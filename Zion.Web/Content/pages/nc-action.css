@@ -1,0 +1,113 @@
+﻿#nc-actions table thead {
+	background-color: #428bca;
+	color: #ffffff;
+}
+
+#nc-actions .detailBox { border: 1px solid #bbb; }
+
+#nc-actions .titleBox {
+	background-color: #fdfdfd;
+	padding: 10px;
+}
+
+#nc-actions .titleBox label {
+	color: #444;
+	display: inline-block;
+	margin: 0;
+}
+
+#nc-actions .commentBox {
+	border-top: 1px dotted #bbb;
+	padding: 10px;
+}
+
+#nc-actions .commentBox .form-group:first-child,
+#nc-actions .actionBox .form-group:first-child { width: 80%; }
+
+#nc-actions .commentBox .form-group:nth-child(2),
+#nc-actions .actionBox .form-group:nth-child(2) { width: 18%; }
+
+#nc-actions .actionBox .form-group * { width: 100%; }
+
+#nc-actions .taskDescription { margin-top: 10px 0; }
+
+#nc-actions .commentList {
+	list-style: none;
+	max-height: 200px;
+	overflow: auto;
+	padding: 0;
+}
+
+#nc-actions .commentList li {
+	margin: 0;
+	margin-top: 10px;
+}
+
+#nc-actions .commentList li > div { display: table-cell; }
+
+#nc-actions .commenterImage {
+	float: left;
+	height: 100%;
+	margin-right: 5px;
+	width: 30px;
+}
+
+#nc-actions .commenterImage img {
+	border-radius: 50%;
+	width: 100%;
+}
+
+#nc-actions .commentText p { margin: 0; }
+
+#nc-actions .sub-text {
+	color: #aaa;
+	font-family: verdana;
+	font-size: 11px;
+}
+
+#nc-actions .actionBox {
+	border-top: 1px dotted #bbb;
+	padding: 10px;
+}
+
+#nc-actions .has-error { border: 2px solid red; }
+
+#rp-ProgressUpdate .detailBox { border: 1px solid #bbb; }
+
+#rp-ProgressUpdate .commentBox .form-group:first-child,
+#rp-ProgressUpdate .actionBox .form-group:first-child { width: 80%; }
+
+#rp-ProgressUpdate .commentBox .form-group:nth-child(2),
+#rp-ProgressUpdate .actionBox .form-group:nth-child(2) { width: 18%; }
+
+#rp-ProgressUpdate .actionBox .form-group * { width: 100%; }
+
+#rp-ProgressUpdate .commentList {
+	list-style: none;
+	max-height: 200px;
+	overflow: auto;
+	padding: 0;
+}
+
+#rp-ProgressUpdate .commentList li {
+	margin: 0;
+	margin-top: 10px;
+}
+
+#rp-ProgressUpdate .commentList li > div { display: table-cell; }
+
+#rp-ProgressUpdate .commentText p { margin: 0; }
+
+#rp-ProgressUpdate .sub-text {
+	color: #aaa;
+	font-family: verdana;
+	font-size: 11px;
+}
+
+#rp-ProgressUpdate .actionBox {
+	border-top: 1px dotted #bbb;
+	padding: 10px;
+}
+
+#rp-ProgressUpdate .has-error { border: 2px solid red; }
+/*# sourceMappingURL=nc-action.css.map */

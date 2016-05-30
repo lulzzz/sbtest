@@ -1,0 +1,17 @@
+﻿@using System.Security.Claims
+@{
+	ViewBag.Title = "AccessList";
+}
+
+<h2>AccessList</h2>
+<div>
+	Welcome @CurrentUser.FullName!. .
+	<div>
+		<h2>Claims</h2>
+		@foreach (Claim claim in CurrentUser.Claims.OrderBy(c => c.Type).ToList())
+		{
+			<div>@claim.Type : @claim.Value</div>
+		}
+		
+	</div>
+</div>

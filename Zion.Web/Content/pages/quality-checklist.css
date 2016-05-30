@@ -1,0 +1,102 @@
+﻿#quality-checklist div.form-controls button { width: 150px; }
+
+#quality-checklist .progress-bar-info {
+	background-color: #aaaaaa;
+	/*.progress-bar-variant(#aaaaaa);*/
+}
+
+#quality-checklist .affix {
+	max-width: 15%;
+	position: fixed;
+	right: 0;
+	top: 20px;
+}
+
+#quality-checklist textarea.comments { height: 130px; }
+
+#quality-checklist ul.groups {
+	-webkit-padding-start: 10px;
+	list-style: none;
+}
+
+#quality-checklist ul.groups li {
+	display: block;
+	padding: 10px 15px;
+	position: relative;
+}
+
+#quality-checklist ul.groups li :hover {
+	background-color: #eeeeee;
+	text-decoration: none;
+}
+
+#quality-checklist ul.groups li a { display: none; }
+
+#quality-checklist .nav li:hover { border-left: 1px solid red; }
+
+#quality-checklist .nav li.active { border-left: 2px solid red; }
+
+#quality-checklist .attach-button { margin-bottom: 5px; }
+
+#quality-checklist .submit-button { margin-top: 20px; }
+
+#quality-checklist .drop-box {
+	background: #F8F8F8;
+	border: 5px dashed #DDD;
+	height: 115px;
+	text-align: center;
+	width: 100%;
+}
+
+#quality-checklist .drop-box .question-files {
+	height: 100px;
+	overflow-y: auto;
+	text-align: left;
+}
+
+#quality-checklist .drop-box .question-files ol { list-style-type: circle; }
+
+#quality-checklist .drop-box .file-upload-icon {
+	font-size: 2em;
+	opacity: 0.5;
+}
+
+#quality-checklist .drop-box.dragover { border: 5px dashed blue; }
+
+#quality-checklist .drop-box.dragover-err { border: 5px dashed red; }
+
+#quality-checklist .question-extension { margin-left: 20px; }
+
+#quality-checklist .question-na { text-decoration: line-through; }
+
+#quality-checklist .angular-ui-tree-empty { min-height: 400px; }
+
+#quality-checklist .tree-node {
+	background: #f8faff;
+	border: 1px solid #dae2ea;
+	color: #7c9eb2;
+}
+
+#quality-checklist .group-header { font-weight: bold; }
+
+#quality-checklist .tree-node-content {
+	line-height: 35px;
+	margin: 10px;
+}
+
+#quality-checklist .tree-node-content .btn-group button { height: 35px; }
+
+#quality-checklist .tree-handle {
+	background: #428bca;
+	color: #FFF;
+	margin-right: 10px;
+	padding: 10px;
+}
+
+#quality-checklist .angular-ui-tree-placeholder {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	background: #f0f9ff;
+	border: 2px dashed #bed2db;
+	box-sizing: border-box;
+}

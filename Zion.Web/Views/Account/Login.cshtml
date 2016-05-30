@@ -1,0 +1,57 @@
+﻿@using System.Security.Policy
+@using System.Web.Optimization
+@using StackExchange.Profiling
+@model HrMaxx.Web.ViewModels.AccountViewModel
+@{
+	ViewBag.Title = "Log in";
+}
+<html>
+	<head>
+		<link href="@Url.Content("~/Content/site.css")" rel="stylesheet" />
+		<!--[if lt IE 9]>
+			@Scripts.Render("~/bundles/html5")
+		<![endif]-->
+		@Scripts.Render("~/bundles/bootstrapjquery")
+
+	</head>
+<body class="gray-bg" ng-app="common">
+	<div class="row" ng-controller="loginCtrl">
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+		<div class="middle-box text-center loginscreen  animated fadeInDown">
+			<div>
+				<div><h1 class="logo-name">Z+</h1></div>
+				<h3>Welcome to HrMaxx</h3>
+				<p>Login. To see it in action.</p>
+				<section id="loginForm">
+					@using (Html.BeginForm("Login", "Account", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "m-t", role = "form", id = "loginFormSubmit", name = "loginFormSubmit" }))
+					{
+						@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+						<div class="form-group">
+							@Html.TextBoxFor(m => m.UserName, new { @class = "form-control", data_ng_model = "username" })
+							@Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+						</div>
+						<div class="form-group">
+							@Html.PasswordFor(m => m.Password, new { @class = "form-control", data_ng_model = "password" })
+							@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+							@Html.HiddenFor(m => m.ReturnUrl)
+						</div>
+						<button type="button" data-loading-text="Please wait..." class="btn btn-primary block full-width m-b" ng-click="login('@Model.ReturnUrl')">Login</button>
+							<!--<a href="#"><small>Forgot password?</small></a>-->
+						<p class="text-muted text-center"><small>Trouble logging in? Contact the <a href="mailto:servicedesk@ventia.com.au?subject=Visionstream - Z - Cant Login">Ventia Service Desk</a></small></p>
+					}
+				</section>
+			</div>
+		</div>
+	</div>
+	@Scripts.Render("~/bundles/angular")
+	@Scripts.Render("~/bundles/slimScroll")
+	<!-- Skin config script - only for demo purpose-->
+	@Scripts.Render("~/bundles/skinConfig")
+
+
+
+	@MiniProfiler.RenderIncludes(useExistingjQuery: true, position: RenderPosition.Right, showControls: true)
+	@section Scripts {
+	}
+</body>
+</html>

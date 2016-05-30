@@ -1,0 +1,48 @@
+﻿@using HrMaxxWeb.Code.Helpers
+<div class="row border-bottom">
+	<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+		<div id="wrapper" class="@Html.PageClass()">
+
+			<div class="navbar-header">
+				<a class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i class="fa fa-angle-left"></i></a>
+			</div>
+		
+			@Html.Partial("_LoginPartial")
+			@if (Request.IsAuthenticated)
+			{
+				<ul class="nav navbar-top-links navbar-right">
+
+					<li class="dropdown" id="dvNotifications" ng-app="notification" ng-controller="notificationCtrl">
+						<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+							<i class="fa fa-envelope"></i>  <span class="label label-warning" ng-show="myNotifications.length">{{unreadNotificationsCount}}</span>
+						</a>
+						<ul class="dropdown-menu dropdown-messages">
+							<li ng-click="refreshNotifications()" class=" col-md-12">
+								<div class="dropdown-messages-box">
+									<center>  <span class="glyphicon glyphicon-refresh icon-refresh" ng-click="refreshNotifications()" aria-hidden="true"></span></center>
+								</div>
+								<div class="divider"></div>
+							</li>
+
+							<li ng-repeat="notification in myNotifications" class="notification-item col-md-12">
+								<div class="dropdown-messages-box">
+									<div class="pull-left">
+										<i class="fa fa-envelope warning" ng-if="notification.isRead"></i>
+										<i class="fa fa-envelope primary" ng-if="!notification.isRead"></i>
+									</div>
+									<div class="media-body" ng-click="NotificationRead(notification)">
+										<small class="pull-right">{{notification.createdOn}}</small>
+										<span ng-class="{'text-bold': notification.isRead === false}">{{notification.type}}</span> <br />{{notification.text}}.
+
+									</div>
+								</div>
+								<div class="divider"></div>
+							</li>
+
+						</ul>
+					</li>
+				</ul>
+			}
+		</div>
+</nav>
+</div>

@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Zion.Web</name>
+    </assembly>
+    <members>
+        <member name="M:Zion.Web.Header.CIDetailsMenuSet(System.String)">
+            <summary>
+            Highlighting the Menu Item based on URL
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            
+        </member>
+        <member name="F:Zion.Web.Header.form1">
+            <summary>
+            form1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.radScriptManager">
+            <summary>
+            radScriptManager control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.Div1">
+            <summary>
+            Div1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.pnlLoading">
+            <summary>
+            pnlLoading control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.panel1">
+            <summary>
+            panel1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.lblTitle">
+            <summary>
+            lblTitle control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.pnlUserState">
+            <summary>
+            pnlUserState control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.ddlCurrentState">
+            <summary>
+            ddlCurrentState control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.lblUserName">
+            <summary>
+            lblUserName control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.lblCurrentDate">
+            <summary>
+            lblCurrentDate control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.lnkLogout">
+            <summary>
+            lnkLogout control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+        <member name="F:Zion.Web.Header.RadMenu1">
+            <summary>
+            RadMenu1 control.
+            </summary>
+            <remarks>
+            Auto-generated field.
+            To modify move field declaration from designer file to code-behind file.
+            </remarks>
+        </member>
+    </members>
+</doc>

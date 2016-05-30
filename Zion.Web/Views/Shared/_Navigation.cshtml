@@ -1,0 +1,52 @@
+﻿@using System.Web.Optimization
+@using System.Security.Policy
+@using StackExchange.Profiling
+@using System.Net.Http
+@using HrMaxx.Infrastructure.Enums
+@using HrMaxx.Infrastructure.Helpers
+@using HrMaxx.Infrastructure.Security
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav" id="side-menu">
+			<li class="nav-header">
+				<div class="dropdown profile-element">
+					<span>
+						<img alt="image" class="img-circle" src="@CurrentUser.Photo" />
+					</span>
+					<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						<span class="clear">
+							<span class="block m-t-xs">
+								@if (User.Identity.IsAuthenticated)
+								{
+									<strong class="font-bold">@CurrentUser.FullName</strong>
+								}
+							</span>
+						</span>
+					</a>
+
+				</div>
+				
+			</li>
+			
+			<li class="@Html.IsSelected("Rectifications")">
+				<a href="@Url.Action("MyActions", "Rectifications", new {area = "SHEQ"})"><i class="fa fa-tasks"></i> <span class="nav-label">My Actions</span> </a>
+			</li>
+			
+				<li class="@Html.IsSelected("Graphs")">
+					<a href="#"><i class="fa fa-bullseye"></i> <span class="nav-label">SHEQ</span><span class="fa arrow"></span></a>
+					<ul class="nav nav-second-level">
+					
+						<li>
+							<a href="@Url.Action("Index", "Inspection", new {area = "SHEQ"})">Inspection</a>
+						</li>
+						<li>
+							<a href="@Url.Action("Index", "WorkSite", new {area = "Ericsson"})">View Inspections</a>
+						</li>
+					
+					</ul>
+				</li>
+			
+			
+		</ul>
+	</div>
+</nav>

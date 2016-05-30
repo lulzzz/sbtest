@@ -1,0 +1,55 @@
+﻿#allocaton-tree { /* --- Tree --- */ }
+
+#allocaton-tree .btn { margin-right: 8px; }
+
+#allocaton-tree .angular-ui-tree-handle {
+	background: #f8faff;
+	border: 1px solid #dae2ea;
+	color: #7c9eb2;
+	padding: 10px 10px;
+}
+
+#allocaton-tree .angular-ui-tree-handle:hover {
+	background: #f4f6f7;
+	border-color: #dce2e8;
+	color: #438eb9;
+}
+
+#allocaton-tree .angular-ui-tree-placeholder {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	background: #f0f9ff;
+	border: 2px dashed #bed2db;
+	box-sizing: border-box;
+}
+
+#allocaton-tree .angular-ui-tree-node { line-height: 15px !important; }
+
+#allocaton-tree .group-title {
+	background-color: #687074 !important;
+	color: #FFF !important;
+}
+
+#allocaton-tree .tree-node {
+	background: #f8faff;
+	border: 1px solid #dae2ea;
+	color: #7c9eb2;
+}
+
+#allocaton-tree .tree-node-content {
+	margin: 1px !important;
+	padding: 3px !important;
+}
+
+#allocaton-tree .tree-handle {
+	background: #428bca;
+	color: #FFF;
+	padding: 10px;
+}
+
+#allocaton-tree .panel-body { padding: 0 15px !important; }
+
+#allocaton-tree .well { margin-bottom: 0 !important; }
+
+#allocaton-tree .row { margin-bottom: -15px !important; }
+/*# sourceMappingURL=allocationtree.css.map */

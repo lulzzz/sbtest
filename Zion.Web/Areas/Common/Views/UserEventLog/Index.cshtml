@@ -1,0 +1,101 @@
+﻿@{
+	Layout = "~/Areas/SHEQ/Views/Shared/_SHEQLayout.cshtml";
+	ViewBag.Title = "User Activity Log";
+}
+
+<div class="col-xs-12" id="user-event-log" ng-app="userEventLog" ng-controller="userEventLogCtrl">
+
+	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+
+	<accordion close-others="oneAtATime">
+		<accordion-group is-open="isFilterOpen">
+			<accordion-heading>
+				Filter <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isFilterOpen, 'glyphicon-chevron-right': !isFilterOpen}"></i>
+			</accordion-heading>
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+					<label for="user" class="col-sm-2 control-label">Users</label>
+					<div class="col-sm-10">
+						<select class="form-control" id="user" ng-model="data.selectedUser" ng-options="user.fullName for user in data.userList track by user.userId">
+							<option value="">Please select...</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Start Date</label>
+					<div class="col-sm-2">
+						<p class="input-group">
+							<input type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="data.startDate" is-open="data.openedStartDate" min-date="minDate" datepicker-options="dateOptions" close-text="Close" />
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-default" ng-click="openStartDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+							</span>
+						</p>
+					</div>
+					<label class="col-sm-2 control-label">End Date</label>
+					<div class="col-sm-2">
+						<p class="input-group">
+							<input type="text" class="form-control" datepicker-popup="dd/MM/yyyy" ng-model="data.endDate" is-open="data.openedEndDate" min-date="data.startDate" datepicker-options="dateOptions" close-text="Close" />
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-default" ng-click="openEndDate($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+							</span>
+						</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary pull-right" ng-click="getData()">Filter</button>
+
+				</div>
+			</form>
+		</accordion-group>
+	</accordion>
+	<div class="panel panel-primary" ng-show="data.userEventLogList.length>0">
+		<div class="panel-heading">User Event Log</div>
+		<div class="panel-body">
+			<button class="btn btn-primary pull-right" ng-click="exportUserEventLog()" ng-show="tableData.length>1">Export</button>
+			<table ng-table="tableParams" id="grdMyActions" template-pagination="custom/pager" show-filter="true" class="table">
+				<tr ng-repeat="eventLog in tableData track by $index" class="mouse-over-pointer">
+					<td data-title=" 'User Id' " filter=" { 'userId' : 'text' }" sortable="'userId'" class="col-md-1">
+						{{eventLog.userId}}
+					</td>
+					<td data-title="'User Name'" filter="{ 'userName': 'text' }" sortable="'userName'" class="col-md-2">
+						{{eventLog.userName}}
+					</td>
+					<td data-title="'Module'" filter="{ 'module': 'text' }" sortable="'module'" class="col-md-1">
+						{{eventLog.module}}
+					</td>
+					<td data-title="'Event'" sortable="'event'" class="col-md-2">
+						{{eventLog.event}} - {{eventLog.eventAction}}
+					</td>
+					<td data-title="'Type'" sortable="'eventObjectName'" class="col-md-1">
+						{{eventLog.eventObjectName}}
+					</td>
+					<td data-title="'Time'" sortable="'timestamp'" class="col-md-1">
+						{{eventLog.timestamp | date:'dd/MM/yyyy hh:mm a'}}
+					</td>
+					
+				</tr>
+			</table>
+			<script type="text/ng-template" id="custom/pager">
+				<ul class="pager ng-cloak">
+					<li ng-repeat="page in pages"
+							ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+							ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+						<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+						<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+					</li>
+					<li>
+						<div class="btn-group">
+							<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default">10</button>
+							<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default">25</button>
+							<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default">50</button>
+							<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default">100</button>
+						</div>
+					</li>
+				</ul>
+			</script>
+
+		</div>
+
+	</div>
+
+</div>

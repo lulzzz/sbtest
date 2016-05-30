@@ -1,0 +1,1 @@
+for /f "usebackq tokens=*" %%n in (`dir /b /s packages\*.nupkg`) do copy "%%n" C:\Dev\NugetServer\NugetServer\NugetServer\Packages /y

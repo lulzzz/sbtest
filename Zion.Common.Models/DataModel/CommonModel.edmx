@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+	<!-- EF Runtime content -->
+	<edmx:Runtime>
+		<!-- SSDL content -->
+		<edmx:StorageModels>
+			<Schema Namespace="CommonModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self"
+			        xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator"
+			        xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation"
+			        xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+				<EntityType Name="StagingData">
+					<Key>
+						<PropertyRef Name="Id" />
+					</Key>
+					<Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+					<Property Name="OriginatorType" Type="varchar" MaxLength="255" Nullable="false" />
+					<Property Name="MementoId" Type="uniqueidentifier" Nullable="false" />
+					<Property Name="Memento" Type="varchar(max)" Nullable="false" />
+					<Property Name="DateCreated" Type="datetime" Nullable="false" />
+				</EntityType>
+				<EntityType Name="Document">
+					<Key>
+						<PropertyRef Name="DocumentID" />
+					</Key>
+					<Property Name="DocumentID" Type="uniqueidentifier" Nullable="false" />
+					<Property Name="DocumentName" Type="varchar(max)" Nullable="false" />
+					<Property Name="DocumentExt" Type="varchar(max)" Nullable="false" />
+				</EntityType>
+				<EntityType Name="Notifications">
+					<Key>
+						<PropertyRef Name="NotificationId" />
+					</Key>
+					<Property Name="NotificationId" Type="uniqueidentifier" Nullable="false" />
+					<Property Name="Type" Type="varchar" MaxLength="100" />
+					<Property Name="Text" Type="varchar" MaxLength="500" />
+					<Property Name="MetaData" Type="varchar(max)" />
+					<Property Name="LoginId" Type="varchar" MaxLength="100" />
+					<Property Name="IsRead" Type="bit" />
+					<Property Name="CreatedOn" Type="datetime" />
+				</EntityType>
+				<EntityType Name="UserEventLog">
+					<Key>
+						<PropertyRef Name="Id" />
+					</Key>
+					<Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+					<Property Name="UserId" Type="varchar" MaxLength="50" Nullable="false" />
+					<Property Name="UserName" Type="varchar(max)" Nullable="false" />
+					<Property Name="Module" Type="varchar" MaxLength="50" Nullable="false" />
+					<Property Name="Event" Type="int" Nullable="false" />
+					<Property Name="EventAction" Type="varchar(max)" />
+					<Property Name="EventObject" Type="varchar(max)" />
+					<Property Name="EventObjectName" Type="varchar" MaxLength="50" />
+					<Property Name="Timestamp" Type="datetime" Nullable="false" />
+				</EntityType>
+				<EntityContainer Name="CommonModelStoreContainer">
+					<EntitySet Name="StagingData" EntityType="Self.StagingData" Schema="Common" store:Type="Tables" />
+					<EntitySet Name="Document" EntityType="Self.Document" Schema="dbo" store:Type="Tables" />
+					<EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
+					<EntitySet Name="UserEventLog" EntityType="Self.UserEventLog" Schema="dbo" store:Type="Tables" />
+				</EntityContainer>
+			</Schema>
+		</edmx:StorageModels>
+		<!-- CSDL content -->
+		<edmx:ConceptualModels>
+			<Schema Namespace="CommonModel" Alias="Self" annotation:UseStrongSpatialTypes="false"
+			        xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation"
+			        xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation"
+			        xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+				<EntityContainer Name="CommonEntities" annotation:LazyLoadingEnabled="true">
+					<EntitySet Name="Documents" EntityType="CommonModel.Document" />
+					<EntitySet Name="StagingDatas" EntityType="CommonModel.StagingData" />
+					<EntitySet Name="Notifications" EntityType="CommonModel.Notification" />
+					<EntitySet Name="UserEventLogs" EntityType="CommonModel.UserEventLog" />
+				</EntityContainer>
+				<EntityType Name="Document">
+					<Key>
+						<PropertyRef Name="DocumentID" />
+					</Key>
+					<Property Name="DocumentID" Type="Guid" Nullable="false" />
+					<Property Name="DocumentName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+					<Property Name="DocumentExt" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+				</EntityType>
+				<EntityType Name="StagingData">
+					<Key>
+						<PropertyRef Name="Id" />
+					</Key>
+					<Property Name="Id" Type="Guid" Nullable="false" />
+					<Property Name="OriginatorType" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+					<Property Name="MementoId" Type="Guid" Nullable="false" />
+					<Property Name="Memento" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+					<Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+				</EntityType>
+				<EntityType Name="Notification">
+					<Key>
+						<PropertyRef Name="NotificationId" />
+					</Key>
+					<Property Name="NotificationId" Type="Guid" Nullable="false" />
+					<Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+					<Property Name="Text" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+					<Property Name="MetaData" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+					<Property Name="LoginId" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+					<Property Name="IsRead" Type="Boolean" />
+					<Property Name="CreatedOn" Type="DateTime" Precision="3" />
+				</EntityType>
+				<EntityType Name="UserEventLog">
+					<Key>
+						<PropertyRef Name="Id" />
+					</Key>
+					<Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+					<Property Name="UserId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+					<Property Name="UserName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+					<Property Name="Event" Type="Int32" Nullable="false" />
+					<Property Name="EventObject" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+					<Property Name="Timestamp" Type="DateTime" Nullable="false" Precision="3" />
+					<Property Name="EventObjectName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+					<Property Name="EventAction" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+					<Property Name="Module" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+				</EntityType>
+			</Schema>
+		</edmx:ConceptualModels>
+		<!-- C-S mapping content -->
+		<edmx:Mappings>
+			<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+				<EntityContainerMapping StorageEntityContainer="CommonModelStoreContainer" CdmEntityContainer="CommonEntities">
+					<EntitySetMapping Name="Documents">
+						<EntityTypeMapping TypeName="CommonModel.Document">
+							<MappingFragment StoreEntitySet="Document">
+								<ScalarProperty Name="DocumentExt" ColumnName="DocumentExt" />
+								<ScalarProperty Name="DocumentName" ColumnName="DocumentName" />
+								<ScalarProperty Name="DocumentID" ColumnName="DocumentID" />
+							</MappingFragment>
+						</EntityTypeMapping>
+					</EntitySetMapping>
+					<EntitySetMapping Name="StagingDatas">
+						<EntityTypeMapping TypeName="CommonModel.StagingData">
+							<MappingFragment StoreEntitySet="StagingData">
+								<ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+								<ScalarProperty Name="Memento" ColumnName="Memento" />
+								<ScalarProperty Name="MementoId" ColumnName="MementoId" />
+								<ScalarProperty Name="OriginatorType" ColumnName="OriginatorType" />
+								<ScalarProperty Name="Id" ColumnName="Id" />
+							</MappingFragment>
+						</EntityTypeMapping>
+					</EntitySetMapping>
+					<EntitySetMapping Name="Notifications">
+						<EntityTypeMapping TypeName="CommonModel.Notification">
+							<MappingFragment StoreEntitySet="Notifications">
+								<ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+								<ScalarProperty Name="IsRead" ColumnName="IsRead" />
+								<ScalarProperty Name="LoginId" ColumnName="LoginId" />
+								<ScalarProperty Name="MetaData" ColumnName="MetaData" />
+								<ScalarProperty Name="Text" ColumnName="Text" />
+								<ScalarProperty Name="Type" ColumnName="Type" />
+								<ScalarProperty Name="NotificationId" ColumnName="NotificationId" />
+							</MappingFragment>
+						</EntityTypeMapping>
+					</EntitySetMapping>
+					<EntitySetMapping Name="UserEventLogs">
+						<EntityTypeMapping TypeName="CommonModel.UserEventLog">
+							<MappingFragment StoreEntitySet="UserEventLog">
+								<ScalarProperty Name="Module" ColumnName="Module" />
+								<ScalarProperty Name="EventAction" ColumnName="EventAction" />
+								<ScalarProperty Name="EventObjectName" ColumnName="EventObjectName" />
+								<ScalarProperty Name="Timestamp" ColumnName="Timestamp" />
+								<ScalarProperty Name="EventObject" ColumnName="EventObject" />
+								<ScalarProperty Name="Event" ColumnName="Event" />
+								<ScalarProperty Name="UserName" ColumnName="UserName" />
+								<ScalarProperty Name="UserId" ColumnName="UserId" />
+								<ScalarProperty Name="Id" ColumnName="Id" />
+							</MappingFragment>
+						</EntityTypeMapping>
+					</EntitySetMapping>
+				</EntityContainerMapping>
+			</Mapping>
+		</edmx:Mappings>
+	</edmx:Runtime>
+	<!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+	<Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+		<Connection>
+			<DesignerInfoPropertySet>
+				<DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+			</DesignerInfoPropertySet>
+		</Connection>
+		<Options>
+			<DesignerInfoPropertySet>
+				<DesignerProperty Name="ValidateOnBuild" Value="true" />
+				<DesignerProperty Name="EnablePluralization" Value="true" />
+				<DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+				<DesignerProperty Name="UseLegacyProvider" Value="false" />
+				<DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+			</DesignerInfoPropertySet>
+		</Options>
+		<!-- Diagram content (shape and connector positions) -->
+		<Diagrams></Diagrams>
+	</Designer>
+</edmx:Edmx>

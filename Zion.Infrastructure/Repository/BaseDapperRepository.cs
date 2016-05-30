@@ -1,0 +1,29 @@
+﻿using System;
+using System.Data;
+using System.Data.Common;
+using HrMaxx.Infrastructure.Mapping;
+using StackExchange.Profiling.Data;
+
+namespace HrMaxx.Infrastructure.Repository
+{
+	public class BaseDapperRepository
+	{
+		protected DbConnection Connection;
+
+		protected BaseDapperRepository(DbConnection connection)
+		{
+			Connection = new ProfiledDbConnection(connection, StackExchange.Profiling.MiniProfiler.Current);
+			OpenConnection();
+		}
+
+		public IMapper Mapper { get; set; }
+
+		protected void OpenConnection()
+		{
+			if (Connection == null) throw new InvalidOperationException("Connection can not be null");
+
+			if (Connection.State == ConnectionState.Closed)
+				Connection.Open();
+		}
+	}
+}

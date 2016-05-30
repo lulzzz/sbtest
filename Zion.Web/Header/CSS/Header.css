@@ -1,0 +1,2855 @@
+﻿div.qsf-demo-canvas {
+	/* Common */
+	/*Margin*/
+	/*Margin Ends*/
+	/*Padding*/
+	/*Padding Ends*/
+	/*Text alignment and vertical alignment*/
+	/*
+
+.imgAddNew
+{
+  opacity:0.9;
+  filter:alpha(opacity=90); 
+}
+*/
+	/*Text alignment and vertical alignment Ends*/
+	/*Inputs*/
+	/* Added By Jambunathan.V,ReadOnly Text Box ,Date:16-Jul-2010 */
+	/* Added By Jambunathan.V,ReadOnly Text Area ,Date:16-Jul-2010 */
+	/*Table layout alignment*/
+	/*Inputs*/
+	/* Added By senthil.E,Lable text LoadBoQ ,Date:28-Mar-2011 */
+	/* iframe related styles*/
+	/* Tab CSS */
+	/* Selected tab */
+	/*
+ Custom tooltip defined here 
+*/
+	/*
+ Custom toolTip end 
+*/
+	/* Radibutton custom*/
+	/* Radibutton custom*/
+	/* build drop related */
+	/* slide 1 new   - starts  */
+	/* slide 1 new - ends */
+	/* Dashboard related - starts  */
+	/* Dashboard related - ends  */
+	/* build drop related - ends here  */
+	/* build drop allocation Rejected Started Completed - starts here  */
+	/* build drop allocation Rejected Started Completed - ends here  */
+	/* build drop allocation Rejected Started Completed - ends here  */
+	/* Rad control patches for IE 9 , 8 */
+	/* Holly Hack for IE \*/
+	/* End */
+	/* CSS Document */
+	/*.SearchWorkID 
+{
+    font:  10px Arial, Helvetica, sans-serif;
+	color: black;
+    width: 80px;
+    text-align:left;
+    background-color:#F1EFF0;
+    border:none;
+    clear:left;
+
+}*/
+	/*div.TemplateMenu .rmGroup li.SearchWorkID a {
+	font: 10px Arial, Helvetica, sans-serif;
+	color: #fff;
+	text-decoration: underline;
+}*/
+	/* ##### Header ##### */
+	/************************/
+	/* ##### Menu Bar ##### */
+	/* header menu text separated */
+	/* ##### Left Side Bar ##### */
+	/* ##### Main Copy ##### */
+	/* ##### Footer ##### */
+	/* ##### Login Header ##### */
+	/* ##### Search ##### */
+	/* ##### FitToScreen Div ##### */
+	/* ##### No Record Div ##### */
+	/* ##### No Record Div ##### */
+	/* ##### Work Order Summary ##### */
+	/* ##### EditedUserDiv ##### */
+	/* ##### Error Msg Div ##### */
+	/*I-Frame*/
+	/* new search related */
+	/* new search related - ends here */
+	/* QFIC CSS Begins here*/
+	/*Begin of Severity CSS*/
+	/*End of Severity CSS*/
+	/* QFIC CSS Ends here*/
+	/*slider css    */
+	/*slider css*/
+	/* button Search*/
+	/*button*/
+}
+
+div.qsf-demo-canvas a:hover {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+div.qsf-demo-canvas img { border: none; }
+
+div.qsf-demo-canvas br { clear: left; }
+
+div.qsf-demo-canvas p {
+	margin: 0;
+	padding: 5px;
+}
+
+div.qsf-demo-canvas .txtFont {
+	font-family: Calibri;
+	font-size: 16px;
+}
+
+div.qsf-demo-canvas .mRight10 { margin-right: 10px; }
+
+div.qsf-demo-canvas .mRight6 { margin-right: 6px; }
+
+div.qsf-demo-canvas .mRight5 { margin-right: 5px; }
+
+div.qsf-demo-canvas .mRight4 { margin-right: 4px; }
+
+div.qsf-demo-canvas .mLeft15 { margin-left: 15px; }
+
+div.qsf-demo-canvas .mLeft85 { margin-left: 85px; }
+
+div.qsf-demo-canvas .mLeft5 { margin-left: 5px; }
+
+div.qsf-demo-canvas .mLeft2 { margin-left: 2px; }
+
+div.qsf-demo-canvas .mTop10 { margin-top: 10px; }
+
+div.qsf-demo-canvas .mTop15 { margin-top: 15px; }
+
+div.qsf-demo-canvas .mTop5 { margin-top: 5px; }
+
+div.qsf-demo-canvas .mTop1 { margin-top: 1px; }
+
+div.qsf-demo-canvas .mBot5 { margin-bottom: 5px; }
+
+div.qsf-demo-canvas .pLeft60 { padding-left: 60px; }
+
+div.qsf-demo-canvas .pLeft50 { padding-left: 50px; }
+
+div.qsf-demo-canvas .pRight50 { padding-right: 50px; }
+
+div.qsf-demo-canvas .pLeft20 { padding-left: 20px; }
+
+div.qsf-demo-canvas .pLeft15 { padding-left: 15px; }
+
+div.qsf-demo-canvas .pLeft10 { padding-left: 10px; }
+
+div.qsf-demo-canvas .pLeft5 { padding-left: 5px; }
+
+div.qsf-demo-canvas .pRight5 { padding-right: 5px; }
+
+div.qsf-demo-canvas .pLeft75 { padding-left: 75px; }
+
+div.qsf-demo-canvas .pBot5 { padding-bottom: 5px; }
+
+div.qsf-demo-canvas .pBot10 { padding-bottom: 10px; }
+
+div.qsf-demo-canvas .pBot15 { padding-bottom: 15px; }
+
+div.qsf-demo-canvas .pBot20 { padding-bottom: 20px; }
+
+div.qsf-demo-canvas .pTop5 { padding-top: 5px; }
+
+div.qsf-demo-canvas .pTop15 { padding-top: 15px; }
+
+div.qsf-demo-canvas .pTop20 { padding-top: 20px; }
+
+div.qsf-demo-canvas .pRight5 { padding-right: 5px; }
+
+div.qsf-demo-canvas .pRight10 { padding-right: 10px; }
+
+div.qsf-demo-canvas .pRight15 {
+	padding-right: 15px;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .pRight20 {
+	padding-right: 15px;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .pRight25 { padding-right: 25px; }
+
+div.qsf-demo-canvas .pRight30 { padding-right: 30px; }
+
+div.qsf-demo-canvas .pRight35 { padding-right: 45px; }
+
+div.qsf-demo-canvas .pRight45 { padding-right: 45px; }
+
+div.qsf-demo-canvas .pRight65 { padding-right: 65px; }
+
+div.qsf-demo-canvas .vaT { vertical-align: top; }
+
+div.qsf-demo-canvas .pBot10 { padding-bottom: 10px; }
+
+div.qsf-demo-canvas .pDate { padding-bottom: 0px; }
+
+div.qsf-demo-canvas .taRDate {
+	padding-bottom: 5px;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .vaB { vertical-align: bottom; }
+
+div.qsf-demo-canvas .vaM { vertical-align: middle; }
+
+div.qsf-demo-canvas .taJ { text-align: justify; }
+
+div.qsf-demo-canvas .taR { text-align: right; }
+
+div.qsf-demo-canvas .taRfsd { text-align: left; }
+
+div.qsf-demo-canvas .taRfsditem { text-align: right; }
+
+div.qsf-demo-canvas .taRMiddle {
+	text-align: right;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .taRUpper {
+	text-align: right;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas .taLUpper {
+	text-align: left;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas .taL { text-align: left; }
+
+div.qsf-demo-canvas .txtAlign {
+	color: Black;
+	text-align: left;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .taLTop {
+	text-align: left;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas .taC { text-align: center; }
+
+div.qsf-demo-canvas .iFrameText { font-weight: bold; }
+
+div.qsf-demo-canvas .fltLeft { float: left; }
+
+div.qsf-demo-canvas .fltRight { float: right; }
+
+div.qsf-demo-canvas .txtBox {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .txtBoxR {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	text-align: right;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .txtBoxMultiLine {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 70px;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .clsHelp {
+	background: white;
+	border: none;
+	color: #000000;
+	font: normal normal normal 14px Arial;
+	font-family: Arial;
+	font-weight: bold;
+	height: 23px;
+	width: 20px;
+}
+
+div.qsf-demo-canvas .txtBoxblue {
+	border: solid 0.1em 8EB4E3;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 20px;
+	width: 90%;
+}
+
+div.qsf-demo-canvas .txtBox1 {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	width: 120px;
+}
+
+div.qsf-demo-canvas .txtBoxMultiLine {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 97px;
+	width: 95%;
+}
+
+div.qsf-demo-canvas .txtSearchDesc {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 45px;
+	width: 95%;
+}
+
+div.qsf-demo-canvas .txtBoxMultiLine1 {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 97px;
+	margin: 0 0 5px 0;
+	width: 95%;
+}
+
+div.qsf-demo-canvas .txtBoxRO {
+	background-color: #ECEEEE;
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .lblRO {
+	background-color: #FFF;
+	border: none;
+	color: #c5c4c0;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .txtBoxROCurrency {
+	background-color: #ECEEEE;
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	text-align: right;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .txtBoxCurrency {
+	border: solid 0.1em Gray;
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	font-family: Arial;
+	height: 17px;
+	text-align: right;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .dropdownlist {
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	width: 81%;
+}
+
+div.qsf-demo-canvas .dropdownlist1 {
+	color: #000000;
+	font: normal normal normal 12px Arial;
+	overflow: auto;
+	width: 230px;
+}
+
+div.qsf-demo-canvas .plusImage {
+	background-repeat: no-repeat;
+	padding-bottom: 3px;
+	padding-right: 0px;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .plusImage2 {
+	background-repeat: no-repeat;
+	height: 28px;
+	padding-bottom: 0px;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .plusImage3 {
+	background-repeat: no-repeat;
+	height: 38px;
+	padding-bottom: 0px;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .linkButton { color: Blue; }
+
+div.qsf-demo-canvas .linkButtonCode {
+	color: Blue;
+	font: normal 11px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .txtArea {
+	border: 1px solid Gray;
+	color: #333;
+	font: normal 12px Arial, Helvetica, sans-serif;
+	font-family: Arial;
+	height: 150px;
+	overflow: auto;
+	vertical-align: top;
+	width: 300px;
+}
+
+div.qsf-demo-canvas .txtAreaRO {
+	background-color: #ECEEEE;
+	border: 1px solid Gray;
+	color: #333;
+	font: normal 12px Arial;
+	font-family: Arial;
+	height: 150px;
+	overflow: auto;
+	vertical-align: top;
+	width: 300px;
+}
+
+div.qsf-demo-canvas .button {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/ButtonBG.gif');
+	background-repeat: repeat-x;
+	border: solid 1px black;
+	color: Black;
+	font: normal 12px Arial;
+	height: 23px;
+	margin-left: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .buttonNewUi {
+	/*background-image: url('../Images/NewUI/Loginbuttonnew.jpg');
+	background-image: url('../Images/NewUI/Cancelnew.jpg');*/
+	background-repeat: repeat-x;
+	border: 0;
+	height: 28px;
+	width: 74px;
+	/*border-color:#8EB4E3;
+	color:#4F81BD;
+	font:bold 12px Times New Roman;	
+	width: 65px;
+	/*padding-left: 2px;
+	padding-right: 2px;	
+	margin-left: 0px;*/
+}
+
+div.qsf-demo-canvas .btnNew {
+	/*background-color: #C0CBCC; */
+	background-image: url(../Images/ButtonBG.gif);
+	background-repeat: repeat-x;
+	border: solid 1px black;
+	color: Black;
+	font-family: Arial;
+	font-size: 12px;
+	height: 22px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .button:hover {
+	/*background-color: #C0CBCC; */
+	background-image: url(../Images/ButtonBG_hover.gif);
+	background-repeat: repeat-x;
+	border: solid 1px black;
+	color: Black;
+	font: normal 12px Arial;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .clear { clear: both; }
+
+div.qsf-demo-canvas .Mandate { color: #FF0000; }
+
+div.qsf-demo-canvas .nowrap { white-space: nowrap; }
+
+div.qsf-demo-canvas .labelColom {
+	color: #f5f5f5;
+	font: normal 12px Arial, Helvetica, sans-serif;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .viewColom {
+	color: #000;
+	font: bold 12px Arial, Helvetica, sans-serif;
+	text-align: left;
+}
+
+div.qsf-demo-canvas .fieldColom { text-align: left; }
+
+div.qsf-demo-canvas .labelColomB {
+	color: #f5f5f5;
+	font: bold 12px Arial, Helvetica, sans-serif;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .ItemStyle { text-align: center; }
+
+div.qsf-demo-canvas .txtBoxPSR { font: normal normal normal 12px Arial; }
+
+div.qsf-demo-canvas .lblText {
+	color: #333;
+	font: bold 12px Arial, Helvetica, sans-serif;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas .divOpac {
+	background-color: Gray;
+	border: 1px solid black;
+	margin-left: 300px;
+	margin-top: -50px;
+	position: absolute;
+	vertical-align: middle;
+	z-index: 1;
+}
+
+div.qsf-demo-canvas .divOpacNew {
+	background-color: Gray;
+	background-color: #ffffff;
+	border: 1px solid black;
+	border: solid 2px #000000;
+	margin-left: 150px;
+	/*	margin-top: 50px;
+	margin-left: 150px;*/
+	margin-top: 0px;
+	position: absolute;
+	position: fixed;
+	vertical-align: middle;
+	z-index: 1;
+	z-index: 100;
+}
+
+div.qsf-demo-canvas .iframe2 {
+	-moz-opacity: 0.7;
+	background-color: #000000;
+	filter: alpha(opacity=70);
+	height: 2100px;
+	left: 0px;
+	opacity: 0.7;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: 100;
+}
+
+div.qsf-demo-canvas .iframeBuildingDetail {
+	background-color: Black;
+	left: 0px;
+	max-height: 130%;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: 100;
+	/*  filter: alpha(opacity=70);
+      opacity: -0.7;
+      -moz-opacity: 0.7;*/
+}
+
+div.qsf-demo-canvas .popupOpac {
+	background-color: #EEEEEE;
+	border: 1px solid #000000;
+	cursor: move;
+	margin-left: 100px;
+	margin-top: -250px;
+	position: absolute;
+	z-index: 1;
+}
+
+div.qsf-demo-canvas .popupFrame {
+	background-attachment: fixed;
+	background-color: #FFFFFF;
+	border: solid 1px #000000;
+	position: absolute;
+	width: 650px;
+	z-index: 200;
+}
+
+div.qsf-demo-canvas .tabButton {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Nor_Center.gif');
+	background-repeat: repeat-x;
+	border: 0px;
+	cursor: pointer;
+	font: normal 12px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabButton:hover {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Nor_Center.gif');
+	background-repeat: repeat-x;
+	border: 0px;
+	cursor: pointer;
+	font: normal 12px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabFirstButton {
+	/*background-color: #C0CBCC;*/
+	background-image: url('../Images/Tab_First.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabMiddleButton {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Middle.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabLastButton {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Last.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedButton {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Over_Center.gif');
+	background-repeat: repeat-x;
+	border: 0px;
+	color: White;
+	cursor: pointer;
+	font: normal 12px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedButton:hover {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Over_Center.gif');
+	background-repeat: repeat-x;
+	border: 0px;
+	color: White;
+	cursor: pointer;
+	font: normal 12px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedFirstButton {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Selected_First.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedMiddle1Button {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Middle1.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedMiddle2Button {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Middle2.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedLastButton {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/Tab_Selected_Last.gif');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .tabSelectedButton a {
+	color: white;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .tabButton a {
+	color: black;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .clsTabCheckBox {
+	background-color: red;
+	height: 20px;
+}
+
+div.qsf-demo-canvas .loginusers {
+	color: #1F497D;
+	font: Times New Roman;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .loginrememberpassword {
+	color: #1F497D;
+	font: Times New Roman;
+	font-size: 9px;
+	font-weight: normal;
+}
+
+div.qsf-demo-canvas .toolTip {
+	font-family: Verdana, Arial, Sans-serif, 'Times New Roman';
+	font-size: 8pt;
+	/*filter:alpha(opacity=80);
+
+    -moz-opacity: 0.8;
+
+    opacity: 0.8;*/
+	/* comment the above 3 line if you don't want transparency*/
+}
+
+div.qsf-demo-canvas .Text {
+	color: #333333;
+	font-family: Verdana, Arial, Sans-serif, 'Times New Roman';
+	font-size: 8pt;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .rbCustomOn {
+	background-image: url('../Images/RadioButtonOn.PNG');
+	background-repeat: no-repeat;
+	border: none;
+	height: 21px;
+	width: 22px;
+}
+
+div.qsf-demo-canvas .rbCustomOff {
+	background-image: url('../Images/RadioButtonOff.PNG');
+	background-repeat: no-repeat;
+	border: none;
+	height: 21px;
+	width: 22px;
+}
+
+div.qsf-demo-canvas .rbCustomOnAlt {
+	background-image: url('../Images/RadioButtonOnAlt.PNG');
+	background-repeat: no-repeat;
+	border: none;
+	height: 21px;
+	width: 22px;
+}
+
+div.qsf-demo-canvas .rbCustomOffAlt {
+	background-image: url('../Images/RadioButtonOffAlt.PNG');
+	background-repeat: no-repeat;
+	border: none;
+	height: 21px;
+	width: 22px;
+}
+
+div.qsf-demo-canvas .AllocateActive {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/BuildDrop/Allocate.png');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	height: 23px;
+	padding: 0 0 0 0;
+	width: 137px;
+}
+
+div.qsf-demo-canvas .AllocateInActive {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/BuildDrop/Allocation_Inactive.PNG');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	height: 23px;
+	padding: 0 0 0 0;
+	width: 137px;
+}
+
+div.qsf-demo-canvas .DashboardActive {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/BuildDrop/Dashborad.PNG');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	height: 23px;
+	padding: 0 0 0 0;
+	width: 137px;
+}
+
+div.qsf-demo-canvas .DashboardInActive {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/BuildDrop/Dashborad_InActive.PNG');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	height: 23px;
+	padding: 0 0 0 0;
+	width: 137px;
+}
+
+div.qsf-demo-canvas .QuintiqActive {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/BuildDrop/Quintiq.PNG');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	height: 23px;
+	padding: 0 0 0 0;
+	width: 137px;
+}
+
+div.qsf-demo-canvas .QuintiqInActive {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/BuildDrop/Dashborad_InActive.PNG');
+	background-repeat: no-repeat;
+	border: 0px;
+	font: normal 10px Arial;
+	height: 23px;
+	padding: 0 0 0 0;
+	width: 137px;
+}
+
+div.qsf-demo-canvas .BuildDropStatusClass {
+	font: normal 11px Arial;
+	font-weight: bold;
+	height: 20px;
+	text-align: center;
+	width: 20px;
+}
+
+div.qsf-demo-canvas .FSDStatusClass {
+	font: normal 11px Arial;
+	font-weight: bold;
+	height: 20px;
+	text-align: center;
+	width: 20px;
+}
+
+div.qsf-demo-canvas .BuildDropStatusText {
+	font: normal 11px Arial;
+	font-weight: bold;
+	text-align: left;
+}
+
+div.qsf-demo-canvas .FSDStatusText {
+	font: normal 11px Arial;
+	font-weight: bold;
+	text-align: left;
+}
+
+div.qsf-demo-canvas #divGmapAndFDASection {
+	border: none;
+	float: left;
+	Width: 35%;
+}
+
+div.qsf-demo-canvas #divSubbyAndStatus {
+	border: solid 1px black;
+	float: right;
+	Width: 64%;
+}
+
+div.qsf-demo-canvas .GMapSearchText {
+	height: 25px;
+	vertical-align: middle;
+	width: 97%;
+}
+
+div.qsf-demo-canvas .clsdivLine {
+	border: solid 1px blue;
+	height: 1px;
+	width: 100%;
+}
+
+div.qsf-demo-canvas .SearchGMap {
+	background-image: url('../Images/BuildDrop/Search.PNG');
+	font: normal 12px Arial;
+	height: 23px;
+	margin-left: 0px;
+	width: 25px;
+}
+
+div.qsf-demo-canvas .BuildDropSelect {
+	background-color: #5783b4;
+	color: #FFFFFF;
+	font-family: Calibri Arial;
+	font-size: 14px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .FSDSelect {
+	background-color: #5783b4;
+	color: #FFFFFF;
+	font-family: Calibri Arial;
+	font-size: 14px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .SubbyDateSecClass {
+	background-color: #4F81BD;
+	color: #FFFFFF;
+	font-family: Calibri Arial;
+	font-size: 10px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .SearchTickets {
+	background-color: #5783b4;
+	color: #FFFFFF;
+	font-family: Calibri Arial;
+	font-size: 14px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .SearchDateCss {
+	background-color: #5783b4;
+	color: #FFFFFF;
+	font-family: Calibri Arial;
+	font-size: 11px;
+	font-weight: bold;
+	height: 20px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .LeftArrowClass {
+	background-color: #4F81BD;
+	background-image: url('../Images/BuildDrop/LeftArrowBlue.bmp');
+}
+
+div.qsf-demo-canvas .RightArrowClass {
+	background-color: #4F81BD;
+	background-image: url('../Images/BuildDrop/RightArrowBlue.bmp');
+}
+
+div.qsf-demo-canvas .DateSectionHeader { background-color: #4F81BD; }
+
+div.qsf-demo-canvas .BuildDropDataListText {
+	font-family: Calibri Arial;
+	font-size: 12px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .FSDDataListText {
+	font-family: Calibri Arial;
+	font-size: 12px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .ScrollableList {
+	height: 134px;
+	left: 13px;
+	overflow: auto;
+	position: absolute;
+	top: 62px;
+	width: 247px;
+	z-index: 102;
+}
+
+div.qsf-demo-canvas .SubbyStatusBackColor {
+	background-color: #e3e4e4;
+	font-family: Calibri Arial;
+	font-size: 16px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .SubbyCommandsBackColor {
+	background-color: #FFFFFF;
+	font-family: Calibri Arial;
+	font-size: 16px;
+	font-weight: bold;
+	height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .imgDateFilter {
+	background-image: url('../Images/BuildDrop/DateFilterImage.PNG');
+	background-repeat: no-repeat;
+}
+
+div.qsf-demo-canvas .SubbyClass { text-decoration: none; }
+
+div.qsf-demo-canvas .SubbySummaryInfo {
+	background-color: #FFFFFF;
+	border: solid 2px black;
+}
+
+div.qsf-demo-canvas .SubbySummaryInfoText {
+	font-family: Clibri Arial;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+div.qsf-demo-canvas .TaskAllocate {
+	background-image: url('../Images/BuildDrop/TaskAllocate.PNG');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 35px;
+	margin-left: 0px;
+	width: 100px;
+}
+
+div.qsf-demo-canvas .TaskMove {
+	background-image: url('../Images/BuildDrop/TaskMove.PNG');
+	font: normal 12px Arial;
+	height: 35px;
+	margin-left: 0px;
+	width: 100px;
+}
+
+div.qsf-demo-canvas .SubbyDataList { vertical-align: top; }
+
+div.qsf-demo-canvas .SubbyStatusRB {
+	height: 15px;
+	width: 15px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButton {
+	height: 30px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButtonSelected {
+	border: solid 1px black;
+	height: 40px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButtonAllocated {
+	background-image: url('../Images/BuildDrop/AllocatedPicture.GIF');
+	background-position: right bottom;
+	background-repeat: no-repeat;
+	height: 30px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButtonStarted {
+	background-image: url('../Images/BuildDrop/AllocateAndTimer.png');
+	background-position: right bottom;
+	background-repeat: no-repeat;
+	height: 30px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButtonAllocatedStarted {
+	background-image: url('../Images/BuildDrop/StartedImg.png'), url('../Images/BuildDrop/AllocatedPicture.GIF');
+	background-position: left bottom, right bottom;
+	background-repeat: no-repeat;
+	height: 30px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButtonRejected {
+	background-image: url('../Images/BuildDrop/rej.png');
+	background-position: right bottom;
+	background-repeat: no-repeat;
+	height: 30px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyStatusButtonSelectedAllocated {
+	background-image: url('../Images/BuildDrop/AllocatedPicture.GIF');
+	background-position: right bottom;
+	background-repeat: no-repeat;
+	border: solid 1px black;
+	height: 40px;
+	width: 37px;
+}
+
+div.qsf-demo-canvas .SubbyDispClass {
+	background-color: #FFFFFF;
+	border: solid 1px black;
+	color: #000000;
+}
+
+div.qsf-demo-canvas .SubbyLinkDispClass {
+	background-color: #FFFFFF;
+	color: #000000;
+}
+
+div.qsf-demo-canvas .SubbySelectBackColor { background-color: #95B3D7; }
+
+div.qsf-demo-canvas .divTaskSOR { height: 600px; }
+
+div.qsf-demo-canvas .imgSearch {
+	background-image: url('../Images/BuildDrop/find.ico');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	/*margin-left: 0px;*/
+	height: 24px;
+	width: 24px;
+	/*background-color :#608EC4;*/
+}
+
+div.qsf-demo-canvas .cssTextSearch {
+	background-color: #608EC4;
+	border-style: none;
+	color: #1F497D;
+	font: 18px Calibri, Verdana;
+	height: 30px;
+	margin-right: 3px;
+	width: 50%;
+}
+
+div.qsf-demo-canvas .cssChkActive {
+	height: 24px;
+	margin-top: 5px;
+	text-align: left;
+}
+
+div.qsf-demo-canvas .imgUnAllocate {
+	background-image: url('../Images/BuildDrop/UnAllocate.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 40px;
+	margin-left: 0px;
+	width: 35px;
+}
+
+div.qsf-demo-canvas .imgAllocate {
+	background-image: url('../Images/BuildDrop/AllocateNew.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 40px;
+	margin-left: 0px;
+	width: 35px;
+}
+
+div.qsf-demo-canvas .SearchClass {
+	text-align: center;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .imgTaskView {
+	background-image: url('../Images/BuildDrop/symbol_information.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 30px;
+	margin-left: 0px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .RadTreeView ul li {
+	border: none;
+	list-style-type: none;
+}
+
+div.qsf-demo-canvas .DateFilterClass {
+	font: normal 12px Arial;
+	font-weight: bold;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas .imgTaskAllocate {
+	background-image: url('../Images/BuildDrop/UserAccount.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 30px;
+	margin-left: 0px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .imgTaskReassign {
+	background-image: url('../Images/BuildDrop/TaskReassign.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 30px;
+	margin-left: 0px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .imgTaskReassign1 {
+	background-image: url('../Images/BuildDrop/TaskReassign.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 30px;
+	margin-left: 0px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .imgExportToExcel {
+	background-image: url('../Images/BuildDrop/excel.png');
+	background-repeat: no-repeat;
+	font: normal 12px Arial;
+	height: 30px;
+	margin-left: 0px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .my_btn {
+	background-image: url('../Images/BuildDrop/Grid_Add_New.gif');
+	background-position: right top;
+	background-repeat: no-repeat;
+	border: 0px;
+	cursor: pointer;
+	font-family: Arial;
+	font-size: 10pt;
+	font-weight: normal;
+	height: 30px;
+	line-height: 30px;
+	width: 98px;
+}
+
+div.qsf-demo-canvas .TextBoxNormalBackColor { background-color: #FFFFFF; }
+
+div.qsf-demo-canvas .TextBoxReadOnlyBackColor { background-color: #D3D3D3; }
+
+div.qsf-demo-canvas .clsGNAFInfo {
+	background-color: #3773BB;
+	color: #FFFFFF;
+	font: normal normal bold 28px Arial;
+}
+
+div.qsf-demo-canvas .clsGNAFInfo1 {
+	background-color: #3773BB;
+	color: #FFFFFF;
+	font: normal normal normal 14px Arial;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .clsDays {
+	background-position: center;
+	text-align: center;
+	vertical-align: middle;
+	width: 30%;
+}
+
+div.qsf-demo-canvas .clsDaysSelected {
+	background-color: #FFF18B;
+	background-position: center;
+	text-align: center;
+	vertical-align: middle;
+	width: 30%;
+}
+
+div.qsf-demo-canvas .clsDashBoardMiddleRow { height: 500px; }
+
+div.qsf-demo-canvas .clsDashBoardFSAMView { border: solid 1px blue; }
+
+div.qsf-demo-canvas .clsDashBoardBottomFSAMView {
+	background-color: #3773BB;
+	border: solid 1px blue;
+	color: #FFFFFF;
+	font: normal normal bold 28px Arial;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .clsDashBoardBottomStatusDisp {
+	background-color: #3773BB;
+	color: #FFFFFF;
+	font: normal normal normal 12px Arial;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .clsDashBoardBottomDispStatus {
+	background-color: #3773BB;
+	color: #FFFFFF;
+	font: normal normal normal 12px Arial;
+	font-weight: bold;
+	width: 5%;
+}
+
+div.qsf-demo-canvas .clsDashBoardBottomDispCenter {
+	background-color: #3773BB;
+	color: #76808C;
+	font: normal normal normal 12px Arial;
+	font-weight: bold;
+	width: 1%;
+}
+
+div.qsf-demo-canvas .clsDashBoardBottomDispCount {
+	background-color: #3773BB;
+	color: yellow;
+	font: normal normal normal 12px Arial;
+	font-weight: bold;
+	height: 60px;
+	width: 5%;
+}
+
+div.qsf-demo-canvas .tree-panel {
+	margin: 0 0px;
+	width: 400px;
+}
+
+div.qsf-demo-canvas .tree-title {
+	color: #4888A3;
+	padding: 0px 0px;
+}
+
+div.qsf-demo-canvas .clsSelectAll {
+	color: #3773BB;
+	font: normal normal normal 12px Arial;
+	font-weight: bold;
+	text-align: center;
+	text-align: left;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .clsExpandAll {
+	color: #3773BB;
+	font: normal normal normal 12px Arial;
+	font-weight: bold;
+	text-align: left;
+}
+
+div.qsf-demo-canvas .tabContainer ul {
+	border-spacing: 0;
+	display: table-cell;
+	list-style: none;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .tabContainer ul li {
+	border-spacing: 0;
+	display: table-cell;
+	height: 28px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .tabContainer ul li a {
+	display: block;
+	margin: 0px;
+	padding: 0.5em;
+	width: 100%;
+}
+
+div.qsf-demo-canvas .imgRejected {
+	background-image: url(../Images/BuildDrop/TaskBuildDropRejected.jpg);
+	background-repeat: no-repeat;
+	border: solid 1px black;
+	color: Black;
+	font-family: Arial;
+	font-size: 12px;
+	height: 24px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .imgStarted {
+	background-image: url(../Images/BuildDrop/TaskBuildDropStarted.png);
+	background-repeat: no-repeat;
+	border: solid 1px black;
+	color: Black;
+	font-family: Arial;
+	font-size: 12px;
+	height: 24px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .imgCompleted {
+	background-image: url(../Images/BuildDrop/TaskBuildDropCompleted.png);
+	background-repeat: no-repeat;
+	border: solid 1px black;
+	color: Black;
+	font-family: Arial;
+	font-size: 12px;
+	height: 24px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 30px;
+}
+
+div.qsf-demo-canvas .imgRej {
+	background-image: url(../Images/BuildDrop/rej.png);
+	background-repeat: no-repeat;
+	height: 12px;
+	padding-left: 12px;
+	padding-right: 2px;
+	width: 12px;
+}
+
+div.qsf-demo-canvas .TaskBuildDropStatusSummary { font: normal normal normal 12px Arial; }
+
+div.qsf-demo-canvas .TaskBuildDropRejected {
+	font: normal normal normal 12px Arial;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .TaskBuildDropStarted {
+	font: normal normal normal 12px Arial;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .TaskFSDStatusSummary { font: normal normal normal 12px Arial; }
+
+div.qsf-demo-canvas .RadNumericRight {
+	background-color: red;
+	text-align: right;
+}
+
+div.qsf-demo-canvas .CheckBoxRed {
+	background-color: red;
+	height: 20px;
+	margin-right: 10px;
+}
+
+div.qsf-demo-canvas .CheckBoxWhite {
+	background-color: white;
+	height: 20px;
+}
+
+div.qsf-demo-canvas .buttonScoping {
+	/*background-color: #C0CBCC; */
+	background-image: url('../Images/ButtonBG.gif');
+	background-repeat: repeat-x;
+	border: solid 1px black;
+	color: Black;
+	font: normal 12px Arial;
+	height: 23px;
+	margin-left: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 95px;
+}
+
+div.qsf-demo-canvas .imgAllocatedIconGray {
+	background-image: url(../Images/BuildDrop/AllocatedGray.gif);
+	background-repeat: no-repeat;
+	height: 12px;
+	padding-left: 12px;
+	padding-right: 2px;
+	width: 12px;
+}
+
+div.qsf-demo-canvas .imgAllocatedIconColor {
+	background-image: url(../Images/BuildDrop/AllocatedColor.gif);
+	background-repeat: no-repeat;
+	height: 12px;
+	padding-left: 12px;
+	padding-right: 2px;
+	width: 12px;
+}
+
+div.qsf-demo-canvas .glossymenu,
+div.qsf-demo-canvas .glossymenu li ul {
+	/*WIDTH OF MAIN MENU ITEMS*/
+	border: 1px solid black;
+	height: auto;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	width: 171px;
+}
+
+div.qsf-demo-canvas .glossymenu li { position: relative; }
+
+div.qsf-demo-canvas .glossymenu li a {
+	background: #ffffff url('../Images/menu_bg.gif') repeat-x left bottom;
+	color: Black;
+	display: block;
+	font: bold 10px Arial, Helvetica, sans-serif;
+	padding: 5px 0;
+	padding-left: 10px;
+	text-decoration: none;
+	width: auto;
+}
+
+div.qsf-demo-canvas .glossymenu li a:hover {
+	background-image: url('../Images/menu_bg_hover.gif');
+	color: Black;
+	font: bold 10px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .glossymenu li ul {
+	display: none;
+	height: auto;
+	/*WIDTH OF SUB MENU ITEMS*/
+	left: 0;
+	/*SUB MENU STYLE*/
+	position: absolute;
+	top: 0;
+	width: 190px;
+}
+
+div.qsf-demo-canvas .glossymenu li ul li { float: left; }
+
+div.qsf-demo-canvas .glossymenu li ul a {
+	width: 180px;
+	/*WIDTH OF SUB MENU ITEMS - 10px padding-left for A elements */
+}
+
+div.qsf-demo-canvas .glossymenu .arrowdiv {
+	background: transparent url('../Images/arrow.gif') no-repeat center right;
+	position: absolute;
+	right: 2px;
+}
+
+div.qsf-demo-canvas .glossymenu li a:visited,
+div.qsf-demo-canvas .glossymenu li a:active { color: white; }
+
+div.qsf-demo-canvas * html .glossymenu li {
+	float: left;
+	height: 1%;
+}
+
+div.qsf-demo-canvas * html .glossymenu li a { height: 1%; }
+
+div.qsf-demo-canvas .menu_table {
+	background-image: url(../Images/menu_bg.gif);
+	background-repeat: repeat-x;
+	border-color: #FF0000;
+	border-style: dotted;
+	border-width: 1px;
+	height: 45px;
+}
+
+div.qsf-demo-canvas .menu_td {
+	border-color: #FF0000;
+	border-style: dotted;
+	border-width: 0px 1px 0px 0px;
+	height: 33px;
+}
+
+div.qsf-demo-canvas .menu_td:hover {
+	background-image: url(../Images/menu_bg_hover.gif);
+	background-repeat: repeat-x;
+	border-color: #FF0000;
+	border-style: dotted;
+	border-width: 0px 1px 0px 0px;
+	height: 33px;
+}
+
+div.qsf-demo-canvas .menu_text {
+	color: #FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .menu_text:hover {
+	color: #FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .qsf-demo-canvas { z-index: 2000; }
+
+div.qsf-demo-canvas .qsf-demo-canvas .rmTemplate {
+	border: inherit;
+	width: 100%;
+}
+
+div.qsf-demo-canvas html .RadMenu .rmTemplate:hover { background-color: #B7D1FE; }
+
+div.qsf-demo-canvas .TemplateMenuItemSelected {
+	/*border: Solid 1px #C6D9F1;
+    color: black;
+    text-decoration: none;*/
+	background-color: #B7D1FE;
+	cursor: pointer;
+}
+
+div.qsf-demo-canvas .TemplateMenu a { text-decoration: none; }
+
+div.qsf-demo-canvas .item-title {
+	color: black;
+	font: 14px/14px Arial, Helvetica, sans-serif;
+	text-align: left;
+	width: 120px;
+}
+
+div.qsf-demo-canvas .telerik-logo {
+	color: Black;
+	display: block;
+	font: 10px Arial, Helvetica, sans-serif;
+	text-align: left;
+	width: 120px;
+}
+
+div.qsf-demo-canvas .firstColumn {
+	clear: left;
+	color: black;
+	font: 12px Arial, Helvetica, sans-serif;
+	text-align: left;
+	width: 120px;
+}
+
+div.qsf-demo-canvas .HeaderLevel1 {
+	color: black;
+	font: bold 12px Arial, Helvetica, sans-serif;
+	vertical-align: central;
+}
+
+div.qsf-demo-canvas .HeaderLevel2 {
+	color: Black;
+	display: block;
+	font: 10px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .Cursor:hover { cursor: pointer !important; }
+
+div.qsf-demo-canvas div.TemplateMenu .rmGroup li.SearchWorkID {
+	background-color: #F1EFF0;
+	height: 100%;
+	width: 100%;
+}
+
+div.qsf-demo-canvas div.TemplateMenu .rmGroup li.SearchWorkID .rmText {
+	padding-bottom: 7px;
+	padding-left: 5px;
+	padding-right: 7px;
+	/*padding: 0  7px;*/
+	padding-top: 7px;
+}
+
+div.qsf-demo-canvas div.TemplateMenu .rmGroup li.SearchWorkID input {
+	background-color: #F1EFF0;
+	border: none;
+	color: darkblue;
+	font: 12px Arial, Helvetica, sans-serif;
+	height: 20px;
+	width: 100%;
+}
+
+div.qsf-demo-canvas div.TemplateMenu .rmGroup li.SearchWorkID input:focus {
+	border-color: #1F497D;
+	box-shadow: 0px 0px 7px #1F497D;
+	outline: none;
+}
+
+div.qsf-demo-canvas .DivBody {
+	height: 300px;
+	width: 300px;
+}
+
+div.qsf-demo-canvas .DivLeft {
+	float: left;
+	height: 324px;
+	width: 280px;
+}
+
+div.qsf-demo-canvas .DivRight {
+	clip: rect(auto, auto, auto, 120px);
+	float: right;
+	height: 319px;
+	margin-bottom: 4px;
+	margin-left: 0px;
+	width: 288px;
+}
+
+div.qsf-demo-canvas .CompanyNm {
+	color: #1E4A6F;
+	font-family: arial, Helvetica, sans-serif;
+	font-size: large;
+	font-weight: bold;
+	height: 10px;
+	width: 305px;
+}
+
+div.qsf-demo-canvas .LeftImage {
+	float: left;
+	padding-left: 15px;
+}
+
+div.qsf-demo-canvas .TowDiv {
+	float: left;
+	height: 89px;
+	left: 5px;
+	padding-right: 15px;
+	position: absolute;
+	top: 62px;
+	width: 250px;
+}
+
+div.qsf-demo-canvas .TowTable {
+	float: left;
+	font-size: small;
+	height: 76px;
+	left: 0px;
+	padding-right: 15px;
+	position: absolute;
+	top: 0px;
+	width: 260px;
+}
+
+div.qsf-demo-canvas .TowTabletd {
+	font-family: arial, Helvetica, sans-serif;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .TowTabletd1 { font-family: arial, Helvetica, sans-serif; }
+
+div.qsf-demo-canvas .AddresDiv {
+	color: #A9A695;
+	float: left;
+	font-family: arial, Helvetica, sans-serif;
+	font-size: medium;
+	height: 62px;
+	left: 6px;
+	padding-right: 15px;
+	position: absolute;
+	top: 155px;
+	width: 250px;
+}
+
+div.qsf-demo-canvas .AddresTable {
+	float: left;
+	font-size: small;
+	height: 68px;
+	padding-right: 15px;
+	position: absolute;
+	top: -6px;
+	width: 257px;
+}
+
+div.qsf-demo-canvas .GNAFDiv {
+	color: #A9A695;
+	float: left;
+	font-family: arial, Helvetica, sans-serif;
+	font-size: medium;
+	height: 46px;
+	left: 6px;
+	padding-right: 15px;
+	position: absolute;
+	top: 221px;
+	width: 250px;
+}
+
+div.qsf-demo-canvas .GNAFBold {
+	color: #808080;
+	font-family: Arial;
+	font-size: small;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .GNAFNormal {
+	color: #A9A695;
+	font-family: Arial;
+	font-size: small;
+}
+
+div.qsf-demo-canvas .DivDirect {
+	color: #A9A695;
+	float: left;
+	font-family: arial, Helvetica, sans-serif;
+	font-size: medium;
+	height: 25px;
+	left: 3px;
+	padding-right: 15px;
+	position: absolute;
+	top: 269px;
+	width: 250px;
+}
+
+div.qsf-demo-canvas .DirectionTD {
+	color: #808080;
+	font-family: Arial;
+	font-size: medium;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .DivStreet {
+	color: #A9A695;
+	float: left;
+	font-family: arial, Helvetica, sans-serif;
+	font-size: medium;
+	height: 25px;
+	left: 3px;
+	padding-right: 15px;
+	position: absolute;
+	top: 297px;
+	width: 250px;
+}
+
+div.qsf-demo-canvas body {
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: arial, sans-serif;
+	font-size: 73%;
+	/* Enables font size scaling in MSIE #C0CBCC*/
+	margin: 0;
+	padding: 0;
+}
+
+div.qsf-demo-canvas .logout {
+	background-image: url(../images/UINew2/Logout.png);
+	background-position: left 100%;
+	background-repeat: no-repeat;
+	color: #C00000;
+	font-weight: bold;
+	padding: 0px 5px 0px 29px;
+}
+
+div.qsf-demo-canvas #header {
+	background-color: #E6E6E6;
+	border-bottom: Solid 1px Gray;
+	color: White;
+	width: 100%;
+}
+
+div.qsf-demo-canvas #headernew {
+	background-color: #E6E6E6;
+	color: White;
+	font: Times New Roman;
+	font-size: 14px;
+	font-weight: bold;
+	width: 100%;
+	/* border-bottom: Solid 1px Gray;*/
+}
+
+div.qsf-demo-canvas .headerTitle {
+	margin: 0;
+	padding: 0 0 0 0;
+}
+
+div.qsf-demo-canvas .headerTitle span { background-color: transparent; }
+
+div.qsf-demo-canvas .subHeader {
+	margin: 0;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .menu {
+	border-bottom: Solid 0.75px White;
+	border-color: #C6D9F1;
+	border-left: Solid 0.75px White;
+	border-right: Solid 0.75px White;
+	border-top: Solid 0.75px White;
+	font: bold 12px Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	height: 25px;
+	width: 100%;
+}
+
+div.qsf-demo-canvas .menuItem {
+	background-color: White;
+	/*  background-image: url(../Images/menu_bg.gif);*/
+	border: Solid 1px #C6D9F1;
+	color: black;
+	height: 25px;
+}
+
+div.qsf-demo-canvas .menuItem:hover {
+	background-color: #B7D1FE;
+	/* background-image: url(../Images/menu_bg_hover.gif);*/
+	border: Solid 1px #C6D9F1;
+	/*#E6B9B8;*/
+	color: black;
+	cursor: pointer;
+	height: 25px;
+}
+
+div.qsf-demo-canvas .menuItemHeader {
+	background-color: White;
+	/*  background-image: url(../Images/menu_bg.gif);*/
+	border: Solid 1px #C6D9F1;
+	color: black;
+	height: 25px;
+}
+
+div.qsf-demo-canvas .menuItemHeader:hover {
+	/* background-image: url(../Images/menu_bg_hover.gif);*/
+	border: Solid 1px #C6D9F1;
+	color: white;
+	cursor: pointer;
+	height: 25px;
+}
+
+div.qsf-demo-canvas .menuItemSelected {
+	background-color: #B7D1FE;
+	/*background: url(../Images/menu_bg_hover.gif);*/
+	border: Solid 1px #C6D9F1;
+	color: black;
+	/*#E6B9B8;*/
+	cursor: pointer;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .menuItemSelect {
+	background-image: url(../Images/menu_bg_hover.gif);
+	border: Solid 1px #C6D9F1;
+	color: Black;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .menuLastItem {
+	/* background-image: url(../Images/menu_bg.gif);*/
+	border: Solid 1px #C6D9F1;
+}
+
+div.qsf-demo-canvas .menuItemName {
+	color: #C00000;
+	text-decoration: none;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .menuItemName:hover {
+	color: #C00000;
+	text-decoration: none;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .clsHeaderImg {
+	float: left;
+	height: 100%;
+	width: 35%;
+}
+
+div.qsf-demo-canvas .clsHeaderTitle {
+	float: right;
+	font: bold 11px arial, verdana;
+	height: 60px;
+	margin-top: 3px;
+	text-align: center;
+	vertical-align: middle;
+	width: 60%;
+}
+
+div.qsf-demo-canvas .clsHeaderImgHover {
+	float: left;
+	height: 100%;
+	width: 35%;
+}
+
+div.qsf-demo-canvas .clsHeaderTitleHover {
+	float: right;
+	font: bold 11px arial, verdana;
+	height: 50px;
+	margin-top: 3px;
+	text-align: center;
+	vertical-align: middle;
+	width: 60%;
+}
+
+div.qsf-demo-canvas .leftmenu {
+	/*border-right: Solid 1px Gray;*/
+	background-color: #FFFFFF;
+	border-bottom: 0 solid #999999;
+	border-left: 0.1em solid #999999;
+	border-right: 0.1em solid #999999;
+	border-top: 0.1em solid #999999;
+	color: Red;
+	vertical-align: top;
+	width: 11%;
+}
+
+div.qsf-demo-canvas .leftSideBar {
+	background-color: White;
+	/*padding-top : 10px;*/
+	border-right: Solid 1px Gray;
+	clear: both;
+	float: left;
+	min-height: 700px;
+	vertical-align: top;
+	width: 130px;
+}
+
+div.qsf-demo-canvas .sideBarTitle {
+	color: #404040;
+	font-weight: bold;
+	margin: 0;
+	padding: 0.8ex 1ex;
+}
+
+div.qsf-demo-canvas ul {
+	list-style-position: outside;
+	list-style-type: none;
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
+div.qsf-demo-canvas li {
+	border-bottom: solid 1px Gray;
+	font: bold 11px Arial, Helvetica, sans-serif;
+	margin: 0ex;
+	padding-bottom: 0.1ex;
+	padding-right: 0;
+	padding-top: 0.1ex;
+}
+
+div.qsf-demo-canvas .leftSideBar a {
+	color: Black;
+	display: block;
+	margin: 0px;
+	padding-bottom: 0.75em;
+	padding-left: 4mm;
+	padding-right: 1ex;
+	padding-top: 0.75em;
+	text-decoration: none;
+}
+
+div.qsf-demo-canvas .leftSideBar a:hover {
+	background-color: #EFEEEE;
+	color: #2F3F5E;
+	display: block;
+}
+
+div.qsf-demo-canvas .sideBarText {
+	background-color: transparent;
+	color: #666666;
+	display: block;
+	margin: 0ex 0.25ex 1.5em 0.75ex;
+	padding: 0;
+}
+
+div.qsf-demo-canvas .sideBarText a { text-decoration: underline; }
+
+div.qsf-demo-canvas .sideBarText a:hover { text-decoration: none; }
+
+div.qsf-demo-canvas #main {
+	background-color: White;
+	clear: both;
+	color: black;
+	margin: 0 0 0 0;
+	min-height: 700px;
+	padding: 0.5ex 0em 0em 0em;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas #mainLogin {
+	background-color: White;
+	color: black;
+	/* margin: 0 0 0 0;/*
+   /* padding: 0.5ex 0em 0em 0em;/*
+    /*min-height:100px;*/
+	/* clear: both;*/
+	/*vertical-align: top;
+     background-color:Blue;*/
+}
+
+div.qsf-demo-canvas .mainContent {
+	font-family: Arial;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 5px;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas .mainContentNewSearch {
+	font-family: Arial;
+	height: 1000px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 5px;
+	vertical-align: top;
+}
+
+div.qsf-demo-canvas #footer {
+	background-color: #E6E6E6;
+	border-top: solid 1px Gray;
+	clear: both;
+	color: Black;
+	font-size: 92%;
+	margin: 0;
+	padding: 1px 0 1px 0;
+	text-align: center;
+}
+
+div.qsf-demo-canvas #footer div { padding: 1 0 0 0; }
+
+div.qsf-demo-canvas #footer a {
+	/* #666666;*/
+	background-color: transparent;
+	color: Black;
+	text-decoration: underline;
+	/*font-weight: bold;*/
+}
+
+div.qsf-demo-canvas #footer a:hover {
+	color: Black;
+	text-decoration: none;
+	/* #6699CC; */
+}
+
+div.qsf-demo-canvas .login {
+	border: solid 1px Gray;
+	height: 220px;
+	width: 400px;
+}
+
+div.qsf-demo-canvas .loginNew {
+	background-image: url(../Images/UINew2/bg.png);
+	background-repeat: no-repeat;
+	height: 300px;
+	/* border: solid 1px #4A7EBB;*/
+	width: 550px;
+}
+
+div.qsf-demo-canvas .loginHeader {
+	background-color: #E6E6E6;
+	background-image: url(../Images/login.png);
+	background-position: center left;
+	background-repeat: no-repeat;
+	border-bottom: solid 1px #808080;
+	color: Black;
+	font-family: Arial;
+	font-size: 15px;
+	font-weight: bold;
+	height: 25px;
+	padding: 8px 0 1px 22px;
+}
+
+div.qsf-demo-canvas .loginBody {
+	padding-bottom: 3px;
+	padding-top: 3px;
+}
+
+div.qsf-demo-canvas .SearchDiv { border: solid 1px #808080; }
+
+div.qsf-demo-canvas .SearchHeader {
+	background-color: #E6E6E6;
+	border-bottom: solid 1px #808080;
+	/*#C0CBCC;*/
+	/*#EF9B49;*/
+	color: Black;
+	font-family: Arial;
+	font-size: 13px;
+	font-weight: bold;
+	height: 20px;
+	padding: 5px 5px 5px 5px;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .SearchHeaderNew {
+	background-color: #E6E6E6;
+	border-bottom: solid 1px #808080;
+	/*#C0CBCC;*/
+	/*#EF9B49;*/
+	color: Black;
+	font-family: Arial;
+	font-size: 13px;
+	font-weight: bold;
+	height: 20px;
+	padding: 5px 5px 5px 5px;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .SearchContent {
+	font-family: Arial;
+	font-size: 12px;
+	padding-bottom: 3px;
+	padding-top: 3px;
+}
+
+div.qsf-demo-canvas .SearchContentWD {
+	font-family: Arial;
+	font-size: 12px;
+	padding-bottom: 3px;
+	padding-top: 3px;
+	width: 1155px;
+}
+
+div.qsf-demo-canvas .FitToScreen { padding: 5px 5px 5px 5px; }
+
+div.qsf-demo-canvas .NoRecDiv {
+	padding-bottom: 5px;
+	padding-top: 5px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .status table {
+	border-left-color: Silver;
+	border-left-style: solid;
+	border-left-width: thin;
+}
+
+div.qsf-demo-canvas .status td {
+	border-bottom-color: Silver;
+	border-bottom-style: solid;
+	border-bottom-width: thin;
+	border-left-color: Silver;
+	border-left-style: solid;
+	border-left-width: thin;
+	border-right-color: Silver;
+	border-right-style: solid;
+	border-right-width: thin;
+	border-top-color: Silver;
+	border-top-style: solid;
+	border-top-width: thin;
+}
+
+div.qsf-demo-canvas .addNew {
+	background-image: url(../images/edit.png);
+	background-position: left 50%;
+	background-repeat: no-repeat;
+	color: Blue;
+	padding: 0px 5px 0px 20px;
+}
+
+div.qsf-demo-canvas .importExcel {
+	background-image: url(../images/Xls.jpg);
+	background-position: left 50%;
+	background-repeat: no-repeat;
+	color: Blue;
+	padding: 0px 5px 0px 20px;
+}
+
+div.qsf-demo-canvas .workTypeLink {
+	background-image: url(../Images/small_arrow.png);
+	background-position: left 50%;
+	background-repeat: no-repeat;
+	color: Blue;
+	padding: 0px 0px 0px 15px;
+}
+
+div.qsf-demo-canvas .editedUserDiv {
+	border: solid 1px Gray;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+div.qsf-demo-canvas .errorPanel {
+	background-color: #E6E6E6;
+	margin: 0 auto;
+	margin-bottom: 8px;
+	min-height: 20px;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+}
+
+div.qsf-demo-canvas .errorMsg {
+	color: Red;
+	font: bold 10px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .successPanel {
+	background-color: #E6E6E6;
+	height: 20px;
+	margin: 0 auto;
+	margin-bottom: 8px;
+	text-align: center;
+	width: 100%;
+}
+
+div.qsf-demo-canvas .successMsg {
+	color: Black;
+	font: bold 10px Arial, Helvetica, sans-serif;
+	vertical-align: middle;
+}
+
+div.qsf-demo-canvas .divOpac {
+	background-color: Gray;
+	border: 1px solid black;
+	margin-left: 150px;
+	margin-top: -50px;
+	position: absolute;
+	z-index: 1;
+}
+
+div.qsf-demo-canvas .iframe {
+	-moz-opacity: 0.7;
+	background-color: #000000;
+	height: 1000px;
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: 100;
+}
+
+div.qsf-demo-canvas .notes {
+	background-color: #fff;
+	background-repeat: repeat;
+	color: #000000;
+	display: block;
+	font: normal normal normal 15px Arial;
+	height: 3000px;
+	margin-bottom: 5px;
+	overflow: auto;
+	padding: 5px;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .PSReportPage { font: normal normal normal 15px Arial; }
+
+div.qsf-demo-canvas .BSHomeDiv {
+	border: solid 1px Gray;
+	height: 340px;
+	overflow: auto;
+}
+
+div.qsf-demo-canvas .MaintenanceMultChkbDiv {
+	border: solid 1px Gray;
+	height: 170px;
+	overflow: auto;
+}
+
+div.qsf-demo-canvas .BSHomeStatusGridDiv {
+	border: solid 0px Gray;
+	height: 415px;
+	overflow: auto;
+}
+
+div.qsf-demo-canvas .TextErrorMessage {
+	font: normal normal normal 13px Arial;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .ErrorMsg {
+	color: Red;
+	font: normal normal bold 11px Arial;
+	font-weight: bold;
+}
+
+div.qsf-demo-canvas .ReqField {
+	color: Red;
+	font-size: small;
+}
+
+div.qsf-demo-canvas .warning {
+	color: red;
+	font: 12px Arial;
+	margin: 0px;
+	max-height: 20px;
+	padding: 15px;
+}
+
+div.qsf-demo-canvas .errorValidaton {
+	font: 12px;
+	font-family: Arial;
+	max-height: 20px;
+	min-height: 15px;
+}
+
+div.qsf-demo-canvas .warning ul {
+	border-bottom: solid 0px Gray;
+	color: red;
+	margin: 0;
+	margin-left: 10px;
+	padding: 0;
+}
+
+div.qsf-demo-canvas .warning ul li {
+	border-bottom: solid 0px Gray;
+	color: red;
+	font: bold 10px Arial, Helvetica, sans-serif;
+	margin: 0ex;
+	padding-bottom: 0.0ex;
+	padding-right: 0;
+	padding-top: 0.1ex;
+}
+
+div.qsf-demo-canvas .divOpac {
+	background-color: Gray;
+	border: 1px solid black;
+	margin-left: 300px;
+	margin-top: -50px;
+	position: absolute;
+	vertical-align: middle;
+	z-index: 1;
+}
+
+div.qsf-demo-canvas .iframe {
+	-moz-opacity: 0.7;
+	background-color: #000000;
+	filter: alpha(opacity=70);
+	height: 2880px;
+	left: -481px;
+	margin-right: 0px;
+	opacity: 0.7;
+	position: absolute;
+	top: 24px;
+	width: 41%;
+	z-index: 100;
+}
+
+div.qsf-demo-canvas .divOpacNew {
+	background-color: Gray;
+	background-color: #ffffff;
+	border: 1px solid black;
+	border: solid 2px #000000;
+	margin-left: 150px;
+	/*	margin-top: 50px;
+	margin-left: 150px;*/
+	margin-top: 0px;
+	position: absolute;
+	position: fixed;
+	vertical-align: middle;
+	z-index: 1;
+	z-index: 100;
+}
+
+div.qsf-demo-canvas .Wrap { word-wrap: break-word; }
+
+div.qsf-demo-canvas .errorMsgForUpload {
+	color: Red;
+	font: bold 12px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .successMsgForUpload {
+	color: Green;
+	font: bold 12px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .normalMsgForUpload {
+	color: Black;
+	font: bold 12px Arial, Helvetica, sans-serif;
+}
+
+div.qsf-demo-canvas .divReconnect {
+	height: 210px;
+	width: 400px;
+}
+
+div.qsf-demo-canvas .reconnecttable {
+	border: solid 2px black;
+	height: 100px;
+	width: 85%;
+}
+
+div.qsf-demo-canvas .lblClassReconnect {
+	font: arial;
+	font-size: 15px;
+	font-weight: bold;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .lblClassReconnect1 {
+	font: arial;
+	font-size: 15px;
+	text-align: left;
+}
+
+div.qsf-demo-canvas .gridpopupOpac1 {
+	background-color: #f1f9fd;
+	border: 1px solid #000000;
+	margin-left: 330px;
+	margin-top: 100px;
+	position: absolute;
+	z-index: 1;
+	/*cursor: move;*/
+}
+
+div.qsf-demo-canvas .gridpopupFrame1 {
+	background-attachment: fixed;
+	background-color: #FFFFFF;
+	border: solid 3px #BBBF4B;
+	border-radius: 15px;
+	position: absolute;
+	z-index: 100;
+}
+
+div.qsf-demo-canvas .gridpopupHeader {
+	background-color: #F3F3F3;
+	background-image: url(../Images/AspGrid/Grid_Popup.gif);
+	background-position: center left;
+	background-repeat: no-repeat;
+	border-bottom: solid 1px #808080;
+	color: Black;
+	font-family: Arial;
+	font-size: 12px;
+	font-weight: bold;
+	height: 5px;
+	padding: 6px 0px 0px 0px;
+	width: 100%;
+}
+
+div.qsf-demo-canvas .gridpopupSch {
+	background-color: #f1f9fd;
+	border: 1px solid #000000;
+	height: 250px;
+	margin-left: 330px;
+	margin-top: -1600px;
+	position: absolute;
+	width: 400px;
+	z-index: 1;
+	/*cursor: move;*/
+}
+
+div.qsf-demo-canvas .gridpopupFrameSch {
+	background-attachment: fixed;
+	background-color: #FFFFFF;
+	border: solid 1px #000000;
+	position: absolute;
+	z-index: 10;
+}
+
+div.qsf-demo-canvas .newSearch { background-color: #95B3D7; }
+
+div.qsf-demo-canvas .newSearchMap { background-color: #95B3D7; }
+
+div.qsf-demo-canvas .NewSearchTitle { font: bold 22px Impact, verdana; }
+
+div.qsf-demo-canvas .NewSearchTitle {
+	color: #1F497D;
+	font: 27px Impact, verdana;
+}
+
+div.qsf-demo-canvas .NewSearchTitleRed {
+	color: red;
+	font: 27px Impact, verdana;
+}
+
+div.qsf-demo-canvas .NewSearchActive {
+	background-color: #C00000;
+	border: none;
+	color: white;
+	font: normal 16px Calibri, Verdana;
+	height: 50px;
+	width: 98%;
+}
+
+div.qsf-demo-canvas .NewSearchInActive {
+	background-color: #1F497D;
+	border: none;
+	color: white;
+	font: normal 16px Calibri, Verdana;
+	height: 50px;
+	width: 98%;
+}
+
+div.qsf-demo-canvas .clsLine {
+	border: 1px solid red;
+	height: 1px;
+	margin-top: 3px;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .clsLine2 {
+	border: 1px solid red;
+	height: 1px;
+	margin-bottom: 3px;
+	width: 99%;
+}
+
+div.qsf-demo-canvas .DownArrow { height: 10px; }
+
+div.qsf-demo-canvas .NewSearhBtnActive {
+	background-color: #BB3B38;
+	border: none;
+	box-shadow: 3px 3px black;
+	color: white;
+	font: normal 12px Calibri, Verdana;
+	height: 25px;
+	width: 25%;
+}
+
+div.qsf-demo-canvas .NewSearhBtn {
+	background-color: #3B75BA;
+	border-style: outset;
+	border-width: thin;
+	box-shadow: 3px 3px black;
+	color: white;
+	font: normal 12px Calibri, Verdana;
+	height: 25px;
+	width: 25%;
+}
+
+div.qsf-demo-canvas .NewSearhBtnReport {
+	background-color: #3B75BA;
+	border-color: inherit;
+	border-style: none;
+	border-width: medium;
+	box-shadow: 3px 3px black;
+	color: white;
+	font: normal 12px Calibri, Verdana;
+	height: 25px;
+}
+
+div.qsf-demo-canvas .NewSearhBtnReports {
+	background-color: #3B75BA;
+	border: none;
+	color: white;
+	font: normal 12px Calibri, Verdana;
+	height: 25px;
+	width: 80%;
+}
+
+div.qsf-demo-canvas .NewSearhBtnReports1 {
+	background-color: #3B75BA;
+	border: none;
+	color: white;
+	font: normal 12px Calibri, Verdana;
+	height: 25px;
+	width: 30%;
+}
+
+div.qsf-demo-canvas .clsSearchTextBox { width: 176px; }
+
+div.qsf-demo-canvas .clsSearchTextBoxWorkID { width: 50px; }
+
+div.qsf-demo-canvas .clsSearchDropDown { width: 180px; }
+
+div.qsf-demo-canvas .Critical { color: Red; }
+
+div.qsf-demo-canvas .Major { color: OrangeRed; }
+
+div.qsf-demo-canvas .Minor { color: Orange; }
+
+div.qsf-demo-canvas .Observation { color: SandyBrown; }
+
+div.qsf-demo-canvas .dropdownlist {
+	color: #000;
+	font: normal normal normal 12px Arial;
+	height: 20px;
+	width: 70%;
+}
+
+div.qsf-demo-canvas .headerTitle span { background-color: transparent; }
+
+div.qsf-demo-canvas .ColorYettoStart span { border: Solid 1px gray; }
+
+div.qsf-demo-canvas .ColorNotApplicable span {
+	background-color: #FFE5CC;
+	border: Solid 1px gray;
+}
+
+div.qsf-demo-canvas .ColorCompleted span {
+	background-color: #3B75BA;
+	border: Solid 1px gray;
+}
+
+div.qsf-demo-canvas .ColorWorkInProgress span {
+	background-color: Gray;
+	border: Solid 1px gray;
+}
+
+div.qsf-demo-canvas .ColorNCRPending span {
+	background-color: #99CCFF;
+	border: Solid 1px gray;
+}
+
+div.qsf-demo-canvas .ColordivWorkInProgress {
+	background-color: Gray;
+	border-bottom: solid 1px Gray;
+	color: #000;
+	font-family: Arial;
+	font-size: 13px;
+	font-weight: 700;
+	height: 20px;
+	padding: 4px 0 4px 8px;
+}
+
+div.qsf-demo-canvas .ColordivCompleted {
+	background-color: #3B75BA;
+	border-bottom: solid 1px Gray;
+	color: #000;
+	font-family: Arial;
+	font-size: 13px;
+	font-weight: 700;
+	height: 20px;
+	padding: 4px 0 4px 8px;
+}
+
+div.qsf-demo-canvas .ReqFieldStar {
+	color: Red;
+	font-size: medium;
+	vertical-align: text-bottom;
+}
+
+div.qsf-demo-canvas .taL { text-align: left; }
+
+div.qsf-demo-canvas .taR { text-align: right; }
+
+div.qsf-demo-canvas .button {
+	background-image: url(../Images/ButtonBG.gif);
+	background-repeat: repeat-x;
+	border: solid 1px #000;
+	color: #000;
+	cursor: pointer;
+	font: 400 12px Arial;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .button:hover {
+	background-image: url(../Images/ButtonBG_hover.gif);
+	background-repeat: repeat-x;
+	border: solid 1px #000;
+	color: #000;
+	cursor: pointer;
+	font: 400 12px Arial;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .btnResponse {
+	background-image: url(../Images/ButtonBG1.gif);
+	background-repeat: repeat-x;
+	border: solid 1px #000;
+	color: #000;
+	cursor: pointer;
+	font: 400 14px Arial;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .btnResponse:hover {
+	background-image: url(../Images/ButtonBG_hover1.gif);
+	background-repeat: repeat-x;
+	border: solid 1px #000;
+	color: #000;
+	cursor: pointer;
+	font: 400 14px Arial;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: 90px;
+}
+
+div.qsf-demo-canvas .slide-out-div {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: #ccc;
+	border: 1px solid #29216d;
+	border-radius: 5px;
+	height: auto;
+	opacity: 0.9;
+	padding-bottom: 0px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 20px;
+	width: 230px;
+	z-index: 3;
+}
+
+div.qsf-demo-canvas .searchinput { width: 200px; }
+
+div.qsf-demo-canvas .searchclear {
+	bottom: 0;
+	color: #ccc;
+	cursor: pointer;
+	font-size: 14px;
+	height: 14px;
+	margin: auto;
+	position: absolute;
+	right: 5px;
+	top: 0;
+}
+
+div.qsf-demo-canvas .SearchButton {
+	-moz-border-radius: 5px;
+	-moz-box-shadow: inset 0px 1px 3px 0px #91b8b3;
+	-webkit-border-radius: 5px;
+	-webkit-box-shadow: inset 0px 1px 3px 0px #91b8b3;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3e598f), color-stop(1, #3784c7));
+	background: -moz-linear-gradient(top, #3e598f 5%, #3784c7 100%);
+	background: -webkit-linear-gradient(top, #3e598f 5%, #3784c7 100%);
+	background: -o-linear-gradient(top, #3e598f 5%, #3784c7 100%);
+	background: -ms-linear-gradient(top, #3e598f 5%, #3784c7 100%);
+	background: linear-gradient(to bottom, #3e598f 5%, #3784c7 100%);
+	background-color: #3e598f;
+	border: 1px solid #566963;
+	border-radius: 5px;
+	box-shadow: inset 0px 1px 3px 0px #91b8b3;
+	color: #ffffff;
+	cursor: pointer;
+	display: inline-block;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3e598f', endColorstr='#3784c7', GradientType=0);
+	font-family: arial;
+	font-size: 14px;
+	height: 34px;
+	padding: 11px 23px;
+	text-decoration: none;
+	text-shadow: 0px -1px 0px #2b665e;
+	width: 25%;
+}
+
+div.qsf-demo-canvas .SearchButton:hover {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3784c7), color-stop(1, #3e598f));
+	background: -moz-linear-gradient(top, #3784c7 5%, #3e598f 100%);
+	background: -webkit-linear-gradient(top, #3784c7 5%, #3e598f 100%);
+	background: -o-linear-gradient(top, #3784c7 5%, #3e598f 100%);
+	background: -ms-linear-gradient(top, #3784c7 5%, #3e598f 100%);
+	background: linear-gradient(to bottom, #3784c7 5%, #3e598f 100%);
+	background-color: #3784c7;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3784c7', endColorstr='#3e598f', GradientType=0);
+	height: 34px;
+	width: 25%;
+}
+
+div.qsf-demo-canvas .SearchButton:active {
+	position: relative;
+	top: 1px;
+}
+
+div.qsf-demo-canvas .modalBackground {
+	background-color: transparent;
+	filter: alpha(opacity=60);
+	opacity: 0.6;
+}
+
+div.qsf-demo-canvas .modalPopup {
+	background-color: #F0F0F0;
+	border: 1px solid #4C3C1B;
+	border-radius: 12px;
+	padding: 0;
+}
+
+div.qsf-demo-canvas .modalPopup .header {
+	background-color: transparent;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	color: White;
+	font-weight: bold;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}
+
+div.qsf-demo-canvas .ModelHeaderFrame {
+	background-color: #002D64;
+	cursor: default;
+	display: table;
+	width: 100%;
+}

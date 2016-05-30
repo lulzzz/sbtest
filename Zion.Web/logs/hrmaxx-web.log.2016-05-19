@@ -1,0 +1,27 @@
+2016-05-19 16:14:09,974 ERROR - API connection error
+2016-05-19 16:14:35,036 ERROR - API connection error
+2016-05-19 16:17:08,540 ERROR - API connection error
+2016-05-19 17:03:44,537 ERROR - Error logging out
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at HrMaxx.Infrastructure.Security.HrMaxxUser.get_UserId() in c:\Dev\EDPI\Source\Zion\Zion.Infrastructure\Security\HrMaxxUser.cs:line 24
+   at HrMaxx.Web.Controllers.AccountController.LogOff() in c:\Dev\EDPI\Source\Zion\Zion.Web\Controllers\AccountController.cs:line 166
+2016-05-19 17:04:00,981 ERROR - Error logging out
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at HrMaxx.Infrastructure.Security.HrMaxxUser.get_UserId() in c:\Dev\EDPI\Source\Zion\Zion.Infrastructure\Security\HrMaxxUser.cs:line 24
+   at HrMaxx.Web.Controllers.AccountController.LogOff() in c:\Dev\EDPI\Source\Zion\Zion.Web\Controllers\AccountController.cs:line 166
+2016-05-19 17:04:03,067 ERROR - Error logging out
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at HrMaxx.Infrastructure.Security.HrMaxxUser.get_UserId() in c:\Dev\EDPI\Source\Zion\Zion.Infrastructure\Security\HrMaxxUser.cs:line 24
+   at HrMaxx.Web.Controllers.AccountController.LogOff() in c:\Dev\EDPI\Source\Zion\Zion.Web\Controllers\AccountController.cs:line 166
+2016-05-19 17:04:03,434 ERROR - Error logging out
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at HrMaxx.Infrastructure.Security.HrMaxxUser.get_UserId() in c:\Dev\EDPI\Source\Zion\Zion.Infrastructure\Security\HrMaxxUser.cs:line 24
+   at HrMaxx.Web.Controllers.AccountController.LogOff() in c:\Dev\EDPI\Source\Zion\Zion.Web\Controllers\AccountController.cs:line 166
+2016-05-19 17:04:03,629 ERROR - Error logging out
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at HrMaxx.Infrastructure.Security.HrMaxxUser.get_UserId() in c:\Dev\EDPI\Source\Zion\Zion.Infrastructure\Security\HrMaxxUser.cs:line 24
+   at HrMaxx.Web.Controllers.AccountController.LogOff() in c:\Dev\EDPI\Source\Zion\Zion.Web\Controllers\AccountController.cs:line 166
+2016-05-19 17:06:00,755 ERROR - Error logging out
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at HrMaxx.Infrastructure.Security.HrMaxxUser.get_UserId() in c:\Dev\EDPI\Source\Zion\Zion.Infrastructure\Security\HrMaxxUser.cs:line 24
+   at HrMaxx.Web.Controllers.AccountController.LogOff() in c:\Dev\EDPI\Source\Zion\Zion.Web\Controllers\AccountController.cs:line 166

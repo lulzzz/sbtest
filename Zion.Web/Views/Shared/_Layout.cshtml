@@ -1,0 +1,67 @@
+﻿@using System.Web.Optimization
+@using StackExchange.Profiling
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<title>@ViewBag.Title</title>
+
+		@if (IsSectionDefined("Styles"))
+		{
+			@RenderSection("Styles", false)
+		}
+
+		<link href="@Url.Content("~/Content/site.css")" rel="stylesheet" />
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			@Scripts.Render("~/bundles/html5")
+		<![endif]-->
+		@*@Styles.Render("~/bundles/site-less")*@
+		@Scripts.Render("~/bundles/bootstrapjquery")
+
+		@Scripts.Render("~/bundles/angular")
+
+    
+
+	</head>
+	<body>
+
+		<!-- Skin configuration box -->
+		@Html.Partial("_SkinConfig")
+		<div id="wrapper" class="@Html.PageClass()">
+			@Html.Partial("_Navigation")
+			<div id="page-wrapper" class="gray-bg @ViewBag.SpecialClass">
+				<!-- Top Navbar -->
+				@Html.Partial("_TopNavbar")
+
+				<!-- Main view  -->
+				@RenderBody()
+
+				<!-- Footer -->
+				@Html.Partial("_Footer")
+			</div>
+
+			<!-- Right Sidebar -->
+			@Html.Partial("_RightSidebar")
+
+			<!-- /#page-wrapper -->
+			<!-- ========================= SCRIPTS ================================ -->
+			@Scripts.Render("~/bundles/angular")
+			@Scripts.Render("~/bundles/slimScroll")
+			<!-- Skin config script - only for demo purpose-->
+			@Scripts.Render("~/bundles/skinConfig")
+        
+
+			@RenderSection("scripts", false)
+
+			@MiniProfiler.RenderIncludes(useExistingjQuery: true, position: RenderPosition.Right, showControls: true)
+		</div>
+
+	</body>
+</html>

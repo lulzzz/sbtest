@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "file": "quotes.css",
+  "sources": [
+    "quotes.less"
+  ],
+  "names": [],
+  "mappings": "AAAA,IACE;EACE,0BAAA"
+}

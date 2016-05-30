@@ -1,0 +1,29 @@
+host.machine_name: DESKTOP-OJJVO4F
+mt.concurrent_receive_threads: 1
+mt.control_bus: loopback://localhost/HRMAXX-API
+mt.default_serializer: JsonMessageSerializer
+mt.max_consumer_threads: 16
+mt.network: desktop-ojjvo4f
+mt.receive_from: loopback://localhost/HRMAXX-API
+mt.receive_timeout: 00:00:03
+mt.service_count: 2
+mt.transport: [loopback] LoopbackTransportFactory
+mt.version: 2.9.0.0
+net.version: 4.0.30319.42000
+os.bits: x64
+os.version: Microsoft Windows NT 10.0.10586.0
+process.bits: x64
+process.fulltrust: True
+process.id: 9072
+zz.mt.inbound_pipeline: Pipeline
+	Routed (MassTransit.IConsumeContext, MassTransit)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
+			Consumed by Component HrMaxx.Common.Services.CommandHandlers.UserEventLogHandler (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
+
+zz.mt.outbound_pipeline: Pipeline
+	Routed (MassTransit.ISendContext, MassTransit)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
+			Send HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API
+

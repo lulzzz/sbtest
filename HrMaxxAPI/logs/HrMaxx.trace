@@ -1,0 +1,26 @@
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Invalid token versionNo Token Vesion, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|16:42:28.1455017
+    DateTime=2016-05-26T11:42:28.1474352Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Invalid token versionNo Token Vesion, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|16:42:45.5637762
+    DateTime=2016-05-26T11:42:45.5637762Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Invalid token versionNo Token Vesion, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|16:45:21.2514529
+    DateTime=2016-05-26T11:45:21.2549015Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Invalid token versionNo Token Vesion, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|17:05:48.3168533
+    DateTime=2016-05-26T12:05:48.3188727Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Invalid token versionNo Token Vesion, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|17:08:01.7054737
+    DateTime=2016-05-26T12:08:01.7054737Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, localhost, http://localhost/HrMaxxWeb/, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|17:13:15.6929678
+    DateTime=2016-05-26T12:13:15.6939690Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|17:13:25.8988547
+    DateTime=2016-05-26T12:13:25.8988547Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, localhost, http://localhost/HrMaxxWeb/, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|13:30:48.0669278
+    DateTime=2016-05-27T08:30:48.0679285Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|13:30:58.4100034
+    DateTime=2016-05-27T08:30:58.4100034Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, localhost, http://localhost/HrMaxxWeb/, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|15:57:42.8106487
+    DateTime=2016-05-27T10:57:42.8116494Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|15:57:53.0796134
+    DateTime=2016-05-27T10:57:53.0796134Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, localhost, http://localhost/HrMaxxWeb/, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|15:58:25.0918845
+    DateTime=2016-05-27T10:58:25.0923994Z
+ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|15:58:35.1356216
+    DateTime=2016-05-27T10:58:35.1366236Z
