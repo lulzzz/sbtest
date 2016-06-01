@@ -2,14 +2,17 @@
 
 @{
     ViewBag.Title = "Error";
+		Layout = "~/Views/Shared/_BlankLayout.cshtml";
 }
-@{
-	if (String.IsNullOrEmpty(ViewBag.errorMessage))
-	{
-		<h2 class="text-danger">An error occurred while processing your request.</h2>
-	}
-	else
-	{
-		<h2 class="text-danger">@ViewBag.errorMessage</h2>
-	}
-}
+<div class="error">
+	<div class="error-code m-b-10"><i class="fa fa-warning"></i></div>
+	<div class="error-content">
+		<div class="error-message">An error occurred while processing your request.</div>
+		<div class="error-desc m-b-20">
+			@ViewBag.errorMessage
+		</div>
+		<div>
+			<a href="@Url.Action("Index", "Home")" class="btn btn-success">Go Back to Home Page</a>
+		</div>
+	</div>
+</div>
