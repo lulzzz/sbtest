@@ -252,7 +252,6 @@
     <Compile Include="Code\IOC\LoggingModule.cs" />
     <Compile Include="Code\Security\HrMaxxViewPage.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\Api\TestController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -287,6 +286,9 @@
     </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap-theme\animate.min.css" />
+    <Content Include="Content\bootstrap-theme\jquery-ui.min.css" />
+    <Content Include="Content\bootstrap-theme\style-coloradmin-theme.css" />
     <Content Include="Content\bootstrap-theme\plugins\dataTables.bootstrap.css" />
     <Content Include="Content\bootstrap-theme\plugins\metisMenu\metisMenu.css" />
     <Content Include="Content\bootstrap-theme\plugins\metisMenu\metisMenu.min.css" />
@@ -300,6 +302,9 @@
       <DependentUpon>sb-admin-2.css</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap-theme\style-inspinia-theme.css" />
+    <Content Include="Content\bootstrap-theme\style-coloradmin-responsive.min.css" />
+    <Content Include="Content\bootstrap-theme\style-coloradmin.min.css" />
+    <Content Include="Content\bootstrap-theme\style-coloradmin.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap\bootstrap.css">
@@ -323,6 +328,10 @@
     <Content Include="Content\images\ASP-NET-Banners-02.png" />
     <Content Include="Content\images\Banner-01-Azure.png" />
     <Content Include="Content\images\Banner-02-VS.png" />
+    <Content Include="Content\images\bg-6.jpg" />
+    <Content Include="Content\images\bg-7.jpg" />
+    <Content Include="Content\images\bg-8.jpg" />
+    <Content Include="Content\images\logo.png" />
     <Content Include="Content\ng-table\ng-table.css" />
     <Content Include="Content\patterns\congruent_pentagon.png" />
     <Content Include="Content\patterns\header-profile-skin-1.png" />
@@ -1142,6 +1151,8 @@
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap-switch.min.js" />
+    <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.js" />
+    <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap3-typeahead.js" />
@@ -1340,6 +1351,8 @@
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Shared\_RightSidebar.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
+    <Content Include="Views\Shared\_LogiPartialModal.cshtml" />
+    <Content Include="Views\Shared\_BlankLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

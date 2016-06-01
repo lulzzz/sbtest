@@ -1,21 +1,35 @@
 ﻿@using Microsoft.AspNet.Identity
 @if (Request.IsAuthenticated)
 {
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Get, new { id = "logoutForm", @class = "navbar-right" }))
-    {
-    @Html.AntiForgeryToken()
+	<li class="dropdown navbar-user">
+		
 
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            @Html.ActionLink("Hello " + CurrentUser.FullName + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
-        </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
-    }
+
+		<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+			<img src="@CurrentUser.Photo" alt="" /> 
+			<span class="hidden-xs">@CurrentUser.FullName</span> <b class="caret"></b>
+		</a>
+			<ul class="dropdown-menu animated fadeInLeft">
+				<li class="arrow"></li>
+				<li><a href="@Url.Action("Index","Manage")">Edit Profile</a></li>
+				<li class="divider"></li>
+				<li>
+					@using (Html.BeginForm("LogOff", "Account", FormMethod.Get, new {id = "logoutForm", @class = "navbar-right"}))
+					{
+						@Html.AntiForgeryToken()
+					}
+					<a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+				</li>
+			</ul>
+		
+	</li>
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
-    </ul>
+    
+	<li class="navbar-user">
+		<a href="#modal-dialog" class="btn btn-sm btn-success" data-toggle="modal">Log in</a>
+		
+	</li>
+	
 }

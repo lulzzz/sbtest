@@ -20,11 +20,12 @@ namespace HrMaxxAPI.Controllers
 		[Route(HrMaxxRoutes.GetNotifications)]
 		public List<NotificationsResource> GetNotifications()
 		{
-			List<NotificationDto> notificationsDto =
-				MakeServiceCall(() => _notificationService.GetNotifications(CurrentUser.UserId), "Get Notifications", true);
-			List<NotificationsResource> notificationsResource =
-				Mapper.Map<List<NotificationDto>, List<NotificationsResource>>(notificationsDto);
-			return notificationsResource;
+			//List<NotificationDto> notificationsDto =
+			//	MakeServiceCall(() => _notificationService.GetNotifications(CurrentUser.UserId), "Get Notifications", true);
+			//List<NotificationsResource> notificationsResource =
+			//	Mapper.Map<List<NotificationDto>, List<NotificationsResource>>(notificationsDto);
+			//return notificationsResource;
+			return new List<NotificationsResource>();
 		}
 
 

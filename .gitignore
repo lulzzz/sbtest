@@ -16,7 +16,6 @@ packages*/
 [Bb]uild/
 *.user
 *.suo
-*.exe
 *.pdb
 *.aps
 *_i.c

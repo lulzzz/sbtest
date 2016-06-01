@@ -4,15 +4,15 @@
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>@ViewBag.Title</title>
-  @if (IsSectionDefined("Styles"))
+	@if (IsSectionDefined("Styles"))
 	{
 		@RenderSection("Styles", false)
 	}
 	@Styles.Render("~/bundles/site-less")
 
-	
+
 	<!--[if lt IE 9]>
 		@Scripts.Render("~/bundles/html5")
 	<![endif]-->
@@ -28,59 +28,37 @@
 <body>
 	<!-- begin #page-loader -->
 	<div id="page-loader" class="fade in"><span class="spinner"></span></div>
-	
+
 	<!-- end #page-loader -->
 	<!-- begin #page-container -->
 	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
-		<!-- begin #header -->
-		@Html.Partial("_TopNavbar") 
-		<!-- end #header -->
-		<!-- begin #sidebar -->
-		@if (User.Identity.IsAuthenticated)
-		{
-			@Html.Partial("_Navigation")
-		}
 		
-		<!-- end #sidebar -->
 		<!-- begin #content -->
 		<div id="content" class="content">
 			@RenderBody()
 		</div>
 		<!-- end #content -->
-		</div>
-		
-		
+	</div>
+
+
 	<!-- Footer -->
 	<div id="footer" class="footer">
-	@Html.Partial("_Footer")	
+		@Html.Partial("_Footer")
 	</div>
-	<div class="modal fade" id="modal-dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	
+	<!-- /#page-wrapper -->
+	<!-- ========================= SCRIPTS ================================ -->
+	@Scripts.Render("~/bundles/angular")
+	@Scripts.Render("~/bundles/slimScroll")
 
-				</div>
-				<div class="modal-body">
-					@Html.Partial("_LogiPartialModal")
-				</div>
-
-			</div>
-		</div>
-	</div>
-			<!-- /#page-wrapper -->
-			<!-- ========================= SCRIPTS ================================ -->
-			@Scripts.Render("~/bundles/angular")
-			@Scripts.Render("~/bundles/slimScroll")
-		
-			@RenderSection("scripts", false)
+	@RenderSection("scripts", false)
 	<script>
 		$(document).ready(function() {
 			App.init();
-			
+
 		});
 	</script>
 
-		
+
 </body>
 </html>

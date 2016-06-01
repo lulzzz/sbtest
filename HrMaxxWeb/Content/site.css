@@ -1,9 +1,9 @@
 ﻿@import url('font-awesome.css');
-
+@import url('bootstrap-theme/jquery-ui.min.css');
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
-
-@import url('bootstrap-theme/style-inspinia-theme.css');
-
+@import url('bootstrap-theme/style-coloradmin.min.css');
+@import url('bootstrap-theme/style-coloradmin-responsive.min.css');
+@import url('bootstrap-theme/style-coloradmin-theme.css');
 @import url('angular/angular-csp.css');
 
 @import url('angular-loading-bar/loading-bar.css');

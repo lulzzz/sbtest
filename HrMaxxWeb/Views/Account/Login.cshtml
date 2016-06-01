@@ -2,56 +2,59 @@
 @model LoginViewModel
 @{
     ViewBag.Title = "Log in";
+	Layout = "~/Views/Shared/_BlankLayout.cshtml";
 }
-
-<h2>@ViewBag.Title.</h2>
-<div class="row" ng-app="common">
-	<div class="col-md-8" ng-controller="loginCtrl">
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-		<section id="loginForm">
-			@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "loginFormSubmit", name = "loginFormSubmit" }))
-			{
-				@Html.AntiForgeryToken()
-				<h4>Use a local account to log in.</h4>
-				<hr />
-				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-				<div class="form-group">
-					@Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-					<div class="col-md-10">
-						@Html.TextBoxFor(m => m.Email, new { @class = "form-control" , data_ng_model = "username" })
-						@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-					</div>
-				</div>
-				<div class="form-group">
-					@Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-					<div class="col-md-10">
-						@Html.PasswordFor(m => m.Password, new { @class = "form-control", data_ng_model = "password" })
-						@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-md-offset-2 col-md-10">
-						<div class="checkbox">
-							@Html.CheckBoxFor(m => m.RememberMe, new { data_ng_model = "rememberMe" })
-							@Html.LabelFor(m => m.RememberMe)
-						</div>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-md-offset-2 col-md-2">
-						<button type="button" data-loading-text="Please wait..." class="btn btn-primary block full-width m-b" ng-click="login($event, '@ViewBag.ReturnUrl')">Login</button>
-						@Html.ActionLink("Forgot your password?", "ForgotPassword")
-					</div>
-				</div>
-
-				
-			}
+<div class="login-cover">
+	<div class="login-cover-image"><img src="~/Content/images/bg-7.jpg" data-id="login-cover-image" alt="" /></div>
+	<div class="login-cover-bg"></div>
+</div>
+<div class="login login-v2" data-pageload-addclass="animated fadeIn" ng-app="common" ng-controller="loginCtrl">
+	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	<!-- begin brand -->
+	<div class="login-header">
+		<div class="brand">
+			<span class="logo"></span> HrMaxx
+			<small>Payroll made easier</small>
+		</div>
+		<div class="icon">
+			<i class="fa fa-sign-in"></i>
+		</div>
+	</div>
+	<!-- end brand -->
+	<div class="login-content">
+		@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "loginFormSubmit", name = "loginFormSubmit" }))
+		{
+			@Html.AntiForgeryToken()
+			@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+	<div class="form-group m-b-20">
+		
+		
+			@Html.TextBoxFor(m => m.Email, new { @class = "form-control input-lg", data_ng_model = "username", placeholder="Email Address" })
+			@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+		
+	</div>
+	<div class="form-group m-b-20">
+		
+			@Html.PasswordFor(m => m.Password, new { @class = "form-control", data_ng_model = "password", placeholder="Password" })
+			@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+		
+	</div>
+	<div class="form-group m-b-20">
+		
+				@Html.CheckBoxFor(m => m.RememberMe, new { data_ng_model = "rememberMe" })
+				@Html.LabelFor(m => m.RememberMe)
 			
+	</div>
+	<div class="login-buttons">
+		
+		<button type="button" data-loading-text="Please wait..." class="btn btn-success btn-block btn-lg" ng-click="login($event, '@ViewBag.ReturnUrl')">Login</button>
 			
-		</section>
+	</div>
+	<div class="m-t-20">
+		@Html.ActionLink("Forgot your password?", "ForgotPassword")
 	</div>
 
-
-
-
+		}
+		
+	</div>
 </div>

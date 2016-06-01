@@ -40,7 +40,7 @@ namespace HrMaxxWeb
 				"~/Scripts/modernizr-{version}.js",
 				"~/Scripts/bootstrap/bootstrap.js",
 				"~/Scripts/bootstrap3-typeahead.js",
-				"~/Scripts/bootstrap/bootstrap-theme/inspinia.min.js",
+				"~/Scripts/bootstrap/bootstrap-theme/coloradmin.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/metisMenu/metisMenu.js",
 				"~/Scripts/Toastr/toastr.min.js");
 			jquery.Builder = nullBuilder;

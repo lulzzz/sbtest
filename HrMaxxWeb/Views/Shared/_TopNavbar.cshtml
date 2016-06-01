@@ -1,48 +1,61 @@
-﻿@using HrMaxxWeb.Code.Helpers
-<div class="row border-bottom">
-	<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
-		<div id="wrapper" class="@Html.PageClass()">
-
-			<div class="navbar-header">
-				<a class="navbar-minimalize minimalize-styl-2 btn btn-primary "><i class="fa fa-angle-left"></i></a>
-			</div>
-		
-			@Html.Partial("_LoginPartial")
+﻿<div id="header" class="header navbar navbar-default navbar-fixed-top">
+	<!-- begin container-fluid -->
+	<div class="container-fluid">
+		<!-- begin mobile sidebar expand / collapse button -->
+		<div class="navbar-header">
+			<a href="@Url.Action("Index", "Home")" class="navbar-brand"><img src="~/Content/images/logo.png" style="width:200px;height:40px"/></a>
+			<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<!-- end mobile sidebar expand / collapse button -->
+		<!-- begin header navigation right -->
+		<ul class="nav navbar-nav navbar-right">
 			@if (Request.IsAuthenticated)
 			{
-				<ul class="nav navbar-top-links navbar-right">
-
-					<li class="dropdown" id="dvNotifications" ng-app="notification" ng-controller="notificationCtrl">
-						<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-							<i class="fa fa-envelope"></i>  <span class="label label-warning" ng-show="myNotifications.length">{{unreadNotificationsCount}}</span>
-						</a>
-						<ul class="dropdown-menu dropdown-messages">
-							<li ng-click="refreshNotifications()" class=" col-md-12">
-								<div class="dropdown-messages-box">
-									<center>  <span class="glyphicon glyphicon-refresh icon-refresh" ng-click="refreshNotifications()" aria-hidden="true"></span></center>
+				<li>
+					<form class="navbar-form full-width">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Enter keyword" />
+							<button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+						</div>
+					</form>
+				</li>
+				<li class="dropdown" ng-app="notification" ng-controller="notificationCtrl">
+					<a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">
+						<i class="fa fa-bell-o"></i>
+						<span class="label" ng-show="myNotifications.length">{{unreadNotificationsCount}}</span>
+					</a>
+					<ul class="dropdown-menu media-list pull-right animated fadeInDown">
+					
+						<li class="dropdown-header">Notifications ({{unreadNotificationsCount}})</li>
+						<li ng-click="refreshNotifications()">
+							<div class="dropdown-messages-box">
+								<center>  <span class="glyphicon glyphicon-refresh icon-refresh" ng-click="refreshNotifications()" aria-hidden="true"></span></center>
+							</div>
+							<div class="divider"></div>
+						</li>
+						<li ng-repeat="notification in myNotifications" class="media">
+							<div class="media-left"><i class="fa fa-bug media-object" ng-if="notification.isRead"></i></div>
+							<div class="media-left"><i class="fa fa-bug media-object bg-red" ng-if="!notification.isRead"></i></div>
+							<div class="media-body" ng-click="NotificationRead(notification)">
+								<h6 class="media-heading">{{notification.type}}</h6>
+								<div class="text-muted f-s-11">
+									<small class="pull-right">{{notification.createdOn}}</small>
+									<br />{{notification.text}}.
 								</div>
-								<div class="divider"></div>
-							</li>
-
-							<li ng-repeat="notification in myNotifications" class="notification-item col-md-12">
-								<div class="dropdown-messages-box">
-									<div class="pull-left">
-										<i class="fa fa-envelope warning" ng-if="notification.isRead"></i>
-										<i class="fa fa-envelope primary" ng-if="!notification.isRead"></i>
-									</div>
-									<div class="media-body" ng-click="NotificationRead(notification)">
-										<small class="pull-right">{{notification.createdOn}}</small>
-										<span ng-class="{'text-bold': notification.isRead === false}">{{notification.type}}</span> <br />{{notification.text}}.
-
-									</div>
-								</div>
-								<div class="divider"></div>
-							</li>
-
-						</ul>
-					</li>
-				</ul>
+							</div>
+						
+						</li>
+					
+					</ul>
+				</li>
 			}
-		</div>
-</nav>
+			@Html.Partial("_LoginPartial")
+		</ul>
+		<!-- end header navigation right -->
+	</div>
+	<!-- end container-fluid -->
 </div>
