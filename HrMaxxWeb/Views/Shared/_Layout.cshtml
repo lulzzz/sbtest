@@ -62,7 +62,10 @@
 
 				</div>
 				<div class="modal-body">
-					@Html.Partial("_LoginPartial")
+					@if (!Request.IsAuthenticated)
+					{
+						@Html.Partial("_LogiPartialModal")
+					}
 				</div>
 
 			</div>
