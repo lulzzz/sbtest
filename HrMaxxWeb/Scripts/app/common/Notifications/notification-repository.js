@@ -1,28 +1,27 @@
 ﻿notification.factory('notificationRepository', [
-	'$http', '$q', 'zionAPI',
-	function($http, $q, zionAPI) {
+	'$q', 'commonServer',
+	function($q, commonServer) {
 		return {
-			getNotifications: function() {
+			getNotifications: function () {
 				var deferred = $q.defer();
-				$http.get(zionAPI.URL + 'GetNotifications').
-					success(function(data, status, headers, config) {
-						deferred.resolve(data);
-					}).
-					error(function(data, status, headers, config) {
-						deferred.reject(data);
-					});
+
+				commonServer.one('GetNotifications').getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
 				return deferred.promise;
 			},
-			notificationRead: function(notificationId) {
+			notificationRead: function (notificationId) {
 				var deferred = $q.defer();
-				$http.get(zionAPI.URL + 'NotificationRead/' + notificationId).
-					success(function(data, status, headers, config) {
-						deferred.resolve(data);
-					}).
-					error(function(data, status, headers, config) {
-						deferred.reject(data);
-					});
+
+				commonServer.one('NotificationRead').one(notificationId).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
 				return deferred.promise;
+				
 			}
 
 		};

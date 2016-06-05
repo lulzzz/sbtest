@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using HrMaxx.Common.Services.Security;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using HrMaxxWeb.Models;
@@ -16,15 +17,16 @@ namespace HrMaxxWeb.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+	    
         public ManageController()
         {
         }
 
-        public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
+	        
         }
 
         public ApplicationSignInManager SignInManager
@@ -50,30 +52,20 @@ namespace HrMaxxWeb.Controllers
                 _userManager = value;
             }
         }
-
-        //
+				//
         // GET: /Manage/Index
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
-            ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
-                : message == ManageMessageId.Error ? "An error has occurred."
-                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
-                : "";
-
-            var userId = User.Identity.GetUserId();
-            var model = new IndexViewModel
-            {
-                HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
-                Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
-            };
-            return View(model);
+					ViewBag.StatusMessage =
+							 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+							 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+							 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+							 : message == ManageMessageId.Error ? "An error has occurred."
+							 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+							 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+							 : "";
+           
+					return View(new ChangePasswordViewModel());
         }
 
         //
@@ -240,7 +232,7 @@ namespace HrMaxxWeb.Controllers
                 return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
             AddErrors(result);
-            return View(model);
+            return View("Index", model);
         }
 
         //

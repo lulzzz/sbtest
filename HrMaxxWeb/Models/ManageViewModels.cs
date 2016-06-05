@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 
 namespace HrMaxxWeb.Models
@@ -12,6 +13,8 @@ namespace HrMaxxWeb.Models
         public string PhoneNumber { get; set; }
         public bool TwoFactor { get; set; }
         public bool BrowserRemembered { get; set; }
+				public IList<string> UserRoles { get; set; }
+				public IList<IdentityRole> Roles { get; set; }
     }
 
     public class ManageLoginsViewModel

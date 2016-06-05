@@ -8,6 +8,7 @@ using HrMaxx.Common.Repository.Documents;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Repository.Notifications;
+using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Extensions;
 
 namespace HrMaxxAPI.Code.IOC.Common
@@ -20,6 +21,8 @@ namespace HrMaxxAPI.Code.IOC.Common
 				ConfigurationManager.ConnectionStrings["HrMaxx"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 			string _commonConnectionString =
 				ConfigurationManager.ConnectionStrings["CommonEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
+			string _userConnectionString =
+				ConfigurationManager.ConnectionStrings["UserEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 			
 
 			string _fileDestinationPath = ConfigurationManager.AppSettings["FilePath"];
@@ -80,6 +83,15 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 			builder.RegisterType<NotificationRepository>()
 				.As<INotificationRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<UserEntities>()
+				.WithParameter(new NamedParameter("nameOrConnectionString", _userConnectionString))
+				.InstancePerLifetimeScope();
+
+			builder.RegisterType<UserRepository>()
+				.As<IUserRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

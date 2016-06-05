@@ -1091,12 +1091,11 @@ var App = function () {
 	return {
 		//main function
 		init: function () {
-		    this.initLocalStorage();
 		    this.initSidebar();
 		    this.initTopMenu();
 		    this.initPageLoad();
 		    this.initComponent();
-		    this.initThemePanel();
+		    
 		},
 		initSidebar: function() {
 			handleSidebarMenu();
@@ -1131,11 +1130,6 @@ var App = function () {
 		},
 		initLocalStorage: function() {
 		    handleLocalStorage();
-		},
-		initThemePanel: function() {
-			handleThemePageStructureControl();
-			handleThemePanelExpand();
-		    handleResetLocalStorage();
 		},
 		scrollTop: function() {
             $('html, body').animate({

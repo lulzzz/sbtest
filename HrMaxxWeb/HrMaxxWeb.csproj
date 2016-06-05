@@ -307,6 +307,7 @@
     <Content Include="Content\bootstrap-theme\style-coloradmin.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\bootstrap\bootstrap-editable.css" />
     <Content Include="Content\bootstrap\bootstrap.css">
       <DependentUpon>bootstrap.less</DependentUpon>
     </Content>
@@ -331,6 +332,7 @@
     <Content Include="Content\images\bg-6.jpg" />
     <Content Include="Content\images\bg-7.jpg" />
     <Content Include="Content\images\bg-8.jpg" />
+    <Content Include="Content\images\BlankUser.jpg" />
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\ng-table\ng-table.css" />
     <Content Include="Content\patterns\congruent_pentagon.png" />
@@ -1148,9 +1150,13 @@
     <Content Include="Scripts\app\common\Notifications\notification-ctrl.js" />
     <Content Include="Scripts\app\common\Notifications\notification-repository.js" />
     <Content Include="Scripts\app\common\Notifications\notification.js" />
+    <Content Include="Scripts\app\common\users\userprofile-ctrl.js" />
+    <Content Include="Scripts\app\common\users\user-repository.js" />
+    <Content Include="Scripts\app\common\users\user-app.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap-switch.min.js" />
+    <Content Include="Scripts\bootstrap\bootstrap-editable\bootstrap-editable.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
@@ -1179,6 +1185,7 @@
     <Content Include="Scripts\date.js" />
     <Content Include="Scripts\es5-shim.js" />
     <Content Include="Scripts\es5-shim.min.js" />
+    <Content Include="Scripts\form-editable.min.js" />
     <Content Include="Scripts\html5shiv\html5shiv-printshiv.js" />
     <Content Include="Scripts\html5shiv\html5shiv-printshiv.min.js" />
     <Content Include="Scripts\html5shiv\html5shiv.js" />

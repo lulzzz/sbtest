@@ -1,84 +1,143 @@
-﻿@model HrMaxxWeb.Models.IndexViewModel
+﻿@model HrMaxxWeb.Models.ChangePasswordViewModel
 @{
     ViewBag.Title = "Manage";
 }
 
-<h2>@ViewBag.Title.</h2>
-
 <p class="text-success">@ViewBag.StatusMessage</p>
-<div>
-    <h4>Change your account settings</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>Password:</dt>
-        <dd>
-            [
-            @if (Model.HasPassword)
-            {
-                @Html.ActionLink("Change your password", "ChangePassword")
-            }
-            else
-            {
-                @Html.ActionLink("Create", "SetPassword")
-            }
-            ]
-        </dd>
-        <dt>External Logins:</dt>
-        <dd>
-            @Model.Logins.Count [
-            @Html.ActionLink("Manage", "ManageLogins") ]
-        </dd>
-        @*
-            Phone Numbers can used as a second factor of verification in a two-factor authentication system.
-             
-             See <a href="http://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
-                for details on setting up this ASP.NET application to support two-factor authentication using SMS.
-             
-             Uncomment the following block after you have set up two-factor authentication
-        *@
-        @*  
-            <dt>Phone Number:</dt>
-            <dd>
-                @(Model.PhoneNumber ?? "None") [
-                @if (Model.PhoneNumber != null)
-                {
-                    @Html.ActionLink("Change", "AddPhoneNumber")
-                    @: &nbsp;|&nbsp;
-                    @Html.ActionLink("Remove", "RemovePhoneNumber")
-                }
-                else
-                {
-                    @Html.ActionLink("Add", "AddPhoneNumber")
-                }
-                ]
-            </dd>
-        *@
-        <dt>Two-Factor Authentication:</dt>
-        <dd>
-            <p>
-                There are no two-factor authentication providers configured. See <a href="http://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
-                for details on setting up this ASP.NET application to support two-factor authentication.
-            </p>
-            @*@if (Model.TwoFactor)
-                {
-                    using (Html.BeginForm("DisableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        <text>Enabled
-                        <input type="submit" value="Disable" class="btn btn-link" />
-                        </text>
-                    }
-                }
-                else
-                {
-                    using (Html.BeginForm("EnableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        <text>Disabled
-                        <input type="submit" value="Enable" class="btn btn-link" />
-                        </text>
-                    }
-                }*@
-        </dd>
-    </dl>
+
+<h1 class="page-header">Profile Page </h1>
+<!-- end page-header -->
+<!-- begin profile-container -->
+<div class="profile-container" ng-app="user" ng-controller="userCtrl" data-userid="@CurrentUser.UserId">
+	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	<!-- begin profile-section -->
+	<div class="profile-section">
+		<!-- begin profile-left -->
+		<div class="profile-left">
+			<!-- begin profile-image -->
+			<div class="profile-image">
+				<img src="~/Content/images/BlankUser.jpg" />
+				<i class="fa fa-user hide"></i>
+			</div>
+			<!-- end profile-image -->
+			<div class="m-b-10">
+				<a href="#" class="btn btn-warning btn-block btn-sm">Change Picture</a>
+			</div>
+			<div class="m-b-10" ng-show="!isChangePassword">
+				<a href="#" class="btn btn-warning btn-block btn-sm" ng-click="isChangePassword = !isChangePassword">Change Password</a>
+			</div>
+			<!-- end profile-highlight -->
+		</div>
+		<!-- end profile-left -->
+		<!-- begin profile-right -->
+		<div class="profile-right">
+			<!-- begin profile-info -->
+			<div class="profile-info">
+				<!-- begin table -->
+				<div class="table-responsive">
+					<table class="table table-profile">
+						<thead>
+							<tr>
+								<th></th>
+								<th>
+									<h4>{{ FullName()}} <small>{{user.email}}</small></h4>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="divider">
+								<td colspan="2"></td>
+							</tr>
+							<tr>
+								<td class="field">Phone</td>
+								<td><i class="fa fa-mobile fa-lg m-r-5"></i> <a href="#" editable-text="user.phone">{{ user.phone || 'empty' }}</a></td>
+							</tr>
+
+							<tr>
+								<td class="field">Role</td>
+								<td>
+									<div class="col-sm-2">
+										<select id="roles" class="form-control" ng-model="user.role" ng-options="role.roleName for role in user.availableRoles track by role.roleId">
+											<option value="">Please select...</option>
+										</select>
+									</div>
+								</td>
+							</tr>
+
+
+							<tr class="divider">
+								<td colspan="2"></td>
+							</tr>
+							<tr>
+								<td class="field"></td>
+								<td class="right">
+									<button class="btn btn-sm btn-primary m-r-5" ng-click="save()">Save</button>
+									<button class="btn btn-sm btn-default m-r-5" ng-click="cancel()">Cancel</button>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+				<!-- end table -->
+			</div>
+			<!-- end profile-info -->
+		</div>
+		<!-- end profile-right -->
+	</div>
+	<!-- end profile-section -->
+	<div class="row" ng-show="isChangePassword">
+		<!-- begin col-6 -->
+		<div class="col-md-6">
+			<!-- begin panel -->
+			<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+				<div class="panel-heading">
+					<div class="panel-heading-btn">
+						<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+					</div>
+					<h4 class="panel-title">Change Password</h4>
+				</div>
+				<div class="panel-body">
+					@using (Html.BeginForm("ChangePassword", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+					{
+						@Html.AntiForgeryToken()
+
+						@Html.ValidationSummary("", new { @class = "text-danger" })
+						<fieldset>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Old Password</label>
+								<div class="col-md-8">
+									@Html.PasswordFor(m => m.OldPassword, new { @class = "form-control" })
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">New Password</label>
+								<div class="col-md-8">
+									@Html.PasswordFor(m => m.NewPassword, new { @class = "form-control" })
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Confirm New Password</label>
+								<div class="col-md-8">
+									@Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+								</div>
+							</div>
+
+							<div class="form-group">
+								<div class="col-md-8 col-md-offset-4">
+									<button type="submit" class="btn btn-sm btn-primary m-r-5">Change password</button>
+
+								</div>
+							</div>
+						</fieldset>
+
+					}
+
+
+				</div>
+			</div>
+			<!-- end panel -->
+		</div>
+		<!-- end col-6 -->
+	</div>
 </div>

@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Messages\Events\UserEventLogEntry.cs" />
+    <Compile Include="Services\IUserService.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\IEmailService.cs" />
     <Compile Include="Services\IDocumentService.cs" />

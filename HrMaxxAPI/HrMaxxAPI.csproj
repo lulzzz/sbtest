@@ -244,6 +244,8 @@
     <Compile Include="Controllers\HrMaxxRoutes.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\User\UserRoutes.cs" />
+    <Compile Include="Controllers\User\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

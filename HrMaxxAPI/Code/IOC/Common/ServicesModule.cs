@@ -51,6 +51,11 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.As<IEmailService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
+
+			builder.RegisterType<UserService>()
+				.As<IUserService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
 		}
 	}
 }

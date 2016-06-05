@@ -1,4 +1,4 @@
-var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover']);
+var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable']);
 
 common.constant('zionPaths', {
 	Login: 'Account/Login',
@@ -28,3 +28,7 @@ common.factory('commonServer', [
 		});
 	}
 ]);
+
+common.run(function (editableOptions) {
+	editableOptions.theme = 'bs3';
+});

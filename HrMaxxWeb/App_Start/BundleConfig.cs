@@ -35,6 +35,7 @@ namespace HrMaxxWeb
 			Bundle jquery = new Bundle("~/bundles/bootstrapjquery").Include(
 				"~/Scripts/jquery-2.1.1.js",
 				"~/Scripts/jquery/jquery-{version}.min.map",
+				"~/Scripts/jquery-ui.custom.js",
 				"~/Scripts/lodash/lodash.js",
 				"~/Scripts/es5-shim.js",
 				"~/Scripts/modernizr-{version}.js",
@@ -94,7 +95,10 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/eventlogs/userEventLog.js",
 				"~/Scripts/app/common/eventlogs/eventlog-repository.js",
 				"~/Scripts/app/common/eventlogs/userEventLog-ctrl.js",
-				"~/Scripts/app/common/login-ctrl.js"
+				"~/Scripts/app/common/login-ctrl.js",
+				"~/Scripts/app/common/users/user-app.js",
+				"~/Scripts/app/common/users/user-repository.js",
+				"~/Scripts/app/common/users/userprofile-ctrl.js"
 
 				);
 			jquery.Builder = nullBuilder;

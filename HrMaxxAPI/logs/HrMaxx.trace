@@ -24,3 +24,143 @@ ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, localhost, http://localhost
     DateTime=2016-05-27T10:58:25.0923994Z
 ZGlobalTrace Verbose: 0 : sherjeel.bedaar@gmail.com, Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|15:58:35.1356216
     DateTime=2016-05-27T10:58:35.1366236Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|12:46:17.3132056
+    DateTime=2016-06-01T07:46:17.3150424Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|12:46:28.2456684
+    DateTime=2016-06-01T07:46:28.2456684Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|12:46:28.4047842
+    DateTime=2016-06-01T07:46:28.4047842Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.NotificationsController|Get Notifications|12:46:28.4262999
+    DateTime=2016-06-01T07:46:28.4262999Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, Mobile, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:34:41.3462423
+    DateTime=2016-06-03T09:34:41.3462423Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:34:41.7822125
+    DateTime=2016-06-03T09:34:41.7822125Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, Mobile, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id|14:35:34.3517248
+    DateTime=2016-06-03T09:35:34.3522098Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id|14:35:36.8065729
+    DateTime=2016-06-03T09:35:36.8065729Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, Mobile, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id|14:36:28.8929431
+    DateTime=2016-06-03T09:36:28.9372078Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id|14:36:57.2687767
+    DateTime=2016-06-03T09:36:57.2687767Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, Mobile, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:39:46.4078193
+    DateTime=2016-06-03T09:39:46.4078193Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, Mobile, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:40:31.1033611
+    DateTime=2016-06-03T09:40:31.1033611Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:16:12.0769355
+    DateTime=2016-06-05T06:16:12.0769355Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:17:44.8753050
+    DateTime=2016-06-05T06:17:44.8753050Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:18:50.7587925
+    DateTime=2016-06-05T06:18:50.7587925Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:19:18.7169414
+    DateTime=2016-06-05T06:19:18.7169414Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:20:31.6637759
+    DateTime=2016-06-05T06:20:31.6637759Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:21:22.2222219
+    DateTime=2016-06-05T06:21:22.2222219Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:22:02.2384791
+    DateTime=2016-06-05T06:22:02.2384791Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:23:30.4127326
+    DateTime=2016-06-05T06:23:30.4127326Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:52:16.1903446
+    DateTime=2016-06-05T06:52:16.1903446Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:58:45.0732380
+    DateTime=2016-06-05T06:58:45.0732380Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|11:59:20.6298917
+    DateTime=2016-06-05T06:59:20.6298917Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:01:36.5349923
+    DateTime=2016-06-05T07:01:36.5349923Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:05:54.6214147
+    DateTime=2016-06-05T07:05:54.6214147Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:12:32.7571994
+    DateTime=2016-06-05T07:12:32.7571994Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:34:10.4237879
+    DateTime=2016-06-05T07:34:10.4237879Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:35:03.7186567
+    DateTime=2016-06-05T07:35:03.7186567Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:37:09.0605008
+    DateTime=2016-06-05T07:37:09.0605008Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:37:35.9190655
+    DateTime=2016-06-05T07:37:35.9190655Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:39:00.8304056
+    DateTime=2016-06-05T07:39:00.8304056Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:39:19.8783546
+    DateTime=2016-06-05T07:39:19.8783546Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:42:20.4528456
+    DateTime=2016-06-05T07:42:20.4528456Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:43:03.4743331
+    DateTime=2016-06-05T07:43:03.4743331Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:43:31.6031141
+    DateTime=2016-06-05T07:43:31.6031141Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:47:05.2850938
+    DateTime=2016-06-05T07:47:05.2850938Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:47:35.2711963
+    DateTime=2016-06-05T07:47:35.2711963Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:48:25.7848926
+    DateTime=2016-06-05T07:48:25.7848926Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:49:13.3011710
+    DateTime=2016-06-05T07:49:13.3011710Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|12:50:23.7542465
+    DateTime=2016-06-05T07:50:23.7542465Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:06:14.0701854
+    DateTime=2016-06-05T08:06:14.0741981Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:06:16.9357205
+    DateTime=2016-06-05T08:06:16.9357205Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:07:13.2200464
+    DateTime=2016-06-05T08:07:13.2200464Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:07:13.2400469
+    DateTime=2016-06-05T08:07:13.2400469Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:07:35.3577992
+    DateTime=2016-06-05T08:07:35.3577992Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:07:35.3617956
+    DateTime=2016-06-05T08:07:35.3617956Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:09:18.0239005
+    DateTime=2016-06-05T08:09:18.0279025Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:10:28.0042199
+    DateTime=2016-06-05T08:10:28.0042199Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:11:08.6193055
+    DateTime=2016-06-05T08:11:08.6193055Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:13:13.3111178
+    DateTime=2016-06-05T08:13:13.3111178Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Save User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:13:24.2922249
+    DateTime=2016-06-05T08:13:24.2922249Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Save User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:13:24.7281861
+    DateTime=2016-06-05T08:13:24.7281861Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Save User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:15:03.3735082
+    DateTime=2016-06-05T08:15:03.3775059Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Save User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:17:23.5155345
+    DateTime=2016-06-05T08:17:23.5155345Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Save User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:24:34.8044218
+    DateTime=2016-06-05T08:24:34.8049213Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:25:03.5106332
+    DateTime=2016-06-05T08:25:03.5106332Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:28:24.3219986
+    DateTime=2016-06-05T08:28:24.3219986Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage?Message=ChangePasswordSuccess, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:48:50.0632703
+    DateTime=2016-06-05T08:48:50.0632703Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:52:35.9725496
+    DateTime=2016-06-05T08:52:35.9766414Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:53:17.2654927
+    DateTime=2016-06-05T08:53:17.2654927Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:54:17.9397900
+    DateTime=2016-06-05T08:54:17.9397900Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|13:58:10.4038618
+    DateTime=2016-06-05T08:58:10.4038618Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage?Message=ChangePasswordSuccess, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:00:15.6195968
+    DateTime=2016-06-05T09:00:15.6235996Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage?Message=ChangePasswordSuccess, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:54:04.3480093
+    DateTime=2016-06-05T09:54:04.3485101Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage/Index, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:55:16.1698467
+    DateTime=2016-06-05T09:55:16.1698467Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage?Message=ChangePasswordSuccess, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:55:33.2351456
+    DateTime=2016-06-05T09:55:33.2351456Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage?Message=ChangePasswordSuccess, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:59:38.6369800
+    DateTime=2016-06-05T09:59:38.6369800Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|14:59:54.8543816
+    DateTime=2016-06-05T09:59:54.8543816Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|15:00:34.8622055
+    DateTime=2016-06-05T10:00:34.8622055Z
+ZGlobalTrace Verbose: 0 : Sherjeel Bedaar, localhost, http://localhost/HrMaxxWeb/Manage?Message=ChangePasswordSuccess, |BusinessLayerCall|HrMaxxAPI.Controllers.UserController|Get User Profile By User Id=a885ca0c-b71c-4a3f-b24b-9bbcd1e3d6ff|15:00:56.9824951
+    DateTime=2016-06-05T10:00:56.9824951Z

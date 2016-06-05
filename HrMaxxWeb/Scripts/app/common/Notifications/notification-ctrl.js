@@ -1,22 +1,11 @@
 ﻿notification.controller('notificationCtrl', [
-	'$scope', 'notificationRepository', 'authService', 'zionAPI', '$window',
+	'$scope', 'notificationRepository', 'zionAPI', '$window',
 	function($scope, notificationRepository, authService, zionAPI, $window) {
 		$scope.zionAPI = zionAPI;
 		$scope.authService = authService;
 		$scope.myNotifications = [];
 		$scope.unreadNotificationsCount = 0;
-		$scope.getProjectId = function(notification) {
-			return eval('(' + notification.metadata + ')').ProjectID;
-		};
-		$scope.getWorkSiteId = function(notification) {
-			return eval('(' + notification.metadata + ')').WorkSiteId;
-		};
-		$scope.getInspectionId = function(notification) {
-			return eval('(' + notification.metadata + ')').InspectionId;
-		};
-		$scope.getActionId = function(notification) {
-			return eval('(' + notification.metadata + ')').ActionId;
-		};
+		
 		$scope.notificationsCount = function() {
 			if ($scope.myNotifications.length > 0)
 				return true;

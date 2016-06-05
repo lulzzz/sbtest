@@ -62,7 +62,7 @@
 
 				</div>
 				<div class="modal-body">
-					@Html.Partial("_LogiPartialModal")
+					@Html.Partial("_LoginPartial")
 				</div>
 
 			</div>
@@ -77,6 +77,7 @@
 	<script>
 		$(document).ready(function() {
 			App.init();
+			angular.bootstrap(document.getElementById('dvNotifications'), ['notification']);
 			
 		});
 	</script>
