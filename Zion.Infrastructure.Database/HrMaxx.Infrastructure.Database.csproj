@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\001_MementoTable.sql" />
     <None Include="Commands\IntegrationTest.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -105,13 +104,13 @@
     <Content Include="Scripts\Initialize\CreateTables_Common.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\004_NotificationsTable.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\Data\Dev\" />
     <Folder Include="Scripts\Data\IntegrationTest\" />
     <Folder Include="Scripts\Data\UAT\" />
     <Folder Include="Scripts\Maintenance\Functions\" />
+    <Folder Include="Scripts\Maintenance\SchemaChanges\" />
     <Folder Include="Scripts\Maintenance\Security\" />
     <Folder Include="Scripts\Maintenance\Storage\" />
     <Folder Include="Scripts\Maintenance\StoredProcedures\" />

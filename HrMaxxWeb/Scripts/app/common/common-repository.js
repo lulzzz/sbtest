@@ -1,6 +1,6 @@
 common.factory('commonRepository', [
-	'$http', 'zionAPI', 'zionPaths', '$q',
-	function($http, zionAPI, zionPaths, $q) {
+	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'commonServer',
+	function ($http, zionAPI, zionPaths, $q, upload, commonServer) {
 		return {
 			token: function(loginData) {
 				var data = "grant_type=password&username=" + loginData.username + "&password=" + loginData.password;
@@ -8,8 +8,7 @@ common.factory('commonRepository', [
 				var deferred = $q.defer();
 
 				$http.post(zionAPI.URL + zionPaths.Token, data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).success(function (response) {
-					
-						deferred.resolve(response);
+					deferred.resolve(response);
 					
 				}).error(function(err) {
 					deferred.reject(err);
@@ -31,6 +30,80 @@ common.factory('commonRepository', [
 					deferred.resolve(response);
 				}).error(function(err) {
 					deferred.reject(err);
+				});
+				return deferred.promise;
+			},
+			uploadDocument: function(attachment) {
+				var url = zionAPI.URL + 'Document/UploadEntityDocument';
+				var deferred = $q.defer();
+				upload.upload({
+					url: url,
+					method: 'POST',
+					data: {
+						inspection: attachment.data
+					},
+					file: attachment.doc.file,
+				}).progress(function (evt) {
+					attachment.currentProgress = parseInt(100.0 * evt.loaded / evt.total);
+					deferred.notify();
+				}).success(function (data, status, headers, config) {
+					attachment.doc.uploaded = true;
+					attachment.completed = true;
+					deferred.resolve(data);
+					
+				})
+				.error(function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			deleteDocument: function(entityTypeId, entityId, documentId) {
+				var deferred = $q.defer();
+
+				commonServer.one('Document/DeleteEntityDocument/' + entityTypeId + '/' + entityId + '/' + documentId).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			getCountries: function() {
+				var deferred = $q.defer();
+
+				commonServer.one('Countries').getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			saveComment: function(comment) {
+				var deferred = $q.defer();
+
+				commonServer.all('Common/SaveComment').post(comment).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			saveContact: function (contact) {
+				var deferred = $q.defer();
+
+				commonServer.all('Common/SaveContact').post(contact).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			deleteRelationship: function(sourceTypeId, targetTypeId, sourceId, targetId) {
+				var deferred = $q.defer();
+
+				commonServer.one('Common/DeleteEntityRelation/' + sourceTypeId + '/' + targetTypeId + '/' + sourceId + '/' + targetId).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
 				});
 				return deferred.promise;
 			}

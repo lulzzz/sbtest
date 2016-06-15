@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Web;
 using Autofac;
 using HrMaxx.Common.Models.DataModel;
-using HrMaxx.Common.Repository.Documents;
+using HrMaxx.Common.Repository.Common;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Repository.Notifications;
@@ -74,13 +74,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.As<IFileRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
-
-			builder.RegisterType<DocumentRepository>()
-				.As<IDocumentRepository>()
-				.InstancePerLifetimeScope()
-				.PropertiesAutowired();
-
-
+			
 			builder.RegisterType<NotificationRepository>()
 				.As<INotificationRepository>()
 				.InstancePerLifetimeScope()
@@ -94,6 +88,11 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.As<IUserRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
+
+			builder.RegisterType<CommonRepository>()
+			.As<ICommonRepository>()
+			.InstancePerLifetimeScope()
+			.PropertiesAutowired();
 		}
 	}
 }

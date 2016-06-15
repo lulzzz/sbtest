@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 
 namespace HrMaxx.Common.Repository.Security
@@ -50,6 +51,18 @@ namespace HrMaxx.Common.Repository.Security
 				}
 				_dbContext.SaveChanges();
 			}
+		}
+
+		public List<Guid> GetUserByRoleAndId(RoleTypeEnum role, Guid? userId)
+		{
+			var users = _dbContext.Users.Where(u => u.Roles.Any(r => r.Id == ((int)role).ToString())
+			                                        && ((userId.HasValue && u.Id == userId.Value.ToString()) || !userId.HasValue)
+				).ToList();
+			if (!users.Any())
+			{
+				return new List<Guid>();
+			}
+			return users.Select(u => new Guid(u.Id)).ToList();
 		}
 	}
 }

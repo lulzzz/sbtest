@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Common.Models.Dtos;
 
 namespace HrMaxx.Common.Models
 {
@@ -15,7 +16,11 @@ namespace HrMaxx.Common.Models
 		public string Phone { get; set; }
 		public int RoleId { get; set; }
 		public UserRole Role { get; set; }
-		public IList<UserRole> AvailableRoles { get; set; } 
+		public IList<UserRole> AvailableRoles { get; set; }
+		public IList<DocumentDto> Documents { get; set; }
+		public Address Address { get; set; }
+		public IList<Comment> Comments { get; set; }
+		public IList<Contact> Contacts { get; set; } 
 	}
 
 	public class UserRole

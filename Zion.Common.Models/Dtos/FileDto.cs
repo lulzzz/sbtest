@@ -7,6 +7,7 @@ namespace HrMaxx.Common.Models.Dtos
 		public Guid DocumentId { get; set; }
 		public string Filename { get; set; }
 		public string DocumentExtension { get; set; }
+		public string MimeType { get; set; }
 		public byte[] Data { get; set; }
 	}
 }

@@ -25,9 +25,12 @@ namespace HrMaxx.Common.Models.DataModel
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Document> Documents { get; set; }
+        public virtual DbSet<Memento> Mementos { get; set; }
         public virtual DbSet<StagingData> StagingDatas { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<UserEventLog> UserEventLogs { get; set; }
+        public virtual DbSet<EntityType> EntityTypes { get; set; }
+        public virtual DbSet<EntityRelation> EntityRelations { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
     }
 }

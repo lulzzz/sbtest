@@ -5,10 +5,15 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="bfb03b328e1c494bafc7d672fe429cd8" Name="Diagram1">
-        <EntityTypeShape EntityType="CommonModel.Document" Width="1.5" PointX="3.375" PointY="0.75" />
-        <EntityTypeShape EntityType="CommonModel.StagingData" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="CommonModel.Notification" Width="1.5" PointX="8.375" PointY="2.375" />
-        <EntityTypeShape EntityType="CommonModel.UserEventLog" Width="1.5" PointX="6.25" PointY="0.875" />
+        <EntityTypeShape EntityType="CommonModel.Memento" Width="1.5" PointX="2.375" PointY="0.625" />
+        <EntityTypeShape EntityType="CommonModel.StagingData" Width="1.5" PointX="0.5" PointY="0.625" />
+        <EntityTypeShape EntityType="CommonModel.Notification" Width="1.5" PointX="0.75" PointY="3.75" />
+        <EntityTypeShape EntityType="CommonModel.UserEventLog" Width="1.5" PointX="3.375" PointY="3.75" />
+        <EntityTypeShape EntityType="CommonModel.EntityType" Width="1.5" PointX="5.125" PointY="0.875" />
+        <EntityTypeShape EntityType="CommonModel.EntityRelation" Width="1.5" PointX="7.375" PointY="4.75" />
+        <AssociationConnector Association="CommonModel.FK_EntityRelation_EntityType" />
+        <AssociationConnector Association="CommonModel.FK_EntityRelation_EntityType1" />
+        <EntityTypeShape EntityType="CommonModel.Country" Width="1.5" PointX="7.375" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

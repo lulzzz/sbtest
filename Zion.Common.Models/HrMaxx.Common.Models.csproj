@@ -52,6 +52,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\Country.cs">
+      <DependentUpon>CommonModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Dtos\Address.cs" />
+    <Compile Include="Dtos\BaseEntityObject.cs" />
     <Compile Include="DataModel\CommonEntities.cs" />
     <Compile Include="DataModel\CommonModel.Context.cs">
       <AutoGen>True</AutoGen>
@@ -68,7 +73,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CommonModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="DataModel\Document.cs">
+    <Compile Include="DataModel\EntityRelation.cs">
+      <DependentUpon>CommonModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\EntityType.cs">
+      <DependentUpon>CommonModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\Memento.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\Notification.cs">
@@ -104,14 +115,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UserModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Dtos\Comment.cs" />
+    <Compile Include="Dtos\Contact.cs" />
     <Compile Include="Dtos\DocumentDTO.cs" />
     <Compile Include="Dtos\EntityIDDto.cs" />
     <Compile Include="Dtos\ExportDto.cs" />
     <Compile Include="Dtos\FileDto.cs" />
     <Compile Include="Dtos\MoveDocumentDto.cs" />
     <Compile Include="Dtos\NotificationDto.cs" />
-    <Compile Include="Dtos\SaveDocumentDto.cs" />
+    <Compile Include="EntityDocumentAttachment.cs" />
+    <Compile Include="Enum\AddressType.cs" />
+    <Compile Include="Enum\EntityTypeEnum.cs" />
     <Compile Include="Enum\NotificationTypeEnum.cs" />
+    <Compile Include="Enum\RoleTypeEnum.cs" />
     <Compile Include="Enum\UserEventEnum.cs" />
     <Compile Include="Mementos\IOriginator.cs" />
     <Compile Include="Mementos\Memento.cs" />

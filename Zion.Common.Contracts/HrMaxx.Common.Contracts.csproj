@@ -40,7 +40,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\Events\ContactEvent.cs" />
     <Compile Include="Messages\Events\UserEventLogEntry.cs" />
+    <Compile Include="Services\ICommonService.cs" />
     <Compile Include="Services\IUserService.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\IEmailService.cs" />

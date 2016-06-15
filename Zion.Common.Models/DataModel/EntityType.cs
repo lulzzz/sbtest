@@ -12,10 +12,18 @@ namespace HrMaxx.Common.Models.DataModel
     using System;
     using System.Collections.Generic;
     
-    public partial class Document
+    public partial class EntityType
     {
-        public System.Guid DocumentID { get; set; }
-        public string DocumentName { get; set; }
-        public string DocumentExt { get; set; }
+        public EntityType()
+        {
+            this.EntityRelations = new HashSet<EntityRelation>();
+            this.EntityRelations1 = new HashSet<EntityRelation>();
+        }
+    
+        public int EntityTypeId { get; set; }
+        public string EntityTypeName { get; set; }
+    
+        public virtual ICollection<EntityRelation> EntityRelations { get; set; }
+        public virtual ICollection<EntityRelation> EntityRelations1 { get; set; }
     }
 }

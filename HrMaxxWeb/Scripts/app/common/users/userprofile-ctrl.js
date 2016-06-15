@@ -2,10 +2,11 @@
 	'$scope', '$element', 'userRepository',
 	function ($scope, $element, userRepository) {
 		$scope.user = null;
+		$scope.user1 = null;
 		$scope.isChangePassword = false;
-		$scope.localUser = null;
+		var localUser = null;
 		var dataSvc = {
-			userId: null,
+			userId: null
 		};
 		$scope.FullName = function() {
 			if ($scope.user) {
@@ -13,18 +14,20 @@
 			}
 			
 		};
-		
+		var getUserProfile = function() {
+			userRepository.getUserProfile(dataSvc.userId).then(function (data) {
+				data.sourceTypeId = 12;
+				data.type = 0;
+				$scope.user = data;
+				localUser = angular.copy(data);
+			});
+		}
 		function _init() {
 			var dataInput = $element.data();
 			dataSvc.userId = dataInput.userid;
-			userRepository.getUserProfile(dataSvc.userId).then(function(data) {
-				$scope.user = data;
-				$scope.localUser = angular.copy($scope.user);
-			});
+			getUserProfile();
 		};
-		$scope.cancel = function() {
-			$scope.user = angular.copy($scope.localUser);
-		}
+		
 		$scope.save = function () {
 			userRepository.saveUserProfile($scope.user).then(function(data) {
 				$scope.addAlert('successfully saved user profile', 'success');

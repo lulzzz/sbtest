@@ -29,18 +29,17 @@
 			<i class="fa fa-bell-o"></i>
 			<span class="label" ng-show="myNotifications.length">{{unreadNotificationsCount}}</span>
 		</a>
-		<ul class="dropdown-menu media-list pull-right animated fadeInDown">
+		<ul class="dropdown-menu media-list pull-right animated fadeInDown col-sm-12">
 
 			<li class="dropdown-header">Notifications ({{unreadNotificationsCount}})</li>
 			<li ng-click="refreshNotifications()">
 				<div class="dropdown-messages-box">
 					<center>  <span class="glyphicon glyphicon-refresh icon-refresh" aria-hidden="true"></span></center>
 				</div>
-				<div class="divider"></div>
 			</li>
 			<li ng-repeat="notification in myNotifications" class="media">
-				<div class="media-left"><i class="fa fa-bug media-object" ng-if="notification.isRead"></i></div>
-				<div class="media-left"><i class="fa fa-bug media-object bg-red" ng-if="!notification.isRead"></i></div>
+				<div class="media-left" ng-if="notification.isRead"><i class="fa fa-info-circle media-object bg-blue"></i></div>
+				<div class="media-left" ng-if="!notification.isRead"><i class="fa fa-info-circle media-object bg-red"></i></div>
 				<div class="media-body" ng-click="NotificationRead(notification)">
 					<h6 class="media-heading">{{notification.type}}</h6>
 					<div class="text-muted f-s-11">

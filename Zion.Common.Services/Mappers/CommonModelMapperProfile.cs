@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Mapping;
+using Magnum;
 
 namespace HrMaxx.Common.Services.Mappers
 {
@@ -22,11 +23,12 @@ namespace HrMaxx.Common.Services.Mappers
 			base.Configure();
 
 			CreateMap<StagingDataDto, StagingData>();
-
-			CreateMap<Models.DataModel.Document, DocumentDto>()
+			CreateMap<EntityDocumentAttachment, DocumentDto>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => CombGuid.Generate()))
 				.ForMember(dest => dest.DocumentPath, opt => opt.Ignore())
-				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.DocumentExt));
-
+				.ForMember(dest => dest.DocumentName, opt => opt.MapFrom(src => src.OriginalFileName))
+				.ForMember(dest => dest.MimeType, opt => opt.MapFrom(src => src.MimeType))
+				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.FileExtension));
 
 			CreateMap<Notification, NotificationDto>();
 			CreateMap<NotificationDto, Notification>();
@@ -36,12 +38,12 @@ namespace HrMaxx.Common.Services.Mappers
 				.ForMember(dest => dest.Id, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
-				.ForMember(dest => dest.Event, opt => opt.MapFrom(src => (int) src.Event))
+				.ForMember(dest => dest.Event, opt => opt.MapFrom(src => (int)src.Event))
 				.ForMember(dest => dest.EventObject, opt => opt.MapFrom(src => src.EventObject))
 				.ForMember(dest => dest.Timestamp, opt => opt.MapFrom(src => DateTime.Now));
 
 			CreateMap<UserEventLog, UserEventLogModel>()
-				.ForMember(dest => dest.Event, opt => opt.MapFrom(src => ((UserEventEnum) src.Event).ToString()));
+				.ForMember(dest => dest.Event, opt => opt.MapFrom(src => ((UserEventEnum)src.Event).ToString()));
 
 			CreateMap<User, UserProfile>()
 				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => new Guid(src.Id)))
@@ -60,8 +62,6 @@ namespace HrMaxx.Common.Services.Mappers
 			CreateMap<UserRole, Role>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RoleId.ToString()))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.RoleName));
-
-
 
 		}
 	}

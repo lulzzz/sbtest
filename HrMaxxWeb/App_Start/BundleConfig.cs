@@ -43,7 +43,8 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap3-typeahead.js",
 				"~/Scripts/bootstrap/bootstrap-theme/coloradmin.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/metisMenu/metisMenu.js",
-				"~/Scripts/Toastr/toastr.min.js");
+				"~/Scripts/Toastr/toastr.min.js",
+				"~/Scripts/bootstrap-switch.min.js");
 			jquery.Builder = nullBuilder;
 			jquery.Transforms.Add(scriptTransformer);
 			jquery.Orderer = nullOrderer;
@@ -51,7 +52,10 @@ namespace HrMaxxWeb
 
 			// SlimScroll
 			bundles.Add(new ScriptBundle("~/bundles/slimScroll").Include(
-				"~/Scripts/bootstrap/bootstrap-theme/plugins/slimscroll/jquery.slimscroll.min.js"));
+				"~/Scripts/bootstrap/bootstrap-theme/plugins/slimscroll/jquery.slimscroll.min.js",
+				"~/Scripts/bootstrap/bootstrap-theme/plugins/parsley/parsley.min.js"
+				));
+
 
 			// Inspinia skin config script
 			bundles.Add(new ScriptBundle("~/bundles/skinConfig").Include(
@@ -98,7 +102,12 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/login-ctrl.js",
 				"~/Scripts/app/common/users/user-app.js",
 				"~/Scripts/app/common/users/user-repository.js",
-				"~/Scripts/app/common/users/userprofile-ctrl.js"
+				"~/Scripts/app/common/users/userprofile-ctrl.js",
+				"~/Scripts/app/common/directives/document-list.js",
+				"~/Scripts/app/common/directives/address.js",
+				"~/Scripts/app/common/directives/comment-list.js",
+				"~/Scripts/app/common/directives/contact-list.js",
+				"~/Scripts/app/common/directives/contact.js"
 
 				);
 			jquery.Builder = nullBuilder;

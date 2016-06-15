@@ -15,7 +15,7 @@
 			notificationRead: function (notificationId) {
 				var deferred = $q.defer();
 
-				commonServer.one('NotificationRead').one(notificationId).then(function (data) {
+				commonServer.one('NotificationRead').one(notificationId).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

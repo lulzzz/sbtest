@@ -17,11 +17,11 @@ namespace HrMaxx.Common.Models.DataModel
         public int Id { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
-        public int Event { get; set; }
-        public string EventObject { get; set; }
-        public System.DateTime Timestamp { get; set; }
-        public string EventObjectName { get; set; }
-        public string EventAction { get; set; }
         public string Module { get; set; }
+        public int Event { get; set; }
+        public string EventAction { get; set; }
+        public string EventObject { get; set; }
+        public string EventObjectName { get; set; }
+        public System.DateTime Timestamp { get; set; }
     }
 }

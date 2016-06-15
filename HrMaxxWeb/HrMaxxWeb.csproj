@@ -278,6 +278,7 @@
     <Content Include="Content\bootstrap-overrides.min.css">
       <DependentUpon>bootstrap-overrides.css</DependentUpon>
     </Content>
+    <Content Include="Content\bootstrap-switch.min.css" />
     <Content Include="Content\bootstrap-theme-overrides.css">
       <DependentUpon>bootstrap-theme-overrides.less</DependentUpon>
     </Content>
@@ -350,6 +351,11 @@
     <Content Include="Content\site.min.css">
       <DependentUpon>site.css</DependentUpon>
     </Content>
+    <Content Include="Content\templates\contact.html" />
+    <Content Include="Content\templates\address.html" />
+    <Content Include="Content\templates\comment-list.html" />
+    <Content Include="Content\templates\contact-list.html" />
+    <Content Include="Content\templates\document-list.html" />
     <Content Include="Content\toastr\toastr.min.css" />
     <Content Include="Content\xeditable\xeditable.css" />
     <Content Include="favicon.ico" />
@@ -1143,6 +1149,11 @@
     <Content Include="Scripts\app\common\common-config.template.js" />
     <Content Include="Scripts\app\common\common-repository.js" />
     <Content Include="Scripts\app\common\common.js" />
+    <Content Include="Scripts\app\common\directives\contact.js" />
+    <Content Include="Scripts\app\common\directives\address.js" />
+    <Content Include="Scripts\app\common\directives\contact-list.js" />
+    <Content Include="Scripts\app\common\directives\comment-list.js" />
+    <Content Include="Scripts\app\common\directives\document-list.js" />
     <Content Include="Scripts\app\common\eventlogs\eventlog-repository.js" />
     <Content Include="Scripts\app\common\eventlogs\userEventLog-ctrl.js" />
     <Content Include="Scripts\app\common\eventlogs\userEventLog.js" />
@@ -1159,6 +1170,7 @@
     <Content Include="Scripts\bootstrap\bootstrap-editable\bootstrap-editable.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.min.js" />
+    <Content Include="Scripts\bootstrap\bootstrap-theme\plugins\parsley\parsley.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap3-typeahead.js" />

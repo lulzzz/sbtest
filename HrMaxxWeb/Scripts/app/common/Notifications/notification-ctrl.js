@@ -1,6 +1,6 @@
 ﻿notification.controller('notificationCtrl', [
-	'$scope', 'notificationRepository', 'zionAPI', '$window',
-	function($scope, notificationRepository, authService, zionAPI, $window) {
+	'$scope', 'notificationRepository','authService', 'zionAPI', '$window','$interval',
+	function($scope, notificationRepository, authService, zionAPI, $window, $interval) {
 		$scope.zionAPI = zionAPI;
 		$scope.authService = authService;
 		$scope.myNotifications = [];
@@ -19,12 +19,7 @@
 		};
 		$scope.NotificationRead = function(notification) {
 			notificationRepository.notificationRead(notification.notificationID).then(function(data) {
-				if (notification.type === "Action Assigned") {
-					$window.location.href = zionAPI.Web + 'SHEQ/Rectifications/MyActions#/?ActionId=' + $scope.getActionId(notification);
-				} else {
-					$window.location.href = zionAPI.Web + 'Ericsson/Worksite/Index#/?ProjectId=' + $scope.getProjectId(notification) + '&WorkSiteId=' + $scope.getWorkSiteId(notification) + '&InspectionId=' + $scope.getInspectionId(notification);
-				}
-				return false;
+				$scope.refreshNotifications();
 			}, function(error) {
 				//$scope.addAlert('Unable to read the notification.', 'danger');
 			});
@@ -48,10 +43,11 @@
 		};
 
 		function _init() {
-			//if ($scope.authService.authentication.isAuth)
-			//	$scope.getMyNotifications();
+			if ($scope.authService.authentication.isAuth)
+				$scope.getMyNotifications();
 		};
 
 		_init();
+		$interval($scope.refreshNotifications, 60000);
 	}
 ]);

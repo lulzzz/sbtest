@@ -47,13 +47,14 @@
 			@RenderBody()
 		</div>
 		<!-- end #content -->
+		<!-- Footer -->
+		<div id="footer" class="footer">
+			@Html.Partial("_Footer")
 		</div>
-		
-		
-	<!-- Footer -->
-	<div id="footer" class="footer">
-	@Html.Partial("_Footer")	
+
 	</div>
+		
+
 	<div class="modal fade" id="modal-dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -81,7 +82,6 @@
 		$(document).ready(function() {
 			App.init();
 			angular.bootstrap(document.getElementById('dvNotifications'), ['notification']);
-			
 		});
 	</script>
 

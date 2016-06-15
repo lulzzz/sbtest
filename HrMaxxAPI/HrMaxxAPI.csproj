@@ -240,6 +240,7 @@
     <Compile Include="Code\Mappers\CommonResourceMapperProfile.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\DocumentController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\HrMaxxController.cs" />
     <Compile Include="Controllers\HrMaxxRoutes.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
@@ -252,6 +253,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Resources\BaseResource.cs" />
+    <Compile Include="Resources\Common\ContactResource.cs" />
+    <Compile Include="Resources\Common\CommentResource.cs" />
+    <Compile Include="Resources\Common\EntityDocumentResource.cs" />
     <Compile Include="Resources\Common\FileAttachmentResource.cs" />
     <Compile Include="Resources\Common\NotificationsResource.cs" />
     <Compile Include="Resources\EntityIDResource.cs" />
@@ -265,7 +269,9 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

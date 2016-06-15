@@ -1,0 +1,49 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading">
+			<div class="panel-heading-btn">
+				<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+				<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" ng-click="isChangePassword = !isChangePassword"><i class="fa fa-times"></i></a>
+			</div>
+			<h4 class="panel-title">{{heading}}</h4>
+		</div>
+		<div class="panel-body table-bordered">
+			<div class="row">
+				<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+			</div>
+
+			<div ng-show="list.length===0" class=" row border-left border-bottom border-right">
+				No comments found
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<div class="collapse.in" id="commentsSection">
+					<div class="detailBox">
+						<div class="actionBox">
+							<ul class="commentList">
+								<li ng-repeat="comment in list">
+									<div class="commentText">
+										<p class="">{{comment.content}}</p> <span class="date sub-text">by {{comment.userName}} on {{comment.timeStamp | date:'dd/MM/yyyy HH:mm:ssa'}}</span>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="divider"></div>
+			<div class="row" >
+				<div class="col-sm-10">
+					<textarea class="textarea form-control" id="wysihtml5" placeholder="type your comments" rows="3" ng-model="comment.content"></textarea>
+				</div>
+				<div class="col-sm-2">
+					<button class="btn btn-sm btn-info p-20" ng-click="saveComment()" ng-show="comment">Add</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end panel -->
+</div>
+
+

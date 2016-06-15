@@ -82,8 +82,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Documents\DocumentRepository.cs" />
-    <Compile Include="Documents\IDocumentRepository.cs" />
+    <Compile Include="Common\CommonRepository.cs" />
+    <Compile Include="Common\ICommonRepository.cs" />
     <Compile Include="Files\FileRepository.cs" />
     <Compile Include="Files\IFileRepository.cs" />
     <Compile Include="Mementos\IMementoDataRepository.cs" />

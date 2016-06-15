@@ -1,0 +1,57 @@
+﻿<div class="row col-sm-12">
+	
+		<div class="row">
+			<div class="form-group col-sm-4" show-errors>
+				<label for="firstname">First Name</label>
+				<input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" ng-model="data.firstName" required/>
+				
+			</div>
+			<div class="form-group col-sm-2">
+				<label for="middleinitial">M.I</label>
+				<input type="text" id="middleinitial" class="form-control" placeholder="Middle Initial" ng-model="data.middleInitial" />
+
+			</div>
+			<div class="form-group col-sm-4" show-errors>
+				<label for="lastname">Last Name</label>
+				<input type="text" id="lastname" name="lastname" class="form-control" placeholder="Last Name" ng-model="data.lastName" required/>
+				
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="form-group" show-errors>
+					<label for="email">Email</label>
+					<input type="email" id="email" name="email" class="form-control" placeholder="Email Address" ng-model="data.email" required />
+				</div>
+				<div class="form-group">
+					<label for="isprimary">IsPrimary </label>
+					<input id="isprimary" type="checkbox" ng-model="data.isPrimary" bootstrap-switch on-text="Yes" off-text="No" />
+
+				</div>
+
+			</div>
+			<div class="col-sm-4 col-sm-offset-1">
+				<div class="form-group">
+					<div>
+						<label for="phone">Phone</label>
+						<input type="text" id="phone" class="form-control" placeholder="Phone Number" ng-model="data.phone" />
+					</div>
+					<div>
+						<label for="mobile">Mobile</label>
+						<input type="text" id="mobile" class="form-control" placeholder="Mobile" ng-model="data.mobile" />
+					</div>
+					<div>
+						<label for="fax">Fax</label>
+						<input type="text" id="fax" class="form-control" placeholder="Fax" ng-model="data.fax" />
+					</div>
+
+				</div>
+
+
+			</div>
+
+		</div>
+		<address data="data.address" type="0" sourcetypeid="sourceTypeId" sourceid="data.id"></address>
+	</form>
+
+</div>

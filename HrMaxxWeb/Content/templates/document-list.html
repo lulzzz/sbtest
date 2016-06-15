@@ -1,0 +1,88 @@
+﻿	<div class="row">
+		<script type="text/ng-template" id="DocumentView.html">
+			<a ng-href="{{getDocumentUrl()}}" target="_blank" />
+		</script>
+		<!-- begin panel -->
+		<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+			<div class="panel-heading">
+				<div class="panel-heading-btn">
+					<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+					<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" ng-click="isChangePassword = !isChangePassword"><i class="fa fa-times"></i></a>
+				</div>
+				<h4 class="panel-title">{{heading}}</h4>
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+				</div>
+
+				<div ng-show="list.length===0">
+					No records found
+				</div>
+				<div class="row" ng-show="list.length>0">
+					<table ng-table="tableParams" id="grdDocuments" class="table" show-filter="true" template-pagination="custom/pager">
+						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="ShowAvailable(item)">
+							<td data-title="' No'" class="col-sm-1">
+								{{$index+1}}
+							</td>
+							<td data-title=" 'Name' " filter="{ 'documentName': 'text' }" sortable=" 'documentName' " class="col-sm-3">
+								{{item.documentName}}.{{item.documentExtension}}
+							</td>
+							<td class="col-sm-2">
+								<a ng-href="{{getDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-primary">View</button></a>
+								<button class="btn btn-sm btn-danger" ng-click="deleteDocument(item)">Delete</button>
+							</td>
+
+						</tr>
+
+					</table>
+					<script type="text/ng-template" id="custom/pager">
+						<ul class="pager ng-cloak">
+							<li ng-repeat="page in pages"
+									ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+									ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+								<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+								<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+							</li>
+							<li>
+								<div class="btn-group">
+									<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+									<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+									<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+									<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								</div>
+							</li>
+						</ul>
+					</script>
+				</div>
+				<div class="row">
+					<div class="col-sm-3">
+						<div ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;">
+							<button class="btn btn-success attach-button " id="attachments">
+								<span class="glyphicon glyphicon-paperclip mouse-over-pointer"></span>Attach
+							</button>
+							<input type="file" ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" multiple="multiple" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;">
+						</div>
+					</div>
+					<button class="glyphicon glyphicon-upload btn btn-primary btn-sm" ng-click="uploadAll()" ng-show="files.length>1">Upload All</button>
+					<button class="glyphicon glyphicon-rub btn btn-default btn-sm" ng-click="files=[]" ng-show="files.length>0">Clear All</button>
+				</div>
+				<div class="row" ng-repeat="file in files track by $index">
+					<div class="col-sm-4">{{file.doc.file.name}}</div>
+					<div class="col-sm-4"><progressbar animate="true" value="file.currentProgress" type="success"><b>{{file.currentProgress}}%</b></progressbar></div>
+					<div class="col-sm-4">
+						<div class="form-group">
+							<i class="fa fa-upload fa-lg" ng-click="uploadDocument($index)" ng-show="!file.doc.uploaded">upload</i>
+							<i class="fa fa-remove fa-lg" ng-click="removeFile($index)">delete</i>
+						</div>
+						
+					</div>
+					
+				</div>
+				
+			</div>
+		</div>
+		<!-- end panel -->
+	</div>
+	
+

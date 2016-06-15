@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using Autofac;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Services.Common;
 using HrMaxx.Common.Services.Document;
 using HrMaxx.Common.Services.Mementos;
 using HrMaxx.Common.Services.Notifications;
@@ -54,6 +55,11 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 			builder.RegisterType<UserService>()
 				.As<IUserService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<CommonService>()
+				.As<ICommonService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

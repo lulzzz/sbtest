@@ -2,30 +2,33 @@
 using System.Collections.Generic;
 using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
-using HrMaxx.Common.Repository.Documents;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.Infrastructure.Transactions;
+using MassTransit.Configurators;
 
 namespace HrMaxx.Common.Services.Document
 {
 	public class DocumentService : BaseService, IDocumentService
 	{
-		private readonly IDocumentRepository _documentRepository;
+		private readonly ICommonService _commonService;
 		private readonly IFileRepository _fileRepository;
 
-		public DocumentService(IFileRepository fileRepository, IDocumentRepository documentRepository)
+		public DocumentService(IFileRepository fileRepository, ICommonService commonService)
 		{
 			_fileRepository = fileRepository;
-			_documentRepository = documentRepository;
+			_commonService = commonService;
 		}
 
-		public List<DocumentDto> GetAllDocuments()
+		public IList<DocumentDto> GetAllDocuments()
 		{
 			try
 			{
-				return _documentRepository.GetAllDocuments();
+				return _commonService.GetAllTargets<DocumentDto>(EntityTypeEnum.Document);
 			}
 			catch (Exception e)
 			{
@@ -35,42 +38,7 @@ namespace HrMaxx.Common.Services.Document
 			}
 		}
 
-		public DocumentDto GetDocumentInfo(Guid documentID)
-		{
-			try
-			{
-				DocumentDto document = _documentRepository.GetDocument(documentID);
-				document.DocumentPath = _fileRepository.GetDocumentLocation(document.DocumentPath);
-				return document;
-			}
-			catch (Exception e)
-			{
-				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, "Document");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		public EntityIDDto SaveDocument(SaveDocumentDto document)
-		{
-			try
-			{
-				if (document.FileName.ToLower().Contains(".jpg") || document.FileName.ToLower().Contains(".jpeg") ||
-				    document.FileName.ToLower().Contains(".png") || document.FileName.ToLower().Contains(".gif") ||
-				    document.FileName.ToLower().Contains(".tif") || document.FileName.ToLower().Contains(".tiff") ||
-				    document.FileName.ToLower().Contains(".bmp"))
-				{
-					document.FileName = document.FileName.Split('.')[0] + ".jpg";
-				}
-				return _documentRepository.SaveDocument(document);
-			}
-			catch (Exception e)
-			{
-				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, "Document");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
+	
 
 		public void MoveDocument(MoveDocumentDto document, bool addWatermark = false)
 		{
@@ -80,18 +48,19 @@ namespace HrMaxx.Common.Services.Document
 		}
 
 
-		public FileDto GetDocument(Guid documentID)
+		public FileDto GetDocument(Guid documentId)
 		{
 			try
 			{
-				DocumentDto document = _documentRepository.GetDocument(documentID);
-				byte[] fileData = _fileRepository.GetFile(documentID + "." + document.DocumentExtension);
+				var document = _commonService.GetTargetEntity<DocumentDto>(EntityTypeEnum.Document, documentId);
+				byte[] fileData = _fileRepository.GetFile(documentId + "." + document.DocumentExtension);
 				return new FileDto
 				{
-					DocumentId = documentID,
+					DocumentId = documentId,
 					Data = fileData,
 					Filename = document.Filename,
-					DocumentExtension = document.DocumentExtension
+					DocumentExtension = document.DocumentExtension,
+					MimeType = document.MimeType
 				};
 			}
 			catch (Exception e)
@@ -107,20 +76,6 @@ namespace HrMaxx.Common.Services.Document
 			try
 			{
 				return _fileRepository.GetFileBytesByPath(documentPath);
-			}
-			catch (Exception e)
-			{
-				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, "File");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		public void DeleteDestinationFile(string documentPath)
-		{
-			try
-			{
-				_fileRepository.DeleteDestinationFile(documentPath);
 			}
 			catch (Exception e)
 			{
@@ -150,7 +105,7 @@ namespace HrMaxx.Common.Services.Document
 			return _fileRepository.ZipDirectory(source, fileName);
 		}
 
-		public List<string> GetStoredFiles()
+		public IList<string> GetStoredFiles()
 		{
 			return _fileRepository.GetDirectoryFiles();
 		}
@@ -190,19 +145,65 @@ namespace HrMaxx.Common.Services.Document
 			
 		}
 
-		public void DeleteDocument(Guid documentId)
+		public IList<DocumentDto> GetEntityDocuments(int entityType, Guid entityId)
 		{
 			try
 			{
-				_documentRepository.DeleteDocument(documentId);
+				return _commonService.GetRelatedEntities<DocumentDto>((EntityTypeEnum) entityType, EntityTypeEnum.Document,
+					entityId);
 			}
 			catch (Exception e)
 			{
-				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " delete document");
+				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" get documents for entity {0} {1}", entityType, entityId));
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public DocumentDto AddEntityDocument(EntityDocumentAttachment doc)
+		{
+			try
+			{
+				DocumentDto document = Mapper.Map<EntityDocumentAttachment, DocumentDto>(doc);
+				
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					MoveDocument(new MoveDocumentDto
+					{
+						SourceFileName = doc.SourceFileName,
+						DestinationFileName = document.Id + "." + doc.FileExtension
+					});
+					_commonService.AddEntityRelation<DocumentDto>((EntityTypeEnum) doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
+						document);
+					txn.Complete();
+				}
+				return document;
+
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" save document for entity {0}-{1}", doc.EntityTypeId, doc.EntityId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void DeleteEntityDocument(int entityTypeId, Guid entityId, Guid documentId)
+		{
+			try
+			{
+				var doc = _commonService.GetTargetEntity<DocumentDto>(EntityTypeEnum.Document, documentId);
+				_commonService.DeleteEntityRelation((EntityTypeEnum)entityTypeId, EntityTypeEnum.Document, entityId, documentId);
+				_fileRepository.DeleteDestinationFile(doc.Id + "." + doc.DocumentExtension);
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" save document for entity {0}-{1}-{2}", entityTypeId, entityId, documentId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 
 	
 	}

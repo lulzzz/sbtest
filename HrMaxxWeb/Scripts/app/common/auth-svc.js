@@ -23,7 +23,7 @@ common.factory('authService', [
 
 				_authentication.isAuth = true;
 				_authentication.userName = loginData.username;
-
+				
 				deferred.resolve(response);
 
 			}, function(err, status) {
@@ -46,6 +46,9 @@ common.factory('authService', [
 			if (authData) {
 				_authentication.isAuth = true;
 				_authentication.userName = authData.userName;
+				commonRepository.getCountries().then(function (data) {
+					localStorageService.set('countries', data);
+				});
 			}
 
 		};
