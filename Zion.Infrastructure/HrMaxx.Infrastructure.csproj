@@ -96,7 +96,7 @@
     <Compile Include="Attributes\DoNotRecordMessageInMessageStoreAttribute.cs" />
     <Compile Include="Attributes\MemoryBusMessageAttribute.cs" />
     <Compile Include="Attributes\ServiceBusMessageAttribute.cs" />
-    <Compile Include="Attributes\ZionSecurityAttribute.cs" />
+    <Compile Include="Attributes\HrMaxxSecurityAttribute.cs" />
     <Compile Include="Enums\Enumerations.cs" />
     <Compile Include="Services\BaseService.cs" />
     <Compile Include="Enums\ClaimsMapping.cs" />
@@ -108,7 +108,7 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\TestConnectionExtensions.cs" />
     <Compile Include="Helpers\TestInfrastructure.cs" />
-    <Compile Include="Helpers\ZionSecurity.cs" />
+    <Compile Include="Helpers\HrMaxxSecurity.cs" />
     <Compile Include="Mapping\IMapper.cs" />
     <Compile Include="Mapping\Mapper.cs" />
     <Compile Include="Mapping\MappingModule.cs" />

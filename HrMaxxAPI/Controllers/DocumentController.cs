@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.Common;
 
@@ -18,7 +19,7 @@ namespace HrMaxxAPI.Controllers
 	public class DocumentController : BaseApiController
 	{
 		private readonly IDocumentService _documentService;
-
+		
 		public DocumentController(IDocumentService documentService)
 		{
 			_documentService = documentService;
@@ -36,6 +37,39 @@ namespace HrMaxxAPI.Controllers
 			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
 			{
 				FileName = document.Filename
+			};
+			return response;
+		}
+
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route(HrMaxxRoutes.DocumentById)]
+		public HttpResponseMessage GetDocumentById(Guid documentId, string extension, string filename)
+		{
+			FileDto document = MakeServiceCall(() => _documentService.GetDocumentById(documentId, extension, filename), "Get Document By ID", true);
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };
+			switch (document.DocumentExtension)
+			{
+				case "jpg":
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpg");
+					break;
+				case "png":
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+					break;
+				case "gif":
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/gif");
+					break;
+				case "pdf":
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+					break;
+				default:
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+					break;
+			}
+
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = document.Filename + "." + extension
 			};
 			return response;
 		}
@@ -70,6 +104,7 @@ namespace HrMaxxAPI.Controllers
 				});
 			}
 		}
+		
 		private async Task<EntityDocumentResource> ProcessMultipartContent()
 		{
 			if (!Request.Content.IsMimeMultipartContent())

@@ -1,0 +1,93 @@
+﻿<div class="row">
+	<div class="panel panel-inverse col-sm-12">
+		<div class="panel-body" ng-bind-html="data.profile" style="height:400px">
+
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<div class="panel panel-inverse">
+			<div class="panel-heading">
+				News & Promo
+			</div>
+			<div class="panel-body" style="height:400px">
+				
+				<ul ng-show="newsfeed.length>0">
+					<li ng-repeat="news in newsfeed | orderBy:'lastModified':true">
+						<div class="commentText">
+							<p class="">{{news.newsContent}}</p> <span class="date sub-text">on {{news.lastModified | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
+						</div>
+					</li>
+				</ul>
+				<div ng-show="newsfeed.length===0" class=" row border-left border-bottom border-right">
+					No news found
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-sm-4">
+		<div class="panel panel-inverse">
+			<div class="panel-heading">
+				Services
+			</div>
+			<div class="panel-body" style="height:400px" ng-bind-html="data.services">
+
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-sm-4">
+		<div class="panel panel-inverse">
+			<div class="panel-heading">
+				Contact Us
+			</div>
+			<div class="panel-body" style="height:400px">
+				<div class="row">
+					<div class="col-sm-8">
+						<table class="table table-profile">
+							<tbody>
+								<tr>
+									<td class="field">Contact Hours</td>
+									<td>
+										<div class="col-sm-12" ng-repeat="contacthour in data.contactHours">
+											<pre>{{contacthour.description}}: <span ng-show="contacthour.isClosed">Closed</span><span ng-show="!contacthour.isClosed">{{contacthour.from | date:'shortTime'}} - {{contacthour.to | date:'shortTime'}}</span></pre>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td class="field">Address</td>
+									<td>
+										<div>{{hostaddress.addressLine1}}</div>
+										<div>{{hostaddress.city}}, {{getStateCode()}} {{hostaddress.zip}} {{hostaddress.zipExtension}}</div>
+									</td>
+								</tr>
+								<tr class="divider">
+									<td colspan="2"><hr /></td>
+								</tr>
+								<tr>
+									<td class="field">Tel</td>
+									<td><i class="fa fa-phone fa-lg m-r-5"></i> {{ data.telephone? (data.telephone | tel) : 'empty' }}</td>
+								</tr>
+								<tr>
+									<td class="field">Fax</td>
+									<td><i class="fa fa-fax fa-lg m-r-5"></i> {{ data.fax ? (data.fax | tel) : 'empty' }}</td>
+								</tr>
+								<tr>
+									<td class="field">Email</td>
+									<td><i class="fa fa-envelope fa-lg m-r-5"></i> {{ data.email || 'empty' }}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="col-sm-4">
+						<img ng-src="{{getDocumentUrl(data.contact)}}" class=" pull-right" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+
+</div>

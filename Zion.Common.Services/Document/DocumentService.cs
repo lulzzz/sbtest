@@ -204,7 +204,26 @@ namespace HrMaxx.Common.Services.Document
 			}
 		}
 
-
-	
+		public FileDto GetDocumentById(Guid documentId, string extension, string fileName)
+		{
+			try
+			{
+				byte[] fileData = _fileRepository.GetFile(documentId + "." + extension);
+				return new FileDto
+				{
+					DocumentId = documentId,
+					Data = fileData,
+					Filename = fileName,
+					DocumentExtension = extension,
+					MimeType = string.Empty
+				};
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, "File");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

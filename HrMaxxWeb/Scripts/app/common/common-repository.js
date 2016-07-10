@@ -1,6 +1,6 @@
 common.factory('commonRepository', [
-	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'commonServer',
-	function ($http, zionAPI, zionPaths, $q, upload, commonServer) {
+	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'commonServer', '$filter', 'Entities',
+	function ($http, zionAPI, zionPaths, $q, upload, commonServer, $filter, Entities) {
 		return {
 			token: function(loginData) {
 				var data = "grant_type=password&username=" + loginData.username + "&password=" + loginData.password;
@@ -97,6 +97,16 @@ common.factory('commonRepository', [
 				});
 				return deferred.promise;
 			},
+			saveAddress: function (address) {
+				var deferred = $q.defer();
+
+				commonServer.all('Common/SaveAddress').post(address).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
 			deleteRelationship: function(sourceTypeId, targetTypeId, sourceId, targetId) {
 				var deferred = $q.defer();
 
@@ -105,6 +115,126 @@ common.factory('commonRepository', [
 				}, function (error) {
 					deferred.reject(error);
 				});
+				return deferred.promise;
+			},
+			getRelatedEntities: function (sourceTypeId, targetTypeId, sourceId) {
+				var deferred = $q.defer();
+				var entity = $filter('filter')(Entities, { entityTypeId: targetTypeId })[0];
+				if (entity) {
+					
+					commonServer.one(entity.getList + '/' + sourceTypeId + '/' + sourceId).get().then(function (data) {
+						deferred.resolve(data);
+					}, function (error) {
+						deferred.reject(error);
+					});
+					
+				} else {
+					deferred.resolve(data);
+				}
+				return deferred.promise;
+			},
+			getFirstRelatedEntity: function (sourceTypeId, targetTypeId, sourceId) {
+				var deferred = $q.defer();
+				var entity = $filter('filter')(Entities, { entityTypeId: targetTypeId })[0];
+				if (entity) {
+
+					commonServer.one(entity.first + '/' + sourceTypeId + '/' + sourceId).get().then(function (data) {
+						deferred.resolve(data);
+					}, function (error) {
+						deferred.reject(error);
+					});
+
+				} else {
+					deferred.resolve(data);
+				}
+				return deferred.promise;
+			},
+			getHostList: function () {
+				var deferred = $q.defer();
+				commonServer.one('Host').getList().then(function (data) {
+						deferred.resolve(data);
+					}, function (error) {
+						deferred.reject(error);
+					});
+
+				return deferred.promise;
+			},
+			getNewsfeed: function (audienceScope, audienceId) {
+				var deferred = $q.defer();
+				var url = 'Common/Newsfeed/' + audienceScope;
+				if (audienceId)
+					url += '/' + audienceId;
+				commonServer.one( url ).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getUserNews: function () {
+				var deferred = $q.defer();
+				var url = 'Common/UserNewsfeed/';
+				commonServer.one(url).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveNews: function (news) {
+				var deferred = $q.defer();
+				commonServer.all('Common/Newsfeed').post(news).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getNewsfeedMetaData: function (news) {
+				var deferred = $q.defer();
+				commonServer.one('Host/NewsMetaData').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getUsers: function (hostId, companyId) {
+				var deferred = $q.defer();
+				var url = "Users";
+				if (hostId)
+					url += "/" + hostId;
+				if (companyId)
+					url += "/" + companyId;
+				commonServer.one(url).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			saveUser: function(user) {
+				var deferred = $q.defer();
+				commonServer.all('SaveUser').post(user).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			resetPassword: function (email) {
+				var deferred = $q.defer();
+				commonServer.one('UserPasswordReset').one(email).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
 				return deferred.promise;
 			}
 		};

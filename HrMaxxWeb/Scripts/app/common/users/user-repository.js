@@ -2,7 +2,7 @@
 	'$q', 'commonServer',
 	function($q, commonServer) {
 		return {
-			
+
 			getUserProfile: function (userId) {
 				var deferred = $q.defer();
 

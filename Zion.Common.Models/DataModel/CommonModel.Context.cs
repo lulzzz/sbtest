@@ -32,5 +32,6 @@ namespace HrMaxx.Common.Models.DataModel
         public virtual DbSet<EntityType> EntityTypes { get; set; }
         public virtual DbSet<EntityRelation> EntityRelations { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<News> News { get; set; }
     }
 }

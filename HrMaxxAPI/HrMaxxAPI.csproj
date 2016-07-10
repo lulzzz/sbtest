@@ -237,10 +237,17 @@
     <Compile Include="Code\IOC\ControllerModule.cs" />
     <Compile Include="Code\IOC\IOCBootstrapper.cs" />
     <Compile Include="Code\IOC\LoggingModule.cs" />
+    <Compile Include="Code\IOC\OnlinePayroll\CommandHandlerModule.cs" />
+    <Compile Include="Code\IOC\OnlinePayroll\MappingModule.cs" />
+    <Compile Include="Code\IOC\OnlinePayroll\RepositoriesModule.cs" />
+    <Compile Include="Code\IOC\OnlinePayroll\ServicesModule.cs" />
+    <Compile Include="Code\Mappers\OnlinePayrollResourceMapperProfile.cs" />
     <Compile Include="Code\Mappers\CommonResourceMapperProfile.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\DocumentController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\Hosts\HostController.cs" />
+    <Compile Include="Controllers\Hosts\HostRoutes.cs" />
     <Compile Include="Controllers\HrMaxxController.cs" />
     <Compile Include="Controllers\HrMaxxRoutes.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
@@ -253,12 +260,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Resources\BaseResource.cs" />
+    <Compile Include="Resources\Common\AddressResource.cs" />
+    <Compile Include="Resources\Common\UserResource.cs" />
     <Compile Include="Resources\Common\ContactResource.cs" />
     <Compile Include="Resources\Common\CommentResource.cs" />
     <Compile Include="Resources\Common\EntityDocumentResource.cs" />
     <Compile Include="Resources\Common\FileAttachmentResource.cs" />
+    <Compile Include="Resources\Common\NewsResource.cs" />
     <Compile Include="Resources\Common\NotificationsResource.cs" />
     <Compile Include="Resources\EntityIDResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\HostHomePageDocumentResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\HomePageResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\HostResource.cs" />
     <Compile Include="Resources\VersionResource.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -294,6 +307,22 @@
     <None Include="Properties\PublishProfiles\test.pubxml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
+      <Project>{58f29bb7-1c20-4138-8526-819454361b99}</Project>
+      <Name>HrMaxx.OnlinePayroll.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.Models\HrMaxx.OnlinePayroll.Models.csproj">
+      <Project>{47df73ff-0053-4e97-9477-06ce38ad3020}</Project>
+      <Name>HrMaxx.OnlinePayroll.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.Repository\HrMaxx.OnlinePayroll.Repository.csproj">
+      <Project>{519f5a7e-cb1b-4bfa-8df5-441507365547}</Project>
+      <Name>HrMaxx.OnlinePayroll.Repository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.Services\HrMaxx.OnlinePayroll.Services.csproj">
+      <Project>{2177db95-b80f-4356-bba6-c089112c84cf}</Project>
+      <Name>HrMaxx.OnlinePayroll.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Zion.Bus\HrMaxx.Bus.csproj">
       <Project>{b2a5cffe-f357-4687-ac08-3a005872e300}</Project>
       <Name>HrMaxx.Bus</Name>

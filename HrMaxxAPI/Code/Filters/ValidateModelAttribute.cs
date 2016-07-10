@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using HrMaxx.Common.Models;
 using HrMaxx.Infrastructure.Security;
 using HrMaxxAPI.Resources;
 
@@ -26,7 +27,7 @@ namespace HrMaxxAPI.Code.Filters
 			}
 			if (actionContext.Request.Method == HttpMethod.Post)
 			{
-				if (actionContext.ActionArguments.All(arg => typeof (BaseRestResource).IsAssignableFrom(arg.Value.GetType())))
+				if (actionContext.ActionArguments.All(arg => typeof(BaseRestResource).IsAssignableFrom(arg.Value.GetType())) || actionContext.ActionArguments.All(arg => typeof(BaseEntityDto).IsAssignableFrom(arg.Value.GetType())))
 				{
 					foreach (var arg in actionContext.ActionArguments)
 					{

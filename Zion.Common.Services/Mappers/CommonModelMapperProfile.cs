@@ -9,6 +9,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Mapping;
 using Magnum;
+using News = HrMaxx.Common.Models.Dtos.News;
 
 namespace HrMaxx.Common.Services.Mappers
 {
@@ -30,8 +31,8 @@ namespace HrMaxx.Common.Services.Mappers
 				.ForMember(dest => dest.MimeType, opt => opt.MapFrom(src => src.MimeType))
 				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.FileExtension));
 
-			CreateMap<Notification, NotificationDto>();
-			CreateMap<NotificationDto, Notification>();
+			CreateMap<Models.DataModel.Notification, NotificationDto>();
+			CreateMap<NotificationDto, Models.DataModel.Notification>();
 
 
 			CreateMap<UserEventLogEntry, UserEventLog>()
@@ -62,6 +63,19 @@ namespace HrMaxx.Common.Services.Mappers
 			CreateMap<UserRole, Role>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.RoleId.ToString()))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.RoleName));
+
+			CreateMap<News, Models.DataModel.News>()
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
+			CreateMap<Models.DataModel.News, News>()
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy));
+
+			CreateMap<User, UserModel>()
+				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => new Guid(src.Id)))
+				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active))
+				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));
+				
 
 		}
 	}

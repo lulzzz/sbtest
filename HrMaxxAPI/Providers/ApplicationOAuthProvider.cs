@@ -36,7 +36,12 @@ namespace HrMaxxAPI.Providers
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;
             }
-
+						if (!user.Active)
+						{
+							context.SetError("invalid_grant", "The user is InActive. Please contact your administrator.");
+							return;
+		        
+						}
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager);
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager);
 

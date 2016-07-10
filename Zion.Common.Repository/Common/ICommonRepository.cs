@@ -16,5 +16,8 @@ namespace HrMaxx.Common.Repository.Common
 		T SaveEntityRelation<T>(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, T targetObject);
 		void SaveTargetList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId, T list);
 		IList<T> GetEntityRelationList<T>(object source, object target, Guid sourceId);
+		List<News> GetNewsListforUser(int? audienceScope, Guid? audienceId);
+		void SaveNewsfeedItem(News news);
+		List<News> GetUserNewsfeed(Guid host, Guid company, string userId);
 	}
 }

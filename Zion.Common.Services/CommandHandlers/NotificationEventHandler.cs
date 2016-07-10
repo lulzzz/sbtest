@@ -11,28 +11,31 @@ using MassTransit;
 
 namespace HrMaxx.Common.Services.CommandHandlers
 {
-	public class ContactEventHandler : BaseService, Consumes<ContactEvent>.All
+	public class NotificationEventHandler : BaseService, Consumes<Notification>.All
 	{
 		public readonly INotificationService _NotificationService;
 		public readonly IUserService _userService;
+		public readonly string _baseUrl;
 
-		public ContactEventHandler(INotificationService notificationService, IUserService userService)
+		public NotificationEventHandler(INotificationService notificationService, IUserService userService, string baseUrl)
 		{
 			_NotificationService = notificationService;
 			_userService = userService;
+			_baseUrl = baseUrl;
 		}
-		public void Consume(ContactEvent event1)
+		public void Consume(Notification event1)
 		{
 			var notificationList = new List<NotificationDto>();
-			var notifyUsers = _userService.GetUsersByRoleAndId(RoleTypeEnum.Master, null);
+			var notifyUsers = _userService.GetUsersByRoleAndId(event1.Roles, null);
 			notifyUsers.ForEach(u => notificationList.Add(new NotificationDto
 			{
 				CreatedOn = DateTime.Now,
 				IsRead = false,
 				LoginId = u.ToString(),
 				NotificationId = CombGuid.Generate(),
-				Text = string.Format("Contact {0} has been updated by {1}", event1.Contact.FullName, event1.Source),
-				Type = NotificationTypeEnum.Info.GetEnumDescription()
+				Text = event1.Text,
+				Type = NotificationTypeEnum.Info.GetEnumDescription(),
+				MetaData = string.Format("{0}{1}", _baseUrl, event1.ReturnUrl)
 			}));
 			_NotificationService.CreateNotifications(notificationList);
 		}

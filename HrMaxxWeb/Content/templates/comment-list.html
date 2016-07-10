@@ -21,7 +21,7 @@
 					<div class="detailBox">
 						<div class="actionBox">
 							<ul class="commentList">
-								<li ng-repeat="comment in list">
+								<li ng-repeat="comment in list | orderBy:'timeStamp':true">
 									<div class="commentText">
 										<p class="">{{comment.content}}</p> <span class="date sub-text">by {{comment.userName}} on {{comment.timeStamp | date:'dd/MM/yyyy HH:mm:ssa'}}</span>
 									</div>

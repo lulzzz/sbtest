@@ -1,0 +1,188 @@
+﻿<div class="col-sm-12">
+	
+		<div class="col-sm-12">
+			<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+		</div>
+
+		<div class="panel panel-info col-sm-12">
+			<div class="panel-heading">
+				Images
+			</div>
+			<div class="panel-body">
+				<div class="col-sm-6 form-group">
+					<div class="col-sm-6">
+						<label class="control-label">Logo</label>
+						<div class="thumbnail col-sm-6" ng-show="data && data.logo">
+							<img ng-src="{{getDocumentUrl(data.logo)}}" class="photoThumbnail" />
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="col-xs-9">
+							<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files, 0)" ng-multiple="false" ng-file-drop-available="dropSupported=true" ng-file-drag-over-class="dragOverClass($event)" ng-file-drag-over-delay="100">
+								<p class="hint" ng-hide="logoImage">Drag 'n' Drop attachments here</p>
+								<p class="hint" ng-hide="logoImage"><span class="glyphicon glyphicon-cloud-upload file-upload-icon"></span></p>
+								<div class="col-xs-12 question-files" ng-if="logoImage">
+									<div class="thumbnail">
+										<img ng-src="{{getDocumentUrl(logoImage)}}" class="photoThumbnail" />
+										<span class="glyphicon glyphicon-remove" ng-click="removeLogo()" ng-show="logoImage.doc.uploaded === false"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-3">
+							<div ng-file-select="onFileSelect($files, 0)" accept="image/*" data-multiple="false" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;">
+								<button class="btn btn-success btn-circle attach-button"><span class="glyphicon glyphicon-paperclip"></span> Attach</button>
+								<input type="file" ng-file-select="onFileSelect($files, 0)" data-multiple="false" title="select file" accept="image/x-png, image/gif, image/jpeg" onclick="this.value = null" class="upload-button" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;">
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-6 form-group">
+					<div class="col-sm-6">
+						<label class="control-label">Contact</label>
+						<div class="thumbnail col-sm-6" ng-show="data && data.contact">
+							<img ng-src="{{getDocumentUrl(data.contact)}}" class="photoThumbnail" />
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="col-xs-9">
+							<div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files, 1)" ng-multiple="false" ng-file-drop-available="dropSupported=true" ng-file-drag-over-class="dragOverClass($event)" ng-file-drag-over-delay="100">
+								<p class="hint" ng-hide="contactImage">Drag 'n' Drop attachments here</p>
+								<p class="hint" ng-hide="contactImage"><span class="glyphicon glyphicon-cloud-upload file-upload-icon"></span></p>
+								<div class="col-xs-12 question-files" ng-if="contactImage">
+									<div class="thumbnail">
+										<img ng-src="{{getDocumentUrl(contactImage)}}" class="photoThumbnail" />
+										<span class="glyphicon glyphicon-remove" ng-click="removeContact()" ng-show="contactImage.doc.uploaded === false"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-3">
+							<div ng-file-select="onFileSelect($files, 1)" accept="image/*" data-multiple="false" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;">
+								<button class="btn btn-success btn-circle attach-button"><span class="glyphicon glyphicon-paperclip"></span> Attach</button>
+								<input type="file" ng-file-select="onFileSelect($files, 1)" data-multiple="false" title="select file" accept="image/x-png, image/gif, image/jpeg" onclick="this.value = null" class="upload-button" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;">
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="panel panel-info col-sm-12">
+			<div class="panel-heading">
+				Profile
+				<button class="btn btn-xs btn-warning pull-right" ng-click="editProfile=!editProfile" ng-show="!editProfile"><i class="fa fa-pencil "></i>edit</button>
+				<button class="btn btn-xs btn-default pull-right" ng-click="profileCancel()" ng-show="editProfile"><i class="fa fa-remove "></i>cancel</button>
+				<button class="btn btn-xs btn-success pull-right" ng-click="profileSave()" ng-show="editProfile"><i class="fa fa-save"></i>save</button>
+			</div>
+			<div class="panel-body table-bordered">
+				<div ng-show="!editProfile" ng-bind-html="data.profile">
+
+				</div>
+				<div class="m-b-15" ng-show="editProfile">
+					<textarea rich-text-editor ng-model="data.profile"></textarea>
+
+				</div>
+			</div>
+
+		</div>
+
+		<div class="panel panel-info col-sm-6">
+			<div class="panel-heading">
+				Services
+				<button class="btn btn-xs btn-warning pull-right" ng-click="editServices=!editServices" ng-show="!editServices"><i class="fa fa-pencil "></i>edit</button>
+				<button class="btn btn-xs btn-default pull-right" ng-click="servicesCancel()" ng-show="editServices"><i class="fa fa-remove "></i>cancel</button>
+				<button class="btn btn-xs btn-success pull-right" ng-click="servicesSave()" ng-show="editServices"><i class="fa fa-save"></i>save</button>
+			</div>
+			<div class="panel-body table-bordered">
+				<div ng-show="!editServices" ng-bind-html="data.services">
+
+				</div>
+				<div class="m-b-15" ng-show="editServices">
+					<textarea rich-text-editor ng-model="data.services"></textarea>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="panel panel-info col-sm-6">
+			<div class="panel-heading">
+				Contact Us
+			</div>
+			<div class="panel-body table-bordered">
+				<div class="table-responsive">
+
+
+
+					<table class="table table-profile">
+						<tbody>
+							<tr>
+								<td class="field">Contact Hours</td>
+								<td>
+									<div class="col-sm-12" ng-repeat="contacthour in data.contactHours track by $index">
+										<pre ng-show="!contacthour.edit">{{contacthour.description}}: <span ng-show="contacthour.isClosed">Closed</span><span ng-show="!contacthour.isClosed">{{contacthour.from | date:'shortTime'}} - {{contacthour.to | date:'shortTime'}}</span>          <i class="fa fa-pencil" ng-click="contacthour.edit=!contacthour.edit"></i></pre>
+										<div ng-show="contacthour.edit" class="col-sm-12 alert panel-default">
+											{{contacthour.description}}:
+											<div class="col-sm-12 form-group">
+												
+												<label for="closed{{$index}}" class="switch">
+													Closed?
+													<input id="closed{{$index}}" type="checkbox" ng-model="contacthour.isClosed" /><i></i>
+												</label>
+											</div>
+											<div ng-show="!contacthour.isClosed" class="col-sm-12 input-group bootstrap-timepicker timepicker">
+												<div class="col-sm-6">
+													From: <timepicker ng-model="contacthour.from" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian"></timepicker>
+												</div>
+												<div col-sm-6>
+													To: <timepicker ng-model="contacthour.to" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian"></timepicker>
+												</div>
+
+											</div>
+											<div class="col-sm-12">
+												<button class="btn btn-xs btn-default" ng-click="contacthour.edit=false"><i class="fa fa-save"></i></button>
+												<button class="btn btn-xs btn-default" ng-click="contacthour.edit=false"><i class="fa fa-times"></i></button>
+											</div>
+										</div>
+										
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="field">Tel</td>
+								<td><i class="fa fa-phone fa-lg m-r-5"></i> <a href="#" editable-text="data.telephone" e-ui-mask="(999) 999-9999">{{ data.telephone? (data.telephone | tel) : 'empty' }}</a></td>
+							</tr>
+							<tr>
+								<td class="field">Fax</td>
+								<td><i class="fa fa-fax fa-lg m-r-5"></i> <a href="#" editable-text="data.fax" e-ui-mask="(999) 999-9999">{{ data.fax ? (data.fax | tel) : 'empty' }}</a></td>
+							</tr>
+							<tr>
+								<td class="field">Email</td>
+								<td><i class="fa fa-envelope fa-lg m-r-5"></i> <a href="#" editable-email="data.email">{{ data.email || 'empty' }}</a></td>
+							</tr>
+							<tr>
+								<td class="field">Address</td>
+								<td>
+									<form name="homepageForm" novalidate>
+										<address type="1" data="hostaddress" source-type-id="1" source-id="hostId"></address>
+									</form>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+				</div>
+
+			</div>
+
+		</div>
+	<div>
+		<button class="btn btn-sm btn-primary m-r-5" ng-click="save()" ng-disabled="homepageForm.$invalid">Save</button>
+		<button class="btn btn-sm btn-default m-r-5" ng-click="cancel()">Cancel</button>
+	</div>
+</div>

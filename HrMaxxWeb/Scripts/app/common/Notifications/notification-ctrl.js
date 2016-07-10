@@ -18,8 +18,12 @@
 			$scope.getMyNotifications();
 		};
 		$scope.NotificationRead = function(notification) {
-			notificationRepository.notificationRead(notification.notificationID).then(function(data) {
-				$scope.refreshNotifications();
+			notificationRepository.notificationRead(notification.notificationID).then(function (data) {
+				if (notification.metadata) {
+					$window.location.href = notification.metadata;
+				} else {
+					$scope.refreshNotifications();
+				}
 			}, function(error) {
 				//$scope.addAlert('Unable to read the notification.', 'danger');
 			});

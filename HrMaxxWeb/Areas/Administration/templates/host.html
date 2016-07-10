@@ -1,0 +1,56 @@
+﻿<div class="col-sm-12">
+	
+		<div class="row">
+			<div class="col-sm-6 form-group" show-errors>
+				<label class="control-label" for="firmName">Firm Name <span class="text-danger">*</span></label>
+				<input type="text" class="form-control" ng-model="host.firmName" name="firmName" placeholder="Firm Name" required />
+
+			</div>
+			<div class="col-sm-6 form-group" show-errors>
+				<label class="control-label" for="url">Url sub domain<span class="text-danger">*</span></label>
+				<div class="input-group">
+					<input type="text" class="form-control" ng-model="host.url" name="url" placeholder="sub domain (between 4 and 10 charachters)" ng-pattern="/^.{4,10}$/" required style="width:15em" />(http://{{host.url}}.hrmaxx.com)
+				</div>
+				
+
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-6 form-group">
+				<label class="control-label">Effective Date <span class="text-danger">*</span></label>
+				<div class="input-group date" show-errors>
+					<input name="effectivedate" type="text" class="form-control" readonly="readonly" datepicker-popup="MM/dd/yyyy" ng-model="host.effectiveDate" is-open="data1.opened" max-date="dt" datepicker-options="dateOptions" close-text="Close" />
+					<span class="input-group-addon">
+						<i class="fa fa-calendar" ng-click="open($event)"></i>
+					</span>
+				</div>
+
+			</div>
+			<div class="col-sm-6 form-group">
+				<label class="control-label">Termination Date</label>
+				<div class="input-group date">
+					<input type="text" class="form-control" readonly="readonly" datepicker-popup="MM/dd/yyyy" ng-model="host.terminationDate" is-open="data1.opened1" min-date="dt" datepicker-options="dateOptions" close-text="Close" />
+					<span class="input-group-addon">
+						<i class="fa fa-calendar" ng-click="open1($event)"></i>
+					</span>
+				</div>
+
+
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-6  form-group">
+				<label class="control-label" for="status">Status</label>
+				<select ng-modle="host.statusId" name="status" class="form-control">
+					<option value="1">Acive</option>
+					<option value="2">InAcive</option>
+					<option value="3">Terminated</option>
+				</select>
+			</div>
+
+
+		</div>
+		
+
+</div>

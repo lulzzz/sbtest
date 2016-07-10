@@ -1,0 +1,112 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading" ng-click="isBodyOpen=!isBodyOpen">
+			<h4 class="panel-title">{{heading}}<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isBodyOpen, 'glyphicon-chevron-right': !isBodyOpen}"></i></h4>
+			
+		</div>
+		<div class="panel-body" ng-show="isBodyOpen">
+			<div class="row">
+				<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+			</div>
+
+			<div ng-show="list.length===0 && !selectedContact" class="table table-bordered">
+				No hosts found
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedHost(item)" ng-class="{'success':selectedHost.id===item.id}">
+						<td data-title="' No'" class="col-sm-1">
+							{{$index+1}}
+						</td>
+						<td data-title=" 'Name' " filter="{ 'firmName': 'text' }" sortable=" 'firmName' " class="col-sm-3">
+							{{item.firmName}}
+						</td>
+						<td data-title=" 'Url' " filter="{ 'url': 'text' }" sortable=" 'url' " class="col-sm-2">
+							http://{{item.url}}.hrmaxx.com
+						</td>
+						<td data-title=" 'Effective From' " class="col-sm-1">
+							{{item.effectiveDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td>
+							<button type="button" class="btn btn-sm btn-primary" ng-click="setSelectedHost(item)">View</button>
+						</td>
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+			<div class="row">
+				<button class="btn btn-sm btn-primary" ng-show="!selectedHost" ng-click="addHost()">Add</button>
+			</div>
+
+			<!-- end panel -->
+		</div>
+	</div>
+	
+	<div class="panel panel-info" ng-if="selectedHost">
+		<div class="panel-heading">
+			<ul class="nav nav-tabs pull-right">
+				<li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
+				<li ng-show="selectedHost.id"><a href="#user" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
+				<li ng-show="selectedHost.id"><a href="#news" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
+				<li ng-show="selectedHost.id"><a href="#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">Documents</span></a></li>
+				<li ng-show="selectedHost.id"><a href="#contacts" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Contats</span></a></li>
+				<li ng-show="selectedHost.id"><a href="#homepage" data-toggle="tab"><i class="fa fa-home"></i> <span class="hidden-xs">Home Page</span></a></li>
+			</ul>
+			<h4 class="panel-title">{{selectedHost.firmName}} Details</h4>
+		</div>
+		<div class="panel-body tab-content">
+			<div class="tab-pane fade active in" id="info">
+				<div class="col-sm-6">
+					<form name="hostForm" novalidate>
+						<host data="selectedHost" sourcetypeid="sourceTypeId" />
+						<div class="row pull-right">
+							<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="hostForm.$invalid">Save</button>
+							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="tab-pane fade in" id="user">
+				<user-list host-id="selectedHost.id" company-id="null" employee-id="null" heading="'Host Users'" reset-password="true" parent-type="sourceTypeId" />
+			</div>
+			<div class="tab-pane fade in" id="news">
+				<news-list audience-type-id="3" audience-id="selectedHost.id" heading="'Newsfeed'" fetch="true" />
+			</div>
+			<div class="tab-pane fade in" id="documents">
+				<document-list source-type-id="1" source-id="selectedHost.id" heading="'Documents'" />
+			</div>
+			<div class="tab-pane fade in" id="contacts">
+				<contact-list source-type-id="1" source-id="selectedHost.id" heading="'Contacts'" />
+			</div>
+			<div class="tab-pane fade in" id="homepage">
+				<homepage host-id="selectedHost.id" source-type-id="1"></homepage>
+			</div>
+		</div>
+
+	</div>
+
+
+
+	
+</div>
+
+

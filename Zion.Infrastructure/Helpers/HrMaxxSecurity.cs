@@ -8,7 +8,7 @@ namespace HrMaxx.Infrastructure.Helpers
 {
 	public static class HrMaaxxSecurity
 	{
-		public static T? GetEnumFromUAMId<T>(int UamId) where T : struct, IConvertible
+		public static T? GetEnumFromDbId<T>(int dbId) where T : struct, IConvertible
 		{
 			foreach (T enumValue in Enum.GetValues(typeof (T)))
 			{
@@ -16,13 +16,13 @@ namespace HrMaxx.Infrastructure.Helpers
 				var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
 				if (attribs.Length == 0) continue;
 
-				if (attribs[0].UAMId == UamId)
+				if (attribs[0].DbId == dbId)
 					return enumValue;
 			}
 			return null;
 		}
 
-		public static T? GetEnumFromUAMName<T>(string UamName) where T : struct, IConvertible
+		public static T? GetEnumFromDbName<T>(string dbName) where T : struct, IConvertible
 		{
 			foreach (T enumValue in Enum.GetValues(typeof (T)))
 			{
@@ -30,7 +30,7 @@ namespace HrMaxx.Infrastructure.Helpers
 				var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
 				if (attribs.Length == 0) continue;
 
-				if (attribs[0].UAMName == UamName)
+				if (attribs[0].DbName == dbName)
 					return enumValue;
 			}
 			return null;
@@ -52,12 +52,12 @@ namespace HrMaxx.Infrastructure.Helpers
 			return null;
 		}
 
-		public static int? GetUAMIdFrom<T>(T enumValue) where T : struct, IConvertible
+		public static int? GetDbIdFrom<T>(T enumValue) where T : struct, IConvertible
 		{
 			FieldInfo fieldInfo = typeof (T).GetField(enumValue.ToString());
 			var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
 			if (attribs.Length == 0) return null;
-			return attribs[0].UAMId;
+			return attribs[0].DbId;
 		}
 
 		public static Guid? GetHrMaxxIdFromEnum<T>(T enumValue) where T : struct, IConvertible
@@ -107,20 +107,20 @@ namespace HrMaxx.Infrastructure.Helpers
 			return claimGuids;
 		}
 
-		public static int? GetUAMId(this Enum enumValue)
+		public static int? GetDbId(this Enum enumValue)
 		{
 			FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
 			var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
 			if (attribs.Length == 0) return null;
-			return attribs[0].UAMId;
+			return attribs[0].DbId;
 		}
 
-		public static string GetUAMName(this Enum enumValue)
+		public static string GetDbName(this Enum enumValue)
 		{
 			FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
 			var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
 			if (attribs.Length == 0) return null;
-			return attribs[0].UAMName;
+			return attribs[0].DbName;
 		}
 
 		public static Guid? GetHrMaxxId(this Enum enumValue)

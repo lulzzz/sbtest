@@ -55,6 +55,9 @@
     <Compile Include="DataModel\Country.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\News.cs">
+      <DependentUpon>CommonModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Dtos\Address.cs" />
     <Compile Include="Dtos\BaseEntityObject.cs" />
     <Compile Include="DataModel\CommonEntities.cs" />
@@ -121,8 +124,11 @@
     <Compile Include="Dtos\EntityIDDto.cs" />
     <Compile Include="Dtos\ExportDto.cs" />
     <Compile Include="Dtos\FileDto.cs" />
+    <Compile Include="Dtos\IdValuePair.cs" />
     <Compile Include="Dtos\MoveDocumentDto.cs" />
+    <Compile Include="Dtos\News.cs" />
     <Compile Include="Dtos\NotificationDto.cs" />
+    <Compile Include="Dtos\UserModel.cs" />
     <Compile Include="EntityDocumentAttachment.cs" />
     <Compile Include="Enum\AddressType.cs" />
     <Compile Include="Enum\EntityTypeEnum.cs" />
@@ -182,6 +188,12 @@
       <DependentUpon>UserModel.edmx</DependentUpon>
       <LastGenOutput>UserModel.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zion.Infrastructure\HrMaxx.Infrastructure.csproj">
+      <Project>{4BA8B656-2741-4474-AB09-537A93E879D2}</Project>
+      <Name>HrMaxx.Infrastructure</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

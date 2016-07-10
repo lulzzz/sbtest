@@ -13,6 +13,10 @@
 		public const string LoginError = "http://HrMaxx/LoginError";
 		public const string VisResIndividualId = "http://HrMaxx/VisResIndividualId";
 		public const string Manager = "http://HrMaxx/Manager";
+
+		public const string Host = "http://HrMaxx/Host";
+		public const string Company = "http://HrMaxx/Company";
+		public const string Employee = "http://HrMaxx/Employee";
 	}
 
 }

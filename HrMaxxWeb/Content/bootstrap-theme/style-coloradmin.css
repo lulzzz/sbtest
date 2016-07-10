@@ -1887,6 +1887,7 @@ legend {
 .panel-body.no-padding,
 .panel-body.panel-full-width {
     padding: 0 !important;
+		border: 1px solid #eee;
 }
 .panel-body.with-table > .table {
     border: 0;
@@ -1909,7 +1910,7 @@ legend {
     border-radius: 0 0 3px 3px;
 }
 .panel-default > .panel-heading {
-    background: #fafafa;
+    background: lightgray;
 }
 .panel-inverse > .panel-heading,
 .panel-success > .panel-heading,

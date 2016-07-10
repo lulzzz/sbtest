@@ -35,6 +35,10 @@
 				$scope.addAlert('Error saving user profile', 'danger');
 			});
 		}
+		$scope.cancel = function() {
+			$scope.user = angular.copy(localUser);
+			$scope.$broadcast('refreshuserprofile');
+		}
 		$scope.alerts = [];
 		
 		$scope.addAlert = function (error, type) {

@@ -7,7 +7,7 @@
 	<div class="login-cover-image"><img src="~/Content/images/bg-8.jpg" data-id="login-cover-image" alt="" /></div>
 	<div class="login-cover-bg"></div>
 </div>
-<div class="login login-v2" data-pageload-addclass="animated fadeIn" ng-app="common" ng-controller="loginCtrl">
+<div class="login login-v2" data-pageload-addclass="animated fadeIn" id="loginpartialmodal" ng-controller="loginCtrl">
 	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 	<!-- begin brand -->
 	<div class="login-header">

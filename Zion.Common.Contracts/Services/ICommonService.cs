@@ -18,5 +18,12 @@ namespace HrMaxx.Common.Contracts.Services
 		IList<Country> GetCountries();
 		T AddToList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum comment, Guid sourceId, T target);
 		IList<T> GetRelatedEntityList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId);
+		T FirstRelatedEntity<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId);
+
+		List<News> GetNewsforUser(int? audienceScope, Guid? audienceId);
+		void SaveNewsItem(News news);
+
+
+		List<News> GetUserNewsfeed(Guid host, Guid company, string id, string userId);
 	}
 }

@@ -17,10 +17,9 @@ namespace HrMaxx.Common.Models
 		public int RoleId { get; set; }
 		public UserRole Role { get; set; }
 		public IList<UserRole> AvailableRoles { get; set; }
-		public IList<DocumentDto> Documents { get; set; }
-		public Address Address { get; set; }
-		public IList<Comment> Comments { get; set; }
-		public IList<Contact> Contacts { get; set; } 
+		public Guid? Host { get; set; }
+		public Guid? Company { get; set; }
+		public bool Active { get; set; }
 	}
 
 	public class UserRole

@@ -62,9 +62,9 @@
 				</div>
 				<div class="row col-sm-6" ng-if="selectedContact">
 					<form name="contactForm" novalidate>
-						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="type" />
+						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="0"/>
 						<div class="row pull-right">
-							<button type="button" class="btn btn-sm btn-primary" ng-click="save()">Save</button>
+							<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="contactForm.$invalid">Save</button>
 							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
 						</div>
 					</form>

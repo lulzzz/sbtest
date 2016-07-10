@@ -6,7 +6,6 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 			restrict: 'E',
 			replace: true,
 			scope: {
-				list: "=list",
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId",
 				heading: "=heading"
@@ -15,7 +14,7 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Contact;
-				
+				$scope.list = [];
 				var addAlert = function (error, type) {
 					$scope.alerts = [];
 					$scope.alerts.push({
@@ -37,8 +36,7 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 						lastName: '',
 						middleInitial: '',
 						email: '',
-						phone: '',
-
+						phone: ''
 					};
 				}
 
@@ -63,14 +61,14 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 
 				$scope.fillTableData = function (params) {
 					// use build-in angular filter
-					if ($scope.list) {
+					if ($scope.list && $scope.list.length>0) {
 						var orderedData = params.filter() ?
-		$filter('filter')($scope.list, params.filter()) :
-		$scope.list;
+															$filter('filter')($scope.list, params.filter()) :
+															$scope.list;
 
 						orderedData = params.sorting() ?
-		$filter('orderBy')(orderedData, params.orderBy()) :
-		orderedData;
+													$filter('orderBy')(orderedData, params.orderBy()) :
+													orderedData;
 
 						$scope.tableParams = params;
 						$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
@@ -82,7 +80,7 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 					$scope.selectedContact = null;
 				}
 				$scope.setSelectedContact = function(item) {
-					$scope.selectedContact = item;
+					$scope.selectedContact = angular.copy(item);
 					$scope.selectedContact.sourceTypeId = $scope.sourceTypeId;
 					$scope.selectedContact.sourceId = $scope.sourceId;
 				}
@@ -118,12 +116,21 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.selectedContact = null;
-					}, function () {
 						addAlert('successfully saved contact', 'success');
 					}, function (error) {
 						addAlert('error saving contact', 'danger');
 					});
 				}
+				var init = function () {
+					commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, $scope.sourceId).then(function (data) {
+						$scope.list = data;
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
+					}, function (erorr) {
+
+					});
+				}
+				init();
 
 			}]
 		}

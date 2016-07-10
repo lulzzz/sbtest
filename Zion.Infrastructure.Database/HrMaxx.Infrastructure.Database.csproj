@@ -88,6 +88,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\001_UpdatesToDB.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>
@@ -110,7 +113,6 @@
     <Folder Include="Scripts\Data\IntegrationTest\" />
     <Folder Include="Scripts\Data\UAT\" />
     <Folder Include="Scripts\Maintenance\Functions\" />
-    <Folder Include="Scripts\Maintenance\SchemaChanges\" />
     <Folder Include="Scripts\Maintenance\Security\" />
     <Folder Include="Scripts\Maintenance\Storage\" />
     <Folder Include="Scripts\Maintenance\StoredProcedures\" />

@@ -16,13 +16,8 @@ common.directive('address', ['$modal', 'zionAPI','localStorageService',
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
 				$scope.countries = localStorageService.get('countries');
-				
-				if (!$scope.data) {
-					$scope.data = {
-						selectedCountry: null,
-						selectState: null
-					}
-				}
+				//$scope.data = angular.copy($scope.data1);
+				var localAddress = null;
 				$scope.addAlert = function (error, type) {
 					$scope.alerts = [];
 					$scope.alerts.push({
@@ -55,9 +50,27 @@ common.directive('address', ['$modal', 'zionAPI','localStorageService',
 						$scope.data.selectedState = $filter('filter')($scope.data.selectedCountry.states, { stateId: $scope.data.stateId })[0];
 					}
 				}
+				if ($scope.type === 1) {
+					$scope.$on('refreshuserprofile', function() {
+						$scope.data = angular.copy(localAddress);
+						defaultCountryState();
+					});
+				}
+				var init = function () {
+					if ($scope.type === 1) {
+						commonRepository.getFirstRelatedEntity($scope.sourceTypeId, $scope.targetTypeId, $scope.sourceId).then(function(data) {
+							localAddress = data;
+							$scope.data = angular.copy(localAddress);
+							defaultCountryState();
+						}, function(erorr) {
 
-				defaultCountryState();
-				
+						});
+					} else {
+						defaultCountryState();
+					}
+					
+				}
+				init();
 
 
 			}]

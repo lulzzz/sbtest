@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using AutoMapper;
 using HrMaxx.Common.Models;
@@ -8,6 +9,7 @@ using HrMaxx.Infrastructure.Enums;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxxAPI.Resources.Common;
 using Magnum;
+using Newtonsoft.Json;
 
 namespace HrMaxxAPI.Code.Mappers
 {
@@ -46,6 +48,35 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<ContactResource, Contact>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+
+			CreateMap<AddressResource, Address>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+
+			CreateMap<NewsResource, News>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
+				.ForMember(dest => dest.Audience, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Audience)));
+
+			CreateMap<News, NewsResource>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+				.ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.Audience, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<IdValuePair>>(src.Audience)));
+
+			CreateMap<UserResource, UserModel>()
+				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active));
+
+			CreateMap<UserModel, UserResource>()
+				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active));
 		}
 	}
 }

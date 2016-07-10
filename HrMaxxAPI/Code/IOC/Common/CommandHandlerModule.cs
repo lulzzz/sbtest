@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.Reflection;
 using Autofac;
 using HrMaxx.Bus.Contracts;
 using MassTransit;
@@ -16,6 +18,11 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 		private static void WireHandlersForAssembly(ContainerBuilder builder, Assembly servicesAssembly)
 		{
+			string _baseUrl =
+				ConfigurationManager.AppSettings["WebUrl"];
+			var namedParameters = new List<NamedParameter>();
+			namedParameters.Add(new NamedParameter("baseUrl", _baseUrl));
+
 			//in memory handlers
 			builder.RegisterAssemblyTypes(servicesAssembly)
 				.Where(t => typeof (IMessageHandler).IsAssignableFrom(t))
@@ -24,6 +31,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 			//masstransit consumers
 			builder.RegisterAssemblyTypes(servicesAssembly)
+				.WithParameters(namedParameters)
 				.Where(t => typeof (IConsumer).IsAssignableFrom(t))
 				.PropertiesAutowired()
 				.AsSelf();

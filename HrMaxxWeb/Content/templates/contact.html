@@ -3,7 +3,7 @@
 		<div class="row">
 			<div class="form-group col-sm-4" show-errors>
 				<label for="firstname">First Name</label>
-				<input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" ng-model="data.firstName" required/>
+				<input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" ng-model="data.firstName" required />
 				
 			</div>
 			<div class="form-group col-sm-2">
@@ -24,9 +24,10 @@
 					<input type="email" id="email" name="email" class="form-control" placeholder="Email Address" ng-model="data.email" required />
 				</div>
 				<div class="form-group">
-					<label for="isprimary">IsPrimary </label>
-					<input id="isprimary" type="checkbox" ng-model="data.isPrimary" bootstrap-switch on-text="Yes" off-text="No" />
-
+					<label for="isprimary" class="switch">
+						IsPrimary
+						<input id="isprimary" type="checkbox" ng-model="data.isPrimary" /><i></i>
+					</label>
 				</div>
 
 			</div>
@@ -51,7 +52,7 @@
 			</div>
 
 		</div>
-		<address data="data.address" type="0" sourcetypeid="sourceTypeId" sourceid="data.id"></address>
-	</form>
+		<address data="data.address" type="0" source-type-id="sourceTypeId" source-id="data.id"></address>
+	
 
 </div>

@@ -68,6 +68,10 @@ namespace HrMaxxWeb.Controllers
 					return View(new ChangePasswordViewModel());
         }
 
+	    public ActionResult News()
+	    {
+		    return View();
+	    }
         //
         // POST: /Manage/RemoveLogin
         [HttpPost]

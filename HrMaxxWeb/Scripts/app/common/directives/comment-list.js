@@ -6,7 +6,6 @@ common.directive('commentList', ['$modal', 'zionAPI', '$timeout', '$window',
 			restrict: 'E',
 			replace: true,
 			scope: {
-				list: "=list",
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId",
 				heading: "=heading"
@@ -15,6 +14,7 @@ common.directive('commentList', ['$modal', 'zionAPI', '$timeout', '$window',
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Comment;
+				$scope.list = [];
 				var addAlert = function (error, type) {
 					$scope.alerts = [];
 					$scope.alerts.push({
@@ -41,6 +41,15 @@ common.directive('commentList', ['$modal', 'zionAPI', '$timeout', '$window',
 						addAlert('error saving comment', 'danger');
 					});
 				}
+				var init = function () {
+					commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, $scope.sourceId).then(function (data) {
+						$scope.list = data;
+						
+					}, function (erorr) {
+
+					});
+				}
+				init();
 
 			}]
 		}

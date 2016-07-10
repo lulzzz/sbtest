@@ -68,12 +68,12 @@
 													</div>
 												</td>
 											</tr>
-											<tr >
+											<tr ng-if="user">
 												<td class="field">Address</td>
 												<td>
 													<form name="profileform" novalidate>
-														<div ng-if="user.address">
-															<address data="user.address" type="user.type" sourceTypeId="user.sourceTypeId" sourceId="user.userId"></address>
+														<div>
+															<address type="1" data="{}" source-type-id="12" source-id="user.userId"></address>
 														</div>
 														
 														<div class="divider">
@@ -123,12 +123,12 @@
 		</ul>
 		<div class="tab-content">
 			<div class="tab-pane fade active in" id="documents">
-				<document-list entity-type-id="12" entity-id="user.userId" list="user.documents" heading="'Documents'" />
+				<document-list source-type-id="12" source-id="user.userId" heading="'Documents'" />
 			</div>
-			<div class="tab-pane fade active in" id="contacts">
-				<contact-list source-type-id="12" source-id="user.userId" list="user.contacts" heading="'Contacts'" />
+			<div class="tab-pane fade in" id="contacts">
+				<contact-list source-type-id="12" source-id="user.userId" heading="'Contacts'" />
 			</div>
-			<div class="tab-pane fade active in" id="password">
+			<div class="tab-pane fade in" id="password">
 				<!-- begin col-6 -->
 				<div class="row" >
 					<!-- begin panel -->

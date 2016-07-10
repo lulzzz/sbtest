@@ -34,6 +34,38 @@ namespace HrMaxx.Infrastructure.Security
 			}
 		}
 
+		public Guid Host
+		{
+			get
+			{
+				return HasClaim(claim => claim.Type == HrMaxxClaimTypes.Host)
+						? new Guid(FindFirst(claim => claim.Type == HrMaxxClaimTypes.Host).Value)
+						: Guid.Empty;	
+			}
+			
+		}
+
+		public string Role
+		{
+			get
+			{
+				return HasClaim(claim => claim.Type == ClaimTypes.Role)
+					? FindFirst(c => c.Type == ClaimTypes.Role).Value
+					: string.Empty;
+			}
+		}
+		
+		public Guid Company
+		{
+			get
+			{
+				return HasClaim(claim => claim.Type == HrMaxxClaimTypes.Company)
+						? new Guid(FindFirst(claim => claim.Type == HrMaxxClaimTypes.Company).Value)
+						: Guid.Empty;
+			}
+
+		}
+
 		public string eMail
 		{
 			get { return FindFirst(claim => claim.Type == HrMaxxClaimTypes.Email).Value; }

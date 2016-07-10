@@ -44,7 +44,12 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap/bootstrap-theme/coloradmin.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/metisMenu/metisMenu.js",
 				"~/Scripts/Toastr/toastr.min.js",
-				"~/Scripts/bootstrap-switch.min.js");
+				"~/Scripts/bootstrap-switch.min.js",
+				"~/Scripts/bootstrap/bootstrap-theme/plugins/wysiwyg/wysihtml5-0.3.0.min.js",
+				"~/Scripts/bootstrap/bootstrap-theme/plugins/wysiwyg/bootstrap-wysihtml5-0.0.2.js",
+				"~/Scripts/bootstrap/timepicker/timepicker.js"
+				
+				);
 			jquery.Builder = nullBuilder;
 			jquery.Transforms.Add(scriptTransformer);
 			jquery.Orderer = nullOrderer;
@@ -71,6 +76,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular/angular-ui/ui-bootstrap-custom-tpls-0.12.0.js",
 				"~/Scripts/angular/angular-file-upload/angular-file-upload.js",
 				"~/Scripts/angular/restangular/restangular.js",
+				"~/Scripts/angular/angular-sanitize.min.js",
 				"~/Scripts/angular/angular-ui-tree/angular-ui-tree.js",
 				"~/Scripts/angular/angular-loading-bar/loading-bar.js",
 				"~/Scripts/angular/angular-local-storage/angular-local-storage.min.js",
@@ -85,6 +91,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular/angular-strap/angular-strap.tpl.js",
 				"~/Scripts/angularjs-dropdown-multiselect.min.js",
 				"~/Scripts/angular/angular-scrollable-table.js",
+				"~/Scripts/angular/mask.min.js",
 				"~/Scripts/app/common/common.js",
 				"~/Scripts/app/common/common-config.js",
 				"~/Scripts/app/common/common-repository.js",
@@ -107,7 +114,17 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/directives/address.js",
 				"~/Scripts/app/common/directives/comment-list.js",
 				"~/Scripts/app/common/directives/contact-list.js",
-				"~/Scripts/app/common/directives/contact.js"
+				"~/Scripts/app/common/directives/contact.js",
+				"~/Scripts/app/Common/directives/news-list.js",
+				"~/Scripts/app/host/host-app.js",
+				"~/Scripts/app/host/host-repository.js",
+				"~/Scripts/app/host/directives/host-list.js",
+				"~/Scripts/app/host/directives/host.js",
+				"~/Scripts/app/host/controllers/hostlogo-ctrl.js",
+				"~/Scripts/app/host/directives/homepage.js",
+				"~/Scripts/app/host/directives/welcome.js",
+				"~/Scripts/app/common/directives/usernews.js",
+				"~/Scripts/app/common/directives/user-list.js"
 
 				);
 			jquery.Builder = nullBuilder;

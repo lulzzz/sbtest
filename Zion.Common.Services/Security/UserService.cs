@@ -31,16 +31,7 @@ namespace HrMaxx.Common.Services.Security
 				var user = _repository.GetUserProfile(userId);
 				user.AvailableRoles = _repository.GetRoles();
 				user.Role = user.AvailableRoles.FirstOrDefault(r => r.RoleId.Equals(user.RoleId));
-				user.Documents = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.User, EntityTypeEnum.Document, user.UserId);
-				user.Address =
-					_commonService.GetRelatedEntities<Address>(EntityTypeEnum.User, EntityTypeEnum.Address, user.UserId)
-						.FirstOrDefault();
-				if (user.Address == null)
-				{
-					user.Address = new Address{Type = AddressType.Personal};
-				}
-				user.Comments = _commonService.GetRelatedEntityList<Comment>(EntityTypeEnum.User, EntityTypeEnum.Comment, userId).OrderByDescending(c=>c.TimeStamp).ToList();
-				user.Contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.User, EntityTypeEnum.Contact, userId);
+				
 				return user;
 			}
 			catch (Exception e)
@@ -56,7 +47,7 @@ namespace HrMaxx.Common.Services.Security
 			try
 			{
 				_repository.SaveUserProfile(user);
-				_commonService.SaveEntityRelation<Address>(EntityTypeEnum.User, EntityTypeEnum.Address, user.UserId, user.Address);
+				//_commonService.SaveEntityRelation<Address>(EntityTypeEnum.User, EntityTypeEnum.Address, user.UserId, user.Address);
 			}
 			catch (Exception e)
 			{
@@ -66,7 +57,7 @@ namespace HrMaxx.Common.Services.Security
 			}
 		}
 
-		public List<Guid> GetUsersByRoleAndId(RoleTypeEnum role, Guid? userId)
+		public List<Guid> GetUsersByRoleAndId(List<RoleTypeEnum> role, Guid? userId)
 		{
 			try
 			{
@@ -75,6 +66,36 @@ namespace HrMaxx.Common.Services.Security
 			catch (Exception e)
 			{
 				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, "user list for role and userid");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<UserModel> GetUsers(Guid? hostId, Guid? companyId)
+		{
+			try
+			{
+				var users = _repository.GetUsers(hostId, companyId);
+				return users;
+			}
+			catch (Exception e)
+			{
+
+				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, "user list for host and company");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void SaveUser(UserModel usermodel)
+		{
+			try
+			{
+				_repository.SaveUser(usermodel);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, "user details for user id" + usermodel.UserId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

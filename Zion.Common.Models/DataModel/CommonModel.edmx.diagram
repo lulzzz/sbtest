@@ -14,6 +14,7 @@
         <AssociationConnector Association="CommonModel.FK_EntityRelation_EntityType" />
         <AssociationConnector Association="CommonModel.FK_EntityRelation_EntityType1" />
         <EntityTypeShape EntityType="CommonModel.Country" Width="1.5" PointX="7.375" PointY="0.75" />
+        <EntityTypeShape EntityType="CommonModel.News" Width="1.5" PointX="0.75" PointY="7.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

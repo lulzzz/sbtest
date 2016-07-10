@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 
 namespace HrMaxx.Common.Repository.Security
@@ -13,6 +14,8 @@ namespace HrMaxx.Common.Repository.Security
 		UserProfile GetUserProfile(Guid userId);
 		IList<UserRole> GetRoles();
 		void SaveUserProfile(UserProfile user);
-		List<Guid> GetUserByRoleAndId(RoleTypeEnum role, Guid? userId);
+		List<Guid> GetUserByRoleAndId(List<RoleTypeEnum> role, Guid? userId);
+		List<UserModel> GetUsers(Guid? hostId, Guid? companyId);
+		void SaveUser(UserModel usermodel);
 	}
 }

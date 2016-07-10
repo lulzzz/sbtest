@@ -1,0 +1,84 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading">
+			<div class="panel-heading-btn">
+				<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+				<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" ng-click="isChangePassword = !isChangePassword"><i class="fa fa-times"></i></a>
+			</div>
+			<h4 class="panel-title">{{heading}}</h4>
+		</div>
+		<div class="panel-body">
+
+			<div class="col-sm-6">
+				<div ng-show="list.length===0">
+					No records found
+				</div>
+				<div class="row" ng-show="list.length>0">
+					<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
+						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedNewsItem(item)">
+							<td data-title=" 'Title' " filter="{ 'title': 'text' }" sortable=" 'title' " class="col-sm-1">
+								{{item.title}}
+							</td>
+							<td data-title=" 'On' " filter="{ 'timeStamp': 'text' }" sortable=" 'timeStamp' " class="col-sm-1">
+								{{item.timeStamp | date:'MM/dd/yyyy'}}
+							</td>
+							<td data-title=" 'Created By' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-1">
+								{{item.userName}}
+							</td>
+						</tr>
+
+					</table>
+					<script type="text/ng-template" id="custom/pager">
+						<ul class="pager ng-cloak">
+							<li ng-repeat="page in pages"
+									ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+									ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+								<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+								<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+							</li>
+							<li>
+								<div class="btn-group">
+									<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+									<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+									<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+									<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								</div>
+							</li>
+						</ul>
+					</script>
+				</div>
+				<div class="row">
+					<button class="btn btn-sm btn-primary" ng-show="!selectedNewsItem" ng-click="addNew()">Add</button>
+				</div>
+			</div>
+
+			<div class="row col-sm-6" ng-if="selectedNewsItem">
+				<div class="row">
+					<table class="table table-profile">
+						<tbody>
+							<tr>
+								<td class="field">Title</td>
+								<td>
+									<pre>{{selectedNewsItem.title}}</pre>
+								</td>
+							</tr>
+							<tr>
+								<td class="field">Content</td>
+								<td>
+									<pre>{{selectedNewsItem.newsContent}}</pre>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+
+
+		</div>
+	</div>
+	<!-- end panel -->
+</div>
+
+

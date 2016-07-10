@@ -23,10 +23,15 @@ namespace HrMaxxAPI.Code.IOC
 			builder.RegisterModule<ControllerModule>();
 			builder.RegisterModule<BusModule>();
 
-			builder.RegisterModule<RepositoriesModule>();
-			builder.RegisterModule<MappingModule>();
-			builder.RegisterModule<ServicesModule>();
-			builder.RegisterModule<CommandHandlerModule>();
+			builder.RegisterModule<Common.RepositoriesModule>();
+			builder.RegisterModule<Common.MappingModule>();
+			builder.RegisterModule<Common.ServicesModule>();
+			builder.RegisterModule<Common.CommandHandlerModule>();
+
+			builder.RegisterModule<OnlinePayroll.RepositoriesModule>();
+			builder.RegisterModule<OnlinePayroll.MappingModule>();
+			builder.RegisterModule<OnlinePayroll.ServicesModule>();
+			builder.RegisterModule<OnlinePayroll.CommandHandlerModule>();
 
 			IContainer container = builder.Build();
 

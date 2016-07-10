@@ -131,7 +131,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandHandlers\ContactEventHandler.cs" />
+    <Compile Include="CommandHandlers\NotificationEventHandler.cs" />
     <Compile Include="CommandHandlers\UserEventLogHandler.cs" />
     <Compile Include="Document\DocumentService.cs" />
     <Compile Include="Email\EmailService.cs" />

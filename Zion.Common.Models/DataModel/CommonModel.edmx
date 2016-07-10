@@ -53,6 +53,18 @@
           <Property Name="EntityTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EntityTypeName" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="News">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Title" Type="varchar(max)" Nullable="false" />
+          <Property Name="NewsContent" Type="varchar(max)" Nullable="false" />
+          <Property Name="AudienceScope" Type="int" />
+          <Property Name="Audience" Type="varchar(max)" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="Notifications">
           <Key>
             <PropertyRef Name="NotificationId" />
@@ -109,6 +121,7 @@
           <EntitySet Name="Country" EntityType="Self.Country" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityRelation" EntityType="Self.EntityRelation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="News" EntityType="Self.News" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserEventLog" EntityType="Self.UserEventLog" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_EntityRelation_EntityType" Association="Self.FK_EntityRelation_EntityType">
@@ -143,6 +156,7 @@
             <End Role="EntityRelation" EntitySet="EntityRelations" />
           </AssociationSet>
           <EntitySet Name="Countries" EntityType="CommonModel.Country" />
+          <EntitySet Name="News" EntityType="CommonModel.News" />
           </EntityContainer>
         <EntityType Name="Memento">
           <Key>
@@ -245,6 +259,18 @@
           <Property Name="CountryName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Data" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="News">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="NewsContent" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AudienceScope" Type="Int32" />
+          <Property Name="Audience" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
 		</edmx:ConceptualModels>
 		<!-- C-S mapping content -->
@@ -328,6 +354,19 @@
                 <ScalarProperty Name="Data" ColumnName="Data" />
                 <ScalarProperty Name="CountryName" ColumnName="CountryName" />
                 <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="News">
+            <EntityTypeMapping TypeName="CommonModel.News">
+              <MappingFragment StoreEntitySet="News">
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Audience" ColumnName="Audience" />
+                <ScalarProperty Name="AudienceScope" ColumnName="AudienceScope" />
+                <ScalarProperty Name="NewsContent" ColumnName="NewsContent" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

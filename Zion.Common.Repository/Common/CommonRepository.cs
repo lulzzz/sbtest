@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 using Magnum;
 using Newtonsoft.Json;
+using News = HrMaxx.Common.Models.Dtos.News;
 
 namespace HrMaxx.Common.Repository.Common
 {
@@ -125,6 +126,50 @@ namespace HrMaxx.Common.Repository.Common
 																											);
 			return relation == null ? new List<T>() : JsonConvert.DeserializeObject<List<T>>(relation.TargetObject);
 
+		}
+
+		public List<News> GetNewsListforUser(int? audienceScope, Guid? audienceId)
+		{
+			var news = _dbContext.News.Where(n => (audienceScope.HasValue && n.AudienceScope == audienceScope) || !audienceScope.HasValue).ToList();
+			if (audienceScope.HasValue && audienceId.HasValue)
+			{
+				news =
+					news.Where(n => JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(audienceId.Value)))
+						.ToList();
+			}
+			return _mapper.Map<List<Models.DataModel.News>, List<News>>(news);
+		}
+
+		public void SaveNewsfeedItem(News news)
+		{
+			var mappedNewsItem = _mapper.Map<News, Models.DataModel.News>(news);
+			var dbNews = _dbContext.News.FirstOrDefault(n => n.Id == news.Id);
+			if(dbNews==null)
+				_dbContext.News.Add(mappedNewsItem);
+			else
+			{
+				dbNews.Title = mappedNewsItem.Title;
+				dbNews.NewsContent = mappedNewsItem.NewsContent;
+				dbNews.Audience = mappedNewsItem.Audience;
+				dbNews.AudienceScope = mappedNewsItem.AudienceScope;
+				dbNews.LastModified = mappedNewsItem.LastModified;
+				dbNews.LastModifiedBy = mappedNewsItem.LastModifiedBy;
+			}
+			_dbContext.SaveChanges();
+		}
+
+		public List<News> GetUserNewsfeed(Guid host, Guid company, string userId)
+		{
+			var returnList = new List<Models.DataModel.News>();
+			var news = _dbContext.News.Where(n=>n.AudienceScope.HasValue).ToList();
+			news = news.Where(n =>
+				(n.AudienceScope.Value == (int) RoleTypeEnum.Host &&
+				 JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(host)))
+				||
+				(n.AudienceScope.Value == (int) RoleTypeEnum.Company &&
+				 JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(company)))
+				).ToList();
+			return _mapper.Map<List<Models.DataModel.News>, List<News>>(news);
 		}
 	}
 }

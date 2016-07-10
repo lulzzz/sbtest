@@ -65,9 +65,9 @@ namespace HrMaxx.Infrastructure.Database
 						//	throw new Exception("Failed to run Command. ");
 						break;
 					case "UAT":
-						commandFile = scriptPath + @"\Commands\UAT.cmd";
-						if (!RunCommands(connectionString, commandFile, scriptPath))
-							throw new Exception("Failed to run Command. ");
+						//commandFile = scriptPath + @"\Commands\UAT.cmd";
+						//if (!RunCommands(connectionString, commandFile, scriptPath))
+						//	throw new Exception("Failed to run Command. ");
 						break;
 					default:
 						break;

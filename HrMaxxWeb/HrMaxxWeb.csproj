@@ -242,6 +242,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
+    <Compile Include="Areas\Administration\Controllers\HostController.cs" />
+    <Compile Include="Areas\Administration\Controllers\NewsController.cs" />
     <Compile Include="Code\ActionResult\JsonNetResult.cs" />
     <Compile Include="Code\Helpers\HtmlHelpers.cs" />
     <Compile Include="Code\IOC\Common\MappingModule.cs" />
@@ -264,6 +267,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Administration\templates\homepage.html" />
+    <Content Include="Areas\Administration\templates\host-list.html" />
+    <Content Include="Areas\Administration\templates\host.html" />
+    <Content Include="Areas\Administration\templates\hostwelcome.html" />
     <Content Include="Content\angular-bootstrap-datepicker\angular-bootstrap-datepicker.css" />
     <Content Include="Content\angular-loading-bar\loading-bar.css" />
     <Content Include="Content\angular-loading-bar\loading-bar.min.css" />
@@ -289,6 +296,10 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap-theme\animate.min.css" />
     <Content Include="Content\bootstrap-theme\jquery-ui.min.css" />
+    <Content Include="Content\bootstrap-datepicker.css" />
+    <Content Include="Content\bootstrap-theme\plugins\bootstrap-wysihtml5-0.0.2.css" />
+    <Content Include="Content\bootstrap-theme\plugins\prettify.css" />
+    <Content Include="Content\bootstrap-theme\plugins\wysiwyg-color.css" />
     <Content Include="Content\bootstrap-theme\style-coloradmin-theme.css" />
     <Content Include="Content\bootstrap-theme\plugins\dataTables.bootstrap.css" />
     <Content Include="Content\bootstrap-theme\plugins\metisMenu\metisMenu.css" />
@@ -351,11 +362,15 @@
     <Content Include="Content\site.min.css">
       <DependentUpon>site.css</DependentUpon>
     </Content>
+    <Content Include="Content\templates\user-list.html" />
+    <Content Include="Content\templates\news-list.html" />
     <Content Include="Content\templates\contact.html" />
     <Content Include="Content\templates\address.html" />
     <Content Include="Content\templates\comment-list.html" />
     <Content Include="Content\templates\contact-list.html" />
     <Content Include="Content\templates\document-list.html" />
+    <None Include="Content\timepicker.less" />
+    <Content Include="Content\templates\usernews.html" />
     <Content Include="Content\toastr\toastr.min.css" />
     <Content Include="Content\xeditable\xeditable.css" />
     <Content Include="favicon.ico" />
@@ -1136,6 +1151,7 @@
     <Content Include="Scripts\angular\i18n\angular-locale_zh.js" />
     <Content Include="Scripts\angular\i18n\angular-locale_zu-za.js" />
     <Content Include="Scripts\angular\i18n\angular-locale_zu.js" />
+    <Content Include="Scripts\angular\mask.min.js" />
     <Content Include="Scripts\angular\multipleDatePicker.min.js" />
     <Content Include="Scripts\angular\ng-google-chart.js" />
     <Content Include="Scripts\angular\ng-table.js" />
@@ -1149,6 +1165,9 @@
     <Content Include="Scripts\app\common\common-config.template.js" />
     <Content Include="Scripts\app\common\common-repository.js" />
     <Content Include="Scripts\app\common\common.js" />
+    <Content Include="Scripts\app\common\directives\user-list.js" />
+    <Content Include="Scripts\app\common\directives\usernews.js" />
+    <Content Include="Scripts\app\common\directives\news-list.js" />
     <Content Include="Scripts\app\common\directives\contact.js" />
     <Content Include="Scripts\app\common\directives\address.js" />
     <Content Include="Scripts\app\common\directives\contact-list.js" />
@@ -1164,6 +1183,14 @@
     <Content Include="Scripts\app\common\users\userprofile-ctrl.js" />
     <Content Include="Scripts\app\common\users\user-repository.js" />
     <Content Include="Scripts\app\common\users\user-app.js" />
+    <Content Include="Scripts\app\host\controllers\hostlogo-ctrl.js" />
+    <Content Include="Scripts\app\host\directives\homepage.js" />
+    <Content Include="Scripts\app\host\directives\welcome.js" />
+    <Content Include="Scripts\app\host\host-repository.js" />
+    <Content Include="Scripts\app\host\directives\host-list.js" />
+    <Content Include="Scripts\app\host\directives\host.js" />
+    <Content Include="Scripts\app\host\host-app.js" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-switch.js" />
     <Content Include="Scripts\bootstrap-switch.min.js" />
@@ -1171,6 +1198,8 @@
     <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\coloradmin.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\plugins\parsley\parsley.min.js" />
+    <Content Include="Scripts\bootstrap\bootstrap-theme\plugins\wysiwyg\bootstrap-wysihtml5-0.0.2.js" />
+    <Content Include="Scripts\bootstrap\bootstrap-theme\plugins\wysiwyg\wysihtml5-0.3.0.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap3-typeahead.js" />
@@ -1309,7 +1338,13 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Areas\Administration\Views\web.config" />
+    <Content Include="Areas\Administration\Views\Host\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Administration\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Administration\Views\News\Index.cshtml" />
     <None Include="Properties\PublishProfiles\hrmaxx.pubxml" />
+    <Content Include="Scripts\bootstrap\timepicker\timepicker.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
@@ -1372,9 +1407,12 @@
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Shared\_LogiPartialModal.cshtml" />
     <Content Include="Views\Shared\_BlankLayout.cshtml" />
+    <Content Include="Views\Home\AccessDenied.cshtml" />
+    <Content Include="Views\Manage\News.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Administration\Models\" />
     <Folder Include="Content\pages\" />
   </ItemGroup>
   <ItemGroup>

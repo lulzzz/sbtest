@@ -8,8 +8,7 @@ common.directive('contact', ['$modal', 'zionAPI','localStorageService',
 			scope: {
 				data: "=data",
 				sourceTypeId: "=sourceTypeId",
-				sourceId: "=sourceId",
-				type: "=type"
+				sourceId: "=sourceId"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/contact.html',
 
@@ -67,11 +66,10 @@ common.directive('bootstrapSwitch', [
         	};
         }
 ]);
-
-common.directive('showErrors', function () {
+common.directive('showErrors',['$timeout', function ($timeout) {
   	return {
   		restrict: 'A',
-  		require: '^form',
+  		require: ['^form'],
   		link: function (scope, el, attrs, formCtrl) {
   			// find the text box element, which has the 'name' attribute
   			var inputEl = el[0].querySelector("[name]");
@@ -82,7 +80,13 @@ common.directive('showErrors', function () {
   			var inputName = inputNgEl.attr('name');
 
   			var validate = function () {
-  				var err = formCtrl[inputName].$error;
+  				var f = null;
+					if (angular.isArray(formCtrl)) {
+						f = formCtrl[0];
+					} else {
+						f = formCtrl;
+					}
+  				var err = f[inputName].$error;
 
   				var targetMessage = (err.required) ? 'This ' + inputNgEl.attr('placeholder') + ' is required' : '';
   				targetMessage = (err.email) ? 'Invalid email' : targetMessage;
@@ -92,11 +96,11 @@ common.directive('showErrors', function () {
   				targetMessage = (err.maxlength) ? 'You must not exceed the maximum of 200 characters for this field' : targetMessage;
   				targetMessage = (err.pattern) ? 'please enter a valid ' + inputNgEl.attr('placeholder') : targetMessage;
 
-  				var bool = formCtrl[inputName].$invalid;
+  				var bool = f[inputName].$invalid;
   				var errorEl = el[0].querySelector(".parsley-errors-list");
   				var errorNgE1 = angular.element(errorEl);
   				errorNgE1.remove();
-  				el.toggleClass('has-error', bool);
+  				inputNgEl.toggleClass('parsley-error', bool);
   				if (bool) {
   					var svg = angular.element('<p class="parsley-errors-list">' + targetMessage + '.</p>');
   					el.append(svg);
@@ -104,14 +108,47 @@ common.directive('showErrors', function () {
   			}
 
   			// only apply the has-error class after the user leaves the text box
-  			inputNgEl.bind('keypressed keydown mouseenter blur change', function () {
-  				scope.$apply(function () {
-					  validate();
-				  });
+  			inputNgEl.bind('blur', function () {
+  				//validate();
+				  
   			});
-			  inputNgEl.load(function() {
-			  	validate();
+  			scope.$watch(function () {
+				  return (formCtrl[0])[inputName].$invalid;
+			  }, function (invalid) {
+  				validate();
 			  });
+  		
 		  }
   	}
-  });
+}]);
+common.directive('richTextEditor', function () {
+	return {
+		restrict: "A",
+		require: 'ngModel',
+		//replace : true,
+		transclude: true,
+		//template : '<div><textarea></textarea></div>',
+		link: function (scope, element, attrs, ctrl) {
+
+			var textarea = element.wysihtml5({ "html": true });
+
+			var editor = textarea.data('wysihtml5').editor;
+
+			// view -> model
+			editor.on('change', function () {
+				if (editor.getValue())
+					scope.$apply(function () {
+						ctrl.$setViewValue(editor.getValue());
+					});
+			});
+
+			// model -> view
+			ctrl.$render = function () {
+				textarea.html(ctrl.$viewValue);
+				editor.setValue(ctrl.$viewValue);
+			};
+
+			ctrl.$render();
+		}
+	};
+});

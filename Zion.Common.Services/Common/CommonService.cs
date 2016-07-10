@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Messages.Events;
@@ -9,7 +10,9 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Common;
+using HrMaxx.Infrastructure.Attributes;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using Magnum;
 
@@ -60,19 +63,7 @@ namespace HrMaxx.Common.Services.Common
 			{
 				if ((targetObject as BaseEntityDto).Id == Guid.Empty)
 					(targetObject as BaseEntityDto).Id = CombGuid.Generate();
-				if (target == EntityTypeEnum.Contact)
-				{
-					Bus.Publish<ContactEvent>(new ContactEvent
-					{
-						Contact = (targetObject as Contact),
-						SourceId = sourceId,
-						UserId = (targetObject as Contact).UserId,
-						Source = (targetObject as Contact).UserName,
-						SourceTypeId = source,
-						TimeStamp = DateTime.Now
-						
-					});
-				}
+				
 				return _commonRepository.SaveEntityRelation<T>(source, target, sourceId, targetObject);
 			}
 			catch (Exception e)
@@ -167,6 +158,77 @@ namespace HrMaxx.Common.Services.Common
 			catch (Exception e)
 			{
 				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" all related entity as list for {0}, {1}, {2}", sourceTypeId, targetTypeId, sourceId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public T FirstRelatedEntity<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId)
+		{
+			try
+			{
+				var entity = GetRelatedEntities<T>(sourceTypeId, targetTypeId, sourceId).FirstOrDefault();
+				if (entity == null)
+				{
+					var temp = System.Activator.CreateInstance<T>();
+					return temp;
+				}
+				return entity;
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" first related entity for {0}, {1}, {2}", sourceTypeId, targetTypeId, sourceId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
+		}
+
+		public List<News> GetNewsforUser(int? audienceScope, Guid? audienceId)
+		{
+			try
+			{
+				if (audienceScope.HasValue && audienceScope.Value == (int) RoleTypeEnum.Master)
+					audienceScope = null;
+				return _commonRepository.GetNewsListforUser(audienceScope, audienceId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" newsfeed"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void SaveNewsItem(News news)
+		{
+			try
+			{
+				_commonRepository.SaveNewsfeedItem(news);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" newsfeed item"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<News> GetUserNewsfeed(Guid host, Guid company, string userId, string role)
+		{
+			try
+			{
+				if (!string.IsNullOrWhiteSpace(role) &&
+				    ((RoleTypeEnum.Master == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role)) ||
+				     (RoleTypeEnum.Admin == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role))))
+					return _commonRepository.GetNewsListforUser(null, null);
+				
+				return _commonRepository.GetUserNewsfeed(host, company, userId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" newsfeed list for users"));
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

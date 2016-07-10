@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 
@@ -53,16 +54,37 @@ namespace HrMaxx.Common.Repository.Security
 			}
 		}
 
-		public List<Guid> GetUserByRoleAndId(RoleTypeEnum role, Guid? userId)
+		public List<Guid> GetUserByRoleAndId(List<RoleTypeEnum> role, Guid? userId)
 		{
-			var users = _dbContext.Users.Where(u => u.Roles.Any(r => r.Id == ((int)role).ToString())
+			var users = _dbContext.Users.Where(u => u.Roles.Any(r => role.Any(nr=>r.Id==((int)nr).ToString()))
 			                                        && ((userId.HasValue && u.Id == userId.Value.ToString()) || !userId.HasValue)
-				).ToList();
+																				).ToList();
 			if (!users.Any())
 			{
 				return new List<Guid>();
 			}
 			return users.Select(u => new Guid(u.Id)).ToList();
+		}
+
+		public List<UserModel> GetUsers(Guid? hostId, Guid? companyId)
+		{
+			var users = _dbContext.Users.AsQueryable();
+			if (hostId.HasValue)
+				users = users.Where(u => u.Host.Value == hostId.Value);
+			if (companyId.HasValue)
+				users = users.Where(u => u.Company.Value == companyId.Value);
+
+			return _mapper.Map<List<User>, List<UserModel>>(users.ToList());
+		}
+
+		public void SaveUser(UserModel usermodel)
+		{
+			var user = _dbContext.Users.First(u => u.Id == usermodel.UserId.ToString());
+			user.FirstName = usermodel.FirstName;
+			user.LastName = usermodel.LastName;
+			user.PhoneNumber = usermodel.Phone;
+			user.Active = usermodel.Active;
+			_dbContext.SaveChanges();
 		}
 	}
 }
