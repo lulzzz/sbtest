@@ -73,9 +73,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 		public Models.Host GetHostByUrl(string url)
 		{
 			var hosts = _dbContext.Hosts.ToList();
+			if (!hosts.Any())
+				return null;
 			var host = hosts.FirstOrDefault(h => string.Format(_domain, h.Url).Equals(url));
 			if (host == null)
-				host = hosts.First(h => h.Url.ToLower().Equals("payroll"));
+				host = hosts.First();
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
 		}
 
