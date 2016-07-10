@@ -1,17 +1,17 @@
 ﻿.bootstrap-timepicker {
     position: relative;
 
-    &.pull-right {
+    .pull-right {
         .bootstrap-timepicker-widget {
-            &.dropdown-menu {
+            .dropdown-menu {
                 left: auto;
                 right: 0;
 
-                &:before {
+                :before {
                     left: auto;
                     right: 12px;
                 }
-                &:after {
+                :after {
                     left: auto;
                     right: 13px;
                 }
@@ -29,12 +29,12 @@
     }
 }
 .bootstrap-timepicker-widget {
-    &.dropdown-menu {
+    .dropdown-menu {
         padding: 4px;
-        &.open {
+        .open {
             display: inline-block;
         }
-        &:before {
+        :before {
             border-bottom: 7px solid rgba(0, 0, 0, 0.2);
             border-left: 7px solid transparent;
             border-right: 7px solid transparent;
@@ -42,7 +42,7 @@
             display: inline-block;
             position: absolute;
         }
-        &:after {
+        :after {
             border-bottom: 6px solid #FFFFFF;
             border-left: 6px solid transparent;
             border-right: 6px solid transparent;
@@ -51,37 +51,37 @@
             position: absolute;
         }
     }
-    &.timepicker-orient-left {
-        &:before {
+    .timepicker-orient-left {
+        :before {
            left: 6px;
         }
-        &:after {
+        :after {
            left: 7px;
         }
     }
-    &.timepicker-orient-right {
-        &:before {
+    .timepicker-orient-right {
+        :before {
            right: 6px;
         }
-        &:after {
+        :after {
            right: 7px;
         }
     }
-    &.timepicker-orient-top {
-        &:before {
+    .timepicker-orient-top {
+        :before {
            top: -7px;
         }
-        &:after {
+        :after {
             top: -6px;
         }
     }
-    &.timepicker-orient-bottom {
-        &:before {
+    .timepicker-orient-bottom {
+        :before {
             bottom: -7px;
             border-bottom: 0;
             border-top: 7px solid #999;
         }
-        &:after {
+        :after {
             bottom: -6px;
             border-bottom: 0;
             border-top: 6px solid #ffffff;
@@ -101,7 +101,7 @@
             margin: 0;
             padding: 2px;
 
-            &:not(.separator) {
+            :not(.separator) {
                 min-width: 30px;
             }
 
@@ -117,7 +117,7 @@
                 outline: 0;
                 color: #333;
 
-                &:hover {
+                :hover {
                     text-decoration: none;
                     background-color: #eee;
                     -webkit-border-radius: 4px;
