@@ -369,7 +369,6 @@
     <Content Include="Content\templates\comment-list.html" />
     <Content Include="Content\templates\contact-list.html" />
     <Content Include="Content\templates\document-list.html" />
-    <Compile Include="Content\timepicker.less" />
     <Content Include="Content\templates\usernews.html" />
     <Content Include="Content\toastr\toastr.min.css" />
     <Content Include="Content\xeditable\xeditable.css" />
