@@ -130,11 +130,11 @@ namespace HrMaxx.Common.Repository.Common
 
 		public List<News> GetNewsListforUser(int? audienceScope, Guid? audienceId)
 		{
-			var news = _dbContext.News.Where(n => (audienceScope.HasValue && n.AudienceScope == audienceScope) || !audienceScope.HasValue).ToList();
+			var news = _dbContext.News.Where(n => (audienceScope.HasValue && n.AudienceScope <= audienceScope) || !audienceScope.HasValue).ToList();
 			if (audienceScope.HasValue && audienceId.HasValue)
 			{
 				news =
-					news.Where(n => JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(audienceId.Value)))
+					news.Where(n => n.AudienceScope<audienceScope.Value || JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(audienceId.Value)))
 						.ToList();
 			}
 			return _mapper.Map<List<Models.DataModel.News>, List<News>>(news);

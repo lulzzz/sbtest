@@ -346,6 +346,8 @@
     <Content Include="Content\images\bg-8.jpg" />
     <Content Include="Content\images\BlankUser.jpg" />
     <Content Include="Content\images\logo.png" />
+    <Content Include="Content\images\news.gif" />
+    <Content Include="Content\images\services.gif" />
     <Content Include="Content\ng-table\ng-table.css" />
     <Content Include="Content\patterns\congruent_pentagon.png" />
     <Content Include="Content\patterns\header-profile-skin-1.png" />
@@ -1342,6 +1344,8 @@
     <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Administration\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Administration\Views\News\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Host\Users.cshtml" />
+    <Content Include="Areas\Administration\Views\Host\Profile.cshtml" />
     <None Include="Properties\PublishProfiles\hrmaxx.pubxml" />
     <Content Include="Scripts\bootstrap\timepicker\timepicker.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />

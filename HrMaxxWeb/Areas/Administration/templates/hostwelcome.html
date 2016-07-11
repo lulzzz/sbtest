@@ -10,16 +10,20 @@
 				News & Promo
 			</div>
 			<div class="panel-body" style="height:400px">
-				
-				<ul ng-show="newsfeed.length>0">
-					<li ng-repeat="news in newsfeed | orderBy:'lastModified':true">
-						<div class="commentText">
-							<p class="">{{news.newsContent}}</p> <span class="date sub-text">on {{news.lastModified | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
-						</div>
-					</li>
-				</ul>
-				<div ng-show="newsfeed.length===0" class=" row border-left border-bottom border-right">
-					No news found
+				<div class="col-sm-8">
+					<ul ng-show="newsfeed.length>0">
+						<li ng-repeat="news in newsfeed | orderBy:'lastModified':true">
+							<div class="commentText">
+								<p class="">{{news.newsContent}}</p> <span class="date sub-text">on {{news.lastModified | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
+							</div>
+						</li>
+					</ul>
+					<div ng-show="newsfeed.length===0" class=" row border-left border-bottom border-right">
+						No news found
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<img ng-src="{{zionAPI.Web + 'Content/images/news.gif'}}" class=" pull-right" />
 				</div>
 			</div>
 		</div>
@@ -30,12 +34,17 @@
 			<div class="panel-heading">
 				Services
 			</div>
-			<div class="panel-body" style="height:400px" ng-bind-html="data.services">
+			<div class="panel-body" style="height:400px">
+				<div class="col-sm-8" ng-bind-html="data.services">
 
+				</div>
+				<div class="col-sm-4">
+					<img ng-src="{{zionAPI.Web + 'Content/images/services.gif'}}" class=" pull-right" />
+				</div>
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="col-sm-4">
 		<div class="panel panel-inverse">
 			<div class="panel-heading">

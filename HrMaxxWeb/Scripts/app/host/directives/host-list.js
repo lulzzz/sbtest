@@ -6,7 +6,8 @@ hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 			restrict: 'E',
 			replace: true,
 			scope: {
-				heading: "=heading"
+				heading: "=heading",
+				selected: "=?selected"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html',
 
@@ -110,20 +111,29 @@ hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 					});
 				}
 				var init = function () {
-					var querystring = $location.search();
-					hostRepository.getHostList().then(function (data) {
-						$scope.list = data;
-						$scope.tableParams.reload();
-						$scope.fillTableData($scope.tableParams);
-						if (querystring.host) {
-							var selected = $filter('filter')($scope.list, { firmName: querystring.host });
-							if (selected.length > 0) {
-								$scope.setSelectedHost(selected[0]);
+					if (!$scope.selected) {
+						var querystring = $location.search();
+						hostRepository.getHostList().then(function (data) {
+							$scope.list = data;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							if (querystring.host) {
+								var selected = $filter('filter')($scope.list, { firmName: querystring.host });
+								if (selected.length > 0) {
+									$scope.setSelectedHost(selected[0]);
+								}
 							}
-						}
-					}, function (erorr) {
+						}, function (erorr) {
 
-					});
+						});
+					} else {
+						hostRepository.getMyHost().then(function(data) {
+							$scope.setSelectedHost(data);
+						}, function(error) {
+							addAlert('Error getting the host', 'danger');
+						});
+					}
+					
 				}
 				init();
 

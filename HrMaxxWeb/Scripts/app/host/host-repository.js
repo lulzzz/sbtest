@@ -2,6 +2,16 @@ hostmodule.factory('hostRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'hostServer', '$filter', 'Entities',
 	function ($http, zionAPI, zionPaths, $q, upload, hostServer, $filter, Entities) {
 		return {
+			getMyHost: function () {
+				var deferred = $q.defer();
+				hostServer.one('MyHost').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getHostList: function () {
 				var deferred = $q.defer();
 				hostServer.one('Hosts').getList().then(function (data) {

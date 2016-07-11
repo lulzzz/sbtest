@@ -7,11 +7,11 @@ common.directive('userList', ['$modal', 'zionAPI', '$timeout', '$window',
 			replace: true,
 			scope: {
 				hostId: "=hostId",
-				companyId: "=companyId",
-				employeeId: "=employeeId",
+				companyId: "=?companyId",
+				employeeId: "=?employeeId",
 				heading: "=heading",
-				resetPassword: "=resetPassword",
-				parentTypeId: "=parentTypeId"
+				showResetPassword: "=?showResetPassword",
+				parentTypeId: "=?parentTypeId"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/user-list.html',
 

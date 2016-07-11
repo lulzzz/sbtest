@@ -1,6 +1,6 @@
 ﻿<div class="row">
 	<!-- begin panel -->
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="!selected">
 		<div class="panel-heading" ng-click="isBodyOpen=!isBodyOpen">
 			<h4 class="panel-title">{{heading}}<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isBodyOpen, 'glyphicon-chevron-right': !isBodyOpen}"></i></h4>
 			
@@ -86,10 +86,10 @@
 				</div>
 			</div>
 			<div class="tab-pane fade in" id="user">
-				<user-list host-id="selectedHost.id" company-id="null" employee-id="null" heading="'Host Users'" reset-password="true" parent-type="sourceTypeId" />
+				<user-list host-id="selectedHost.id" company-id="null" employee-id="null" heading="'Host Users'" show-reset-password="true" parent-type-id="sourceTypeId" />
 			</div>
 			<div class="tab-pane fade in" id="news">
-				<news-list audience-type-id="3" audience-id="selectedHost.id" heading="'Newsfeed'" fetch="true" />
+				<news-list audience-type-id="3" audience-id="selectedHost.id" heading="'Newsfeed'" fetch="true" show-audience-list="false"/>
 			</div>
 			<div class="tab-pane fade in" id="documents">
 				<document-list source-type-id="1" source-id="selectedHost.id" heading="'Documents'" />
@@ -98,7 +98,7 @@
 				<contact-list source-type-id="1" source-id="selectedHost.id" heading="'Contacts'" />
 			</div>
 			<div class="tab-pane fade in" id="homepage">
-				<homepage host-id="selectedHost.id" source-type-id="1"></homepage>
+				<homepage host-id="selectedHost.id" source-type-id="1" host="selectedHost"></homepage>
 			</div>
 		</div>
 

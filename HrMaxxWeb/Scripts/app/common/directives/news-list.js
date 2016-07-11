@@ -9,7 +9,8 @@ common.directive('newsList', ['$modal', 'zionAPI', '$timeout', '$window',
 				audienceTypeId: "=audienceTypeId",
 				audienceId: "=audienceId",
 				heading: "=heading",
-				fetch: "=fetch"
+				fetch: "=fetch",
+				showAudienceList: "=showAudienceList"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/news-list.html',
 
@@ -36,17 +37,14 @@ common.directive('newsList', ['$modal', 'zionAPI', '$timeout', '$window',
 						audienceScope: $scope.audienceTypeId,
 						audience: []
 					};
-					if($scope.audienceId)
-						$scope.selectedNewsItem.audience.push($scope.audienceId);
-				}
-				$scope.setTargetAudience = function () {
-					$scope.targetAudience = [];
-					$scope.selectedNewsItem.audience = [];
-					if (parseInt($scope.selectedNewsItem.audienceScope) === 3) {
-						$scope.targetAudience = angular.copy($scope.metadata.hosts);
+					if (parseInt($scope.selectedNewsItem.audienceScope) === 3 && $scope.audienceId) {
+						var thisHost = $filter('filter')($scope.metadata.hosts, { key: $scope.audienceId })[0];
+						if(thisHost)
+							$scope.selectedNewsItem.audience.push(thisHost);
 					}
+						
 				}
-			
+				
 				$scope.tableData = [];
 				$scope.tableParams = new ngTableParams({
 					page: 1,            // show first page
@@ -80,11 +78,30 @@ common.directive('newsList', ['$modal', 'zionAPI', '$timeout', '$window',
 						params.total(orderedData.length); // set total for recalc pagination
 					}
 				};
+				$scope.setTargetAudience = function (emptyAudience) {
+					$scope.targetAudience = [];
+					if (emptyAudience) {
+						$scope.selectedNewsItem.audience = [];
+						$scope.selectedAudience = [];
+					}
+						
+					if (parseInt($scope.selectedNewsItem.audienceScope) === 3) {
+						$scope.targetAudience = angular.copy($scope.metadata.hosts);
+						$.each($scope.metadata.hosts, function (index, host) {
+							var exists = $filter('filter')($scope.selectedNewsItem.audience, { key: host.key })[0];
+							if (exists) {
+								$scope.selectedAudience.push({ id: host.key });
+							}
+						});
+					}
+				}
+
 				$scope.cancel=function() {
 					$scope.selectedNewsItem = null;
 				}
 				$scope.setSelectedNewsItem = function (item) {
 					$scope.selectedNewsItem = item;
+					$scope.setTargetAudience(false); 
 				}
 				$scope.getRowClass = function(item) {
 					if ($scope.selectedContact && $scope.selectedContact.id === item.id)

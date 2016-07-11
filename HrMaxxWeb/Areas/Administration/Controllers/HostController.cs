@@ -13,9 +13,23 @@ namespace HrMaxxWeb.Areas.Administration.Controllers
         // GET: Administration/CPA
         public ActionResult Index()
         {
-					if (!CurrentUser.IsInRole("Master"))
+					if (!CurrentUser.IsInRole("Master") && !CurrentUser.IsInRole("Admin"))
 						return RedirectToAction("AccessDenied", "Home", new { area = "" });
           return View();
         }
+
+	    public ActionResult Users()
+	    {
+				if (!CurrentUser.IsInRole("Master") && !CurrentUser.IsInRole("Admin"))
+					return RedirectToAction("AccessDenied", "Home", new { area = "" });
+				return View();
+	    }
+
+	    public ActionResult Profile()
+	    {
+				if (!CurrentUser.IsInRole("Host"))
+					return RedirectToAction("AccessDenied", "Home", new { area = "" });
+				return View();
+	    }
     }
 }

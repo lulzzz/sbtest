@@ -7,7 +7,8 @@ hostmodule.directive('homepage', ['$modal', 'zionAPI', '$timeout', 'localStorage
 			
 			scope: {
 				hostId: "=hostId",
-				sourceTypeId: "=sourceTypeId"
+				sourceTypeId: "=sourceTypeId",
+				parent: "=host"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/homepage.html',
 
@@ -172,7 +173,7 @@ hostmodule.directive('homepage', ['$modal', 'zionAPI', '$timeout', 'localStorage
 							$scope.hostaddress.id = data.id;
 							hostRepository.saveHomePage($scope.data).then(function(data) {
 								localStorageService.set('hostHomePage', data);
-								$window.location.href = zionAPI.Web;
+								$window.location.href = zionAPI.Web + '#/?host='+$scope.parent.firmName;
 								addAlert('successfully saved home page details', 'success');
 							}, function(erorr) {
 								addAlert('error saving host home page details', 'danger');

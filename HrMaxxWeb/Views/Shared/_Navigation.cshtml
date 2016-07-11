@@ -39,11 +39,17 @@
 					<ul class="sub-menu">
 						<li><a href="@Url.Action("Index", "Host", new {area = "Administration"})">Manage Host</a></li>
 						<li><a href="@Url.Action("Index", "News", new {area = "Administration"})">News & Announcements</a></li>
+						<li><a href="@Url.Action("Users", "Host", new {area = "Administration"})">Users</a></li>
 						
 					</ul>
 				</li>
 			}
-		
+			@if (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()))
+			{
+				<li><a href="@Url.Action("Profile", "Host", new {area = "Administration"})"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
+				
+			}
+
 			<!-- begin sidebar minify button -->
 			<li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
 			<!-- end sidebar minify button -->

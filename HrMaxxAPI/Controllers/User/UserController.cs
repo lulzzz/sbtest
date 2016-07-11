@@ -20,6 +20,7 @@ using HrMaxxAPI.Controllers.Hosts;
 using HrMaxxAPI.Resources.Common;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using RestSharp;
 
 namespace HrMaxxAPI.Controllers
 {
@@ -79,9 +80,9 @@ namespace HrMaxxAPI.Controllers
 						ReasonPhrase = "No matching user found"
 					});
 				}
-				string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+				string code = GetCode(user.Id, false);
 				var callbackUrl = string.Format("{0}/{1}/{2}?userId={3}&code={4}", ConfigurationManager.AppSettings["WebURL"],
-					"Account", "ResetPassword", user.Id, code);
+					"Account", "ResetPassword", user.Id, HttpUtility.UrlEncode(code));
 				await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
 			}
 			catch (Exception e)
@@ -121,7 +122,6 @@ namespace HrMaxxAPI.Controllers
 				var result = await UserManager.CreateAsync(user, "HrMaxx1234!");
 				if (result.Succeeded)
 				{
-					//string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
 					var role = string.Empty;
 					if (!model.SourceTypeId.HasValue)
 					{
@@ -140,10 +140,12 @@ namespace HrMaxxAPI.Controllers
 					}
 					await UserManager.AddToRoleAsync(user.Id, role);
 					model.UserId = new Guid(user.Id);
+					string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
 					return model;
 				}
 				else
 				{
+					
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.Conflict,
@@ -154,6 +156,7 @@ namespace HrMaxxAPI.Controllers
 			}
 			catch (Exception e)
 			{
+				Logger.Error("Error creating user", e);
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
@@ -165,15 +168,37 @@ namespace HrMaxxAPI.Controllers
 		}
 		private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
 		{
-			string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
+			string code = GetCode(userID, true);//await UserManager.GenerateEmailConfirmationTokenAsync(userID));
 			
 			var callbackUrl = string.Format("{0}/{1}/{2}?userId={3}&code={4}", ConfigurationManager.AppSettings["WebURL"],
-				"Account", "ConfirmEmail", userID, code);
+				"Account", "ConfirmEmail", userID, HttpUtility.UrlEncode(code));
 			
 			await UserManager.SendEmailAsync(userID, subject,
 				 "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
 			return callbackUrl;
+		}
+
+		private string GetCode(string userId, bool confirmEmail)
+		{
+			try
+			{
+				var client = new RestClient { BaseUrl = new Uri(ConfigurationManager.AppSettings["WebURL"] + "/Account/Token") };
+
+				var request = new RestRequest { UseDefaultCredentials = true };
+				request.AddParameter("userId", userId, ParameterType.QueryString); // used on every request
+				request.AddParameter("confirmEmail", confirmEmail, ParameterType.QueryString); // used on every request
+
+				var response = client.Execute(request);
+				return response.Content;
+
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error getting email token from Web", e);
+				return string.Empty;
+			}
+			
 		}
 	}
 }

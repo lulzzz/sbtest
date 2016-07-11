@@ -177,11 +177,11 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			
 		}
 
-		public object GetHostHomePageByUrl(string url)
+		public object GetHostHomePageByUrl(string url, Guid hostId)
 		{
 			try
 			{
-				var host = _hostRepository.GetHostByUrl(url);
+				var host = _hostRepository.GetHostByUrl(url, hostId);
 				var homepage = GetHostHomePage(host.Id);
 				var address = _commonService.FirstRelatedEntity<Address>(EntityTypeEnum.Host, EntityTypeEnum.Address, host.Id);
 				var newsfeed = _commonService.GetNewsforUser((int) RoleTypeEnum.Host, host.Id);
@@ -210,11 +210,11 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			}
 		}
 
-		public object GetHostHomePageByFirmName(string firmName)
+		public object GetHostHomePageByFirmName(string firmName, Guid hostId)
 		{
 			try
 			{
-				var host = _hostRepository.GetHostByFirmName(firmName);
+				var host = _hostRepository.GetHostByFirmName(firmName, hostId);
 				var homepage = GetHostHomePage(host.Id);
 				var address = _commonService.FirstRelatedEntity<Address>(EntityTypeEnum.Host, EntityTypeEnum.Address, host.Id);
 				var newsfeed = _commonService.GetNewsforUser((int)RoleTypeEnum.Host, host.Id);

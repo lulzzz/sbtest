@@ -75,7 +75,7 @@
 							</div>
 							<div class="form-group col-sm-12">
 								<label for="scope">Scope</label>
-								<select id="scope" name="scope" class="form-control" ng-change="setTargetAudience()" ng-disabled="audienceTypeId>2" ng-model="selectedNewsItem.audienceScope">
+								<select id="scope" name="scope" class="form-control" ng-change="setTargetAudience(true)" ng-disabled="audienceTypeId>2" ng-model="selectedNewsItem.audienceScope">
 									<option value="1">All</option>
 									<option value="3">Host</option>
 									<option value="4">Company</option>
@@ -83,7 +83,7 @@
 
 								</select>
 							</div>
-							<div class="form-group col-sm-12" ng-show="selectedNewsItem.audienceScope>2">
+							<div class="form-group col-sm-12" ng-show="showAudienceList && selectedNewsItem.audienceScope>2">
 								<label for="audience">Audiences</label>
 								<div ng-dropdown-multiselect="" options="targetAudience" extra-settings="{displayProp: 'value', idProp: 'key', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedAudience" events="audienceEvents"></div>
 

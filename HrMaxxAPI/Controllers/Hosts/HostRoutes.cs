@@ -13,5 +13,6 @@
 		public const string HostWelcomeByFirmName = "Host/HostWelcomeByFirmName/{firmName}";
 
 		public const string NewsMetaData = "Host/NewsMetaData";
+		public const string Host = "Host/MyHost";
 	}
 }

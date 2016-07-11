@@ -70,26 +70,43 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			}
 		}
 
-		public Models.Host GetHostByUrl(string url)
+		public Models.Host GetHostByUrl(string url, Guid hostId)
 		{
 			var hosts = _dbContext.Hosts.ToList();
 			if (!hosts.Any())
 				return null;
-			var host = hosts.FirstOrDefault(h => string.Format(_domain, h.Url).Equals(url));
-			if (host == null)
-				host = hosts.First();
-			return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
+			
+			if (!hostId.Equals(Guid.Empty))
+			{
+				var host = hosts.FirstOrDefault(h => h.Id == hostId);
+				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
+			}
+			else
+			{
+				var host = hosts.FirstOrDefault(h => h.Url.Equals(url));
+				if (host == null)
+					host = hosts.First();
+				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
+			}
 		}
 
-		public Models.Host GetHostByFirmName(string firmName)
+		public Models.Host GetHostByFirmName(string firmName, Guid hostId)
 		{
 			var hosts = _dbContext.Hosts.ToList();
 			if (!hosts.Any())
 				return null;
-			var host = hosts.FirstOrDefault(h => h.FirmName.ToLower().Equals(firmName.ToLower()));
-			if (host == null)
-				host = hosts.First();
-			return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
+			if (!hostId.Equals(Guid.Empty))
+			{
+				var host = hosts.FirstOrDefault(h => h.Id == hostId);
+				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
+			}
+			else
+			{
+				var host = hosts.FirstOrDefault(h => h.FirmName.Equals(firmName));
+				if (host == null)
+					host = hosts.First();
+				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
+			}
 		}
 	}
 }

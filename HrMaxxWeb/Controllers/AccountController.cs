@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
+using HrMaxxWeb.Code.ActionResult;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -184,6 +185,28 @@ namespace HrMaxxWeb.Controllers
             return View(model);
         }
 
+				[HttpGet]
+				[AllowAnonymous]
+				[Route("token")]
+				public async Task<string> Token(string userId, bool confirmEmail)
+				{
+					try
+					{
+						if (confirmEmail)
+						{
+							return await UserManager.GenerateEmailConfirmationTokenAsync(userId);
+						}
+						else
+						{
+							return await UserManager.GeneratePasswordResetTokenAsync(userId);
+						}
+					}
+					catch (Exception e)
+					{
+						
+						return e.Message;
+					}
+				}
         //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
@@ -193,6 +216,7 @@ namespace HrMaxxWeb.Controllers
             {
                 return View("Error");
             }
+	       
             var result = await UserManager.ConfirmEmailAsync(userId, code);
 						return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }

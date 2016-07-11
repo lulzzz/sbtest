@@ -30,6 +30,13 @@ namespace HrMaxxAPI.Controllers.Hosts
 		}
 
 		[HttpGet]
+		[Route(HostRoutes.Host)]
+		public Host GetHost()
+		{
+			return MakeServiceCall(() => _hostService.GetHost(CurrentUser.Host), "Get Current User's host", true);
+		}
+
+		[HttpGet]
 		[Route(HostRoutes.Hosts)]
 		public IList<Host> GetHosts()
 		{
@@ -41,7 +48,7 @@ namespace HrMaxxAPI.Controllers.Hosts
 		[Route(HostRoutes.HostWelcome)]
 		public object GetHostWelcome(string url)
 		{
-			return MakeServiceCall(() => _hostService.GetHostHomePageByUrl(url), "Get home page for the host", true);
+			return MakeServiceCall(() => _hostService.GetHostHomePageByUrl(url, CurrentUser.Host), "Get home page for the host", true);
 			
 		}
 
@@ -55,7 +62,7 @@ namespace HrMaxxAPI.Controllers.Hosts
 		[Route(HostRoutes.HostWelcomeByFirmName)]
 		public object GetHostWelcomeByFirmName(string firmName)
 		{
-			return MakeServiceCall(() => _hostService.GetHostHomePageByFirmName(firmName), "Get home page for the host", true);
+			return MakeServiceCall(() => _hostService.GetHostHomePageByFirmName(firmName, CurrentUser.Host), "Get home page for the host", true);
 		}
 
 		[HttpGet]
