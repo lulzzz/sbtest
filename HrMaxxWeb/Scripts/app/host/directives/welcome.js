@@ -47,7 +47,8 @@ hostmodule.directive('welcome', ['$modal', 'zionAPI', '$location','localStorageS
 				var init = function () {
 					var querystring = $location.search();
 					if (querystring.host) {
-						hostRepository.getHostWelcomePageByFirmName(querystring.host).then(function (data) {
+						var hostname = host.split(".")[0];
+						hostRepository.getHostWelcomePageByFirmName(hostname).then(function (data) {
 							$scope.data = angular.copy(data.homePage);
 							$scope.hostaddress = data.address;
 							$scope.hostId = data.hostId;
