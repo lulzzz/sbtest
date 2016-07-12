@@ -83,7 +83,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			}
 			else
 			{
-				var host = hosts.FirstOrDefault(h => h.Url.Equals(url));
+				var host = hosts.FirstOrDefault(h => h.Url.ToLower().Equals(url.ToLower()));
 				if (host == null)
 					host = hosts.First();
 				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
@@ -102,7 +102,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			}
 			else
 			{
-				var host = hosts.FirstOrDefault(h => h.FirmName.Equals(firmName));
+				var host = hosts.FirstOrDefault(h => h.FirmName.ToLower().Equals(firmName.ToLower()));
 				if (host == null)
 					host = hosts.First();
 				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
