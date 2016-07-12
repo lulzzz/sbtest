@@ -121,7 +121,7 @@ common.directive('userList', ['$modal', 'zionAPI', '$timeout', '$window',
 					});
 				}
 				$scope.resetPassword = function() {
-					commpnRepository.resetPassword($scope.selectedUser.email).then(function (result) {
+					commpnRepository.resetPassword($scope.selectedUser).then(function (result) {
 						addAlert('successfully sent a password reset email to the user', 'success');
 					}, function (error) {
 						addAlert('Error: ' + error.statusText, 'danger');

@@ -65,13 +65,13 @@ namespace HrMaxxAPI.Controllers
 			MakeServiceCall(() => _userService.SaveUserProfile(user), string.Format("Save User Profile By User Id={0}", user.UserId));
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(UserRoutes.ResetPassword)]
-		public async void UserPasswordReset(string email)
+		public async Task UserPasswordReset(UserResource resource)
 		{
 			try
 			{
-				var user = await UserManager.FindByEmailAsync(email);
+				var user = await UserManager.FindByEmailAsync(resource.Email);
 				if (user == null)
 				{
 					throw new HttpResponseException(new HttpResponseMessage
@@ -87,6 +87,7 @@ namespace HrMaxxAPI.Controllers
 			}
 			catch (Exception e)
 			{
+				Logger.Error("Error Resetting password", e);
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
@@ -108,7 +109,7 @@ namespace HrMaxxAPI.Controllers
 				return model;
 			}
 			var userExists = await UserManager.FindByEmailAsync(model.Email);
-			if (userExists!=null && !model.UserId.HasValue)
+			if (userExists!=null)
 			{
 				throw new HttpResponseException(new HttpResponseMessage
 				{

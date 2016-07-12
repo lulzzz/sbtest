@@ -227,9 +227,9 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
-			resetPassword: function (email) {
+			resetPassword: function (user) {
 				var deferred = $q.defer();
-				commonServer.one('UserPasswordReset').one(email).then(function (data) {
+				commonServer.all('UserPasswordReset').post(user).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

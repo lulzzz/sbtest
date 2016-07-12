@@ -7,6 +7,6 @@
 		public const string Users = "Users/{hostId:guid?}/{companyId:guid?}";
 		public const string SaveUserProfile = "User";
 		public const string SaveUser = "SaveUser";
-		public const string ResetPassword = "UserPasswordReset/{email}";
+		public const string ResetPassword = "UserPasswordReset";
 	}
 }
