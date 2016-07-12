@@ -62,7 +62,7 @@ hostmodule.directive('welcome', ['$modal', 'zionAPI', '$location','localStorageS
 						});
 
 					} else {
-						hostRepository.getHostWelcomePage($location.$$host).then(function (data) {
+						hostRepository.getHostWelcomePage($location.$$host.split(".")[0]).then(function (data) {
 							$scope.data = angular.copy(data.homePage);
 							$scope.hostaddress = data.address;
 							$scope.hostId = data.hostId;
