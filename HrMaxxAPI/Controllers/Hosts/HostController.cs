@@ -40,7 +40,7 @@ namespace HrMaxxAPI.Controllers.Hosts
 		[Route(HostRoutes.Hosts)]
 		public IList<Host> GetHosts()
 		{
-			return MakeServiceCall(() => _hostService.GetHostList(), "Get list of all hosts", true);
+			return MakeServiceCall(() => _hostService.GetHostList(CurrentUser.Host), "Get list of all hosts", true);
 		}
 
 		[HttpGet]

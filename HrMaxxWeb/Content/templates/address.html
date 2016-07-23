@@ -2,12 +2,12 @@
 	<div class="row">
 		<div class="form-group col-sm-6" show-errors>
 			<label for="addressline1">Street Address</label>
-			<input type="text" id="addressline1" name="addressline1" class="form-control" placeholder="Address Line 1" ng-model="data.addressLine1" required my-directive />
+			<input type="text" id="addressline1" name="addressline1" class="form-control" placeholder="Address Line 1" ng-model="data.addressLine1" required ng-disabled="showDisabled" />
 
 		</div>
 		<div class="form-group col-sm-6">
 			<label for="city">City</label>
-			<input type="text" id="city" class="form-control" placeholder="City" ng-model="data.city" />
+			<input type="text" id="city" class="form-control" placeholder="City" ng-model="data.city" ng-disabled="showDisabled" />
 
 		</div>
 	</div>
@@ -15,13 +15,13 @@
 		<div class="col-sm-6 row">
 			<div class="form-group  col-sm-6" show-errors>
 				<label for="country">Country</label>
-				<select id="country" class="form-control" name="country" placeholder="country" ng-change="countrySelected()" ng-disabled="countries.length===1" ng-model="data.selectedCountry" ng-options="country.countryName for country in countries track by country.countryId" required>
+				<select id="country" class="form-control" name="country" placeholder="country" ng-change="countrySelected()" ng-disabled="(data && countries.length===1) || showDisabled" ng-model="data.selectedCountry" ng-options="country.countryName for country in countries track by country.countryId" required>
 					<option value="">Please select...</option>
 				</select>
 			</div>
 			<div class="form-group  col-sm-6" show-errors	>
 				<label for="state">State</label>
-				<select id="state" class="form-control" name="state" placeholder="state" required ng-model="data.selectedState" ng-change="stateSelected()" ng-options="state.stateName for state in data.selectedCountry.states track by state.stateId">
+				<select id="state" class="form-control" name="state" placeholder="state" required ng-model="data.selectedState" ng-change="stateSelected()" ng-disabled="showDisabled" ng-options="state.stateName for state in data.selectedCountry.states track by state.stateId">
 					<option value="">Please select...</option>
 				</select>
 			</div>
@@ -31,12 +31,12 @@
 		<div class="col-sm-6">
 			<div class="form-group col-sm-6" show-errors>
 				<label for="zip">Zip</label>
-				<input type="text" id="zip" class="form-control" name="zip" ng-pattern="/^(\d{5}(-\d{4})?|[A-Z]\d[A-Z] *\d[A-Z]\d)$/" required placeholder="Zip Code" ng-model="data.zip" />
+				<input type="text" id="zip" class="form-control" name="zip" ng-pattern="/^(\d{5}(-\d{4})?|[A-Z]\d[A-Z] *\d[A-Z]\d)$/" ng-disabled="showDisabled" required placeholder="Zip Code" ng-model="data.zip" />
 
 			</div>
 			<div class="form-group col-sm-6" show-errors>
 				<label for="city">Zip Extension</label>
-				<input type="text" id="zipextension" name="zipextension" class="form-control" placeholder="Zip Extension" ng-model="data.zipExtension" ng-pattern="/^\d{4}$/" />
+				<input type="text" id="zipextension" name="zipextension" class="form-control" placeholder="Zip Extension" ng-model="data.zipExtension" ng-disabled="showDisabled" ng-pattern="/^\d{4}$/" />
 
 			</div>
 

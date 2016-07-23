@@ -1045,7 +1045,7 @@ label {
 .has-error .form-control-feedback {
     color: #ff5b57;
 }
-.has-error .form-control {
+.has-error.form-control {
     border-color: #ff5b57;
 }
 .has-error .form-control:focus {

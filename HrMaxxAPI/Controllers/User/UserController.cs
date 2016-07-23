@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -16,13 +14,11 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
 using HrMaxx.Infrastructure.Helpers;
-using HrMaxxAPI.Controllers.Hosts;
 using HrMaxxAPI.Resources.Common;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using RestSharp;
 
-namespace HrMaxxAPI.Controllers
+namespace HrMaxxAPI.Controllers.User
 {
 	public class UserController : BaseApiController
 	{

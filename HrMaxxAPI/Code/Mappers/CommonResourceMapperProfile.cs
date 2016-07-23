@@ -24,6 +24,9 @@ namespace HrMaxxAPI.Code.Mappers
 			base.Configure();
 
 			CreateMap<NotificationDto, NotificationsResource>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.NotificationId))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(n => n.CreatedOn,
 					opt =>
 						opt.MapFrom(
@@ -53,6 +56,11 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
 
+			CreateMap<Address, AddressResource>()
+				.ForMember(dest => dest.SourceId, opt => opt.Ignore())
+				.ForMember(dest => dest.SourceTypeId, opt => opt.Ignore())
+				.ForMember(dest => dest.TargetTypeId, opt => opt.Ignore());
+
 			CreateMap<NewsResource, News>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
@@ -72,11 +80,17 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active));
 
 			CreateMap<UserModel, UserResource>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
 				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
 				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
 				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
 				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
-				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active));
+				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active))
+				.ForMember(dest => dest.SourceTypeId, opt => opt.Ignore())
+				.ForMember(dest => dest.HostId, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
+				.ForMember(dest => dest.UserName, opt => opt.Ignore());
 		}
 	}
 }

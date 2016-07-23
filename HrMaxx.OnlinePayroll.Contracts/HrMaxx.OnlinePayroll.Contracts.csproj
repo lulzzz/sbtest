@@ -45,6 +45,8 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Services\ICompanyService.cs" />
+    <Compile Include="Services\IMetaDataService.cs" />
     <Compile Include="Services\IHostService.cs" />
   </ItemGroup>
   <ItemGroup>

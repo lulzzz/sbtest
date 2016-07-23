@@ -245,6 +245,8 @@
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
     <Compile Include="Areas\Administration\Controllers\HostController.cs" />
     <Compile Include="Areas\Administration\Controllers\NewsController.cs" />
+    <Compile Include="Areas\Client\ClientAreaRegistration.cs" />
+    <Compile Include="Areas\Client\Controllers\CompanyController.cs" />
     <Compile Include="Code\ActionResult\JsonNetResult.cs" />
     <Compile Include="Code\Helpers\HtmlHelpers.cs" />
     <Compile Include="Code\IOC\Common\MappingModule.cs" />
@@ -271,6 +273,12 @@
     <Content Include="Areas\Administration\templates\host-list.html" />
     <Content Include="Areas\Administration\templates\host.html" />
     <Content Include="Areas\Administration\templates\hostwelcome.html" />
+    <Content Include="Areas\Client\templates\company-list.html" />
+    <Content Include="Areas\Client\templates\tax-year-rate-list.html" />
+    <Content Include="Areas\Client\templates\accumulated-pay-type-list.html" />
+    <Content Include="Areas\Client\templates\pay-code-list.html" />
+    <Content Include="Areas\Client\templates\worker-compensation-list.html" />
+    <Content Include="Areas\Client\templates\deduction-list.html" />
     <Content Include="Content\angular-bootstrap-datepicker\angular-bootstrap-datepicker.css" />
     <Content Include="Content\angular-loading-bar\loading-bar.css" />
     <Content Include="Content\angular-loading-bar\loading-bar.min.css" />
@@ -332,6 +340,7 @@
     <Content Include="Content\bootstrap\variables.min.css">
       <DependentUpon>variables.css</DependentUpon>
     </Content>
+    <Content Include="Content\bwizard.css" />
     <Content Include="Content\custom.css" />
     <Content Include="Content\datepicker.min.css" />
     <Content Include="Content\font-awesome.css" />
@@ -349,6 +358,7 @@
     <Content Include="Content\images\news.gif" />
     <Content Include="Content\images\services.gif" />
     <Content Include="Content\ng-table\ng-table.css" />
+    <Content Include="Content\parsley.css" />
     <Content Include="Content\patterns\congruent_pentagon.png" />
     <Content Include="Content\patterns\header-profile-skin-1.png" />
     <Content Include="Content\patterns\header-profile-skin-2.png" />
@@ -1184,6 +1194,14 @@
     <Content Include="Scripts\app\common\users\userprofile-ctrl.js" />
     <Content Include="Scripts\app\common\users\user-repository.js" />
     <Content Include="Scripts\app\common\users\user-app.js" />
+    <Content Include="Scripts\app\company\company-app.js" />
+    <Content Include="Scripts\app\company\company-repository.js" />
+    <Content Include="Scripts\app\company\directives\tax-year-rate-list.js" />
+    <Content Include="Scripts\app\company\directives\accumulated-pay-type-list.js" />
+    <Content Include="Scripts\app\company\directives\pay-code-list.js" />
+    <Content Include="Scripts\app\company\directives\worker-compensation-list.js" />
+    <Content Include="Scripts\app\company\directives\deduction-list.js" />
+    <Content Include="Scripts\app\company\directives\company-list.js" />
     <Content Include="Scripts\app\host\controllers\hostlogo-ctrl.js" />
     <Content Include="Scripts\app\host\directives\homepage.js" />
     <Content Include="Scripts\app\host\directives\welcome.js" />
@@ -1224,6 +1242,8 @@
     <Content Include="Scripts\bootstrap\bootstrap-theme\plugins\slimscroll\jquery.slimscroll.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\sb-admin-2.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\skin.config.min.js" />
+    <Content Include="Scripts\bootstrap\parsley.js" />
+    <Content Include="Scripts\bootstrap\wizard\bwizard.js" />
     <Content Include="Scripts\date.js" />
     <Content Include="Scripts\es5-shim.js" />
     <Content Include="Scripts\es5-shim.min.js" />
@@ -1346,6 +1366,8 @@
     <Content Include="Areas\Administration\Views\News\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Host\Users.cshtml" />
     <Content Include="Areas\Administration\Views\Host\Profile.cshtml" />
+    <Content Include="Areas\Client\Views\web.config" />
+    <Content Include="Areas\Client\Views\Company\Index.cshtml" />
     <None Include="Properties\PublishProfiles\hrmaxx.pubxml" />
     <Content Include="Scripts\bootstrap\timepicker\timepicker.js" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
@@ -1358,6 +1380,8 @@
     <None Include="Scripts\jquery\jquery-1.9.0.intellisense.js" />
     <Content Include="Scripts\jquery\jquery-1.9.0.js" />
     <Content Include="Scripts\jquery\jquery-1.9.0.min.js" />
+    <Content Include="Scripts\jquery\jquery.cookie.min.js" />
+    <Content Include="Scripts\jquery\jquery.ui.widget.min.js" />
     <Content Include="Scripts\lodash\lodash.js" />
     <Content Include="Scripts\lodash\lodash.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
@@ -1416,6 +1440,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Administration\Models\" />
+    <Folder Include="Areas\Client\Models\" />
+    <Folder Include="Areas\Client\Views\Shared\" />
     <Folder Include="Content\pages\" />
   </ItemGroup>
   <ItemGroup>

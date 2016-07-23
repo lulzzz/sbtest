@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrMaxx.OnlinePayroll.Reposi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrMaxx.OnlinePayroll.Services", "HrMaxx.OnlinePayroll.Services\HrMaxx.OnlinePayroll.Services.csproj", "{2177DB95-B80F-4356-BBA6-C089112C84CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrMaxx.OnlinePayroll.Tests", "HrMaxx.OnlinePayroll.Tests\HrMaxx.OnlinePayroll.Tests.csproj", "{C5DA2A96-1584-403B-86E4-AAAC745DCEDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,10 @@ Global
 		{2177DB95-B80F-4356-BBA6-C089112C84CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2177DB95-B80F-4356-BBA6-C089112C84CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2177DB95-B80F-4356-BBA6-C089112C84CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5DA2A96-1584-403B-86E4-AAAC745DCEDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5DA2A96-1584-403B-86E4-AAAC745DCEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5DA2A96-1584-403B-86E4-AAAC745DCEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5DA2A96-1584-403B-86E4-AAAC745DCEDD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,5 +162,6 @@ Global
 		{47DF73FF-0053-4E97-9477-06CE38AD3020} = {9464E643-893E-4882-ADC2-D72A4C04775D}
 		{519F5A7E-CB1B-4BFA-8DF5-441507365547} = {9464E643-893E-4882-ADC2-D72A4C04775D}
 		{2177DB95-B80F-4356-BBA6-C089112C84CF} = {9464E643-893E-4882-ADC2-D72A4C04775D}
+		{C5DA2A96-1584-403B-86E4-AAAC745DCEDD} = {4C335120-3047-4B73-9B91-FA76CF8FF8AC}
 	EndGlobalSection
 EndGlobal

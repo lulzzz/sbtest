@@ -5,6 +5,123 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="HrMaxxModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Company">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CompanyName" Type="varchar(max)" Nullable="false" />
+          <Property Name="CompanyNo" Type="varchar(max)" Nullable="false" />
+          <Property Name="HostId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="StatusId" Type="int" Nullable="false" />
+          <Property Name="IsVisibleToHost" Type="bit" Nullable="false" />
+          <Property Name="FileUnderHost" Type="bit" Nullable="false" />
+          <Property Name="DirectDebitPayer" Type="bit" Nullable="false" />
+          <Property Name="PayrollDaysInPast" Type="int" Nullable="false" />
+          <Property Name="InsuranceGroupNo" Type="int" Nullable="false" />
+          <Property Name="TaxFilingName" Type="varchar(max)" Nullable="false" />
+          <Property Name="CompanyAddress" Type="varchar(max)" Nullable="false" />
+          <Property Name="BusinessAddress" Type="varchar(max)" Nullable="false" />
+          <Property Name="IsAddressSame" Type="bit" Nullable="false" />
+          <Property Name="ManageTaxPayment" Type="bit" Nullable="false" />
+          <Property Name="ManageEFileForms" Type="bit" Nullable="false" />
+          <Property Name="FederalEIN" Type="varchar(max)" Nullable="false" />
+          <Property Name="FederalPin" Type="varchar(max)" Nullable="false" />
+          <Property Name="DepositSchedule941" Type="int" Nullable="false" />
+          <Property Name="PayrollSchedule" Type="int" Nullable="false" />
+          <Property Name="PayCheckStock" Type="int" Nullable="false" />
+          <Property Name="IsFiler944" Type="bit" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CompanyAccumlatedPayType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayTypeId" Type="int" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RatePerHour" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="AnnualLimit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CompanyContract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="PrePaidSubscriptionType" Type="int" />
+          <Property Name="BillingType" Type="int" Nullable="false" />
+          <Property Name="CardDetails" Type="varchar(max)" />
+          <Property Name="BankDetails" Type="varchar(max)" />
+          <Property Name="InvoiceRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CompanyDeduction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TypeId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" />
+          <Property Name="AnnualMax" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <EntityType Name="CompanyPayCode">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Code" Type="varchar(max)" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CompanyTaxRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TaxId" Type="int" Nullable="false" />
+          <Property Name="TaxYear" Type="int" Nullable="false" />
+          <Property Name="Rate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CompanyTaxState">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CountryId" Type="int" Nullable="false" />
+          <Property Name="StateId" Type="int" Nullable="false" />
+          <Property Name="StateCode" Type="varchar(max)" Nullable="false" />
+          <Property Name="StateName" Type="varchar(max)" Nullable="false" />
+          <Property Name="EIN" Type="varchar(max)" Nullable="false" />
+          <Property Name="Pin" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CompanyWorkerCompensation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Code" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="Rate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DeductionType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="Category" Type="int" Nullable="false" />
+          <Property Name="W2_12" Type="varchar(max)" />
+          <Property Name="W2_13R" Type="varchar(max)" />
+          <Property Name="R940_R" Type="varchar(max)" />
+        </EntityType>
         <EntityType Name="Host">
           <Key>
             <PropertyRef Name="Id" />
@@ -19,6 +136,16 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="PayType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="Description" Type="varchar(max)" Nullable="false" />
+          <Property Name="IsTaxable" Type="bit" Nullable="false" />
+          <Property Name="IsAccumulable" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Status">
           <Key>
             <PropertyRef Name="StatusId" />
@@ -26,6 +153,174 @@
           <Property Name="StatusId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="StatusName" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="Tax">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Code" Type="varchar(max)" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="CountryId" Type="int" Nullable="false" />
+          <Property Name="StateId" Type="int" />
+          <Property Name="IsCompanySpecific" Type="bit" Nullable="false" />
+          <Property Name="DefaultRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PaidBy" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TaxYearRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TaxId" Type="int" Nullable="false" />
+          <Property Name="TaxYear" Type="int" Nullable="false" />
+          <Property Name="Rate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AnnualMaxPerEmployee" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="TaxRateLimit" Type="decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <Association Name="FK_Company_Host">
+          <End Role="Host" Type="Self.Host" Multiplicity="1" />
+          <End Role="Company" Type="Self.Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Host">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company">
+              <PropertyRef Name="HostId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Company_Status">
+          <End Role="Status" Type="Self.Status" Multiplicity="1" />
+          <End Role="Company" Type="Self.Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="StatusId" />
+            </Principal>
+            <Dependent Role="Company">
+              <PropertyRef Name="StatusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyAccumlatedPayType_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyAccumlatedPayType" Type="Self.CompanyAccumlatedPayType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyAccumlatedPayType">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyAccumlatedPayType_PayType">
+          <End Role="PayType" Type="Self.PayType" Multiplicity="1" />
+          <End Role="CompanyAccumlatedPayType" Type="Self.CompanyAccumlatedPayType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyAccumlatedPayType">
+              <PropertyRef Name="PayTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyContract_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyContract" Type="Self.CompanyContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyContract">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyDeduction_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyDeduction" Type="Self.CompanyDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyDeduction">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyDeduction_DeductionType">
+          <End Role="DeductionType" Type="Self.DeductionType" Multiplicity="1" />
+          <End Role="CompanyDeduction" Type="Self.CompanyDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DeductionType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyDeduction">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyPayCode_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyPayCode" Type="Self.CompanyPayCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyPayCode">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyTax_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyTaxRate" Type="Self.CompanyTaxRate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyTaxRate">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyTax_Tax">
+          <End Role="Tax" Type="Self.Tax" Multiplicity="1" />
+          <End Role="CompanyTaxRate" Type="Self.CompanyTaxRate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tax">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyTaxRate">
+              <PropertyRef Name="TaxId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyTaxState_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyTaxState" Type="Self.CompanyTaxState" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyTaxState">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyWorkerCompensation_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CompanyWorkerCompensation" Type="Self.CompanyWorkerCompensation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyWorkerCompensation">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CPA_Status">
           <End Role="Status" Type="Self.Status" Multiplicity="1" />
           <End Role="Host" Type="Self.Host" Multiplicity="*" />
@@ -38,12 +333,88 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TaxYearRate_Tax">
+          <End Role="Tax" Type="Self.Tax" Multiplicity="1" />
+          <End Role="TaxYearRate" Type="Self.TaxYearRate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tax">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TaxYearRate">
+              <PropertyRef Name="TaxId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="HrMaxxModelStoreContainer">
+          <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyAccumlatedPayType" EntityType="Self.CompanyAccumlatedPayType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyContract" EntityType="Self.CompanyContract" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyDeduction" EntityType="Self.CompanyDeduction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyPayCode" EntityType="Self.CompanyPayCode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyTaxRate" EntityType="Self.CompanyTaxRate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyTaxState" EntityType="Self.CompanyTaxState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyWorkerCompensation" EntityType="Self.CompanyWorkerCompensation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DeductionType" EntityType="Self.DeductionType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PayType" EntityType="Self.PayType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Status" EntityType="Self.Status" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tax" EntityType="Self.Tax" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaxYearRate" EntityType="Self.TaxYearRate" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Company_Host" Association="Self.FK_Company_Host">
+            <End Role="Host" EntitySet="Host" />
+            <End Role="Company" EntitySet="Company" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Company_Status" Association="Self.FK_Company_Status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="Company" EntitySet="Company" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyAccumlatedPayType_Company" Association="Self.FK_CompanyAccumlatedPayType_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyAccumlatedPayType" EntitySet="CompanyAccumlatedPayType" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyAccumlatedPayType_PayType" Association="Self.FK_CompanyAccumlatedPayType_PayType">
+            <End Role="PayType" EntitySet="PayType" />
+            <End Role="CompanyAccumlatedPayType" EntitySet="CompanyAccumlatedPayType" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyContract_Company" Association="Self.FK_CompanyContract_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyContract" EntitySet="CompanyContract" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyDeduction_Company" Association="Self.FK_CompanyDeduction_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyDeduction" EntitySet="CompanyDeduction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyDeduction_DeductionType" Association="Self.FK_CompanyDeduction_DeductionType">
+            <End Role="DeductionType" EntitySet="DeductionType" />
+            <End Role="CompanyDeduction" EntitySet="CompanyDeduction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyPayCode_Company" Association="Self.FK_CompanyPayCode_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyPayCode" EntitySet="CompanyPayCode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyTax_Company" Association="Self.FK_CompanyTax_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyTaxRate" EntitySet="CompanyTaxRate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyTax_Tax" Association="Self.FK_CompanyTax_Tax">
+            <End Role="Tax" EntitySet="Tax" />
+            <End Role="CompanyTaxRate" EntitySet="CompanyTaxRate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyTaxState_Company" Association="Self.FK_CompanyTaxState_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyTaxState" EntitySet="CompanyTaxState" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyWorkerCompensation_Company" Association="Self.FK_CompanyWorkerCompensation_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CompanyWorkerCompensation" EntitySet="CompanyWorkerCompensation" />
+          </AssociationSet>
           <AssociationSet Name="FK_CPA_Status" Association="Self.FK_CPA_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Host" EntitySet="Host" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TaxYearRate_Tax" Association="Self.FK_TaxYearRate_Tax">
+            <End Role="Tax" EntitySet="Tax" />
+            <End Role="TaxYearRate" EntitySet="TaxYearRate" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -57,6 +428,7 @@
           <Property Name="StatusId" Type="Int32" Nullable="false" />
           <Property Name="StatusName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_CPA_Status" FromRole="Status" ToRole="Host" />
+          <NavigationProperty Name="Companies" Relationship="HrMaxxModel.FK_Company_Status" FromRole="Status" ToRole="Company" />
         </EntityType>
         <EntityContainer Name="OnlinePayrollEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Status" EntityType="Self.Status" />
@@ -65,7 +437,71 @@
             <End Role="Status" EntitySet="Status" />
             <End Role="Host" EntitySet="Hosts" />
           </AssociationSet>
-        </EntityContainer>
+          <EntitySet Name="Companies" EntityType="HrMaxxModel.Company" />
+          <EntitySet Name="CompanyTaxRates" EntityType="HrMaxxModel.CompanyTaxRate" />
+          <EntitySet Name="CompanyTaxStates" EntityType="HrMaxxModel.CompanyTaxState" />
+          <EntitySet Name="Taxes" EntityType="HrMaxxModel.Tax" />
+          <EntitySet Name="TaxYearRates" EntityType="HrMaxxModel.TaxYearRate" />
+          <AssociationSet Name="FK_Company_Host" Association="HrMaxxModel.FK_Company_Host">
+            <End Role="Host" EntitySet="Hosts" />
+            <End Role="Company" EntitySet="Companies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Company_Status" Association="HrMaxxModel.FK_Company_Status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="Company" EntitySet="Companies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyTax_Company" Association="HrMaxxModel.FK_CompanyTax_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyTaxRate" EntitySet="CompanyTaxRates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyTaxState_Company" Association="HrMaxxModel.FK_CompanyTaxState_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyTaxState" EntitySet="CompanyTaxStates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CompanyTax_Tax" Association="HrMaxxModel.FK_CompanyTax_Tax">
+            <End Role="Tax" EntitySet="Taxes" />
+            <End Role="CompanyTaxRate" EntitySet="CompanyTaxRates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TaxYearRate_Tax" Association="HrMaxxModel.FK_TaxYearRate_Tax">
+            <End Role="Tax" EntitySet="Taxes" />
+            <End Role="TaxYearRate" EntitySet="TaxYearRates" />
+          </AssociationSet>
+          <EntitySet Name="CompanyContracts" EntityType="HrMaxxModel.CompanyContract" />
+          <AssociationSet Name="FK_CompanyContract_Company" Association="HrMaxxModel.FK_CompanyContract_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyContract" EntitySet="CompanyContracts" />
+          </AssociationSet>
+          <EntitySet Name="CompanyDeductions" EntityType="HrMaxxModel.CompanyDeduction" />
+          <AssociationSet Name="FK_CompanyDeduction_Company" Association="HrMaxxModel.FK_CompanyDeduction_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyDeduction" EntitySet="CompanyDeductions" />
+          </AssociationSet>
+          <EntitySet Name="CompanyWorkerCompensations" EntityType="HrMaxxModel.CompanyWorkerCompensation" />
+          <AssociationSet Name="FK_CompanyWorkerCompensation_Company" Association="HrMaxxModel.FK_CompanyWorkerCompensation_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyWorkerCompensation" EntitySet="CompanyWorkerCompensations" />
+          </AssociationSet>
+          <EntitySet Name="DeductionTypes" EntityType="HrMaxxModel.DeductionType" />
+          <AssociationSet Name="FK_CompanyDeduction_DeductionType" Association="HrMaxxModel.FK_CompanyDeduction_DeductionType">
+            <End Role="DeductionType" EntitySet="DeductionTypes" />
+            <End Role="CompanyDeduction" EntitySet="CompanyDeductions" />
+          </AssociationSet>
+          <EntitySet Name="CompanyAccumlatedPayTypes" EntityType="HrMaxxModel.CompanyAccumlatedPayType" />
+          <AssociationSet Name="FK_CompanyAccumlatedPayType_Company" Association="HrMaxxModel.FK_CompanyAccumlatedPayType_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyAccumlatedPayType" EntitySet="CompanyAccumlatedPayTypes" />
+          </AssociationSet>
+          <EntitySet Name="PayTypes" EntityType="HrMaxxModel.PayType" />
+          <AssociationSet Name="FK_CompanyAccumlatedPayType_PayType" Association="HrMaxxModel.FK_CompanyAccumlatedPayType_PayType">
+            <End Role="PayType" EntitySet="PayTypes" />
+            <End Role="CompanyAccumlatedPayType" EntitySet="CompanyAccumlatedPayTypes" />
+          </AssociationSet>
+          <EntitySet Name="CompanyPayCodes" EntityType="HrMaxxModel.CompanyPayCode" />
+          <AssociationSet Name="FK_CompanyPayCode_Company" Association="HrMaxxModel.FK_CompanyPayCode_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CompanyPayCode" EntitySet="CompanyPayCodes" />
+          </AssociationSet>
+          </EntityContainer>
         <EntityType Name="Host">
           <Key>
             <PropertyRef Name="Id" />
@@ -80,6 +516,7 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_CPA_Status" FromRole="Host" ToRole="Status" />
+          <NavigationProperty Name="Companies" Relationship="HrMaxxModel.FK_Company_Host" FromRole="Host" ToRole="Company" />
         </EntityType>
         <Association Name="FK_CPA_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -93,7 +530,338 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        <EntityType Name="Company">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="CompanyName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CompanyNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HostId" Type="Guid" Nullable="false" />
+          <Property Name="StatusId" Type="Int32" Nullable="false" />
+          <Property Name="IsVisibleToHost" Type="Boolean" Nullable="false" />
+          <Property Name="FileUnderHost" Type="Boolean" Nullable="false" />
+          <Property Name="DirectDebitPayer" Type="Boolean" Nullable="false" />
+          <Property Name="PayrollDaysInPast" Type="Int32" Nullable="false" />
+          <Property Name="InsuranceGroupNo" Type="Int32" Nullable="false" />
+          <Property Name="TaxFilingName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CompanyAddress" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BusinessAddress" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsAddressSame" Type="Boolean" Nullable="false" />
+          <Property Name="ManageTaxPayment" Type="Boolean" Nullable="false" />
+          <Property Name="ManageEFileForms" Type="Boolean" Nullable="false" />
+          <Property Name="FederalEIN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="FederalPin" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DepositSchedule941" Type="Int32" Nullable="false" />
+          <Property Name="PayrollSchedule" Type="Int32" Nullable="false" />
+          <Property Name="PayCheckStock" Type="Int32" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Host" Relationship="HrMaxxModel.FK_Company_Host" FromRole="Company" ToRole="Host" />
+          <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_Company_Status" FromRole="Company" ToRole="Status" />
+          <NavigationProperty Name="CompanyTaxRates" Relationship="HrMaxxModel.FK_CompanyTax_Company" FromRole="Company" ToRole="CompanyTaxRate" />
+          <NavigationProperty Name="CompanyTaxStates" Relationship="HrMaxxModel.FK_CompanyTaxState_Company" FromRole="Company" ToRole="CompanyTaxState" />
+          <Property Name="IsFiler944" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CompanyContracts" Relationship="HrMaxxModel.FK_CompanyContract_Company" FromRole="Company" ToRole="CompanyContract" />
+          <NavigationProperty Name="CompanyDeductions" Relationship="HrMaxxModel.FK_CompanyDeduction_Company" FromRole="Company" ToRole="CompanyDeduction" />
+          <NavigationProperty Name="CompanyWorkerCompensations" Relationship="HrMaxxModel.FK_CompanyWorkerCompensation_Company" FromRole="Company" ToRole="CompanyWorkerCompensation" />
+          <NavigationProperty Name="CompanyAccumlatedPayTypes" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_Company" FromRole="Company" ToRole="CompanyAccumlatedPayType" />
+          <NavigationProperty Name="CompanyPayCodes" Relationship="HrMaxxModel.FK_CompanyPayCode_Company" FromRole="Company" ToRole="CompanyPayCode" />
+        </EntityType>
+        <EntityType Name="CompanyTaxRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="TaxId" Type="Int32" Nullable="false" />
+          <Property Name="TaxYear" Type="Int32" Nullable="false" />
+          <Property Name="Rate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyTax_Company" FromRole="CompanyTaxRate" ToRole="Company" />
+          <NavigationProperty Name="Tax" Relationship="HrMaxxModel.FK_CompanyTax_Tax" FromRole="CompanyTaxRate" ToRole="Tax" />
+        </EntityType>
+        <EntityType Name="CompanyTaxState">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="CountryId" Type="Int32" Nullable="false" />
+          <Property Name="StateId" Type="Int32" Nullable="false" />
+          <Property Name="StateCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StateName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EIN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Pin" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyTaxState_Company" FromRole="CompanyTaxState" ToRole="Company" />
+        </EntityType>
+        <EntityType Name="Tax">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CountryId" Type="Int32" Nullable="false" />
+          <Property Name="StateId" Type="Int32" />
+          <Property Name="IsCompanySpecific" Type="Boolean" Nullable="false" />
+          <Property Name="DefaultRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PaidBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CompanyTaxRates" Relationship="HrMaxxModel.FK_CompanyTax_Tax" FromRole="Tax" ToRole="CompanyTaxRate" />
+          <NavigationProperty Name="TaxYearRates" Relationship="HrMaxxModel.FK_TaxYearRate_Tax" FromRole="Tax" ToRole="TaxYearRate" />
+        </EntityType>
+        <EntityType Name="TaxYearRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TaxId" Type="Int32" Nullable="false" />
+          <Property Name="TaxYear" Type="Int32" Nullable="false" />
+          <Property Name="Rate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AnnualMaxPerEmployee" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="Tax" Relationship="HrMaxxModel.FK_TaxYearRate_Tax" FromRole="TaxYearRate" ToRole="Tax" />
+          <Property Name="TaxRateLimit" Type="Decimal" Precision="18" Scale="2" />
+        </EntityType>
+        <Association Name="FK_Company_Host">
+          <End Type="HrMaxxModel.Host" Role="Host" Multiplicity="1" />
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Host">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company">
+              <PropertyRef Name="HostId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Company_Status">
+          <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="StatusId" />
+            </Principal>
+            <Dependent Role="Company">
+              <PropertyRef Name="StatusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyTax_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyTaxRate" Role="CompanyTaxRate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyTaxRate">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyTaxState_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyTaxState" Role="CompanyTaxState" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyTaxState">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CompanyTax_Tax">
+          <End Type="HrMaxxModel.Tax" Role="Tax" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyTaxRate" Role="CompanyTaxRate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tax">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyTaxRate">
+              <PropertyRef Name="TaxId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TaxYearRate_Tax">
+          <End Type="HrMaxxModel.Tax" Role="Tax" Multiplicity="1" />
+          <End Type="HrMaxxModel.TaxYearRate" Role="TaxYearRate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tax">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TaxYearRate">
+              <PropertyRef Name="TaxId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CompanyContract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="PrePaidSubscriptionType" Type="Int32" />
+          <Property Name="BillingType" Type="Int32" Nullable="false" />
+          <Property Name="CardDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BankDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="InvoiceRate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyContract_Company" FromRole="CompanyContract" ToRole="Company" />
+        </EntityType>
+        <Association Name="FK_CompanyContract_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyContract" Role="CompanyContract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyContract">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CompanyDeduction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="TypeId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AnnualMax" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyDeduction_Company" FromRole="CompanyDeduction" ToRole="Company" />
+          <NavigationProperty Name="DeductionType" Relationship="HrMaxxModel.FK_CompanyDeduction_DeductionType" FromRole="CompanyDeduction" ToRole="DeductionType" />
+        </EntityType>
+        <Association Name="FK_CompanyDeduction_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyDeduction">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CompanyWorkerCompensation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="Code" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Rate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyWorkerCompensation_Company" FromRole="CompanyWorkerCompensation" ToRole="Company" />
+        </EntityType>
+        <Association Name="FK_CompanyWorkerCompensation_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyWorkerCompensation">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="DeductionType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Category" Type="Int32" Nullable="false" />
+          <Property Name="W2_12" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="W2_13R" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="R940_R" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CompanyDeductions" Relationship="HrMaxxModel.FK_CompanyDeduction_DeductionType" FromRole="DeductionType" ToRole="CompanyDeduction" />
+        </EntityType>
+        <Association Name="FK_CompanyDeduction_DeductionType">
+          <End Type="HrMaxxModel.DeductionType" Role="DeductionType" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DeductionType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyDeduction">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CompanyAccumlatedPayType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayTypeId" Type="Int32" Nullable="false" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="RatePerHour" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="AnnualLimit" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_Company" FromRole="CompanyAccumlatedPayType" ToRole="Company" />
+          <NavigationProperty Name="PayType" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_PayType" FromRole="CompanyAccumlatedPayType" ToRole="PayType" />
+        </EntityType>
+        <Association Name="FK_CompanyAccumlatedPayType_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyAccumlatedPayType" Role="CompanyAccumlatedPayType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyAccumlatedPayType">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PayType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsTaxable" Type="Boolean" Nullable="false" />
+          <Property Name="IsAccumulable" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CompanyAccumlatedPayTypes" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_PayType" FromRole="PayType" ToRole="CompanyAccumlatedPayType" />
+        </EntityType>
+        <Association Name="FK_CompanyAccumlatedPayType_PayType">
+          <End Type="HrMaxxModel.PayType" Role="PayType" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyAccumlatedPayType" Role="CompanyAccumlatedPayType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyAccumlatedPayType">
+              <PropertyRef Name="PayTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CompanyPayCode">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HourlyRate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyPayCode_Company" FromRole="CompanyPayCode" ToRole="Company" />
+        </EntityType>
+        <Association Name="FK_CompanyPayCode_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CompanyPayCode" Role="CompanyPayCode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CompanyPayCode">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -122,7 +890,170 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="Companies">
+            <EntityTypeMapping TypeName="HrMaxxModel.Company">
+              <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="IsFiler944" ColumnName="IsFiler944" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="PayCheckStock" ColumnName="PayCheckStock" />
+                <ScalarProperty Name="PayrollSchedule" ColumnName="PayrollSchedule" />
+                <ScalarProperty Name="DepositSchedule941" ColumnName="DepositSchedule941" />
+                <ScalarProperty Name="FederalPin" ColumnName="FederalPin" />
+                <ScalarProperty Name="FederalEIN" ColumnName="FederalEIN" />
+                <ScalarProperty Name="ManageEFileForms" ColumnName="ManageEFileForms" />
+                <ScalarProperty Name="ManageTaxPayment" ColumnName="ManageTaxPayment" />
+                <ScalarProperty Name="IsAddressSame" ColumnName="IsAddressSame" />
+                <ScalarProperty Name="BusinessAddress" ColumnName="BusinessAddress" />
+                <ScalarProperty Name="CompanyAddress" ColumnName="CompanyAddress" />
+                <ScalarProperty Name="TaxFilingName" ColumnName="TaxFilingName" />
+                <ScalarProperty Name="InsuranceGroupNo" ColumnName="InsuranceGroupNo" />
+                <ScalarProperty Name="PayrollDaysInPast" ColumnName="PayrollDaysInPast" />
+                <ScalarProperty Name="DirectDebitPayer" ColumnName="DirectDebitPayer" />
+                <ScalarProperty Name="FileUnderHost" ColumnName="FileUnderHost" />
+                <ScalarProperty Name="IsVisibleToHost" ColumnName="IsVisibleToHost" />
+                <ScalarProperty Name="StatusId" ColumnName="StatusId" />
+                <ScalarProperty Name="HostId" ColumnName="HostId" />
+                <ScalarProperty Name="CompanyNo" ColumnName="CompanyNo" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyTaxRates">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyTaxRate">
+              <MappingFragment StoreEntitySet="CompanyTaxRate">
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="TaxYear" ColumnName="TaxYear" />
+                <ScalarProperty Name="TaxId" ColumnName="TaxId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyTaxStates">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyTaxState">
+              <MappingFragment StoreEntitySet="CompanyTaxState">
+                <ScalarProperty Name="Pin" ColumnName="Pin" />
+                <ScalarProperty Name="EIN" ColumnName="EIN" />
+                <ScalarProperty Name="StateName" ColumnName="StateName" />
+                <ScalarProperty Name="StateCode" ColumnName="StateCode" />
+                <ScalarProperty Name="StateId" ColumnName="StateId" />
+                <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Taxes">
+            <EntityTypeMapping TypeName="HrMaxxModel.Tax">
+              <MappingFragment StoreEntitySet="Tax">
+                <ScalarProperty Name="PaidBy" ColumnName="PaidBy" />
+                <ScalarProperty Name="DefaultRate" ColumnName="DefaultRate" />
+                <ScalarProperty Name="IsCompanySpecific" ColumnName="IsCompanySpecific" />
+                <ScalarProperty Name="StateId" ColumnName="StateId" />
+                <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaxYearRates">
+            <EntityTypeMapping TypeName="HrMaxxModel.TaxYearRate">
+              <MappingFragment StoreEntitySet="TaxYearRate">
+                <ScalarProperty Name="TaxRateLimit" ColumnName="TaxRateLimit" />
+                <ScalarProperty Name="AnnualMaxPerEmployee" ColumnName="AnnualMaxPerEmployee" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="TaxYear" ColumnName="TaxYear" />
+                <ScalarProperty Name="TaxId" ColumnName="TaxId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyContracts">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyContract">
+              <MappingFragment StoreEntitySet="CompanyContract">
+                <ScalarProperty Name="InvoiceRate" ColumnName="InvoiceRate" />
+                <ScalarProperty Name="BankDetails" ColumnName="BankDetails" />
+                <ScalarProperty Name="CardDetails" ColumnName="CardDetails" />
+                <ScalarProperty Name="BillingType" ColumnName="BillingType" />
+                <ScalarProperty Name="PrePaidSubscriptionType" ColumnName="PrePaidSubscriptionType" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyDeductions">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyDeduction">
+              <MappingFragment StoreEntitySet="CompanyDeduction">
+                <ScalarProperty Name="AnnualMax" ColumnName="AnnualMax" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyWorkerCompensations">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyWorkerCompensation">
+              <MappingFragment StoreEntitySet="CompanyWorkerCompensation">
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DeductionTypes">
+            <EntityTypeMapping TypeName="HrMaxxModel.DeductionType">
+              <MappingFragment StoreEntitySet="DeductionType">
+                <ScalarProperty Name="R940_R" ColumnName="R940_R" />
+                <ScalarProperty Name="W2_13R" ColumnName="W2_13R" />
+                <ScalarProperty Name="W2_12" ColumnName="W2_12" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyAccumlatedPayTypes">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyAccumlatedPayType">
+              <MappingFragment StoreEntitySet="CompanyAccumlatedPayType">
+                <ScalarProperty Name="AnnualLimit" ColumnName="AnnualLimit" />
+                <ScalarProperty Name="RatePerHour" ColumnName="RatePerHour" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="PayTypeId" ColumnName="PayTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PayTypes">
+            <EntityTypeMapping TypeName="HrMaxxModel.PayType">
+              <MappingFragment StoreEntitySet="PayType">
+                <ScalarProperty Name="IsAccumulable" ColumnName="IsAccumulable" />
+                <ScalarProperty Name="IsTaxable" ColumnName="IsTaxable" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyPayCodes">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyPayCode">
+              <MappingFragment StoreEntitySet="CompanyPayCode">
+                <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

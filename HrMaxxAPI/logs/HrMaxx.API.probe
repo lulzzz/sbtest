@@ -14,15 +14,21 @@ os.bits: x64
 os.version: Microsoft Windows NT 10.0.10586.0
 process.bits: x64
 process.fulltrust: True
-process.id: 13192
+process.id: 12540
 zz.mt.inbound_pipeline: Pipeline
 	Routed (MassTransit.IConsumeContext, MassTransit)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts)
+			Consumed by Component HrMaxx.Common.Services.CommandHandlers.NotificationEventHandler (HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts)
 		Translated to HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts
 		Routed (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
 			Consumed by Component HrMaxx.Common.Services.CommandHandlers.UserEventLogHandler (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
 
 zz.mt.outbound_pipeline: Pipeline
 	Routed (MassTransit.ISendContext, MassTransit)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts)
+			Send HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts
 		Routed (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
 			Send HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API

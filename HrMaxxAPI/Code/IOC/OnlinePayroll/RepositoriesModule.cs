@@ -3,6 +3,8 @@ using System.Configuration;
 using Autofac;
 using HrMaxx.Infrastructure.Extensions;
 using HrMaxx.OnlinePayroll.Models.DataModel;
+using HrMaxx.OnlinePayroll.Repository;
+using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Host;
 
 namespace HrMaxxAPI.Code.IOC.OnlinePayroll
@@ -27,6 +29,16 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 			builder.RegisterType<HostRepository>()
 				.WithParameters(namedParameters)
 				.As<IHostRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<MetaDataRepository>()
+				.As<IMetaDataRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<CompanyRepository>()
+				.As<ICompanyRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

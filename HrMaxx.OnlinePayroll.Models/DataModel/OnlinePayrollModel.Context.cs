@@ -27,5 +27,17 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
         public virtual DbSet<Status> Status { get; set; }
         public virtual DbSet<Host> Hosts { get; set; }
+        public virtual DbSet<Company> Companies { get; set; }
+        public virtual DbSet<CompanyTaxRate> CompanyTaxRates { get; set; }
+        public virtual DbSet<CompanyTaxState> CompanyTaxStates { get; set; }
+        public virtual DbSet<Tax> Taxes { get; set; }
+        public virtual DbSet<TaxYearRate> TaxYearRates { get; set; }
+        public virtual DbSet<CompanyContract> CompanyContracts { get; set; }
+        public virtual DbSet<CompanyDeduction> CompanyDeductions { get; set; }
+        public virtual DbSet<CompanyWorkerCompensation> CompanyWorkerCompensations { get; set; }
+        public virtual DbSet<DeductionType> DeductionTypes { get; set; }
+        public virtual DbSet<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
+        public virtual DbSet<PayType> PayTypes { get; set; }
+        public virtual DbSet<CompanyPayCode> CompanyPayCodes { get; set; }
     }
 }

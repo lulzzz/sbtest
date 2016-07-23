@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Status()
         {
             this.Hosts = new HashSet<Host>();
+            this.Companies = new HashSet<Company>();
         }
     
         public int StatusId { get; set; }
@@ -25,5 +26,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Host> Hosts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Company> Companies { get; set; }
     }
 }

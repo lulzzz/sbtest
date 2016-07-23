@@ -13,6 +13,7 @@ using SpecsFor;
 
 namespace HrMaxx.Common.Tests.Stories.Login
 {
+	[Ignore]
 	public class Login_Error : SpecsFor<AccountController>
 	{
 		private LoginWithServerError _Context;

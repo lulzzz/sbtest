@@ -21,10 +21,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			_domain = domain;
 		}
 
-		public IList<Models.Host> GetHostList()
+		public IList<Models.Host> GetHostList(Guid host)
 		{
-			var hosts = _dbContext.Hosts.ToList();
-			return _mapper.Map<List<Models.DataModel.Host>, List<Models.Host>>(hosts);
+			var hosts = _dbContext.Hosts.AsQueryable();
+			if (host != Guid.Empty)
+				hosts = hosts.Where(h => h.Id == host);
+			return _mapper.Map<List<Models.DataModel.Host>, List<Models.Host>>(hosts.ToList());
 		}
 
 		public Models.Host GetHost(Guid cpaId)

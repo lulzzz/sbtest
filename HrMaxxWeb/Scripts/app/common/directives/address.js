@@ -9,13 +9,16 @@ common.directive('address', ['$modal', 'zionAPI','localStorageService',
 				data: "=data",
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId",
-				type: "=type"
+				type: "=type",
+				showDisabled: "=?showDisabled"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/address.html',
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
 				$scope.countries = localStorageService.get('countries');
+				if (!$scope.showDisabled)
+					$scope.showDisabled = false;
 				//$scope.data = angular.copy($scope.data1);
 				var localAddress = null;
 				$scope.addAlert = function (error, type) {
@@ -41,7 +44,7 @@ common.directive('address', ['$modal', 'zionAPI','localStorageService',
 						$scope.data.selectedCountry = $filter('filter')($scope.countries, { countryId: $scope.data.countryId })[0];
 
 					} else {
-						if ($scope.countries.length === 1) {
+						if ($scope.data && $scope.countries.length === 1) {
 							$scope.data.selectedCountry = $scope.countries[0];
 							$scope.countrySelected();
 						}

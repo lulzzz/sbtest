@@ -56,9 +56,49 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BankAccount.cs" />
+    <Compile Include="Company.cs" />
+    <Compile Include="DataModel\Company.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyAccumlatedPayType.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyContract.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyDeduction.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyPayCode.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyTaxRate.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyTaxState.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyWorkerCompensation.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\DeductionType.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Host.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\PayType.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\Tax.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\TaxYearRate.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DeductionType.cs" />
+    <Compile Include="Enum\PayCheckStock.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="HostHomePage.cs" />
     <Compile Include="DataModel\OnlinePayrollModel.Context.cs">
@@ -80,6 +120,9 @@
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="HostHomePageDocument.cs" />
+    <Compile Include="MetaDataModels\TaxDefinition.cs" />
+    <Compile Include="MetaDataModels\TaxYear.cs" />
+    <Compile Include="PayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
@@ -98,6 +141,10 @@
     <ProjectReference Include="..\Zion.Common.Models\HrMaxx.Common.Models.csproj">
       <Project>{6B33E83D-006B-45AE-8657-9676568EC734}</Project>
       <Name>HrMaxx.Common.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zion.Infrastructure\HrMaxx.Infrastructure.csproj">
+      <Project>{4BA8B656-2741-4474-AB09-537A93E879D2}</Project>
+      <Name>HrMaxx.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

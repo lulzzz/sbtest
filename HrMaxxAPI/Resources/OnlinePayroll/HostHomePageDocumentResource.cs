@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-using HrMaxx.Common.Models.Enum;
 using Newtonsoft.Json;
 
-namespace HrMaxxAPI.Resources.Common
+namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class HostHomePageDocumentResource
 	{

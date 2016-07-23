@@ -176,4 +176,7 @@ a.thumbnail.active {
   padding: 9px;
   color: #333333;
 }
-
+.has-error.form-control {
+    border-color: #ff5b57!important;
+	border-width: 2px!important;
+}

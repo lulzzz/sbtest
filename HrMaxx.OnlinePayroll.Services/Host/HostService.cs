@@ -34,11 +34,11 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			_documentService = documentService;
 			_commonService = commonService;
 		}
-		public IList<Models.Host> GetHostList()
+		public IList<Models.Host> GetHostList(Guid host)
 		{
 			try
 			{
-				return _hostRepository.GetHostList();
+				return _hostRepository.GetHostList(host);
 			}
 			catch (Exception e)
 			{
@@ -199,7 +199,7 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 		{
 			try
 			{
-				var hosts = _hostRepository.GetHostList().Select(h=>new {Key=h.Id, Value=h.FirmName}).ToList();
+				var hosts = _hostRepository.GetHostList(Guid.Empty).Select(h=>new {Key=h.Id, Value=h.FirmName}).ToList();
 				return new {Hosts = hosts};
 			}
 			catch (Exception e)

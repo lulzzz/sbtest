@@ -66,6 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Company\CompanyService.cs" />
+    <Compile Include="Mappers\CompanyModelMapperProfile.cs" />
+    <Compile Include="MetaDataService.cs" />
     <Compile Include="Host\HostService.cs" />
     <Compile Include="Mappers\OnlinePayrollModelMapperProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

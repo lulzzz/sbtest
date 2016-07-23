@@ -52,6 +52,6 @@
 		};
 
 		_init();
-		$interval($scope.refreshNotifications, 60000);
+//		$interval($scope.refreshNotifications, 60000);
 	}
 ]);

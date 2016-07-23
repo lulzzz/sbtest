@@ -1,0 +1,69 @@
+﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
+	<div class="row">
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	</div>
+	<table class="table table-header table-bordered table-condensed form-controls input-sm">
+		<thead>
+			<tr>
+				<td class="col-sm-3">Type</td>
+				<td class="col-sm-2">Name</td>
+				<td class="col-sm-3">Description</td>
+				<td class="col-sm-2">Annual Max</td>
+				<td class="col-sm-2"></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="item in list track by $index">
+				<td>
+					<!-- editable tesltra worktype (select-local) -->
+					<span e-ng-change="item.type = $data;" editable-select="item.type" e-name="type" e-form="rowform" e-ng-options="ded.categoryText + ' - ' + ded.name for ded in types track by ded.id">
+						{{ showDeductionType(item) }}
+					</span>
+				</td>
+				<td>
+					<span e-ng-change="item.deductionName = $data" editable-text="item.deductionName" e-name="deductionname" e-form="rowform">
+						{{ item.deductionName }}
+					</span>
+				</td>
+				<td>
+					<span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
+						{{ item.description }}
+					</span>
+				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						{{ item.annualMax }}
+					</span>
+				</td>
+				<td style="white-space: nowrap">
+					<!-- form -->
+					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();selected=item">
+							edit
+						</button>
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
+							save
+						</button>
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+							cancel
+						</button>
+					</form>
+				</td>
+				
+			</tr>
+			<tr ng-show="!selected">
+				<td colspan="4">
+					<span ng-show="list.length===0">No items found</span>
+				</td>
+
+				<td>
+					<button type="button" ng-click="add()" class="btn btn-primary">
+						Add
+					</button>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>

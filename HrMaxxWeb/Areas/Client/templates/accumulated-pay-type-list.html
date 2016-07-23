@@ -1,0 +1,62 @@
+﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
+	<div class="row">
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	</div>
+	<table class="table table-header table-bordered table-condensed form-controls input-sm">
+		<thead>
+			<tr>
+				<td class="col-sm-3">Pay Type</td>
+				<td class="col-sm-3">Rate Per Hour</td>
+				<td class="col-sm-3">Annual Limit (Hrs per Employee)</td>
+				<td class="col-sm-3"></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="item in list track by $index">
+				<td>
+					<span e-ng-change="item.payType = $data;" editable-select="item.payType" e-name="type" e-form="rowform" e-ng-options="paytype.description for paytype in metaData track by paytype.id">
+						{{ item.payType? item.payType.description : '' }}
+					</span>
+				</td>
+				<td>
+					<span e-ng-change="item.ratePerHour = $data" editable-number="item.ratePerHour" e-name="rate" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						{{ item.ratePerHour }}
+					</span>
+				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<span editable-number="item.annualLimit" e-name="limit" e-form="rowform" e-ng-change="item.annualLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						{{ item.annualLimit }}
+					</span>
+				</td>
+				<td style="white-space: nowrap">
+					<!-- form -->
+					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();selected=item">
+							edit
+						</button>
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
+							save
+						</button>
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+							cancel
+						</button>
+					</form>
+				</td>
+				
+			</tr>
+			<tr ng-show="!selected">
+				<td colspan="3">
+					<span ng-show="list.length===0">No items found</span>
+				</td>
+
+				<td>
+					<button type="button" ng-click="add()" ng-show="availablePayTypes().length>0" class="btn btn-primary">
+						Add
+					</button>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>

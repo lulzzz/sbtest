@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Services;
 using HrMaxx.OnlinePayroll.Services.Host;
 
 namespace HrMaxxAPI.Code.IOC.OnlinePayroll
@@ -11,6 +12,16 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 			
 			builder.RegisterType<HostService>()
 				.As<IHostService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<MetaDataService>()
+				.As<IMetaDataService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<CompanyService>()
+				.As<ICompanyService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 

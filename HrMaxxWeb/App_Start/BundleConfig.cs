@@ -36,6 +36,8 @@ namespace HrMaxxWeb
 				"~/Scripts/jquery-2.1.1.js",
 				"~/Scripts/jquery/jquery-{version}.min.map",
 				"~/Scripts/jquery-ui.custom.js",
+				"~/Scripts/jquery/jquery.cookie.min.js",
+				"~/Scripts/jquery/jquery.ui.widget.min.js",
 				"~/Scripts/lodash/lodash.js",
 				"~/Scripts/es5-shim.js",
 				"~/Scripts/modernizr-{version}.js",
@@ -47,7 +49,9 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap-switch.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/wysiwyg/wysihtml5-0.3.0.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/wysiwyg/bootstrap-wysihtml5-0.0.2.js",
-				"~/Scripts/bootstrap/timepicker/timepicker.js"
+				"~/Scripts/bootstrap/parsley.js",
+				"~/Scripts/bootstrap/wizard/bwizard.js"
+
 				
 				);
 			jquery.Builder = nullBuilder;
@@ -124,7 +128,16 @@ namespace HrMaxxWeb
 				"~/Scripts/app/host/directives/homepage.js",
 				"~/Scripts/app/host/directives/welcome.js",
 				"~/Scripts/app/common/directives/usernews.js",
-				"~/Scripts/app/common/directives/user-list.js"
+				"~/Scripts/app/common/directives/user-list.js",
+				"~/Scripts/app/company/company-app.js",
+				"~/Scripts/app/company/company-repository.js",
+				"~/Scripts/app/company/directives/deduction-list.js",
+				"~/Scripts/app/company/directives/worker-compensation-list.js",
+				"~/Scripts/app/company/directives/tax-year-rate-list.js",
+				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
+				"~/Scripts/app/company/directives/pay-code-list.js",
+				"~/Scripts/app/company/directives/company-list.js"
+				
 
 				);
 			jquery.Builder = nullBuilder;

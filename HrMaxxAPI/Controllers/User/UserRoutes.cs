@@ -1,4 +1,4 @@
-﻿namespace HrMaxxAPI.Controllers
+﻿namespace HrMaxxAPI.Controllers.User
 {
 	public class UserRoutes
 	{

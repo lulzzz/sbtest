@@ -11,7 +11,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
 	public interface IHostService
 	{
-		IList<Host> GetHostList();
+		IList<Host> GetHostList(Guid host);
 		Host GetHost(Guid cpaId);
 		void Save(Host cpa);
 
