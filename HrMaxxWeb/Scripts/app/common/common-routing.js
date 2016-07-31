@@ -36,9 +36,7 @@
 	$routeProvider.when('/Client/Employees', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/employees.html'
 	});
-	$routeProvider.otherwise({
-		redirectTo: '/'
-	});
+	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.html5Mode(false).hashPrefix('!');
 }]);

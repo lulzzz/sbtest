@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository',
-	function ($scope, $element, hostRepository, zionAPI, companyRepository) {
+	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService',
+	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService) {
 		$scope.alerts = [];
 
 		$scope.addAlert = function (error, type) {
@@ -25,31 +25,35 @@
 			showFilterPanel: true,
 			showCompanies: true,
 			userHost: null,
-			userCompany: null
+			userCompany: null,
+			isReady:false
 		};
 		$scope.data = dataSvc;
 		
 		function _init() {
-			hostRepository.getHostList().then(function (data) {
-				dataSvc.hosts = data;
-				if (dataSvc.hosts.length === 1) {
-					dataSvc.selectedHost = dataSvc.hosts[0];
-				}
-				if (dataSvc.selectedHost) {
-					$scope.hostSelected();
-				}
-			}, function (error) {
-				addAlert('error getting list of hosts', 'danger');
-			});
-			var dataInput = $element.data();
-			if (dataInput.host !== '00000000-0000-0000-0000-000000000000')
-				dataSvc.userHost = dataInput.host;
-			if (dataInput.company !== '00000000-0000-0000-0000-000000000000')
-				dataSvc.userCompany = dataInput.company;
+			var auth = localStorageService.get('authorizationData');
+			if (auth) {
+				hostRepository.getHostList().then(function (data) {
+					dataSvc.hosts = data;
+					if (dataSvc.hosts.length === 1) {
+						dataSvc.selectedHost = dataSvc.hosts[0];
+					}
+					if (dataSvc.selectedHost) {
+						$scope.hostSelected();
+					}
+				}, function (error) {
+					$scope.addAlert('error getting list of hosts', 'danger');
+				});
+				var dataInput = $element.data();
+				if (dataInput.host !== '00000000-0000-0000-0000-000000000000')
+					dataSvc.userHost = dataInput.host;
+				if (dataInput.company !== '00000000-0000-0000-0000-000000000000')
+					dataSvc.userCompany = dataInput.company;
 
-			dataSvc.showFilterPanel = !dataSvc.userHost;
-			dataSvc.showCompanies = !dataSvc.userCompany;
-
+				dataSvc.showFilterPanel = !dataSvc.userHost;
+				dataSvc.showCompanies = !dataSvc.userCompany;
+				dataSvc.isReady = true;
+			}
 		};
 		$scope.getCompanies = function () {
 			companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {

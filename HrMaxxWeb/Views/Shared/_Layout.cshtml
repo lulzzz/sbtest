@@ -41,7 +41,7 @@
 		<!-- end #sidebar -->
 		<!-- begin #content -->
 		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company">
-			<div class="panel panel-inverse" ng-show="data.showFilterPanel">
+			<div class="panel panel-inverse" ng-show="data.showFilterPanel" ng-if="data.isReady">
 				<div class="panel-heading" ng-click="data.isFilterOpen=!data.isFilterOpen">
 					<h4 class="panel-title">Host and Company Filter<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isFilterOpen, 'glyphicon-chevron-right': !data.isFilterOpen}"></i></h4>
 				</div>
