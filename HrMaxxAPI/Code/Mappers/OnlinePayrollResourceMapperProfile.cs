@@ -124,6 +124,9 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<EmployeeState, EmployeeStateResource>();
 
 
+			CreateMap<EmployeeDeductionResource, EmployeeDeduction>();
+			CreateMap<EmployeeDeduction, EmployeeDeductionResource>();
+
 		}
 	}
 }

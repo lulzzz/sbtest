@@ -40,6 +40,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int FederalExemptions { get; set; }
 		public decimal FederalAdditionalAmount { get; set; }
 		public EmployeeStateResource State { get; set; }
+		public List<EmployeeDeductionResource> Deductions { get; set; } 
 
 		public string StatusText
 		{
@@ -64,5 +65,13 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public EmployeeTaxStatus TaxStatus { get; set; }
 		public int Exemptions { get; set; }
 		public decimal AdditionalAmount { get; set; }
+	}
+
+	public class EmployeeDeductionResource
+	{
+		public CompanyDeductionResource Deduction { get; set; }
+		public bool IsFixedRate { get; set; }
+		public decimal Rate { get; set; }
+		public decimal AnnualMax { get; set; }
 	}
 }

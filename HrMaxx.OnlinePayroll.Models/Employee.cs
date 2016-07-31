@@ -41,7 +41,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int FederalExemptions { get; set; }
 		public decimal FederalAdditionalAmount { get; set; }
 		public EmployeeState State { get; set; }
-		
+		public List<EmployeeDeduction> Deductions { get; set; } 
 	}
 
 	public class EmployeePayType
@@ -56,5 +56,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeeTaxStatus TaxStatus { get; set; }
 		public int Exemptions { get; set; }
 		public decimal AdditionalAmount { get; set; }
+	}
+
+	public class EmployeeDeduction
+	{
+		public CompanyDeduction Deduction { get; set; }
+		public bool IsFixedRate { get; set; }
+		public decimal Rate { get; set; }
+		public decimal AnnualMax { get; set; }
 	}
 }

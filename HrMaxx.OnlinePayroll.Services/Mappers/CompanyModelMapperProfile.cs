@@ -266,7 +266,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
-				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified));
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.Deductions, opt => opt.Ignore());
 			
 			CreateMap<Models.Employee, Models.DataModel.Employee>()
 				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Encrypt(src.SSN)))

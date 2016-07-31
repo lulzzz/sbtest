@@ -75,7 +75,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);
-			return _mapper.Map<Models.DataModel.Company, Models.Company>(dbMappedCompany);
+			var dbcomp = _dbContext.Companies.First(c => c.Id == dbCompany.Id);
+			return _mapper.Map<Models.DataModel.Company, Models.Company>(dbcomp);
 		}
 
 		public ContractDetails SaveCompanyContract(Company savedcompany, ContractDetails contract)
@@ -332,7 +333,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 
 			_dbContext.SaveChanges();
-			return _mapper.Map<Models.DataModel.Employee, Employee>(dbEmployee);
+			var dbemp = _dbContext.Employees.First(e => e.Id == dbEmployee.Id);
+			return _mapper.Map<Models.DataModel.Employee, Employee>(dbemp);
 		}
 	}
 }
