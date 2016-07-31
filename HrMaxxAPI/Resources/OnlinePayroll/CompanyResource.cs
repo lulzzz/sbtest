@@ -145,7 +145,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 	{
 		public int? Id { get; set; }
 		public int TaxId { get; set; }
-		public Guid CompanyId { get; set; }
+		public Guid? CompanyId { get; set; }
 		public string TaxCode { get; set; }
 		public int TaxYear { get; set; }
 		public Decimal Rate { get; set; }
