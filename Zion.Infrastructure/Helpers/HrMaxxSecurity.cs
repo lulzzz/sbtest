@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
 using HrMaxx.Infrastructure.Attributes;
@@ -105,6 +106,18 @@ namespace HrMaxx.Infrastructure.Helpers
 					claimGuids.Add(hrmaxxId.Value);
 			});
 			return claimGuids;
+		}
+		public static List<KeyValuePair<int, string>> GetEnumList<T>()
+		{
+			var result = new List<KeyValuePair<int, string>>();
+			Enum.GetValues(typeof(T)).Cast<T>().ToList().ForEach(@enum =>
+			{
+
+				FieldInfo fieldInfo = @enum.GetType().GetField(@enum.ToString());
+				var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
+				result.Add(new KeyValuePair<int, string>(attribs[0].DbId, attribs[0].DbName));
+			});
+			return result;
 		}
 
 		public static int? GetDbId(this Enum enumValue)

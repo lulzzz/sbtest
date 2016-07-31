@@ -36,5 +36,6 @@
 		public const string SaveNewsfeed = "Common/Newsfeed";
 
 		public const string UserNewsfeed = "Common/UserNewsfeed";
+		public const string AccountsMetaData = "AccountsMetaData";
 	}
 }

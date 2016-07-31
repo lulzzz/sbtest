@@ -56,9 +56,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs" />
     <Compile Include="BankAccount.cs" />
     <Compile Include="Company.cs" />
+    <Compile Include="DataModel\AccountTemplate.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\BankAccount.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Company.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\CompanyAccount.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\CompanyAccumlatedPayType.cs">
@@ -85,6 +95,12 @@
     <Compile Include="DataModel\DeductionType.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\Employee.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\EntityType.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Host.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -97,8 +113,12 @@
     <Compile Include="DataModel\TaxYearRate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\VendorCustomer.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DeductionType.cs" />
-    <Compile Include="Enum\PayCheckStock.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="Enum\OPEnums.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="HostHomePage.cs" />
     <Compile Include="DataModel\OnlinePayrollModel.Context.cs">
@@ -124,6 +144,7 @@
     <Compile Include="MetaDataModels\TaxYear.cs" />
     <Compile Include="PayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VendorCustomer.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

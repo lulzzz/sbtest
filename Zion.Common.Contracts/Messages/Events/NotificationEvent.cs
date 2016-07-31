@@ -20,5 +20,7 @@ namespace HrMaxx.Common.Contracts.Messages.Events
 		public List<RoleTypeEnum> Roles { get; set; }
 		public string Text { get; set; }
 		public string ReturnUrl { get; set; }
+		public NotificationTypeEnum EventType;
+		public List<Guid> AffectedUsers { get; set; } 
 	}
 }

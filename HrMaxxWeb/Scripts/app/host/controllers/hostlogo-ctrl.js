@@ -1,4 +1,4 @@
-﻿hostmodule.controller('hostlogo', [ 
+﻿common.controller('hostlogo', [
 	'$scope', 'localStorageService', 'zionAPI',
 	function ($scope, localStorageService, zionAPI) {
 		$scope.zionAPI = zionAPI;

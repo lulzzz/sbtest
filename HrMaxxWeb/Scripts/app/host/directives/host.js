@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-hostmodule.directive('host', ['$modal', 'zionAPI','localStorageService',
+common.directive('host', ['$modal', 'zionAPI','localStorageService',
 	function ($modal, zionAPI, localStorageService) {
 		return {
 			restrict: 'E',

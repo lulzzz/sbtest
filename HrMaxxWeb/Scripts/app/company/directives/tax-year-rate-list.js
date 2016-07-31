@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-companymodule.directive('taxYearRateList', ['$modal', 'zionAPI',
+common.directive('taxYearRateList', ['$modal', 'zionAPI',
 	function ($modal, zionAPI) {
 		return {
 			restrict: 'E',

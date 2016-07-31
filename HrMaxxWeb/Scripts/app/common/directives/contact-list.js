@@ -36,7 +36,8 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 						lastName: '',
 						middleInitial: '',
 						email: '',
-						phone: ''
+						phone: '',
+						address: {}
 					};
 				}
 
@@ -104,6 +105,8 @@ common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
 					});
 				}
 				$scope.save = function () {
+					if (false === $('form[name="contactForm"]').parsley().validate())
+						return false;
 					commonRepository.saveContact($scope.selectedContact).then(function (result) {
 						
 						var exists = $filter('filter')($scope.list, { id:result.id });

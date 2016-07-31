@@ -21,6 +21,8 @@ namespace HrMaxx.Common.Models.Enum
 		Invoice=11,
 		User =12,
 		Document = 13,
-		Comment = 14
+		Comment = 14,
+		Vendor=15,
+		Customer=16
 	}
 }

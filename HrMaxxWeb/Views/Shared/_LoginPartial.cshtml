@@ -12,8 +12,8 @@
 			<ul class="dropdown-menu animated fadeInLeft">
 				
 				<li class="arrow"></li>
-				<li><a href="@Url.Action("News","Manage", new { area=""})">My News</a></li>
-				<li><a href="@Url.Action("Index","Manage", new { area=""})">My Profile</a></li>
+				<li><a href="#!/My/News">My News</a></li>
+				<li><a href="#!/My/Profile" target="_self">My Profile</a></li>
 				<li class="divider"></li>
 				<li>
 					@using (Html.BeginForm("LogOff", "Account", new {area=""}, FormMethod.Get, new {id = "logoutForm", @class = "navbar-right"}))

@@ -272,8 +272,22 @@
     <Content Include="Areas\Administration\templates\homepage.html" />
     <Content Include="Areas\Administration\templates\host-list.html" />
     <Content Include="Areas\Administration\templates\host.html" />
+    <Content Include="Areas\Administration\templates\HostList.html" />
+    <Content Include="Areas\Administration\templates\hostprofile.html" />
     <Content Include="Areas\Administration\templates\hostwelcome.html" />
+    <Content Include="Areas\Client\templates\employee-list.html" />
+    <Content Include="Areas\Client\templates\customers.html" />
+    <Content Include="Areas\Client\templates\account-list.html" />
+    <Content Include="Areas\Client\templates\vendor-customer-list.html" />
+    <Content Include="Areas\Client\templates\accounts.html" />
+    <Content Include="Areas\Client\templates\employees.html" />
+    <Content Include="Areas\Client\templates\vendors.html" />
+    <Content Include="Content\templates\myprofile.html" />
+    <Content Include="Areas\Administration\templates\news-list.html" />
+    <Content Include="Areas\Administration\templates\user-list.html" />
+    <Content Include="Areas\Administration\templates\welcome.html" />
     <Content Include="Areas\Client\templates\company-list.html" />
+    <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\tax-year-rate-list.html" />
     <Content Include="Areas\Client\templates\accumulated-pay-type-list.html" />
     <Content Include="Areas\Client\templates\pay-code-list.html" />
@@ -382,6 +396,7 @@
     <Content Include="Content\templates\contact-list.html" />
     <Content Include="Content\templates\document-list.html" />
     <Content Include="Content\templates\usernews.html" />
+    <Content Include="Content\templates\userprofile.html" />
     <Content Include="Content\toastr\toastr.min.css" />
     <Content Include="Content\xeditable\xeditable.css" />
     <Content Include="favicon.ico" />
@@ -1175,7 +1190,9 @@
     <Content Include="Scripts\app\common\common-config.js" />
     <Content Include="Scripts\app\common\common-config.template.js" />
     <Content Include="Scripts\app\common\common-repository.js" />
+    <Content Include="Scripts\app\common\common-routing.js" />
     <Content Include="Scripts\app\common\common.js" />
+    <Content Include="Scripts\app\common\directives\userprofile.js" />
     <Content Include="Scripts\app\common\directives\user-list.js" />
     <Content Include="Scripts\app\common\directives\usernews.js" />
     <Content Include="Scripts\app\common\directives\news-list.js" />
@@ -1191,7 +1208,7 @@
     <Content Include="Scripts\app\common\Notifications\notification-ctrl.js" />
     <Content Include="Scripts\app\common\Notifications\notification-repository.js" />
     <Content Include="Scripts\app\common\Notifications\notification.js" />
-    <Content Include="Scripts\app\common\users\userprofile-ctrl.js" />
+    <Content Include="Scripts\app\common\main-ctrl.js" />
     <Content Include="Scripts\app\common\users\user-repository.js" />
     <Content Include="Scripts\app\common\users\user-app.js" />
     <Content Include="Scripts\app\company\company-app.js" />
@@ -1199,6 +1216,9 @@
     <Content Include="Scripts\app\company\directives\tax-year-rate-list.js" />
     <Content Include="Scripts\app\company\directives\accumulated-pay-type-list.js" />
     <Content Include="Scripts\app\company\directives\pay-code-list.js" />
+    <Content Include="Scripts\app\company\directives\account-list.js" />
+    <Content Include="Scripts\app\company\directives\employee-list.js" />
+    <Content Include="Scripts\app\company\directives\vendor-customer-list.js" />
     <Content Include="Scripts\app\company\directives\worker-compensation-list.js" />
     <Content Include="Scripts\app\company\directives\deduction-list.js" />
     <Content Include="Scripts\app\company\directives\company-list.js" />
@@ -1391,6 +1411,7 @@
     <Content Include="Scripts\respond\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond\respond.min.js" />
     <Content Include="Scripts\Toastr\toastr.min.js" />
+    <Content Include="Content\templates\mynews.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1443,6 +1464,7 @@
     <Folder Include="Areas\Client\Models\" />
     <Folder Include="Areas\Client\Views\Shared\" />
     <Folder Include="Content\pages\" />
+    <Folder Include="Views\templates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

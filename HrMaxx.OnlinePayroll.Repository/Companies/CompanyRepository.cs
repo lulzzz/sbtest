@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 using Company = HrMaxx.OnlinePayroll.Models.Company;
 using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
 using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
 using CompanyTaxState = HrMaxx.OnlinePayroll.Models.CompanyTaxState;
 using CompanyWorkerCompensation = HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation;
+using Employee = HrMaxx.OnlinePayroll.Models.Employee;
+using VendorCustomer = HrMaxx.OnlinePayroll.Models.VendorCustomer;
 
 namespace HrMaxx.OnlinePayroll.Repository.Companies
 {
@@ -18,11 +22,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
+		private readonly IUtilRepository _utilRepository;
 
-		public CompanyRepository(IMapper mapper, OnlinePayrollEntities dbContext)
+		public CompanyRepository(IMapper mapper, OnlinePayrollEntities dbContext, IUtilRepository utilRepository)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
+			_utilRepository = utilRepository;
 		}
 
 		public IList<Company> GetCompanies(Guid hostId, Guid companyId)
@@ -68,13 +74,22 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				
 			}
 			_dbContext.SaveChanges();
+			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);
 			return _mapper.Map<Models.DataModel.Company, Models.Company>(dbMappedCompany);
 		}
 
 		public ContractDetails SaveCompanyContract(Company savedcompany, ContractDetails contract)
 		{
+			if (contract.BankDetails != null)
+			{
+				contract.BankDetails.SourceTypeId = EntityTypeEnum.Company;
+				contract.BankDetails.SourceId = savedcompany.Id;
+				contract.BankDetails.LastModifiedBy = savedcompany.UserName;
+				contract.BankDetails = _utilRepository.SaveBankAccount(contract.BankDetails);
+			}
 			var mapped = _mapper.Map<ContractDetails, CompanyContract>(contract);
 			mapped.CompanyId = savedcompany.Id;
+			
 			var dbContract = _dbContext.CompanyContracts.FirstOrDefault(c => c.CompanyId == savedcompany.Id);
 			if (dbContract == null)
 			{
@@ -191,6 +206,133 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.CompanyPayCode, CompanyPayCode>(mappedpc);
+		}
+
+		public List<VendorCustomer> GetVendorCustomers(Guid companyId, bool isVendor)
+		{
+			var list = _dbContext.VendorCustomers.Where(vc => vc.CompanyId == companyId && vc.IsVendor == isVendor);
+			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<VendorCustomer>>(list.ToList());
+		}
+
+		public VendorCustomer SaveVendorCustomer(VendorCustomer mappedResource)
+		{
+			var vc = _mapper.Map<VendorCustomer, Models.DataModel.VendorCustomer>(mappedResource);
+			var dbVC = _dbContext.VendorCustomers.FirstOrDefault(v => v.Id == vc.Id);
+			if (dbVC==null)
+			{
+				_dbContext.VendorCustomers.Add(vc);
+			}
+			else
+			{
+				dbVC.Name = vc.Name;
+				dbVC.AccountNo = vc.AccountNo;
+				dbVC.StatusId = vc.StatusId;
+				dbVC.Note = vc.Note;
+				dbVC.LastModifiedBy = vc.LastModifiedBy;
+				dbVC.LastModified = vc.LastModified;
+				dbVC.Contact = vc.Contact;
+				dbVC.IdentifierType = vc.IdentifierType;
+				dbVC.IndividualSSN = vc.IndividualSSN;
+				dbVC.BusinessFIN = vc.BusinessFIN;
+				dbVC.Type1099 = vc.Type1099;
+				dbVC.SubType1099 = vc.SubType1099;
+				dbVC.IsVendor1099 = vc.IsVendor1099;
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.VendorCustomer, VendorCustomer>(vc);
+		}
+
+		public List<Account> GetCompanyAccounts(Guid companyId)
+		{
+			var accounts = _dbContext.CompanyAccounts.Where(c => c.CompanyId == companyId);
+			return _mapper.Map<List<CompanyAccount>, List<Account>>(accounts.ToList());
+		}
+
+		public Account SaveCompanyAccount(Account account)
+		{
+			if (account.Type == AccountType.Assets && account.SubType == AccountSubType.Bank && account.BankAccount != null)
+			{
+				account.BankAccount.SourceTypeId = EntityTypeEnum.Company;
+				account.BankAccount.SourceId = account.CompanyId;
+				account.BankAccount = _utilRepository.SaveBankAccount(account.BankAccount);
+			}
+			var mapped = _mapper.Map<Account, CompanyAccount>(account);
+			if (mapped.Id == 0)
+			{
+				_dbContext.CompanyAccounts.Add(mapped);
+			}
+			else
+			{
+				var dbAccount = _dbContext.CompanyAccounts.FirstOrDefault(ca => ca.Id == mapped.Id);
+				if (dbAccount != null)
+				{
+					dbAccount.LastModified = mapped.LastModified;
+					dbAccount.LastModifiedBy = mapped.LastModifiedBy;
+					dbAccount.Name = mapped.Name;
+					dbAccount.OpeningBalance = mapped.OpeningBalance;
+				}
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<CompanyAccount, Account>(mapped);
+		}
+
+		public bool CompanyExists(Guid companyId)
+		{
+			return _dbContext.Companies.Any(c => c.Id == companyId);
+		}
+
+		public List<Employee> GetEmployeeList(Guid companyId)
+		{
+			var employees = _dbContext.Employees.Where(e => e.CompanyId == companyId);
+			return _mapper.Map<List<Models.DataModel.Employee>, List<Employee>>(employees.ToList());
+		}
+
+		public Employee SaveEmployee(Employee employee)
+		{
+			if (employee.BankAccount != null)
+			{
+				employee.BankAccount.SourceTypeId = EntityTypeEnum.Employee;
+				employee.BankAccount.SourceId = employee.Id;
+				employee.BankAccount.LastModifiedBy = employee.UserName;
+				employee.BankAccount = _utilRepository.SaveBankAccount(employee.BankAccount);
+			}
+			var me = _mapper.Map<Employee, Models.DataModel.Employee>(employee);
+			var dbEmployee = _dbContext.Employees.FirstOrDefault(e => e.Id == me.Id);
+			if (dbEmployee == null)
+			{
+				_dbContext.Employees.Add(me);
+			}
+			else
+			{
+				dbEmployee.FirstName = me.FirstName;
+				dbEmployee.LastName = me.LastName;
+				dbEmployee.LastModified = me.LastModified;
+				dbEmployee.LastModifiedBy = me.LastModifiedBy;
+				dbEmployee.Contact = me.Contact;
+				dbEmployee.Department = me.Department;
+				dbEmployee.SSN = me.SSN;
+				dbEmployee.BirthDate = me.BirthDate;
+				dbEmployee.HireDate = me.HireDate;
+				dbEmployee.Gender = me.Gender;
+				dbEmployee.EmployeeNo = me.EmployeeNo;
+				dbEmployee.Memo = me.Memo;
+				dbEmployee.PayrollSchedule = me.PayrollSchedule;
+				dbEmployee.PayType = me.PayType;
+				dbEmployee.Compensations = me.Compensations;
+				dbEmployee.PayCodes = me.PayCodes;
+				dbEmployee.PaymentMethod = me.PaymentMethod;
+				dbEmployee.DirectDebitAuthorized = me.DirectDebitAuthorized;
+				dbEmployee.TaxCategory = me.TaxCategory;
+				dbEmployee.FederalAdditionalAmount = me.FederalAdditionalAmount;
+				dbEmployee.FederalExemptions = me.FederalExemptions;
+				dbEmployee.FederalStatus = me.FederalStatus;
+				dbEmployee.State = me.State;
+				if (employee.BankAccount != null)
+					dbEmployee.BankAccountId = employee.BankAccount.Id;
+			}
+
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.Employee, Employee>(dbEmployee);
 		}
 	}
 }

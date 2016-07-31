@@ -14,6 +14,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
 using HrMaxx.Infrastructure.Helpers;
+using HrMaxxAPI.Resources;
 using HrMaxxAPI.Resources.Common;
 using Microsoft.AspNet.Identity.Owin;
 using RestSharp;
@@ -41,9 +42,9 @@ namespace HrMaxxAPI.Controllers.User
 		}
 		[HttpGet]
 		[Route(UserRoutes.User)]
-		public UserProfile GetUser(Guid userId)
+		public UserProfile GetUser()
 		{
-			return MakeServiceCall(() => _userService.GetUserProfile(userId), string.Format("Get User Profile By User Id={0}", userId), true);
+			return MakeServiceCall(() => _userService.GetUserProfile(new Guid(CurrentUser.UserId)), string.Format("Get User Profile By User Id={0}", CurrentUser.UserId), true);
 		}
 
 		[HttpGet]
@@ -91,6 +92,44 @@ namespace HrMaxxAPI.Controllers.User
 				});
 			}
 			
+			
+		}
+
+		[HttpPost]
+		[Route(UserRoutes.UserPasswordChange)]
+		public async Task ChangePassword(UserPasswordChangeRequest resource)
+		{
+			var userExists = await UserManager.FindByEmailAsync(CurrentUser.eMail);
+			if (userExists == null)
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.BadRequest,
+					ReasonPhrase = "this user does not exist"
+				});
+			}
+			try
+			{
+				var result = await UserManager.ChangePasswordAsync(CurrentUser.UserId, resource.OldPassword, resource.NewPassword);
+				if (!result.Succeeded)
+				{
+					throw new HttpResponseException(new HttpResponseMessage
+					{
+						StatusCode = HttpStatusCode.InternalServerError,
+						ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Change User Password"
+					});
+
+				}
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error creating user", e);
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = "Failed to complete change user password"
+				});
+			}
 			
 		}
 

@@ -56,11 +56,13 @@
   <ItemGroup>
     <Compile Include="Companies\CompanyRepository.cs" />
     <Compile Include="Companies\ICompanyRepository.cs" />
+    <Compile Include="IUtilRepository.cs" />
     <Compile Include="MetaDataRepository.cs" />
     <Compile Include="Host\HostRepository.cs" />
     <Compile Include="Host\IHostRepositoru.cs" />
     <Compile Include="IMetaDataRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtilRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

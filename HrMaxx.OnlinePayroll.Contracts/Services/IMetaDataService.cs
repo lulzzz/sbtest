@@ -12,5 +12,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IMetaDataService
 	{
 		object GetCompanyMetaData();
+		object GetAccountsMetaData();
+		object GetEmployeeMetaData();
 	}
 }

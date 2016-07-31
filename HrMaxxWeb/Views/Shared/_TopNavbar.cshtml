@@ -3,7 +3,7 @@
 	<div class="container-fluid">
 		<!-- begin mobile sidebar expand / collapse button -->
 		<div class="navbar-header" id="hostlogo" ng-controller="hostlogo">
-			<a href="@Url.Action("Index", "Home", new { area = "" })" class="navbar-brand">
+			<a href="#!/" class="navbar-brand">
 				<img ng-src="{{getDocumentUrl(logo)}}" style="width:200px;height:40px" />
 			</a>
 			<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
@@ -41,8 +41,8 @@
 							</div>
 						</li>
 						<li ng-repeat="notification in myNotifications" class="media">
-							<div class="media-left" ng-if="notification.isRead"><i class="fa fa-info-circle media-object bg-blue"></i></div>
-							<div class="media-left" ng-if="!notification.isRead"><i class="fa fa-info-circle media-object bg-red"></i></div>
+							<div class="media-left" ng-if="notification.isRead"><i class="fa media-object bg-blue" ng-class="getEventClass(notification)"></i></div>
+							<div class="media-left" ng-if="!notification.isRead"><i class="fa media-object bg-red" ng-class="getEventClass(notification)"></i></div>
 							<div class="media-body" ng-click="NotificationRead(notification)">
 								<h6 class="media-heading">{{notification.type}}</h6>
 								<div class="text-muted f-s-11">

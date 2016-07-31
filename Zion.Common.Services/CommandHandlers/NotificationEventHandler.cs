@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Messages.Events;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
@@ -26,7 +28,7 @@ namespace HrMaxx.Common.Services.CommandHandlers
 		public void Consume(Notification event1)
 		{
 			var notificationList = new List<NotificationDto>();
-			var notifyUsers = _userService.GetUsersByRoleAndId(event1.Roles, null);
+			var notifyUsers = event1.AffectedUsers.Any()? event1.AffectedUsers : _userService.GetUsersByRoleAndId(event1.Roles, null);
 			notifyUsers.ForEach(u => notificationList.Add(new NotificationDto
 			{
 				CreatedOn = DateTime.Now,
@@ -34,7 +36,7 @@ namespace HrMaxx.Common.Services.CommandHandlers
 				LoginId = u.ToString(),
 				NotificationId = CombGuid.Generate(),
 				Text = event1.Text,
-				Type = NotificationTypeEnum.Info.GetEnumDescription(),
+				Type = event1.EventType.GetEnumDescription(),
 				MetaData = string.Format("{0}{1}", _baseUrl, event1.ReturnUrl)
 			}));
 			_NotificationService.CreateNotifications(notificationList);

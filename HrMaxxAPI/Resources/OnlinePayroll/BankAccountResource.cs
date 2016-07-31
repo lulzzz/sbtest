@@ -9,6 +9,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class BankAccountResource 
 	{
+		public int? Id { get; set; }
 		[Required]
 		public string BankName { get; set; }
 		[Required]
@@ -19,5 +20,9 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string AccountNumber { get; set; }
 		[Required]
 		public string RoutingNumber { get; set; }
+		[Required]
+		public int SourceTypeId { get; set; }
+		public Guid? SourceId { get; set; }
+
 	}
 }

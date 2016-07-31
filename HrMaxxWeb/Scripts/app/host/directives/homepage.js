@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-hostmodule.directive('homepage', ['$modal', 'zionAPI', '$timeout', 'localStorageService', '$window',
+common.directive('homepage', ['$modal', 'zionAPI', '$timeout', 'localStorageService', '$window',
 	function ($modal, zionAPI, $timeout, localStorageService, $window) {
 		return {
 			restrict: 'E',
@@ -165,6 +165,8 @@ hostmodule.directive('homepage', ['$modal', 'zionAPI', '$timeout', 'localStorage
 				}
 
 				$scope.save = function () {
+					if (false === $('form[name="homepageForm"]').parsley().validate('address'))
+						return false;
 					uploadImages().then(function () {
 						$scope.hostaddress.sourceTypeId = EntityTypes.Host;
 						$scope.hostaddress.targetTypeId = EntityTypes.Address;

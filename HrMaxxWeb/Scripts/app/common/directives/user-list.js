@@ -11,7 +11,8 @@ common.directive('userList', ['$modal', 'zionAPI', '$timeout', '$window',
 				employeeId: "=?employeeId",
 				heading: "=heading",
 				showResetPassword: "=?showResetPassword",
-				parentTypeId: "=?parentTypeId"
+				parentTypeId: "=?parentTypeId",
+				mainData: "=?mainData"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/user-list.html',
 
@@ -19,15 +20,10 @@ common.directive('userList', ['$modal', 'zionAPI', '$timeout', '$window',
 				$scope.targetTypeId = EntityTypes.Contact;
 				$scope.list = [];
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				if ($scope.mainData)
+					$scope.mainData.showFilterPanel = false;
 				$scope.selectedUser = null;
 
 				$scope.addNewUser = function () {

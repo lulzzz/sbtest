@@ -1,6 +1,5 @@
 ﻿'use strict';
 
-var companymodule = angular.module('company', ['host']);
 common.factory('companyServer', [
 	'Restangular', 'zionAPI', function (Restangular, zionAPI) {
 

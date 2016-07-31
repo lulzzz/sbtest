@@ -121,7 +121,7 @@ common.directive('documentList', ['$modal', 'zionAPI', '$timeout', '$window',
 						}
 					}
 					$scope.deleteDocument = function(doc) {
-						commonRepository.deleteDocument($scope.entityTypeId, $scope.entityId, doc.id).then(function () {
+						commonRepository.deleteDocument($scope.sourceTypeId, $scope.sourceId, doc.id).then(function () {
 							$scope.list.splice($scope.list.indexOf(doc), 1);
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);

@@ -6,6 +6,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Resources.Common;
 
 namespace HrMaxxAPI.Controllers
@@ -14,11 +15,19 @@ namespace HrMaxxAPI.Controllers
 	public class CommonController : BaseApiController
 	{
 		public readonly ICommonService _commonService;
-		public CommonController(ICommonService commonService)
+		public readonly IMetaDataService _metaDataService;
+		public CommonController(ICommonService commonService, IMetaDataService metaDataService)
 		{
 			_commonService = commonService;
+			_metaDataService = metaDataService;
 		}
 
+		[HttpGet]
+		[Route(HrMaxxRoutes.AccountsMetaData)]
+		public object GetAccountsMetaData()
+		{
+			return MakeServiceCall(() => _metaDataService.GetAccountsMetaData(), "Accounts Meta Data", true);
+		}
 		
 		[HttpGet]
 		[Route(HrMaxxRoutes.DeleteRelationship)]

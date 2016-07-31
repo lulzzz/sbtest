@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository;
 
 namespace HrMaxx.OnlinePayroll.Services
@@ -32,6 +35,31 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Company");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public object GetAccountsMetaData()
+		{
+			return
+				new
+				{
+					Types = HrMaaxxSecurity.GetEnumList<AccountType>(),
+					SubTypes = HrMaaxxSecurity.GetEnumList<AccountSubType>()
+				};
+		}
+
+		public object GetEmployeeMetaData()
+		{
+			try
+			{
+				var paytypes = _metaDataRepository.GetAllPayTypes();
+				return new { PayTypes = paytypes };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Employee");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

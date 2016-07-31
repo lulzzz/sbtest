@@ -275,11 +275,15 @@
     <Compile Include="Resources\Common\NewsResource.cs" />
     <Compile Include="Resources\Common\NotificationsResource.cs" />
     <Compile Include="Resources\EntityIDResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\AccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\BankAccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\CompanyResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\EmployeeResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HostHomePageDocumentResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HomePageResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HostResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\VendorCustomerResource.cs" />
+    <Compile Include="Resources\UserPasswordChangeRequest.cs" />
     <Compile Include="Resources\VersionResource.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

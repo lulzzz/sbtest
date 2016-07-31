@@ -1,12 +1,26 @@
-﻿usermodule.factory('userRepository', [
+﻿common.factory('userRepository', [
 	'$q', 'commonServer',
 	function($q, commonServer) {
 		return {
 
-			getUserProfile: function (userId) {
+			getUserProfile: function () {
 				var deferred = $q.defer();
 
-				commonServer.one('User').one(userId).get().then(function (data) {
+				commonServer.one('User').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
+			changePassword: function (old, new1, confirm) {
+				var deferred = $q.defer();
+
+				commonServer.all('UserPasswordChange').post({
+					oldPassword: old,
+					newPassword: new1,
+					confirmPassword: confirm
+				}).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using HrMaxx.Bus.Contracts;
+using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models.DataModel;
+using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Enums;
+using HrMaxx.Infrastructure.Services;
+using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
+using Magnum;
+using MassTransit;
+using Notification = HrMaxx.Common.Contracts.Messages.Events.Notification;
+
+namespace HrMaxx.Common.Services.CommandHandlers
+{
+	public class CompanyEventHandler : BaseService, Consumes<CompanyUpdatedEvent>.All
+	{
+		public IBus Bus { get; set; }
+		private readonly IUserService _userService;
+
+		public CompanyEventHandler(IUserService userService)
+		{
+			_userService = userService;
+		}
+		public void Consume(CompanyUpdatedEvent event1)
+		{
+			var users = _userService.GetUsers(event1.SavedObject.HostId, event1.SavedObject.Id).Select(u=>u.UserId).ToList();
+			var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() {RoleTypeEnum.Admin, RoleTypeEnum.Master}, null);
+			users.AddRange(adminUsers);
+			Bus.Publish<Notification>(new Notification
+			{
+				SavedObject = event1.SavedObject,
+				SourceId = event1.SavedObject.Id,
+				UserId = event1.UserId,
+				Source = event1.UserName,
+				TimeStamp = event1.TimeStamp,
+				Text = event1.NotificationText,
+				ReturnUrl = "#!/Client/Company/?name=" + event1.SavedObject.Name,
+				EventType = event1.EventType,
+				AffectedUsers = users.Distinct().ToList()
+			});
+
+
+		}
+	}
+}

@@ -1,6 +1,5 @@
 ﻿'use strict';
 
-var hostmodule = angular.module('host', ['common']);
 common.factory('hostServer', [
 	'Restangular', 'zionAPI', function (Restangular, zionAPI) {
 

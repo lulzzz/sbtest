@@ -25,6 +25,12 @@ namespace HrMaxxAPI.Controllers.Companies
 	  {
 			return MakeServiceCall(() => _metaDataService.GetCompanyMetaData(), "Get company meta data", true);
 	  }
+		[HttpGet]
+		[Route(CompanyRoutes.EmployeeMetaData)]
+		public object GetEmployeeMetaData()
+		{
+			return MakeServiceCall(() => _metaDataService.GetEmployeeMetaData(), "Get employee meta data", true);
+		}
 
 		[HttpGet]
 		[Route(CompanyRoutes.Companies)]
@@ -76,6 +82,59 @@ namespace HrMaxxAPI.Controllers.Companies
 			var mappedResource = Mapper.Map<CompanyPayCodeResource, CompanyPayCode>(resource);
 			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource), "save company pay code", true);
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.VendorCustomerList)]
+		public List<VendorCustomerResource> SavePayCode(Guid companyId, bool isVendor)
+		{
+			var vendors = MakeServiceCall(() => _companyService.GetVendorCustomers(companyId, isVendor), string.Format("getting list of vendor or customer for {0}, {1}", companyId, isVendor), true);
+			return Mapper.Map<List<VendorCustomer>, List<VendorCustomerResource>>(vendors);
+		}
+
+		[HttpPost]
+		[Route(CompanyRoutes.VendorCustomer)]
+		public VendorCustomerResource SaveVendorCustomer(VendorCustomerResource resource)
+		{
+			var mappedResource = Mapper.Map<VendorCustomerResource, VendorCustomer>(resource);
+			var vendor = MakeServiceCall(() => _companyService.SaveVendorCustomers(mappedResource), string.Format("saving vendor or customer for {0}, {1}", resource.CompanyId, mappedResource.IsVendor), true);
+			return Mapper.Map<VendorCustomer, VendorCustomerResource>(vendor);
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.Accounts)]
+		public List<AccountResource> GetCompanyAccounts(Guid companyId)
+		{
+			var accounts = MakeServiceCall(() => _companyService.GetComanyAccounts(companyId), string.Format("getting list of accounts for {0}", companyId), true);
+			return Mapper.Map<List<Account>, List<AccountResource>>(accounts);
+		}
+
+		[HttpPost]
+		[Route(CompanyRoutes.SaveAccount)]
+		public AccountResource SaveAccount(AccountResource resource)
+		{
+			var mappedResource = Mapper.Map<AccountResource, Account>(resource);
+			mappedResource.LastModified = DateTime.Now;
+			mappedResource.LastModifiedBy = CurrentUser.FullName;
+			var account = MakeServiceCall(() => _companyService.SaveCompanyAccount(mappedResource), string.Format("saving account for {0}", resource.CompanyId), true);
+			return Mapper.Map<Account, AccountResource>(account);
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.EmployeeList)]
+		public List<EmployeeResource> EmployeeList(Guid companyId)
+		{
+			var vendors = MakeServiceCall(() => _companyService.GetEmployeeList(companyId), string.Format("getting list of employees for {0}", companyId), true);
+			return Mapper.Map<List<Employee>, List<EmployeeResource>>(vendors);
+		}
+
+		[HttpPost]
+		[Route(CompanyRoutes.Employee)]
+		public EmployeeResource SaveEmployee(EmployeeResource resource)
+		{
+			var mappedResource = Mapper.Map<EmployeeResource, Employee>(resource);
+			var vendor = MakeServiceCall(() => _companyService.SaveEmployee(mappedResource), string.Format("saving employee for {0}", resource.CompanyId), true);
+			return Mapper.Map<Employee, EmployeeResource>(vendor);
 		}
   }
 }

@@ -1,10 +1,20 @@
-companymodule.factory('companyRepository', [
+common.factory('companyRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'companyServer', '$filter', 'Entities',
 	function ($http, zionAPI, zionPaths, $q, upload, companyServer, $filter, Entities) {
 		return {
 			getCompanyMetaData: function () {
 				var deferred = $q.defer();
 				companyServer.one('MetaData').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getEmployeeMetaData: function () {
+				var deferred = $q.defer();
+				companyServer.one('EmployeeMetaData').get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);
@@ -71,7 +81,68 @@ companymodule.factory('companyRepository', [
 				});
 
 				return deferred.promise;
-			}
+			},
+			getVendorCustomers: function (companyId, isVendor) {
+				var deferred = $q.defer();
+				companyServer.one('Vendors').one(companyId, isVendor).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveVendorCustomer: function (vendor) {
+				var deferred = $q.defer();
+				companyServer.all('VendorCustomer').post(vendor).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getCompanyAccounts: function (companyId) {
+				var deferred = $q.defer();
+				companyServer.one('Accounts').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveCompanyAccount: function (account) {
+				var deferred = $q.defer();
+				companyServer.all('Accounts').post(account).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getEmployees: function (companyId) {
+				var deferred = $q.defer();
+				companyServer.one('Employees').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveEmployee: function (employee) {
+				var deferred = $q.defer();
+				companyServer.all('Employee').post(employee).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+
 		};
 	}
 ]);

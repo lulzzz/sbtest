@@ -78,7 +78,11 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<ContractDetailsResource, ContractDetails>()
 				.ForMember(dest => dest.PrePaidSubscriptionOption, opt => opt.MapFrom(src => src.PrePaidSubscriptionOption.HasValue ? src.PrePaidSubscriptionOption.Value : PrePaidSubscriptionOption.NA));
 
-			CreateMap<BankAccountResource, BankAccount>();
+			CreateMap<BankAccountResource, BankAccount>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore());
+ 
 			CreateMap<BankAccount, BankAccountResource>();
 
 			CreateMap<AccumulatedPayType, AccumulatedPayTypeResource>();
@@ -91,6 +95,34 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<CreditCardResource, CreditCard>();
 			CreateMap<CreditCard, CreditCardResource>();
+
+			CreateMap<VendorCustomer, VendorCustomerResource>();
+			CreateMap<VendorCustomerResource, VendorCustomer>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+
+			CreateMap<AccountResource, Account>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0))
+				.ForMember(dest => dest.OpeningDate, opt => opt.MapFrom(src => src.OpeningDate.HasValue ? src.OpeningDate.Value : DateTime.Now)); 
+
+			CreateMap<Account, AccountResource>();
+
+			CreateMap<EmployeeResource, Employee>()
+				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Contact.FirstName))
+				.ForMember(dest => dest.MiddleInitial, opt => opt.MapFrom(src => src.Contact.MiddleInitial))
+				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Contact.LastName))
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+
+
+			CreateMap<Employee, EmployeeResource>();
+
+			CreateMap<EmployeePayTypeResource, EmployeePayType>();
+			CreateMap<EmployeePayType, EmployeePayTypeResource>();
+
+			CreateMap<EmployeeStateResource, EmployeeState>();
+			CreateMap<EmployeeState, EmployeeStateResource>();
+
 
 		}
 	}

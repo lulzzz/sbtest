@@ -33,6 +33,21 @@
         <AssociationConnector Association="HrMaxxModel.FK_CompanyAccumlatedPayType_PayType" />
         <EntityTypeShape EntityType="HrMaxxModel.CompanyPayCode" Width="1.5" PointX="5.25" PointY="16.375" />
         <AssociationConnector Association="HrMaxxModel.FK_CompanyPayCode_Company" />
+        <EntityTypeShape EntityType="HrMaxxModel.VendorCustomer" Width="1.5" PointX="8.25" PointY="0.75" />
+        <AssociationConnector Association="HrMaxxModel.FK_VendorCustomer_Company" />
+        <AssociationConnector Association="HrMaxxModel.FK_VendorCustomer_Status" />
+        <EntityTypeShape EntityType="HrMaxxModel.AccountTemplate" Width="1.5" PointX="9.625" PointY="15.625" />
+        <EntityTypeShape EntityType="HrMaxxModel.BankAccount" Width="1.5" PointX="9.625" PointY="11.125" />
+        <EntityTypeShape EntityType="HrMaxxModel.CompanyAccount" Width="1.5" PointX="11.875" PointY="11" />
+        <EntityTypeShape EntityType="HrMaxxModel.EntityType" Width="1.5" PointX="7.375" PointY="12" />
+        <AssociationConnector Association="HrMaxxModel.FK_CompanyAccount_AccountTemplate" />
+        <AssociationConnector Association="HrMaxxModel.FK_BankAccount_EntityType" />
+        <AssociationConnector Association="HrMaxxModel.FK_CompanyAccount_BankAccount" />
+        <AssociationConnector Association="HrMaxxModel.FK_CompanyAccount_Company" />
+        <EntityTypeShape EntityType="HrMaxxModel.Employee" Width="1.5" PointX="13.875" PointY="3.125" />
+        <AssociationConnector Association="HrMaxxModel.FK_Employee_Company" />
+        <AssociationConnector Association="HrMaxxModel.FK_Employee_Status" />
+        <AssociationConnector Association="HrMaxxModel.FK_Employee_Company1" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

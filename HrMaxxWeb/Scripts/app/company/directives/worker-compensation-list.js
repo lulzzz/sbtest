@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-companymodule.directive('workerCompensationList', ['$modal', 'zionAPI',
+common.directive('workerCompensationList', ['$modal', 'zionAPI',
 	function ($modal, zionAPI) {
 		return {
 			restrict: 'E',

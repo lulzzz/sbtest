@@ -37,19 +37,23 @@
 						<span>Administration</span>
 					</a>
 					<ul class="sub-menu">
-						<li><a href="@Url.Action("Index", "Host", new {area = "Administration"})">Manage Host</a></li>
-						<li><a href="@Url.Action("Index", "News", new {area = "Administration"})">News & Announcements</a></li>
-						<li><a href="@Url.Action("Users", "Host", new {area = "Administration"})">Users</a></li>
+						<li><a href="#!/Admin/HostList">Manage Host</a></li>
+						<li><a href="#!/Admin/NewsList">News & Announcements</a></li>
+						<li><a href="#!/Admin/UserList">Users</a></li>
 						
 					</ul>
 				</li>
 			}
 			@if (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()))
 			{
-				<li><a href="@Url.Action("Profile", "Host", new {area = "Administration"})"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
+				<li><a href="#!/Admin/Host"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
 				
 			}
-			<li><a href="@Url.Action("Index", "Company", new {area = "Client"})"><i class="fa fa-home"></i><span>Company</span></a></li>
+			<li><a href="#!/Client/Company"><i class="fa fa-home"></i><span>Company</span></a></li>
+			<li><a href="#!/Client/Employees"><i class="fa fa-home"></i><span>Employee</span></a></li>
+			<li><a href="#!/Client/Vendors"><i class="fa fa-home"></i><span>Vendors</span></a></li>
+			<li><a href="#!/Client/Customers"><i class="fa fa-home"></i><span>Customers</span></a></li>
+			<li><a href="#!/Client/Accounts"><i class="fa fa-home"></i><span>COA</span></a></li>
 
 			<!-- begin sidebar minify button -->
 			<li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>

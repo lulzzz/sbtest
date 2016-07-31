@@ -5,10 +5,6 @@
 				<h4 class="panel-title">{{heading}}</h4>
 			</div>
 			<div class="panel-body">
-				<div class="row">
-					<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-				</div>
-
 				<div ng-show="list.length===0 && !selectedContact">
 					No Users found
 				</div>

@@ -1,4 +1,4 @@
-﻿notification.factory('notificationRepository', [
+﻿common.factory('notificationRepository', [
 	'$q', 'commonServer',
 	function($q, commonServer) {
 		return {

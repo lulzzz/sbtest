@@ -12,11 +12,13 @@ using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using Magnum;
 using Magnum.Extensions;
 using Newtonsoft.Json;
+using BankAccount = HrMaxx.OnlinePayroll.Models.BankAccount;
 using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
 using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
 using CompanyWorkerCompensation = HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation;
 using DeductionType = HrMaxx.OnlinePayroll.Models.DeductionType;
 using PayType = HrMaxx.OnlinePayroll.Models.PayType;
+using VendorCustomer = HrMaxx.OnlinePayroll.Models.VendorCustomer;
 
 namespace HrMaxx.OnlinePayroll.Services.Mappers
 {
@@ -64,7 +66,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.CompanyTaxStates))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src=>src.CompanyDeductions))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => src.CompanyPayCodes))
-				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src=>src.CompanyWorkerCompensations))
+				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src => src.CompanyWorkerCompensations))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 
@@ -103,7 +105,10 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyWorkerCompensations, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyContracts, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyTaxRates, opt => opt.MapFrom(src=>src.CompanyTaxRates))
-				.ForMember(dest => dest.CompanyTaxStates, opt => opt.Ignore());
+				.ForMember(dest => dest.VendorCustomers, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyTaxStates, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore())
+				.ForMember(dest => dest.Employees, opt => opt.Ignore());
 			
 
 			CreateMap<Models.DataModel.CompanyContract, Models.ContractDetails>()
@@ -199,7 +204,84 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<CompanyPayCode, Models.DataModel.CompanyPayCode>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore());
 
+			CreateMap<Models.DataModel.VendorCustomer, VendorCustomer>()
+				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src=>!string.IsNullOrWhiteSpace(src.IndividualSSN)? Crypto.Decrypt(src.IndividualSSN) : src.IndividualSSN))
+				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN) : src.BusinessFIN))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy));
+
+			CreateMap<VendorCustomer, Models.DataModel.VendorCustomer>()
+				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Encrypt(src.IndividualSSN) : src.IndividualSSN))
+				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Encrypt(src.BusinessFIN) : src.BusinessFIN))
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName))
+				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src=>JsonConvert.SerializeObject(src.Contact)))
+				.ForMember(dest => dest.Status, opt => opt.Ignore())
+				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src=>src.StatusId));
+
+			CreateMap<Models.DataModel.CompanyAccount, Account>()
+				;
+
+			CreateMap<Account, Models.DataModel.CompanyAccount>()
+				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.BankAccount, opt => opt.Ignore())
+				.ForMember(dest => dest.AccountTemplate, opt => opt.Ignore())
+				;
+
+			CreateMap<Models.DataModel.BankAccount, BankAccount>()
+				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccountNumber)))
+				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNumber)))
+				.ForMember(dest => dest.SourceTypeId, opt => opt.MapFrom(src => src.EntityTypeId))
+				.ForMember(dest => dest.SourceId, opt => opt.MapFrom(src => src.EntityId));
+
+			CreateMap<BankAccount, Models.DataModel.BankAccount>()
+				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Encrypt(src.AccountNumber)))
+				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Encrypt(src.RoutingNumber)))
+				.ForMember(dest => dest.EntityId, opt => opt.MapFrom(src => src.SourceId))
+				.ForMember(dest => dest.EntityTypeId, opt => opt.MapFrom(src => src.SourceTypeId))
+				.ForMember(dest => dest.EntityType, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore())
+				.ForMember(dest => dest.Employees, opt => opt.Ignore());
+
+			CreateMap<Models.DataModel.AccountTemplate, Models.DataModel.CompanyAccount>()
+				.ForMember(dest => dest.Id, opt => opt.Ignore())
+				.ForMember(dest => dest.TemplateId, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.OpeningBalance, opt => opt.MapFrom(src => (decimal)0))
+				.ForMember(dest => dest.OpeningDate, opt => opt.MapFrom(src => DateTime.Now))
+				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
+				.ForMember(dest => dest.AccountTemplate, opt => opt.Ignore())
+				.ForMember(dest => dest.BankAccount, opt => opt.Ignore())
+				.ForMember(dest => dest.BankAccountId, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src=>DateTime.Now))
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore());
+
+			CreateMap<Models.DataModel.Employee, Models.Employee>()
+				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src=>Crypto.Decrypt(src.SSN)))
+				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src => src.BankAccount))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
+				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<CompanyPayCode>>(src.PayCodes)))
+				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<EmployeePayType>>(src.Compensations)))
+				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified));
+			
+			CreateMap<Models.Employee, Models.DataModel.Employee>()
+				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Encrypt(src.SSN)))
+				.ForMember(dest => dest.BankAccount, opt => opt.Ignore())
+				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.Status, opt => opt.Ignore())
+				.ForMember(dest => dest.BankAccountId, opt => opt.MapFrom(src => src.BankAccount.Id))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Contact)))
+				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.PayCodes)))
+				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Compensations)))
+				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.State)))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src=>src.LastModified))
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
 
 		}
 	}
 }
+

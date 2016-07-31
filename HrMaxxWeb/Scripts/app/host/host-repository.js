@@ -1,4 +1,4 @@
-hostmodule.factory('hostRepository', [
+common.factory('hostRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'hostServer', '$filter', 'Entities',
 	function ($http, zionAPI, zionPaths, $q, upload, hostServer, $filter, Entities) {
 		return {

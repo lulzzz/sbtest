@@ -10,13 +10,16 @@ common.directive('address', ['$modal', 'zionAPI','localStorageService',
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId",
 				type: "=type",
-				showDisabled: "=?showDisabled"
+				showDisabled: "=?showDisabled",
+				valGroup: "=?valGroup"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/address.html',
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
 				$scope.countries = localStorageService.get('countries');
+				if (!$scope.valGroup)
+					$scope.valGroup = "address";
 				if (!$scope.showDisabled)
 					$scope.showDisabled = false;
 				//$scope.data = angular.copy($scope.data1);

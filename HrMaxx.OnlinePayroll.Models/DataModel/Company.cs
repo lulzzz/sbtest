@@ -24,6 +24,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             this.CompanyWorkerCompensations = new HashSet<CompanyWorkerCompensation>();
             this.CompanyAccumlatedPayTypes = new HashSet<CompanyAccumlatedPayType>();
             this.CompanyPayCodes = new HashSet<CompanyPayCode>();
+            this.VendorCustomers = new HashSet<VendorCustomer>();
+            this.CompanyAccounts = new HashSet<CompanyAccount>();
+            this.Employees = new HashSet<Employee>();
         }
     
         public System.Guid Id { get; set; }
@@ -67,5 +70,11 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CompanyPayCode> CompanyPayCodes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<VendorCustomer> VendorCustomers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CompanyAccount> CompanyAccounts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

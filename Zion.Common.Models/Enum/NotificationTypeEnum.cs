@@ -13,6 +13,10 @@ namespace HrMaxx.Common.Models.Enum
 		[Description("Info")] Info = 7,
 		[Description("Error")] Error = 8,
 		[Description("Warning")] Warning = 9,
-		[Description("Action Assigned")] ActionAssigned = 10
+		[Description("Action Assigned")] ActionAssigned = 10,
+		[Description("Created")]
+		Created = 11,
+		[Description("Updated")]
+		Updated = 12
 	}
 }

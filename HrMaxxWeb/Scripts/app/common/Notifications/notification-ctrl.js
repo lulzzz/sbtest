@@ -1,4 +1,4 @@
-﻿notification.controller('notificationCtrl', [
+﻿common.controller('notificationCtrl', [
 	'$scope', 'notificationRepository','authService', 'zionAPI', '$window','$interval',
 	function($scope, notificationRepository, authService, zionAPI, $window, $interval) {
 		$scope.zionAPI = zionAPI;
@@ -13,6 +13,18 @@
 				return false;
 
 		};
+		$scope.getEventClass = function(event) {
+			if (event.type === 'Created') {
+				return "fa-plus-circle";
+			} else if (event.type === 'Updated') {
+				return "fa-wrench";
+			}
+			else if (event.type === 'Info') {
+				return "fa-info-circle";
+			} else {
+				return "fa-comment-o";
+			}
+		}
 		$scope.refreshNotifications = function() {
 			$scope.myNotifications = [];
 			$scope.getMyNotifications();

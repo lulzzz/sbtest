@@ -68,6 +68,7 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			{
 				var original = _hostRepository.GetHost(host.Id);
 				var notificationText = original == null ? "A new Host {0} has been created" : "{0} has been updated";
+				var eventType = original == null ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 				_hostRepository.Save(host);
 				Bus.Publish<Notification>(new Notification
 				{
@@ -78,8 +79,8 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 					TimeStamp = DateTime.Now,
 					Roles = new List<RoleTypeEnum> { RoleTypeEnum.Master, RoleTypeEnum.Admin },
 					Text = string.Format("{0} by {1}", string.Format(notificationText, host.FirmName), host.UserName),
-					ReturnUrl = "#/?host="+host.FirmName
-
+					ReturnUrl = "#!/?host="+host.FirmName,
+					EventType = eventType
 				});
 			}
 			catch (Exception e)

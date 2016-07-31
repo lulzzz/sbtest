@@ -1,7 +1,4 @@
-﻿<div class="row">
-	<div class="row">
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-	</div>
+﻿<div class="row" ng-show="mainData.selectedHost">
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="!companyId">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
@@ -9,19 +6,6 @@
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
-			<div class="row form-group">
-				<label for="host" class="col-md-2 control-label">Host</label>
-				<div class="col-md-4">
-
-					<select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hostList.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hostList track by host1.id">
-						<option value="">Please select...</option>
-					</select>
-				</div>
-			</div>
-			<div style="height:50px">
-
-			</div>
-
 			<div ng-show="list.length===0 && !selectedContact" class="table table-bordered">
 				No Companies found
 			</div>
@@ -66,7 +50,7 @@
 				</script>
 			</div>
 			<div class="row">
-				<button class="btn btn-sm btn-primary" ng-show="data.selectedHost && !selectedCompany" ng-click="addCompany()">Add</button>
+				<button class="btn btn-sm btn-primary" ng-show="mainData.selectedHost && !selectedCompany" ng-click="addCompany()">Add</button>
 			</div>
 
 			<!-- end panel -->
@@ -79,16 +63,16 @@
 			<div class="panel-heading">
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right">
-					<li class="active"><a href="#info" data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="#user" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="#news" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">Documents</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="#contacts" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Contacts</span></a></li>
-					
+					<li class="active"><a href="\#info" data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
+					<li ng-show="selectedCompany.id"><a href="\#user" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
+					<li ng-show="selectedCompany.id"><a href="\#news" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
+					<li ng-show="selectedCompany.id"><a href="\#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">Documents</span></a></li>
+					<li ng-show="selectedCompany.id"><a href="\#contacts" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Contacts</span></a></li>
+
 				</ul>
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-						
+					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" href="\#collapseOne">
+
 						{{selectedCompany.name}} Details
 					</a>
 				</h3>
@@ -171,7 +155,7 @@
 												<!-- begin col-4 -->
 												<div class="col-sm-6">
 													<div class="form-group">
-														<address type="0" data="selectedCompany.companyAddress" source-type-id="2" source-id="selectedCompany.companyId"></address>
+														<address type="0" data="selectedCompany.companyAddress" source-type-id="2" source-id="selectedCompany.companyId" val-group="'wizard-step-1'"></address>
 													</div>
 												</div>
 												<!-- end col-4 -->
@@ -270,7 +254,7 @@
 														</div>
 													</div>
 													<div class="form-group">
-														<address type="0" data="selectedCompany.businessAddress" source-type-id="2" source-id="selectedCompany.companyId" show-disabled="selectedCompany.isAddressSame"></address>
+														<address type="0" data="selectedCompany.businessAddress" source-type-id="2" source-id="selectedCompany.companyId" show-disabled="selectedCompany.isAddressSame" val-group="'wizard-step-3'"></address>
 
 													</div>
 												</div>
@@ -498,7 +482,7 @@
 
 													</div>
 													<div class="form-group">
-														<address type="0" data="selectedCompany.contract.creditCardDetails.billingAddress" source-type-id="2" source-id="selectedCompany.companyId"></address>
+														<address type="0" data="selectedCompany.contract.creditCardDetails.billingAddress" source-type-id="2" source-id="selectedCompany.companyId" val-group="'wizard-step-4'"></address>
 													</div>
 												</div>
 
@@ -530,7 +514,7 @@
 													<div class="form-group">
 														<label>Routing Number</label>
 														<div>
-															<input type="text" class="form-control" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]{9}$/" name="routingnumber" ui-mask="999999999" ng-model="selectedCompany.contract.bankDetails.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selectedCompany.contract.bankDetails.routingNumber)}" />
+															<input type="text" class="form-control" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]{9}$/" data-parsley-trigger="blur" name="routingnumber" ui-mask="999999999" ng-model="selectedCompany.contract.bankDetails.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selectedCompany.contract.bankDetails.routingNumber)}" />
 
 														</div>
 													</div>
@@ -555,10 +539,10 @@
 							</form>
 						</div>
 						<div class="tab-pane fade in" id="user" ng-if="selectedCompany.id">
-							<user-list host-id="data.selectedHost.id" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" />
+							<user-list host-id="data.selectedHost.id" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="data"/>
 						</div>
 						<div class="tab-pane fade in" id="news" ng-if="selectedCompany.id">
-							<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" />
+							<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data"/>
 						</div>
 						<div class="tab-pane fade in" id="documents" ng-if="selectedCompany.id">
 							<document-list source-type-id="data.sourceTypeId" source-id="selectedCompany.id" heading="'Documents'" />
@@ -566,22 +550,23 @@
 						<div class="tab-pane fade in" id="contacts" ng-if="selectedCompany.id">
 							<contact-list source-type-id="data.sourceTypeId" source-id="selectedCompany.id" heading="'Contacts'" />
 						</div>
-						
+
 					</div>
-					
+
 				</div>
 			</div>
 		</div>
 		<div class="panel panel-inverse overflow-hidden">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-						<i class="fa fa-plus-circle pull-right"></i>Deductions</a>
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseTwo">
+						<i class="fa fa-plus-circle pull-right"></i>Deductions
+					</a>
 				</h3>
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
-					<deduction-list list="selectedCompany.deductions" types="data.companyMetaData.deductionTypes" company-id="selectedCompany.id"/>
+					<deduction-list list="selectedCompany.deductions" types="data.companyMetaData.deductionTypes" company-id="selectedCompany.id" />
 				</div>
 			</div>
 		</div>
@@ -589,7 +574,7 @@
 		<div class="panel panel-inverse overflow-hidden">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseThree">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Workers Compensation
 					</a>
@@ -597,14 +582,14 @@
 			</div>
 			<div id="collapseThree" class="panel-collapse collapse">
 				<div class="panel-body">
-					<worker-compensation-list list="selectedCompany.workerCompensations"  company-id="selectedCompany.id" />
+					<worker-compensation-list list="selectedCompany.workerCompensations" company-id="selectedCompany.id" />
 				</div>
 			</div>
 		</div>
 		<div class="panel panel-inverse overflow-hidden">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseFour">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Company Taxes
 					</a>
@@ -619,7 +604,7 @@
 		<div class="panel panel-inverse overflow-hidden">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseFive">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Accumulated Pay Types
 					</a>
@@ -634,7 +619,7 @@
 		<div class="panel panel-inverse overflow-hidden">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseSix">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseSix">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Pay Codes
 					</a>
@@ -646,7 +631,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 	</div>
 
 

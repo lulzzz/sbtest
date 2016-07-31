@@ -1,13 +1,14 @@
 ﻿'use strict';
 
-hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
+common.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 	function ($modal, zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				heading: "=heading",
-				selected: "=?selected"
+				selected: "=?selected",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html',
 
@@ -15,15 +16,9 @@ hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 				function ($scope, $element, $location, $filter, hostRepository, ngTableParams, EntityTypes) {
 				$scope.sourceTypeId = EntityTypes.Host;
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				$scope.selectedHost = null;
 					$scope.isBodyOpen = true;
 				$scope.addHost = function () {
@@ -31,6 +26,9 @@ hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 						statusId: 1
 					};
 				}
+				
+				$scope.mainData.showFilterPanel = false;
+				$scope.mainData.showCompanies = false;
 
 				$scope.tableData = [];
 				$scope.tableParams = new ngTableParams({
@@ -79,6 +77,11 @@ hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.selectedHost = angular.copy(item);
 						$scope.selectedHost.sourceTypeId = $scope.sourceTypeId;
 						$scope.isBodyOpen = false;
+						if ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id) {
+							$scope.mainData.selectedHost = item;
+							$scope.$parent.$parent.hostSelected();
+						}
+							
 					}, 1);
 					
 					
@@ -92,6 +95,8 @@ hostmodule.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 				}
 			
 				$scope.save = function () {
+					if (false === $('form[name="hostForm"]').parsley().validate())
+						return false;
 					hostRepository.saveHost($scope.selectedHost).then(function (result) {
 						
 						var exists = $filter('filter')($scope.list, { id:result.id });

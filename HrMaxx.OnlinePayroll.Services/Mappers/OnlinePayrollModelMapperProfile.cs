@@ -10,6 +10,7 @@ using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using Magnum;
 using Magnum.Extensions;
 using Newtonsoft.Json;
+using BankAccount = HrMaxx.OnlinePayroll.Models.BankAccount;
 using PayType = HrMaxx.OnlinePayroll.Models.PayType;
 
 namespace HrMaxx.OnlinePayroll.Services.Mappers
@@ -65,6 +66,20 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Tax, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.PayType, PayType>();
+			CreateMap<Models.DataModel.BankAccount, BankAccount>()
+				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccountNumber)))
+				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNumber)))
+				.ForMember(dest => dest.SourceTypeId, opt => opt.MapFrom(src => src.EntityTypeId))
+				.ForMember(dest => dest.SourceId, opt => opt.MapFrom(src=>src.EntityId));
+
+			CreateMap<BankAccount, Models.DataModel.BankAccount>()
+				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Encrypt(src.AccountNumber)))
+				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Encrypt(src.RoutingNumber)))
+				.ForMember(dest => dest.EntityId, opt => opt.MapFrom(src => src.SourceId))
+				.ForMember(dest => dest.EntityTypeId, opt => opt.MapFrom(src => src.SourceTypeId))
+				.ForMember(dest => dest.EntityType, opt => opt.Ignore())
+				.ForMember(dest => dest.Employees, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore()); 
 
 		}
 	}

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-companymodule.directive('payCodeList', ['$modal', 'zionAPI',
+common.directive('payCodeList', ['$modal', 'zionAPI',
 	function ($modal, zionAPI) {
 		return {
 			restrict: 'E',

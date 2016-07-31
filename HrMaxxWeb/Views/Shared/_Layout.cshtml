@@ -21,9 +21,6 @@
 
 	@Scripts.Render("~/bundles/angular")
 
-
-
-
 </head>
 <body>
 	<!-- begin #page-loader -->
@@ -31,7 +28,7 @@
 	
 	<!-- end #page-loader -->
 	<!-- begin #page-container -->
-	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
+	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed" ng-app="common">
 		<!-- begin #header -->
 		@Html.Partial("_TopNavbar") 
 		<!-- end #header -->
@@ -43,7 +40,37 @@
 		
 		<!-- end #sidebar -->
 		<!-- begin #content -->
-		<div id="content" class="content">
+		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company">
+			<div class="panel panel-inverse" ng-show="data.showFilterPanel">
+				<div class="panel-heading" ng-click="data.isFilterOpen=!data.isFilterOpen">
+					<h4 class="panel-title">Host and Company Filter<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isFilterOpen, 'glyphicon-chevron-right': !data.isFilterOpen}"></i></h4>
+				</div>
+				<div class="panel-body" ng-show="data.isFilterOpen">
+					<div class="row form-group">
+						<label for="host" class="col-md-2 control-label">Hosts</label>
+						<div class="col-md-4">
+							<select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
+								<option value="">Please select...</option>
+							</select>
+						</div>
+					</div>
+					<div class="row form-group" ng-show="data.showCompanies">
+						<label for="company" class="col-md-2 control-label">Companies</label>
+						<div class="col-md-4">
+							<select id="company" class="form-control"  ng-model="data.selectedCompany" ng-options="company.name for company in data.companies track by company.id">
+								<option value="">Please select...</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="data.selectedCompany">
+				<h4 class="pull-right">You are viewing company: {{data.selectedCompany.name}}</h4>
+			</div>
+			<div class="row">
+				<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+			</div>
+			<div ng-view></div>
 			@RenderBody()
 		</div>
 		<!-- end #content -->
@@ -80,8 +107,6 @@
 	<script>
 		$(document).ready(function() {
 			App.init();
-			angular.bootstrap(document.getElementById('dvNotifications'), ['notification']);
-			angular.bootstrap(document.getElementById('hostlogo'), ['host']);
 			angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
 		});
 	</script>

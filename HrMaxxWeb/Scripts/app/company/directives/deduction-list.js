@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-companymodule.directive('deductionList', ['$modal', 'zionAPI',
+common.directive('deductionList', ['$modal', 'zionAPI',
 	function ($modal, zionAPI) {
 		return {
 			restrict: 'E',

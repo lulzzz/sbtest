@@ -33,7 +33,13 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public IList<PayType> GetAccumulablePayTypes()
 		{
-			var paytypes = _dbContext.PayTypes.Where(p => p.IsAccumulable).ToList();
+			var paytypes = _dbContext.PayTypes.Where(pt=>pt.IsAccumulable).ToList();
+			return _mapper.Map<List<Models.DataModel.PayType>, List<PayType>>(paytypes);
+		}
+
+		public IList<PayType> GetAllPayTypes()
+		{
+			var paytypes = _dbContext.PayTypes.ToList();
 			return _mapper.Map<List<Models.DataModel.PayType>, List<PayType>>(paytypes);
 		}
 	}

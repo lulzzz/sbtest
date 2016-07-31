@@ -97,8 +97,13 @@ namespace HrMaxxWeb
 				"~/Scripts/angular/angular-scrollable-table.js",
 				"~/Scripts/angular/mask.min.js",
 				"~/Scripts/app/common/common.js",
+				"~/Scripts/app/host/host-app.js",
+				"~/Scripts/app/company/company-app.js",
 				"~/Scripts/app/common/common-config.js",
+				"~/Scripts/app/common/common-routing.js",
 				"~/Scripts/app/common/common-repository.js",
+				"~/Scripts/app/company/company-repository.js",
+				"~/Scripts/app/host/host-repository.js",
 				"~/Scripts/app/common/authInterceptorService.js",
 				"~/Scripts/app/common/auth-svc.js",
 				
@@ -113,15 +118,15 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/login-ctrl.js",
 				"~/Scripts/app/common/users/user-app.js",
 				"~/Scripts/app/common/users/user-repository.js",
-				"~/Scripts/app/common/users/userprofile-ctrl.js",
 				"~/Scripts/app/common/directives/document-list.js",
 				"~/Scripts/app/common/directives/address.js",
 				"~/Scripts/app/common/directives/comment-list.js",
 				"~/Scripts/app/common/directives/contact-list.js",
 				"~/Scripts/app/common/directives/contact.js",
 				"~/Scripts/app/Common/directives/news-list.js",
-				"~/Scripts/app/host/host-app.js",
-				"~/Scripts/app/host/host-repository.js",
+				"~/Scripts/app/common/directives/userprofile.js",
+				
+				
 				"~/Scripts/app/host/directives/host-list.js",
 				"~/Scripts/app/host/directives/host.js",
 				"~/Scripts/app/host/controllers/hostlogo-ctrl.js",
@@ -129,14 +134,18 @@ namespace HrMaxxWeb
 				"~/Scripts/app/host/directives/welcome.js",
 				"~/Scripts/app/common/directives/usernews.js",
 				"~/Scripts/app/common/directives/user-list.js",
-				"~/Scripts/app/company/company-app.js",
-				"~/Scripts/app/company/company-repository.js",
+				
+				
 				"~/Scripts/app/company/directives/deduction-list.js",
 				"~/Scripts/app/company/directives/worker-compensation-list.js",
 				"~/Scripts/app/company/directives/tax-year-rate-list.js",
 				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
 				"~/Scripts/app/company/directives/pay-code-list.js",
-				"~/Scripts/app/company/directives/company-list.js"
+				"~/Scripts/app/company/directives/company-list.js",
+				"~/Scripts/app/common/main-ctrl.js",
+				"~/Scripts/app/company/directives/vendor-customer-list.js",
+				"~/Scripts/app/company/directives/account-list.js",
+				"~/Scripts/app/company/directives/employee-list.js"
 				
 
 				);

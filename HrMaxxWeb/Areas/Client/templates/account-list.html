@@ -1,0 +1,183 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Char of Accounts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div ng-show="list.length===0 && !selected" class="table table-bordered">
+				{{'No COA found'}}
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id}">
+						<td data-title="' No'" class="col-sm-1">
+							{{$index+1}}
+						</td>
+						<td data-title=" 'Type' " filter="{ 'typeText': 'text' }" sortable=" 'typeText' " class="col-sm-3">
+							{{item.typeText}}
+						</td>
+						<td data-title=" 'Sub Type' " filter="{ 'subTypeText': 'text' }" sortable=" 'subTypeText' " class="col-sm-2">
+							{{item.subTypeText}}
+						</td>
+						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-1">
+							{{item.name}}
+						</td>
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+			<div class="row">
+				<button class="btn btn-sm btn-primary" ng-show="!selected" ng-click="add()">Add</button>
+			</div>
+
+			<!-- end panel -->
+		</div>
+	</div>
+
+	<div class="panel panel-inverse" ng-if="selected">
+		<div class="panel-heading">
+			<h4 class="panel-title">{{selected.name}} Details</h4>
+		</div>
+		<div class="panel-body">
+			<div class="tab-pane fade active in" id="info">
+				<form data-parsley-validate="true" name="account">
+					<div class="col-sm-12">
+						<div class="col-sm-6">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Type</label>
+										
+										<select id="type" class="form-control" ng-change="typeSelected()" ng-model="data.selectedType" ng-options="t.value for t in data.types track by t.key" required data-parsley-group="account">
+											<option value="">Please select...</option>
+										</select>
+										
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Sub Type</label>
+
+										<select id="subtype" class="form-control" ng-disbaled="!selected.type" ng-change="subTypeSelected()" ng-model="data.selectedSubType" ng-options="t.value for t in data.selectableSubTypes track by t.key" required data-parsley-group="account">
+											<option value="">Please select...</option>
+										</select>
+
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-sm-12">
+									<label>Name</label>
+									<input type="text" name="name" placeholder="Name" class="form-control" ng-model="selected.name" required data-parsley-group="account" />
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-sm-12">
+									<label>Tax Code</label>
+									<span ng-show="selected.taxCode">{{selected.taxCode}}</span>
+									<span ng-show="!selected.taxCode">NA</span>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label>Opening Balance</label>
+
+										<input type="number" class="form-control" ng-model="selected.openingBalance" data-parsley-group="account" data-parsley-type="number" />
+
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="control-label">Opening Date</label>
+										<div class="input-group date">
+											<input name="effectivedate" type="text" class="form-control" readonly="readonly" datepicker-popup="MM/dd/yyyy" ng-model="selected.openingDate" is-open="data.opened" max-date="dt" datepicker-options="dateOptions" close-text="Close" />
+											<span class="input-group-addon">
+												<i class="fa fa-calendar" ng-click="open($event)"></i>
+											</span>
+										</div>
+
+
+
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-sm-6" ng-if="isBank()">
+							<div class="form-group">
+								<label>Bank Name</label>
+								<input type="text" required ng-model="selected.bankAccount.bankName" data-parsley-group="account" class="form-control" />
+							</div>
+							<div class="form-group">
+								<label>Account Name</label>
+								<div>
+									<input type="text" class="form-control" required data-parsley-group="account" name="accountname" ng-model="selected.bankAccount.accountName" />
+
+								</div>
+							</div>
+							<div class="form-group">
+								<label>Account type</label>
+								<div>
+									<select ng-model="selected.bankAccount.accountType" required data-parsley-group="account" name="accountType" class="form-control" convert-to-number>
+										<option value="1">Checking</option>
+										<option value="2">Savings</option>
+
+									</select>
+
+								</div>
+
+							</div>
+							<div class="form-group">
+								<label>Routing Number</label>
+								<div>
+									<input type="text" class="form-control" required data-parsley-group="account" data-parsley-pattern="/^[0-9]{9}$/" data-parsley-trigger="blur" name="routingnumber" ui-mask="999999999" ng-model="selected.bankAccount.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selectedCompany.contract.bankDetails.routingNumber)}" />
+
+								</div>
+							</div>
+							<div class="form-group">
+								<label>Account Number</label>
+								<div>
+									<input type="text" class="form-control" placeholder="Account Number between 8-15 numbers" required data-parsley-group="account" name="accountnumber" ng-model="selected.bankAccount.accountNumber" data-parsley-pattern="/^\d{8,15}$/" />
+
+								</div>
+							</div>
+						</div>
+						
+					</div>
+					<div class="col-sm-2 col-sm-offset-4">
+						<button class="btn btn-primary" ng-click="save()">save</button>
+						<button class="btn btn-default" ng-click="cancel()">cancel</button>
+					</div>
+				</form>
+			</div>
+			
+		</div>
+
+	</div>
+
+
+
+
+</div>
+
+

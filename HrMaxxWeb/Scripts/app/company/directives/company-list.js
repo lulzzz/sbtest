@@ -1,13 +1,13 @@
 ﻿'use strict';
 
-companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
+common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 	function ($modal, zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				heading: "=heading",
-				hostId: "=hostId"
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company-list.html',
 
@@ -16,24 +16,21 @@ companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$windo
 					var dataSvc = {
 					hostList: [],
 					selectedHost: null,
-					selectedHostId: $scope.hostId ? $scope.hostId : null,
+					selectedHostId: $scope.host ? $scope.host.id : null,
 					sourceTypeId: EntityTypes.Company,
 					companyMetaData: null,
 					isBodyOpen: true
 				}
 
 					$scope.data = dataSvc;
-				
+					$scope.mainData.showFilterPanel = !$scope.mainData.userHost;
+					$scope.mainData.showCompanies = false;
+					
+
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				$scope.selectedCompany = null;
 			
 					
@@ -118,6 +115,7 @@ companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$windo
 						$scope.selectedCompany = angular.copy(item);
 						$scope.selectedCompany.sourceTypeId = dataSvc.sourceTypeId;
 						$scope.data.isBodyOpen = false;
+						$scope.mainData.selectedCompany = item;
 						$timeout(function() {
 							$("#wizard").bwizard({validating: function(e, ui) {
 								if (ui.index == 0) {
@@ -324,7 +322,9 @@ companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$windo
 							accountName: '',
 							accountNumber: '',
 							routingNumber: '',
-							accountType:1
+							accountType: 1,
+							sourceTypeId: $scope.sourceTypeId,
+							sourceId: $scope.selectedCompany.id
 						}
 					}
 					
@@ -347,6 +347,10 @@ companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$windo
 						$scope.selectedCompany.contract.bankDetails = null;
 					} else {
 						$scope.selectedCompany.contract.creditCardDetails = null;
+						if ($scope.selectedCompany.contract.bankDetails) {
+							$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
+							$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
+						}
 					}
 					if ($scope.selectedCompany.contract.contractOption === 1) {
 						$scope.selectedCompany.contract.invoiceCharge = 0;
@@ -363,32 +367,38 @@ companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$windo
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.selectedCompany = null;
-						$scope.isBodyOpen = true;
+						$scope.data.isBodyOpen = true;
 						addAlert('successfully saved Company', 'success');
 					}, function (error) {
 						addAlert('error saving Company', 'danger');
 					});
 				}
-				$scope.getCompanies = function(hostId) {
-					companyRepository.getCompanyList(hostId).then(function (data) {
-						$scope.list = data;
-						$scope.tableParams.reload();
-						$scope.fillTableData($scope.tableParams);
-						if ($scope.companyId) {
-							var selected = $filter('filter')($scope.list, { id: $scope.companyId });
-							if (selected.length > 0) {
-								$scope.setCompany(selected[0]);
-							}
-						}
-					}, function (erorr) {
-						addAlert('error getting company list', 'danger');
-					});
-				}
-				$scope.hostSelected = function () {
-					if (dataSvc.selectedHost)
-						$scope.getCompanies(dataSvc.selectedHost.id);
-				}
-				
+				//$scope.getCompanies = function(hostId) {
+				//	companyRepository.getCompanyList(hostId).then(function (data) {
+				//		$scope.list = data;
+				//		$scope.tableParams.reload();
+				//		$scope.fillTableData($scope.tableParams);
+				//		if ($scope.companyId) {
+				//			var selected = $filter('filter')($scope.list, { id: $scope.companyId });
+				//			if (selected.length > 0) {
+				//				$scope.setCompany(selected[0]);
+				//			}
+				//		}
+				//	}, function (erorr) {
+				//		addAlert('error getting company list', 'danger');
+				//	});
+				//}
+			
+				$scope.$watch('mainData.companies.length',
+					 function (newValue, oldValue) {
+					 	if (newValue !== oldValue) {
+							 $scope.list = $scope.mainData.companies;
+			 						$scope.tableParams.reload();
+			 						$scope.fillTableData($scope.tableParams);
+						 }
+			 				
+					 }, true
+			 );
 				var init = function () {
 					
 					companyRepository.getCompanyMetaData().then(function (data) {
@@ -397,22 +407,14 @@ companymodule.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$windo
 					{
 						addAlert('error getting company meta data', 'danger');
 					});
-
-					hostRepository.getHostList().then(function (data) {
-						dataSvc.hostList = data;
-						if (dataSvc.selectedHostId) {
-							dataSvc.selectedHost = $filter('filter')(dataSvc.hostList, { id: dataSvc.selectedHostId })[0];
+					$scope.list = $scope.mainData.companies;
+					var querystring = $location.search();
+					if (querystring.name) {
+						var exists = $filter('filter')($scope.list, { name: querystring.name }, true)[0];
+						if (exists) {
+							$scope.setCompany(exists);
 						}
-						else if (dataSvc.hostList.length === 1) {
-							dataSvc.selectedHost = dataSvc.hostList[0];
-						}
-						if (dataSvc.selectedHost) {
-							dataSvc.hostSelected();
-						}
-					}, function (error) {
-						addAlert('error getting list of hosts', 'danger');
-					});
-					
+					}
 				}
 				init();
 				

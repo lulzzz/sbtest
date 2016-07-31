@@ -60,11 +60,11 @@
 				<div class="row" >
 					<button class="btn btn-sm btn-primary" ng-show="!selectedContact" ng-click="addNewContact()">Add</button>
 				</div>
-				<div class="row col-sm-6" ng-if="selectedContact">
-					<form name="contactForm" novalidate>
-						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="0"/>
+				<div class="row" ng-if="selectedContact">
+					<form name="contactForm" data-parsley-validate="true">
+						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="0" val-group="newcontact"/>
 						<div class="row pull-right">
-							<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="contactForm.$invalid">Save</button>
+							<button type="button" class="btn btn-sm btn-primary" ng-click="save()">Save</button>
 							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
 						</div>
 					</form>

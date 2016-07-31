@@ -1,4 +1,4 @@
-var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable', 'ngTable', 'angularFileUpload', 'restangular', 'ui.mask', 'ngSanitize', 'angularjs-dropdown-multiselect']);
+var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable', 'ngTable', 'angularFileUpload', 'restangular', 'ui.mask', 'ngSanitize', 'angularjs-dropdown-multiselect', 'ngRoute']);
 
 common.constant('zionPaths', {
 	Login: 'Account/Login',
@@ -20,7 +20,9 @@ common.constant('EntityTypes', {
 	Invoice:11,
 	User :12,
 	Document: 13,
-	Comment: 14
+	Comment: 14,
+	Vendor: 15,
+	Customer: 16
 });
 common.constant('Entities', [
 	{
@@ -60,9 +62,6 @@ common.factory('commonServer', [
 	}
 ]);
 
-common.config(function($httpProvider) {
-	$httpProvider.interceptors.push('authInterceptorService');
-});
 
 common.run([
 	'authService', function(authService) {

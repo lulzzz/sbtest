@@ -39,5 +39,11 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
         public virtual DbSet<PayType> PayTypes { get; set; }
         public virtual DbSet<CompanyPayCode> CompanyPayCodes { get; set; }
+        public virtual DbSet<VendorCustomer> VendorCustomers { get; set; }
+        public virtual DbSet<AccountTemplate> AccountTemplates { get; set; }
+        public virtual DbSet<BankAccount> BankAccounts { get; set; }
+        public virtual DbSet<CompanyAccount> CompanyAccounts { get; set; }
+        public virtual DbSet<EntityType> EntityTypes { get; set; }
+        public virtual DbSet<Employee> Employees { get; set; }
     }
 }

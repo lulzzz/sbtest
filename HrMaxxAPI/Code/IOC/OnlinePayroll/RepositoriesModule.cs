@@ -37,6 +37,11 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
+			builder.RegisterType<UtilRepository>()
+				.As<IUtilRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
 			builder.RegisterType<CompanyRepository>()
 				.As<ICompanyRepository>()
 				.InstancePerLifetimeScope()

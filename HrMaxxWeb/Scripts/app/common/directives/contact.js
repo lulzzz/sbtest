@@ -8,12 +8,15 @@ common.directive('contact', ['$modal', 'zionAPI','localStorageService',
 			scope: {
 				data: "=data",
 				sourceTypeId: "=sourceTypeId",
-				sourceId: "=sourceId"
+				sourceId: "=sourceId",
+				valGroup: "=?valGroup"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/contact.html',
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
-				
+				if (!$scope.valGroup) {
+					$scope.valGroup = "contact";
+				}
 				$scope.addAlert = function (error, type) {
 					$scope.alerts = [];
 					$scope.alerts.push({

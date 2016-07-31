@@ -10,5 +10,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		IList<TaxByYear> GetTaxes();
 		IList<DeductionType> GetDeductionTypes();
 		IList<PayType> GetAccumulablePayTypes();
+		IList<PayType> GetAllPayTypes();
 	}
 }

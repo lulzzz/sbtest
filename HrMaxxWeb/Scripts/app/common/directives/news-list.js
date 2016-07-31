@@ -10,7 +10,8 @@ common.directive('newsList', ['$modal', 'zionAPI', '$timeout', '$window',
 				audienceId: "=audienceId",
 				heading: "=heading",
 				fetch: "=fetch",
-				showAudienceList: "=showAudienceList"
+				showAudienceList: "=showAudienceList",
+				mainData: "=?mainData"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/news-list.html',
 
@@ -19,16 +20,12 @@ common.directive('newsList', ['$modal', 'zionAPI', '$timeout', '$window',
 				$scope.targetAudience = [];
 				$scope.selectedAudience = [];
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				$scope.selectedNewsItem = null;
+				if ($scope.mainData)
+					$scope.mainData.showFilterPanel = false;
 
 				$scope.addNew = function () {
 					$scope.selectedNewsItem = {
