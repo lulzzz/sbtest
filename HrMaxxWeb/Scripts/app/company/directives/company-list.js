@@ -36,7 +36,7 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 					
 				$scope.addCompany = function () {
 					var selectedCompany = {
-						hostId: dataSvc.selectedHostId,
+						hostId: $scope.mainData.selectedHost.id,
 						statusId: 1,
 						isAddressSame: true,
 						isVisibleToHost: true,
