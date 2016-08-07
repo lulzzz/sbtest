@@ -184,6 +184,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.DeductionType, opt => opt.Ignore())
 				.ForMember(dest => dest.TypeId, opt => opt.MapFrom(src => src.Type.Id))
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeDeductions, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src=>src.CompanyId));
 
 			CreateMap<Models.DataModel.CompanyWorkerCompensation, CompanyWorkerCompensation>();
@@ -267,7 +268,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
-				.ForMember(dest => dest.Deductions, opt => opt.Ignore());
+				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src=>src.EmployeeDeductions));
 			
 			CreateMap<Models.Employee, Models.DataModel.Employee>()
 				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Encrypt(src.SSN)))
@@ -280,7 +281,16 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Compensations)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.State)))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src=>src.LastModified))
+				.ForMember(dest => dest.EmployeeDeductions, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
+
+			CreateMap<Models.DataModel.EmployeeDeduction, Models.EmployeeDeduction>()
+				.ForMember(dest => dest.Deduction, opt => opt.MapFrom(src => src.CompanyDeduction));
+
+			CreateMap<Models.EmployeeDeduction, Models.DataModel.EmployeeDeduction>()
+				.ForMember(dest => dest.Employee, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyDeduction, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyDeductionId, opt => opt.MapFrom(src => src.Deduction.Id));
 
 		}
 	}

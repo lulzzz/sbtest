@@ -90,7 +90,7 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.HostId, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
-				.ForMember(dest => dest.UserName, opt => opt.Ignore());
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src=>src.UserName));
 		}
 	}
 }

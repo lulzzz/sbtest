@@ -14,6 +14,7 @@ using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
 using CompanyTaxState = HrMaxx.OnlinePayroll.Models.CompanyTaxState;
 using CompanyWorkerCompensation = HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation;
 using Employee = HrMaxx.OnlinePayroll.Models.Employee;
+using EmployeeDeduction = HrMaxx.OnlinePayroll.Models.EmployeeDeduction;
 using VendorCustomer = HrMaxx.OnlinePayroll.Models.VendorCustomer;
 
 namespace HrMaxx.OnlinePayroll.Repository.Companies
@@ -335,6 +336,44 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			_dbContext.SaveChanges();
 			var dbemp = _dbContext.Employees.First(e => e.Id == dbEmployee.Id);
 			return _mapper.Map<Models.DataModel.Employee, Employee>(dbemp);
+		}
+
+		public EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction)
+		{
+			var mappeddeduction = _mapper.Map<EmployeeDeduction, Models.DataModel.EmployeeDeduction>(deduction);
+			if (mappeddeduction.Id == 0)
+			{
+				_dbContext.EmployeeDeductions.Add(mappeddeduction);
+			}
+			else
+			{
+				var dbdeduction = _dbContext.EmployeeDeductions.FirstOrDefault(cd => cd.Id == mappeddeduction.Id);
+				if (dbdeduction != null)
+				{
+					dbdeduction.Method = mappeddeduction.Method;
+					dbdeduction.Rate = mappeddeduction.Rate;
+					dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
+					dbdeduction.CompanyDeductionId = mappeddeduction.CompanyDeductionId;
+				}
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.EmployeeDeduction, EmployeeDeduction>(mappeddeduction);
+		}
+
+		public bool EmployeeExists(Guid id)
+		{
+			return _dbContext.Employees.Any(c => c.Id == id);
+		}
+
+		public void DeleteEmployeeDeduction(int deductionId)
+		{
+			var dbdeduction = _dbContext.EmployeeDeductions.FirstOrDefault(d => d.Id == deductionId);
+			if (dbdeduction != null)
+			{
+				_dbContext.EmployeeDeductions.Remove(dbdeduction);
+				_dbContext.SaveChanges();
+			}
+				
 		}
 	}
 }

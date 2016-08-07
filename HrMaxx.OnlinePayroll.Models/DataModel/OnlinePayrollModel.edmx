@@ -198,6 +198,17 @@
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="EmployeeDeduction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Method" Type="int" Nullable="false" />
+          <Property Name="Rate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="AnnualMax" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CompanyDeductionId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="EntityType">
           <Key>
             <PropertyRef Name="EntityTypeId" />
@@ -521,6 +532,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_EmployeeDeduction_CompanyDeduction">
+          <End Role="CompanyDeduction" Type="Self.CompanyDeduction" Multiplicity="1" />
+          <End Role="EmployeeDeduction" Type="Self.EmployeeDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompanyDeduction">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeDeduction">
+              <PropertyRef Name="CompanyDeductionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmployeeDeduction_Employee">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="EmployeeDeduction" Type="Self.EmployeeDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeDeduction">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TaxYearRate_Tax">
           <End Role="Tax" Type="Self.Tax" Multiplicity="1" />
           <End Role="TaxYearRate" Type="Self.TaxYearRate" Multiplicity="*" />
@@ -571,6 +606,7 @@
           <EntitySet Name="CompanyWorkerCompensation" EntityType="Self.CompanyWorkerCompensation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeductionType" EntityType="Self.DeductionType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EmployeeDeduction" EntityType="Self.EmployeeDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayType" EntityType="Self.PayType" Schema="dbo" store:Type="Tables" />
@@ -657,6 +693,14 @@
           <AssociationSet Name="FK_Employee_Status" Association="Self.FK_Employee_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Employee" EntitySet="Employee" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeDeduction_CompanyDeduction" Association="Self.FK_EmployeeDeduction_CompanyDeduction">
+            <End Role="CompanyDeduction" EntitySet="CompanyDeduction" />
+            <End Role="EmployeeDeduction" EntitySet="EmployeeDeduction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeDeduction_Employee" Association="Self.FK_EmployeeDeduction_Employee">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="EmployeeDeduction" EntitySet="EmployeeDeduction" />
           </AssociationSet>
           <AssociationSet Name="FK_TaxYearRate_Tax" Association="Self.FK_TaxYearRate_Tax">
             <End Role="Tax" EntitySet="Tax" />
@@ -798,6 +842,15 @@
           <AssociationSet Name="FK_Employee_Company1" Association="HrMaxxModel.FK_Employee_Company1">
             <End Role="Company" EntitySet="Companies" />
             <End Role="Employee" EntitySet="Employees" />
+          </AssociationSet>
+          <EntitySet Name="EmployeeDeductions" EntityType="HrMaxxModel.EmployeeDeduction" />
+          <AssociationSet Name="FK_EmployeeDeduction_CompanyDeduction" Association="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction">
+            <End Role="CompanyDeduction" EntitySet="CompanyDeductions" />
+            <End Role="EmployeeDeduction" EntitySet="EmployeeDeductions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeDeduction_Employee" Association="HrMaxxModel.FK_EmployeeDeduction_Employee">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="EmployeeDeduction" EntitySet="EmployeeDeductions" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
@@ -1032,6 +1085,7 @@
           <Property Name="AnnualMax" Type="Decimal" Precision="18" Scale="2" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyDeduction_Company" FromRole="CompanyDeduction" ToRole="Company" />
           <NavigationProperty Name="DeductionType" Relationship="HrMaxxModel.FK_CompanyDeduction_DeductionType" FromRole="CompanyDeduction" ToRole="DeductionType" />
+          <NavigationProperty Name="EmployeeDeductions" Relationship="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" FromRole="CompanyDeduction" ToRole="EmployeeDeduction" />
         </EntityType>
         <Association Name="FK_CompanyDeduction_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -1350,6 +1404,7 @@
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_Employee_Company1" FromRole="Employee" ToRole="Company" />
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EmployeeDeductions" Relationship="HrMaxxModel.FK_EmployeeDeduction_Employee" FromRole="Employee" ToRole="EmployeeDeduction" />
         </EntityType>
         <Association Name="FK_Employee_Company">
           <End Type="HrMaxxModel.BankAccount" Role="BankAccount" Multiplicity="0..1" />
@@ -1384,6 +1439,43 @@
             </Principal>
             <Dependent Role="Employee">
               <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="EmployeeDeduction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeId" Type="Guid" Nullable="false" />
+          <Property Name="Method" Type="Int32" Nullable="false" />
+          <Property Name="Rate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="AnnualMax" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CompanyDeductionId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CompanyDeduction" Relationship="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" FromRole="EmployeeDeduction" ToRole="CompanyDeduction" />
+          <NavigationProperty Name="Employee" Relationship="HrMaxxModel.FK_EmployeeDeduction_Employee" FromRole="EmployeeDeduction" ToRole="Employee" />
+        </EntityType>
+        <Association Name="FK_EmployeeDeduction_CompanyDeduction">
+          <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="1" />
+          <End Type="HrMaxxModel.EmployeeDeduction" Role="EmployeeDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompanyDeduction">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeDeduction">
+              <PropertyRef Name="CompanyDeductionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmployeeDeduction_Employee">
+          <End Type="HrMaxxModel.Employee" Role="Employee" Multiplicity="1" />
+          <End Type="HrMaxxModel.EmployeeDeduction" Role="EmployeeDeduction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeDeduction">
+              <PropertyRef Name="EmployeeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1685,6 +1777,18 @@
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="StatusId" ColumnName="StatusId" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmployeeDeductions">
+            <EntityTypeMapping TypeName="HrMaxxModel.EmployeeDeduction">
+              <MappingFragment StoreEntitySet="EmployeeDeduction">
+                <ScalarProperty Name="CompanyDeductionId" ColumnName="CompanyDeductionId" />
+                <ScalarProperty Name="AnnualMax" ColumnName="AnnualMax" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

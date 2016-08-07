@@ -44,7 +44,7 @@ namespace HrMaxx.Common.Tests.Stories.Login
 
 				AuthServiceException = new Exception();
 				state.GetMockFor<IAuthenticationService>()
-					.Setup(a => a.Authenticate(AccountViewModel.Email, AccountViewModel.Password))
+					.Setup(a => a.Authenticate(AccountViewModel.UserName, AccountViewModel.Password))
 					.Throws(AuthServiceException);
 			}
 		}
@@ -53,7 +53,7 @@ namespace HrMaxx.Common.Tests.Stories.Login
 		public void then_authentication_service_is_called()
 		{
 			GetMockFor<IAuthenticationService>()
-				.Verify(a => a.Authenticate(_Context.AccountViewModel.Email, _Context.AccountViewModel.Password), Times.Once());
+				.Verify(a => a.Authenticate(_Context.AccountViewModel.UserName, _Context.AccountViewModel.Password), Times.Once());
 		}
 
 		[Test]

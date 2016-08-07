@@ -69,12 +69,19 @@ namespace HrMaxx.Common.Repository.Security
 		public List<UserModel> GetUsers(Guid? hostId, Guid? companyId)
 		{
 			var users = _dbContext.Users.AsQueryable();
-			var result = new List<User>();
+			
 			if (hostId.HasValue)
-				result.AddRange(users.Where(u => u.Host.Value == hostId.Value));
-			if (companyId.HasValue)
-				result.AddRange(users.Where(u => u.Company.Value == companyId.Value));
-
+			{
+				if (companyId.HasValue)
+				{
+					users = users.Where(u => u.Host.Value == hostId.Value && u.Company.Value == companyId.Value);
+				}
+				else
+				{
+					users = users.Where(u => u.Host.Value == hostId.Value);
+				}
+			}
+			
 			return _mapper.Map<List<User>, List<UserModel>>(users.Distinct().ToList());
 		}
 
@@ -85,6 +92,7 @@ namespace HrMaxx.Common.Repository.Security
 			user.LastName = usermodel.LastName;
 			user.PhoneNumber = usermodel.Phone;
 			user.Active = usermodel.Active;
+			user.UserName = usermodel.UserName;
 			_dbContext.SaveChanges();
 		}
 	}

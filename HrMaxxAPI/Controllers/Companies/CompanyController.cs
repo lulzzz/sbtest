@@ -136,5 +136,21 @@ namespace HrMaxxAPI.Controllers.Companies
 			var vendor = MakeServiceCall(() => _companyService.SaveEmployee(mappedResource), string.Format("saving employee for {0}", resource.CompanyId), true);
 			return Mapper.Map<Employee, EmployeeResource>(vendor);
 		}
+
+		[HttpPost]
+		[Route(CompanyRoutes.EmployeeDeduction)]
+		public EmployeeDeductionResource SaveEmployee(EmployeeDeductionResource resource)
+		{
+			var mappedResource = Mapper.Map<EmployeeDeductionResource, EmployeeDeduction>(resource);
+			var deductions = MakeServiceCall(() => _companyService.SaveEmployeeDeduction(mappedResource), string.Format("saving deduction for employee {0}", resource.EmployeeId), true);
+			return Mapper.Map<EmployeeDeduction, EmployeeDeductionResource>(deductions);
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.DeleteEmployeeDeduction)]
+		public void DeleteEmployeeDeduction(int deductionId)
+		{
+			MakeServiceCall(() => _companyService.DeleteEmployeeDeduction(deductionId), string.Format("deleting deduction id {0}", deductionId));
+		}
   }
 }

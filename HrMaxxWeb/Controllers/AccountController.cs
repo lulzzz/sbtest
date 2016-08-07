@@ -76,19 +76,19 @@ namespace HrMaxxWeb.Controllers
                 return View(model);
             }
 						// Require the user to have a confirmed email before they can log on.
-						var user = await UserManager.FindByNameAsync(model.Email);
+						var user = await UserManager.FindByNameAsync(model.UserName);
 						if (user != null)
 						{
 							if (!await UserManager.IsEmailConfirmedAsync(user.Id))
 							{
 								ViewBag.errorMessage = "You must have a confirmed email to log on.";
-								return View("Error");
+								return View("Error", "_BlankLayout");
 							}
 						}
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -226,7 +226,7 @@ namespace HrMaxxWeb.Controllers
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
-            return View();
+            return View("ForgotPassword", "_BlankLayout");
         }
 				private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
 				{
@@ -263,7 +263,7 @@ namespace HrMaxxWeb.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return View("ForgotPassword", "_BlankLayout", model);
         }
 
         //
@@ -436,7 +436,7 @@ namespace HrMaxxWeb.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+						return RedirectToAction("Index", "Home");
         }
 
         //

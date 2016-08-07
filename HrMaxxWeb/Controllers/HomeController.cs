@@ -30,7 +30,12 @@ namespace HrMaxxWeb.Controllers
 
 		public ActionResult AccessDenied()
 		{
-			return View();
+			return View("AccessDenied", "_BlankLayout");
+		}
+
+		public ActionResult Error()
+		{
+			return View("Error", "_BlankLayout");
 		}
 	}
 }

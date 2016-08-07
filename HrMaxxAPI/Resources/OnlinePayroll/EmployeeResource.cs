@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using HrMaxx.Common.Models.Dtos;
@@ -69,9 +70,15 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 	public class EmployeeDeductionResource
 	{
+		public int? Id { get; set; }
+		[Required]
+		public Guid EmployeeId { get; set; }
+		[Required]
 		public CompanyDeductionResource Deduction { get; set; }
-		public bool IsFixedRate { get; set; }
+		[Required]
+		public KeyValuePair<int, string> Method { get; set; }
+		[Required]
 		public decimal Rate { get; set; }
-		public decimal AnnualMax { get; set; }
+		public decimal? AnnualMax { get; set; }
 	}
 }

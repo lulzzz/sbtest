@@ -275,6 +275,7 @@
     <Content Include="Areas\Administration\templates\HostList.html" />
     <Content Include="Areas\Administration\templates\hostprofile.html" />
     <Content Include="Areas\Administration\templates\hostwelcome.html" />
+    <Content Include="Areas\Client\templates\employee-deduction-list.html" />
     <Content Include="Areas\Client\templates\employee-list.html" />
     <Content Include="Areas\Client\templates\customers.html" />
     <Content Include="Areas\Client\templates\account-list.html" />
@@ -1213,6 +1214,7 @@
     <Content Include="Scripts\app\common\users\user-app.js" />
     <Content Include="Scripts\app\company\company-app.js" />
     <Content Include="Scripts\app\company\company-repository.js" />
+    <Content Include="Scripts\app\company\directives\employee-deduction-list.js" />
     <Content Include="Scripts\app\company\directives\tax-year-rate-list.js" />
     <Content Include="Scripts\app\company\directives\accumulated-pay-type-list.js" />
     <Content Include="Scripts\app\company\directives\pay-code-list.js" />

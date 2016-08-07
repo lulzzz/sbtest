@@ -7,7 +7,6 @@ common.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 			replace: true,
 			scope: {
 				heading: "=heading",
-				selected: "=?selected",
 				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html',
@@ -116,7 +115,7 @@ common.directive('hostList', ['$modal', 'zionAPI', '$timeout', '$window',
 					});
 				}
 				var init = function () {
-					if (!$scope.selected) {
+					if (!$scope.mainData.selectedHost) {
 						var querystring = $location.search();
 						hostRepository.getHostList().then(function (data) {
 							$scope.list = data;

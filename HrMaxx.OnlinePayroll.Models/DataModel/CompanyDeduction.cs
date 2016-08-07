@@ -14,6 +14,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class CompanyDeduction
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public CompanyDeduction()
+        {
+            this.EmployeeDeductions = new HashSet<EmployeeDeduction>();
+        }
+    
         public int Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public int TypeId { get; set; }
@@ -23,5 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
         public virtual Company Company { get; set; }
         public virtual DeductionType DeductionType { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmployeeDeduction> EmployeeDeductions { get; set; }
     }
 }

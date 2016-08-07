@@ -15,7 +15,7 @@ using Notification = HrMaxx.Common.Contracts.Messages.Events.Notification;
 
 namespace HrMaxx.Common.Services.CommandHandlers
 {
-	public class CompanyEventHandler : BaseService, Consumes<CompanyUpdatedEvent>.All
+	public class CompanyEventHandler : BaseService, Consumes<CompanyUpdatedEvent>.All, Consumes<EmployeeUpdatedEvent>.All
 	{
 		public IBus Bus { get; set; }
 		private readonly IUserService _userService;
@@ -38,6 +38,25 @@ namespace HrMaxx.Common.Services.CommandHandlers
 				TimeStamp = event1.TimeStamp,
 				Text = event1.NotificationText,
 				ReturnUrl = "#!/Client/Company/?name=" + event1.SavedObject.Name,
+				EventType = event1.EventType,
+				AffectedUsers = users.Distinct().ToList()
+			});
+
+
+		}
+		public void Consume(EmployeeUpdatedEvent event1)
+		{
+			var users = _userService.GetUsers(event1.SavedObject.CompanyId, event1.SavedObject.Id).Select(u => u.UserId).ToList();
+			
+			Bus.Publish<Notification>(new Notification
+			{
+				SavedObject = event1.SavedObject,
+				SourceId = event1.SavedObject.Id,
+				UserId = event1.UserId,
+				Source = event1.UserName,
+				TimeStamp = event1.TimeStamp,
+				Text = event1.NotificationText,
+				ReturnUrl = "#!/Client/Employee/?id=" + event1.SavedObject.Id,
 				EventType = event1.EventType,
 				AffectedUsers = users.Distinct().ToList()
 			});

@@ -72,9 +72,10 @@ namespace HrMaxx.Common.Services.Security
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
-                AllowOnlyAlphanumericUserNames = false,
-                RequireUniqueEmail = true
+                AllowOnlyAlphanumericUserNames = true,
+                RequireUniqueEmail = false
             };
+					
 
             // Configure validation logic for passwords
             manager.PasswordValidator = new PasswordValidator
@@ -85,7 +86,7 @@ namespace HrMaxx.Common.Services.Security
                 RequireLowercase = true,
                 RequireUppercase = true,
             };
-
+						
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;
             manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);

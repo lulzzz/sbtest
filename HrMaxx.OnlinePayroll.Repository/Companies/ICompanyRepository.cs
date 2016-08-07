@@ -22,5 +22,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		bool CompanyExists(Guid companyId);
 		List<Employee> GetEmployeeList(Guid companyId);
 		Employee SaveEmployee(Employee mappedResource);
+		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction);
+		bool EmployeeExists(Guid id);
+		void DeleteEmployeeDeduction(int deductionId);
 	}
 }

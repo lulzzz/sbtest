@@ -145,7 +145,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/main-ctrl.js",
 				"~/Scripts/app/company/directives/vendor-customer-list.js",
 				"~/Scripts/app/company/directives/account-list.js",
-				"~/Scripts/app/company/directives/employee-list.js"
+				"~/Scripts/app/company/directives/employee-list.js",
+				"~/Scripts/app/company/directives/employee-deduction-list.js"
 				
 
 				);

@@ -78,6 +78,7 @@ namespace HrMaxx.Common.Services.Mappers
 			CreateMap<User, UserModel>()
 				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => new Guid(src.Id)))
 				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
 				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
 				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active))
 				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber));

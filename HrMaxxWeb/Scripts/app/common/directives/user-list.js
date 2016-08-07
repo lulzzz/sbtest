@@ -87,7 +87,7 @@ common.directive('userList', ['$modal', 'zionAPI', '$timeout', '$window',
 				}
 				$scope.validateUser = function() {
 					if ($scope.selectedUser) {
-						if ($scope.selectedUser.firstName && $scope.selectedUser.lastName && $scope.selectedUser.email && $scope.selectedUser.phone)
+						if ($scope.selectedUser.firstName && $scope.selectedUser.lastName && $scope.selectedUser.email && $scope.selectedUser.phone && $scope.selectedUser.userName)
 							return true;
 						else
 							return false;

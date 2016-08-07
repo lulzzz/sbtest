@@ -17,5 +17,7 @@
 		public const string EmployeeList = "Company/Employees/{companyId:guid}";
 		public const string Employee = "Company/Employee";
 		public const string EmployeeMetaData = "Company/EmployeeMetaData";
+		public const string EmployeeDeduction = "Company/EmployeeDeduction";
+		public const string DeleteEmployeeDeduction = "Company/DeleteEmployeeDeduction/{deductionId:int}";
 	}
 }

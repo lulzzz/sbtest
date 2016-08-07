@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\Events\EmployeeUpdatedEvent.cs" />
     <Compile Include="Messages\Events\CompanyUpdatedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\OnlinePayrollStringResources.Designer.cs">

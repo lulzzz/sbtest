@@ -12,6 +12,9 @@
 					<div class="row" ng-show="list.length>0">
 						<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
 							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedUser(item)" ng-class="{'success':selectedUser===item}">
+								<td data-title=" 'UserName' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-1">
+									{{item.userName}}
+								</td>
 								<td data-title=" 'Email' " filter="{ 'email': 'text' }" sortable=" 'email' " class="col-sm-1">
 									{{item.email}}
 								</td>
@@ -63,6 +66,12 @@
 					<pre ng-show="!selectedUser.userId">New User</pre>
 					<table class="table table-profile">
 						<tbody>
+							<tr>
+								<td class="field">User Name</td>
+								<td>
+									<a href="#" editable-text="selectedUser.userName" e-ng-maxlength="10" e-required e-ng-pattern="/^[a-zA-Z0-9]*$/">{{ selectedUser.userName || 'not set' }}</a>
+								</td>
+							</tr>
 							<tr>
 								<td class="field">First Name</td>
 								<td>

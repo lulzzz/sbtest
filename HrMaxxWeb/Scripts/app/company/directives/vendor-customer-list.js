@@ -19,7 +19,7 @@ common.directive('vendorCustomerList', ['$modal', 'zionAPI', '$timeout', '$windo
 					}
 
 					$scope.data = dataSvc;
-					$scope.mainData.showFilterPanel = !$scope.mainData.userHost;
+					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 

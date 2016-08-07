@@ -48,7 +48,7 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.data.opened1 = true;
 					};
 					$scope.data = dataSvc;
-					$scope.mainData.showFilterPanel = !$scope.mainData.userHost;
+					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 

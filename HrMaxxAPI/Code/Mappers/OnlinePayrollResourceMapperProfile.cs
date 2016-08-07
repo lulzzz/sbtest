@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using AutoMapper;
 using HrMaxx.Common.Models;
@@ -124,8 +125,11 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<EmployeeState, EmployeeStateResource>();
 
 
-			CreateMap<EmployeeDeductionResource, EmployeeDeduction>();
-			CreateMap<EmployeeDeduction, EmployeeDeductionResource>();
+			CreateMap<EmployeeDeductionResource, EmployeeDeduction>()
+				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method.Key))
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue? src.Id : 0));
+			CreateMap<EmployeeDeduction, EmployeeDeductionResource>()
+				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Fixed Rate")));
 
 		}
 	}

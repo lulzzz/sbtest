@@ -52,6 +52,17 @@ namespace HrMaxxAPI.Controllers.User
 		public List<UserResource> GetUsers(Guid? hostId = null, Guid? companyId = null)
 		{
 			var users = MakeServiceCall(() => _userService.GetUsers(hostId, companyId), string.Format("Get Users for scope"), true);
+			if (CurrentUser.Host != Guid.Empty)
+			{
+				if (CurrentUser.Company != Guid.Empty)
+				{
+					users = users.Where(u => u.Company.HasValue && u.Company.Value == CurrentUser.Company).ToList();
+				}
+				else
+				{
+					users = users.Where(u => u.Host.HasValue && u.Host.Value == CurrentUser.Host).ToList();
+				}
+			}
 			return Mapper.Map<List<UserModel>, List<UserResource>>(users);
 		}
 
@@ -68,7 +79,7 @@ namespace HrMaxxAPI.Controllers.User
 		{
 			try
 			{
-				var user = await UserManager.FindByEmailAsync(resource.Email);
+				var user = await UserManager.FindByNameAsync(resource.UserName);
 				if (user == null)
 				{
 					throw new HttpResponseException(new HttpResponseMessage
@@ -143,18 +154,18 @@ namespace HrMaxxAPI.Controllers.User
 				MakeServiceCall(() => _userService.SaveUser(usermodel), string.Format("Save User details for User Id={0}", model.UserId));
 				return model;
 			}
-			var userExists = await UserManager.FindByEmailAsync(model.Email);
+			var userExists = await UserManager.FindByNameAsync(model.UserName);
 			if (userExists!=null)
 			{
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.BadRequest,
-					ReasonPhrase = "A user already exists with this email address"
+					ReasonPhrase = "A user already exists with this user name"
 				});
 			}
 			try
 			{
-				var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.HostId, Company = model.CompanyId, Active = model.Active, PhoneNumber = model.Phone };
+				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.HostId, Company = model.CompanyId, Active = model.Active, PhoneNumber = model.Phone };
 				var result = await UserManager.CreateAsync(user, "HrMaxx1234!");
 				if (result.Succeeded)
 				{

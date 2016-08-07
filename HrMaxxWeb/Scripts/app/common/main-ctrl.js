@@ -50,7 +50,7 @@
 				if (dataInput.company !== '00000000-0000-0000-0000-000000000000')
 					dataSvc.userCompany = dataInput.company;
 
-				dataSvc.showFilterPanel = !dataSvc.userHost;
+				dataSvc.showFilterPanel = !dataSvc.userHost || (dataSvc.userHost && !dataSvc.userCompany);
 				dataSvc.showCompanies = !dataSvc.userCompany;
 				dataSvc.isReady = true;
 			}

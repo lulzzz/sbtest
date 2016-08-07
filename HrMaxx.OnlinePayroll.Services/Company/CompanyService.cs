@@ -208,15 +208,55 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public Employee SaveEmployee(Employee mappedResource)
+		public Employee SaveEmployee(Employee employee)
 		{
 			try
 			{
-				return _companyRepository.SaveEmployee(mappedResource);
+				var exists = _companyRepository.EmployeeExists(employee.Id);
+				var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
+				var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
+				var savedEmployee = _companyRepository.SaveEmployee(employee);
+				Bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
+				{
+					SavedObject = savedEmployee,
+					UserId = savedEmployee.UserId,
+					TimeStamp = DateTime.Now,
+					NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedEmployee.FullName), savedEmployee.UserName),
+					EventType = eventType
+				});
+				return savedEmployee;
 			}
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "employee for company ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction)
+		{
+			try
+			{
+				return _companyRepository.SaveEmployeeDeduction(deduction);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "deduction for employee ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void DeleteEmployeeDeduction(int deductionId)
+		{
+			try
+			{
+				_companyRepository.DeleteEmployeeDeduction(deductionId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " delete deduction for employee ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

@@ -14,6 +14,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class Employee
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Employee()
+        {
+            this.EmployeeDeductions = new HashSet<EmployeeDeduction>();
+        }
+    
         public System.Guid Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public int StatusId { get; set; }
@@ -47,5 +53,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual BankAccount BankAccount { get; set; }
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmployeeDeduction> EmployeeDeductions { get; set; }
     }
 }

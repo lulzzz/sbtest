@@ -17,6 +17,8 @@ namespace HrMaxxAPI.Resources.Common
 		public string LastName { get; set; }
 		[Required]
 		public string Email { get; set; }
+		[Required]
+		public string UserName { get; set; }
 		public string Phone { get; set; }
 		public EntityTypeEnum? SourceTypeId { get; set; }
 		public Guid? HostId { get; set; }

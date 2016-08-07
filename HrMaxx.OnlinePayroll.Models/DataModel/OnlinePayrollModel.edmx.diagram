@@ -48,6 +48,9 @@
         <AssociationConnector Association="HrMaxxModel.FK_Employee_Company" />
         <AssociationConnector Association="HrMaxxModel.FK_Employee_Status" />
         <AssociationConnector Association="HrMaxxModel.FK_Employee_Company1" />
+        <EntityTypeShape EntityType="HrMaxxModel.EmployeeDeduction" Width="1.5" PointX="16.125" PointY="5.625" />
+        <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" />
+        <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_Employee" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

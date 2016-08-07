@@ -200,4 +200,10 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Check=1,
 		DirectDebit=2
 	}
+
+	public enum DeductionMethod
+	{
+		Percentage=1,
+		FixedRate=2
+	}
 }

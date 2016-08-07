@@ -142,6 +142,26 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveEmployeeDeduction: function(deduction) {
+				var deferred = $q.defer();
+				companyServer.all('EmployeeDeduction').post(deduction).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			deleteEmployeeDeduction: function (deductionId) {
+				var deferred = $q.defer();
+				companyServer.one('DeleteEmployeeDeduction', deductionId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			}
 
 		};
 	}
