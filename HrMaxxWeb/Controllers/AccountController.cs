@@ -218,7 +218,7 @@ namespace HrMaxxWeb.Controllers
             }
 	       
             var result = await UserManager.ConfirmEmailAsync(userId, code);
-						return View(result.Succeeded ? "ConfirmEmail" : "Error");
+						return View(result.Succeeded ? "ConfirmEmail" : "Error", "_BlankLayout");
         }
 
         //
@@ -247,8 +247,8 @@ namespace HrMaxxWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                var user = await UserManager.FindByNameAsync(model.UserName);
+                if (user == null || user.Email!=model.Email || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
@@ -279,7 +279,7 @@ namespace HrMaxxWeb.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            return code == null ? View("Error") : View();
+            return code == null ? View("Error", "_BlankLayout") : View("ResetPassword", "_BlankLayout");
         }
 
         //
