@@ -56,12 +56,20 @@
   <ItemGroup>
     <Compile Include="Companies\CompanyRepository.cs" />
     <Compile Include="Companies\ICompanyRepository.cs" />
+    <Compile Include="Dashboard\IDashboardRepository.cs" />
+    <Compile Include="Dashboard\DashboardRepository.cs" />
     <Compile Include="IUtilRepository.cs" />
+    <Compile Include="Journals\IJournalRepository.cs" />
+    <Compile Include="Journals\JournalRepository.cs" />
     <Compile Include="MetaDataRepository.cs" />
     <Compile Include="Host\HostRepository.cs" />
     <Compile Include="Host\IHostRepositoru.cs" />
     <Compile Include="IMetaDataRepository.cs" />
+    <Compile Include="Payroll\IPayrollRepository.cs" />
+    <Compile Include="Payroll\PayrollRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Taxation\ITaxationRepository.cs" />
+    <Compile Include="Taxation\TaxationRepository.cs" />
     <Compile Include="UtilRepository.cs" />
   </ItemGroup>
   <ItemGroup>

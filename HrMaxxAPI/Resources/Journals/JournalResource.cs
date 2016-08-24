@@ -1,0 +1,89 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
+
+namespace HrMaxxAPI.Resources.Journals
+{
+	public class JournalResource
+	{
+		public int? Id { get; set; }
+		[Required]
+		public Guid CompanyId { get; set; }
+		[Required]
+		public TransactionType TransactionType { get; set; }
+		[Required]
+		public EmployeePaymentMethod PaymentMethod { get; set; }
+		[Required]
+		public int CheckNumber { get; set; }
+		public int? PayrollPayCheckId { get; set; }
+		[Required]
+		public EntityTypeEnum EntityType { get; set; }
+		public Guid PayeeId { get; set; }
+		[Required]
+		public string PayeeName { get; set; }
+		[Required]
+		public decimal Amount { get; set; }
+		[Required]
+		public int MainAccountId { get; set; }
+		[Required]
+		public DateTime TransactionDate { get; set; }
+		public string Memo { get; set; }
+		[Required]
+		public bool IsDebit { get; set; }
+		[Required]
+		public bool IsVoid { get; set; }
+		[Required]
+		public List<JournalDetailResource> JournalDetails { get; set; }
+		public string LastModifiedBy { get; set; }
+		public DateTime LastModified { get; set; }
+
+		public decimal DisplayAmount
+		{
+			get { return (IsDebit ? Amount*-1 : Amount); }
+		}
+
+		public string TransactionTypeText
+		{
+			get { return TransactionType.GetDbName(); }
+		}
+
+		public string PaymentMethodText
+		{
+			get { return TransactionType==TransactionType.Deposit ? string.Empty : PaymentMethod.GetDbName(); }
+		}
+
+		public string CheckNumberText
+		{
+			get { return TransactionType == TransactionType.Deposit ? string.Empty : PaymentMethod == EmployeePaymentMethod.Check ? CheckNumber.ToString() : "EFT"; }
+		}
+
+		public string StatusText
+		{
+			get { return IsVoid ? "Void" : string.Empty; }
+		}
+	}
+
+	public class JournalDetailResource
+	{
+		[Required]
+		public int AccountId { get; set; }
+		[Required]
+		public string AccountName { get; set; }
+		[Required]
+		public bool IsDebit { get; set; }
+		[Required]
+		public decimal Amount { get; set; }
+		public string Memo { get; set; }
+		public VendorDepositMethod DepositMethod { get; set; }
+		public VendorCustomer Payee { get; set; }
+		public int CheckNumber { get; set; }
+		public DateTime LastModfied { get; set; }
+		public string LastModifiedBy { get; set; }
+	}
+}

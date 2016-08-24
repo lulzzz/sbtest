@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
-using HrMaxx.Common.Models.DataModel;
-using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
-using HrMaxx.Infrastructure.Enums;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
-using Magnum;
 using MassTransit;
 using Notification = HrMaxx.Common.Contracts.Messages.Events.Notification;
 
-namespace HrMaxx.Common.Services.CommandHandlers
+namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 {
 	public class CompanyEventHandler : BaseService, Consumes<CompanyUpdatedEvent>.All, Consumes<EmployeeUpdatedEvent>.All
 	{

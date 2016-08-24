@@ -49,11 +49,14 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string State { get; set; }
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
+        public Nullable<int> WorkerCompensationId { get; set; }
+        public Nullable<System.DateTime> LastPayrollDate { get; set; }
     
         public virtual BankAccount BankAccount { get; set; }
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeDeduction> EmployeeDeductions { get; set; }
+        public virtual CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
     }
 }

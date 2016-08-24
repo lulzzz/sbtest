@@ -10,7 +10,9 @@ using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxxAPI.Resources.Common;
+using HrMaxxAPI.Resources.Journals;
 using HrMaxxAPI.Resources.OnlinePayroll;
+using HrMaxxAPI.Resources.Payroll;
 using Magnum;
 
 namespace HrMaxxAPI.Code.Mappers
@@ -131,6 +133,57 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<EmployeeDeduction, EmployeeDeductionResource>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Fixed Rate")));
 
+			CreateMap<PayrollResource, Payroll>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now)); 
+
+			CreateMap<Payroll, PayrollResource>();
+
+			CreateMap<PayCheckResource, PayCheck>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : 0))
+				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src=>src.StartDate))
+				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src=>src.EndDate))
+				.ForMember(dest => dest.PayDay, opt => opt.MapFrom(src=>src.PayDay))
+				.ForMember(dest => dest.YTDSalary, opt => opt.Ignore())
+				.ForMember(dest => dest.CheckNumber, opt => opt.MapFrom(src => src.CheckNumber.HasValue ? src.CheckNumber : default(int)));
+			CreateMap<PayCheck, PayCheckResource>();
+
+			CreateMap<PayrollPayCodeResource, PayrollPayCode>();
+			CreateMap<PayrollPayCode, PayrollPayCodeResource>();
+
+			CreateMap<PayTypeAccumulationResource, PayTypeAccumulation>();
+			CreateMap<PayTypeAccumulation, PayTypeAccumulationResource>();
+
+			CreateMap<PayrollTaxResource, PayrollTax>();
+			CreateMap<PayrollTax, PayrollTaxResource>();
+
+			CreateMap<PayrollPayTypeResource, PayrollPayType>();
+			CreateMap<PayrollPayType, PayrollPayTypeResource>();
+
+			CreateMap<CommentResource, Comment>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => DateTime.Now))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+
+			CreateMap<Comment, CommentResource>()
+				.ForMember(dest => dest.SourceTypeId, opt => opt.Ignore())
+				.ForMember(dest => dest.TargetTypeId, opt => opt.Ignore())
+				.ForMember(dest => dest.SourceId, opt => opt.Ignore());
+
+			CreateMap<PayrollDeductionResource, PayrollDeduction>()
+				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method.Key));
+			CreateMap<PayrollDeduction, PayrollDeductionResource>()
+				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method == DeductionMethod.Percentage ? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Fixed Rate"))); ;
+
+			CreateMap<Journal, JournalResource>();
+			CreateMap<JournalResource, Journal>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : 0))
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2)));
+			CreateMap<JournalDetail, JournalDetailResource>();
+			CreateMap<JournalDetailResource, JournalDetail>()
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2)));
+
+			CreateMap<JournalList, JournalListResource>();
 		}
 	}
 }

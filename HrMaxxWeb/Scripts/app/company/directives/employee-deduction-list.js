@@ -8,7 +8,8 @@ common.directive('employeeDeductionList', ['$modal', 'zionAPI',
 			scope: {
 				employeeId: "=employeeId",
 				companyDeductions: "=companyDeductions",
-				list: "=list"
+				list: "=list",
+				saveToServer: "=saveToServer"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html',
 
@@ -51,20 +52,30 @@ common.directive('employeeDeductionList', ['$modal', 'zionAPI',
 					$scope.list.push($scope.selected);
 				},
 				
-				$scope.save = function(item) {
-					companyRepository.saveEmployeeDeduction(item).then(function (deduction) {
-						item.id = deduction.id;
+				$scope.save = function (item) {
+					if ($scope.saveToServer) {
+						companyRepository.saveEmployeeDeduction(item).then(function(deduction) {
+							item.id = deduction.id;
+							$scope.selected = null;
+						}, function(error) {
+							addAlert('error in saving deduction', 'danger');
+						});
+					} else {
 						$scope.selected = null;
-					}, function(error) {
-						addAlert('error in saving deduction', 'danger');
-					});
+					}
+					
 				}
-				$scope.delete = function (item) {
-					companyRepository.deleteEmployeeDeduction(item.id).then(function (deduction) {
-						$scope.list.splice($scope.list.indexOf(item), 1);
-					}, function (error) {
-						addAlert('error in saving deduction', 'danger');
-					});
+				$scope.delete = function (index) {
+					var item = $scope.list[index];
+					if ($scope.saveToServer) {
+						companyRepository.deleteEmployeeDeduction(item.id).then(function(deduction) {
+							$scope.list.splice(index, 1);
+						}, function(error) {
+							addAlert('error in saving deduction', 'danger');
+						});
+					} else {
+						$scope.list.splice(index, 1);
+					}
 				}
 				$scope.cancel = function (index) {
 					if ($scope.selected.id === 0) {

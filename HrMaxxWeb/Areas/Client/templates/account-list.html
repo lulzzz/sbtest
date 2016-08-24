@@ -8,20 +8,115 @@
 			<div ng-show="list.length===0 && !selected" class="table table-bordered">
 				{{'No COA found'}}
 			</div>
+			<div class="col-sm-12 p-5">
+				<table class="table table-condensed">
+					<thead>
+						<tr>
+							<th class="col-sm-4">
+								<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByDateRange, 'fa-minus-square':data.filter.filterByDateRange}" ng-click="data.filter.filterByDateRange=!data.filter.filterByDateRange"> Filter By Date Range</i>
+							</th>
+							<th class="col-sm-4">
+								<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByMonthYear, 'fa-minus-square':data.filter.filterByMonthYear}" ng-click="data.filter.filterByMonthYear=!data.filter.filterByMonthYear"> Filter By Month & Year</i>
+							</th>
+							<th class="col-sm-4">
+
+								<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByPeriod, 'fa-minus-square':data.filter.filterByPeriod}" ng-click="data.filter.filterByPeriod=!data.filter.filterByPeriod"> Filter By Period</i>
+							</th>
+						</tr>
+
+					</thead>
+					<tbody>
+						<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
+							<td class="col-sm-4">
+								<div class="row" ng-show="data.filter.filterByDateRange">
+									<div class="col-sm-12">
+										<div class="col-sm-2"><label>From: </label></div>
+										<div class="col-sm-6 input-group date">
+											<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="data.filter.startDate" is-open="data.opened" datepicker-options="dateOptions" close-text="Close" />
+											<span class="input-group-addon">
+												<i class="fa fa-calendar" ng-click="open($event)"></i>
+											</span>
+										</div>
+									</div>
+									<div class="col-sm-12">
+										<div class="col-sm-2"><label>To: </label></div>
+										<div class="col-sm-6 input-group date">
+											<input name="enddate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="data.filter.endDate" min-date="data.filter.startDate" is-open="data.opened1" datepicker-options="dateOptions" close-text="Close" />
+											<span class="input-group-addon">
+												<i class="fa fa-calendar" ng-click="open1($event)"></i>
+											</span>
+										</div>
+										<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button></div>
+									</div>
+								</div>
+
+							</td>
+
+							<td class="col-sm-4">
+								<div class="row" ng-show="data.filter.filterByMonthYear">
+									<div class="col-sm-5">
+										<select name="filtermonths" ng-model="data.filter.month" class="form-control" convert-to-number>
+											<option value="0">please select</option>
+											<option value="1">January</option>
+											<option value="2">February</option>
+											<option value="3">March</option>
+											<option value="4">April</option>
+											<option value="5">May</option>
+											<option value="6">June</option>
+											<option value="7">July</option>
+											<option value="8">August</option>
+											<option value="9">September</option>
+											<option value="10">October</option>
+											<option value="11">November</option>
+											<option value="12">December</option>
+										</select>
+									</div>
+									<div class="col-sm-5">
+										<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years"></select>
+									</div>
+									<div class="col-sm-2"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
+								</div>
+
+							</td>
+
+							<td class="col-sm-4">
+								<div class="row" ng-show="data.filter.filterByPeriod">
+									<div class="col-sm-8">
+										<select name="filterperiod" ng-model="data.filter.period" class="form-control" convert-to-number>
+											<option value="1">All</option>
+											<option value="2">Last 3 months</option>
+											<option value="3">Last 6 months</option>
+											<option value="4">Last 12 months</option>
+										</select>
+									</div>
+									<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.period" ng-click="filterByPeriod()">Go</button></div>
+								</div>
+
+							</td>
+
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id}">
-						<td data-title="' No'" class="col-sm-1">
+						<td data-title="' No'" class="col-sm-1 text-center">
 							{{$index+1}}
 						</td>
-						<td data-title=" 'Type' " filter="{ 'typeText': 'text' }" sortable=" 'typeText' " class="col-sm-3">
+						<td data-title=" 'Type' " filter="{ 'typeText': 'text' }" sortable=" 'typeText' " class="col-sm-1 text-center">
 							{{item.typeText}}
 						</td>
-						<td data-title=" 'Sub Type' " filter="{ 'subTypeText': 'text' }" sortable=" 'subTypeText' " class="col-sm-2">
+						
+						<td data-title=" 'Sub Type' " filter="{ 'subTypeText': 'text' }" sortable=" 'subTypeText' " class="col-sm-1 text-center">
 							{{item.subTypeText}}
 						</td>
-						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-1">
+						
+						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3 text-center">
 							{{item.name}}
+						</td>
+						<td data-title=" 'Balance' " sortable=" 'accountBalance' " class="col-sm-1 show-red text-center">
+							{{item.accountBalance | currency:'$'}}
 						</td>
 					</tr>
 
@@ -121,6 +216,17 @@
 									</div>
 								</div>
 							</div>
+							<div class="row" ng-if="isBank()">
+								<div class="form-group">
+									<label></label>
+									<div>
+										<label for="useinpayroll" class="switch">
+											Use In Payroll?
+											<input id="useinpayroll" type="checkbox" ng-model="selected.useInPayroll" /><i></i>
+										</label>
+									</div>
+								</div>
+							</div>
 						</div>
 						
 						<div class="col-sm-6" ng-if="isBank()">
@@ -150,7 +256,7 @@
 							<div class="form-group">
 								<label>Routing Number</label>
 								<div>
-									<input type="text" class="form-control" required data-parsley-group="account" data-parsley-pattern="/^[0-9]{9}$/" data-parsley-trigger="blur" name="routingnumber" ui-mask="999999999" ng-model="selected.bankAccount.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selectedCompany.contract.bankDetails.routingNumber)}" />
+									<input type="text" class="form-control" required data-parsley-group="account" data-parsley-pattern="/^[0-9]{9}$/" data-parsley-trigger="blur" name="routingnumber" ui-mask="999999999" ng-model="selected.bankAccount.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selected.bankAccount.routingNumber)}" />
 
 								</div>
 							</div>
@@ -175,9 +281,81 @@
 
 	</div>
 
+	<div class="panel panel-inverse" ng-if="selected.id">
+		<div class="panel-body">
+			<div class="col-sm-12" >
+				<div ng-show="register.length===0" class="table table-bordered">
+					No register entries found
+				</div>
+				<div ng-show="selected.journals.length>0" class="row p-5">
+					<div class="col-sm-6">
+						<label class="label label-success">Credits</label>
+						<label class="label label-danger">Debits</label>
+					</div>
+					<div class="col-sm-6">
+						<strong><em>Account Register <span ng-show="data.filterStartDate || data.filterEndDate"> ({{data.filterEndDate ? '' : 'From'}} {{data.filterStartDate? (data.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.filterEndDate? ' - ' + (data.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+					</div>
+				</div>
+				<div class="row" ng-show="selected.journals.length>0">
+					<table ng-table="tableParamsRegister" class="table" show-filter="true" template-pagination="custom/pager1">
+						<tr ng-repeat="item in tableDataRegister track by $index" class="mouse-over-pointer" ng-class="{'success':!item.isDebit, 'danger' : item.isDebit}">
+							<td data-title=" 'Date' " sortable=" 'transactionDate' " class="col-sm-1 text-center">
+								{{item.transactionDate | date:'MM/dd/yyyy'}}
+							</td>
+							<td data-title=" 'Type' " filter="{ 'transactionTypeText': 'text' }" sortable="'transactionTypeText'" class="col-sm-1 text-center">
+								{{item.transactionTypeText}}
+							</td>
+							<td data-title=" 'Number' " filter="{ 'checkNumberText': 'text' }" sortable="'checkNumberText'" class="col-sm-1 text-center">
+								{{item.checkNumberText}}
+							</td>
+							<td data-title=" 'Payee' " filter="{ 'payee': 'text' }" sortable=" 'payee' " class="col-sm-1 text-center">
+								{{item.payee}}
+							</td>
+							<td data-title=" 'From' " filter="{ 'fromAccount': 'text' }" sortable=" 'fromAccount' " class="col-sm-1 text-center">
+								{{item.fromAccount}}
+							</td>
+							<td data-title=" 'To' " filter="{ 'toAccount': 'text' }" sortable=" 'toAccount' " class="col-sm-1 text-center">
+								{{item.toAccount}}
+							</td>
+							<td data-title=" 'Amount' " class="col-sm-1 text-center show-red">
+								{{item.displayAmount | currency:'$'}}
+							</td>
+							<td data-title=" 'Memo' " class="col-sm-1 text-center">
+								{{item.memo}}
+							</td>
+							<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+								<span class="label label-warning" ng-show="item.isVoid">{{item.statusText}}</span>
+								
+							</td>
+						</tr>
+
+					</table>
+					<script type="text/ng-template" id="custom/pager1">
+						<ul class="pager ng-cloak">
+							<li ng-repeat="page in pages"
+									ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+									ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+								<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+								<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+							</li>
+							<li>
+								<div class="btn-group">
+									<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+									<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+									<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+									<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								</div>
+							</li>
+						</ul>
+					</script>
+				</div>
+			</div>
+		</div>
+
+	</div>
 
 
 
-</div>
+	</div>
 
 

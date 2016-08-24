@@ -275,10 +275,20 @@
     <Content Include="Areas\Administration\templates\HostList.html" />
     <Content Include="Areas\Administration\templates\hostprofile.html" />
     <Content Include="Areas\Administration\templates\hostwelcome.html" />
+    <Content Include="Areas\Client\templates\checkbook.html" />
     <Content Include="Areas\Client\templates\employee-deduction-list.html" />
     <Content Include="Areas\Client\templates\employee-list.html" />
     <Content Include="Areas\Client\templates\customers.html" />
     <Content Include="Areas\Client\templates\account-list.html" />
+    <Content Include="Areas\Client\templates\paycheck.html" />
+    <Content Include="Areas\Client\templates\journal-list.html" />
+    <Content Include="Areas\Client\templates\payroll-processed.html" />
+    <Content Include="Areas\Client\templates\payroll.html" />
+    <Content Include="Areas\Client\templates\payroll-list.html" />
+    <Content Include="Areas\Client\templates\payrolls.html" />
+    <Content Include="Areas\Client\templates\deposit-ticket.html" />
+    <Content Include="Areas\Client\templates\account-adjustment.html" />
+    <Content Include="Areas\Client\templates\regular-check.html" />
     <Content Include="Areas\Client\templates\vendor-customer-list.html" />
     <Content Include="Areas\Client\templates\accounts.html" />
     <Content Include="Areas\Client\templates\employees.html" />
@@ -1231,6 +1241,18 @@
     <Content Include="Scripts\app\host\directives\host-list.js" />
     <Content Include="Scripts\app\host\directives\host.js" />
     <Content Include="Scripts\app\host\host-app.js" />
+    <Content Include="Scripts\app\journal\directives\journal-list.js" />
+    <Content Include="Scripts\app\journal\directives\deposit-ticket.js" />
+    <Content Include="Scripts\app\journal\directives\account-adjustment.js" />
+    <Content Include="Scripts\app\journal\directives\regular-check.js" />
+    <Content Include="Scripts\app\journal\journal-app.js" />
+    <Content Include="Scripts\app\journal\journal-repository.js" />
+    <Content Include="Scripts\app\payroll\directives\paycheck.js" />
+    <Content Include="Scripts\app\payroll\directives\payroll-processed.js" />
+    <Content Include="Scripts\app\payroll\directives\payroll.js" />
+    <Content Include="Scripts\app\payroll\directives\payroll-list.js" />
+    <Content Include="Scripts\app\payroll\payroll-app.js" />
+    <Content Include="Scripts\app\payroll\payroll-repository.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-switch.js" />
@@ -1414,7 +1436,9 @@
     <Content Include="Scripts\respond\respond.min.js" />
     <Content Include="Scripts\Toastr\toastr.min.js" />
     <Content Include="Content\templates\mynews.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

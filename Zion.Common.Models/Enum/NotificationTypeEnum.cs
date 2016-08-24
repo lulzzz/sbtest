@@ -17,6 +17,8 @@ namespace HrMaxx.Common.Models.Enum
 		[Description("Created")]
 		Created = 11,
 		[Description("Updated")]
-		Updated = 12
+		Updated = 12,
+		[Description("Removed")]
+		Removed = 13
 	}
 }

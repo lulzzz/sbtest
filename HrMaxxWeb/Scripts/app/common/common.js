@@ -24,6 +24,13 @@ common.constant('EntityTypes', {
 	Vendor: 15,
 	Customer: 16
 });
+common.constant('AccountType', {
+	Assets: 1,
+	Equity: 2,
+	Expense: 3,
+	Income: 4,
+	Liability: 5
+});
 common.constant('Entities', [
 	{
 		entityTypeId: 13,

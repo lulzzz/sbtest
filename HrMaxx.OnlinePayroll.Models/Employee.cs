@@ -42,10 +42,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal FederalAdditionalAmount { get; set; }
 		public EmployeeState State { get; set; }
 		public List<EmployeeDeduction> Deductions { get; set; }
+		public CompanyWorkerCompensation WorkerCompensation { get; set; }
+
+		public DateTime? LastPayrollDate { get; set; }
 
 		public string FullName
 		{
-			get { return string.Format("{0}, {1}", LastName, FirstName); }
+			get { return string.Format("{0} {1}", FirstName, LastName); }
 		}
 	}
 

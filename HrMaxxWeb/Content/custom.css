@@ -180,3 +180,15 @@ a.thumbnail.active {
     border-color: #ff5b57!important;
 	border-width: 2px!important;
 }
+.show-red {
+	color: red;
+}
+.table th {
+            background-color: #1ab394!important;
+            color: #ffffff!important;
+        }
+label {
+	font-weight: bold;
+	color: gray;
+}
+

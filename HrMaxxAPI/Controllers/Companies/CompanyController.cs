@@ -33,6 +33,13 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 
 		[HttpGet]
+		[Route(CompanyRoutes.PayrollMetaData)]
+		public object GetPayrollMetaData(Guid companyId)
+		{
+			return MakeServiceCall(() => _metaDataService.GetPayrollMetaData(companyId), "Get payroll meta data", true);
+		}
+
+		[HttpGet]
 		[Route(CompanyRoutes.Companies)]
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{

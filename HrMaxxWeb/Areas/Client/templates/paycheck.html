@@ -1,0 +1,162 @@
+﻿<div class="row" ng-show="check">
+	<div class="col-sm-12">
+		<div class="col-sm-1">Pay Period</div>
+		<div class="col-sm-2 form-group">
+			<label class="control-label">Start Date: {{check.startDate | date: 'MM/dd/yyyy'}}</label>
+
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">End Date: {{check.endDate | date: 'MM/dd/yyyy'}}</label>
+
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">Check Date: {{check.payDay | date: 'MM/dd/yyyy'}}</label>
+
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">Check Number: {{check.checkNumber}}</label>
+
+		</div>
+	</div>
+	<div class="col-sm-12">
+		<table class="table table-bordered table-condensed">
+			<tr>
+				<th colspan="5" class="text-center">Pay Check for {{check.employee.name}}</th>
+			</tr>
+			<tr>
+				<th class="text-center">Description</th>
+				<th class="text-center">Hours</th>
+				<th class="text-center">Rate</th>
+				<th class="text-center">Amount</th>
+				<th class="text-center">YTD</th>
+			</tr>
+			<tr ng-repeat-start="pc in check.payCodes">
+				<td>{{pc.payCode.description}} - Hours</td>
+				<td class="text-right">{{pc.hours}}</td>
+				<td class="text-right">{{pc.payCode.hourlyRate | currency:'$'}}</td>
+				<td class="text-right">{{pc.amount | currency:'$'}}</td>
+				<td class="text-right">{{pc.ytd | currency:'$'}}</td>
+			</tr>
+			<tr ng-repeat-end>
+				<td>{{pc.payCode.description}} - Overtime</td>
+				<td class="text-right">{{pc.overtimeHours}}</td>
+				<td class="text-right">{{pc.payCode.hourlyRate * 1.5 | currency:'$'}}</td>
+				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
+				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
+			</tr>
+			<tr ng-repeat="comp in check.compensations | filter:{payType: {isTaxable:true}}">
+				<td>{{comp.payType.description}}</td>
+				<td colspan="3" class="text-right">{{comp.amount | currency:'$'}}</td>
+				<td class="text-right">{{comp.ytd | currency: '$'}}</td>
+			</tr>
+			<tr>
+				<td>Total</td>
+				<td colspan="3" class="text-right">{{ check.calculatedSalary + check.compensationTaxableAmount | currency:'$' }}</td>
+				<td class="text-right">{{ check.calculatedSalaryYTD + check.compensationTaxableYTD | currency:'$' }}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col-sm-12" ng-if="showNonTaxable()">
+		<table class="table table-bordered table-condensed">
+			<tr>
+				<th colspan="3" class="text-center">Non Taxable Wages</th>
+			</tr>
+			<tr>
+				<th class="text-center">Description</th>
+				<th class="text-center">Amount</th>
+				<th class="text-center">YTD</th>
+			</tr>
+			<tr ng-repeat="comp in check.compensations | filter:{payType: {isTaxable:false}}">
+				<td>{{comp.payType.description}}</td>
+				<td class="text-right">{{comp.amount | currency:'$'}}</td>
+				<td class="text-right">{{comp.ytd | currency: '$'}}</td>
+			</tr>
+			<tr>
+				<td>Total</td>
+				<td class="text-right">{{ check.compensationNonTaxableAmount | currency:'$' }}</td>
+				<td class="text-right">{{ check.compensationNonTaxableYTD | currency:'$' }}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col-sm-12">
+		<table class="table table-bordered table-condensed">
+			<tr>
+				<th colspan="7" class="text-center">Accumulated Pay Types</th>
+			</tr>
+			<tr>
+				<th class="text-center">Types</th>
+				<th class="text-center">Hours Used</th>
+				<th class="text-center">YTD Used</th>
+				<th class="text-center">Current</th>
+				<th class="text-center">YTD Accumulation</th>
+				<th class="text-center">Carry Over</th>
+				<th class="text-center">Available</th>
+			</tr>
+			<tr ng-repeat="pt in check.accumulations">
+				<td>{{pt.payType.payType.description}} ({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})</td>
+				<td class="text-right">{{pt.used}}</td>
+				<td class="text-right">{{pt.ytdUsed}}</td>
+				<td class="text-right">{{pt.accumulatedValue}}</td>
+				<td class="text-right">{{pt.ytdFiscal}}</td>
+				<td class="text-right">{{pt.carryOver}}</td>
+				<td class="text-right">{{pt.available}}</td>
+			</tr>
+			
+		</table>
+	</div>
+	<div class="col-sm-12">
+		<table class="table table-bordered table-condensed">
+			<tr>
+				<th colspan="3" class="text-center">Employee Withheld</th>
+			</tr>
+			<tr>
+				<th class="text-center">Description</th>
+				<th class="text-center">Amount</th>
+				<th class="text-center">YTD</th>
+			</tr>
+			<tr ng-repeat="tax in check.taxes | filter:{ isEmployeeTax: true}">
+				<td>{{tax.tax.name}}</td>
+				<td class="text-right">{{tax.amount | currency:'$'}}</td>
+				<td class="text-right">{{tax.ytdTax | currency: '$'}}</td>
+			</tr>
+			<tr ng-repeat="ded in check.deductions">
+				<td>{{ded.deduction.description}}</td>
+				<td class="text-right">{{ded.amount | currency:'$'}}</td>
+				<td class="text-right">{{ded.ytd | currency: '$'}}</td>
+			</tr>
+			<tr>
+				<td>Total</td>
+				<td class="text-right">{{ check.employeeTaxes + check.deductionAmount | currency:'$' }}</td>
+				<td class="text-right">{{ check.employeeTaxesYTD + check.deductionYTD | currency:'$' }}</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div class="col-sm-12">
+		<table class="table table-bordered table-condensed">
+			<tr>
+				<th colspan="3" class="text-center">Employer Withheld</th>
+			</tr>
+			<tr>
+				<th class="text-center">Description</th>
+				<th class="text-center">Amount</th>
+				<th class="text-center">YTD</th>
+			</tr>
+			<tr ng-repeat="tax in check.taxes | filter:{ isEmployeeTax: false}">
+				<td>{{tax.tax.name}}</td>
+				<td class="text-right">{{tax.amount | currency:'$'}}</td>
+				<td class="text-right">{{tax.ytdTax | currency: '$'}}</td>
+			</tr>
+			<tr>
+				<td>Total</td>
+				<td class="text-right">{{ check.employerTaxes | currency:'$' }}</td>
+				<td class="text-right">{{ check.employerTaxesYTD | currency:'$' }}</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div class="col-sm-12 text-right">
+		Net Pay: {{check.netWage | currency:'$'}}
+	</div>
+	
+</div>

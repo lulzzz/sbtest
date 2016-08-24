@@ -41,7 +41,10 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int FederalExemptions { get; set; }
 		public decimal FederalAdditionalAmount { get; set; }
 		public EmployeeStateResource State { get; set; }
-		public List<EmployeeDeductionResource> Deductions { get; set; } 
+		public List<EmployeeDeductionResource> Deductions { get; set; }
+		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
+
+		public DateTime? LastPayrollDate { get; set; }
 
 		public string StatusText
 		{

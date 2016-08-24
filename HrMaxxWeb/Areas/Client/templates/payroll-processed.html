@@ -1,0 +1,84 @@
+﻿<div class="row">
+	<div class="col-sm-12">
+		<div class="col-sm-1"><label>Pay Period</label></div>
+		<div class="col-sm-2 form-group">
+			<label class="control-label">Start Date: </label>{{item.startDate | date: 'MM/dd/yyyy'}}
+			
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">End Date: </label>{{item.endDate | date: 'MM/dd/yyyy'}}
+			
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">Check Date: </label>{{item.payDay | date: 'MM/dd/yyyy'}}
+			
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">Starting Check Number: </label>{{item.startingCheckNumber}}
+			
+		</div>
+	</div>
+	
+	<div class="col-sm-12">
+		<table class="table table-bordered table-condensed" >
+			<tr>
+				<th colspan="2">Employee</th>
+				<th>Gross Pay</th>
+				<th>Deductions</th>
+				<th>Taxes EE</th>
+				<th>Net Pay</th>
+				<th>Taxes ER</th>
+				<th>Total Cost</th>
+				<th>Payment Method</th>
+				<th>Status</th>
+				<th></th>
+			</tr>
+			<tr ng-repeat="listitem in item.payChecks track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid}">
+				<td colspan="2">
+					{{listitem.employee.name}}
+				</td>
+				<td>{{listitem.grossWage | currency:"$"}}</td>
+				<td>{{listitem.deductionAmount | currency:"$"}}</td>
+				<td>{{listitem.employeeTaxes | currency:"$"}}</td>
+				<td>{{listitem.netWage | currency:"$"}}</td>
+				<td>{{listitem.employerTaxes | currency:"$"}}</td>
+				<td>{{listitem.grossWage + listitem.employerTaxes | currency:"$"}}</td>
+				<td>{{listitem.paymentMethodText}}</td>
+				<td>{{listitem.statusText}}</td>
+				<td>
+					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2? 'review' : 'view'}}</button>
+					<button class="btn btn-sm btn-danger" ng-show="listitem.status>2 && !listitem.isVoid" ng-click="voidcheck(listitem)">void</button>
+				</td>
+				
+			</tr>
+
+		</table>
+		
+		
+	</div>
+	<div class="col-sm-12">
+		<button class="btn btn-sm btn-primary" ng-if="item.status===2" ng-click="save()">confirm</button>
+		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2? 'back' : 'cancel'}}</button>
+	</div>
+	
+	<script type="text/ng-template" id="popover/reviewpaycheck.html">
+		
+			<div class="modal-header">
+				<h2 class="modal-title">Pay Check Details</h2>
+			</div>
+			<div class="modal-body">
+				<paycheck check="check"/>
+			</div>
+		<div class="modal-footer">
+			<div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0">
+				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()">cancel</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()">save</button>
+			</div>
+
+		</div>
+
+	</script>
+	
+</div>
+
+

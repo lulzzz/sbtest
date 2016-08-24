@@ -76,6 +76,7 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 								exemptions: 0,
 								additionalAmount:0
 							},
+							workerCompnesation: null
 
 						};
 						
@@ -344,6 +345,10 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 							$scope.selectedPayCodes = [];
 							$scope.selectedPayTypes = [];
 							$scope.getEmployees($scope.mainData.selectedCompany.id);
+							dataSvc.companyStates = [];
+							$.each($scope.mainData.selectedCompany.states, function (index, st) {
+								dataSvc.companyStates.push(st.state);
+							});
 						}
 						
 

@@ -99,10 +99,14 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/common.js",
 				"~/Scripts/app/host/host-app.js",
 				"~/Scripts/app/company/company-app.js",
+				"~/Scripts/app/payroll/payroll-app.js",
+				"~/Scripts/app/journal/journal-app.js",
 				"~/Scripts/app/common/common-config.js",
 				"~/Scripts/app/common/common-routing.js",
 				"~/Scripts/app/common/common-repository.js",
 				"~/Scripts/app/company/company-repository.js",
+				"~/Scripts/app/payroll/payroll-repository.js",
+				"~/Scripts/app/journal/journal-repository.js",
 				"~/Scripts/app/host/host-repository.js",
 				"~/Scripts/app/common/authInterceptorService.js",
 				"~/Scripts/app/common/auth-svc.js",
@@ -146,7 +150,16 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/vendor-customer-list.js",
 				"~/Scripts/app/company/directives/account-list.js",
 				"~/Scripts/app/company/directives/employee-list.js",
-				"~/Scripts/app/company/directives/employee-deduction-list.js"
+				"~/Scripts/app/company/directives/employee-deduction-list.js",
+
+				"~/Scripts/app/payroll/directives/payroll-list.js", 
+				"~/Scripts/app/payroll/directives/payroll.js",
+				"~/Scripts/app/payroll/directives/payroll-processed.js",
+				"~/Scripts/app/payroll/directives/paycheck.js",
+				"~/Scripts/app/journal/directives/regular-check.js",
+				"~/Scripts/app/journal/directives/deposit-ticket.js",
+				"~/Scripts/app/journal/directives/account-adjustment.js",
+				"~/Scripts/app/journal/directives/journal-list.js"
 				
 
 				);

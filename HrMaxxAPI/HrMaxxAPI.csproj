@@ -256,7 +256,11 @@
     <Compile Include="Controllers\Hosts\HostRoutes.cs" />
     <Compile Include="Controllers\HrMaxxController.cs" />
     <Compile Include="Controllers\HrMaxxRoutes.cs" />
+    <Compile Include="Controllers\Journals\JournalRoutes.cs" />
+    <Compile Include="Controllers\Journals\JournalController.cs" />
     <Compile Include="Controllers\NotificationsController.cs" />
+    <Compile Include="Controllers\Payrolls\PayrollController.cs" />
+    <Compile Include="Controllers\Payrolls\PayrollRoutes.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\User\UserRoutes.cs" />
     <Compile Include="Controllers\User\UserController.cs" />
@@ -275,6 +279,8 @@
     <Compile Include="Resources\Common\NewsResource.cs" />
     <Compile Include="Resources\Common\NotificationsResource.cs" />
     <Compile Include="Resources\EntityIDResource.cs" />
+    <Compile Include="Resources\Journals\JournalListResource.cs" />
+    <Compile Include="Resources\Journals\JournalResource.cs" />
     <Compile Include="Resources\OnlinePayroll\AccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\BankAccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\CompanyResource.cs" />
@@ -282,7 +288,10 @@
     <Compile Include="Resources\OnlinePayroll\HostHomePageDocumentResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HomePageResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HostResource.cs" />
+    <Compile Include="Resources\Journals\JournalFilterResource.cs" />
     <Compile Include="Resources\OnlinePayroll\VendorCustomerResource.cs" />
+    <Compile Include="Resources\Payroll\PayrollFilterResource.cs" />
+    <Compile Include="Resources\Payroll\PayrollResource.cs" />
     <Compile Include="Resources\UserPasswordChangeRequest.cs" />
     <Compile Include="Resources\VersionResource.cs" />
     <Compile Include="Startup.cs" />

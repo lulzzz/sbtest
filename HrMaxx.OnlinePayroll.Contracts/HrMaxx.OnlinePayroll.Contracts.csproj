@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\Events\PayCheckVoidedEvent.cs" />
+    <Compile Include="Messages\Events\PayrollSavedEvent.cs" />
     <Compile Include="Messages\Events\EmployeeUpdatedEvent.cs" />
     <Compile Include="Messages\Events\CompanyUpdatedEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -48,6 +50,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Services\ICompanyService.cs" />
+    <Compile Include="Services\IJournalService.cs" />
+    <Compile Include="Services\IDashboardService.cs" />
+    <Compile Include="Services\ITaxationService.cs" />
+    <Compile Include="Services\IPayrollService.cs" />
     <Compile Include="Services\IMetaDataService.cs" />
     <Compile Include="Services\IHostService.cs" />
   </ItemGroup>

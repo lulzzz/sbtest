@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
@@ -21,5 +22,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public BankAccount BankAccount { get; set; }
 		public DateTime LastModified { get; set; }
 		public string LastModifiedBy { get; set; }
+		public bool UseInPayroll { get; set; }
+
+		public string AccountName
+		{
+			get { return string.Format("{0}: {1}: {2}", Type.GetDbName(), SubType.GetDbName(), Name); }
+		}
+
+		public bool IsBank
+		{
+			get { return Type == AccountType.Assets && SubType == AccountSubType.Bank; }
+		}
 	}
 }

@@ -14,6 +14,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class CompanyWorkerCompensation
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public CompanyWorkerCompensation()
+        {
+            this.Employees = new HashSet<Employee>();
+        }
+    
         public int Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public int Code { get; set; }
@@ -21,5 +27,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal Rate { get; set; }
     
         public virtual Company Company { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Employee> Employees { get; set; }
     }
 }

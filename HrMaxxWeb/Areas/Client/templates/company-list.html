@@ -21,6 +21,9 @@
 						<td data-title=" 'No' " filter="{ 'companyNo': 'text' }" sortable=" 'companyNo' " class="col-sm-2">
 							{{item.companyNo}}
 						</td>
+						<td data-title=" 'Last Payroll' "  sortable=" 'lastPayrollDate' " class="col-sm-1">
+							{{item.lastPayrollDate | date:'MM/dd/yyyy'}}
+						</td>
 						<td data-title=" 'Status' " class="col-sm-1">
 							{{item.getTextForStatus}}
 						</td>

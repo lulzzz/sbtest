@@ -24,11 +24,14 @@
 						<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-2">
 							{{item.department}}
 						</td>
-						<td data-title=" 'Hir Date' " filter="{ 'hireDate': 'text' }" sortable=" 'hireDaate' " class="col-sm-2">
+						<td data-title=" 'Hire Date' " filter="{ 'hireDate': 'text' }" sortable=" 'hireDaate' " class="col-sm-2">
 							{{item.hireDate | date:'MM/dd/yyyy'}}
 						</td>
+						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
+							{{item.lastPayrollDate | date:'MM/dd/yyyy'}}
+						</td>
 						<td data-title=" 'Status' " filter="{ 'statusText': 'text' }" sortable=" 'statusText' " class="col-sm-1">
-							{{item.StatusText}}
+							{{item.statusText}}
 						</td>
 						
 					</tr>
@@ -176,7 +179,14 @@
 														<input type="text" name="memo" placeholder="memo" class="form-control" ng-model="selected.memo" />
 													</div>
 												</div>
-												<div class="col-sm-4"></div>
+												<div class="col-sm-4">
+													<div class="form-group">
+														<label>W/C Job Class </label>
+														<select class="form-control" ng-model="selected.workerCompensation" ng-options="wc.code for wc in mainData.selectedCompany.workerCompensations | orderBy:'id' track by wc.id">
+															<option value="">Please select...</option>
+														</select>
+													</div>
+												</div>
 											</div>
 										</fieldset>
 									</div>
@@ -257,6 +267,11 @@
 														<label>Salary $</label>
 														<input id="rate" type="number" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-min="0"/>{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 														
+													</div>
+													<div class="form-group" ng-if="selected.payType===1">
+														<label>Base Hourly Rate $</label>
+														<input id="rate" type="number" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
+
 													</div>
 													<div class="form-group" ng-if="selected.payType===1">
 														<label for="paycodes">Pay Code(s)</label>
@@ -453,7 +468,7 @@
 		</div>
 		<div id="collapseTwo" class="panel-collapse collapse">
 			<div class="panel-body">
-				<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" />
+				<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" />
 			</div>
 		</div>
 	</div>

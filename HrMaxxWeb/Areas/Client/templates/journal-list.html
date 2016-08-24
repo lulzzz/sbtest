@@ -1,0 +1,225 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Checkbook<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
+				<i class="pull-right glyphicon glyphicon-refresh" ng-click="refresh()"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div class="row" ng-if="data && data.startingCheckNumber>0 && data.bankAccounts.length===0">
+					<pre class="alert alert-danger" >Please set a Bank Account in COA secton</pre>
+				
+			</div>
+			<div class="row" ng-show="data.bankAccounts.length>0">
+				<div class="col-sm-12 p-5">
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th class="col-sm-4">
+									<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByDateRange, 'fa-minus-square':data.filter.filterByDateRange}" ng-click="data.filter.filterByDateRange=!data.filter.filterByDateRange"> Filter By Date Range</i>
+								</th>
+								<th class="col-sm-4">
+									<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByMonthYear, 'fa-minus-square':data.filter.filterByMonthYear}" ng-click="data.filter.filterByMonthYear=!data.filter.filterByMonthYear"> Filter By Month & Year</i>
+								</th>
+								<th class="col-sm-4">
+									
+									<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByPeriod, 'fa-minus-square':data.filter.filterByPeriod}" ng-click="data.filter.filterByPeriod=!data.filter.filterByPeriod"> Filter By Period</i>
+								</th>	
+							</tr>
+							
+						</thead>
+						<tbody>
+							<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
+								<td class="col-sm-4" >
+									<div class="row" ng-show="data.filter.filterByDateRange">
+										<div class="col-sm-12">
+											<div class="col-sm-2"><label>From: </label></div>
+											<div class="col-sm-6 input-group date">
+												<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="data.filter.startDate" is-open="data.opened" datepicker-options="dateOptions" close-text="Close" />
+												<span class="input-group-addon">
+													<i class="fa fa-calendar" ng-click="open($event)"></i>
+												</span>
+											</div>
+										</div>
+										<div class="col-sm-12">
+											<div class="col-sm-2"><label>To: </label></div>
+											<div class="col-sm-6 input-group date">
+												<input name="enddate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="data.filter.endDate" min-date="data.filter.startDate" is-open="data.opened1" datepicker-options="dateOptions" close-text="Close" />
+												<span class="input-group-addon">
+													<i class="fa fa-calendar" ng-click="open1($event)"></i>
+												</span>
+											</div>
+											<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button></div>
+										</div>
+									</div>
+									
+								</td>
+
+								<td class="col-sm-4" >
+									<div class="row" ng-show="data.filter.filterByMonthYear">
+										<div class="col-sm-5">
+											<select name="filtermonths" ng-model="data.filter.month" class="form-control" convert-to-number>
+												<option value="0">please select</option>
+												<option value="1">January</option>
+												<option value="2">February</option>
+												<option value="3">March</option>
+												<option value="4">April</option>
+												<option value="5">May</option>
+												<option value="6">June</option>
+												<option value="7">July</option>
+												<option value="8">August</option>
+												<option value="9">September</option>
+												<option value="10">October</option>
+												<option value="11">November</option>
+												<option value="12">December</option>
+											</select>
+										</div>
+										<div class="col-sm-5">
+											<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years"></select>
+										</div>
+										<div class="col-sm-2"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
+									</div>
+									
+								</td>
+							
+								<td class="col-sm-4" >
+									<div class="row" ng-show="data.filter.filterByPeriod">
+										<div class="col-sm-8">
+											<select name="filterperiod" ng-model="data.filter.period" class="form-control" convert-to-number>
+												<option value="1">All</option>
+												<option value="2">Last 3 months</option>
+												<option value="3">Last 6 months</option>
+												<option value="4">Last 12 months</option>
+											</select>
+										</div>
+										<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.period" ng-click="filterByPeriod()">Go</button></div>
+									</div>
+									
+								</td>
+
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col-sm-12 p-5">
+					<div class="col-sm-4">
+						<div class="col-sm-2"><label for="bank">Account: </label> </div>
+						<div class="col-sm-10">
+							<select id="bank" class="form-control" ng-change="accountSelected()" ng-disabled="data.bankAccounts.length===1" ng-model="data.selectedAccount" ng-options="bank.accountName for bank in data.bankAccounts track by bank.id"></select>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="col-sm-2"><label for="balance">Balance: </label> </div>
+						<div class="col-sm-10">
+							{{ data.selectedAccountBalance | currency:'$'}}
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-12 p-20">
+					<div class="col-sm-7"></div>
+					<div class="col-sm-5 ">
+
+
+						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(4, false)">Transfer Money between Account</button>
+						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(3, false)">Record a Deposit</button>
+						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(2, true)">Record an EFT</button>
+						<button class="btn btn-sm btn-info pull-right m-5" ng-click="add(2, false)">Write a Check</button>
+
+
+					</div>
+				</div>
+				<div class="col-sm-12" ng-if="data.selectedAccount" ng-show="!newItem">
+					<div ng-show="list.length===0" class="table table-bordered">
+						No checks found
+					</div>
+					<div ng-show="list.length>0" class="row text-center p-5">
+						<strong><em>Account Register <span ng-show="data.filterStartDate || data.filterEndDate"> ({{data.filterEndDate ? '' : 'From'}} {{data.filterStartDate? (data.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.filterEndDate? ' - ' + (data.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+					</div>
+					<div class="row" ng-show="list.length>0">
+						<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id, 'warning' : !selected && item.isVoid}">
+								<td data-title=" 'Date' " sortable=" 'transactionDate' " class="col-sm-1 text-center">
+									{{item.transactionDate | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Type' " filter="{ 'transactionTypeText': 'text' }" sortable="'transactionTypeText'" class="col-sm-1 text-center">
+									{{item.transactionTypeText}}
+								</td>
+								<td data-title=" 'Number' " filter="{ 'checkNumberText': 'text' }" sortable="'checkNumberText'" class="col-sm-1 text-center">
+									{{item.checkNumberText}}
+								</td>
+								<td data-title=" 'Payee' " filter="{ 'payeeName': 'text' }" sortable=" 'payeeName' " class="col-sm-1 text-center">
+									{{item.transactionType>2 ? '':item.payeeName}}
+								</td>
+								<td data-title=" 'Amount' " class="col-sm-1 text-center show-red">
+									{{item.displayAmount | currency:'$'}}
+								</td>
+								<td data-title=" 'Memo' " class="col-sm-1 text-center">
+									{{item.memo}}
+								</td>
+								<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+									<span class="label label-warning" ng-show="item.isVoid">{{item.statusText}}</span>
+								</td>
+							</tr>
+
+						</table>
+						<script type="text/ng-template" id="custom/pager">
+							<ul class="pager ng-cloak">
+								<li ng-repeat="page in pages"
+										ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+										ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+									<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+									<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+								</li>
+								<li>
+									<div class="btn-group">
+										<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+										<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+										<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+									</div>
+								</li>
+							</ul>
+						</script>
+					</div>
+				</div>
+			</div>
+			<!-- end panel -->
+		</div>
+	</div>
+	
+	<div class="panel panel-info" ng-if="selected && selected.transactionType===1">
+		<div class="panel-body tab-content">
+			<paycheck check-id="selected.payrollPayCheckId" />
+			<div class="col-sm-12 pull-right">
+				<button class="btn btn-sm btn-default" ng-click="cancel()">cancel</button>
+			</div>
+		</div>
+
+	</div>
+	<div class="panel panel-info" ng-if="selected && selected.transactionType===2">
+		<div class="panel-body tab-content">
+			<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" />
+		</div>
+
+	</div>
+	<div class="panel panel-info" ng-if="selected && selected.transactionType===3">
+		<div class="panel-body tab-content">
+			<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany"/>
+		</div>
+
+	</div>
+	<div class="panel panel-info" ng-if="selected && selected.transactionType===4">
+		<div class="panel-body tab-content">
+			<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" />
+		</div>
+
+	</div>
+	
+
+
+
+	
+</div>
+
+

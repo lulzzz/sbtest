@@ -25,5 +25,25 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string IndividualSSN { get; set; }
 		public string BusinessFIN { get; set; }
 		public bool IsVendor1099 { get; set; }
+
+		public VendorCustomer(Guid id, Guid companyId, string name, bool isVendor, string lastModifiedBy)
+		{
+			Id = id;
+			CompanyId = companyId;
+			IsVendor = isVendor;
+			IsVendor1099 = false;
+			Name = name;
+			StatusId = StatusOption.Active;
+			AccountNo = string.Empty;
+			Contact = new Contact();
+			Note = string.Empty;
+			Type1099= F1099Type.NA;
+			SubType1099 = F1099SubType.NA;
+			IdentifierType = VCIdentifierType.NA;
+			BusinessFIN = string.Empty;
+			IndividualSSN = string.Empty;
+			LastModified = DateTime.Now;
+			UserName = lastModifiedBy;
+		}
 	}
 }

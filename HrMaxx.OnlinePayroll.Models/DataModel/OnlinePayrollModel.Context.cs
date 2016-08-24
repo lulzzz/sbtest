@@ -46,5 +46,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<EntityType> EntityTypes { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<EmployeeDeduction> EmployeeDeductions { get; set; }
+        public virtual DbSet<Payroll> Payrolls { get; set; }
+        public virtual DbSet<PayrollPayCheck> PayrollPayChecks { get; set; }
+        public virtual DbSet<Journal> Journals { get; set; }
+        public virtual DbSet<CompanyPayrollCube> CompanyPayrollCubes { get; set; }
     }
 }

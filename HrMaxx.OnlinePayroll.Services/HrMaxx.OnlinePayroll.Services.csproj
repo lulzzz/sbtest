@@ -67,12 +67,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Company\CompanyService.cs" />
+    <Compile Include="Dashboard\DashboardService.cs" />
+    <Compile Include="EventHandlers\AccumulatationCubesHandler.cs" />
+    <Compile Include="EventHandlers\PayrollEventHandler.cs" />
     <Compile Include="EventHandlers\CompanyEventHandler.cs" />
+    <Compile Include="Journals\JournalService.cs" />
+    <Compile Include="Mappers\USTaxTablesModelMapperProfile.cs" />
     <Compile Include="Mappers\CompanyModelMapperProfile.cs" />
     <Compile Include="MetaDataService.cs" />
     <Compile Include="Host\HostService.cs" />
     <Compile Include="Mappers\OnlinePayrollModelMapperProfile.cs" />
+    <Compile Include="Payroll\PayrollService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="USTax\USTaxationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

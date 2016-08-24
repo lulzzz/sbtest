@@ -1,0 +1,170 @@
+﻿<div class="row">
+	<div class="col-sm-10 col-sm-offset-1" style="background-color:lightgray">
+		<div class="row p-10 text-center">
+			<h4><em><u>Deposit Ticket</u></em></h4>
+		</div>
+		<div class="row p-10">
+			<div class="col-sm-8 text-bold" style="color: darkgreen">
+				<div class="col-sm-12">
+					{{company.name}}
+				</div>
+				<div class="col-sm-12">
+					{{company.companyAddress.addressLine1}}
+				</div>
+				<div class="col-sm-12">
+					{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}
+				</div>
+			</div>
+
+		</div>
+		<div class="row p-5">
+			<div class="col-sm-9"></div>
+			<div class="col-sm-3">
+				<div class="form-group col-sm-6 col-sm-offset-3">
+					<div class="col-sm-6"><label class="control-label">Cash: </label></div>
+					<div class="col-sm-6 pull-right"><label class="text-right">{{ cashAmount  | currency:'$'}}</label></div>
+
+				</div>
+
+
+			</div>
+		</div>
+		<div class="row p-5">
+			<div class="col-sm-9"></div>
+			<div class="col-sm-3">
+				<div class="form-group col-sm-6 col-sm-offset-3">
+					<div class="col-sm-6"><label class="control-label">Check: </label></div>
+					<div class="col-sm-6 pull-right"><label class="text-right">{{ checkAmount  | currency:'$'}}</label></div>
+
+				</div>
+
+
+			</div>
+		</div>
+		<div class="row p-5">
+			<div class="col-sm-9"></div>
+			<div class="col-sm-3">
+				<div class="form-group col-sm-6 col-sm-offset-3">
+					<div class="col-sm-6"><label class="control-label">Total: </label></div>
+					<div class="col-sm-6 pull-right"><label class="text-right">{{ (cashAmount + checkAmount)  | currency:'$'}}</label></div>
+
+				</div>
+
+
+			</div>
+		</div>
+		<div class="row p-10 form-group">
+			<div class="col-sm-8">
+				<div class="col-sm-1">
+					<label>Date: </label>
+				</div>
+				<div class="col-sm-4">
+					<div class="input-group date">
+						<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.transactionDate" min-date="minPayDate" is-open="data.opened" datepicker-options="dateOptions" close-text="Close" />
+						<span class="input-group-addon">
+							<i class="fa fa-calendar" ng-click="open($event)"></i>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row p-10 form-group">
+			<div class="col-sm-8">
+				<div class="col-sm-1">
+					<label>Memo: </label>
+				</div>
+				<div class="col-sm-6">
+					<input type="text" ng-model="item.memo" class="form-control" required />
+
+
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+	<div class="col-sm-10 col-sm-offset-1">
+		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()">cancel</button>
+		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid">save</button>
+		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid">print</button>
+		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid">void</button>
+	</div>
+	<div class="col-sm-10 col-sm-offset-1">
+		<table class="table table-header table-bordered table-condensed form-controls input-sm">
+			<thead>
+				<tr>
+					<th class="col-sm-2">Account</th>
+					<th class="col-sm-1">Type</th>
+					<th class="col-sm-1">Number</th>
+					<th class="col-sm-1">Amount</th>
+					<th class="col-sm-2">From</th>
+					<th class="col-sm-2">Memo</th>
+					<th class="col-sm-1"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} track by $index" ng-class="{'success':jd.isDebit===false, 'danger':jd.isDebit}">
+					<td>
+						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName" editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
+							{{ jd.accountId? jd.accountName : '' }}
+						</span>
+					</td>
+					<td>
+						<span e-ng-change="jd.depositMethod=$data; jd.checkNumber = 0" editable-select="jd.depositMethod" e-name="dm" e-form="rowform" e-ng-options="a.value for a in data.depositMethods track by a.key">
+							{{ jd.depositMethod? jd.depositMethod.value : '' }}
+						</span>
+					</td>
+					<td>
+						<span e-ng-change="jd.checkNumber = $data" e-ng-show="jd.depositMethod.key===1" editable-number="jd.checkNumber" e-name="checknumber" e-form="rowform" e-ng-pattern="/^[1-9][0-9]{2,5}$/" e-step="1" e-style="width:10em;">
+							{{ jd.checkNumber }}
+						</span>
+					</td>
+					<td>
+						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+							{{ jd.amount | currency:'$'}}
+						</span>
+					</td>
+					<td>
+						<span e-ng-change="jd.payee = $data" editable-select="jd.payee" e-name="payee" e-form="rowform" e-ng-options="a.name for a in data.allPayees track by a.id">
+							{{ jd.payee? jd.payee.name : '' }}
+						</span>
+					</td>
+					<td>
+						<!-- editable comment (text with validation) -->
+						<span editable-text="jd.memo" e-name="memo" e-form="rowform" e-ng-change="jd.memo = $data" e-style="width:15em;">
+							{{ jd.memo }}
+						</span>
+					</td>
+					<td style="white-space: nowrap">
+						<!-- form -->
+						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd">
+							<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
+								edit
+							</button>
+							<button type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
+								save
+							</button>
+							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-default">
+								cancel
+							</button>
+						</form>
+					</td>
+
+				</tr>
+				<tr ng-show="!selectedjd">
+					<td colspan="6">
+						<span ng-show="item.journalDetails.length===0">No items found</span>
+					</td>
+
+					<td>
+						<button type="button" ng-click="addJournalDetail()" class="btn btn-primary">
+							Add
+						</button>
+					</td>
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+</div>
+

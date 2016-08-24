@@ -25,5 +25,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Employee SaveEmployee(Employee mappedResource);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction mappedResource);
 		void DeleteEmployeeDeduction(int deductionId);
+		List<Account> GetCompanyPayrollAccounts(Guid id);
 	}
 }

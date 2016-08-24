@@ -57,7 +57,7 @@
 					<div class="row form-group" ng-show="data.showCompanies">
 						<label for="company" class="col-md-2 control-label">Companies</label>
 						<div class="col-md-4">
-							<select id="company" class="form-control"  ng-model="data.selectedCompany" ng-options="company.name for company in data.companies track by company.id">
+							<select id="company" class="form-control" ng-change="data.isFilterOpen=false" ng-model="data.selectedCompany" ng-options="company.name for company in data.companies track by company.id">
 								<option value="">Please select...</option>
 							</select>
 						</div>

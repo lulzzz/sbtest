@@ -256,7 +256,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			{
 				account.BankAccount.SourceTypeId = EntityTypeEnum.Company;
 				account.BankAccount.SourceId = account.CompanyId;
+				account.BankAccount.LastModified = DateTime.Now;
+				account.BankAccount.LastModifiedBy = account.LastModifiedBy;
 				account.BankAccount = _utilRepository.SaveBankAccount(account.BankAccount);
+				if (account.UseInPayroll)
+				{
+					var payrollAccount =
+						_dbContext.CompanyAccounts.FirstOrDefault(
+							c => c.Type == (int) AccountType.Assets && c.SubType == (int) AccountSubType.Bank && c.UsedInPayroll);
+					if (payrollAccount != null)
+						payrollAccount.UsedInPayroll = false;
+				}
 			}
 			var mapped = _mapper.Map<Account, CompanyAccount>(account);
 			if (mapped.Id == 0)
@@ -272,6 +282,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbAccount.LastModifiedBy = mapped.LastModifiedBy;
 					dbAccount.Name = mapped.Name;
 					dbAccount.OpeningBalance = mapped.OpeningBalance;
+					dbAccount.UsedInPayroll = mapped.UsedInPayroll;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -329,6 +340,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.FederalExemptions = me.FederalExemptions;
 				dbEmployee.FederalStatus = me.FederalStatus;
 				dbEmployee.State = me.State;
+				dbEmployee.WorkerCompensationId = me.WorkerCompensationId;
+				dbEmployee.Rate = me.Rate;
 				if (employee.BankAccount != null)
 					dbEmployee.BankAccountId = employee.BankAccount.Id;
 			}
@@ -374,6 +387,27 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				_dbContext.SaveChanges();
 			}
 				
+		}
+
+		public void UpdateLastPayrollDateCompany(Guid id, DateTime payDay)
+		{
+			var dbCompany = _dbContext.Companies.FirstOrDefault(c => c.Id == id);
+			if (dbCompany != null)
+			{
+				dbCompany.LastPayrollDate = payDay;
+				_dbContext.SaveChanges();
+			}
+		}
+
+		public void UpdateLastPayrollDateEmployee(Guid id, DateTime payDay)
+		{
+			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
+			if (dbEmployee != null)
+			{
+				var maxPayDay = _dbContext.PayrollPayChecks.Where(p => p.EmployeeId == id && !p.IsVoid).Max(p => p.PayDay);
+				dbEmployee.LastPayrollDate = maxPayDay;
+				_dbContext.SaveChanges();
+			}
 		}
 	}
 }

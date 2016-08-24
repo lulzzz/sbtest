@@ -51,6 +51,16 @@
         <EntityTypeShape EntityType="HrMaxxModel.EmployeeDeduction" Width="1.5" PointX="16.125" PointY="5.625" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_Employee" />
+        <EntityTypeShape EntityType="HrMaxxModel.Payroll" Width="1.5" PointX="14.375" PointY="13.125" />
+        <EntityTypeShape EntityType="HrMaxxModel.PayrollPayCheck" Width="1.5" PointX="16.625" PointY="12.125" />
+        <AssociationConnector Association="HrMaxxModel.FK_PayrollDetail_Payroll" />
+        <AssociationConnector Association="HrMaxxModel.FK_Employee_CompanyWorkerCompensation" />
+        <EntityTypeShape EntityType="HrMaxxModel.Journal" Width="1.5" PointX="18.875" PointY="13.5" />
+        <AssociationConnector Association="HrMaxxModel.FK_Journal_EntityType" />
+        <AssociationConnector Association="HrMaxxModel.FK_Journal_PayrollPayCheck" />
+        <AssociationConnector Association="HrMaxxModel.FK_Journal_Company" />
+        <AssociationConnector Association="HrMaxxModel.FK_Journal_CompanyAccount" />
+        <EntityTypeShape EntityType="HrMaxxModel.CompanyPayrollCube" Width="1.5" PointX="10.375" PointY="4" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

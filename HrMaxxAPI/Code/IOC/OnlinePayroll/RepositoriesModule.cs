@@ -5,7 +5,11 @@ using HrMaxx.Infrastructure.Extensions;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
+using HrMaxx.OnlinePayroll.Repository.Dashboard;
 using HrMaxx.OnlinePayroll.Repository.Host;
+using HrMaxx.OnlinePayroll.Repository.Journals;
+using HrMaxx.OnlinePayroll.Repository.Payroll;
+using HrMaxx.OnlinePayroll.Repository.Taxation;
 
 namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 {
@@ -18,9 +22,15 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			string _onlinePayrollConnectionString =
 				ConfigurationManager.ConnectionStrings["OnlinePayrollEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
+			string _usTaxTablesConnectionString =
+				ConfigurationManager.ConnectionStrings["USTaxTableEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 
 			builder.RegisterType<OnlinePayrollEntities>()
 				.WithParameter(new NamedParameter("nameOrConnectionString", _onlinePayrollConnectionString))
+				.InstancePerLifetimeScope();
+
+			builder.RegisterType<USTaxTableEntities>()
+				.WithParameter(new NamedParameter("nameOrConnectionString", _usTaxTablesConnectionString))
 				.InstancePerLifetimeScope();
 
 			var namedParameters = new List<NamedParameter>();
@@ -44,6 +54,26 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<CompanyRepository>()
 				.As<ICompanyRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<TaxationRepository>()
+				.As<ITaxationRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<PayrollRepository>()
+				.As<IPayrollRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<JournalRepository>()
+				.As<IJournalRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<DashboardRepository>()
+				.As<IDashboardRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

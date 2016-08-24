@@ -45,7 +45,7 @@
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();selected=item">
 							edit
 						</button>
-						<button type="button" ng-show="!rowform.$visible && item.id>0" class="btn btn-danger" ng-click="delete(item)">
+						<button type="button" ng-show="!rowform.$visible && (item.id>0 || !saveToServer)" class="btn btn-danger" ng-click="delete($index)">
 							delete
 						</button>
 						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">

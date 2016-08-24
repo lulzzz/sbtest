@@ -37,6 +37,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string FederalPin { get; set; }
 		public DepostiSchedule941 DepositSchedule { get; set; }
 		public bool IsFiler944 { get; set; }
+		public DateTime? LastPayrollDate { get; set; }
 		
 		public List<CompanyTaxState> States { get; set; }
 		public List<AccumulatedPayType> AccumulatedPayTypes { get; set; }

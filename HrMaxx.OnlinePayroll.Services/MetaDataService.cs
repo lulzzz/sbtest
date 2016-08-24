@@ -15,11 +15,13 @@ namespace HrMaxx.OnlinePayroll.Services
 	public class MetaDataService : BaseService, IMetaDataService
 	{
 		private readonly ICommonService _commonService;
+		private readonly ICompanyService _companyService;
 		private readonly IMetaDataRepository _metaDataRepository;
-		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService)
+		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService)
 		{
 			_metaDataRepository = metaDataRepository;
 			_commonService = commonService;
+			_companyService = companyService;
 		}
 
 		public object GetCompanyMetaData()
@@ -27,7 +29,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var countries = _commonService.GetCountries();
-				var taxes = _metaDataRepository.GetTaxes();
+				var taxes = _metaDataRepository.GetCompanyOverridableTaxes();
 				var deductiontypes = _metaDataRepository.GetDeductionTypes();
 				var paytypes = _metaDataRepository.GetAccumulablePayTypes();
 				return new {Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes};
@@ -60,6 +62,42 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Employee");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public object GetPayrollMetaData(Guid companyId)
+		{
+			try
+			{
+				var paytypes = _metaDataRepository.GetAllPayTypes();
+				var bankAccount = _metaDataRepository.GetPayrollAccount(companyId);
+				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber(companyId);
+				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Payroll for company " + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public object GetJournalMetaData(Guid companyId)
+		{
+			try
+			{
+				var companyAccounts = _companyService.GetComanyAccounts(companyId);
+				var vendors = _companyService.GetVendorCustomers(companyId, true);
+				var customers = _companyService.GetVendorCustomers(companyId, false);
+				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber(companyId);
+				var maxAdjustmentNumber = _metaDataRepository.GetMaxAdjustmenetNumber(companyId);
+				return new { Accounts = companyAccounts, Vendors = vendors, Customers = customers, startingCheckNumber = maxCheckNumber, StartingAdjustmentNumber = maxAdjustmentNumber };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Journal for company " + companyId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

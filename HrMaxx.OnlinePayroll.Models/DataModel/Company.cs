@@ -27,6 +27,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             this.VendorCustomers = new HashSet<VendorCustomer>();
             this.CompanyAccounts = new HashSet<CompanyAccount>();
             this.Employees = new HashSet<Employee>();
+            this.Journals = new HashSet<Journal>();
         }
     
         public System.Guid Id { get; set; }
@@ -53,6 +54,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
         public System.DateTime LastModified { get; set; }
         public bool IsFiler944 { get; set; }
+        public Nullable<System.DateTime> LastPayrollDate { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }
@@ -76,5 +78,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<CompanyAccount> CompanyAccounts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Employee> Employees { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Journal> Journals { get; set; }
     }
 }

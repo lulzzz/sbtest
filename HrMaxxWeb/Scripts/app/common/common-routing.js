@@ -36,6 +36,12 @@
 	$routeProvider.when('/Client/Employees', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/employees.html'
 	});
+	$routeProvider.when('/Client/Payrolls', {
+		templateUrl: zionAPI.Web + '/Areas/Client/templates/payrolls.html'
+	});
+	$routeProvider.when('/Client/Checkbook', {
+		templateUrl: zionAPI.Web + '/Areas/Client/templates/checkbook.html'
+	});
 	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.html5Mode(false).hashPrefix('!');

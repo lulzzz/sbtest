@@ -189,6 +189,41 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		UnmarriedHeadofHousehold=3
 	}
 
+	public enum USFederalFilingStatus
+	{
+		[HrMaxxSecurity(DbName = "Single")]
+		Single=1,
+		[HrMaxxSecurity(DbName = "Married")]
+		Married=2,
+		[HrMaxxSecurity(DbName = "HeadofHousehold")]
+		HeadofHousehold=3
+	}
+
+	public enum CAStateFilingStatus
+	{
+		[HrMaxxSecurity(DbName = "Single")]
+		Single=1,
+		[HrMaxxSecurity(DbName = "Married")]
+		Married=2,
+		[HrMaxxSecurity(DbName = "Headofhousehold")]
+		HeadofHousehold=3
+	}
+
+	public enum CAStateLowIncomeFilingStatus
+	{
+		[HrMaxxSecurity(DbName = "Single")]
+		Single=1,
+		[HrMaxxSecurity(DbName = "DualIncomeMarried")]
+		DualIncomeMarried=2,
+		[HrMaxxSecurity(DbName = "MarriedWithMultipleEmployers")]
+		MarriedWithMultipleEmployers=3,
+		[HrMaxxSecurity(DbName = "Married")]
+		Married=4,
+		[HrMaxxSecurity(DbName = "Headofhousehold")]
+		HeadofHousehold=5
+	}
+
+
 	public enum EmployeeTaxCategory
 	{
 		USWorkerNonVisa=1,
@@ -197,7 +232,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum EmployeePaymentMethod
 	{
+		[HrMaxxSecurity(DbName = "Check")]
 		Check=1,
+		[HrMaxxSecurity(DbName = "EFT")]
 		DirectDebit=2
 	}
 
@@ -205,5 +242,63 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	{
 		Percentage=1,
 		FixedRate=2
+	}
+
+	public enum PaycheckStatus
+	{
+		[HrMaxxSecurity(DbName = "Not Processed")]
+		NotProcessed = 1,
+		[HrMaxxSecurity(DbName = "Processed")]
+		Processed = 2,
+		[HrMaxxSecurity(DbName = "Committed")]
+		Saved = 3,
+		[HrMaxxSecurity(DbName = "Printed")]
+		Printed = 4,
+		[HrMaxxSecurity(DbName = "Paid")]
+		Paid = 5,
+		[HrMaxxSecurity(DbName = "Printed And Paid")]
+		PrintedAndPaid = 6,
+		[HrMaxxSecurity(DbName = "Void")]
+		Void = 7
+	}
+
+	public enum PayrollStatus
+	{
+		[HrMaxxSecurity(DbName = "Not Processed")]
+		Started = 1,
+		[HrMaxxSecurity(DbName = "Processed")]
+		Processed = 2,
+		[HrMaxxSecurity(DbName = "Committed")]
+		Committed = 3,
+		[HrMaxxSecurity(DbName = "Invoiced")]
+		Invoiced = 4
+	}
+
+	public enum TransactionType
+	{
+		[HrMaxxSecurity(DbName = "Payroll Check")]
+		PayCheck=1,
+		[HrMaxxSecurity(DbName = "Regular Check")]
+		RegularCheck=2,
+		[HrMaxxSecurity(DbName = "Deposit")]
+		Deposit=3,
+		[HrMaxxSecurity(DbName = "Adjustment")]
+		Adjustment=4
+
+	}
+
+	public enum VendorDepositMethod
+	{
+		[HrMaxxSecurity(DbName = "Check")]
+		Check = 1,
+		[HrMaxxSecurity(DbName = "Cash")]
+		Cash = 2
+	}
+
+	public enum CubeType
+	{
+		Yearly=1,
+		Quarterly=2,
+		Monthly=3
 	}
 }

@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService',
-	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService) {
+	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval',
+	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval) {
 		$scope.alerts = [];
 
 		$scope.addAlert = function (error, type) {
@@ -71,7 +71,10 @@
 			if (dataSvc.selectedHost)
 				$scope.getCompanies();
 		}
-		
+		var removeMessages = function() {
+			$scope.alerts = [];
+		}
 		_init();
+		$interval(removeMessages, 15000);
 	}
 ]);

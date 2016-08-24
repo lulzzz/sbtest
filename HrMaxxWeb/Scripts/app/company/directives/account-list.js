@@ -11,8 +11,8 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/account-list.html',
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'commonRepository',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, commonRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'commonRepository', 'journalRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, commonRepository, journalRepository) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Company,
 						types: [],
@@ -21,7 +21,21 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 						selectedType: null,
 						selectedSubType: null,
 						isBodyOpen: true,
-						opened: false
+						opened: false,
+						opened1: false,
+						opened2: false,
+						filterStartDate : null,
+						filterEndDate: null,
+						filter: {
+							years: [],
+							month: 0,
+							year: 0
+						}
+					}
+					var currentYear = new Date().getFullYear();
+					dataSvc.filter.year = currentYear;
+					for (var i = currentYear - 4; i <= currentYear + 4; i++) {
+						dataSvc.filter.years.push(i);
 					}
 					$scope.dateOptions = {
 						format: 'dd/MMyyyy',
@@ -41,6 +55,17 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$event.stopPropagation();
 						$scope.data.opened = true;
 					};
+					$scope.open1 = function ($event) {
+						$event.preventDefault();
+						$event.stopPropagation();
+						$scope.data.opened1 = true;
+					};
+
+					$scope.open2 = function ($event) {
+						$event.preventDefault();
+						$event.stopPropagation();
+						$scope.data.opened2 = true;
+					};
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -59,15 +84,17 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 							type: null,
 							subType: null,
 							name: null,
-							taxCode:null,
+							taxCode: null,
 							openingBalance: 0,
 							templateId: null,
 							bankAccount: null,
+							useInPayroll: false,
 							isBank: function() {
 								if (type === 1 && subType === 2)
 									return true;
 								return false;
 							}
+
 						};
 						
 						$scope.set(selected);
@@ -75,6 +102,7 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 					
 
 					$scope.tableData = [];
+					
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
@@ -123,6 +151,8 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 								dataSvc.selectedType = $filter('filter')(dataSvc.types, { key: $scope.selected.type })[0];
 								dataSvc.selectedSubType = $filter('filter')(dataSvc.subTypes, { key: $scope.selected.subType })[0];
 								$scope.typeSelected();
+								$scope.tableParamsRegister.reload();
+								$scope.fillTableDataRegister($scope.tableParamsRegister);
 							}
 							dataSvc.isBodyOpen = false;
 						}, 1);
@@ -150,8 +180,55 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 							addAlert('error saving account', 'danger');
 						});
 					}
+					$scope.filterByDateRange = function () {
+						dataSvc.filterStartDate = dataSvc.filter.startDate ? dataSvc.filter.startDate : null;
+						dataSvc.filterEndDate = dataSvc.filter.endDate ? dataSvc.filter.endDate : null;
+						dataSvc.filter.filterByMonthYear = false;
+						dataSvc.filter.filterByPeriod = false;
+
+						$scope.getCompanyAccounts($scope.mainData.selectedCompany.id);
+					}
+					$scope.filterByMonthYear = function () {
+						if (!dataSvc.filter.month) {
+							dataSvc.filterStartDate = moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
+							dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
+						} else {
+							dataSvc.filterStartDate = moment(dataSvc.filter.month + '/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
+							var test1 = moment(dataSvc.filterStartDate).endOf('month');
+							var test = moment(dataSvc.filterStartDate).endOf('month').date();
+							dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('month').format('MM/DD/YYYY');
+						}
+
+						dataSvc.filter.filterByDateRange = false;
+						dataSvc.filter.filterByPeriod = false;
+
+						$scope.getCompanyAccounts($scope.mainData.selectedCompany.id);
+					}
+					$scope.filterByPeriod = function () {
+						if (dataSvc.filter.period === 1) {
+							dataSvc.filterStartDate = null;
+							dataSvc.filterEndDate = null;
+						}
+						else if (dataSvc.filter.period === 2) {
+							dataSvc.filterEndDate = new Date();
+							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-3, 'months').format('MM/DD/YYYY');
+						}
+						else if (dataSvc.filter.period === 3) {
+							dataSvc.filterEndDate = new Date();
+							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-6, 'months').format('MM/DD/YYYY');
+						}
+						else if (dataSvc.filter.period === 4) {
+							dataSvc.filterEndDate = new Date();
+							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-1, 'years').format('MM/DD/YYYY');
+						}
+
+						dataSvc.filter.filterByMonthYear = false;
+						dataSvc.filter.filterByDateRange = false;
+
+						$scope.getCompanyAccounts($scope.mainData.selectedCompany.id);
+					}
 					$scope.getCompanyAccounts = function(companyId) {
-						companyRepository.getCompanyAccounts(companyId).then(function (data) {
+						journalRepository.getAccountJournalList(companyId, dataSvc.filterStartDate, dataSvc.filterEndDate).then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
@@ -249,6 +326,41 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 						
 
 					}
+					$scope.tableDataRegister = [];
+					$scope.tableParamsRegister = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						filter: {
+							payee: '',       // initial filter
+						},
+						sorting: {
+							transactionDate: 'desc'     // initial sorting
+						}
+					}, {
+						total: $scope.selected && $scope.selected.journals.length > 0 ? $scope.selected.journals.length : 0, // length of data
+						getData: function ($defer, params) {
+							$scope.fillTableDataRegister(params);
+							$defer.resolve($scope.tableDataRegister);
+						}
+					});
+					$scope.fillTableDataRegister = function (params) {
+						// use build-in angular filter
+						if ($scope.selected && $scope.selected.journals.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.selected.journals, params.filter()) :
+																$scope.selected.journals;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParamsRegister = params;
+							$scope.tableDataRegister = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
 					init();
 
 

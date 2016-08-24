@@ -57,8 +57,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="AccountWithJournal.cs" />
     <Compile Include="BankAccount.cs" />
     <Compile Include="Company.cs" />
+    <Compile Include="CompanyPayrollCube.cs" />
     <Compile Include="DataModel\AccountTemplate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -83,6 +85,9 @@
     <Compile Include="DataModel\CompanyPayCode.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CompanyPayrollCube.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CompanyTaxRate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -104,17 +109,65 @@
     <Compile Include="DataModel\EntityType.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\EstimatedDeductionsTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\ExemptionAllowanceTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\FITTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\FITWithholdingAllowanceTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Host.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\Journal.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\Payroll.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\PayrollPayCheck.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\PayType.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\SITLowIncomeTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\SITTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\StandardDeductionTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Tax.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\TaxDeductionPrecedence.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\TaxYearRate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\USTaxTablesModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>USTaxTablesModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\USTaxTablesModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\USTaxTablesModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>USTaxTablesModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="DataModel\VendorCustomer.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
@@ -143,10 +196,24 @@
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="HostHomePageDocument.cs" />
+    <Compile Include="Journal.cs" />
+    <Compile Include="JournalList.cs" />
     <Compile Include="MetaDataModels\TaxDefinition.cs" />
     <Compile Include="MetaDataModels\TaxYear.cs" />
+    <Compile Include="Payroll.cs" />
+    <Compile Include="PayrollAccumulation.cs" />
     <Compile Include="PayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tax.cs" />
+    <Compile Include="USTaxModels\CAStandardDeductionTableRow.cs" />
+    <Compile Include="USTaxModels\EstimatedDeductionTableRow.cs" />
+    <Compile Include="USTaxModels\ExemptionAllowanceTableRow.cs" />
+    <Compile Include="USTaxModels\FITTaxTableRow.cs" />
+    <Compile Include="USTaxModels\FITWithholdingAllowanceTableRow.cs" />
+    <Compile Include="USTaxModels\CASITLowIncomeTaxTableRow.cs" />
+    <Compile Include="USTaxModels\CASITTaxTableRow.cs" />
+    <Compile Include="USTaxModels\TaxDeductionPrecendence.cs" />
+    <Compile Include="USTaxModels\USTaxTables.cs" />
     <Compile Include="VendorCustomer.cs" />
   </ItemGroup>
   <ItemGroup />
@@ -158,6 +225,13 @@
     </EntityDeploy>
     <None Include="DataModel\OnlinePayrollModel.edmx.diagram">
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
+    </None>
+    <EntityDeploy Include="DataModel\USTaxTablesModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>USTaxTablesModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="DataModel\USTaxTablesModel.edmx.diagram">
+      <DependentUpon>USTaxTablesModel.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
@@ -181,6 +255,16 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
       <LastGenOutput>OnlinePayrollModel.cs</LastGenOutput>
+    </Content>
+    <Content Include="DataModel\USTaxTablesModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>USTaxTablesModel.edmx</DependentUpon>
+      <LastGenOutput>USTaxTablesModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="DataModel\USTaxTablesModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>USTaxTablesModel.edmx</DependentUpon>
+      <LastGenOutput>USTaxTablesModel.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>

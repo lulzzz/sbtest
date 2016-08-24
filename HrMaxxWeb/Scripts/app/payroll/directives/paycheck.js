@@ -1,0 +1,44 @@
+﻿'use strict';
+
+common.directive('paycheck', ['$modal', 'zionAPI', '$timeout', '$window',
+	function ($modal, zionAPI, $timeout, $window) {
+		return {
+			restrict: 'E',
+			replace: true,
+			scope: {
+				check: "=?check",
+				checkId: "=?checkId"
+			},
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/paycheck.html',
+
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$modal',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $modal) {
+
+					$scope.showNonTaxable = function () {
+						if ($scope.check) {
+							var exists = $filter('filter')($scope.check.compensations, { payType: { isTaxable: false } });
+							if (exists.length > 0)
+								return true;
+							else {
+								return false;
+							}
+						} else {
+							return false;
+						}
+						
+					}
+					var _init = function() {
+						if (!$scope.check && $scope.checkId) {
+							payrollRepository.getPayCheckById($scope.checkId).then(function (data) {
+								$scope.check = data;
+							}, function (erorr) {
+								$scope.$parent.$parent.addAlert('error getting paycheck by id', 'danger');
+							});
+						}
+					}
+					_init();
+
+				}]
+		}
+	}
+]);

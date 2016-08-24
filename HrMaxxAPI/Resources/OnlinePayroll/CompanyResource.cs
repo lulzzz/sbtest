@@ -50,6 +50,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool isFiler944 { get; set; }
 		public DepostiSchedule941 DepositSchedule { get; set; }
 
+		public DateTime? LastPayrollDate { get; set; }
+
 		public List<CompanyTaxStateResource> States { get; set; }
 		public List<CompanyTaxRateResource> CompanyTaxRates { get; set; } 
 		public List<AccumulatedPayTypeResource> AccumulatedPayTypes { get; set; }

@@ -14,6 +14,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class CompanyAccount
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public CompanyAccount()
+        {
+            this.Journals = new HashSet<Journal>();
+        }
+    
         public int Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public int Type { get; set; }
@@ -26,9 +32,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
         public System.DateTime OpeningDate { get; set; }
+        public bool UsedInPayroll { get; set; }
     
         public virtual AccountTemplate AccountTemplate { get; set; }
         public virtual BankAccount BankAccount { get; set; }
         public virtual Company Company { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Journal> Journals { get; set; }
     }
 }

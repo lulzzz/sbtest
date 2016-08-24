@@ -13,6 +13,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 			builder.RegisterType<OnlinePayrollResourceMapperProfile>().As<ProfileLazy>();
 			builder.RegisterType<OnlinePayrollModelMapperProfile>().As<ProfileLazy>();
 			builder.RegisterType<CompanyModelMapperProfile>().As<ProfileLazy>();
+			builder.RegisterType<USTaxTablesModelMapperProfile>().As<ProfileLazy>();
 		}
 	}
 }
