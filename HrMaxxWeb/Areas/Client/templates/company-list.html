@@ -1,6 +1,6 @@
 ﻿<div class="row" ng-show="mainData.selectedHost">
 	<!-- begin panel -->
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="!companyId">
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="!companyId && !mainData.userCompany">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">{{heading}}<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
@@ -21,7 +21,7 @@
 						<td data-title=" 'No' " filter="{ 'companyNo': 'text' }" sortable=" 'companyNo' " class="col-sm-2">
 							{{item.companyNo}}
 						</td>
-						<td data-title=" 'Last Payroll' "  sortable=" 'lastPayrollDate' " class="col-sm-1">
+						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
 							{{item.lastPayrollDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Status' " class="col-sm-1">
@@ -542,7 +542,7 @@
 							</form>
 						</div>
 						<div class="tab-pane fade in" id="user" ng-if="selectedCompany.id">
-							<user-list host-id="data.selectedHost.id" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="data"/>
+							<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="data"/>
 						</div>
 						<div class="tab-pane fade in" id="news" ng-if="selectedCompany.id">
 							<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data"/>

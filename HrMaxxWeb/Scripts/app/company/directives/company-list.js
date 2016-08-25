@@ -409,7 +409,13 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 					});
 					$scope.list = $scope.mainData.companies;
 					var querystring = $location.search();
-					if (querystring.name) {
+					if ($scope.mainData.userCompany !== '00000000-0000-0000-0000-000000000000') {
+						var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userCompany }, true)[0];
+						if (exists1) {
+							$scope.setCompany(exists1);
+						}
+					}
+					else if (querystring.name) {
 						var exists = $filter('filter')($scope.list, { name: querystring.name }, true)[0];
 						if (exists) {
 							$scope.setCompany(exists);

@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval',
-	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval) {
+	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter',
+	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter) {
 		$scope.alerts = [];
 
 		$scope.addAlert = function (error, type) {
@@ -33,9 +33,19 @@
 		function _init() {
 			var auth = localStorageService.get('authorizationData');
 			if (auth) {
+				var dataInput = $element.data();
+				if (dataInput.host !== '00000000-0000-0000-0000-000000000000') {
+					dataSvc.userHost = dataInput.host;
+				}
+				if (dataInput.company !== '00000000-0000-0000-0000-000000000000')
+					dataSvc.userCompany = dataInput.company;
 				hostRepository.getHostList().then(function (data) {
 					dataSvc.hosts = data;
-					if (dataSvc.hosts.length === 1) {
+					if (dataSvc.userHost) {
+						var uhost = $filter('filter')(dataSvc.hosts, { id: dataSvc.userHost })[0];
+						dataSvc.selectedHost = uhost;
+					}
+					else if (dataSvc.hosts.length === 1) {
 						dataSvc.selectedHost = dataSvc.hosts[0];
 					}
 					if (dataSvc.selectedHost) {
@@ -44,17 +54,15 @@
 				}, function (error) {
 					$scope.addAlert('error getting list of hosts', 'danger');
 				});
-				var dataInput = $element.data();
-				if (dataInput.host !== '00000000-0000-0000-0000-000000000000')
-					dataSvc.userHost = dataInput.host;
-				if (dataInput.company !== '00000000-0000-0000-0000-000000000000')
-					dataSvc.userCompany = dataInput.company;
+				
+				
 
 				dataSvc.showFilterPanel = !dataSvc.userHost || (dataSvc.userHost && !dataSvc.userCompany);
 				dataSvc.showCompanies = !dataSvc.userCompany;
 				dataSvc.isReady = true;
 			}
 		};
+		
 		$scope.getCompanies = function () {
 			companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
 				dataSvc.companies = data;

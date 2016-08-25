@@ -84,6 +84,8 @@ common.directive('userList', ['$modal', 'zionAPI', '$timeout', '$window',
 				}
 				$scope.setSelectedUser = function(item) {
 					$scope.selectedUser = angular.copy(item);
+					$scope.selectedUser.hostId = $scope.hostId;
+					$scope.selectedUser.companyId = $scope.companyId;
 				}
 				$scope.validateUser = function() {
 					if ($scope.selectedUser) {
