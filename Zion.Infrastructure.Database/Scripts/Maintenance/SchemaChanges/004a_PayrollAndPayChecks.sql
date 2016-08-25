@@ -11,6 +11,12 @@ Alter Table Employee Add LastPayrollDate DateTime;
 Go;
 Alter table CompanyAccumlatedPayType Alter Column RatePerHour decimal(18,4) not null;
 Go;
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'CompanyAccount'
+                 AND COLUMN_NAME = 'UsedInPayroll')
+Alter Table CompanyAccount Add UsedInPayroll bit not null Default 0;
+Go;
 Update AccountTemplate set TaxCode='MOE' where Id=24;
 Update AccountTemplate set TaxCode='ETT' where Id=37;
 Update AccountTemplate set TaxCode='SUI' where Id=38;
