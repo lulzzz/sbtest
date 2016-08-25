@@ -1,8 +1,15 @@
-﻿Alter Table Company Add LastPayrollDate DateTime;
-Go
+﻿IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'Company'
+                 AND COLUMN_NAME = 'LastPayrollDate')
+Alter Table Company Add LastPayrollDate DateTime;
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'Employee'
+                 AND COLUMN_NAME = 'LastPayrollDate')
 Alter Table Employee Add LastPayrollDate DateTime;
 Go;
-Alter table CompanyAccumulatedPayType Alter Column RatePerHour decimal(18,4) not null;
+Alter table CompanyAccumlatedPayType Alter Column RatePerHour decimal(18,4) not null;
 Go;
 Update AccountTemplate set TaxCode='MOE' where Id=24;
 Update AccountTemplate set TaxCode='ETT' where Id=37;

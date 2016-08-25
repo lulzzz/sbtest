@@ -1,53 +1,219 @@
-﻿SET IDENTITY_INSERT [dbo].[Tax] ON 
+﻿/****** Object:  Table [dbo].[TaxDeductionPrecedence]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TaxDeductionPrecedence]') AND type in (N'U'))
+DROP TABLE [dbo].[TaxDeductionPrecedence]
+GO
+/****** Object:  Table [dbo].[StandardDeductionTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[StandardDeductionTable]') AND type in (N'U'))
+DROP TABLE [dbo].[StandardDeductionTable]
+GO
+/****** Object:  Table [dbo].[SITTaxTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SITTaxTable]') AND type in (N'U'))
+DROP TABLE [dbo].[SITTaxTable]
+GO
+/****** Object:  Table [dbo].[SITLowIncomeTaxTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SITLowIncomeTaxTable]') AND type in (N'U'))
+DROP TABLE [dbo].[SITLowIncomeTaxTable]
+GO
+/****** Object:  Table [dbo].[FITWithholdingAllowanceTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FITWithholdingAllowanceTable]') AND type in (N'U'))
+DROP TABLE [dbo].[FITWithholdingAllowanceTable]
+GO
+/****** Object:  Table [dbo].[FITTaxTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FITTaxTable]') AND type in (N'U'))
+DROP TABLE [dbo].[FITTaxTable]
+GO
+/****** Object:  Table [dbo].[ExemptionAllowanceTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExemptionAllowanceTable]') AND type in (N'U'))
+DROP TABLE [dbo].[ExemptionAllowanceTable]
+GO
+/****** Object:  Table [dbo].[EstimatedDeductionsTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[EstimatedDeductionsTable]') AND type in (N'U'))
+DROP TABLE [dbo].[EstimatedDeductionsTable]
+GO
+/****** Object:  Table [dbo].[EstimatedDeductionsTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[EstimatedDeductionsTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[EstimatedDeductionsTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodID] [int] NULL,
+	[NoOfAllowances] [int] NULL,
+	[Amount] [money] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_EstimatedDeductionsTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Object:  Table [dbo].[ExemptionAllowanceTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ExemptionAllowanceTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[ExemptionAllowanceTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodID] [int] NULL,
+	[NoOfAllowances] [int] NULL,
+	[Amount] [money] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_ExemptionAllowanceTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Object:  Table [dbo].[FITTaxTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FITTaxTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[FITTaxTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodID] [int] NULL,
+	[FilingStatus] [varchar](50) NULL,
+	[StartRange] [float] NULL,
+	[EndRange] [float] NULL,
+	[FlatRate] [float] NULL,
+	[AdditionalPercentage] [float] NULL,
+	[ExcessOvrAmt] [float] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_FITTaxTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[FITWithholdingAllowanceTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[FITWithholdingAllowanceTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[FITWithholdingAllowanceTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodID] [int] NULL,
+	[AmtForOneWithholdingAllow] [float] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_FITWithholdingAllowanceTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+/****** Object:  Table [dbo].[SITLowIncomeTaxTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SITLowIncomeTaxTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[SITLowIncomeTaxTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodId] [int] NULL,
+	[FilingStatus] [varchar](50) NULL,
+	[Amount] [money] NULL,
+	[AmtIfExmpGrtThan2] [money] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_SITLowIncomeTaxTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[SITTaxTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SITTaxTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[SITTaxTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodID] [int] NULL,
+	[FilingStatus] [varchar](50) NULL,
+	[StartRange] [float] NULL,
+	[EndRange] [float] NULL,
+	[FlatRate] [money] NULL,
+	[AdditionalPercentage] [float] NULL,
+	[ExcessOvrAmt] [money] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_SITTaxTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[StandardDeductionTable]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[StandardDeductionTable]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[StandardDeductionTable](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[PayrollPeriodID] [int] NULL,
+	[FilingStatus] [varchar](50) NULL,
+	[Amount] [money] NULL,
+	[AmtIfExmpGrtThan1] [money] NULL,
+	[Year] [int] NULL,
+ CONSTRAINT [PK_StandardDeductionTable] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[TaxDeductionPrecedence]    Script Date: 24/08/2016 9:24:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TaxDeductionPrecedence]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[TaxDeductionPrecedence](
+	[TaxCode] [varchar](max) NOT NULL,
+	[DeductionTypeId] [int] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
 
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (1, N'FIT', N'Federal Income Tax', 1, NULL, 0, NULL, N'Employee')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (2, N'MD_Employee', N'Medicare Employee', 1, NULL, 0, NULL, N'Employee')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (3, N'MD_Employer', N'Medicare Employer', 1, NULL, 0, NULL, N'Employer')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (4, N'SS_Employee', N'Social Security Employee', 1, NULL, 0, NULL, N'Employee')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (5, N'SS_Employer', N'Social Security Employer', 1, NULL, 0, NULL, N'Employer')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (6, N'FUTA', N'Federal Unemployment Tax', 1, NULL, 0, NULL, N'Employer')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (7, N'SIT', N'State Income Tax', 1, 1, 0, NULL, N'Employee')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (8, N'SDI', N'State Disability Insurance', 1, 1, 0, NULL, N'Employee')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (9, N'ETT', N'Employee Training Tax', 1, 1, 1, CAST(0.10 AS Decimal(18, 2)), N'Employer')
-GO
-INSERT [dbo].[Tax] ([Id], [Code], [Name], [CountryId], [StateId], [IsCompanySpecific], [DefaultRate], [PaidBy]) VALUES (10, N'SUI', N'State Unemployment Insurance', 1, 1, 1, CAST(3.40 AS Decimal(18, 2)), N'Employer')
-GO
-SET IDENTITY_INSERT [dbo].[Tax] OFF
-GO
-SET IDENTITY_INSERT [dbo].[TaxYearRate] ON 
 
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (1, 1, 2016, NULL, NULL, NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (2, 2, 2016, CAST(1.45 AS Decimal(18, 2)), NULL, NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (3, 3, 2016, CAST(1.45 AS Decimal(18, 2)), NULL, NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (4, 4, 2016, CAST(6.20 AS Decimal(18, 2)), CAST(118500.00 AS Decimal(18, 2)), NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (5, 5, 2016, CAST(6.20 AS Decimal(18, 2)), CAST(118500.00 AS Decimal(18, 2)), NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (6, 6, 2016, CAST(2.40 AS Decimal(18, 2)), CAST(7000.00 AS Decimal(18, 2)), NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (7, 7, 2016, NULL, NULL, NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (8, 8, 2016, CAST(0.90 AS Decimal(18, 2)), CAST(106742.00 AS Decimal(18, 2)), NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (9, 9, 2016, CAST(0.10 AS Decimal(18, 2)), CAST(7000.00 AS Decimal(18, 2)), NULL)
-GO
-INSERT [dbo].[TaxYearRate] ([Id], [TaxId], [TaxYear], [Rate], [AnnualMaxPerEmployee], [TaxRateLimit]) VALUES (10, 10, 2016, CAST(3.40 AS Decimal(18, 2)), CAST(7000.00 AS Decimal(18, 2)), CAST(6.20 AS Decimal(18, 2)))
-GO
-SET IDENTITY_INSERT [dbo].[TaxYearRate] OFF
-GO
 SET IDENTITY_INSERT [dbo].[EstimatedDeductionsTable] ON 
 
 GO
