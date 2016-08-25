@@ -47,7 +47,7 @@ common.directive('taxYearRateList', ['$modal', 'zionAPI',
 				}
 
 				$scope.isItemValid = function (item) {
-					var matching = $filter('filter')($scope.metaData, { taxId: item.taxId, taxYear: item.taxYear })[0];
+					var matching = $filter('filter')($scope.metaData, { id: item.taxId, taxYear: item.taxYear })[0];
 					if (!item.id || !item.rate || !matching || (matching.taxRateLimit && item.rate>matching.taxRateLimit))
 						return false;
 					else

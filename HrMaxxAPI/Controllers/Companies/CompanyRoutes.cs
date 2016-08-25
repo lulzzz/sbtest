@@ -7,6 +7,7 @@
 		public const string Save = "Company/Save";
 
 		public const string SaveDeduction = "Company/Deduction";
+		public const string SaveCompanyTaxYearRate = "Company/TaxYearRate";
 		public const string SaveWorkerCompensation = "Company/WorkerCompensation";
 		public const string SaveAccumulatedPayType = "Company/AccumulatedPayType";
 		public const string SavePayCode = "Company/PayCode";

@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Company = HrMaxx.OnlinePayroll.Models.Company;
 using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
 using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
+using CompanyTaxRate = HrMaxx.OnlinePayroll.Models.CompanyTaxRate;
 using CompanyTaxState = HrMaxx.OnlinePayroll.Models.CompanyTaxState;
 using CompanyWorkerCompensation = HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation;
 using Employee = HrMaxx.OnlinePayroll.Models.Employee;
@@ -408,6 +409,25 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.LastPayrollDate = maxPayDay;
 				_dbContext.SaveChanges();
 			}
+		}
+
+		public CompanyTaxRate SaveCompanyTaxRate(CompanyTaxRate taxrate)
+		{
+			var taxyearrate = _mapper.Map<CompanyTaxRate, Models.DataModel.CompanyTaxRate>(taxrate);
+			if (taxyearrate.Id == 0)
+			{
+				_dbContext.CompanyTaxRates.Add(taxyearrate);
+			}
+			else
+			{
+				var dbtaxyearrate = _dbContext.CompanyTaxRates.FirstOrDefault(cd => cd.Id == taxyearrate.Id);
+				if (dbtaxyearrate != null)
+				{
+					dbtaxyearrate.Rate = taxyearrate.Rate;
+				}
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.CompanyTaxRate, CompanyTaxRate>(taxyearrate);
 		}
 	}
 }

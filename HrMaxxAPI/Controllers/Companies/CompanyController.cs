@@ -65,6 +65,15 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 
 		[HttpPost]
+		[Route(CompanyRoutes.SaveCompanyTaxYearRate)]
+		public CompanyTaxRateResource SaveCompanyTaxYearRate(CompanyTaxRateResource resource)
+		{
+			var mappedResource = Mapper.Map<CompanyTaxRateResource, CompanyTaxRate>(resource);
+			var taxrate = MakeServiceCall(() => _companyService.SaveCompanyTaxYearRate(mappedResource), "save company tax year rate", true);
+			return Mapper.Map<CompanyTaxRate, CompanyTaxRateResource>(taxrate);
+		}
+
+		[HttpPost]
 		[Route(CompanyRoutes.SaveWorkerCompensation)]
 		public CompanyWorkerCompensationResource SaveWorkerCompensation(CompanyWorkerCompensationResource resource)
 		{

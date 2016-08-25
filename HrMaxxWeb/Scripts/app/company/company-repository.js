@@ -73,6 +73,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveTaxYearRate: function (input) {
+				var deferred = $q.defer();
+				companyServer.all('TaxYearRate').post(input).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveAccumulatedPayType: function (input) {
 				var deferred = $q.defer();
 				companyServer.all('AccumulatedPayType').post(input).then(function (data) {

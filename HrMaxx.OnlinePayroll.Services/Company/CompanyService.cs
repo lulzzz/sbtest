@@ -278,5 +278,19 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource)
+		{
+			try
+			{
+				return _companyRepository.SaveCompanyTaxRate(mappedResource);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "tax year rate for company ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }
