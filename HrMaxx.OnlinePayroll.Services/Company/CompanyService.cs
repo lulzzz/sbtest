@@ -202,7 +202,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("getting employee list for {0}, {1}", companyId));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("getting employee list for {0}", companyId));
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
