@@ -154,7 +154,10 @@ common.directive('journalList', ['$modal', 'zionAPI', '$timeout', '$window',
 								if (exists) {
 									$scope.list.splice($scope.list.indexOf(exists), 1);
 								}
-								dataSvc.selectedAccountBalance -= check.amount;
+								var jd = $filter('filter')(data.journalDetails, { accountId: dataSvc.selectedAccount.id })[0];
+								if (jd) {
+									dataSvc.selectedAccountBalance -= (jd.isDebit ? jd.amount * -1 : jd.amount);
+								}
 								
 								$scope.list.push(data);
 								$scope.tableParams.reload();

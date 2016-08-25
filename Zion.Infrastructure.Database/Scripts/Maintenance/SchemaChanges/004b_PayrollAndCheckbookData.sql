@@ -1,4 +1,6 @@
-﻿/****** Object:  Table [dbo].[TaxDeductionPrecedence]    Script Date: 24/08/2016 9:24:15 PM ******/
+﻿Insert into EntityType(EntityTypeName) values('Vendor');
+Insert into EntityType(EntityTypeName) values('Customer');
+/****** Object:  Table [dbo].[TaxDeductionPrecedence]    Script Date: 24/08/2016 9:24:15 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[TaxDeductionPrecedence]') AND type in (N'U'))
 DROP TABLE [dbo].[TaxDeductionPrecedence]
 GO
