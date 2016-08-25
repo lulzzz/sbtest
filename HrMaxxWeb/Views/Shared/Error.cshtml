@@ -7,9 +7,9 @@
 <div class="error">
 	<div class="error-code m-b-10"><i class="fa fa-warning"></i></div>
 	<div class="error-content">
-		<div class="error-message">An error occurred while processing your request.</div>
+		<div class="error-message">@ViewBag.errorMessage</div>
 		<div class="error-desc m-b-20">
-			@ViewBag.errorMessage
+			An error occurred while processing your request.
 		</div>
 		<div>
 			<a href="@Url.Action("Index", "Home")" class="btn btn-success">Go Back to Home Page</a>
