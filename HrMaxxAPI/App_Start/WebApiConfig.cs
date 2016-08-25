@@ -28,9 +28,9 @@ namespace HrMaxxAPI
 
 						config.Filters.Add(new ValidateModelAttribute());
 
-						
-						var cors = new EnableCorsAttribute("*", "*", "*");
-						config.EnableCors();
+
+						//var cors = new EnableCorsAttribute("http://hrmaxx.azurewebsites.net/", "*", "*");
+						//config.EnableCors();
 
 						JsonMediaTypeFormatter jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
 						jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
