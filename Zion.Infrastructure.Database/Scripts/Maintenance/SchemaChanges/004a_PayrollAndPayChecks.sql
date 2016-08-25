@@ -8,15 +8,28 @@ IF NOT EXISTS(SELECT *
           WHERE  TABLE_NAME = 'Employee'
                  AND COLUMN_NAME = 'LastPayrollDate')
 Alter Table Employee Add LastPayrollDate DateTime;
-Go;
+Go
 Alter table CompanyAccumlatedPayType Alter Column RatePerHour decimal(18,4) not null;
-Go;
+Go
 IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'CompanyAccount'
                  AND COLUMN_NAME = 'UsedInPayroll')
 Alter Table CompanyAccount Add UsedInPayroll bit not null Default 0;
-Go;
+Go
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'Employee'
+                 AND COLUMN_NAME = 'WorkerCompensationId')
+Alter Table Employee Add WorkerCompensationId int;
+Go
+ALTER TABLE [dbo].[Employee]  WITH CHECK ADD  CONSTRAINT [FK_Employee_CompanyWorkerCompensation] FOREIGN KEY([WorkerCompensationId])
+REFERENCES [dbo].[CompanyWorkerCompensation] ([Id])
+GO
+
+ALTER TABLE [dbo].[Employee] CHECK CONSTRAINT [FK_Employee_CompanyWorkerCompensation]
+GO
+
 Update AccountTemplate set TaxCode='MOE' where Id=24;
 Update AccountTemplate set TaxCode='ETT' where Id=37;
 Update AccountTemplate set TaxCode='SUI' where Id=38;
