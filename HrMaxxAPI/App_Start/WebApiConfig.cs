@@ -30,7 +30,7 @@ namespace HrMaxxAPI
 
 						
 						var cors = new EnableCorsAttribute("*", "*", "*");
-						config.EnableCors(cors);
+						config.EnableCors();
 
 						JsonMediaTypeFormatter jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
 						jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
