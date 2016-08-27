@@ -4,7 +4,7 @@
 		<div class="col-sm-2 form-group">
 			<label class="control-label">Start Date <span class="text-danger">*</span></label>
 			<div class="input-group date">
-				<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.startDate" is-open="data.opened" datepicker-options="dateOptions" close-text="Close"/>
+				<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.startDate" is-open="data.opened" datepicker-options="dateOptions" close-text="Close" readonly="readonly"/>
 				<span class="input-group-addon">
 					<i class="fa fa-calendar" ng-click="open($event)"></i>
 				</span>
@@ -13,7 +13,7 @@
 		<div class="col-sm-2">
 			<label class="control-label">End Date <span class="text-danger">*</span></label>
 			<div class="input-group date">
-				<input name="enddate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.endDate" is-open="data.opened1" min-date="item.startDate" datepicker-options="dateOptions" close-text="Close"/>
+				<input name="enddate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.endDate" is-open="data.opened1" min-date="item.startDate" datepicker-options="dateOptions" close-text="Close" readonly="readonly" />
 				<span class="input-group-addon">
 					<i class="fa fa-calendar" ng-click="open1($event)" ng-if="item.startDate"></i>
 				</span>
@@ -22,7 +22,7 @@
 		<div class="col-sm-2">
 			<label class="control-label">Check Date <span class="text-danger">*</span></label>
 			<div class="input-group date">
-				<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.payDay" is-open="data.opened2" min-date="minPayDate" datepicker-options="dateOptions" close-text="Close" />
+				<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.payDay" is-open="data.opened2" min-date="minPayDate" datepicker-options="dateOptions" close-text="Close" readonly="readonly" />
 				<span class="input-group-addon">
 					<i class="fa fa-calendar" ng-click="open2($event)" ng-if="item.endDate"></i>
 				</span>
@@ -55,28 +55,29 @@
 					<div class="row" ng-if="listitem.employee.payType===2">
 						<input type="number" class="form-control" ng-model="listitem.salary" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" />
 					</div>
-					<div class="row" ng-if="listitem.employee.payType===1">
-						<div class="col-sm-12">
-							<div class="row alert-success">
-								<div class="col-sm-6">Pay Code</div>
-								<div class="col-sm-3">Hours</div>
-								<div class="col-sm-3">Overtime</div>
+					
+						<div class="row" ng-if="listitem.employee.payType===1">
+							<div class="col-sm-12">
+								<div class="row alert-success">
+									<div class="col-sm-6">Pay Code</div>
+									<div class="col-sm-3">Hours</div>
+									<div class="col-sm-3">Overtime</div>
+								</div>
+								<div class="row" ng-repeat="pc in listitem.payCodes">
+									<div class="col-sm-6">{{pc.payCode.description}}</div>
+									<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" /></div>
+									<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" /></div>
+								</div>
 							</div>
-							<div class="row" ng-repeat="pc in listitem.payCodes">
-								<div class="col-sm-6">{{pc.payCode.description}}</div>
-								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" /></div>
-								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" /></div>
-							</div>
-						</div>
 
-					</div>
-				</td>
+						</div>
+</td>
 
 				<td data-title=" 'Notes' " class="col-sm-1">
 					<input type="text" class="form-control" ng-model="listitem.memo" />
 				</td>
 				<td class="col-sm-3">
-					<button class="btn btn-sm btn-danger" ng-show="!item.id" ng-click="removePayCheck(listitem)">remove</button>
+					<button class="btn btn-sm btn-danger" ng-show="false" ng-click="removePayCheck(listitem)">remove</button>
 					<button class="btn btn-warning btn-sm" ng-click="showcomps(listitem)">Compensations</button>
 					<button class="btn btn-warning btn-sm" ng-click="showdeds(listitem)">Deducitons</button>
 				</td>

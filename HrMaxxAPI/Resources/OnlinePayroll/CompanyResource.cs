@@ -76,6 +76,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public CreditCardResource CreditCardDetails { get; set; }
 		public BankAccountResource BankDetails { get; set; }
 		public decimal InvoiceCharge { get; set; }
+		public int Method { get; set; }
 	}
 
 	public class CreditCardResource

@@ -100,6 +100,7 @@
           <Property Name="CardDetails" Type="varchar(max)" />
           <Property Name="BankDetails" Type="varchar(max)" />
           <Property Name="InvoiceRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Method" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyDeduction">
           <Key>
@@ -190,7 +191,7 @@
           <Property Name="Contact" Type="varchar(max)" Nullable="false" />
           <Property Name="Gender" Type="int" Nullable="false" />
           <Property Name="SSN" Type="varchar(max)" Nullable="false" />
-          <Property Name="BirthDate" Type="datetime" Nullable="false" />
+          <Property Name="BirthDate" Type="datetime" />
           <Property Name="HireDate" Type="datetime" Nullable="false" />
           <Property Name="Department" Type="varchar(max)" />
           <Property Name="EmployeeNo" Type="varchar(max)" />
@@ -1280,6 +1281,7 @@
           <Property Name="BankDetails" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="InvoiceRate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyContract_Company" FromRole="CompanyContract" ToRole="Company" />
+          <Property Name="Method" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyContract_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -1605,7 +1607,7 @@
           <Property Name="Contact" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Gender" Type="Int32" Nullable="false" />
           <Property Name="SSN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="BirthDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="BirthDate" Type="DateTime" Precision="3" />
           <Property Name="HireDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Department" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="EmployeeNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -1985,6 +1987,7 @@
           <EntitySetMapping Name="CompanyContracts">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyContract">
               <MappingFragment StoreEntitySet="CompanyContract">
+                <ScalarProperty Name="Method" ColumnName="Method" />
                 <ScalarProperty Name="InvoiceRate" ColumnName="InvoiceRate" />
                 <ScalarProperty Name="BankDetails" ColumnName="BankDetails" />
                 <ScalarProperty Name="CardDetails" ColumnName="CardDetails" />

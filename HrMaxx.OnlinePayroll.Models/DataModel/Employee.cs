@@ -29,7 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Contact { get; set; }
         public int Gender { get; set; }
         public string SSN { get; set; }
-        public System.DateTime BirthDate { get; set; }
+        public Nullable<System.DateTime> BirthDate { get; set; }
         public System.DateTime HireDate { get; set; }
         public string Department { get; set; }
         public string EmployeeNo { get; set; }

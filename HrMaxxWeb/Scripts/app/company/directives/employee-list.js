@@ -209,7 +209,7 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 					}
 					var validateStep1 = function () {
 						var c = $scope.selected;
-						if (!c.gender || !c.ssn || !c.birthDate || !c.hireDate || !c.statusId)
+						if (!c.gender || !c.ssn || !c.hireDate || !c.statusId)
 							return false;
 						else if (!c.contact.firstName || !c.contact.lastName || !c.contact.email)
 							return false;
@@ -223,7 +223,7 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 						var c = $scope.selected;
 						if (!c.payrollSchedule || !c.payType)
 							return false;
-						if ((c.payType === 1 && c.payCodes.length === 0) || (c.payType===2 && !c.rate))
+						if ((c.payType === 1 && (!c.rate || c.payCodes.length === 0)) || (c.payType===2 && !c.rate))
 							return false;
 						if (c.paymentMethod === 2) {
 							var b = c.bankAccount;

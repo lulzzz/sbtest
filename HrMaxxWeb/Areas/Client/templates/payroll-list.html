@@ -12,8 +12,8 @@
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':committed.id===item.id}">
-						<td data-title="' No'" class="col-sm-1">
-							{{$index+1}}
+						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
+							{{item.payDay | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Start Date' " sortable=" 'startDate' " class="col-sm-1 text-center">
 							{{item.startDate | date:'MM/dd/yyyy'}}
@@ -21,9 +21,7 @@
 						<td data-title=" 'End Date' " sortable=" 'endDate' " class="col-sm-1 text-center">
 							{{item.endDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
-							{{item.payDay | date:'MM/dd/yyyy'}}
-						</td>
+						
 						<td data-title=" 'Gross Wage' " sortable=" 'totalGrossWage' " class="col-sm-1 text-center show-red">
 							{{item.totalGrossWage | currency:'$'}}
 						</td>

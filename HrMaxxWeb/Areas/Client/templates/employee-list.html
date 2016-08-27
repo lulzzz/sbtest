@@ -124,7 +124,7 @@
 													<div class="form-group">
 														<label class="control-label">Birth Date</label>
 														<div class="input-group date">
-															<input name="birthdate" type="text" class="form-control" readonly="readonly" datepicker-popup="MM/dd/yyyy" ng-model="selected.birthDate" is-open="data.opened1" datepicker-options="dateOptions" close-text="Close"  />
+															<input name="birthdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="selected.birthDate" is-open="data.opened1" datepicker-options="dateOptions" close-text="Close" readonly="readonly"/>
 															<span class="input-group-addon">
 																<i class="fa fa-calendar" ng-click="open1($event)"></i>
 															</span>
@@ -275,7 +275,7 @@
 													</div>
 													<div class="form-group" ng-if="selected.payType===1">
 														<label for="paycodes">Pay Code(s)</label>
-														<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayCodes" events="payCodeEvents"></div>
+														<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayCodes" events="payCodeEvents" required></div>
 
 													</div>
 													<div class="row" ng-if="selected.paymentMethod===2">

@@ -87,7 +87,7 @@
 		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()">cancel</button>
 		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid">save</button>
 		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid">print</button>
-		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid">void</button>
+		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid" confirmation-needed="Are your sure you want to void this check?">void</button>
 	</div>
 	<div class="col-sm-10 col-sm-offset-1">
 		<table class="table table-header table-bordered table-condensed form-controls input-sm">

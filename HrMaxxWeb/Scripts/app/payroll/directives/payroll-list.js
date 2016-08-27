@@ -121,6 +121,28 @@ common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
 							});
 							selected.payChecks.push(paycheck);
 						});
+						if ($scope.list.length > 0) {
+							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
+							selected.startDate = moment(sorted[0].endDate).add(1, 'day');
+
+							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
+								selected.endDate = moment(selected.startDate).add(1, 'week');
+								selected.payDay = moment(sorted[0].payDay).add(1, 'week');
+							}
+							else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
+								selected.endDate = moment(selected.startDate).add(2, 'week');
+								selected.payDay = moment(sorted[0].payDay).add(2, 'week');
+							}
+							else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
+								selected.endDate = moment(selected.startDate).add(15, 'day');
+								selected.payDay = moment(sorted[0].payDay).add(15, 'day');
+							} else {
+								selected.endDate = moment(selected.startDate).add(1, 'month');
+								selected.payDay = moment(sorted[0].payDay).add(1, 'month');
+							}
+								
+
+						}
 						$scope.set(selected);
 					}
 				

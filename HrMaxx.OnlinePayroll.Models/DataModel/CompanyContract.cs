@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string CardDetails { get; set; }
         public string BankDetails { get; set; }
         public decimal InvoiceRate { get; set; }
+        public int Method { get; set; }
     
         public virtual Company Company { get; set; }
     }

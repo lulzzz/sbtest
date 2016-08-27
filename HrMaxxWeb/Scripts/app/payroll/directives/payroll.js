@@ -70,6 +70,7 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 					
 					$scope.tableData = [];
 					$scope.tableParams = new ngTableParams({
+						count: $scope.list ? $scope.list.length : 0,
 						filter: {
 							name: '',       // initial filter
 						},
@@ -104,7 +105,8 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 														orderedData;
 							params.$params.filter.paytype = filterbypaytype;
 							$scope.tableParams = params;
-							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+							//$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+							$scope.tableData = orderedData;
 
 							params.total(orderedData.length); // set total for recalc pagination
 						}

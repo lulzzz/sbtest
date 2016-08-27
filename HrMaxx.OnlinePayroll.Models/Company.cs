@@ -56,6 +56,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public BillingOptions BillingOption { get; set; }
 		public CreditCard CreditCardDetails { get; set; }
 		public decimal InvoiceCharge { get; set; }
+		public int Method { get; set; }
 	}
 
 	public class CreditCard

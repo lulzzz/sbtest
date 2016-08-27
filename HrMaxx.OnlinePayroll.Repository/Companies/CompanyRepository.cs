@@ -104,6 +104,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbContract.CardDetails = mapped.CardDetails;
 				dbContract.BillingType = mapped.BillingType;
 				dbContract.InvoiceRate = mapped.InvoiceRate;
+				dbContract.Method = mapped.Method;
 				dbContract.Type = mapped.Type;
 				
 			}

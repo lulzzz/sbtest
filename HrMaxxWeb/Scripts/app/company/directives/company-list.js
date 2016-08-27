@@ -267,8 +267,11 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 					else if(!c.federalEIN || !c.federalPin) {
 						returnVal = false;
 					}
-					else
-					{
+					else {
+						if (c.states.length === 0) {
+							returnVal = false;
+							return false;
+						}
 						$.each(c.states, function (index, state1) {
 							if (!state1.state.stateId || !state1.stateEIN || !state1.statePin) {
 								returnVal = false;
@@ -297,7 +300,7 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 						if (!b || !b.bankName || !b.accountName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
 							return false;
 					}
-					if (c.billingOption === 3 && !c.invoiceCharge)
+					if (c.billingOption === 3 && (!c.invoiceCharge || !c.method))
 						return false;
 					
 					return true;
@@ -339,6 +342,8 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 				}
 			
 				$scope.save = function () {
+					if (false === $('form[name="form-wizard"]').parsley().validate())
+						return false;
 					if ($scope.selectedCompany.contract.billingOption === 0 || $scope.selectedCompany.contract.billingOption === 3) {
 						$scope.selectedCompany.contract.creditCardDetails = null;
 						$scope.selectedCompany.contract.bankDetails = null;
