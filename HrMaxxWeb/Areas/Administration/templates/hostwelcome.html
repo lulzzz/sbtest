@@ -52,14 +52,15 @@
 			</div>
 			<div class="panel-body" style="height:400px">
 				<div class="row">
-					<div class="col-sm-8">
+					<div class="col-sm-12 table-responsive">
 						<table class="table table-profile col-sm-12">
 							<tbody>
 								<tr>
-									<td class="field col-sm-4">Contact Hours</td>
-									<td class="col-sm-8">
-										<div class="col-sm-12" ng-repeat="contacthour in data.contactHours">
-											<pre class="col-sm-12">{{contacthour.description}}: <span ng-show="contacthour.isClosed">Closed</span><span ng-show="!contacthour.isClosed">{{contacthour.from | date:'shortTime'}} - {{contacthour.to | date:'shortTime'}}</span></pre>
+									<td class="field col-sm-3">
+										<img ng-src="{{getDocumentUrl(data.contact)}}" class=" pull-right" /></td>
+									<td class="col-sm-9">
+										<div ng-repeat="contacthour in data.contactHours">
+											<pre>{{contacthour.description}}: <span ng-show="contacthour.isClosed">Closed</span><span ng-show="!contacthour.isClosed">{{contacthour.from | date:'shortTime'}} - {{contacthour.to | date:'shortTime'}}</span></pre>
 										</div>
 									</td>
 								</tr>
@@ -88,9 +89,7 @@
 							</tbody>
 						</table>
 					</div>
-					<div class="col-sm-4">
-						<img ng-src="{{getDocumentUrl(data.contact)}}" class=" pull-right" />
-					</div>
+					
 				</div>
 			</div>
 		</div>
