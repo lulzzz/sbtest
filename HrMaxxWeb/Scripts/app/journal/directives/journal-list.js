@@ -145,28 +145,30 @@ common.directive('journalList', ['$modal', 'zionAPI', '$timeout', '$window',
 						dataSvc.isBodyOpen = false;
 
 					}
-					$scope.void = function() {
-						var check = $scope.selected;
+					$scope.void = function () {
+						if ($window.confirm('Are you sure you want to mark this check Void?')) {
+							var check = $scope.selected;
 
-						if (check.transactionType > 1) {
-							journalRepository.voidCheck(check).then(function (data) {
-								var exists = $filter('filter')($scope.list, { id: data.id })[0];
-								if (exists) {
-									$scope.list.splice($scope.list.indexOf(exists), 1);
-								}
-								var jd = $filter('filter')(data.journalDetails, { accountId: dataSvc.selectedAccount.id })[0];
-								if (jd) {
-									dataSvc.selectedAccountBalance -= (jd.isDebit ? jd.amount * -1 : jd.amount);
-								}
-								
-								$scope.list.push(data);
-								$scope.tableParams.reload();
-								$scope.fillTableData($scope.tableParams);
-								$scope.addAlert('successfully voided checkbook item', 'success');
-								$scope.cancel();
-							}, function (erorr) {
-								$scope.addAlert('error making the check void', 'danger');
-							});
+							if (check.transactionType > 1) {
+								journalRepository.voidCheck(check).then(function(data) {
+									var exists = $filter('filter')($scope.list, { id: data.id })[0];
+									if (exists) {
+										$scope.list.splice($scope.list.indexOf(exists), 1);
+									}
+									var jd = $filter('filter')(data.journalDetails, { accountId: dataSvc.selectedAccount.id })[0];
+									if (jd) {
+										dataSvc.selectedAccountBalance -= (jd.isDebit ? jd.amount * -1 : jd.amount);
+									}
+
+									$scope.list.push(data);
+									$scope.tableParams.reload();
+									$scope.fillTableData($scope.tableParams);
+									$scope.addAlert('successfully voided checkbook item', 'success');
+									$scope.cancel();
+								}, function(erorr) {
+									$scope.addAlert('error making the check void', 'danger');
+								});
+							}
 						}
 					}
 					$scope.save = function () {

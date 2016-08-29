@@ -179,6 +179,10 @@ common.directive('depositTicket', ['$modal', 'zionAPI',
 						$scope.$parent.$parent.save();
 					}
 
+					$scope.void = function () {
+						$scope.$parent.$parent.void();
+					}
+
 					var init = function () {
 						
 						

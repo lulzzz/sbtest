@@ -115,8 +115,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					r =>
 						r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
 						(int) r.FilingStatus == (int) payCheck.Employee.FederalStatus
-						&& r.RangeStart<= withholdingAllowance
-						&& r.RangeEnd>=withholdingAllowance);
+						&& r.RangeStart<= (withholdingAllowance<0? 0 : withholdingAllowance)
+						&& r.RangeEnd >= (withholdingAllowance < 0 ? 0 : withholdingAllowance));
 
 			var taxAmount = (decimal)0;
 			if (payCheck.Employee.FederalExemptions == 10)
@@ -130,11 +130,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 			return new PayrollTax
 			{
-				Amount = Math.Round(taxAmount,2),
-				TaxableWage = Math.Round(taxableWage, 2),
+				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
-				YTDTax = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount) + taxAmount, 2),
-				YTDWage = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage) + taxableWage, 2)
+				YTDTax = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount) + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
 		private PayrollTax GetMDEE(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
@@ -148,8 +148,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					Amount = 0,
 					TaxableWage = 0,
 					Tax = Mapper.Map<TaxByYear, Tax>(tax),
-					YTDTax = Math.Round(ytdTax, 2),
-					YTDWage = Math.Round(ytdWage, 2)
+					YTDTax = Math.Round(ytdTax, 2, MidpointRounding.AwayFromZero),
+					YTDWage = Math.Round(ytdWage, 2, MidpointRounding.AwayFromZero)
 				};
 			}
 			var taxRate = tax.Rate;
@@ -170,11 +170,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			var taxAmount = taxableWage*taxRate.Value/100 + special9PercentTax;
 			return new PayrollTax
 			{
-				Amount = Math.Round(taxAmount, 2),
-				TaxableWage = Math.Round(taxableWage, 2),
+				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
-				YTDTax = Math.Round(ytdTax + taxAmount, 2),
-				YTDWage = Math.Round(ytdWage + taxableWage, 2)
+				YTDTax = Math.Round(ytdTax + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(ytdWage + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
 		
@@ -189,8 +189,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					Amount = 0,
 					TaxableWage = 0,
 					Tax = Mapper.Map<TaxByYear, Tax>(tax),
-					YTDTax = Math.Round(ytdTax, 2),
-					YTDWage = Math.Round(ytdWage, 2)
+					YTDTax = Math.Round(ytdTax, 2, MidpointRounding.AwayFromZero),
+					YTDWage = Math.Round(ytdWage, 2, MidpointRounding.AwayFromZero)
 				};
 			}
 
@@ -214,11 +214,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			taxAmount = taxableWage * taxRate / 100;
 			return new PayrollTax
 			{
-				Amount = Math.Round(taxAmount, 2),
-				TaxableWage = Math.Round(taxableWage, 2),
+				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
-				YTDTax = Math.Round(ytdTax + taxAmount, 2),
-				YTDWage = Math.Round(ytdWage + taxableWage, 2)
+				YTDTax = Math.Round(ytdTax + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(ytdWage + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
 
@@ -289,11 +289,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			
 			return new PayrollTax
 			{
-				Amount = Math.Round(taxAmount, 2),
-				TaxableWage = Math.Round(taxableWage, 2),
+				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
-				YTDTax = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount) + taxAmount, 2),
-				YTDWage =Math.Round( employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage) + taxableWage, 2)
+				YTDTax = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount) + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
 
@@ -302,7 +302,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		private decimal GetTaxExemptedDeductionAmount(Company company, PayCheck payCheck, decimal grossWage,
 			List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
 		{
-			return Math.Round(payCheck.Deductions.Where(d => TaxTables.TaxDeductionPrecendences.Any(tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(tax.Tax.Code))).Sum(ded => ded.Amount), 2);
+			return Math.Round(payCheck.Deductions.Where(d => TaxTables.TaxDeductionPrecendences.Any(tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(tax.Tax.Code))).Sum(ded => ded.Amount), 2, MidpointRounding.AwayFromZero);
 		}
 	}
 }

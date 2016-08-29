@@ -144,6 +144,35 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 						else
 							return false;
 					}
+					$scope.isPayrollInvalid = function () {
+						var returnVal = false;
+						$.each($scope.item.payChecks, function (index1, paycheck) {
+							if ($scope.isPayCheckInvalid(paycheck)) {
+								returnVal = true;
+								return returnVal;
+							}
+						});
+						return returnVal;
+					}
+					$scope.isPayCheckInvalid = function(pc) {
+						var returnVal = false;
+						var salary = pc.salary;
+						var payCodeSum = 0;
+						var comps = 0;
+						$.each(pc.payCodes, function (index1, paycode) {
+							payCodeSum += (paycode.hours + paycode.overtimeHours);
+						});
+						$.each(pc.compensations, function (index1, comp) {
+							comps += comp.amount;
+						});
+						var gross = salary + payCodeSum + comps;
+						if (!gross || gross <= 0)
+							returnVal = true;
+						else {
+							returnVal = false;
+						}
+						return returnVal;
+					}
 					$scope.showcomps = function(listitem) {
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps.html',
@@ -196,9 +225,11 @@ common.controller('updateCompsCtrl', function ($scope, $modalInstance, $filter, 
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.paytypes = paytypes;
 	$scope.newPayTypes = [];
-	$scope.remove = function(index) {
+	$scope.changesMade = false;
+	$scope.remove = function (index) {
 		$scope.paycheck.compensations.splice(index, 1);
 		markUsed();
+		$scope.changesMade = true;
 	}
 	$scope.cancel = function () {
 		$modalInstance.close($scope);
@@ -224,6 +255,7 @@ common.controller('updateCompsCtrl', function ($scope, $modalInstance, $filter, 
 			payType: null,
 			amount: 0
 		});
+		$scope.changesMade = true;
 	}
 	$scope.availablePayTypes = function () {
 		return $filter('filter')($scope.paytypes, { used: 0 });

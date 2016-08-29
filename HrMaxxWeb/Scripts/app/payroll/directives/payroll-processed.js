@@ -35,7 +35,7 @@ common.directive('payrollProcessed', ['$modal', 'zionAPI', '$timeout', '$window'
 						
 						$scope.datasvc.isBodyOpen = true;
 					}
-
+					
 					$scope.save = function () {
 						payrollRepository.commitPayroll($scope.item).then(function (data) {
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
@@ -45,11 +45,13 @@ common.directive('payrollProcessed', ['$modal', 'zionAPI', '$timeout', '$window'
 					}
 
 					$scope.voidcheck = function (listitem) {
+						if($window.confirm('Are you sure you want to mark this check Void?')){
 						payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function (data) {
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
 						}, function (error) {
 							addAlert('error voiding pay check', 'danger');
 						});
+						}
 					}
 					$scope.viewcheck = function(listitem) {
 						var modalInstance = $modal.open({

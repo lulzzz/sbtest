@@ -41,7 +41,7 @@
 	</div>
 	<div class="col-sm-12" ng-if="showList()">
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/pager">
-			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer">
+			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'danger': isPayCheckInvalid(listitem)}">
 				<td data-title="'No'" filter="{ 'employeeNo': 'text' }" sortable=" 'employeeNo' " class="col-sm-1">
 					{{listitem.employeeNo}}
 				</td>
@@ -53,25 +53,25 @@
 				</td>
 				<td data-title=" 'Wages' " filter="{ 'paytype': 'paytype' }" class="col-sm-2">
 					<div class="row" ng-if="listitem.employee.payType===2">
-						<input type="number" class="form-control" ng-model="listitem.salary" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" />
+						<input type="number" class="form-control" ng-model="listitem.salary" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" />
 					</div>
-					
-						<div class="row" ng-if="listitem.employee.payType===1">
-							<div class="col-sm-12">
-								<div class="row alert-success">
-									<div class="col-sm-6">Pay Code</div>
-									<div class="col-sm-3">Hours</div>
-									<div class="col-sm-3">Overtime</div>
-								</div>
-								<div class="row" ng-repeat="pc in listitem.payCodes">
-									<div class="col-sm-6">{{pc.payCode.description}}</div>
-									<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" /></div>
-									<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[1-9][0-9]*$/" data-parsley-type="number" /></div>
-								</div>
-							</div>
 
+					<div class="row" ng-if="listitem.employee.payType===1">
+						<div class="col-sm-12">
+							<div class="row alert-success">
+								<div class="col-sm-6">Pay Code</div>
+								<div class="col-sm-3">Hours</div>
+								<div class="col-sm-3">Overtime</div>
+							</div>
+							<div class="row" ng-repeat="pc in listitem.payCodes">
+								<div class="col-sm-6">{{pc.payCode.description}}</div>
+								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" /></div>
+								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" /></div>
+							</div>
 						</div>
-</td>
+
+					</div>
+				</td>
 
 				<td data-title=" 'Notes' " class="col-sm-1">
 					<input type="text" class="form-control" ng-model="listitem.memo" />
@@ -88,7 +88,7 @@
 
 	</div>
 	<div class="col-sm-12">
-		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()">process</button>
+		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()">process</button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()">cancel</button>
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">
@@ -138,7 +138,7 @@
 				</form>
 			</div>
 		<div class="modal-footer">
-			<div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0">
+			<div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
 				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()">cancel</button>
 				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()">save</button>
 			</div>

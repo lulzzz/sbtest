@@ -22,11 +22,11 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal TotalGrossWage
 		{
-			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2); }
+			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal TotalNetWage
 		{
-			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage), 2); }
+			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage), 2, MidpointRounding.AwayFromZero); }
 		}
 	}
 
@@ -63,58 +63,58 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal EmployeeTaxes
 		{
-			get { return Math.Round( Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.Amount), 2); }
+			get { return Math.Round(Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal EmployerTaxes
 		{
-			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.Amount), 2); }
+			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal EmployeeTaxesYTD
 		{
-			get { return Math.Round(Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.YTDTax), 2); }
+			get { return Math.Round(Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.YTDTax), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal EmployerTaxesYTD
 		{
-			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.YTDTax), 2); }
+			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.YTDTax), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal DeductionAmount
 		{
-			get { return Math.Round(Deductions.Sum(d => d.Amount), 2); }
+			get { return Math.Round(Deductions.Sum(d => d.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal DeductionYTD
 		{
-			get { return Math.Round(Deductions.Sum(d => d.YTD), 2); }
+			get { return Math.Round(Deductions.Sum(d => d.YTD), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal CompensationTaxableAmount
 		{
-			get { return Math.Round(Compensations.Where(c => c.PayType.IsTaxable).Sum(c => c.Amount), 2); }
+			get { return Math.Round(Compensations.Where(c => c.PayType.IsTaxable).Sum(c => c.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal CompensationTaxableYTD
 		{
-			get { return Math.Round(Compensations.Where(c => c.PayType.IsTaxable).Sum(c => c.YTD), 2); }
+			get { return Math.Round(Compensations.Where(c => c.PayType.IsTaxable).Sum(c => c.YTD), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal CompensationNonTaxableAmount
 		{
-			get { return Math.Round(Compensations.Where(c => !c.PayType.IsTaxable).Sum(c => c.Amount), 2); }
+			get { return Math.Round(Compensations.Where(c => !c.PayType.IsTaxable).Sum(c => c.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal CompensationNonTaxableYTD
 		{
-			get { return Math.Round(Compensations.Where(c => !c.PayType.IsTaxable).Sum(c => c.YTD), 2); }
+			get { return Math.Round(Compensations.Where(c => !c.PayType.IsTaxable).Sum(c => c.YTD), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public decimal CalculatedSalary
 		{
-			get { return Employee.PayType == EmployeeType.Salary ? Salary : Math.Round(PayCodes.Sum(pc => pc.Amount + pc.OvertimeAmount), 2); }
+			get { return Employee.PayType == EmployeeType.Salary ? Salary : Math.Round(PayCodes.Sum(pc => pc.Amount + pc.OvertimeAmount), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal CalculatedSalaryYTD
 		{
-			get { return Employee.PayType == EmployeeType.Salary ? YTDSalary : Math.Round(PayCodes.Sum(pc => pc.YTD + pc.YTDOvertime), 2); }
+			get { return Employee.PayType == EmployeeType.Salary ? YTDSalary : Math.Round(PayCodes.Sum(pc => pc.YTD + pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); }
 		}
 
 		public void AddToYTD(PayCheck paycheck)
@@ -129,10 +129,10 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			else
 			{
-				YTDSalary = Math.Round(YTDSalary + paycheck.Salary, 2);
+				YTDSalary = Math.Round(YTDSalary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 			}
-			YTDGrossWage = Math.Round(YTDGrossWage + paycheck.GrossWage, 2);
-			YTDNetWage = Math.Round(YTDNetWage + paycheck.NetWage);
+			YTDGrossWage = Math.Round(YTDGrossWage + paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
+			YTDNetWage = Math.Round(YTDNetWage + paycheck.NetWage, 2, MidpointRounding.AwayFromZero);
 		}
 
 		private void AddToLeavedAccumulation(IEnumerable<PayTypeAccumulation> accumulations)
@@ -144,12 +144,12 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					if (apt1.FiscalStart == apt.FiscalStart)
 					{
-						apt.YTDFiscal = Math.Round(apt.YTDFiscal + apt1.AccumulatedValue, 2);
-						apt.YTDUsed = Math.Round(apt.YTDUsed + apt1.Used, 2);
+						apt.YTDFiscal = Math.Round(apt.YTDFiscal + apt1.AccumulatedValue, 2, MidpointRounding.AwayFromZero);
+						apt.YTDUsed = Math.Round(apt.YTDUsed + apt1.Used, 2, MidpointRounding.AwayFromZero);
 					}
 					else
 					{
-						apt.CarryOver = Math.Round(apt.CarryOver + (apt1.AccumulatedValue-apt1.Used),2);
+						apt.CarryOver = Math.Round(apt.CarryOver + (apt1.AccumulatedValue - apt1.Used), 2, MidpointRounding.AwayFromZero);
 					}
 				}
 			});
@@ -162,8 +162,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var pc1 = payCodes.FirstOrDefault(paycode => paycode.PayCode.Id==pc.PayCode.Id);
 				if (pc1 != null)
 				{
-					pc.YTD = Math.Round(pc.YTD + pc1.Amount, 2);
-					pc.YTDOvertime = Math.Round(pc.YTDOvertime + pc1.OvertimeAmount, 2);
+					pc.YTD = Math.Round(pc.YTD + pc1.Amount, 2, MidpointRounding.AwayFromZero);
+					pc.YTDOvertime = Math.Round(pc.YTDOvertime + pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -175,7 +175,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
 				if (c1 != null)
 				{
-					c.YTD = Math.Round(c.YTD + c1.Amount, 2);
+					c.YTD = Math.Round(c.YTD + c1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -187,7 +187,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
 				{
-					d.YTD = Math.Round(d.YTD + d1.Amount, 2);
+					d.YTD = Math.Round(d.YTD + d1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -199,8 +199,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t.YTDWage = Math.Round(t.YTDWage + t1.TaxableWage, 2);
-					t.YTDTax = Math.Round(t.YTDTax + t1.Amount, 2);
+					t.YTDWage = Math.Round(t.YTDWage + t1.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t.YTDTax = Math.Round(t.YTDTax + t1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -217,10 +217,10 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			else
 			{
-				YTDSalary = Math.Round(YTDSalary - paycheck.Salary, 2);
+				YTDSalary = Math.Round(YTDSalary - paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 			}
-			YTDGrossWage = Math.Round(YTDGrossWage - paycheck.GrossWage, 2);
-			YTDNetWage = Math.Round(YTDNetWage - paycheck.NetWage);
+			YTDGrossWage = Math.Round(YTDGrossWage - paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
+			YTDNetWage = Math.Round(YTDNetWage - paycheck.NetWage, 2, MidpointRounding.AwayFromZero);
 		}
 
 		private void SubtractFromYTDAccumulations(IEnumerable<PayTypeAccumulation> accumulations)
@@ -232,12 +232,12 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					if (apt1.FiscalStart == apt.FiscalStart)
 					{
-						apt.YTDFiscal = Math.Round(apt.YTDFiscal - apt1.AccumulatedValue, 2);
-						apt.YTDUsed = Math.Round(apt.YTDUsed - apt1.Used, 2);
+						apt.YTDFiscal = Math.Round(apt.YTDFiscal - apt1.AccumulatedValue, 2, MidpointRounding.AwayFromZero);
+						apt.YTDUsed = Math.Round(apt.YTDUsed - apt1.Used, 2, MidpointRounding.AwayFromZero);
 					}
 					else
 					{
-						apt.CarryOver = Math.Round(apt.CarryOver - (apt1.AccumulatedValue - apt1.Used), 2);
+						apt.CarryOver = Math.Round(apt.CarryOver - (apt1.AccumulatedValue - apt1.Used), 2, MidpointRounding.AwayFromZero);
 					}
 				}
 			});
@@ -250,8 +250,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var pc1 = payCodes.FirstOrDefault(paycode => paycode.PayCode.Id == pc.PayCode.Id);
 				if (pc1 != null)
 				{
-					pc.YTD = Math.Round(pc.YTD - pc1.Amount, 2);
-					pc.YTDOvertime = Math.Round(pc.YTDOvertime - pc1.OvertimeAmount);
+					pc.YTD = Math.Round(pc.YTD - pc1.Amount, 2, MidpointRounding.AwayFromZero);
+					pc.YTDOvertime = Math.Round(pc.YTDOvertime - pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -263,7 +263,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
 				if (c1 != null)
 				{
-					c.YTD = Math.Round(c.YTD - c1.Amount, 2);
+					c.YTD = Math.Round(c.YTD - c1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -275,7 +275,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
 				{
-					d.YTD = Math.Round(d.YTD - d1.Amount,2 );
+					d.YTD = Math.Round(d.YTD - d1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -287,8 +287,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t.YTDWage = Math.Round(t.YTDWage - t1.TaxableWage, 2);
-					t.YTDTax = Math.Round(t.YTDTax - t1.Amount, 2);
+					t.YTDWage = Math.Round(t.YTDWage - t1.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t.YTDTax = Math.Round(t.YTDTax - t1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}

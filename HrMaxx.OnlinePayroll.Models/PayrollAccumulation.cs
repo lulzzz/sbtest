@@ -30,9 +30,9 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void Add(PayrollAccumulation add)
 		{
-			Salary += Math.Round(add.Salary, 2);
-			GrossWage += Math.Round(add.GrossWage, 2);
-			NetWage += Math.Round(add.NetWage, 2);
+			Salary += Math.Round(add.Salary, 2, MidpointRounding.AwayFromZero);
+			GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
+			NetWage += Math.Round(add.NetWage, 2, MidpointRounding.AwayFromZero);
 
 			AddCompensations(add.Compensations);
 			AddDeductions(add.Deductions);
@@ -41,9 +41,9 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void Remove(PayrollAccumulation remove)
 		{
-			Salary -= Math.Round(remove.Salary, 2);
-			GrossWage -= Math.Round(remove.GrossWage, 2);
-			NetWage -= Math.Round(remove.NetWage, 2);
+			Salary -= Math.Round(remove.Salary, 2, MidpointRounding.AwayFromZero);
+			GrossWage -= Math.Round(remove.GrossWage, 2, MidpointRounding.AwayFromZero);
+			NetWage -= Math.Round(remove.NetWage, 2, MidpointRounding.AwayFromZero);
 
 			RemoveCompensations(remove.Compensations);
 			RemoveDeductions(remove.Deductions);
@@ -54,9 +54,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			if (PayCheckIds.All(pci => pci != add.Id))
 			{
-				Salary += Math.Round(add.Salary, 2);
-				GrossWage += Math.Round(add.GrossWage, 2);
-				NetWage += Math.Round(NetWage, 2);
+				Salary += Math.Round(add.Salary, 2, MidpointRounding.AwayFromZero);
+				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
+				NetWage += Math.Round(NetWage, 2, MidpointRounding.AwayFromZero);
 
 				AddCompensations(add.Compensations);
 				AddDeductions(add.Deductions);
@@ -69,9 +69,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			if (PayCheckIds.Any(pci => pci == add.Id))
 			{
-				Salary -= Math.Round(add.Salary, 2);
-				GrossWage -= Math.Round(add.GrossWage, 2);
-				NetWage -= Math.Round(NetWage, 2);
+				Salary -= Math.Round(add.Salary, 2, MidpointRounding.AwayFromZero);
+				GrossWage -= Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
+				NetWage -= Math.Round(NetWage, 2, MidpointRounding.AwayFromZero);
 
 				RemoveCompensations(add.Compensations);
 				RemoveDeductions(add.Deductions);
@@ -94,7 +94,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
 				if (c1 != null)
 				{
-					c.Amount += Math.Round(c1.Amount, 2);
+					c.Amount += Math.Round(c1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			var missingList = comps.Where(c => !Compensations.Any(comp => comp.PayType.Id == c.PayType.Id));
@@ -108,7 +108,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
 				{
-					d.Amount += Math.Round(d1.Amount, 2);
+					d.Amount += Math.Round(d1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			var missingList = deds.Where(d => !Deductions.Any(ded => ded.Deduction.Id == d.Deduction.Id));
@@ -122,8 +122,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t.TaxableWage += Math.Round(t.TaxableWage, 2);
-					t.Amount += Math.Round(t1.Amount, 2);
+					t.TaxableWage += Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t.Amount += Math.Round(t1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			var missingList = taxes.Where(d => !Taxes.Any(tax => tax.Tax.Id ==d.Tax.Id));
@@ -137,7 +137,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
 				if (c1 != null)
 				{
-					c.Amount -= Math.Round(c1.Amount, 2);
+					c.Amount -= Math.Round(c1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
@@ -149,7 +149,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
 				{
-					d.Amount -= Math.Round(d1.Amount, 2);
+					d.Amount -= Math.Round(d1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			
@@ -162,8 +162,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t.TaxableWage -= Math.Round(t.TaxableWage, 2);
-					t.Amount -= Math.Round(t1.Amount, 2);
+					t.TaxableWage -= Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t.Amount -= Math.Round(t1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			

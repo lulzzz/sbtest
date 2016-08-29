@@ -24,7 +24,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.RangeEnd, opt => opt.MapFrom(src => src.EndRange))
 				.ForMember(dest => dest.ExcessOverAmoutt, opt => opt.MapFrom(src => src.ExcessOvrAmt))
 				.ForMember(dest => dest.FilingStatus,
-					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<USFederalFilingStatus>(src.FilingStatus)));
+					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<USFederalFilingStatus>(src.FilingStatus.Trim())));
 
 			CreateMap<Models.DataModel.FITWithholdingAllowanceTable, FITWithholdingAllowanceTableRow>()
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
@@ -36,19 +36,19 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.RangeEnd, opt => opt.MapFrom(src => src.EndRange))
 				.ForMember(dest => dest.ExcessOverAmoutt, opt => opt.MapFrom(src => src.ExcessOvrAmt))
 				.ForMember(dest => dest.FilingStatus,
-					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<CAStateFilingStatus>(src.FilingStatus)));
+					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<CAStateFilingStatus>(src.FilingStatus.Trim())));
 
 			CreateMap<Models.DataModel.SITLowIncomeTaxTable, CASITLowIncomeTaxTableRow>()
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodId))
 				.ForMember(dest => dest.AmountIfExemptGreaterThan2, opt => opt.MapFrom(src => src.AmtIfExmpGrtThan2))
 				.ForMember(dest => dest.FilingStatus,
-					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<CAStateLowIncomeFilingStatus>(src.FilingStatus)));
+					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<CAStateLowIncomeFilingStatus>(src.FilingStatus.Trim())));
 
 			CreateMap<Models.DataModel.StandardDeductionTable, CAStandardDeductionTableRow>()
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
 				.ForMember(dest => dest.AmountIfExemptGreaterThan1, opt => opt.MapFrom(src => src.AmtIfExmpGrtThan1))
 				.ForMember(dest => dest.FilingStatus,
-					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<CAStateLowIncomeFilingStatus>(src.FilingStatus)));
+					opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<CAStateLowIncomeFilingStatus>(src.FilingStatus.Trim())));
 
 			CreateMap<Models.DataModel.EstimatedDeductionsTable, EstimatedDeductionTableRow>()
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))

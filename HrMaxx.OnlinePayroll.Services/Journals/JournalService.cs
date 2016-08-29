@@ -90,7 +90,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				return new JournalList
 				{
 					Account = coa,
-					AccountBalance = Math.Round(openingBalance + credits - debits, 2),
+					AccountBalance = Math.Round(openingBalance + credits - debits, 2, MidpointRounding.AwayFromZero),
 					Journals = journals
 				};
 			}
@@ -123,7 +123,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					}
 					var credits = coa.Journals.Where(j => !j.IsVoid && !j.IsDebit).Sum(j => j.Amount);
 					var debits = coa.Journals.Where(j => !j.IsVoid && j.IsDebit).Sum(j => j.Amount);
-					coa.AccountBalance = Math.Round(openingBalance + credits - debits, 2);
+					coa.AccountBalance = Math.Round(openingBalance + credits - debits, 2, MidpointRounding.AwayFromZero);
 				});
 				return coas;
 			}

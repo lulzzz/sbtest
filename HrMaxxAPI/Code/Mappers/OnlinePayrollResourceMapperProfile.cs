@@ -178,10 +178,10 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<Journal, JournalResource>();
 			CreateMap<JournalResource, Journal>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : 0))
-				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2)));
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2, MidpointRounding.AwayFromZero)));
 			CreateMap<JournalDetail, JournalDetailResource>();
 			CreateMap<JournalDetailResource, JournalDetail>()
-				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2)));
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2, MidpointRounding.AwayFromZero)));
 
 			CreateMap<JournalList, JournalListResource>();
 		}
