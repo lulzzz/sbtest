@@ -66,15 +66,15 @@
 			<div class="panel-heading">
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right">
-					<li class="active"><a href="\#info" data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="\#user" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="\#news" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="\#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">Documents</span></a></li>
-					<li ng-show="selectedCompany.id"><a href="\#contacts" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Contacts</span></a></li>
+					<li class="active"><a data-target="#info" data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
+					<li ng-show="selectedCompany.id"><a data-target="#user" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
+					<li ng-show="selectedCompany.id"><a data-target="#news" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
+					<li ng-show="selectedCompany.id"><a data-target="#documents" data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">Documents</span></a></li>
+					<li ng-show="selectedCompany.id"><a data-target="#contacts" data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Contacts</span></a></li>
 
 				</ul>
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" href="/#collapseOne">
+					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
 
 						{{selectedCompany.name}} Details
 					</a>
@@ -569,7 +569,7 @@
 		<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseTwo">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
 						<i class="fa fa-plus-circle pull-right"></i>Deductions
 					</a>
 				</h3>
@@ -584,7 +584,7 @@
 		<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseThree">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Workers Compensation
 					</a>
@@ -599,7 +599,7 @@
 		<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseFour">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Company Taxes
 					</a>
@@ -614,7 +614,7 @@
 		<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseFive">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFive">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Accumulated Pay Types
 					</a>
@@ -629,7 +629,7 @@
 		<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" href="\#collapseSix">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSix">
 						<i class="fa fa-plus-circle pull-right"></i>
 						Pay Codes
 					</a>
