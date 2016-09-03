@@ -115,13 +115,16 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.Ignore())
 				.ForMember(dest => dest.StartingCheckNumber, opt => opt.MapFrom(src => src.StartingCheckNumber))
 				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+				.ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.InvoiceId))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 			CreateMap<Models.Payroll, Models.DataModel.Payroll>()
 				.ForMember(dest => dest.PayrollPayChecks, opt => opt.MapFrom(src=>src.PayChecks))
 				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.Company.Id))
 				.ForMember(dest => dest.Company, opt => opt.MapFrom(src =>JsonConvert.SerializeObject(src.Company)))
-				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src=>src.UserName));
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src=>src.UserName))
+				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
+				.ForMember(dest => dest.Invoice, opt => opt.Ignore());
 
 			CreateMap<Models.PayCheck, Models.DataModel.PayrollPayCheck>()
 				.ForMember(dest => dest.PayrollId, opt => opt.Ignore())
@@ -155,6 +158,19 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.CompanyPayrollCube, Models.DataModel.CompanyPayrollCube>()
 				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Accumulation)));
+
+			CreateMap<Models.Invoice, Models.DataModel.Invoice>()
+				.ForMember(dest => dest.Payrolls, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src=>src.UserName))
+				.ForMember(dest => dest.LineItems, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.LineItems)))
+				.ForMember(dest => dest.Payments, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Payments)));
+
+			CreateMap<Models.DataModel.Invoice, Models.Invoice>()
+				.ForMember(dest => dest.PayrollIds, opt => opt.MapFrom(src=>src.Payrolls.Select(p=>p.Id).ToList()))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.LineItems, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<InvoiceLineItem>>(src.LineItems)))
+				.ForMember(dest => dest.Payments, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<InvoicePayment>>(src.Payments))); 
 		}
 	}
 }

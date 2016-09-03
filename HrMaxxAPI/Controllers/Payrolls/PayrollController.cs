@@ -68,6 +68,48 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var check = MakeServiceCall(() => _payrollService.GetPayCheck(checkId), string.Format("get paycheck with id={0}", checkId));
 			return Mapper.Map<PayCheck, PayCheckResource>(check);
 		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.Invoices)]
+		public List<InvoiceResource> GetCompanyInvoices(Guid companyId)
+		{
+			var invoices = MakeServiceCall(() => _payrollService.GetCompanyInvoices(companyId), string.Format("get invoices for company with id={0}", companyId));
+			return Mapper.Map<List<Invoice>, List<InvoiceResource>>(invoices);
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.SaveInvoice)]
+		public InvoiceResource SaveInvoice(InvoiceResource resource)
+		{
+			resource.Payments.ForEach(p =>
+			{
+				if (p.HasChanged)
+				{
+					p.LastModified = DateTime.Now;
+					p.LastModifiedBy = CurrentUser.FullName;
+				}
+				
+			});
+			var mappedResource = Mapper.Map<InvoiceResource, Invoice>(resource);
+			
+			var processed = MakeServiceCall(() => _payrollService.SaveInvoice(mappedResource), string.Format("save invoice for company={0}", resource.CompanyId));
+			return Mapper.Map<Invoice, InvoiceResource>(processed);
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.GetInvoice)]
+		public InvoiceResource GetInvoice(Guid invoiceId)
+		{
+			var invoices = MakeServiceCall(() => _payrollService.GetInvoiceById(invoiceId), string.Format("get invoice with id={0}", invoiceId));
+			return Mapper.Map<Invoice, InvoiceResource>(invoices);
+		}
+		[HttpGet]
+		[Route(PayrollRoutes.GetInvoicePayroll)]
+		public List<PayrollResource> GetInvoicePayroll(Guid invoiceId)
+		{
+			var payrolls = MakeServiceCall(() => _payrollService.GetInvoicePayrolls(invoiceId), string.Format("get payrolls for invoice with id={0}", invoiceId));
+			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
+		}
 	}
 
 

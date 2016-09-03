@@ -301,4 +301,47 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Quarterly=2,
 		Monthly=3
 	}
+
+	public enum InvoiceStatus
+	{
+		[HrMaxxSecurity(DbName = "Draft")]
+		Draft=1,
+		[HrMaxxSecurity(DbName = "Submitted")]
+		Submitted=2,
+		[HrMaxxSecurity(DbName = "Delivered")]
+		Delivered = 3,
+		[HrMaxxSecurity(DbName = "Paid")]
+		Paid=4,
+		[HrMaxxSecurity(DbName = "On Hold")]
+		OnHold=5,
+		[HrMaxxSecurity(DbName = "Payment Bounced")]
+		PaymentBounced = 6,
+		[HrMaxxSecurity(DbName = "Partially Paid")]
+		PartialPayment = 7
+		
+	}
+
+	public enum PaymentStatus
+	{
+		[HrMaxxSecurity(DbName = "Draft")]
+		Draft = 1,
+		[HrMaxxSecurity(DbName = "Submitted")]
+		Submitted = 2,
+		[HrMaxxSecurity(DbName = "Paid")]
+		Paid = 3,
+		[HrMaxxSecurity(DbName = "Payment Bounced")]
+		PaymentBounced = 4
+	}
+
+	public enum RiskLevel
+	{
+		[HrMaxxSecurity(DbName = "Low")]
+		Low=1,
+		[HrMaxxSecurity(DbName = "Medium")]
+		Medium=2,
+		[HrMaxxSecurity(DbName = "High")]
+		High=3,
+		[HrMaxxSecurity(DbName = "Critical")]
+		Critical=4
+	}
 }

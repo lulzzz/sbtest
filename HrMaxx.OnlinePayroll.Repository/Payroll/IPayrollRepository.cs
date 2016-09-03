@@ -16,5 +16,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		PayCheck VoidPayCheck(PayCheck paycheck, string name);
 		Models.Payroll GetPayrollById(Guid payrollId);
 		PayCheck GetPayCheckById(int payCheckId);
+		List<Invoice> GetCompanyInvoices(Guid companyId);
+		Invoice SaveInvoice(Invoice invoice);
+		Invoice GetInvoiceById(Guid invoiceId);
+		List<Models.Payroll> GetInvoicePayrolls(Guid invoiceId);
+		void SetPayrollInvoiceId(Invoice savedInvoice);
 	}
 }

@@ -1,0 +1,104 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="row" ng-if="mainData.selectedCompany && !showInvoices()">
+		
+		<pre class="alert alert-danger" >This company is not set up for invoices</pre>
+		
+	</div>
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="showInvoices()">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Invoice List<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div ng-show="list.length===0 && !selected" class="table table-bordered">
+				No invoices found
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'danger':item.riskLevel===4, 'warning':item.riskLevel===3, 'info':item.riskLevel===2}">
+						<td data-title=" 'Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+							{{item.invoiceDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Due Date' " sortable=" 'dueDate' " class="col-sm-1 text-center">
+							{{item.dueDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Payroll(s) Value' " sortable=" 'invoiceValue' " class="col-sm-1 text-center show-red">
+							{{item.invoiceValue | currency:'$'}}
+						</td>
+						
+						<td data-title=" 'Line Item(s)' " sortable=" 'totalGrossWage' " class="col-sm-1 text-center show-red">
+							{{item.lineItemTotal | currency:'$'}}
+						</td>
+						<td data-title=" 'Paid' " sortable=" 'paidAmount' " class="col-sm-1 text-center show-red">
+							{{item.paidAmount | currency:'$'}}
+						</td>
+						<td data-title=" 'Balance' " sortable=" 'balance' " class="col-sm-1 text-center show-red">
+							{{item.balance | currency:'$'}}
+						</td>
+						<td data-title=" 'Submitted' " sortable=" 'submittedOn' " class="col-sm-1 text-center">
+							{{item.submittedOn? (item.submittedOn | date:'MM/dd/yyyy') : ''}}
+						</td>
+						<td data-title=" 'Submitted By' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
+							{{item.submittedBy}}
+						</td>
+						<td data-title=" 'Delivered' " sortable=" 'deliveredOn' " class="col-sm-1 text-center">
+							{{item.deliveredOn? (item.deliveredOn | date:'MM/dd/yyyy') : ''}}
+						</td>
+						<td data-title=" 'Delivered By' " sortable=" 'deliveredBy' " class="col-sm-1 text-center">
+							{{item.deliveredBy}}
+						</td>
+						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+							<label class="label" ng-class="{'label-success': item.status===4, 'label-danger': item.status===6, 'label-warning': item.status===7, 'label-default':(item.status===1 || item.status===2 || item.status===3)}">{{item.statusText}}</label>
+						</td>
+						<td class="col-sm-1 text-center">
+							<button class="btn btn-sm btn-info" ng-show="item.status===1" ng-click="submit(item)">submit</button>
+							<button class="btn btn-sm btn-success" ng-show="item.status===2" ng-click="deliver(item)">delivered</button>
+						</td>
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+			<div class="row">
+				<button class="btn btn-sm btn-primary pull-right" ng-show="data.payrolls.length>0 && !selected" ng-click="add()">New Invoice</button>
+				
+			</div>
+
+			<!-- end panel -->
+		</div>
+	</div>
+	
+	<div class="panel panel-info" ng-if="selected">
+		<div class="panel-heading">
+			<h4 class="panel-title">Invoice Details</h4>
+		</div>
+		<div class="panel-body tab-content">
+			<form data-parsley-validate="false" name="invoice">
+				<invoice item="selected" datasvc="data" company="mainData.selectedCompany" />
+			</form>
+		</div>
+
+	</div>
+	
+	
+</div>
+
+

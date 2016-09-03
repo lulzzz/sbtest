@@ -33,6 +33,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			getInvoiceMetaData: function (companyId) {
+				var deferred = $q.defer();
+				companyServer.one('InvoiceMetaData').one(companyId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getCompanyList: function (hostId) {
 				var deferred = $q.defer();
 				companyServer.one('Companies', hostId).get().then(function (data) {

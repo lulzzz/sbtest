@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int StartingCheckNumber { get; set; }
 		public List<Comment> Notes { get; set; }
 		public PayrollStatus Status { get; set; }
-
+		public Guid? InvoiceId { get; set; }
 		public decimal TotalGrossWage
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }
@@ -28,6 +28,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage), 2, MidpointRounding.AwayFromZero); }
 		}
+
+		public decimal TotalCost
+		{
+			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Cost), 2, MidpointRounding.AwayFromZero); }
+		}
+
 	}
 
 	public class PayCheck
@@ -60,6 +66,11 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+
+		public decimal Cost
+		{
+			get { return Math.Round(GrossWage + EmployerTaxes, 2, MidpointRounding.AwayFromZero); }
+		}
 
 		public decimal EmployeeTaxes
 		{

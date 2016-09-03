@@ -93,5 +93,24 @@ namespace HrMaxx.OnlinePayroll.Repository
 				return 1;
 			}
 		}
+
+		public List<Models.Payroll> GetUnInvoicedPayrolls(Guid companyId)
+		{
+			var payrolls = _dbContext.Payrolls.Where(p => p.CompanyId == companyId && !p.InvoiceId.HasValue && p.Status==3);
+			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls.ToList());
+		}
+
+		public string GetMaxInvoiceNumber(Guid companyId)
+		{
+			var maxInvoiceNumber = string.Empty;
+			var invoices =
+				_dbContext.Invoices.Where(i => i.CompanyId == companyId).OrderByDescending(i => i.InvoiceDate).ToList();
+			if (invoices.Any())
+				return invoices.First().InvoiceNumber;
+			else
+			{
+				return "1111".PadLeft(8, '0');
+			}
+		}
 	}
 }

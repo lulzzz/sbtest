@@ -29,11 +29,13 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public decimal TotalGrossWage { get; set; }
 		public decimal TotalNetWage { get; set; }
+		public decimal TotalCost { get; set; }
 
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }
 		}
+		public Guid? InvoiceId { get; set; }
 	}
 	public class PayCheckResource
 	{
@@ -71,6 +73,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal EmployerTaxes { get; set; }
 		public decimal EmployeeTaxesYTD { get; set; }
 		public decimal EmployerTaxesYTD { get; set; }
+		public decimal Cost { get; set; }
 
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }

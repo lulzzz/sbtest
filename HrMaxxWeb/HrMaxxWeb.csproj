@@ -282,9 +282,12 @@
     <Content Include="Areas\Client\templates\account-list.html" />
     <Content Include="Areas\Client\templates\paycheck.html" />
     <Content Include="Areas\Client\templates\journal-list.html" />
+    <Content Include="Areas\Client\templates\invoice-list.html" />
+    <Content Include="Areas\Client\templates\invoice.html" />
     <Content Include="Areas\Client\templates\payroll-processed.html" />
     <Content Include="Areas\Client\templates\payroll.html" />
     <Content Include="Areas\Client\templates\payroll-list.html" />
+    <Content Include="Areas\Client\templates\invoices.html" />
     <Content Include="Areas\Client\templates\payrolls.html" />
     <Content Include="Areas\Client\templates\deposit-ticket.html" />
     <Content Include="Areas\Client\templates\account-adjustment.html" />
@@ -458,6 +461,7 @@
     <Content Include="Scripts\angular\angular-ui\ui-bootstrap-custom-0.12.0.min.js" />
     <Content Include="Scripts\angular\angular-ui\ui-bootstrap-custom-tpls-0.12.0.js" />
     <Content Include="Scripts\angular\angular-ui\ui-bootstrap-custom-tpls-0.12.0.min.js" />
+    <Content Include="Scripts\angular\angular-ui\ui-bootstrap-tpls-2.1.3.min.js" />
     <Content Include="Scripts\angular\angular.js" />
     <Content Include="Scripts\angular\angular.min.js" />
     <Content Include="Scripts\angular\i18n\angular-locale_aa-dj.js" />
@@ -1248,6 +1252,8 @@
     <Content Include="Scripts\app\journal\journal-app.js" />
     <Content Include="Scripts\app\journal\journal-repository.js" />
     <Content Include="Scripts\app\payroll\directives\paycheck.js" />
+    <Content Include="Scripts\app\payroll\directives\invoice-list.js" />
+    <Content Include="Scripts\app\payroll\directives\invoice.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-processed.js" />
     <Content Include="Scripts\app\payroll\directives\payroll.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-list.js" />

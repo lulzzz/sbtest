@@ -102,5 +102,22 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public object GetInvoiceMetaData(Guid companyId)
+		{
+			try
+			{
+				var payrolls = _metaDataRepository.GetUnInvoicedPayrolls(companyId).Where(p=>p.TotalCost>0).ToList();
+				var maxCheckNumber = _metaDataRepository.GetMaxInvoiceNumber(companyId);
+				return new {Payrolls = payrolls, StartingInvoiceNumber = maxCheckNumber};
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Invoice for company " + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

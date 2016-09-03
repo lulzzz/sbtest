@@ -40,6 +40,13 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 
 		[HttpGet]
+		[Route(CompanyRoutes.InvoiceMetaData)]
+		public object GetInvoiceMetaData(Guid companyId)
+		{
+			return MakeServiceCall(() => _metaDataService.GetInvoiceMetaData(companyId), "Get invoice meta data", true);
+		}
+
+		[HttpGet]
 		[Route(CompanyRoutes.Companies)]
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{

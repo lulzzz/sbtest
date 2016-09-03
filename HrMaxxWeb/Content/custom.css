@@ -187,6 +187,11 @@ a.thumbnail.active {
             background-color: #1ab394!important;
             color: #ffffff!important;
         }
+.table-invoice th {
+            background-color: transparent!important;
+            color: darkgray!important;
+        }
+
 label {
 	font-weight: bold;
 	color: gray;

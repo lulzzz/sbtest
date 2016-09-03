@@ -30,8 +30,10 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
         public int Status { get; set; }
+        public Nullable<System.Guid> InvoiceId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
+        public virtual Invoice Invoice { get; set; }
     }
 }

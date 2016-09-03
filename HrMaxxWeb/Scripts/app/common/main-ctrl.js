@@ -79,6 +79,19 @@
 			if (dataSvc.selectedHost)
 				$scope.getCompanies();
 		}
+
+		$scope.$on('companyUpdated', function(company) {
+			var exists = $filter('filter')(dataSvc.companies, { id: company.id });
+			if (exists.length === 0) {
+				
+			} else {
+				dataSvc.companies.splice(dataSvc.companies.indexOf(exists[0]), 1);
+				
+			}
+			dataSvc.companies.push(result);
+			
+		});
+
 		var removeMessages = function() {
 			$scope.alerts = [];
 		}

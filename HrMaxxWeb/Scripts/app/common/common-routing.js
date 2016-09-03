@@ -42,6 +42,9 @@
 	$routeProvider.when('/Client/Checkbook', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/checkbook.html'
 	});
+	$routeProvider.when('/Client/Invoices', {
+		templateUrl: zionAPI.Web + '/Areas/Client/templates/invoices.html'
+	});
 	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.html5Mode(false).hashPrefix('!');

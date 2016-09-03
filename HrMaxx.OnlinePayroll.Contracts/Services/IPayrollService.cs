@@ -17,5 +17,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Payroll ConfirmPayroll(Payroll mappedResource);
 		Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string fullName);
 		PayCheck GetPayCheck(int checkId);
+		List<Invoice> GetCompanyInvoices(Guid companyId);
+		Invoice SaveInvoice(Invoice mappedResource);
+		Invoice GetInvoiceById(Guid invoiceId);
+		List<Payroll> GetInvoicePayrolls(Guid invoiceId);
 	}
 }

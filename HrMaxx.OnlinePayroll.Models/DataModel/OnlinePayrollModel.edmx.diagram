@@ -61,6 +61,8 @@
         <AssociationConnector Association="HrMaxxModel.FK_Journal_Company" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_CompanyAccount" />
         <EntityTypeShape EntityType="HrMaxxModel.CompanyPayrollCube" Width="1.5" PointX="10.375" PointY="4" />
+        <EntityTypeShape EntityType="HrMaxxModel.Invoice" Width="1.5" PointX="12.125" PointY="16.875" />
+        <AssociationConnector Association="HrMaxxModel.FK_Payroll_Invoice" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

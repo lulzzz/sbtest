@@ -184,6 +184,18 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2, MidpointRounding.AwayFromZero)));
 
 			CreateMap<JournalList, JournalListResource>();
+
+			CreateMap<InvoiceResource, Invoice>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now)); 
+			CreateMap<InvoiceLineItemResource, InvoiceLineItem>();
+			CreateMap<InvoicePaymentResource, InvoicePayment>();
+
+			CreateMap<InvoiceLineItem, InvoiceLineItemResource>();
+			CreateMap<InvoicePayment, InvoicePaymentResource>()
+				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false)); 
+
+			CreateMap<Invoice, InvoiceResource>();
 		}
 	}
 }

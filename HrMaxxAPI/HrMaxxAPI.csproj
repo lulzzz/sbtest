@@ -290,6 +290,7 @@
     <Compile Include="Resources\OnlinePayroll\HostResource.cs" />
     <Compile Include="Resources\Journals\JournalFilterResource.cs" />
     <Compile Include="Resources\OnlinePayroll\VendorCustomerResource.cs" />
+    <Compile Include="Resources\Payroll\InvoiceResource.cs" />
     <Compile Include="Resources\Payroll\PayrollFilterResource.cs" />
     <Compile Include="Resources\Payroll\PayrollResource.cs" />
     <Compile Include="Resources\UserPasswordChangeRequest.cs" />

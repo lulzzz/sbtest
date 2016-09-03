@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
+using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
@@ -109,6 +112,65 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		{
 			var paycheck = _dbContext.PayrollPayChecks.First(p => p.Id == payCheckId);
 			return _mapper.Map<PayrollPayCheck, PayCheck>(paycheck);
+		}
+
+		public List<Invoice> GetCompanyInvoices(Guid companyId)
+		{
+			var invoices = _dbContext.Invoices.Where(i => i.CompanyId == companyId);
+			return _mapper.Map<List<Models.DataModel.Invoice>, List<Invoice>>(invoices.ToList());
+		}
+
+		public Invoice SaveInvoice(Invoice invoice)
+		{
+			var dbinvoice = _dbContext.Invoices.FirstOrDefault(i => i.Id == invoice.Id);
+			var mapped = _mapper.Map<Invoice, Models.DataModel.Invoice>(invoice);
+			if (dbinvoice == null)
+			{
+				_dbContext.Invoices.Add(mapped);
+				
+			}
+			else
+			{
+				dbinvoice.DueDate = mapped.DueDate;
+				dbinvoice.LastModifiedBy = mapped.LastModifiedBy;
+				dbinvoice.LastModified = mapped.LastModified;
+				dbinvoice.LineItemTotal = mapped.LineItemTotal;
+				dbinvoice.Total = mapped.Total;
+				dbinvoice.Balance = mapped.Balance;
+				dbinvoice.LineItems = mapped.LineItems;
+				dbinvoice.Payments = mapped.Payments;
+				dbinvoice.InvoiceNumber = mapped.InvoiceNumber;
+				dbinvoice.Status = mapped.Status;
+				dbinvoice.SubmittedBy = mapped.SubmittedBy;
+				dbinvoice.SubmittedOn = mapped.SubmittedOn;
+				dbinvoice.DeliveredBy = mapped.DeliveredBy;
+				dbinvoice.DeliveredOn = mapped.DeliveredOn;
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.Invoice, Invoice>(mapped);
+		}
+
+		public Invoice GetInvoiceById(Guid invoiceId)
+		{
+			var invoice = _dbContext.Invoices.FirstOrDefault(i => i.Id == invoiceId);
+			return _mapper.Map<Models.DataModel.Invoice, Invoice>(invoice);
+		}
+
+		public List<Models.Payroll> GetInvoicePayrolls(Guid invoiceId)
+		{
+			var payrolls = _dbContext.Payrolls.Where(p => p.InvoiceId == invoiceId);
+			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls.ToList());
+		}
+
+		public void SetPayrollInvoiceId(Invoice savedInvoice)
+		{
+			var dbPayrolls = _dbContext.Payrolls.Where(p => savedInvoice.PayrollIds.Any(pi => pi == p.Id)).ToList();
+			dbPayrolls.ForEach(p =>
+			{
+				p.InvoiceId = savedInvoice.Id;
+				p.Status = (int) PayrollStatus.Invoiced;
+			});
+			_dbContext.SaveChanges();
 		}
 	}
 }

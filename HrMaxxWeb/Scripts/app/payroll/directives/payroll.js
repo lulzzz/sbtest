@@ -26,10 +26,10 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 					
 					$scope.list = [];
 					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
+						format: 'MM/dd/yyyy',
 						startingDay: 1
 					};
-
+					
 					$scope.today = function () {
 						$scope.dt = new Date();
 					};

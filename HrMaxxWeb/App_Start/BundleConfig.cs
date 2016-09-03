@@ -159,7 +159,9 @@ namespace HrMaxxWeb
 				"~/Scripts/app/journal/directives/regular-check.js",
 				"~/Scripts/app/journal/directives/deposit-ticket.js",
 				"~/Scripts/app/journal/directives/account-adjustment.js",
-				"~/Scripts/app/journal/directives/journal-list.js"
+				"~/Scripts/app/journal/directives/journal-list.js",
+				"~/Scripts/app/payroll/directives/invoice-list.js", 
+				"~/Scripts/app/payroll/directives/invoice.js"
 				
 
 				);

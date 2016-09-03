@@ -66,8 +66,47 @@ common.factory('payrollRepository', [
 				});
 
 				return deferred.promise;
-			}
+			},
+			getPayrollsForInvoice: function (invoiceId) {
+				var deferred = $q.defer();
+					payrollServer.one('PayrollsForInvoice').one(invoiceId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
 
+				return deferred.promise;
+			},
+			getInvoicesForCompany: function (companyId) {
+				var deferred = $q.defer();
+				payrollServer.one('Invoices').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveInvoice: function (invoice) {
+				var deferred = $q.defer();
+				payrollServer.all('Invoice').post(invoice).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getInvoiceById: function (invoiceId) {
+				var deferred = $q.defer();
+				payrollServer.one('Invoice').one(invoiceId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 		};
 	}
 ]);

@@ -337,6 +337,108 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		public List<Invoice> GetCompanyInvoices(Guid companyId)
+		{
+			try
+			{
+				return _payrollRepository.GetCompanyInvoices(companyId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Invoices for company id=" + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Invoice SaveInvoice(Invoice invoice)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					invoice.Payments.ForEach(p =>
+					{
+						if (p.Status == PaymentStatus.Draft)
+						{
+							p.Status = p.Method==VendorDepositMethod.Cash? PaymentStatus.Paid : PaymentStatus.Submitted;
+						}
+						
+					});
+					var dbIncvoice = _payrollRepository.GetInvoiceById(invoice.Id);
+					if (dbIncvoice != null)
+					{
+						if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
+						{
+							invoice.SubmittedOn = DateTime.Now;
+							invoice.SubmittedBy = invoice.UserName;
+						}
+						if (dbIncvoice.Status == InvoiceStatus.Submitted && invoice.Status == InvoiceStatus.Delivered)
+						{
+							invoice.DeliveredOn = DateTime.Now;
+							invoice.DeliveredBy = invoice.UserName;
+						}
+						if (invoice.Status == InvoiceStatus.Delivered || invoice.Status==InvoiceStatus.PartialPayment || invoice.Status==InvoiceStatus.PaymentBounced)
+						{
+							if(invoice.Balance == 0)
+								invoice.Status = InvoiceStatus.Paid;
+							else if (invoice.Balance < invoice.Total)
+								invoice.Status = invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)
+									? InvoiceStatus.PaymentBounced
+									: InvoiceStatus.PartialPayment;
+						}
+						
+					}
+					var savedInvoice = _payrollRepository.SaveInvoice(invoice);
+
+					if (dbIncvoice == null || invoice.Status == InvoiceStatus.Draft)
+					{
+						savedInvoice.PayrollIds = invoice.PayrollIds;
+						_payrollRepository.SetPayrollInvoiceId(savedInvoice);
+					}
+						
+					txn.Complete();
+					
+					return savedInvoice;
+				}
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Invoice for company id=" + invoice.CompanyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Invoice GetInvoiceById(Guid invoiceId)
+		{
+			try
+			{
+				return _payrollRepository.GetInvoiceById(invoiceId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Invoice By id=" + invoiceId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<Models.Payroll> GetInvoicePayrolls(Guid invoiceId)
+		{
+			try
+			{
+				return _payrollRepository.GetInvoicePayrolls(invoiceId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + invoiceId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private void CreateJournalEntry(PayCheck pc, List<Account> coaList, string userName)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);

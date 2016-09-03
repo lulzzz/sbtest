@@ -31,6 +31,9 @@
 						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
+						<td class="col-sm-1 text-center" ng-if="showInvoices()">
+							<button class="btn btn-sm btn-warning" ng-click="viewInvoice(item.invoiceId)" ng-show="item.invoiceId">view invoice</button>
+						</td>
 					</tr>
 
 				</table>
@@ -88,6 +91,16 @@
 		</div>
 		<div class="panel-body tab-content">
 			<payroll-processed item="committed" datasvc="data" company="mainData.selectedCompany" />
+		</div>
+	</div>
+	<div class="panel panel-info" ng-if="invoiceId">
+		<div class="panel-heading">
+			<h4 class="panel-title">Invoice Details</h4>
+		</div>
+		<div class="panel-body tab-content">
+			<form data-parsley-validate="true" name="invoice">
+				<invoice item-id="invoiceId" datasvc="data" company="mainData.selectedCompany" from-payroll="true" />
+			</form>
 		</div>
 	</div>
 

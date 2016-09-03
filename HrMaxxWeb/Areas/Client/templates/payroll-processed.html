@@ -47,7 +47,7 @@
 				<td>{{listitem.statusText}}</td>
 				<td>
 					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2? 'review' : 'view'}}</button>
-					<button class="btn btn-sm btn-danger" ng-show="item.status===3 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void</button>
+					<button class="btn btn-sm btn-danger" ng-show="item.status===3 && !listitem.isVoid && !item.invoiceId" ng-click="voidcheck(listitem)" >void</button>
 				</td>
 				
 			</tr>

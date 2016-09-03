@@ -112,6 +112,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\004c Payroll and Checkbook mods.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\005a_invoice handling.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>

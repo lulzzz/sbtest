@@ -146,7 +146,7 @@ common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
 								selected.endDate = moment(selected.startDate).add(1, 'month');
 								selected.payDay = moment(sorted[0].payDay).add(1, 'month');
 							}
-								
+							
 
 						}
 						$scope.set(selected);
@@ -215,6 +215,18 @@ common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
 					$scope.save = function () {
 						
 					}
+					$scope.invoiceSaved = function (item, payrollIds) {
+						$.each(payrollIds, function (index, p) {
+							var payroll = $filter('filter')($scope.list, { id: p })[0];
+							if (payroll) {
+								payroll.invoiceId = item.id;
+								payroll.status = 4;
+							}
+						});
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
+
+					}
 					$scope.canRunPayroll = function() {
 						if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0)
 							return false;
@@ -264,7 +276,21 @@ common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
 
 						 }, true
 				 );
+					$scope.showInvoices = function() {
+						var comp = $scope.mainData.selectedCompany;
+						if (comp && comp.contract.contractOption === 2 && comp.contract.billingOption === 3) {
+							return true;
+						} else {
+							return false;
+						}
+					}
 					
+					$scope.viewInvoice = function(invoiceId) {
+						var payrolls = $filter('filter')($scope.list, { invoiceId: '!', status: 3 });
+						
+						dataSvc.payrolls = payrolls;
+						$scope.invoiceId = invoiceId;
+					}
 					var init = function () {
 						
 						if ($scope.mainData.selectedCompany) {
