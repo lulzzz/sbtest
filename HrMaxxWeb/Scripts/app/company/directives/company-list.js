@@ -19,23 +19,15 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window',
 						selectedHostId: $scope.host ? $scope.host.id : null,
 						sourceTypeId: EntityTypes.Company,
 						companyMetaData: null,
-						isBodyOpen: true,
-						accord: 1,
-						tab: 1
+						isBodyOpen: true
+						
 					}
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = false;
 
-					$scope.toggleAccord = function (val) {
-						dataSvc.accord = dataSvc.accord ? 0 : val;
-
-					}
-					$scope.toggleTab = function (val) {
-						dataSvc.tab = dataSvc.tab ? 0 : val;
-
-					}
+					
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
