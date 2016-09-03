@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('companyList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -11,8 +11,8 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company-list.html',
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'hostRepository',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, hostRepository) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'hostRepository',
+				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, hostRepository) {
 					var dataSvc = {
 					hostList: [],
 					selectedHost: null,
@@ -373,12 +373,13 @@ common.directive('companyList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.fillTableData($scope.tableParams);
 						$scope.selectedCompany = null;
 						$scope.data.isBodyOpen = true;
-						$scope.$broadcast('companyUpdated', result);
+						$rootScope.$broadcast('companyUpdated', {company:result});
 						addAlert('successfully saved Company', 'success');
 					}, function (error) {
 						addAlert('error saving Company', 'danger');
 					});
 				}
+				
 				//$scope.getCompanies = function(hostId) {
 				//	companyRepository.getCompanyList(hostId).then(function (data) {
 				//		$scope.list = data;

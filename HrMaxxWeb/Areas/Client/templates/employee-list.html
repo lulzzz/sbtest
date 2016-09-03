@@ -123,12 +123,8 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label class="control-label">Birth Date</label>
-														<div class="input-group date">
-															<input name="birthdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="selected.birthDate" is-open="data.opened1" datepicker-options="dateOptions" close-text="Close" readonly="readonly"/>
-															<span class="input-group-addon">
-																<i class="fa fa-calendar" ng-click="open1($event)"></i>
-															</span>
-														</div>
+														<date-ctrl name="birthdate" required="false" model="selected.birthDate" disabled="false" />
+														
 													</div>
 												</div>
 											</div>
@@ -141,12 +137,8 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label class="control-label">Hire Date</label>
-														<div class="input-group date">
-															<input name="hiredate" type="text" class="form-control" readonly="readonly" datepicker-popup="MM/dd/yyyy" ng-model="selected.hireDate" is-open="data.opened" max-date="dt" datepicker-options="dateOptions" close-text="Close" />
-															<span class="input-group-addon">
-																<i class="fa fa-calendar" ng-click="open($event)"></i>
-															</span>
-														</div>
+														<date-ctrl name="hiredate" required="true" model="selected.hireDate" disabled="false" />
+														
 													</div>
 												</div>
 												<div class="col-sm-4">

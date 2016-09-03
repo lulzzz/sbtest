@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('workerCompensationList', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('workerCompensationList', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -11,8 +11,8 @@ common.directive('workerCompensationList', ['$modal', 'zionAPI',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html',
 
-			controller: ['$scope', '$filter', 'companyRepository',
-				function ($scope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
+				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
 				$scope.alerts = [];
@@ -41,6 +41,7 @@ common.directive('workerCompensationList', ['$modal', 'zionAPI',
 					companyRepository.saveWorkerCompensation(item).then(function(data) {
 						item.id = data.id;
 						$scope.selected = null;
+						$rootScope.$broadcast('companyWCUpdated', { wc: data });
 					}, function(error) {
 						addAlert('error in saving worker compensation', 'danger');
 					});

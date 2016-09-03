@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('regularCheck', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('regularCheck', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -15,7 +15,7 @@ common.directive('regularCheck', ['$modal', 'zionAPI',
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'AccountType', 
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, AccountType) {
 					var dataSvc = {
-						opened: false,
+						
 						companyAccounts: $scope.datasvc.companyAccounts,
 						vendors: $scope.datasvc.vendors? $scope.datasvc.vendors : [],
 						customers: $scope.datasvc.customers ? $scope.datasvc.customers : [],
@@ -25,26 +25,7 @@ common.directive('regularCheck', ['$modal', 'zionAPI',
 					}
 
 					$scope.list = [];
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
-
+					
 					$scope.data = dataSvc;
 					$scope.cancel = function () {
 						$scope.$parent.$parent.selected = null;
@@ -161,7 +142,7 @@ common.directive('regularCheck', ['$modal', 'zionAPI',
 								dataSvc.selectedPayee = exists;
 							}
 						}
-
+						
 					}
 					init();
 

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('deductionList', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('deductionList', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -12,8 +12,8 @@ common.directive('deductionList', ['$modal', 'zionAPI',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/deduction-list.html',
 
-			controller: ['$scope', '$filter', 'companyRepository',
-				function ($scope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
+				function ($scope,$rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
 				$scope.alerts = [];
@@ -39,7 +39,7 @@ common.directive('deductionList', ['$modal', 'zionAPI',
 				$scope.showDeductionType = function(item) {
 					var selected = [];
 					if (item.type) {
-						selected = $filter('filter')($scope.types, { id: item.id }, true);
+						selected = $filter('filter')($scope.types, { id: item.type.id }, true);
 					}
 					return selected.length ? selected[0].categoryText + ' - ' + selected[0].name : 'Not set';
 				},
@@ -47,10 +47,12 @@ common.directive('deductionList', ['$modal', 'zionAPI',
 					companyRepository.saveCompanyDeduction(item).then(function(deduction) {
 						item.id = deduction.id;
 						$scope.selected = null;
+						$rootScope.$broadcast('companyDeductionUpdated', { ded: deduction });
 					}, function(error) {
 						addAlert('error in saving deduction', 'danger');
 					});
 				}
+
 				$scope.cancel = function (index) {
 					if ($scope.selected.id === 0) {
 						$scope.list.splice(index, 1);

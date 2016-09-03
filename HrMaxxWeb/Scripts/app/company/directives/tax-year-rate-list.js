@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('taxYearRateList', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('taxYearRateList', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -12,8 +12,8 @@ common.directive('taxYearRateList', ['$modal', 'zionAPI',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-year-rate-list.html',
 
-			controller: ['$scope', '$filter', 'companyRepository',
-				function ($scope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
+				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
 				$scope.alerts = [];
@@ -32,6 +32,7 @@ common.directive('taxYearRateList', ['$modal', 'zionAPI',
 					companyRepository.saveTaxYearRate(item).then(function(data) {
 						item.id = data.id;
 						$scope.selected = null;
+						$rootScope.$broadcast('companyTaxUpdated', { tax: data });
 					}, function(error) {
 						addAlert('error in saving tax year rate ', 'danger');
 					});

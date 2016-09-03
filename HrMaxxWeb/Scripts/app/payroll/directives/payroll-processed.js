@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-common.directive('payrollProcessed', ['$modal', 'zionAPI', '$timeout', '$window',
+common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$window',
 	function ($modal, zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
@@ -12,8 +12,8 @@ common.directive('payrollProcessed', ['$modal', 'zionAPI', '$timeout', '$window'
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html',
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository','$modal',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $modal) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
@@ -27,6 +27,9 @@ common.directive('payrollProcessed', ['$modal', 'zionAPI', '$timeout', '$window'
 								paycheck.department = paycheck.employee.department;
 								paycheck.status = 1;
 							});
+							$scope.item.startDate = moment($scope.item.startDate).toDate();
+							$scope.item.endDate = moment($scope.item.endDate).toDate();
+							$scope.item.payDay = moment($scope.item.payDay).toDate();
 							$scope.item.status = 1;
 							var copyitem = angular.copy($scope.item);
 							$scope.item = null;
@@ -80,7 +83,7 @@ common.directive('payrollProcessed', ['$modal', 'zionAPI', '$timeout', '$window'
 		}
 	}
 ]);
-common.controller('paycheckPopupCtrl', function ($scope, $modalInstance, $filter, paycheck) {
+common.controller('paycheckPopupCtrl', function ($scope, $uibModalInstance, $filter, paycheck) {
 	$scope.check = paycheck;
 	
 

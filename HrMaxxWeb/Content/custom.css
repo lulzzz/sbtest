@@ -197,3 +197,15 @@ label {
 	color: gray;
 }
 
+
+.uib-datepicker .btn.btn-default {
+    color: #333;
+    background: #fff;
+    border-color: #b6c2c9;
+}
+.uib-datepicker .btn.btn-default.btn-info {
+       color: #fff;
+    background: #49b6d6;
+    border-color: #49b6d6;
+}
+

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('userProfile', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('userProfile', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,

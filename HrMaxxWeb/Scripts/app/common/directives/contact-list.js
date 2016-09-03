@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('contactList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('contactList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,

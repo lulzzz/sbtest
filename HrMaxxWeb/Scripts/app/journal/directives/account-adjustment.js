@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('accountAdjustment', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('accountAdjustment', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -15,31 +15,12 @@ common.directive('accountAdjustment', ['$modal', 'zionAPI',
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'AccountType', 
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, AccountType) {
 					var dataSvc = {
-						opened: false,
 						companyAccounts: $scope.datasvc.companyAccounts
 					}
 
 					$scope.list = [];
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
-
+					$scope.dt = new Date();
+					
 					$scope.data = dataSvc;
 					$scope.cancel = function () {
 						$scope.$parent.$parent.selected = null;
@@ -141,7 +122,8 @@ common.directive('accountAdjustment', ['$modal', 'zionAPI',
 						if (!$scope.item.journalDetails[0].isIncrease) {
 							$scope.item.journalDetails[0].isIncrease = $scope.item.journalDetails[0].isDebit ? 1 : 0;
 						}
-						
+						if ($scope.item.transactionDate)
+							$scope.item.transactionDate = moment($scope.transactionDate).toDate();
 
 					}
 					init();

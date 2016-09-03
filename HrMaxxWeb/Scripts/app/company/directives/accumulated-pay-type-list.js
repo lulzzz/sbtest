@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('accumulatedPayTypeList', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('accumulatedPayTypeList', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -12,8 +12,8 @@ common.directive('accumulatedPayTypeList', ['$modal', 'zionAPI',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/accumulated-pay-type-list.html',
 
-			controller: ['$scope', '$filter', 'companyRepository',
-				function ($scope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
+				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
 				$scope.alerts = [];
@@ -43,6 +43,7 @@ common.directive('accumulatedPayTypeList', ['$modal', 'zionAPI',
 					companyRepository.saveAccumulatedPayType(item).then(function(data) {
 						item.id = data.id;
 						$scope.selected = null;
+						$rootScope.$broadcast('companyPayTypeUpdated', { pt: data });
 					}, function(error) {
 						addAlert('error in saving accumulated work type', 'danger');
 					});

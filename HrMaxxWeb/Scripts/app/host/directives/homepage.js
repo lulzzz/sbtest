@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('homepage', ['$modal', 'zionAPI', '$timeout', 'localStorageService', '$window',
-	function ($modal, zionAPI, $timeout, localStorageService, $window) {
+common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$window',
+	function (zionAPI, $timeout, localStorageService, $window) {
 		return {
 			restrict: 'E',
 			

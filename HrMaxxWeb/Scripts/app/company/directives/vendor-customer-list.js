@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('vendorCustomerList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,

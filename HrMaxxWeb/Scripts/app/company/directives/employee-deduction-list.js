@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-common.directive('employeeDeductionList', ['$modal', 'zionAPI',
+common.directive('employeeDeductionList', ['$uibModal', 'zionAPI',
 	function ($modal, zionAPI) {
 		return {
 			restrict: 'E',

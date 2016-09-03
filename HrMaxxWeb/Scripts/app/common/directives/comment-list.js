@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('commentList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('commentList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,

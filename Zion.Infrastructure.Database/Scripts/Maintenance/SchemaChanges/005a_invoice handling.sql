@@ -70,3 +70,10 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_Payroll_Invoice]') AND parent_object_id = OBJECT_ID(N'[dbo].[Payroll]'))
 ALTER TABLE [dbo].[Payroll] CHECK CONSTRAINT [FK_Payroll_Invoice]
 GO
+
+update DeductionType set Category=4 where Id=3;
+update DeductionType set Category=4 where Id=4;
+update DeductionType set Category=2 where Id=6;
+update DeductionType set Category=2 where Id=7;
+update DeductionType set Category=2 where Id=8;
+update DeductionType set Category=3 where Id=9;

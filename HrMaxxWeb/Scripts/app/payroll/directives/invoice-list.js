@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('invoiceList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('invoiceList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -15,45 +15,14 @@ common.directive('invoiceList', ['$modal', 'zionAPI', '$timeout', '$window',
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
-						opened: false,
-						opened1: false,
-						opened2: false,
+						
 						payrolls: [],
 						startingInvoiceNumber: 0,
 						invoiceMethod: 2,
 						invoiceRate:0
 					}
 					$scope.list = [];
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
 					
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
-
-					$scope.open2 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened2 = true;
-					};
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
@@ -76,7 +45,7 @@ common.directive('invoiceList', ['$modal', 'zionAPI', '$timeout', '$window',
 						var selected = {
 							companyId: $scope.mainData.selectedCompany.id,
 							invoiceDate: new Date(),
-							dueDate: moment().add(2, 'week'),
+							dueDate: moment().add(2, 'week').toDate(),
 							invoiceMethod: $scope.mainData.selectedCompany.contract.method,
 							invoiceRate: $scope.mainData.selectedCompany.contract.invoiceCharge,
 							invoiceNumber: dataSvc.startingInvoiceNumber,

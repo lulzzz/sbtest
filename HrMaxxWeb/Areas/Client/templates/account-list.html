@@ -31,21 +31,13 @@
 								<div class="row" ng-show="data.filter.filterByDateRange">
 									<div class="col-sm-12">
 										<div class="col-sm-2"><label>From: </label></div>
-										<div class="col-sm-6 input-group date">
-											<input name="startdate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="data.filter.startDate" is-open="data.opened" datepicker-options="dateOptions" close-text="Close" />
-											<span class="input-group-addon">
-												<i class="fa fa-calendar" ng-click="open($event)"></i>
-											</span>
-										</div>
+										<date-ctrl name="startdate" required="true" model="data.filter.startDate" disabled="false" />
+										
 									</div>
 									<div class="col-sm-12">
 										<div class="col-sm-2"><label>To: </label></div>
-										<div class="col-sm-6 input-group date">
-											<input name="enddate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="data.filter.endDate" min-date="data.filter.startDate" is-open="data.opened1" datepicker-options="dateOptions" close-text="Close" />
-											<span class="input-group-addon">
-												<i class="fa fa-calendar" ng-click="open1($event)"></i>
-											</span>
-										</div>
+										<date-ctrl name="enddate" required="true" model="data.filter.endDate" min="data.filter.startDate"  />
+										
 										<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button></div>
 									</div>
 								</div>
@@ -204,15 +196,8 @@
 								<div class="col-sm-6">
 									<div class="form-group">
 										<label class="control-label">Opening Date</label>
-										<div class="input-group date">
-											<input name="effectivedate" type="text" class="form-control" readonly="readonly" datepicker-popup="MM/dd/yyyy" ng-model="selected.openingDate" is-open="data.opened" max-date="dt" datepicker-options="dateOptions" close-text="Close" />
-											<span class="input-group-addon">
-												<i class="fa fa-calendar" ng-click="open($event)"></i>
-											</span>
-										</div>
-
-
-
+										<date-ctrl name="effectivedate" required="true" model="selected.openingDate" max="dt" disabled="false" />
+										
 									</div>
 								</div>
 							</div>

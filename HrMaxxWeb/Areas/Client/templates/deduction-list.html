@@ -16,7 +16,7 @@
 			<tr ng-repeat="item in list track by $index">
 				<td>
 					<!-- editable tesltra worktype (select-local) -->
-					<span e-ng-change="item.type = $data;" editable-select="item.type" e-name="type" e-form="rowform" e-ng-options="ded.categoryText + ' - ' + ded.name for ded in types track by ded.id">
+					<span e-ng-change="item.type = $data;" editable-select="item.type" e-name="type" e-form="rowform" e-ng-options="ded.categoryText + ' - ' + ded.name for ded in types | orderBy:'category' track by ded.id">
 						{{ showDeductionType(item) }}
 					</span>
 				</td>
@@ -58,7 +58,7 @@
 				</td>
 
 				<td>
-					<button type="button" ng-click="add()" class="btn btn-primary">
+					<button type="button" ng-click="add()" ng-show="!selected" class="btn btn-primary">
 						Add
 					</button>
 				</td>

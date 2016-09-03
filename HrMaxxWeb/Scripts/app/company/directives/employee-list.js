@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('employeeList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -16,37 +16,12 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
-						opened: false,
-						opened1: false,
 						payCodes: [],
 						companyStates: [],
 						compensations: [],
 						employeeMetaData: null
 					}
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
 					
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -129,6 +104,11 @@ common.directive('employeeList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.selectedPayCodes = [];
 						$timeout(function () {
 							$scope.selected = angular.copy(item);
+							if ($scope.selected.birthDate)
+								$scope.selected.birthDate = moment($scope.selected.birthDate).toDate();
+							if ($scope.selected.hireDate)
+								$scope.selected.hireDate = moment($scope.selected.hireDate).toDate();
+
 							$.each($scope.selected.payCodes, function (index, pc) {
 								$scope.selectedPayCodes.push({id:pc.id});
 							});

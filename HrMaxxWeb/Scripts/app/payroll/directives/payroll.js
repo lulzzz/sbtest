@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
+common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window',
 	function ($modal, zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
@@ -12,12 +12,9 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html',
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository','$modal',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $modal) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 					var dataSvc = {
-						opened: false,
-						opened1: false,
-						opened2: false,
 						payTypes: $scope.datasvc.payTypes,
 						employees: $scope.datasvc.employees,
 						payTypeFilter: 0
@@ -25,38 +22,7 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 					}
 					
 					$scope.list = [];
-					$scope.dateOptions = {
-						format: 'MM/dd/yyyy',
-						startingDay: 1
-					};
 					
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-					
-					
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
-					
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
-
-					$scope.open2 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened2 = true;
-					};
-
 					$scope.data = dataSvc;
 					$scope.cancel = function() {
 						$scope.$parent.$parent.selected = null;
@@ -139,8 +105,11 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 						});
 					}
 					$scope.showList = function() {
-						if ($scope.list.length > 0 && $scope.item.startDate && $scope.item.endDate && $scope.item.payDay && $scope.item.startingCheckNumber)
+						if (moment($scope.item.endDate) < moment($scope.item.startDate) || moment($scope.item.payDay) < $scope.minPayDate)
+							return false;
+						else if ($scope.list.length > 0 && $scope.item.startDate && $scope.item.endDate && $scope.item.payDay && $scope.item.startingCheckNumber)
 							return true;
+						
 						else
 							return false;
 					}
@@ -208,9 +177,9 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.datasvc.isBodyOpen = false;
-						$scope.minPayDate = new Date();
+						$scope.minPayDate = moment();
 						if ($scope.company.payrollDaysInPast > 0) {
-							$scope.minPayDate.setDate($scope.minPayDate.getDate() - $scope.company.payrollDaysInPast);
+							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast*-1, 'day').toDate();
 						}
 					}
 					init();
@@ -220,7 +189,7 @@ common.directive('payroll', ['$modal', 'zionAPI', '$timeout', '$window',
 		}
 	}
 ]);
-common.controller('updateCompsCtrl', function ($scope, $modalInstance, $filter, paycheck, paytypes) {
+common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, paytypes) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.paytypes = paytypes;
@@ -232,7 +201,7 @@ common.controller('updateCompsCtrl', function ($scope, $modalInstance, $filter, 
 		$scope.changesMade = true;
 	}
 	$scope.cancel = function () {
-		$modalInstance.close($scope);
+		$uibModalInstance.close($scope);
 	};
 	$scope.save = function () {
 		if (false === $('form[name="compform"]').parsley().validate()) {
@@ -248,7 +217,7 @@ common.controller('updateCompsCtrl', function ($scope, $modalInstance, $filter, 
 			if($scope.newPayTypes[index1].amount>0)
 			$scope.original.compensations.push($scope.newPayTypes[index1]);
 		});
-		$modalInstance.close($scope);
+		$uibModalInstance.close($scope);
 	};
 	$scope.addPayType = function() {
 		$scope.newPayTypes.push({
@@ -297,7 +266,7 @@ common.controller('updateCompsCtrl', function ($scope, $modalInstance, $filter, 
 	_init();
 });
 
-common.controller('updateDedsCtrl', function ($scope, $modalInstance, $filter, paycheck, companydeductions) {
+common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.dedList = angular.copy(paycheck.deductions);
@@ -306,11 +275,11 @@ common.controller('updateDedsCtrl', function ($scope, $modalInstance, $filter, p
 
 
 	$scope.cancel = function () {
-		$modalInstance.close($scope);
+		$uibModalInstance.close($scope);
 	};
 	$scope.empty = function() {
 		$scope.original.deductions = [];
-		$modalInstance.close($scope);
+		$uibModalInstance.close($scope);
 	}
 	$scope.permanentSave = function () {
 		$scope.original.deductions = [];
@@ -318,14 +287,14 @@ common.controller('updateDedsCtrl', function ($scope, $modalInstance, $filter, p
 			dd.updateEmployee = true;
 			$scope.original.deductions.push(dd);
 		});
-		$modalInstance.close($scope);
+		$uibModalInstance.close($scope);
 	};
 	$scope.save = function () {
 		$scope.original.deductions = [];
 		$.each($scope.dedList, function (index, dd) {
 			$scope.original.deductions.push(dd);
 		});
-		$modalInstance.close($scope);
+		$uibModalInstance.close($scope);
 	};
 
 	

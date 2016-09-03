@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
+common.directive('invoice', ['$uibModal', 'zionAPI', '$timeout', '$window',
 	function ($modal, zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
@@ -14,12 +14,10 @@ common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice.html',
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository','$modal',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $modal) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 					var dataSvc = {
-						opened: false,
-						opened1: false,
-						opened2: false,
+						
 						payrolls: [],
 						invoiceMethod: $scope.company.contract.method,
 						invoiceRate: $scope.company.contract.invoiceCharge
@@ -27,37 +25,8 @@ common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
 				}
 					
 					$scope.list = [];
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
 					$scope.dt = new Date();
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
 					
-					
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
-					
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
-
-					$scope.open2 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened2 = true;
-					};
 
 					$scope.data = dataSvc;
 					$scope.cancel = function () {
@@ -127,7 +96,7 @@ common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
 					$scope.addPayment = function() {
 						var payment = {
 							hasChanged: true,
-							paymentDate: moment().format("MMDDYYYY"),
+							paymentDate: moment().toDate(),
 							method:1,
 							checkNumber: 0,
 							status: 1,
@@ -197,9 +166,9 @@ common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
 							addAlert(validation, 'warning');
 							return false;
 						}
-						$.each($scope.item.payments, function (index, p) {
-							p.paymentDate = moment(p.paymentDate, 'MM/DD/YYYY').format("MM/DD/YYYY");
-						});
+						//$.each($scope.item.payments, function (index, p) {
+						//	p.paymentDate = moment(p.paymentDate, 'MM/DD/YYYY').format("MM/DD/YYYY");
+						//});
 						payrollRepository.saveInvoice($scope.item).then(function(data) {
 							$timeout(function () {
 								$scope.cancel();
@@ -231,8 +200,9 @@ common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
 						payrollRepository.getInvoiceById(invoiceId).then(function (data) {
 							$scope.item = angular.copy(data);
 							$.each($scope.item.payments, function (index, p) {
-								p.paymentDate = moment(p.paymentDate).format("MMDDYYYY");
+								p.paymentDate = moment(p.paymentDate).toDate();
 							});
+							$scope.item.dueDate = moment($scope.item.dueDate).toDate();
 							getInvoicePayrolls(invoiceId);
 						}, function (error) {
 							addAlert('error getting invoices', 'danger');
@@ -241,11 +211,23 @@ common.directive('invoice', ['$modal', 'zionAPI', '$timeout', '$window',
 					$scope.getProgressBarValue = function() {
 						return $scope.item.status > 4 ? 80 : $scope.item.status * 25;
 					}
+					$scope.getProgressType = function() {
+						if ($scope.item.status <= 2)
+							return 'warning';
+						else if ($scope.item.status === 3)
+							return 'info';
+						else if ($scope.item.status === 4 || $scope.item.status === 7)
+							return 'success';
+						else if ($scope.item.status === 6)
+							return 'danger';
+					}
+
 					var init = function () {
 						if ($scope.item) {
 							$.each($scope.item.payments, function (index, p) {
-								p.paymentDate = moment(p.paymentDate).format("MMDDYYYY");
+								p.paymentDate = moment(p.paymentDate).toDate();
 							});
+							$scope.item.dueDate = moment($scope.item.dueDate).toDate();
 							if($scope.item.id)
 								getInvoicePayrolls($scope.item.id);
 						}

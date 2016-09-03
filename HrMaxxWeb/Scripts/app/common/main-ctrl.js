@@ -80,17 +80,44 @@
 				$scope.getCompanies();
 		}
 
-		$scope.$on('companyUpdated', function(company) {
-			var exists = $filter('filter')(dataSvc.companies, { id: company.id });
-			if (exists.length === 0) {
-				
-			} else {
-				dataSvc.companies.splice(dataSvc.companies.indexOf(exists[0]), 1);
-				
-			}
-			dataSvc.companies.push(result);
+		$scope.$on('companyUpdated', function (event, args) {
+			var company = args.company;
+			updateInList(dataSvc.companies, company);
+		});
+		$scope.$on('companyDeductionUpdated', function (event, args) {
+			var ded = args.ded;
+			updateInList(dataSvc.selectedCompany.deductions, ded);
+		});
+		$scope.$on('companyWCUpdated', function (event, args) {
+			var wc = args.wc;
+			updateInList(dataSvc.selectedCompany.workerCompensations, wc);
 			
 		});
+		$scope.$on('companyTaxUpdated', function (event, args) {
+			var tax = args.tax;
+			updateInList(dataSvc.selectedCompany.companyTaxRates, tax);
+
+		});
+		$scope.$on('companyPayCodeUpdated', function (event, args) {
+			var pc = args.pc;
+			updateInList(dataSvc.selectedCompany.payCodes, pc);
+
+		});
+		$scope.$on('companyPayTypeUpdated', function (event, args) {
+			var pt = args.pt;
+			updateInList(dataSvc.selectedCompany.payCodes, pt);
+
+		});
+		var updateInList = function(list, match) {
+			var exists = $filter('filter')(list, { id: match.id });
+			if (exists.length === 0) {
+
+			} else {
+				list.splice(list.indexOf(exists[0]), 1);
+
+			}
+			list.push(match);
+		}
 
 		var removeMessages = function() {
 			$scope.alerts = [];

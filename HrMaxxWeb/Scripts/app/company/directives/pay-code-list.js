@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('payCodeList', ['$modal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('payCodeList', ['zionAPI',
+	function (zionAPI) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -11,8 +11,8 @@ common.directive('payCodeList', ['$modal', 'zionAPI',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/pay-code-list.html',
 
-			controller: ['$scope', '$filter', 'companyRepository',
-				function ($scope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
+				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
 				$scope.alerts = [];
@@ -41,6 +41,7 @@ common.directive('payCodeList', ['$modal', 'zionAPI',
 					companyRepository.savePayCode(item).then(function(data) {
 						item.id = data.id;
 						$scope.selected = null;
+						$rootScope.$broadcast('companyPayCodeUpdated', { pc: data });
 					}, function(error) {
 						addAlert('error in saving pay code', 'danger');
 					});

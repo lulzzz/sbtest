@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('accountList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -21,11 +21,7 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 						selectedType: null,
 						selectedSubType: null,
 						isBodyOpen: true,
-						opened: false,
-						opened1: false,
-						opened2: false,
-						filterStartDate : null,
-						filterEndDate: null,
+						
 						filter: {
 							years: [],
 							month: 0,
@@ -37,35 +33,8 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 					for (var i = currentYear - 4; i <= currentYear + 4; i++) {
 						dataSvc.filter.years.push(i);
 					}
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
-
-					$scope.open2 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened2 = true;
-					};
+					$scope.dt = new Date();
+					
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -111,7 +80,7 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 							name: '',       // initial filter
 						},
 						sorting: {
-							id: 'asc'     // initial sorting
+							typeText: 'asc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -147,6 +116,8 @@ common.directive('accountList', ['$modal', 'zionAPI', '$timeout', '$window',
 						$scope.selected = null;
 						$timeout(function () {
 							$scope.selected = angular.copy(item);
+							if ($scope.selected.openingDate)
+								$scope.selected.openingDate = moment($scope.selected.openingDate).toDate();
 							if ($scope.selected.id) {
 								dataSvc.selectedType = $filter('filter')(dataSvc.types, { key: $scope.selected.type })[0];
 								dataSvc.selectedSubType = $filter('filter')(dataSvc.subTypes, { key: $scope.selected.subType })[0];

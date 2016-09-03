@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('paycheck', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('paycheck', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -11,8 +11,8 @@ common.directive('paycheck', ['$modal', 'zionAPI', '$timeout', '$window',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/paycheck.html',
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$modal',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $modal) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 
 					$scope.showNonTaxable = function () {
 						if ($scope.check) {

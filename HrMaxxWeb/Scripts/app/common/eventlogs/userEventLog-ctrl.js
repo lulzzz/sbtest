@@ -1,8 +1,8 @@
 ﻿'use strict';
 
 userEventLog.controller('userEventLogCtrl', [
-	'$scope', '$element', '$anchorScroll', '$location', 'userEventLogRepository', '$modal', 'zionAPI', '$window', '$filter', 'ngTableParams',
-	function($scope, $element, $anchorScroll, $location, userEventLogRepository, $modal, zionAPI, $window, $filter, ngTableParams) {
+	'$scope', '$element', '$anchorScroll', '$location', 'userEventLogRepository', 'zionAPI', '$window', '$filter', 'ngTableParams',
+	function($scope, $element, $anchorScroll, $location, userEventLogRepository, zionAPI, $window, $filter, ngTableParams) {
 		$scope.data = {
 			userList: [],
 			userEventLogList: [],

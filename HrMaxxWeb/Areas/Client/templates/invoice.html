@@ -1,41 +1,41 @@
 ﻿<div class="row">
 	<div class="col-sm-12 m-t-10 m-b-10" ng-if="item.id">
-		<progressbar animate="false" value="getProgressBarValue()" type="success"><b>{{item.statusText}}</b></progressbar>
+		<uib-progressbar class="progress-striped" value="getProgressBarValue()" ng-type="getProgressType()"><b>{{item.statusText}}</b></uib-progressbar>
+		
 	</div>
 	<div class="col-sm-12">
-		<div class="invoice">
+		<div class="col-sm-8">
+			<div class="invoice">
 
-			<div class="invoice-header">
+				<div class="invoice-header">
 
-				<div class="invoice-to">
-					<div class="m-t-5 m-b-5 col-sm-6">
-						<strong>{{company.name}}</strong><br />
-						{{company.companyAddress.addressLine1}}<br />
-						{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}<br />
+					<div class="invoice-to">
+						<div class="m-t-5 m-b-5 col-sm-6">
+							<strong>{{company.name}}</strong><br />
+							{{company.companyAddress.addressLine1}}<br />
+							{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}<br />
 
-					</div>
-					<div class="m-t-5 m-b-5 col-sm-6">
-						<div class="col-sm-12 form-group">
-							<div class="col-sm-6 "><label class="control-label pull-right">Due Date <span class="text-danger">*</span></label></div>
-							<div class="col-sm-6">
-								<div class="input-group date">
-									<input name="duedate" type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="item.dueDate" is-open="data.opened1" min-date="dt" datepicker-options="dateOptions" close-text="Close" readonly="readonly" />
-									<span class="input-group-addon">
-										<i class="fa fa-calendar" ng-click="open1($event)"></i>
-									</span>
+						</div>
+						<div class="m-t-5 m-b-5 col-sm-6">
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label pull-right">Due Date <span class="text-danger">*</span></label></div>
+								<div class="col-sm-6">
+
+									<date-ctrl name="duedate" required="true" model="item.dueDate" disabled="false" />
+
 								</div>
 							</div>
-						</div>
-						<div class="col-sm-12 form-group">
-							<div class="col-sm-6 "><label class="control-label pull-right">Invoice Date <span class="text-danger">*</span></label></div>
-							<div class="col-sm-6">{{item.invoiceDate | date:'MM/dd/yyyy'}}</div>
-						</div>
-						<div class="col-sm-12 form-group">
-							<div class="col-sm-6 "><label class="control-label pull-right">Invoice Number <span class="text-danger">*</span></label></div>
-							<div class="col-sm-6"><input type="text" ng-model="item.invoiceNumber" class="form-control" ng-minlength="8" ng-maxlength="8" ng-disabled="item.id" required /></div>
+
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label pull-right">Invoice Date <span class="text-danger">*</span></label></div>
+								<div class="col-sm-6">{{item.invoiceDate | date:'MM/dd/yyyy'}}</div>
+							</div>
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label pull-right">Invoice Number <span class="text-danger">*</span></label></div>
+								<div class="col-sm-6"><input type="text" ng-model="item.invoiceNumber" class="form-control" ng-minlength="8" ng-maxlength="8" ng-disabled="item.id" required /></div>
+							</div>
 						</div>
 					</div>
-
 				</div>
 
 			</div>
@@ -74,181 +74,188 @@
 						<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid"><i class="fa fa-print m-r-5"></i> Print</button>
 					</div>
 				</div>
-				<div class="table-responsive m-t-5 m-b-5">
-					<div class="col-sm-12 panel-default"><div class="panel-heading"><strong>Fee(s) & Charges</strong></div></div>
-					<div class="col-sm-10">
-						<table class="table table-invoice">
-							<thead>
-								<tr>
-									<th class="col-sm-2">DESCRIPTION</th>
-									<th class="col-sm-1">Amount</th>
-									<th class="col-sm-8">Notes</th>
-									<th class="col-sm-1">
-										<i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ng-show="item.status===1"></i>
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="lineitem in item.lineItems track by $index">
-									<td>
-										<input class="form-control" type="text" ng-model="lineitem.description" required ng-disabled="item.status!==1"/>
-									</td>
-									<td>
-										<input name="lineamount{{$index}}" class="form-control" ng-model="lineitem.amount" ng-change="updateLineAmounts()" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" ng-disabled="item.status!==1" data-parsley-type="number" />
-									</td>
-									<td>
-										<input class="form-control" type="text" ng-model="lineitem.notes" />
-									</td>
-									<td>
-										<i class="fa fa-remove fa-lg" ng-click="deletelineitem($index)" ng-show="item.status===1"></i>
-									</td>
-								</tr>
-
-							</tbody>
-						</table>
-					</div>
-
-				</div>
-				<div class="table-responsive  m-t-5 m-b-5">
-					<div class="col-sm-12 panel-default"><div class="panel-heading"><strong>Payrolls</strong></div></div>
-					<div class="col-sm-12">
-						<table class="table table-invoice" show-filter="true">
-							<thead>
-								<tr>
-									<th class="col-sm-1 text-center">Pay Day</th>
-									<th class="col-sm-1 text-center">Start Date</th>
-									<th class="col-sm-1 text-center">End Date</th>
-									<th class="col-sm-1 text-center">Total Gross Wage</th>
-									<th class="col-sm-1 text-center">Total Net Wage</th>
-									<th class="col-sm-1 text-center">Total Cost</th>
-
-								</tr>
-							</thead>
-							<tr ng-repeat="payroll in data.payrolls track by $index" class="mouse-over-pointer" ng-class="{'success': payroll.selected}" ng-click="payrollSelected(payroll)">
-								<td class="col-sm-1 text-center">
-									{{payroll.payDay | date:'MM/dd/yyyy'}}
-								</td>
-								<td class="col-sm-1 text-center">
-									{{payroll.startDate | date:'MM/dd/yyyy'}}
-								</td>
-								<td class="col-sm-1 text-center">
-									{{payroll.endDate | date:'MM/dd/yyyy'}}
-								</td>
-
-								<td class="col-sm-1 text-center show-red">
-									{{payroll.totalGrossWage | currency:'$'}}
-								</td>
-								<td class="col-sm-1 text-center show-red">
-									{{payroll.totalNetWage | currency:'$'}}
-								</td>
-								<td class="col-sm-1 text-center show-red">
-									{{payroll.totalCost | currency:'$'}}
-								</td>
-
-
-							</tr>
-							<tr ng-if="item.status===1" ng-repeat="payroll in datasvc.payrolls | filter:{'status':3} track by $index" class="mouse-over-pointer" ng-class="{'success': payroll.selected}" ng-click="payrollSelected(payroll)">
-								<td class="col-sm-1 text-center">
-									{{payroll.payDay | date:'MM/dd/yyyy'}}
-								</td>
-								<td class="col-sm-1 text-center">
-									{{payroll.startDate | date:'MM/dd/yyyy'}}
-								</td>
-								<td class="col-sm-1 text-center">
-									{{payroll.endDate | date:'MM/dd/yyyy'}}
-								</td>
-
-								<td class="col-sm-1 text-center show-red">
-									{{payroll.totalGrossWage | currency:'$'}}
-								</td>
-								<td class="col-sm-1 text-center show-red">
-									{{payroll.totalNetWage | currency:'$'}}
-								</td>
-								<td class="col-sm-1 text-center show-red">
-									{{payroll.totalCost | currency:'$'}}
-								</td>
-
-
-							</tr>
-
-						</table>
-					</div>
-
-				</div>
-				<div class="table-responsive m-t-5 m-b-5" ng-if="item.status>2">
-					<div class="col-sm-12 panel-default"><div class="panel-heading"><strong>Payments Received</strong></div></div>
-					<div class="col-sm-12">
-						<table class="table table-invoice">
-							<thead>
-								<tr>
-									<th class="col-sm-1">Date</th>
-									<th class="col-sm-1">Type</th>
-									<th class="col-sm-1">Check Number</th>
-									<th class="col-sm-1">Amount</th>
-									<th class="col-sm-4">Notes</th>
-									<th class="col-sm-4">
-										<i class="fa fa-lg fa-plus-circle" ng-click="addPayment()" ng-show="paymentRemaining()"></i>
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="payment in item.payments track by $index">
-									<td>
-										<input class="form-control" type="text" ng-model="payment.paymentDate" ng-maxlength="10" ui-mask="99/99/9999" model-view-value="true" data-parsley-pattern="/^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" required />
-										
-									</td>
-									<td>
-										<select class="form-control" ng-model="payment.method" convert-to-number ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" required>
-											<option value="1">Check</option>
-											<option value="2">Cash</option>
-										</select>
-									</td>
-									<td>
-										<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
-									</td>
-									<td>
-										<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
-									</td>
-									<td>
-										<input class="form-control" type="text" ng-model="payment.notes" />
-									</td>
-									<td>
-										<alert type="danger" ng-if="payment.status===4 && !payment.marker">Check has bounced</alert>
-										<alert type="success" ng-if="payment.status===3 && !payment.marker">Paid</alert>
-										<alert type="danger" ng-if="payment.status===4 && payment.marker">Check will be marked as bounced When you save</alert>
-										<alert type="success" ng-if="payment.status===3 && payment.marker">Will be marked as Paid When you save</alert>
-
-										<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
-										<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;" ng-show="payment.status===2" >Mark Paid</button>
-										<i class="fa fa-remove fa-lg" ng-click="deletepayment($index)" ng-show="payment.status===1"></i>
-									</td>
-								</tr>
-
-							</tbody>
-						</table>
-					</div>
-
-				</div>
 			</div>
-			<div class="invoice-note">
-				* Make all cheques payable to [Your Company Name]<br />
-				* Payment is due within 30 days<br />
-				* If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
-			</div>
-			<div class="invoice-footer text-muted">
-				<p class="text-center m-b-5">
-					THANK YOU FOR YOUR BUSINESS
-				</p>
-				<p class="text-center">
-					<span class="m-r-10"><i class="fa fa-globe"></i> matiasgallipoli.com</span>
-					<span class="m-r-10"><i class="fa fa-phone"></i> T:016-18192302</span>
-					<span class="m-r-10"><i class="fa fa-envelope"></i> rtiemps@gmail.com</span>
-				</p>
+		</div>
+		<div class="col-sm-4" >
+			<div class="col-sm-12 m-l-20" ng-if="item.id">
+				<comment-list source-type-id="11" source-id="item.id" list="item.comments" heading="'Internal Notes'" />
 			</div>
 		</div>
 	</div>
-	
-	
+	<div class="col-sm-12">
+		
+		<div class="invoice-content">
+			<div class="table-responsive m-t-5 m-b-5">
+				<div class="col-sm-12 panel-default"><div class="panel-heading"><strong>Fee(s) & Charges</strong></div></div>
+				<div class="col-sm-10">
+					<table class="table table-invoice">
+						<thead>
+							<tr>
+								<th class="col-sm-2">DESCRIPTION</th>
+								<th class="col-sm-1">Amount</th>
+								<th class="col-sm-8">Notes</th>
+								<th class="col-sm-1">
+									<i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ng-show="item.status===1"></i>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="lineitem in item.lineItems track by $index">
+								<td>
+									<input class="form-control" type="text" ng-model="lineitem.description" required ng-disabled="item.status!==1" />
+								</td>
+								<td>
+									<input name="lineamount{{$index}}" class="form-control" ng-model="lineitem.amount" ng-change="updateLineAmounts()" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" ng-disabled="item.status!==1" data-parsley-type="number" />
+								</td>
+								<td>
+									<input class="form-control" type="text" ng-model="lineitem.notes" />
+								</td>
+								<td>
+									<i class="fa fa-remove fa-lg" ng-click="deletelineitem($index)" ng-show="item.status===1"></i>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+			<div class="table-responsive  m-t-5 m-b-5">
+				<div class="col-sm-12 panel-default"><div class="panel-heading"><strong>Payrolls</strong></div></div>
+				<div class="col-sm-12">
+					<table class="table table-invoice" show-filter="true">
+						<thead>
+							<tr>
+								<th class="col-sm-1 text-center">Pay Day</th>
+								<th class="col-sm-1 text-center">Start Date</th>
+								<th class="col-sm-1 text-center">End Date</th>
+								<th class="col-sm-1 text-center">Total Gross Wage</th>
+								<th class="col-sm-1 text-center">Total Net Wage</th>
+								<th class="col-sm-1 text-center">Total Cost</th>
+
+							</tr>
+						</thead>
+						<tr ng-repeat="payroll in data.payrolls track by $index" class="mouse-over-pointer" ng-class="{'success': payroll.selected}" ng-click="payrollSelected(payroll)">
+							<td class="col-sm-1 text-center">
+								{{payroll.payDay | date:'MM/dd/yyyy'}}
+							</td>
+							<td class="col-sm-1 text-center">
+								{{payroll.startDate | date:'MM/dd/yyyy'}}
+							</td>
+							<td class="col-sm-1 text-center">
+								{{payroll.endDate | date:'MM/dd/yyyy'}}
+							</td>
+
+							<td class="col-sm-1 text-center show-red">
+								{{payroll.totalGrossWage | currency:'$'}}
+							</td>
+							<td class="col-sm-1 text-center show-red">
+								{{payroll.totalNetWage | currency:'$'}}
+							</td>
+							<td class="col-sm-1 text-center show-red">
+								{{payroll.totalCost | currency:'$'}}
+							</td>
+
+
+						</tr>
+						<tr ng-if="item.status===1" ng-repeat="payroll in datasvc.payrolls | filter:{'status':3} track by $index" class="mouse-over-pointer" ng-class="{'success': payroll.selected}" ng-click="payrollSelected(payroll)">
+							<td class="col-sm-1 text-center">
+								{{payroll.payDay | date:'MM/dd/yyyy'}}
+							</td>
+							<td class="col-sm-1 text-center">
+								{{payroll.startDate | date:'MM/dd/yyyy'}}
+							</td>
+							<td class="col-sm-1 text-center">
+								{{payroll.endDate | date:'MM/dd/yyyy'}}
+							</td>
+
+							<td class="col-sm-1 text-center show-red">
+								{{payroll.totalGrossWage | currency:'$'}}
+							</td>
+							<td class="col-sm-1 text-center show-red">
+								{{payroll.totalNetWage | currency:'$'}}
+							</td>
+							<td class="col-sm-1 text-center show-red">
+								{{payroll.totalCost | currency:'$'}}
+							</td>
+
+
+						</tr>
+
+					</table>
+				</div>
+
+			</div>
+			<div class="table-responsive m-t-5 m-b-5" ng-if="item.status>2">
+				<div class="col-sm-12 panel-default"><div class="panel-heading"><strong>Payments Received</strong></div></div>
+				<div class="col-sm-12">
+					<table class="table table-invoice">
+						<thead>
+							<tr>
+								<th class="col-sm-2">Date</th>
+								<th class="col-sm-1">Type</th>
+								<th class="col-sm-1">Check Number</th>
+								<th class="col-sm-1">Amount</th>
+								<th class="col-sm-3">Notes</th>
+								<th class="col-sm-4">
+									<i class="fa fa-lg fa-plus-circle" ng-click="addPayment()" ng-show="paymentRemaining()"></i>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="payment in item.payments track by $index">
+								<td>
+									<date-ctrl name="paydate" required="true" model="payment.paymentDate" disabled="payment.status!==1" />
+								</td>
+								<td>
+									<select class="form-control" ng-model="payment.method" convert-to-number ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" required>
+										<option value="1">Check</option>
+										<option value="2">Cash</option>
+									</select>
+								</td>
+								<td>
+									<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
+								</td>
+								<td>
+									<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
+								</td>
+								<td>
+									<input class="form-control" type="text" ng-model="payment.notes" />
+								</td>
+								<td>
+									<alert type="danger" ng-if="payment.status===4 && !payment.marker">Check has bounced</alert>
+									<alert type="success" ng-if="payment.status===3 && !payment.marker">Paid</alert>
+									<alert type="danger" ng-if="payment.status===4 && payment.marker">Check will be marked as bounced When you save</alert>
+									<alert type="success" ng-if="payment.status===3 && payment.marker">Will be marked as Paid When you save</alert>
+
+									<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
+									<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;" ng-show="payment.status===2">Mark Paid</button>
+									<i class="fa fa-remove fa-lg" ng-click="deletepayment($index)" ng-show="payment.status===1"></i>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+		<div class="invoice-note">
+			* Make all cheques payable to [Your Company Name]<br />
+			* Payment is due within 30 days<br />
+			* If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
+		</div>
+		<div class="invoice-footer text-muted">
+			<p class="text-center m-b-5">
+				THANK YOU FOR YOUR BUSINESS
+			</p>
+			<p class="text-center">
+				<span class="m-r-10"><i class="fa fa-globe"></i> matiasgallipoli.com</span>
+				<span class="m-r-10"><i class="fa fa-phone"></i> T:016-18192302</span>
+				<span class="m-r-10"><i class="fa fa-envelope"></i> rtiemps@gmail.com</span>
+			</p>
+		</div>
+	</div>
 </div>
 
 

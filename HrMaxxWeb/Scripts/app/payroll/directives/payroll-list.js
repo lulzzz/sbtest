@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('payrollList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -15,45 +15,14 @@ common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
-						opened: false,
-						opened1: false,
-						opened2: false,
+						
 						payTypes: [],
 						payrollAccount: null,
 						employees: [],
 						startingCheckNumber: 0
 					}
 					$scope.list = [];
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
 					
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
-
-					$scope.open2 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened2 = true;
-					};
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
@@ -123,28 +92,28 @@ common.directive('payrollList', ['$modal', 'zionAPI', '$timeout', '$window',
 						});
 						if ($scope.list.length > 0) {
 							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
-							selected.startDate = moment(sorted[0].endDate).add(1, 'day');
+							selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
 
 							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
-								selected.endDate = moment(selected.startDate).add(1, 'week');
-								selected.payDay = moment(sorted[0].payDay).add(1, 'week');
+								selected.endDate = moment(selected.startDate).add(1, 'week').toDate();
+								selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
 							}
 							else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
-								selected.endDate = moment(selected.startDate).add(2, 'week');
-								selected.payDay = moment(sorted[0].payDay).add(2, 'week');
+								selected.endDate = moment(selected.startDate).add(2, 'week').toDate();
+								selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
 							}
 							else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
 								if (moment(selected.startDate).date() === 1) {
-									selected.endDate = moment(selected.startDate).add(14, 'day');
-									selected.payDay = moment(sorted[0].payDay).add(15, 'day');
+									selected.endDate = moment(selected.startDate).add(14, 'day').toDate();
+									selected.payDay = moment(sorted[0].payDay).add(15, 'day').toDate();
 								} else {
-									selected.endDate = moment(selected.startDate).endOf('month');
+									selected.endDate = moment(selected.startDate).endOf('month').toDate();
 									selected.payDay = moment(sorted[0].startDate).endOf('month');
 								}
 								
 							} else {
-								selected.endDate = moment(selected.startDate).add(1, 'month');
-								selected.payDay = moment(sorted[0].payDay).add(1, 'month');
+								selected.endDate = moment(selected.startDate).add(1, 'month').toDate();
+								selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
 							}
 							
 

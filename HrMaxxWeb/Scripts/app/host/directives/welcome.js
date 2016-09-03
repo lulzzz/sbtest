@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('welcome', ['$modal', 'zionAPI', '$location','localStorageService',
-	function ($modal, zionAPI, $locaation, localStorageService) {
+common.directive('welcome', ['zionAPI', '$location','localStorageService',
+	function (zionAPI, $locaation, localStorageService) {
 		return {
 			restrict: 'E',
 

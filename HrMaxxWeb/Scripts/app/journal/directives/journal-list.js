@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('journalList', ['$modal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('journalList', ['zionAPI', '$timeout', '$window',
+	function (zionAPI, $timeout, $window) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -14,9 +14,7 @@ common.directive('journalList', ['$modal', 'zionAPI', '$timeout', '$window',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, journalRepository) {
 					var dataSvc = {
 						isBodyOpen: true,
-						opened: false,
-						opened1: false,
-						opened2: false,
+						
 						companyAccounts: [],
 						bankAccounts: [],
 						vendors: [],
@@ -42,37 +40,8 @@ common.directive('journalList', ['$modal', 'zionAPI', '$timeout', '$window',
 					}
 					$scope.list = [];
 					$scope.newItem = null;
-					$scope.dateOptions = {
-						format: 'dd/MMyyyy',
-						startingDay: 1
-					};
-
-					$scope.today = function () {
-						$scope.dt = new Date();
-					};
-					$scope.today();
-
-					$scope.clear = function () {
-						$scope.dt = null;
-					};
-					$scope.open = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened = true;
-					};
+					$scope.dt = new Date();
 					
-					$scope.open1 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened1 = true;
-					};
-
-					$scope.open2 = function ($event) {
-						$event.preventDefault();
-						$event.stopPropagation();
-						$scope.data.opened2 = true;
-					};
-
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
