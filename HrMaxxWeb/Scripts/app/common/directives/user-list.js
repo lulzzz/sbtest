@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('userList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('userList', ['zionAPI', '$timeout', '$window','version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -14,7 +14,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window',
 				parentTypeId: "=?parentTypeId",
 				mainData: "=?mainData"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/user-list.html',
+			templateUrl: zionAPI.Web + 'Content/templates/user-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commpnRepository, ngTableParams, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Contact;

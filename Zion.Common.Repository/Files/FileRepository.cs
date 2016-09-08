@@ -10,6 +10,7 @@ namespace HrMaxx.Common.Repository.Files
 	{
 		private readonly string _destinationPath;
 		private readonly string _sourcePath;
+		private readonly string _pdfSourcePath;
 		private readonly string _userImagePath;
 
 		public FileRepository(string destinationPath, string sourcePath, string userimagepath)
@@ -17,6 +18,7 @@ namespace HrMaxx.Common.Repository.Files
 			_destinationPath = destinationPath;
 			_sourcePath = sourcePath;
 			_userImagePath = userimagepath;
+			_pdfSourcePath = _destinationPath + "PDFTemp/";
 		}
 
 		public void DeleteDestinationFile(string file)
@@ -42,6 +44,14 @@ namespace HrMaxx.Common.Repository.Files
 			string destPath = _destinationPath + destination;
 			string srcPath = _sourcePath + source;
 			File.Move(srcPath, destPath);
+		}
+
+		public void MovePDFFile(string source, string destination)
+		{
+			string destPath = _destinationPath + destination;
+			string srcPath = _pdfSourcePath + source;
+			File.Copy(srcPath, destPath, true);
+			File.Delete(srcPath);
 		}
 
 		public string GetDocumentLocation(string documentName)
@@ -135,6 +145,18 @@ namespace HrMaxx.Common.Repository.Files
 					f.Write(imageBytes, 0, imageBytes.Length);
 				}
 			}
+		}
+
+		public bool FileExists(Guid documentId)
+		{
+			string destPath = documentId + ".*";
+			var dir = new DirectoryInfo(_destinationPath);
+			return dir.GetFiles(destPath).Any();
+		}
+
+		public void DeleteTargetFile(string file)
+		{
+			File.Delete(file);
 		}
 	}
 }

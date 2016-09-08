@@ -14,4 +14,10 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 	}
+
+	public class PayrollPrintRequest
+	{
+		public Guid DocumentId { get; set; }
+		public int PayCheckId { get; set; }
+	}
 }

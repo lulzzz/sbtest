@@ -11,5 +11,9 @@
 		public const string SaveInvoice = "Payroll/Invoice";
 		public const string GetInvoice = "Payroll/Invoice/{invoiceId:guid}";
 		public const string GetInvoicePayroll = "Payroll/PayrollsForInvoice/{invoiceId:guid}";
+		public const string PrintPayCheck = "Payroll/PrintPayCheck/{payrollId:guid}/{checkId:int}";
+		public const string Print = "Payroll/Print";
+		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";
+		public const string PrintPayroll = "Payroll/PrintPayroll";
 	}
 }

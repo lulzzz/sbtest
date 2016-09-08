@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('taxYearRateList', ['zionAPI',
-	function (zionAPI) {
+common.directive('taxYearRateList', ['zionAPI', 'version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('taxYearRateList', ['zionAPI',
 				list: "=list",
 				metaData: "=metaData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-year-rate-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-year-rate-list.html?v=' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {

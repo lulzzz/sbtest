@@ -45,9 +45,10 @@ namespace HrMaxx.Common.Repository.Common
 		public T GetTargetEntity<T>(EntityTypeEnum target, Guid targetId)
 		{
 			var entity =
-				_dbContext.EntityRelations.First(
+				_dbContext.EntityRelations.FirstOrDefault(
 					er => er.TargetEntityTypeId == (int) target && er.TargetEntityId == targetId);
-
+			if (entity == null)
+				return default(T);
 			return JsonConvert.DeserializeObject<T>(entity.TargetObject);
 		}
 

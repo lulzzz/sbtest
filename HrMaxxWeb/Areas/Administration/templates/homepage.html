@@ -76,8 +76,8 @@
 			<div class="panel-heading">
 				Profile
 				<button class="btn btn-xs btn-warning pull-right" ng-click="editProfile=!editProfile" ng-show="!editProfile"><i class="fa fa-pencil "></i>edit</button>
-				<button class="btn btn-xs btn-default pull-right" ng-click="profileCancel()" ng-show="editProfile"><i class="fa fa-remove "></i>cancel</button>
-				<button class="btn btn-xs btn-success pull-right" ng-click="profileSave()" ng-show="editProfile"><i class="fa fa-save"></i>save</button>
+				<button class="btn btn-xs btn-default pull-right" ng-click="profileCancel()" ng-show="editProfile"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<button class="btn btn-xs btn-success pull-right" ng-click="profileSave()" ng-show="editProfile"><i class="fa fa-save m-r-5"></i> Save</button>
 			</div>
 			<div class="panel-body table-bordered">
 				<div ng-show="!editProfile" ng-bind-html="data.profile">
@@ -96,7 +96,7 @@
 				Services
 				<button class="btn btn-xs btn-warning pull-right" ng-click="editServices=!editServices" ng-show="!editServices"><i class="fa fa-pencil "></i>edit</button>
 				<button class="btn btn-xs btn-default pull-right" ng-click="servicesCancel()" ng-show="editServices"><i class="fa fa-remove "></i>cancel</button>
-				<button class="btn btn-xs btn-success pull-right" ng-click="servicesSave()" ng-show="editServices"><i class="fa fa-save"></i>save</button>
+				<button class="btn btn-xs btn-success pull-right" ng-click="servicesSave()" ng-show="editServices"><i class="fa fa-save m-r-5"></i> Save</button>
 			</div>
 			<div class="panel-body table-bordered">
 				<div ng-show="!editServices" ng-bind-html="data.services">
@@ -183,6 +183,6 @@
 		</div>
 	<div>
 		<button class="btn btn-sm btn-primary m-r-5" ng-click="save()" ng-disabled="homepageForm.$invalid">Save</button>
-		<button class="btn btn-sm btn-default m-r-5" ng-click="cancel()">Cancel</button>
+		<button class="btn btn-sm btn-default m-r-5" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 	</div>
 </div>

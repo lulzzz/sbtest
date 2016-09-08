@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'version',
+	function ($modal, zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window',
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {

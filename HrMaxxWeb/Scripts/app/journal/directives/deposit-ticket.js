@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('depositTicket', ['zionAPI',
-	function (zionAPI) {
+common.directive('depositTicket', ['zionAPI','version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('depositTicket', ['zionAPI',
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/deposit-ticket.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/deposit-ticket.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes','AccountType',
 				function ($scope, $element, $location, $filter, companyRepository, EntityTypes, AccountType) {
@@ -160,11 +160,23 @@ common.directive('depositTicket', ['zionAPI',
 						updateItemAmount();
 						$scope.$parent.$parent.save();
 					}
-
+					$scope.print = function () {
+						var j = angular.copy($scope.item);
+						j.paymentMethod = j.paymentMethod ? 2 : 1;
+						$.each(j.journalDetails, function (index, jd) {
+							if (!jd.accountId !== $scope.datasvc.selectedAccount.id) {
+								jd.depositMethod = jd.depositMethod ? jd.depositMethod.key : 1;
+							}
+						});
+					
+						$scope.$parent.$parent.printJournal(j);
+					}
 					$scope.void = function () {
 						$scope.$parent.$parent.void();
 					}
-
+					$scope.hasChanged = function () {
+						return !angular.equals($scope.item, dataSvc.original);
+					}
 					var init = function () {
 						
 						
@@ -186,9 +198,9 @@ common.directive('depositTicket', ['zionAPI',
 							}
 						});
 						if ($scope.item.transactionDate)
-							$scope.item.transactionDate = moment($scope.transactionDate).toDate();
+							$scope.item.transactionDate = moment($scope.item.transactionDate).toDate();
 						updateItemAmount();
-
+						dataSvc.original = angular.copy($scope.item);
 					}
 					init();
 

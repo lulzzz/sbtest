@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PDFModel.cs" />
     <Compile Include="DataModel\Country.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>
     </Compile>

@@ -88,8 +88,8 @@
 
 	</div>
 	<div class="col-sm-10 col-sm-offset-1">
-		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()">cancel</button>
-		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid">save</button>
+		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid"><i class="fa fa-save m-r-5"></i> Save</button>
 		<button class="btn btn-sm btn-warning pull-right m-5" ng-click="void()" ng-show="item.id && !item.isVoid">void</button>
 	</div>
 	

@@ -1,10 +1,12 @@
 ﻿using System.Configuration;
+using System.Web;
 using Autofac;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Services.Common;
 using HrMaxx.Common.Services.Document;
 using HrMaxx.Common.Services.Mementos;
 using HrMaxx.Common.Services.Notifications;
+using HrMaxx.Common.Services.PDF;
 using HrMaxx.Common.Services.Security;
 using EmailService = HrMaxx.Common.Services.Email.EmailService;
 
@@ -18,6 +20,10 @@ namespace HrMaxxAPI.Code.IOC.Common
 			string _smtpServer = ConfigurationManager.AppSettings["SMTPServer"];
 			string webUrl = ConfigurationManager.AppSettings["WebURL"];
 			string tokenVersion = ConfigurationManager.AppSettings["TokenVersion"];
+			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
+			string _templatePath = HttpContext.Current.Server.MapPath("~/Templates/");
+
+
 			builder.RegisterType<StagingDataService>()
 				.As<IStagingDataService>()
 				.InstancePerLifetimeScope()
@@ -60,6 +66,13 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 			builder.RegisterType<CommonService>()
 				.As<ICommonService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<PDFService>()
+				.WithParameter(new NamedParameter("filePath", _pdfPath))
+				.WithParameter(new NamedParameter("templatePath", _templatePath))
+				.As<IPDFService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

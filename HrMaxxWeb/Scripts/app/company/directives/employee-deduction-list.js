@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('employeeDeductionList', ['$uibModal', 'zionAPI',
-	function ($modal, zionAPI) {
+common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
+	function ($modal, zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -11,7 +11,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI',
 				list: "=list",
 				saveToServer: "=saveToServer"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html?v=' + version,
 
 			controller: ['$scope', '$filter', 'companyRepository',
 				function ($scope, $filter, companyRepository) {

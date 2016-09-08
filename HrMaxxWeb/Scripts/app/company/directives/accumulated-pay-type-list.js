@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('accumulatedPayTypeList', ['zionAPI',
-	function (zionAPI) {
+common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('accumulatedPayTypeList', ['zionAPI',
 				list: "=list",
 				metaData: "=metaData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/accumulated-pay-type-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/accumulated-pay-type-list.html?v=' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {

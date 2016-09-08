@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('payCodeList', ['zionAPI',
-	function (zionAPI) {
+common.directive('payCodeList', ['zionAPI','version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -9,7 +9,7 @@ common.directive('payCodeList', ['zionAPI',
 				companyId: "=companyId",
 				list: "=list"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/pay-code-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/pay-code-list.html?v=' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {

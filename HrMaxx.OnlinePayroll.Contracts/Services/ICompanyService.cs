@@ -27,5 +27,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void DeleteEmployeeDeduction(int deductionId);
 		List<Account> GetCompanyPayrollAccounts(Guid id);
 		CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource);
+		Company GetCompanyById(Guid companyId);
+		VendorCustomer GetVendorCustomersById(Guid vcId);
 	}
 }

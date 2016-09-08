@@ -328,6 +328,16 @@
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\hrmaxxapi.pubxml" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
+    <Content Include="templates\MICRPayChecl.pdf" />
+    <Content Include="templates\LaserTopPayCheck.pdf" />
+    <Content Include="templates\LaserMiddlePayCheck.pdf" />
+    <Content Include="templates\MICRQBPayCheck.pdf" />
+    <Content Include="templates\micro.ttf" />
+    <Content Include="templates\RegCheck.pdf" />
+    <Content Include="templates\RegCheckDeluxe.pdf" />
+    <Content Include="templates\RegCheckMiddle.pdf" />
+    <Content Include="templates\RegCheckQB.pdf" />
+    <Content Include="templates\DepositTicket.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

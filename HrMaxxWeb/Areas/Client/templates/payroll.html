@@ -74,8 +74,8 @@
 
 	</div>
 	<div class="col-sm-12">
-		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()">process</button>
-		<button class="btn btn-sm btn-default" ng-click="cancel()">cancel</button>
+		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
+		<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">
 		<select id="paytypelist" class="form-control" ng-model="params.filter()[name]" name="filter-paytype" convert-to-number>
@@ -125,8 +125,8 @@
 			</div>
 		<div class="modal-footer">
 			<div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
-				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()">cancel</button>
-				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()">save</button>
+				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()"><i class="fa fa-save m-r-5"></i> Save</button>
 			</div>
 
 		</div>

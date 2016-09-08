@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('userNews', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('userNews', ['zionAPI', '$timeout', '$window','version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -9,7 +9,7 @@ common.directive('userNews', ['zionAPI', '$timeout', '$window',
 				heading: "=heading",
 				fetch: "=fetch"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/usernews.html',
+			templateUrl: zionAPI.Web + 'Content/templates/usernews.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.list = [];

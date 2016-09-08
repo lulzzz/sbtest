@@ -42,6 +42,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public List<JournalDetailResource> JournalDetails { get; set; }
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+		public Guid? DocumentId { get; set; }
 
 		public decimal DisplayAmount
 		{

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('invoice', ['$uibModal', 'zionAPI', '$timeout', '$window',
-	function ($modal, zionAPI, $timeout, $window) {
+common.directive('invoice', ['$uibModal', 'zionAPI', '$timeout', '$window','version',
+	function ($modal, zionAPI, $timeout, $window,version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -12,7 +12,7 @@ common.directive('invoice', ['$uibModal', 'zionAPI', '$timeout', '$window',
 				company: "=company",
 				fromPayroll: "=?fromPayroll"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
@@ -49,7 +49,7 @@ common.directive('invoice', ['$uibModal', 'zionAPI', '$timeout', '$window',
 					
 					var calculateInvoiceCharge = function () {
 
-						if ($scope.datasvc.invoiceMethod === 1) {
+						if ($scope.item.invoiceMethod === 1) {
 							$scope.item.invoiceValue = +($scope.item.invoiceRate * $scope.item.payrollIds.length).toFixed(2);
 						} else {
 							$scope.item.invoiceValue = +(($scope.item.invoiceRate * $scope.item.payrollValue) / 100).toFixed(2);
@@ -108,12 +108,13 @@ common.directive('invoice', ['$uibModal', 'zionAPI', '$timeout', '$window',
 					$scope.payrollSelected = function (payroll) {
 						if ($scope.item.status === 1) {
 							payroll.selected = !payroll.selected;
-							$scope.updatePayrollAmounts();
+							
 							if (payroll.selected) {
 								$scope.item.payrollIds.push(payroll.id);
 							} else {
 								$scope.item.payrollIds.splice($scope.item.payrollIds.indexOf(payroll.id), 1);
 							}
+							$scope.updatePayrollAmounts();
 						}
 						
 					}

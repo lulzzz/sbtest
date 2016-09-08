@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('paycheck', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('paycheck', ['zionAPI', '$timeout', '$window', 'version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -9,7 +9,7 @@ common.directive('paycheck', ['zionAPI', '$timeout', '$window',
 				check: "=?check",
 				checkId: "=?checkId"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/paycheck.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/paycheck.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {

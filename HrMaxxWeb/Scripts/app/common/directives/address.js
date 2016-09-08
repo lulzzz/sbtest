@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('address', ['zionAPI','localStorageService',
-	function (zionAPI, localStorageService) {
+common.directive('address', ['zionAPI','localStorageService','version',
+	function (zionAPI, localStorageService, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -13,7 +13,7 @@ common.directive('address', ['zionAPI','localStorageService',
 				showDisabled: "=?showDisabled",
 				valGroup: "=?valGroup"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/address.html',
+			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;

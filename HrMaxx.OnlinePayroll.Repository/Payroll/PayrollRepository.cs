@@ -172,5 +172,26 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			});
 			_dbContext.SaveChanges();
 		}
+
+		public void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed)
+		{
+			var dbcheck = _dbContext.PayrollPayChecks.First(p => p.Id == payCheckId);
+			dbcheck.Status = (int) printed;
+			_dbContext.SaveChanges();
+		}
+
+		public void MarkPayrollPrinted(Guid payrollId)
+		{
+			var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollId);
+			dbPayroll.Status = (int)PayrollStatus.Printed;
+			foreach (var check in dbPayroll.PayrollPayChecks.Where(pc=>!pc.IsVoid).ToList())
+			{
+				if (check.Status == (int) PaycheckStatus.Saved)
+					check.Status = (int) PaycheckStatus.Printed;
+				else if (check.Status == (int)PaycheckStatus.Paid)
+					check.Status = (int)PaycheckStatus.PrintedAndPaid;
+			}
+			_dbContext.SaveChanges();
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
@@ -53,6 +54,8 @@ namespace HrMaxx.Common.Services.Document
 			try
 			{
 				var document = _commonService.GetTargetEntity<DocumentDto>(EntityTypeEnum.Document, documentId);
+				if (document == null)
+					return null;
 				byte[] fileData = _fileRepository.GetFile(documentId + "." + document.DocumentExtension);
 				return new FileDto
 				{
@@ -188,6 +191,39 @@ namespace HrMaxx.Common.Services.Document
 			}
 		}
 
+		public DocumentDto AddEntityPDF(EntityDocumentAttachment doc, Guid documentId)
+		{
+			try
+			{
+				DocumentDto document = Mapper.Map<EntityDocumentAttachment, DocumentDto>(doc);
+				document.Id = documentId;
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					MovePDF(new MoveDocumentDto
+					{
+						SourceFileName = doc.SourceFileName,
+						DestinationFileName = document.Id + "." + doc.FileExtension
+					});
+					_commonService.SaveEntityRelation<DocumentDto>((EntityTypeEnum)doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
+						document);
+					txn.Complete();
+				}
+				return document;
+
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" save document for entity {0}-{1}", doc.EntityTypeId, doc.EntityId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private void MovePDF(MoveDocumentDto document)
+		{
+			_fileRepository.MovePDFFile(document.SourceFileName, document.DestinationFileName);
+		}
+
 		public void DeleteEntityDocument(int entityTypeId, Guid entityId, Guid documentId)
 		{
 			try
@@ -224,6 +260,11 @@ namespace HrMaxx.Common.Services.Document
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public bool DocumentExists(Guid documentId)
+		{
+			return _fileRepository.FileExists(documentId);
 		}
 	}
 }

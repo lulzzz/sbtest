@@ -1,14 +1,14 @@
 ﻿'use strict';
 
-common.directive('invoiceList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('invoiceList', ['zionAPI', '$timeout', '$window','version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {

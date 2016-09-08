@@ -99,6 +99,10 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Persits.PDF">
+      <HintPath>..\Persits.PDF.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -140,6 +144,7 @@
     <Compile Include="Mementos\MementoDataService.cs" />
     <Compile Include="Mementos\StagingDataService.cs" />
     <Compile Include="Notifications\NotificationService.cs" />
+    <Compile Include="PDF\PDFService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\UserService.cs" />
     <Compile Include="Security\AuthenticationService.cs" />

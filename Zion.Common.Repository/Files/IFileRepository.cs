@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HrMaxx.Common.Repository.Files
 {
@@ -8,6 +9,7 @@ namespace HrMaxx.Common.Repository.Files
 		void DeleteFile(string file);
 		void DeleteFiles(List<string> files);
 		void MoveFile(string source, string destination);
+		void MovePDFFile(string source, string destination);
 		string GetDocumentLocation(string documentName);
 		byte[] GetFile(string documentName);
 		byte[] GetFileBytesByPath(string documentPath);
@@ -21,5 +23,7 @@ namespace HrMaxx.Common.Repository.Files
 		void MoveDestinationFile(string sourceFileName, string destinationFileName);
 		void MoveFile(string source, string destination, byte[] file);
 		void SaveUserImage(string user, string image);
+		bool FileExists(Guid documentId);
+		void DeleteTargetFile(string file);
 	}
 }

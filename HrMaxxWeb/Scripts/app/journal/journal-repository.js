@@ -61,7 +61,34 @@ common.factory('journalRepository', [
 				});
 
 				return deferred.promise;
-			}
+			},
+
+			printCheck: function (journal) {
+				var deferred = $q.defer();
+				$http.post(zionAPI.URL + "Journal/Print", journal, { responseType: "arraybuffer" }).success(
+					function (data, status, headers) {
+						var type = headers('Content-Type');
+						var disposition = headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}).error(function (data, status) {
+						var e = /* error */
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
 
 		};
 	}

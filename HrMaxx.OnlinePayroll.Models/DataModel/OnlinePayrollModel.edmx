@@ -294,6 +294,7 @@
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="JournalDetails" Type="varchar(max)" Nullable="false" />
+          <Property Name="DocumentId" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
         <EntityType Name="Payroll">
           <Key>
@@ -1864,6 +1865,7 @@
           <Property Name="PayeeName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="MainAccountId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="CompanyAccount" Relationship="HrMaxxModel.FK_Journal_CompanyAccount" FromRole="Journal" ToRole="CompanyAccount" />
+          <Property Name="DocumentId" Type="Guid" Nullable="false" />
         </EntityType>
         <Association Name="FK_Journal_EntityType">
           <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
@@ -2340,6 +2342,7 @@
           <EntitySetMapping Name="Journals">
             <EntityTypeMapping TypeName="HrMaxxModel.Journal">
               <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
                 <ScalarProperty Name="MainAccountId" ColumnName="MainAccountId" />
                 <ScalarProperty Name="PayeeName" ColumnName="PayeeName" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />

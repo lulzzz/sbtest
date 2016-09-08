@@ -104,8 +104,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.Taxes)))
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Comment>>(src.Notes)))
 				.ForMember(dest => dest.Salary, opt => opt.MapFrom(src=>src.Salary))
-				.ForMember(dest => dest.YTDGrossWage, opt => opt.Ignore())
-				.ForMember(dest => dest.YTDNetWage, opt => opt.Ignore());
+				.ForMember(dest => dest.PayrollId, opt => opt.MapFrom(src => src.PayrollId))
+				.ForMember(dest => dest.DocumentId, opt => opt.MapFrom(src => src.Journals.Any() ? src.Journals.First().DocumentId : Guid.Empty));
 
 
 			CreateMap<Models.DataModel.Payroll, Models.Payroll>()

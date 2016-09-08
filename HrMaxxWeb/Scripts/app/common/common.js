@@ -5,7 +5,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-
+common.constant('version', '1.0.0.1');
 common.constant('EntityTypes', {
 	Host:1,
 	Company:2,
@@ -75,7 +75,6 @@ common.run([
 		authService.fillAuthData();
 	}
 ]);
-
 
 common.run(function (editableOptions) {
 	editableOptions.theme = 'bs3';

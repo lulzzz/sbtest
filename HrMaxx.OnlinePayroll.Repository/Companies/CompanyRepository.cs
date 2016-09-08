@@ -430,5 +430,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.CompanyTaxRate, CompanyTaxRate>(taxyearrate);
 		}
+
+		public Company GetCompanyById(Guid companyId)
+		{
+			var dbCompany = _dbContext.Companies.First(c => c.Id == companyId);
+			return _mapper.Map<Models.DataModel.Company, Models.Company>(dbCompany);
+		}
+
+		public VendorCustomer GetVendorCustomersById(Guid vcId)
+		{
+			var db = _dbContext.VendorCustomers.First(vc => vc.Id == vcId);
+			return _mapper.Map<Models.DataModel.VendorCustomer, VendorCustomer>(db);
+		}
 	}
 }

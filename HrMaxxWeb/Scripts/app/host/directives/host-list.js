@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('hostList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -9,7 +9,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window',
 				heading: "=heading",
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'ngTableParams', 'EntityTypes',
 				function ($scope, $element, $location, $filter, hostRepository, ngTableParams, EntityTypes) {

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
@@ -15,6 +18,8 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
+using Magnum;
+using Magnum.Extensions;
 
 namespace HrMaxx.OnlinePayroll.Services.Payroll
 {
@@ -24,16 +29,21 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly ITaxationService _taxationService;
 		private readonly ICompanyService _companyService;
 		private readonly IJournalService _journalService;
+		private readonly IPDFService _pdfService;
+		private readonly IFileRepository _fileRepository;
 
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
 			_companyService = companyService;
 			_journalService = journalService;
+			_pdfService = pdfService;
+			_fileRepository = fileRepository;
 		}
+
 
 
 		public List<Models.Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate)
@@ -242,8 +252,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 					var coaList = _companyService.GetCompanyPayrollAccounts(payroll.Company.Id);
 					var savedPayroll = _payrollRepository.SavePayroll(payroll);
-					savedPayroll.PayChecks.ForEach(pc => CreateJournalEntry(pc, coaList, payroll.UserName));
+					savedPayroll.PayChecks.ForEach(pc =>
+					{
+						var j = CreateJournalEntry(pc, coaList, payroll.UserName);
+						pc.DocumentId = j.DocumentId;
+					});
 					var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPayroll.Company.Id, savedPayroll.PayDay);
+					var affectedChecks = new List<PayCheck>();
 					foreach (var paycheck in savedPayroll.PayChecks)
 					{
 						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id).ToList();
@@ -251,6 +266,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							employeeFutureCheck.AddToYTD(paycheck);
 							_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+							affectedChecks.Add(employeeFutureCheck);
 						}
 
 
@@ -261,7 +277,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						SavedObject = savedPayroll,
 						UserId = savedPayroll.UserId,
 						TimeStamp = DateTime.Now,
-						EventType = NotificationTypeEnum.Created
+						EventType = NotificationTypeEnum.Created,
+						AffectedChecks = affectedChecks
 					});
 					return savedPayroll;
 				}
@@ -308,7 +325,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						SavedObject = savedPaycheck,
 						UserId = new Guid(user),
 						TimeStamp = DateTime.Now,
-						EventType = NotificationTypeEnum.Updated
+						EventType = NotificationTypeEnum.Updated,
+						AffectedChecks = employeeFutureChecks
 					});
 				}
 				return _payrollRepository.GetPayrollById(payrollId);
@@ -439,7 +457,400 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private void CreateJournalEntry(PayCheck pc, List<Account> coaList, string userName)
+		public FileDto PrintPayCheck(int payCheckId)
+		{
+			try
+			{
+				var payCheck = _payrollRepository.GetPayCheckById(payCheckId);
+				var payroll = _payrollRepository.GetPayrollById(payCheck.PayrollId);
+				var journal = _journalService.GetPayCheckJournal(payCheck.Id);
+				return PrintPayCheck(payroll, payCheck, journal);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + payCheckId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public FileDto PrintPayCheck(PayCheck payCheck)
+		{
+			try
+			{
+				var payroll = _payrollRepository.GetPayrollById(payCheck.PayrollId);
+				var journal = _journalService.GetPayCheckJournal(payCheck.Id);
+				return PrintPayCheck(payroll, payCheck, journal);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + payCheck.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private FileDto PrintPayCheck(Models.Payroll payroll, PayCheck payCheck)
+		{
+			try
+			{
+				var journal = _journalService.GetPayCheckJournal(payCheck.Id);
+				return PrintPayCheck(payroll, payCheck, journal);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + payCheck.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void MarkPayCheckPrinted(int payCheckId)
+		{
+			var paycheck = _payrollRepository.GetPayCheckById(payCheckId);
+			if (paycheck.Status == PaycheckStatus.Printed || paycheck.Status==PaycheckStatus.PrintedAndPaid)
+				return;
+			if (paycheck.Status == PaycheckStatus.Saved)
+				_payrollRepository.ChangePayCheckStatus(payCheckId, PaycheckStatus.Printed);
+			else if (paycheck.Status==PaycheckStatus.Paid)
+				_payrollRepository.ChangePayCheckStatus(payCheckId, PaycheckStatus.PrintedAndPaid);
+		}
+
+		public FileDto PrintPayroll(Models.Payroll payroll)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var documents = new List<Guid>();
+					var updateStatus = false;
+					foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid))
+					{
+						if (!_fileRepository.FileExists(paychecks.DocumentId))
+						{
+							PrintPayCheck(payroll, paychecks);
+							updateStatus = true;
+						}
+						documents.Add(paychecks.DocumentId);
+					}
+					
+					var fileName = string.Format("Payroll_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+					var returnFile = _pdfService.AppendAllDocuments(payroll.Id, fileName, documents);
+					if(payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && updateStatus))
+						_payrollRepository.MarkPayrollPrinted(payroll.Id);
+					txn.Complete();
+					return returnFile;
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Print Payrolls for id=" + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private FileDto PrintPayCheck(Models.Payroll payroll, PayCheck payCheck, Journal journal)
+		{
+			try
+			{
+				var coas = _companyService.GetComanyAccounts(payroll.Company.Id);
+				var bankcoa = coas.First(c => c.Id == journal.MainAccountId);
+				var pdf = new PDFModel
+				{
+					Name = string.Format("Pay Check_{1}_{2} {0}.pdf", payCheck.PayDay.ToString("MMddyyyy"), payCheck.PayrollId, payCheck.Id),
+					TargetId = payCheck.Id,
+					NormalFontFields = new List<KeyValuePair<string, string>>(),
+					BoldFontFields = new List<KeyValuePair<string, string>>(),
+					TargetType = EntityTypeEnum.PayCheck,
+					Template = payroll.Company.PayCheckStock.GetHrMaxxName(),
+					DocumentId = journal.DocumentId
+				};
+				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", payroll.Company.Name));
+				if (payroll.Company.PayCheckStock == PayCheckStock.LaserMiddle)
+				{
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name-2", payroll.Company.Name));
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date-3", payCheck.PayDay.ToString("MM/dd/yyyy")));
+				}
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", payroll.Company.CompanyAddress.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", payroll.Company.CompanyAddress.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
+				if (payroll.Company.PayCheckStock == PayCheckStock.MICREncodedTop || payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName3", payCheck.Employee.FullName));
+				}
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text1", payCheck.Employee.Contact.Address.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text2", payCheck.Employee.Contact.Address.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date", payCheck.PayDay.ToString("MM/dd/yyyy")));
+
+				var words = Utilities.NumberToWords(Math.Floor(payCheck.NetWage));
+				var decPlaces = (int)(((decimal)payCheck.NetWage % 1) * 100);
+				if (payroll.Company.PayCheckStock == PayCheckStock.MICREncodedTop ||
+						payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", "****" + payCheck.NetWage));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, "****")));
+				}
+				else
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, string.Empty)));
+
+					if (payCheck.PaymentMethod == EmployeePaymentMethod.Check)
+					{
+						var micr = "00000000";
+						micr =
+							micr.Substring(0,
+								(8 - payCheck.CheckNumber.ToString().Length) < 0 ? 0 : 8 - payCheck.CheckNumber.ToString().Length) +
+							payCheck.CheckNumber.ToString();
+						var micrVal = string.Format("C{0}CA{1}A{2}C", micr, bankcoa.BankAccount.RoutingNumber,
+							bankcoa.BankAccount.AccountNumber);
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("MICR", micrVal));
+					}
+
+				}
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
+				var caption8 = string.Format("****-**-{0}                                                {1} {2}",
+					payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4), "Employee No:", payCheck.Employee.EmployeeNo);
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", caption8));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", payroll.Company.Name));
+
+				if (payroll.Company.PayCheckStock != PayCheckStock.MICRQb)
+				{
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2",
+						payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", payroll.Company.CompanyAddress.AddressLine1));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", payroll.Company.CompanyAddress.AddressLine2));
+
+					var sum2 = string.Format("Federal Status: {0}{1}Federal Exemptions: {2}{3}Additional Fed Withholding: {4}",
+						payCheck.Employee.FederalStatus.GetDbName(), "".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length),
+						payCheck.Employee.FederalExemptions,
+						"".PadRight(66 - payCheck.Employee.FederalAdditionalAmount.ToString("C").Length),
+						payCheck.Employee.FederalAdditionalAmount.ToString("C"));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2", sum2));
+
+					var text8 = string.Format("State Status:    {0}{1}State Exemptions:    {2}{3}Additional State Withholding: {4}",
+						payCheck.Employee.State.TaxStatus.GetDbName(),
+						"".PadRight(57 - payCheck.Employee.State.TaxStatus.GetDbName().Length), payCheck.Employee.State.Exemptions,
+						"".PadRight(66 - payCheck.Employee.State.AdditionalAmount.ToString("C").Length),
+						payCheck.Employee.State.AdditionalAmount.ToString("C"));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8", text8));
+				}
+				else
+				{
+					var sum2 = string.Format("Federal Status: {0}      Federal Exemptions: {1}      Additional Fed Withholding: {2}",
+						payCheck.Employee.FederalStatus.GetDbName(),
+						payCheck.Employee.FederalExemptions,
+						payCheck.Employee.FederalAdditionalAmount.ToString("C"));
+
+
+					var text8 = string.Format("State Status: {0}      State Exemptions: {1}      Additional State Withholding: {2}",
+						payCheck.Employee.State.TaxStatus.GetDbName(),
+						payCheck.Employee.State.Exemptions,
+						payCheck.Employee.State.AdditionalAmount.ToString("C"));
+
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2", sum2));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8", text8));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2-1", sum2));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8-1", text8));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", string.Empty));
+
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2-1", payCheck.Employee.FullName));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", journal.Memo));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", string.Empty));
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", payroll.Company.Name));
+					if (payCheck.Employee.PayType == EmployeeType.Salary)
+					{
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr1-s-1", "Salary"));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-1-1", payCheck.Salary.ToString("C")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-1-1", payCheck.YTDSalary.ToString("C")));
+					}
+					else
+					{
+
+						var hrcounter = 1;
+						var otcounter = 1;
+						foreach (var payCode in payCheck.PayCodes.Where(p => p.Hours > 0 || p.OvertimeHours > 0).ToList())
+						{
+							if (hrcounter < 4 && (payCode.Amount > 0))
+							{
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s-1", payCode.PayCode.Description));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter + "-1", payCode.Hours.ToString()));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter + "-1",
+									payCode.PayCode.HourlyRate.ToString("C")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter + "-1", payCode.Amount.ToString("c")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter + "-1", payCode.YTD.ToString("C")));
+
+								hrcounter++;
+							}
+							if (otcounter < 4 && (payCode.OvertimeAmount > 0))
+							{
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot-1",
+									payCode.PayCode.Description + " Overtime"));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter + "-1",
+									payCode.OvertimeHours.ToString()));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter + "-1",
+									(payCode.PayCode.HourlyRate*(decimal) 1.5).ToString("C")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter + "-1",
+									payCode.OvertimeAmount.ToString("c")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter + "-1",
+									payCode.YTDOvertime.ToString("c")));
+
+								otcounter++;
+							}
+
+						}
+					}
+					var compCounter1 = 1;
+					foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
+					{
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", compensation.PayType.Description));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compytd" + compCounter1 + "-1", compensation.YTD.ToString("C")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compamt" + compCounter1 + "-1", compensation.Amount.ToString("C")));
+						compCounter1++;
+					}
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("11-1", payCheck.CompensationTaxableAmount.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("12-1", payCheck.CompensationTaxableYTD.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-2-1", payCheck.CompensationNonTaxableAmount.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-2-1", payCheck.CompensationNonTaxableYTD.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15_1", payCheck.GrossWage.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16_1", payCheck.YTDGrossWage.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-1-1", (payCheck.NetWage - payCheck.CompensationNonTaxableAmount).ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-1-1", (payCheck.YTDNetWage - payCheck.CompensationNonTaxableYTD).ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-3-1", payCheck.NetWage.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-3-1", payCheck.YTDNetWage.ToString("C")));
+
+
+				}
+				decimal prwytd = 0;
+				if (payCheck.Employee.PayType == EmployeeType.Salary)
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr1-s", "Salary"));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-1", payCheck.Salary.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-1", payCheck.YTDSalary.ToString("C")));
+				}
+				else
+				{
+					var hrcounter = 1;
+					var otcounter = 1;
+					
+					foreach (var payCode in payCheck.PayCodes.Where(p => p.Hours > 0 || p.OvertimeHours > 0).ToList())
+					{
+						prwytd += Math.Round(payCode.YTD + payCode.YTDOvertime - payCode.Amount - payCode.OvertimeAmount, 2,
+							MidpointRounding.AwayFromZero);
+						if (hrcounter < 4 && (payCode.Amount > 0))
+						{
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", payCode.PayCode.Description));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.PayCode.HourlyRate.ToString("C")));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter, payCode.Amount.ToString("c")));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter, payCode.YTD.ToString("C")));
+
+							hrcounter++;
+						}
+						if (otcounter < 4 && (payCode.OvertimeAmount > 0))
+						{
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot", payCode.PayCode.Description + " Overtime"));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter, payCode.OvertimeHours.ToString()));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter, (payCode.PayCode.HourlyRate * (decimal)1.5).ToString("C")));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter, payCode.OvertimeAmount.ToString("c")));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter, payCode.YTDOvertime.ToString("c")));
+
+							otcounter++;
+						}
+
+					}
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd", prwytd.ToString("C")));
+				}
+
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", journal.Memo));
+				var compCounter = 1;
+				foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, compensation.PayType.Description));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compytd" + compCounter, compensation.YTD.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compamt" + compCounter, compensation.Amount.ToString("C")));
+					compCounter++;
+				}
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("11", payCheck.CompensationTaxableAmount.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("12", payCheck.CompensationTaxableYTD.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-2", payCheck.CompensationNonTaxableAmount.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-2", payCheck.CompensationNonTaxableYTD.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15", payCheck.GrossWage.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16", payCheck.YTDGrossWage.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-1", (payCheck.NetWage - payCheck.CompensationNonTaxableAmount).ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-1", (payCheck.YTDNetWage - payCheck.CompensationNonTaxableYTD).ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-3", payCheck.NetWage.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-3", payCheck.YTDNetWage.ToString("C")));
+
+				var taxCounter = 17;
+				foreach (var employeeTax in payCheck.Taxes.Where(t => t.IsEmployeeTax).OrderBy(t => t.Tax.Id))
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString(), employeeTax.Tax.Name));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString(), employeeTax.Amount.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter.ToString() + "-1", employeeTax.YTDWage.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString(), employeeTax.YTDTax.ToString("C")));
+
+				}
+				foreach (var ded in payCheck.Deductions)
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString(), ded.Deduction.Description));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString(), ded.Amount.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString(), ded.YTD.ToString("C")));
+				}
+
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("95", (payCheck.EmployeeTaxes + payCheck.DeductionAmount).ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("96", (payCheck.EmployeeTaxesYTD + payCheck.DeductionYTD).ToString("C")));
+
+				if (payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
+				{
+					taxCounter = 17;
+					foreach (var employeeTax in payCheck.Taxes.Where(t => t.IsEmployeeTax).OrderBy(t => t.Tax.Id))
+					{
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString() + "-1", employeeTax.Tax.Name));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString() + "-1", employeeTax.Amount.ToString("C")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter.ToString() + "-1-1", employeeTax.YTDWage.ToString("C")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString() + "_1", employeeTax.YTDTax.ToString("C")));
+
+					}
+					foreach (var ded in payCheck.Deductions)
+					{
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString() + "-1", ded.Deduction.Description));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString() + "-1", ded.Amount.ToString("C")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>(taxCounter++.ToString() + "_1", ded.YTD.ToString("C")));
+					}
+
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("95-1", (payCheck.EmployeeTaxes + payCheck.DeductionAmount).ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("96_1", (payCheck.EmployeeTaxesYTD + payCheck.DeductionYTD).ToString("C")));
+
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd-1", prwytd.ToString("C")));
+				}
+
+				if (payCheck.Accumulations.Any())
+				{
+					var scl = payCheck.Accumulations.First();
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype", string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.Used.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-1", scl.AccumulatedValue.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
+				}
+
+				return _pdfService.Print(pdf);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + payCheck.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		private Journal CreateJournalEntry(PayCheck pc, List<Account> coaList, string userName)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -461,7 +872,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				TransactionType = TransactionType.PayCheck,
 				PayeeName = pc.Employee.FullName,
 				MainAccountId = bankCOA.Id,
-				JournalDetails = new List<JournalDetail>()
+				JournalDetails = new List<JournalDetail>(),
+				DocumentId =  CombGuid.Generate()
 
 			};
 			//bank account debit
@@ -478,7 +890,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			}
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero), LastModfied = journal.LastModified, LastModifiedBy = userName });
-			_journalService.SaveJournalForPayroll(journal);
+			return _journalService.SaveJournalForPayroll(journal);
 		}
 
 		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, IEnumerable<PayCheck> previousChecks  )

@@ -28,5 +28,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		void UpdateLastPayrollDateCompany(Guid id, DateTime payDay);
 		void UpdateLastPayrollDateEmployee(Guid id, DateTime payDay);
 		CompanyTaxRate SaveCompanyTaxRate(CompanyTaxRate mappedResource);
+		Company GetCompanyById(Guid companyId);
+		VendorCustomer GetVendorCustomersById(Guid vcId);
 	}
 }

@@ -28,6 +28,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<JournalDetail> JournalDetails { get; set; } 
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+		public Guid DocumentId { get; set; }
 	}
 
 	public class JournalDetail

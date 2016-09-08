@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
@@ -21,5 +22,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		Invoice GetInvoiceById(Guid invoiceId);
 		List<Models.Payroll> GetInvoicePayrolls(Guid invoiceId);
 		void SetPayrollInvoiceId(Invoice savedInvoice);
+		void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed);
+		void MarkPayrollPrinted(Guid payrollId);
 	}
 }

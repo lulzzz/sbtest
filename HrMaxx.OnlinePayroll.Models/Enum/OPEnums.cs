@@ -20,9 +20,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	}
 	public enum PayCheckStock
 	{
+		[HrMaxxSecurity(HrMaxxName = "MICRPayCheck.pdf")]
 		MICREncodedTop=1,
+		[HrMaxxSecurity(HrMaxxName = "LaserMiddlePayCheck.pdf")]
 		LaserMiddle=2,
+		[HrMaxxSecurity(HrMaxxName = "LaserTopPayCheck.pdf")]
 		LaserTop=3,
+		[HrMaxxSecurity(HrMaxxName = "MICRQBPayCheck.pdf")]
 		MICRQb=4
 	}
 
@@ -184,8 +188,11 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum EmployeeTaxStatus
 	{
+		[HrMaxxSecurity(DbName = "Single")]
 		Single=1,
+		[HrMaxxSecurity(DbName = "Married")]
 		Married=2,
+		[HrMaxxSecurity(DbName = "U")]
 		UnmarriedHeadofHousehold=3
 	}
 
@@ -195,7 +202,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Single=1,
 		[HrMaxxSecurity(DbName = "Married")]
 		Married=2,
-		[HrMaxxSecurity(DbName = "HeadofHousehold")]
+		[HrMaxxSecurity(DbName = "Unmarried Head of Household")]
 		HeadofHousehold=3
 	}
 
@@ -271,7 +278,10 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Committed")]
 		Committed = 3,
 		[HrMaxxSecurity(DbName = "Invoiced")]
-		Invoiced = 4
+		Invoiced = 4,
+		[HrMaxxSecurity(DbName = "Printed")]
+		Printed = 5
+
 	}
 
 	public enum TransactionType

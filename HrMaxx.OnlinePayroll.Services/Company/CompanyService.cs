@@ -292,5 +292,33 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public Company GetCompanyById(Guid companyId)
+		{
+			try
+			{
+				return _companyRepository.GetCompanyById(companyId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "company by Id= "+companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public VendorCustomer GetVendorCustomersById(Guid vcId)
+		{
+			try
+			{
+				return _companyRepository.GetVendorCustomersById(vcId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "vendor customer by Id= " + vcId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

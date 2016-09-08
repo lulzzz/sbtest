@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('contact', ['zionAPI','localStorageService',
-	function (zionAPI, localStorageService) {
+common.directive('contact', ['zionAPI','localStorageService','version',
+	function (zionAPI, localStorageService, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -11,7 +11,7 @@ common.directive('contact', ['zionAPI','localStorageService',
 				sourceId: "=sourceId",
 				valGroup: "=?valGroup"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/contact.html',
+			templateUrl: zionAPI.Web + 'Content/templates/contact.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				if (!$scope.valGroup) {

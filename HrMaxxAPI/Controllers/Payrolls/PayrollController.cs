@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
+using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Resources.Payroll;
@@ -10,11 +15,66 @@ namespace HrMaxxAPI.Controllers.Payrolls
 	public class PayrollController : BaseApiController
 	{
 		private readonly IPayrollService _payrollService;
-
-		public PayrollController(IPayrollService payrollService)
+		private readonly IDocumentService _documentService;
+		
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService)
 		{
 			_payrollService = payrollService;
+			_documentService = documentService;
 		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.Print)]
+		public HttpResponseMessage GetDocument(PayrollPrintRequest request)
+		{
+			if (_documentService.DocumentExists(request.DocumentId))
+			{
+				try
+				{
+					var document = MakeServiceCall(() => _documentService.GetDocument(request.DocumentId), "Get Document By ID",
+						true);
+					return Printed(document);
+				}
+				catch (Exception e)
+				{
+					
+				}
+			}
+			
+			var printedCheck = MakeServiceCall(() => _payrollService.PrintPayCheck(request.PayCheckId), "print check by payroll id and check id", true);
+			return Printed(printedCheck);	
+			
+			
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.PrintPayroll)]
+		public HttpResponseMessage GetDocument(PayrollResource payroll)
+		{
+			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayroll(mapped), "print all check for payroll with id " + mapped.Id, true);
+			return Printed(printed);
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.MarkPayCheckPrinted)]
+		public void MarkPayCheckPrinted(int payCheckId)
+		{
+			MakeServiceCall(() => _payrollService.MarkPayCheckPrinted(payCheckId), "mark paycheck printed");
+		}
+
+		private HttpResponseMessage Printed(FileDto document)
+		{
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(document.MimeType);
+
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = document.Filename
+			};
+			return response;
+		}
+
 		[HttpPost]
 		[Route(PayrollRoutes.Payrolls)]
 		public List<PayrollResource> GetPayrolls(PayrollFilterResource filter)
@@ -46,6 +106,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			mappedResource.PayChecks.ForEach(p =>
 			{
+				p.PayrollId = mappedResource.Id;
 				p.LastModified = DateTime.Now;
 				p.LastModifiedBy = CurrentUser.FullName;
 			});
@@ -109,6 +170,13 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var payrolls = MakeServiceCall(() => _payrollService.GetInvoicePayrolls(invoiceId), string.Format("get payrolls for invoice with id={0}", invoiceId));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
+		}
+		[HttpGet]
+		[Route(PayrollRoutes.PrintPayCheck)]
+		public FileDto PrintPayCheck(Guid payrollId, int checkId)
+		{
+			return MakeServiceCall(() => _payrollService.PrintPayCheck(checkId), string.Format("print paycheck with id={0}", checkId), true);
+			
 		}
 	}
 

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('employeeList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -9,7 +9,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window',
 				mainData: "=mainData",
 				isVendor: "=isVendor"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {

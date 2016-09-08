@@ -1,14 +1,14 @@
 ﻿'use strict';
 
-common.directive('payrollList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
@@ -162,7 +162,28 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window',
 						getPayrolls($scope.mainData.selectedCompany.id, null, null, selectedItemId);
 						getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 					}
-				
+					$scope.updateStatus = function(checkid, status, statusText) {
+						var item = $filter('filter')($scope.committed.payChecks, { id: checkid })[0];
+						if (item) {
+							item.status = status;
+							item.statusText = statusText;
+						}
+					}
+					$scope.updatePrintStatus = function () {
+						var item = $filter('filter')($scope.list, { id: $scope.committed.id })[0];
+						item.status = item.status === 3 ? 5 : item.status;
+						item.statusText = item.status === 5 ? "Printed" : item.statusText;
+						$.each(item.payChecks, function (index, p) {
+							if (p.status === 3 || p.status === 5) {
+								var status = p.status === 3 ? 4 : 6;
+								var statusText = p.status === 4 ? "Paid" : "Printed and Paid";
+								$scope.updateStatus(p.id, status, statusText);
+							}
+							
+						});
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
+					}
 
 					$scope.set = function (item) {
 						$scope.selected = null;
@@ -174,7 +195,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window',
 								$scope.selected = item;
 							else if (item.status === 2)
 								$scope.processed = angular.copy(item);
-							else if (item.status === 3 || item.status === 4)
+							else if (item.status > 2)
 								$scope.committed = angular.copy(item);
 							
 						}, 1);

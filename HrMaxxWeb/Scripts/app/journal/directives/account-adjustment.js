@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('accountAdjustment', ['zionAPI',
-	function (zionAPI) {
+common.directive('accountAdjustment', ['zionAPI','version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('accountAdjustment', ['zionAPI',
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/account-adjustment.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/account-adjustment.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'AccountType', 
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, AccountType) {

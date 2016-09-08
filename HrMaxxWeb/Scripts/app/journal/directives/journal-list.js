@@ -1,17 +1,17 @@
 ﻿'use strict';
 
-common.directive('journalList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/journal-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/journal-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'journalRepository',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, journalRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'journalRepository', 'payrollRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, journalRepository, payrollRepository) {
 					var dataSvc = {
 						isBodyOpen: true,
 						
@@ -47,7 +47,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window',
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 
-					$scope.addAlert = function (error, type) {
+					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					
@@ -114,6 +114,39 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window',
 						dataSvc.isBodyOpen = false;
 
 					}
+					$scope.markPrinted = function (listitem) {
+						payrollRepository.printPayCheck(listitem.documentId, listitem.payrollPayCheckId).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
+							payrollRepository.markPayCheckPrinted(listitem.payrollPayCheckId).then(function () {
+									
+								}, function (error) {
+									addAlert('error marking pay check as printed', 'danger');
+								});
+							
+
+
+						}, function (error) {
+							addAlert('error printing pay check', 'danger');
+						});
+					}
+					$scope.printJournal = function (journal) {
+						journalRepository.printCheck(journal).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+						}, function (error) {
+							addAlert('error printing check', 'danger');
+						});
+					}
 					$scope.void = function () {
 						if ($window.confirm('Are you sure you want to mark this check Void?')) {
 							var check = $scope.selected;
@@ -132,10 +165,10 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window',
 									$scope.list.push(data);
 									$scope.tableParams.reload();
 									$scope.fillTableData($scope.tableParams);
-									$scope.addAlert('successfully voided checkbook item', 'success');
+									addAlert('successfully voided checkbook item', 'success');
 									$scope.cancel();
 								}, function(erorr) {
-									$scope.addAlert('error making the check void', 'danger');
+									addAlert('error making the check void', 'danger');
 								});
 							}
 						}
@@ -168,10 +201,10 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window',
 								$scope.list.push(data);
 								$scope.tableParams.reload();
 								$scope.fillTableData($scope.tableParams);
-								$scope.addAlert('successfully saved checkbook item', 'success');
+								addAlert('successfully saved checkbook item', 'success');
 								$scope.cancel();
 							}, function (erorr) {
-								$scope.addAlert('error saving checkbook item', 'danger');
+								addAlert('error saving checkbook item', 'danger');
 							});
 						}
 					}

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('commentList', ['zionAPI', '$timeout', '$window',
-	function (zionAPI, $timeout, $window) {
+common.directive('commentList', ['zionAPI', '$timeout', '$window','version',
+	function (zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('commentList', ['zionAPI', '$timeout', '$window',
 				sourceId: "=sourceId",
 				heading: "=heading"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/comment-list.html',
+			templateUrl: zionAPI.Web + 'Content/templates/comment-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Comment;

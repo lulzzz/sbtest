@@ -143,5 +143,13 @@ namespace HrMaxx.Infrastructure.Helpers
 			if (attribs.Length == 0) return null;
 			return new Guid(attribs[0].HrMaxxId);
 		}
+
+		public static string GetHrMaxxName(this Enum enumValue)
+		{
+			FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+			var attribs = fieldInfo.GetCustomAttributes(typeof(HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
+			if (attribs.Length == 0) return null;
+			return attribs[0].HrMaxxName;
+		}
 	}
 }

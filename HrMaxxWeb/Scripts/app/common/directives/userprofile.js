@@ -1,14 +1,14 @@
 ﻿'use strict';
 
-common.directive('userProfile', ['zionAPI',
-	function (zionAPI) {
+common.directive('userProfile', ['zionAPI','version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/userprofile.html',
+			templateUrl: zionAPI.Web + 'Content/templates/userprofile.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'userRepository', function ($scope, $element, $location, $filter, userRepository) {
 				$scope.mainData.showFilterPanel = false;

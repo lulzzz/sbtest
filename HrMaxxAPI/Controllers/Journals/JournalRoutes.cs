@@ -7,5 +7,6 @@
 		public const string SaveJournal = "Journal/Journal";
 		public const string AccountWithJournalList = "Journal/Accounts";
 		public const string VoidJournal = "Journal/Void";
+		public const string Print = "Journal/Print";
 	}
 }

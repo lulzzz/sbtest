@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using Autofac.Features.Metadata;
 using HrMaxx.Common.Contracts.Services;
@@ -20,13 +23,40 @@ namespace HrMaxxAPI.Controllers.Journals
 	{
 		public readonly IJournalService _journalService;
 		public readonly IMetaDataService _metaDataService;
+		public readonly IDocumentService _documentService;
 
-		public JournalController(IJournalService journalService, IMetaDataService metaDataService)
+		public JournalController(IJournalService journalService, IMetaDataService metaDataService, IDocumentService documentService)
 		{
 			_journalService = journalService;
 			_metaDataService = metaDataService;
+			_documentService = documentService;
 		}
+		[HttpPost]
+		[Route(JournalRoutes.Print)]
+		public HttpResponseMessage GetDocument(JournalResource journal)
+		{
+			
+			var mapped = Mapper.Map<JournalResource, Journal>(journal);
+			if (_documentService.DocumentExists(mapped.DocumentId))
+			{
+				var document = MakeServiceCall(() => _documentService.GetDocument(mapped.DocumentId), "Get Document By ID",
+						true);
+				return Printed(document);
+			}
+			var printed = MakeServiceCall(() => _journalService.Print(mapped), "print journal with id " + mapped.Id, true);
+			return Printed(printed);
+		}
+		private HttpResponseMessage Printed(FileDto document)
+		{
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(document.MimeType);
 
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = document.Filename
+			};
+			return response;
+		}
 		[HttpPost]
 		[Route(JournalRoutes.JournalList)]
 		public JournalListResource GetJournalList(JournalFilterResource filter)

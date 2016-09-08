@@ -1,14 +1,14 @@
 ﻿'use strict';
 
-common.directive('welcome', ['zionAPI', '$location','localStorageService',
-	function (zionAPI, $locaation, localStorageService) {
+common.directive('welcome', ['zionAPI', '$location','localStorageService','version',
+	function (zionAPI, $locaation, localStorageService, version) {
 		return {
 			restrict: 'E',
 
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Administration/templates/hostwelcome.html',
+			templateUrl: zionAPI.Web + 'Areas/Administration/templates/hostwelcome.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'commonRepository', '$q', 'EntityTypes', function ($scope, $element, $location, $filter, hostRepository, commonRepository, $q, EntityTypes) {
 				$scope.mainData.showFilterPanel = false;

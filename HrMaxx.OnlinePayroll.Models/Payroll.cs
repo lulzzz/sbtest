@@ -33,11 +33,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Cost), 2, MidpointRounding.AwayFromZero); }
 		}
-
+		
 	}
 
 	public class PayCheck
 	{
+		public Guid PayrollId { get; set; }
 		public int Id { get; set; }
 		public Employee Employee { get; set; }
 		public List<PayrollPayCode> PayCodes { get; set; }
@@ -90,6 +91,15 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.YTDTax), 2, MidpointRounding.AwayFromZero); }
 		}
 
+		public decimal EmployeeTaxesYTDWage
+		{
+			get { return Math.Round(Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.YTDWage), 2, MidpointRounding.AwayFromZero); }
+		}
+		public decimal EmployerTaxesYTDWage
+		{
+			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.YTDWage), 2, MidpointRounding.AwayFromZero); }
+		}
+
 		public decimal DeductionAmount
 		{
 			get { return Math.Round(Deductions.Sum(d => d.Amount), 2, MidpointRounding.AwayFromZero); }
@@ -127,7 +137,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Employee.PayType == EmployeeType.Salary ? YTDSalary : Math.Round(PayCodes.Sum(pc => pc.YTD + pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); }
 		}
-
+		public Guid DocumentId { get; set; }
 		public void AddToYTD(PayCheck paycheck)
 		{
 			AddToYTDCompensation(paycheck.Compensations);
@@ -168,37 +178,50 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		private void AddToYTDPayCodes(IEnumerable<PayrollPayCode> payCodes)
 		{
-			PayCodes.ForEach(pc =>
+			payCodes.ToList().ForEach(pc1 =>
 			{
-				var pc1 = payCodes.FirstOrDefault(paycode => paycode.PayCode.Id==pc.PayCode.Id);
-				if (pc1 != null)
+				var pc = PayCodes.FirstOrDefault(paycode => paycode.PayCode.Id == pc1.PayCode.Id);
+				if (pc != null)
 				{
 					pc.YTD = Math.Round(pc.YTD + pc1.Amount, 2, MidpointRounding.AwayFromZero);
 					pc.YTDOvertime = Math.Round(pc.YTDOvertime + pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				}
+				else
+				{
+					PayCodes.Add(pc1);
+				}
 			});
+			
 		}
 
 		private void AddToYTDCompensation(IEnumerable<PayrollPayType> comps)
 		{
-			Compensations.ForEach(c =>
+			comps.ToList().ForEach(c1 =>
 			{
-				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
-				if (c1 != null)
+				var c = Compensations.FirstOrDefault(comp => comp.PayType.Id == c1.PayType.Id);
+				if (c != null)
 				{
 					c.YTD = Math.Round(c.YTD + c1.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					Compensations.Add(c1);
 				}
 			});
 		}
 
 		private void AddToYTDDeductions(IEnumerable<PayrollDeduction> deds)
 		{
-			Deductions.ForEach(d =>
+			deds.ToList().ForEach(d1 =>
 			{
-				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
-				if (d1 != null)
+				var d = Deductions.FirstOrDefault(ded => ded.Deduction.Id == d1.Deduction.Id);
+				if (d != null)
 				{
 					d.YTD = Math.Round(d.YTD + d1.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					Deductions.Add(d1);
 				}
 			});
 		}
@@ -359,6 +382,11 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Used { get; set; }
 		public decimal YTDUsed { get; set; }
 		public decimal CarryOver { get; set; }
+
+		public decimal Available
+		{
+			get { return CarryOver + YTDFiscal - YTDUsed; }
+		}
 	}
 	
 }

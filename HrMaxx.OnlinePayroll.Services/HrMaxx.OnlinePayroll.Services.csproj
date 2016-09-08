@@ -110,6 +110,10 @@
       <Project>{6B33E83D-006B-45AE-8657-9676568EC734}</Project>
       <Name>HrMaxx.Common.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Zion.Common.Repository\HrMaxx.Common.Repository.csproj">
+      <Project>{B8D8A327-C212-4021-B732-1AF84FF99ABF}</Project>
+      <Name>HrMaxx.Common.Repository</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Zion.Infrastructure\HrMaxx.Infrastructure.csproj">
       <Project>{4ba8b656-2741-4474-ab09-537a93e879d2}</Project>
       <Name>HrMaxx.Infrastructure</Name>

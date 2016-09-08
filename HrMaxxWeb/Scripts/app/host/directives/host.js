@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('host', ['zionAPI','localStorageService',
-	function (zionAPI, localStorageService) {
+common.directive('host', ['zionAPI','localStorageService','version',
+	function (zionAPI, localStorageService, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('host', ['zionAPI','localStorageService',
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host.html',
+			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'EntityTypes', function ($scope, $element, $location, $filter, hostRepository, EntityTypes) {
 				$scope.data1 = {

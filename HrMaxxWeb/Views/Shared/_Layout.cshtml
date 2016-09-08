@@ -68,7 +68,9 @@
 				<h4 class="pull-right">You are viewing company: {{data.selectedCompany.name}}</h4>
 			</div>
 			<div class="row">
-				<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+				<div ng-repeat="alert in alerts" class="alert" ng-class="{'alert-success':alert.type==='success', 'alert-danger':alert.type==='danger'}">
+					{{alert.msg}}
+				</div>
 			</div>
 			<div ng-view></div>
 			@RenderBody()

@@ -23,7 +23,9 @@ namespace HrMaxx.Common.Contracts.Services
 
 		IList<DocumentDto> GetEntityDocuments(int entityType, Guid entityId);
 		DocumentDto AddEntityDocument(EntityDocumentAttachment document);
+		DocumentDto AddEntityPDF(EntityDocumentAttachment document, Guid documentId);
 		void DeleteEntityDocument(int entityTypeId, Guid entityId, Guid documentId);
 		FileDto GetDocumentById(Guid documentId, string extension , string fileName);
+		bool DocumentExists(Guid documentId);
 	}
 }

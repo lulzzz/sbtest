@@ -8,5 +8,6 @@ namespace HrMaxx.Infrastructure.Attributes
 		public int DbId { get; set; }
 		public string DbName { get; set; }
 		public string HrMaxxId { get; set; }
+		public string HrMaxxName { get; set; }
 	}
 }

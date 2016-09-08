@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$window',
-	function (zionAPI, $timeout, localStorageService, $window) {
+common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$window','version',
+	function (zionAPI, $timeout, localStorageService, $window, version) {
 		return {
 			restrict: 'E',
 			
@@ -10,7 +10,7 @@ common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$wi
 				sourceTypeId: "=sourceTypeId",
 				parent: "=host"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Administration/templates/homepage.html',
+			templateUrl: zionAPI.Web + 'Areas/Administration/templates/homepage.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'commonRepository', '$q', 'EntityTypes',
 				function ($scope, $element, $location, $filter, hostRepository, commonRepository, $q, EntityTypes) {

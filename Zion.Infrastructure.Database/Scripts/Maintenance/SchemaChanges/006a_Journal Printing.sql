@@ -1,0 +1,1 @@
+﻿Alter Table Journal Add DocumentId uniqueidentifier not null Default newid();

@@ -16,6 +16,15 @@ namespace HrMaxx.Common.Models.Dtos
 		public string Zip { get; set; }
 		public string ZipExtension { get; set; }
 		public AddressType Type { get; set; }
+
+		public string AddressLine2
+		{
+			get
+			{
+				return string.Format("{0}, {1} {2}{3}", City, "CA", Zip,
+					!string.IsNullOrWhiteSpace(ZipExtension) ? "-" + ZipExtension : string.Empty);
+			}
+		}
 	}
 
 	public class State

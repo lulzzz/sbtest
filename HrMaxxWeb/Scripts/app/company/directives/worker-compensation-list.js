@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('workerCompensationList', ['zionAPI',
-	function (zionAPI) {
+common.directive('workerCompensationList', ['zionAPI', 'version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -9,7 +9,7 @@ common.directive('workerCompensationList', ['zionAPI',
 				companyId: "=companyId",
 				list: "=list"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html?v=' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {

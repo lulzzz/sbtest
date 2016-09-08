@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('dateCtrl', ['zionAPI',
-	function (zionAPI) {
+common.directive('dateCtrl', ['zionAPI','version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -13,7 +13,7 @@ common.directive('dateCtrl', ['zionAPI',
 				name: "=name",
 				required: "=required"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/datectrl.html',
+			templateUrl: zionAPI.Web + 'Content/templates/datectrl.html?v=' + version,
 
 			controller: ['$scope', function ($scope) {
 			

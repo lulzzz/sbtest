@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('deductionList', ['zionAPI',
-	function (zionAPI) {
+common.directive('deductionList', ['zionAPI', 'version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('deductionList', ['zionAPI',
 				list: "=list",
 				types: "=types"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/deduction-list.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/deduction-list.html?nd=' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope,$rootScope, $filter, companyRepository) {

@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('regularCheck', ['zionAPI',
-	function (zionAPI) {
+common.directive('regularCheck', ['zionAPI','version',
+	function (zionAPI, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -10,7 +10,7 @@ common.directive('regularCheck', ['zionAPI',
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/regular-check.html',
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/regular-check.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'AccountType', 
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, AccountType) {
@@ -76,6 +76,11 @@ common.directive('regularCheck', ['zionAPI',
 						$scope.selectedjd = null;
 						updateItemAmount();
 					}
+					$scope.print = function () {
+						var j = angular.copy($scope.item);
+						j.paymentMethod = j.paymentMethod ? 2 : 1;
+						$scope.$parent.$parent.printJournal(j);
+					}
 					$scope.isJournalDetailValid = function(jd) {
 						if (!jd.accountId || !jd.accountName || !jd.amount)
 							return false;
@@ -131,10 +136,11 @@ common.directive('regularCheck', ['zionAPI',
 					$scope.void = function() {
 						$scope.$parent.$parent.void();
 					}
-
+					$scope.hasChanged = function() {
+						return !angular.equals($scope.item, dataSvc.original);
+					}
 					var init = function () {
 						
-						$scope.minPayDate = new Date();
 						dataSvc.allPayees = dataSvc.vendors.concat(dataSvc.customers);
 						if ($scope.item.payeeId != '00000000-0000-0000-0000-000000000000') {
 							var exists = $filter('filter')(dataSvc.allPayees, { id: $scope.item.payeeId })[0];
@@ -142,7 +148,10 @@ common.directive('regularCheck', ['zionAPI',
 								dataSvc.selectedPayee = exists;
 							}
 						}
-						
+						if ($scope.item.transactionDate)
+							$scope.item.transactionDate = moment($scope.item.transactionDate).toDate();
+
+						dataSvc.original = angular.copy($scope.item);
 					}
 					init();
 

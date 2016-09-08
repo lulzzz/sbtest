@@ -39,6 +39,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	}
 	public class PayCheckResource
 	{
+		public Guid PayrollId { get; set; }
 		public int? Id { get; set; }
 		[Required]
 		public EmployeeResource Employee { get; set; }
@@ -73,6 +74,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal EmployerTaxes { get; set; }
 		public decimal EmployeeTaxesYTD { get; set; }
 		public decimal EmployerTaxesYTD { get; set; }
+		public decimal EmployeeTaxesYTDWage { get; set; }
+		public decimal EmployerTaxesYTDWage { get; set; }
 		public decimal Cost { get; set; }
 
 		public DateTime? StartDate { get; set; }
@@ -90,6 +93,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get { return Status.GetDbName(); }
 		}
+		public Guid DocumentId { get; set; }
 	}
 
 	public class PayrollPayCodeResource
@@ -156,9 +160,6 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal YTDUsed { get; set; }
 		public decimal CarryOver { get; set; }
 
-		public decimal Available
-		{
-			get { return CarryOver + YTDFiscal - YTDUsed; }
-		}
+		public decimal Available { get; set; }
 	}
 }
