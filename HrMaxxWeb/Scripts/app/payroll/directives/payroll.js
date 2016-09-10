@@ -144,7 +144,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					$scope.showcomps = function(listitem) {
 						var modalInstance = $modal.open({
-							templateUrl: 'popover/updatecomps.html',
+							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
 							size: 'md',
 							resolve: {

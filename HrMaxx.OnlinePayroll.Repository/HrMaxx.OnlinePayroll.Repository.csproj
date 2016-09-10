@@ -68,6 +68,8 @@
     <Compile Include="Payroll\IPayrollRepository.cs" />
     <Compile Include="Payroll\PayrollRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reports\ReportRepository.cs" />
+    <Compile Include="Reports\IReportRepository.cs" />
     <Compile Include="Taxation\ITaxationRepository.cs" />
     <Compile Include="Taxation\TaxationRepository.cs" />
     <Compile Include="UtilRepository.cs" />

@@ -58,6 +58,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal GrossWage { get; set; }
 		public decimal NetWage { get; set; }
 		public decimal WCAmount { get; set; }
+		public PayrollWorkerCompensationResource WorkerCompensation { get; set; }
 
 		public decimal YTDGrossWage { get; set; }
 		public decimal YTDNetWage { get; set; }
@@ -94,6 +95,13 @@ namespace HrMaxxAPI.Resources.Payroll
 			get { return Status.GetDbName(); }
 		}
 		public Guid DocumentId { get; set; }
+	}
+
+	public class PayrollWorkerCompensationResource
+	{
+		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
+		public decimal Amount { get; set; }
+		public decimal YTD { get; set; }
 	}
 
 	public class PayrollPayCodeResource
@@ -144,6 +152,11 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
+
+		public string Name
+		{
+			get { return string.Format("{0} - {1}", Deduction.Type.Name, Deduction.DeductionName); }
+		}
 	}
 
 	public class PayTypeAccumulationResource

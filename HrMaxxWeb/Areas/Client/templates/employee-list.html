@@ -19,7 +19,7 @@
 							{{item.name}}
 						</td>
 						<td data-title=" 'SSN' " filter="{ 'ssn': 'text' }" sortable=" 'ssn' " class="col-sm-2">
-							{{item.ssn}}
+							{{item.ssn.substr(0,3) +'-'+ item.ssn.substr(3,2) + '-' + item.ssn.substr(item.ssn.length-4)}}
 						</td>
 						<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-2">
 							{{item.department}}
@@ -174,7 +174,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>W/C Job Class </label>
-														<select class="form-control" ng-model="selected.workerCompensation" ng-options="wc.code for wc in mainData.selectedCompany.workerCompensations | orderBy:'id' track by wc.id">
+														<select class="form-control" ng-model="selected.workerCompensation" ng-options="wc.code for wc in mainData.selectedCompany.workerCompensations | orderBy:'id' track by wc.id" data-parsley-group="wizard-step-1" ng-required="mainData.selectedCompany.workerCompensations.length>0">
 															<option value="">Please select...</option>
 														</select>
 													</div>

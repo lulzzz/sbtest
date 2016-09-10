@@ -9,6 +9,7 @@ using HrMaxx.OnlinePayroll.Repository.Dashboard;
 using HrMaxx.OnlinePayroll.Repository.Host;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
+using HrMaxx.OnlinePayroll.Repository.Reports;
 using HrMaxx.OnlinePayroll.Repository.Taxation;
 
 namespace HrMaxxAPI.Code.IOC.OnlinePayroll
@@ -74,6 +75,11 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<DashboardRepository>()
 				.As<IDashboardRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ReportRepository>()
+				.As<IReportRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

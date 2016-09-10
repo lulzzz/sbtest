@@ -261,6 +261,8 @@
     <Compile Include="Controllers\NotificationsController.cs" />
     <Compile Include="Controllers\Payrolls\PayrollController.cs" />
     <Compile Include="Controllers\Payrolls\PayrollRoutes.cs" />
+    <Compile Include="Controllers\Reports\ReportController.cs" />
+    <Compile Include="Controllers\Reports\ReportRoutes.cs" />
     <Compile Include="Controllers\TestController.cs" />
     <Compile Include="Controllers\User\UserRoutes.cs" />
     <Compile Include="Controllers\User\UserController.cs" />
@@ -293,6 +295,8 @@
     <Compile Include="Resources\Payroll\InvoiceResource.cs" />
     <Compile Include="Resources\Payroll\PayrollFilterResource.cs" />
     <Compile Include="Resources\Payroll\PayrollResource.cs" />
+    <Compile Include="Resources\Reports\ReportRequestResource.cs" />
+    <Compile Include="Resources\Reports\ReportResponseResource.cs" />
     <Compile Include="Resources\UserPasswordChangeRequest.cs" />
     <Compile Include="Resources\VersionResource.cs" />
     <Compile Include="Startup.cs" />

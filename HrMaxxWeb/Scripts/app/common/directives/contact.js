@@ -168,6 +168,19 @@ common.directive('convertToNumber', function() {
 		}
 	};
 });
+common.directive('convertToDecimal', function () {
+	return {
+		require: 'ngModel',
+		link: function (scope, element, attrs, ngModel) {
+			ngModel.$parsers.push(function (val) {
+				return +parseFloat(val).toFixed(2);
+			});
+			ngModel.$formatters.push(function (val) {
+				return '' + val;
+			});
+		}
+	};
+});
 common.directive('confirmationNeeded', function () {
 	return {
 		priority: 1,

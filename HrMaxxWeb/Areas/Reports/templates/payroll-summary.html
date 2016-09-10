@@ -1,0 +1,299 @@
+﻿<div class="row">
+	<script type="text/ng-template" id="employee.html">
+		<div class="col-sm-12 text-center">
+			<strong>{{pc.employee.fullName}}</strong>
+		</div>
+		<div class="col-sm-12"></div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>SSN:</strong></div>
+			<div class="col-sm-6 text-right">***-**-{{pc.employee.ssn.substr(pc.employee.ssn.length-4)}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Dept:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.employee.department}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Hired:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.employee.hireDate | date:'MM/dd/yyyy'}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Born:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.employee.birthDate | date:'MM/dd/yyyy'}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Pay Type:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.employee.payType===1? 'Hourly' : 'Salary'}}</div>
+		</div>
+		
+	</script>
+	<script type="text/ng-template" id="paytype.html">
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>{{pt.payType.payType.name}}</strong></div>
+			<div class="col-sm-6 text-right">{{pt.accumulatedValue}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-right">used:</div>
+			<div class="col-sm-6 text-left">{{pt.ytdUsed}}hrs</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-right">c.o:</div>
+			<div class="col-sm-6 text-left">{{pt.carryOver}}hrs</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-right">net:</div>
+			<div class="col-sm-6 text-left">{{pt.available}}hrs</div>
+		</div>
+	</script>
+	<script type="text/ng-template" id="wages.html">
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Gross Wage:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.accumulation.grossWage | currency:'$'}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Salary:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.accumulation.salary | currency:'$'}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>OT:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.accumulation.overtime | currency:'$'}}</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left">&nbsp;</div>
+			<div class="col-sm-6 text-right">&nbsp;</div>
+		</div>
+		<div class="col-sm-12" ng-include="'comp.html'" ng-repeat="comp in pc.accumulation.compensations" ></div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left">&nbsp;</div>
+			<div class="col-sm-6 text-right">&nbsp;</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="col-sm-6 text-left"><strong>Net Wage:</strong></div>
+			<div class="col-sm-6 text-right">{{pc.accumulation.netWage | currency:'$'}}</div>
+		</div>
+	</script>
+	<script type="text/ng-template" id="comp.html">
+		
+			<div class="col-sm-6 text-left"><strong>{{comp.payType.name}}:</strong></div>
+			<div class="col-sm-6 text-right">{{comp.amount | currency:'$'}}</div>
+		
+	
+	</script>
+	<script type="text/ng-template" id="tax.html">
+
+		<div class="col-sm-4 text-left"><strong>{{tax.tax.code}}:</strong></div>
+		<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
+		<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
+
+
+	</script>
+	<script type="text/ng-template" id="ded.html">
+
+		<div class="col-sm-6 text-left"><strong>{{ded.name}}:</strong></div>
+		<div class="col-sm-6 text-right">{{ded.amount | currency:'$'}}</div>
+
+
+	</script>
+	
+		<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+			<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+				<h4 class="panel-title">Payroll Summary<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+			</div>
+			<div class="panel-body text">
+				<div class="row">
+					<report-filter filter="mainData.reportFilter" callback="getReport()" />
+				</div>
+				<div ng-show="data.response.employeeAccumulations.length===0" class="table table-bordered">
+					No results found
+				</div>
+				<div ng-show="data.response.employeeAccumulations.length>0" class="row text-center p-5">
+					<strong><em>Payroll Summary <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+				</div>
+				<div class="row" ng-show="data.response.employeeAccumulations.length>0">
+					<table class="table table-condensed table-bordered">
+						<thead>
+							<tr>
+								<th class="col-sm-1 text-center">Total Cash Requirement</th>
+								<th class="col-sm-1 text-center">Gross Pay</th>
+								<th class="col-sm-1 text-center">Employee Deductions</th>
+								<th class="col-sm-1 text-center">Employee Taxes</th>
+								<th class="col-sm-1 text-center">Employer Taxes</th>
+								<th class="col-sm-1 text-center">Net Pay</th>
+								<th class="col-sm-1 text-center">Net Pay Check</th>
+								<th class="col-sm-1 text-center">Net Pay DD</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.cashRequirement | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.grossWage | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.employeeDeductions | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.employeeTaxes | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.employerTaxes | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.netWage | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.checkPay | currency:'$'}}</td>
+								<td class="col-sm-1 text-center">{{data.response.companyAccumulation.ddPay | currency:'$'}}</td>
+							</tr>
+							<tr>
+								<td colspan="4">
+									<div class="col-sm-12 panel panel-info">
+										<div class="panel-heading text-center">
+											<strong>IRS Tax Deposits</strong>
+</div>
+										<div class="panel-body">
+											<div class="col-sm-12">
+												<div class="col-sm-6 text-left"><strong>941:</strong></div>
+												<div class="col-sm-6 text-right"><strong>{{(data.response.companyAccumulation.federalTaxes - data.response.companyAccumulation.usaIrs940) | currency:'$'}}</strong></div>
+											</div>
+											<div class="col-sm-12">
+												<div class="col-sm-6 text-left"><strong>940:</strong></div>
+												<div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulation.usaIrs940 | currency:'$'}}</strong></div>
+											</div>
+											<div class="col-sm-12 ">
+												<div class="col-sm-6 text-left"><strong>IRS Total:</strong></div>
+												<div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulation.federalTaxes | currency:'$'}}</strong></div>
+											</div>
+										</div>
+									</div>
+								</td>
+								<td colspan="4">
+									<div class="col-sm-12 panel panel-info  text-center" ng-if="data.response.company.hasCalifornia">
+										<div class="panel-heading">
+											<strong> State Deposits</strong>
+										</div>
+										<div class="panel-body">
+											<div class="col-sm-12">
+												<div class="col-sm-6 text-left"><strong>CA UI + ETT:</strong></div>
+												<div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulation.californiaEmployerTaxes | currency:'$'}}</strong></div>
+											</div>
+											<div class="col-sm-12">
+												<div class="col-sm-6 text-left"><strong> SDI + PIT:</strong></div>
+												<div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulation.californiaEmployeeTaxes | currency:'$'}}</strong></div>
+											</div>
+											<div class="col-sm-12">
+												<div class="col-sm-6 text-left"><strong> Total:</strong></div>
+												<div class="col-sm-6 text-right"><strong>{{(data.response.companyAccumulation.californiaEmployeeTaxes + data.response.companyAccumulation.californiaEmployerTaxes) | currency:'$'}}</strong></div>
+											</div>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<table class="table table-condensed table-bordered">
+						<thead>
+							<tr>
+								<th class="col-sm-1 text-center">Wage Type</th>
+								<th class="col-sm-1 text-center">Total Wages</th>
+								<th class="col-sm-1 text-center">Taxes</th>
+								<th class="col-sm-1 text-center">Wage</th>
+								<th class="col-sm-1 text-center">Tax</th>
+								<th class="col-sm-1 text-center">Deduction</th>
+								<th class="col-sm-1 text-center">Amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td colspan="2">
+									<div class="col-sm-12">
+										<div class="col-sm-6 text-left"><strong>Gross Wage:</strong></div>
+										<div class="col-sm-6 text-right">{{data.response.companyAccumulation.grossWage | currency:'$'}}</div>
+									</div>
+									<div class="col-sm-12">
+										<div class="col-sm-6 text-left"><strong>Salary:</strong></div>
+										<div class="col-sm-6 text-right">{{data.response.companyAccumulation.salary | currency:'$'}}</div>
+									</div>
+									<div class="col-sm-12">
+										<div class="col-sm-6 text-left"><strong>OT:</strong></div>
+										<div class="col-sm-6 text-right">{{data.response.companyAccumulation.overtime | currency:'$'}}</div>
+									</div>
+									<div class="col-sm-12">
+										<div class="col-sm-6 text-left">&nbsp;</div>
+										<div class="col-sm-6 text-right">&nbsp;</div>
+									</div>
+									<div class="col-sm-12" ng-include="'comp.html'" ng-repeat="comp in data.response.companyAccumulation.compensations" ng-int="useYtd=false"></div>
+									
+									<div class="col-sm-12">
+										<div class="col-sm-6 text-left">&nbsp;</div>
+										<div class="col-sm-6 text-right">&nbsp;</div>
+									</div>
+									<div class="col-sm-12">
+										<div class="col-sm-6 text-left"><strong>Net Wage:</strong></div>
+										<div class="col-sm-6 text-right">{{data.response.companyAccumulation.netWage | currency:'$'}}</div>
+									</div>
+								</td>
+								<td colspan="3">
+									<div class="col-sm-12"><strong>Employee:</strong></div>
+									<div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in data.response.companyAccumulation.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'"></div>
+									<div class="col-sm-12">
+										<div class="col-sm-4 col-sm-offset-4">
+											<strong><em>Total:       {{data.response.companyAccumulation.employeeTaxes | currency:'$'}}</em></strong>
+										</div>
+									</div>
+									<div class="col-sm-12"><strong>Employer:</strong></div>
+									<div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in data.response.companyAccumulation.taxes | filter:{isEmployeeTax:false} | orderBy:'tax.id'"></div>
+									<div class="col-sm-12">
+										<div class="col-sm-4 col-sm-offset-4">
+											<strong><em>Total:       {{data.response.companyAccumulation.employerTaxes | currency:'$'}}</em></strong>
+										</div>
+									</div>
+								</td>
+								<td colspan="2">
+									<div ng-repeat="ded in data.response.companyAccumulation.deductions" ng-include="'ded.html'" class="row"></div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<table class="table table-condensed table-bordered">
+						<thead>
+							<tr>
+								<th class="col-sm-2 text-center">Employee</th>
+								<th class="col-sm-1 text-center">Wage Type</th>
+								<th class="col-sm-1 text-center">Total Wages</th>
+								<th class="col-sm-1 text-center">Taxes</th>
+								<th class="col-sm-1 text-center">Wage</th>
+								<th class="col-sm-1 text-center">Tax</th>
+								<th class="col-sm-1 text-center">Deduction</th>
+								<th class="col-sm-1 text-center">Amount</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="pc in data.response.employeeAccumulations">
+								<td>
+									<div id="pc.id" ng-model="pc" ng-include="'employee.html'" class="row"></div>
+									<!--<div class="row" ng-include="'paytype.html'" ng-repeat="pt in pc" id="pt.id"></div>-->
+								</td>
+								<td colspan="2">
+									<div ng-model="pc" ng-include="'wages.html'" class="row"></div>
+								</td>
+								<td colspan="3">
+									<div class="col-sm-12"><strong>Employee:</strong></div>
+									<div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in pc.accumulation.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'"></div>
+									<div class="col-sm-12">
+										<div class="col-sm-4 col-sm-offset-4">
+											<strong><em>Total:       {{pc.accumulation.employeeTaxes | currency:'$'}}</em></strong>
+										</div>
+									</div>
+									<div class="col-sm-12"><strong>Employer:</strong></div>
+									<div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in pc.accumulation.taxes | filter:{isEmployeeTax:false} | orderBy:'tax.id'"></div>
+									<div class="col-sm-12">
+										<div class="col-sm-4 col-sm-offset-4">
+											<strong><em>Total:       {{pc.accumulation.employerTaxes | currency:'$'}}</em></strong>
+										</div>
+									</div>
+								</td>
+								<td colspan="2">
+									<div ng-repeat="ded in pc.accumulation.deductions" ng-include="'ded.html'" class="row"></div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+
+				<!-- end panel -->
+			</div>
+		</div>
+
+</div>
+
+

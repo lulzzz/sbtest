@@ -5,6 +5,7 @@ using HrMaxx.OnlinePayroll.Services.Dashboard;
 using HrMaxx.OnlinePayroll.Services.Host;
 using HrMaxx.OnlinePayroll.Services.Journals;
 using HrMaxx.OnlinePayroll.Services.Payroll;
+using HrMaxx.OnlinePayroll.Services.Reports;
 using HrMaxx.OnlinePayroll.Services.USTax;
 
 namespace HrMaxxAPI.Code.IOC.OnlinePayroll
@@ -46,6 +47,11 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<DashboardService>()
 				.As<IDashboardService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ReportService>()
+				.As<IReportService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 

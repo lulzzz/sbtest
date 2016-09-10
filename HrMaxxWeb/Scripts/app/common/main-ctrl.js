@@ -1,7 +1,8 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter',
-	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter) {
+	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams',
+	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams) {
 		$scope.alerts = [];
+		$scope.params = $routeParams;
 
 		$scope.addAlert = function (error, type) {
 			$scope.alerts = [];
@@ -26,7 +27,17 @@
 			showCompanies: true,
 			userHost: null,
 			userCompany: null,
-			isReady:false
+			isReady: false,
+			reportFilter: {
+				filterStartDate: null,
+				filterEndDate: null,
+				filter: {
+					years: [],
+					month: 0,
+					year: 0,
+					quarter: 0
+				}
+			}
 		};
 		$scope.data = dataSvc;
 		
@@ -79,7 +90,12 @@
 			if (dataSvc.selectedHost)
 				$scope.getCompanies();
 		}
-
+		$scope.companySelected = function ($item, $model, $label, $event) {
+			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
+				dataSvc.selectedCompany = dataSvc.selectedCompany1;
+				dataSvc.isFilterOpen = false;
+			}
+		}
 		$scope.$on('companyUpdated', function (event, args) {
 			var company = args.company;
 			updateInList(dataSvc.companies, company);

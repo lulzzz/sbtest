@@ -100,6 +100,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayCode>>(src.PayCodes)))
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayType>>(src.Compensations)))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollDeduction>>(src.Deductions)))
+				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.WorkerCompensation)? JsonConvert.DeserializeObject<PayrollWorkerCompensation>(src.WorkerCompensation) : null))
 				.ForMember(dest => dest.Accumulations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayTypeAccumulation>>(src.Accumulations)))
 				.ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.Taxes)))
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Comment>>(src.Notes)))
@@ -138,6 +139,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Compensations)))
 				.ForMember(dest => dest.Accumulations, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Accumulations)))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Deductions)))
+				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.WorkerCompensation!=null ? JsonConvert.SerializeObject(src.WorkerCompensation) : string.Empty))
 				.ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Taxes)))
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Notes)));
 
@@ -158,6 +160,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.CompanyPayrollCube, Models.DataModel.CompanyPayrollCube>()
 				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Accumulation)));
+
+			CreateMap<Models.DataModel.CompanyPayrollCube, Models.CompanyPayrollCube>()
+				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<PayrollAccumulation>(src.Accumulation)));
 
 			CreateMap<Models.Invoice, Models.DataModel.Invoice>()
 				.ForMember(dest => dest.Payrolls, opt => opt.Ignore())

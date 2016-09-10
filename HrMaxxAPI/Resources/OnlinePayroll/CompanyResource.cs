@@ -64,7 +64,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		{
 			get { return StatusId.GetDbName(); }
 		}
-		
+
+		public bool HasCalifornia
+		{
+			get { return States.Any(s => s.State.StateId == 1); }
+		}
 	}
 	public class ContractDetailsResource
 	{

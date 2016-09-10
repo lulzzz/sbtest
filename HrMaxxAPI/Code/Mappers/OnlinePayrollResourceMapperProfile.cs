@@ -13,6 +13,7 @@ using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.Journals;
 using HrMaxxAPI.Resources.OnlinePayroll;
 using HrMaxxAPI.Resources.Payroll;
+using HrMaxxAPI.Resources.Reports;
 using Magnum;
 
 namespace HrMaxxAPI.Code.Mappers
@@ -161,6 +162,9 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<PayrollPayTypeResource, PayrollPayType>();
 			CreateMap<PayrollPayType, PayrollPayTypeResource>();
 
+			CreateMap<PayrollWorkerCompensation, PayrollWorkerCompensationResource>();
+			CreateMap<PayrollWorkerCompensationResource, PayrollWorkerCompensation>();
+
 			CreateMap<CommentResource, Comment>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
 				.ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src => DateTime.Now))
@@ -198,6 +202,12 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false)); 
 
 			CreateMap<Invoice, InvoiceResource>();
+
+			CreateMap<ReportRequestResource, ReportRequest>()
+				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.HasValue ? src.StartDate.Value : new DateTime(DateTime.Now.Year, 1, 1)))
+				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : new DateTime(DateTime.Now.Year, 12, 31)));
+
+			CreateMap<ReportResponse, ReportResponseResource>();
 		}
 	}
 }

@@ -95,7 +95,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 						if (paycheck.Employee.WorkerCompensation != null)
 						{
-							paycheck.WCAmount = Math.Round(paycheck.GrossWage * paycheck.Employee.WorkerCompensation.Rate, 2, MidpointRounding.AwayFromZero);
+							paycheck.WCAmount = Math.Round(paycheck.GrossWage * paycheck.Employee.WorkerCompensation.Rate /100, 2, MidpointRounding.AwayFromZero);
+							paycheck.WorkerCompensation = new PayrollWorkerCompensation
+							{
+								WorkerCompensation = paycheck.Employee.WorkerCompensation,
+								Amount = paycheck.WCAmount,
+								YTD =
+									Math.Round(employeePayChecks.Where(p=>p.WorkerCompensation!=null).Select(p => p.WorkerCompensation).Sum(wc => wc.Amount) + paycheck.WCAmount, 2,
+										MidpointRounding.AwayFromZero)
+							};
 						}
 						else
 						{

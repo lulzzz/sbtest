@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -12,16 +13,69 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Salary { get; set; }
 		public decimal GrossWage { get; set; }
 		public decimal NetWage { get; set; }
+		public decimal CheckPay { get; set; }
+		public decimal DDPay { get; set; }
+
+		public List<PayrollWorkerCompensation> WorkerCompensations { get; set; } 
+		public List<PayrollPayCode> PayCodes { get; set; } 
 		public List<PayrollPayType> Compensations { get; set; }
 		public List<PayrollDeduction> Deductions { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
-		public List<int> PayCheckIds { get; set; } 
+		public List<int> PayCheckIds { get; set; }
+
+		public decimal EmployeeTaxes
+		{
+			get { return Math.Round(Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero); }
+		}
+		public decimal EmployerTaxes
+		{
+			get { return Math.Round(Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero); }
+		}
+
+		public decimal CashRequirement
+		{
+			get { return Math.Round(GrossWage + EmployerTaxes, 2, MidpointRounding.AwayFromZero); }
+		}
+		public decimal EmployeeDeductions
+		{
+			get { return Math.Round(Deductions.Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero); }
+		}
+
+		public decimal EmployeeWorkerCompensations
+		{
+			get { return WorkerCompensations!=null? Math.Round(WorkerCompensations.Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero) : 0; }
+		}
+
+		public decimal UsaIrs940
+		{
+			get { return Taxes.Any(t => t.Tax.Code == "FUTA") ? Taxes.First(t => t.Tax.Code == "FUTA").Amount : 0; }
+		}
+		public decimal FederalTaxes
+		{
+			get { return Taxes.Where(t=>!t.Tax.StateId.HasValue).Sum(t=>t.Amount); }
+		}
+
+		public decimal CaliforniaEmployeeTaxes
+		{
+			get { return Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId==1 && t.IsEmployeeTax).Sum(t => t.Amount); }
+		}
+		public decimal CaliforniaEmployerTaxes
+		{
+			get { return Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId == 1 && !t.IsEmployeeTax).Sum(t => t.Amount); }
+		}
+
+		public decimal Overtime
+		{
+			get { return PayCodes.Sum(p => p.OvertimeAmount); }
+		}
 
 		public PayrollAccumulation()
 		{
 			Salary = 0;
 			GrossWage = 0;
 			NetWage = 0;
+			WorkerCompensations = new List<PayrollWorkerCompensation>();
+			PayCodes = new List<PayrollPayCode>();
 			Compensations=new List<PayrollPayType>();
 			Deductions=new List<PayrollDeduction>();
 			Taxes=new List<PayrollTax>();
@@ -33,10 +87,16 @@ namespace HrMaxx.OnlinePayroll.Models
 			Salary += Math.Round(add.Salary, 2, MidpointRounding.AwayFromZero);
 			GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
 			NetWage += Math.Round(add.NetWage, 2, MidpointRounding.AwayFromZero);
+			CheckPay += Math.Round(add.CheckPay, 2, MidpointRounding.AwayFromZero);
+			DDPay += Math.Round(add.DDPay, 2, MidpointRounding.AwayFromZero);
 
+			add.WorkerCompensations.ForEach(AddWorkerCompensation);
+			
+			AddPayCodes(add.PayCodes);
 			AddCompensations(add.Compensations);
 			AddDeductions(add.Deductions);
 			AddTaxes(add.Taxes);
+			PayCheckIds.AddRange(add.PayCheckIds);
 		}
 
 		public void Remove(PayrollAccumulation remove)
@@ -44,7 +104,11 @@ namespace HrMaxx.OnlinePayroll.Models
 			Salary -= Math.Round(remove.Salary, 2, MidpointRounding.AwayFromZero);
 			GrossWage -= Math.Round(remove.GrossWage, 2, MidpointRounding.AwayFromZero);
 			NetWage -= Math.Round(remove.NetWage, 2, MidpointRounding.AwayFromZero);
+			CheckPay -= Math.Round(remove.CheckPay, 2, MidpointRounding.AwayFromZero);
+			DDPay -= Math.Round(remove.DDPay, 2, MidpointRounding.AwayFromZero);
 
+			remove.WorkerCompensations.ForEach(RemoveWorkerCompensation);
+			RemovePayCodes(remove.PayCodes);
 			RemoveCompensations(remove.Compensations);
 			RemoveDeductions(remove.Deductions);
 			RemoveTaxes(remove.Taxes);
@@ -54,10 +118,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			if (PayCheckIds.All(pci => pci != add.Id))
 			{
-				Salary += Math.Round(add.Salary, 2, MidpointRounding.AwayFromZero);
+				Salary += Math.Round(add.CalculatedSalary, 2, MidpointRounding.AwayFromZero);
 				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
-				NetWage += Math.Round(NetWage, 2, MidpointRounding.AwayFromZero);
+				NetWage += Math.Round(add.NetWage, 2, MidpointRounding.AwayFromZero);
+				CheckPay += Math.Round(add.CheckPay, 2, MidpointRounding.AwayFromZero);
+				DDPay += Math.Round(add.DDPay, 2, MidpointRounding.AwayFromZero);
 
+				AddWorkerCompensation(add.WorkerCompensation);
+				AddPayCodes(add.PayCodes);
 				AddCompensations(add.Compensations);
 				AddDeductions(add.Deductions);
 				AddTaxes(add.Taxes);
@@ -65,14 +133,27 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 		}
 
+		public void AddPayChecks(IEnumerable<PayCheck> checks)
+		{
+			foreach ( var add in checks)
+			{
+				AddPayCheck(add);
+			}
+			
+		}
+
 		public void RemovePayCheck(PayCheck add)
 		{
 			if (PayCheckIds.Any(pci => pci == add.Id))
 			{
-				Salary -= Math.Round(add.Salary, 2, MidpointRounding.AwayFromZero);
+				Salary -= Math.Round(add.CalculatedSalary, 2, MidpointRounding.AwayFromZero);
 				GrossWage -= Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
-				NetWage -= Math.Round(NetWage, 2, MidpointRounding.AwayFromZero);
+				NetWage -= Math.Round(add.NetWage, 2, MidpointRounding.AwayFromZero);
+				CheckPay -= Math.Round(add.CheckPay, 2, MidpointRounding.AwayFromZero);
+				DDPay -= Math.Round(add.DDPay, 2, MidpointRounding.AwayFromZero);
 
+				RemoveWorkerCompensation(add.WorkerCompensation);
+				RemovePayCodes(add.PayCodes);
 				RemoveCompensations(add.Compensations);
 				RemoveDeductions(add.Deductions);
 				RemoveTaxes(add.Taxes);
@@ -87,69 +168,147 @@ namespace HrMaxx.OnlinePayroll.Models
 			payroll.PayChecks.ForEach(AddPayCheck);
 		}
 
-		private void AddCompensations(IEnumerable<PayrollPayType> comps)
+		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp)
 		{
-			Compensations.ForEach(c =>
+			if (wcomp != null)
 			{
-				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
-				if (c1 != null)
+				var wc = WorkerCompensations.FirstOrDefault(w => w.WorkerCompensation.Id == wcomp.WorkerCompensation.Id);
+				if (wc != null)
 				{
-					c.Amount += Math.Round(c1.Amount, 2, MidpointRounding.AwayFromZero);
+					wc.Amount += Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					var temp = JsonConvert.SerializeObject(wcomp);
+					WorkerCompensations.Add(JsonConvert.DeserializeObject<PayrollWorkerCompensation>(temp));
+				}
+			}
+		}
+
+		private void AddPayCodes(IEnumerable<PayrollPayCode> paycode)
+		{
+			paycode.ToList().ForEach(p =>
+			{
+				var p1 = PayCodes.FirstOrDefault(pc => pc.PayCode.Id == p.PayCode.Id);
+				if (p1 != null)
+				{
+					p1.Amount += Math.Round(p.Amount, 2, MidpointRounding.AwayFromZero);
+					p1.OvertimeAmount += Math.Round(p.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					var temp = JsonConvert.SerializeObject(p);
+					PayCodes.Add(JsonConvert.DeserializeObject<PayrollPayCode>(temp));
 				}
 			});
-			var missingList = comps.Where(c => !Compensations.Any(comp => comp.PayType.Id == c.PayType.Id));
-			Compensations.AddRange(missingList);
+
+		}
+
+		private void AddCompensations(IEnumerable<PayrollPayType> comps)
+		{
+			comps.ToList().ForEach(c =>
+			{
+				var c1 = Compensations.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
+				if (c1 != null)
+				{
+					c1.Amount += Math.Round(c.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					var temp = JsonConvert.SerializeObject(c);
+					Compensations.Add(JsonConvert.DeserializeObject<PayrollPayType>(temp));
+				}
+			});
+			
 		}
 
 		private void AddDeductions(IEnumerable<PayrollDeduction> deds)
 		{
-			Deductions.ForEach(d =>
+			deds.ToList().ForEach(d =>
 			{
-				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
+				var d1 = Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
 				{
-					d.Amount += Math.Round(d1.Amount, 2, MidpointRounding.AwayFromZero);
+					d1.Amount += Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					var temp = JsonConvert.SerializeObject(d);
+					Deductions.Add(JsonConvert.DeserializeObject<PayrollDeduction>(temp));
 				}
 			});
-			var missingList = deds.Where(d => !Deductions.Any(ded => ded.Deduction.Id == d.Deduction.Id));
-			Deductions.AddRange(missingList);
+		
 		}
 
 		private void AddTaxes(IEnumerable<PayrollTax> taxes)
 		{
-			Taxes.ForEach(t =>
+			taxes.ToList().ForEach(t =>
 			{
-				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
+			
+				var t1 = Taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t.TaxableWage += Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
-					t.Amount += Math.Round(t1.Amount, 2, MidpointRounding.AwayFromZero);
+					t1.TaxableWage += Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t1.Amount += Math.Round(t.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					var temp = JsonConvert.SerializeObject(t);
+					Taxes.Add(JsonConvert.DeserializeObject<PayrollTax>(temp));
 				}
 			});
-			var missingList = taxes.Where(d => !Taxes.Any(tax => tax.Tax.Id ==d.Tax.Id));
-			Taxes.AddRange(missingList);
+			
+		}
+
+		private void RemoveWorkerCompensation(PayrollWorkerCompensation wcomp)
+		{
+			if (wcomp != null)
+			{
+				var wc = WorkerCompensations.FirstOrDefault(w => w.WorkerCompensation.Id == wcomp.WorkerCompensation.Id);
+				if (wc != null)
+				{
+					wc.Amount -= Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+			}
+			
+			
+		}
+
+		private void RemovePayCodes(IEnumerable<PayrollPayCode> paycode)
+		{
+			paycode.ToList().ForEach(p =>
+			{
+				var p1 = PayCodes.FirstOrDefault(pc => pc.PayCode.Id == p.PayCode.Id);
+				if (p1 != null)
+				{
+					p1.Amount -= Math.Round(p.Amount, 2, MidpointRounding.AwayFromZero);
+					p1.OvertimeAmount -= Math.Round(p.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
+				}
+				
+			});
+
 		}
 
 		private void RemoveCompensations(IEnumerable<PayrollPayType> comps)
 		{
-			Compensations.ForEach(c =>
+			comps.ToList().ForEach(c =>
 			{
-				var c1 = comps.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
+				var c1 = Compensations.FirstOrDefault(comp => comp.PayType.Id == c.PayType.Id);
 				if (c1 != null)
 				{
-					c.Amount -= Math.Round(c1.Amount, 2, MidpointRounding.AwayFromZero);
+					c1.Amount -= Math.Round(c.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 		}
 
 		private void RemoveDeductions(IEnumerable<PayrollDeduction> deds)
 		{
-			Deductions.ForEach(d =>
+			deds.ToList().ForEach(d =>
 			{
-				var d1 = deds.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
+				var d1 = Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
 				{
-					d.Amount -= Math.Round(d1.Amount, 2, MidpointRounding.AwayFromZero);
+					d1.Amount -= Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			
@@ -157,13 +316,13 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		private void RemoveTaxes(IEnumerable<PayrollTax> taxes)
 		{
-			Taxes.ForEach(t =>
+			taxes.ToList().ForEach(t =>
 			{
-				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
+				var t1 = Taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t.TaxableWage -= Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
-					t.Amount -= Math.Round(t1.Amount, 2, MidpointRounding.AwayFromZero);
+					t1.TaxableWage -= Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t1.Amount -= Math.Round(t.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			

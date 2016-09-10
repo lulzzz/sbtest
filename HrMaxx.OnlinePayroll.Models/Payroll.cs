@@ -56,6 +56,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal GrossWage { get; set; }
 		public decimal NetWage { get; set; }
 		public decimal WCAmount { get; set; }
+		public PayrollWorkerCompensation WorkerCompensation { get; set; }
 
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
@@ -67,6 +68,9 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+
+		public decimal CheckPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? NetWage : 0; } }
+		public decimal DDPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? 0 : NetWage; } }
 
 		public decimal Cost
 		{
@@ -140,6 +144,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid DocumentId { get; set; }
 		public void AddToYTD(PayCheck paycheck)
 		{
+			
 			AddToYTDCompensation(paycheck.Compensations);
 			AddToYTDDeductions(paycheck.Deductions);
 			AddToYTDTaxes(paycheck.Taxes);
@@ -154,6 +159,10 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			YTDGrossWage = Math.Round(YTDGrossWage + paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
 			YTDNetWage = Math.Round(YTDNetWage + paycheck.NetWage, 2, MidpointRounding.AwayFromZero);
+			if (paycheck.WorkerCompensation != null &&
+			    WorkerCompensation.WorkerCompensation.Id == paycheck.WorkerCompensation.WorkerCompensation.Id &&
+			    paycheck.WCAmount > 0)
+				WorkerCompensation.YTD += Math.Round(paycheck.WCAmount, 2, MidpointRounding.AwayFromZero);
 		}
 
 		private void AddToLeavedAccumulation(IEnumerable<PayTypeAccumulation> accumulations)
@@ -255,6 +264,10 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			YTDGrossWage = Math.Round(YTDGrossWage - paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
 			YTDNetWage = Math.Round(YTDNetWage - paycheck.NetWage, 2, MidpointRounding.AwayFromZero);
+			if (paycheck.WorkerCompensation != null &&
+					WorkerCompensation.WorkerCompensation.Id == paycheck.WorkerCompensation.WorkerCompensation.Id &&
+					paycheck.WCAmount > 0)
+				WorkerCompensation.YTD -= Math.Round(paycheck.WCAmount, 2, MidpointRounding.AwayFromZero);
 		}
 
 		private void SubtractFromYTDAccumulations(IEnumerable<PayTypeAccumulation> accumulations)
@@ -339,6 +352,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal YTDOvertime { get; set; }
 	}
 
+	public class PayrollWorkerCompensation
+	{
+		public CompanyWorkerCompensation WorkerCompensation { get; set; }
+		public decimal Amount { get; set; }
+		public decimal YTD { get; set; }
+	}
+
 	public class PayrollTax
 	{
 		public Tax Tax { get; set; }
@@ -370,6 +390,10 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
+		public string Name
+		{
+			get { return string.Format("{0} - {1}",Deduction.Type.Name, Deduction.DeductionName); }
+		}
 	}
 
 	public class PayTypeAccumulation

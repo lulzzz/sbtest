@@ -348,6 +348,7 @@
           <Property Name="YTDNetWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="WorkerCompensation" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="PayType">
           <Key>
@@ -1814,6 +1815,7 @@
           <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="Journal" />
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="WorkerCompensation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_PayrollDetail_Payroll">
           <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="1" />
@@ -2304,6 +2306,7 @@
           <EntitySetMapping Name="PayrollPayChecks">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
               <MappingFragment StoreEntitySet="PayrollPayCheck">
+                <ScalarProperty Name="WorkerCompensation" ColumnName="WorkerCompensation" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
                 <ScalarProperty Name="LastModified" ColumnName="LastModified" />
                 <ScalarProperty Name="Accumulations" ColumnName="Accumulations" />

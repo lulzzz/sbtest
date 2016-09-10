@@ -247,6 +247,7 @@
     <Compile Include="Areas\Administration\Controllers\NewsController.cs" />
     <Compile Include="Areas\Client\ClientAreaRegistration.cs" />
     <Compile Include="Areas\Client\Controllers\CompanyController.cs" />
+    <Compile Include="Areas\Reports\ReportsAreaRegistration.cs" />
     <Compile Include="Code\ActionResult\JsonNetResult.cs" />
     <Compile Include="Code\Helpers\HtmlHelpers.cs" />
     <Compile Include="Code\IOC\Common\MappingModule.cs" />
@@ -296,6 +297,12 @@
     <Content Include="Areas\Client\templates\accounts.html" />
     <Content Include="Areas\Client\templates\employees.html" />
     <Content Include="Areas\Client\templates\vendors.html" />
+    <Content Include="Areas\Reports\templates\worker-compensation-report.html" />
+    <Content Include="Areas\Reports\templates\deduction-report.html" />
+    <Content Include="Areas\Reports\templates\payroll-summary.html" />
+    <Content Include="Areas\Reports\templates\report-filter.html" />
+    <Content Include="Areas\Reports\templates\payroll-register.html" />
+    <Content Include="Areas\Reports\templates\reports.html" />
     <Content Include="Content\templates\datectrl.html" />
     <Content Include="Content\templates\myprofile.html" />
     <Content Include="Areas\Administration\templates\news-list.html" />
@@ -1235,6 +1242,7 @@
     <Content Include="Scripts\app\common\common-routing.js" />
     <Content Include="Scripts\app\common\common.js" />
     <Content Include="Scripts\app\common\directives\date-ctrl.js" />
+    <Content Include="Scripts\app\common\directives\report-filter.js" />
     <Content Include="Scripts\app\common\directives\userprofile.js" />
     <Content Include="Scripts\app\common\directives\user-list.js" />
     <Content Include="Scripts\app\common\directives\usernews.js" />
@@ -1287,6 +1295,12 @@
     <Content Include="Scripts\app\payroll\directives\payroll-list.js" />
     <Content Include="Scripts\app\payroll\payroll-app.js" />
     <Content Include="Scripts\app\payroll\payroll-repository.js" />
+    <Content Include="Scripts\app\reports\directives\worker-compensation-report.js" />
+    <Content Include="Scripts\app\reports\directives\deduction-report.js" />
+    <Content Include="Scripts\app\reports\directives\payroll-summary.js" />
+    <Content Include="Scripts\app\reports\directives\payroll-register.js" />
+    <Content Include="Scripts\app\reports\report-app.js" />
+    <Content Include="Scripts\app\reports\report-repository.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap-switch.js" />
@@ -1446,6 +1460,7 @@
     <Content Include="Areas\Administration\Views\Host\Profile.cshtml" />
     <Content Include="Areas\Client\Views\web.config" />
     <Content Include="Areas\Client\Views\Company\Index.cshtml" />
+    <Content Include="Areas\Reports\Views\web.config" />
     <None Include="Properties\PublishProfiles\hrmaxx.pubxml" />
     <Content Include="Scripts\bootstrap\timepicker\timepicker.js" />
     <Content Include="Scripts\angular1.5\angular-animate.min.js.map" />
@@ -1538,6 +1553,9 @@
     <Folder Include="Areas\Administration\Models\" />
     <Folder Include="Areas\Client\Models\" />
     <Folder Include="Areas\Client\Views\Shared\" />
+    <Folder Include="Areas\Reports\Controllers\" />
+    <Folder Include="Areas\Reports\Models\" />
+    <Folder Include="Areas\Reports\Views\Shared\" />
     <Folder Include="Content\pages\" />
     <Folder Include="Scripts\angular1.5\i18n\ngLocale\" />
     <Folder Include="Views\templates\" />

@@ -14,7 +14,7 @@ os.bits: x64
 os.version: Microsoft Windows NT 10.0.10586.0
 process.bits: x64
 process.fulltrust: True
-process.id: 12364
+process.id: 2512
 zz.mt.inbound_pipeline: Pipeline
 	Routed (MassTransit.IConsumeContext, MassTransit)
 		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts

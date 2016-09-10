@@ -131,7 +131,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/directives/contact.js",
 				"~/Scripts/app/Common/directives/news-list.js",
 				"~/Scripts/app/common/directives/userprofile.js",
-				
+				"~/Scripts/app/common/directives/report-filter.js",
 				
 				"~/Scripts/app/host/directives/host-list.js",
 				"~/Scripts/app/host/directives/host.js",
@@ -163,7 +163,14 @@ namespace HrMaxxWeb
 				"~/Scripts/app/journal/directives/account-adjustment.js",
 				"~/Scripts/app/journal/directives/journal-list.js",
 				"~/Scripts/app/payroll/directives/invoice-list.js", 
-				"~/Scripts/app/payroll/directives/invoice.js"
+				"~/Scripts/app/payroll/directives/invoice.js",
+				"~/Scripts/app/reports/report-app.js",
+				"~/Scripts/app/reports/report-repository.js",
+				"~/Scripts/app/reports/directives/payroll-register.js",
+				"~/Scripts/app/reports/directives/payroll-summary.js",
+				"~/Scripts/app/reports/directives/deduction-report.js",
+				"~/Scripts/app/reports/directives/worker-compensation-report.js"
+
 				
 
 				);

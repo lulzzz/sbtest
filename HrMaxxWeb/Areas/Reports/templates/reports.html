@@ -1,0 +1,16 @@
+﻿<div>
+	
+	<div class="row" ng-if="params['reportName']==='PayrollRegister'">
+		<payroll-register main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='PayrollSummary'">
+		<payroll-summary main-data="data"  />
+	</div>
+	<div class="row" ng-if="params['reportName']==='Deductions'">
+		<deduction-report main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='WorkerCompensations'">
+		<worker-compensation-report main-data="data" />
+	</div>
+	
+</div>

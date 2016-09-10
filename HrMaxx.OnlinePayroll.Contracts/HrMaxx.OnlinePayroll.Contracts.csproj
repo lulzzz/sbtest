@@ -52,6 +52,7 @@
     <Compile Include="Services\ICompanyService.cs" />
     <Compile Include="Services\IJournalService.cs" />
     <Compile Include="Services\IDashboardService.cs" />
+    <Compile Include="Services\IReportService.cs" />
     <Compile Include="Services\ITaxationService.cs" />
     <Compile Include="Services\IPayrollService.cs" />
     <Compile Include="Services\IMetaDataService.cs" />

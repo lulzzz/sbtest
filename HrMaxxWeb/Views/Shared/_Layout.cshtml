@@ -57,9 +57,8 @@
 					<div class="row form-group" ng-show="data.showCompanies">
 						<label for="company" class="col-md-2 control-label">Companies</label>
 						<div class="col-md-4">
-							<select id="company" class="form-control" ng-change="data.isFilterOpen=false" ng-disabled="data.companies.length===0" ng-model="data.selectedCompany" ng-options="company.name for company in data.companies track by company.id">
-								<option value="">Please select...</option>
-							</select>
+							<input type="text" placeholder="Company Name" ng-disabled="data.companies.length===0" ng-model="data.selectedCompany1" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.companies | filter:$viewValue" class="form-control">
+							
 						</div>
 					</div>
 				</div>
