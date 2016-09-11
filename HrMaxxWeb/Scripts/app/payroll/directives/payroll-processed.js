@@ -60,7 +60,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							if (listitem.status === 3 || listitem.status === 5) {
 								payrollRepository.markPayCheckPrinted(listitem.id).then(function() {
 									var status = listitem.status === 3 ? 4 : 6;
-									var statusText = listitem.status === 4 ? "Paid" : "Printed and Paid";
+									var statusText = listitem.status === 3 ? "Printed" : "Printed and Paid";
 									$scope.$parent.$parent.updateStatus(listitem.id, status, statusText);
 
 								}, function(error) {
