@@ -30,6 +30,7 @@ namespace HrMaxxAPI
 
 
 						var cors = new EnableCorsAttribute("*", "*", "GET, POST, OPTIONS, PUT, DELETE");
+						cors.ExposedHeaders.Add("Content-Disposition");
 						config.EnableCors(cors);
 
 						JsonMediaTypeFormatter jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
