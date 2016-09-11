@@ -169,7 +169,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							item.statusText = statusText;
 						}
 						var payrollInList = $filter('filter')($scope.list, { id: $scope.committed.id })[0];
-						var pc = $filter('filter')(payrollInList, { id: checkid })[0];
+						var pc = $filter('filter')(payrollInList.payChecks, { id: checkid })[0];
 						if (pc) {
 							item.status = status;
 							item.statusText = statusText;
