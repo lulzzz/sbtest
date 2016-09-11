@@ -61,7 +61,9 @@ namespace HrMaxx.Common.Services.Security
 		{
 			try
 			{
-				return _repository.GetUserByRoleAndId(role, userId);
+				if(role.Any())
+					return _repository.GetUserByRoleAndId(role, userId);
+				return new List<Guid>();
 			}
 			catch (Exception e)
 			{
