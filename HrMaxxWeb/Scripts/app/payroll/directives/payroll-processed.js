@@ -61,7 +61,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								payrollRepository.markPayCheckPrinted(listitem.id).then(function() {
 									var status = listitem.status === 3 ? 4 : 6;
 									var statusText = listitem.status === 4 ? "Paid" : "Printed and Paid";
-									$scope.$parent.$parent.updateStatus($scope.listitem.id, status, statusText);
+									$scope.$parent.$parent.updateStatus(listitem.id, status, statusText);
 
 								}, function(error) {
 									addAlert('error marking pay check as printed', 'danger');
