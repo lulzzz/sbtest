@@ -74,6 +74,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular1.5/angular-file-upload/angular-file-upload-shim.js",
 				"~/Scripts/moment.js",
 				"~/Scripts/angular1.5/angular.min.js",
+				"~/Scripts/angular1.5/i18n/angular-locale_en-us.js",
 				"~/Scripts/angular1.5/angular-animate.min.js",
 				"~/Scripts/angular1.5/angular-route.min.js",
 				"~/Scripts/angular1.5/angular-loader.min.js",
@@ -169,7 +170,9 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/payroll-register.js",
 				"~/Scripts/app/reports/directives/payroll-summary.js",
 				"~/Scripts/app/reports/directives/deduction-report.js",
-				"~/Scripts/app/reports/directives/worker-compensation-report.js"
+				"~/Scripts/app/reports/directives/worker-compensation-report.js",
+				"~/Scripts/app/reports/directives/income-statement.js",
+				"~/Scripts/app/reports/directives/balance-sheet.js"
 
 				
 

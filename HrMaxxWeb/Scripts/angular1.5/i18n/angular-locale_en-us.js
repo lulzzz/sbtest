@@ -118,8 +118,8 @@ $provide.value("$locale", {
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
-        "negPre": "-",
-        "negSuf": "",
+        "negPre": "(",
+        "negSuf": ")",
         "posPre": "",
         "posSuf": ""
       },
@@ -129,8 +129,8 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4",
-        "negSuf": "",
+        "negPre": "(\u00A4",
+        "negSuf": ")",
         "posPre": "\u00a4",
         "posSuf": ""
       }

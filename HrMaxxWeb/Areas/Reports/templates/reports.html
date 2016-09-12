@@ -12,5 +12,10 @@
 	<div class="row" ng-if="params['reportName']==='WorkerCompensations'">
 		<worker-compensation-report main-data="data" />
 	</div>
-	
+	<div class="row" ng-if="params['reportName']==='IncomeStatement'">
+		<income-statement main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='BalanceSheet'">
+		<balance-sheet main-data="data" />
+	</div>
 </div>

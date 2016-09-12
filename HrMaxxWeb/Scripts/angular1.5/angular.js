@@ -10691,7 +10691,8 @@ function headersGetter(headers) {
   var headersObj;
 
   return function(name) {
-    if (!headersObj) headersObj =  parseHeaders(headers);
+  	if (!headersObj)
+  		headersObj = parseHeaders(headers);
 
     if (name) {
       var value = headersObj[lowercase(name)];
@@ -31735,8 +31736,8 @@ $provide.value("$locale", {
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
-        "negPre": "-",
-        "negSuf": "",
+        "negPre": "(",
+        "negSuf": ")",
         "posPre": "",
         "posSuf": ""
       },
@@ -31746,8 +31747,8 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4",
-        "negSuf": "",
+        "negPre": "(",
+        "negSuf": ")",
         "posPre": "\u00a4",
         "posSuf": ""
       }

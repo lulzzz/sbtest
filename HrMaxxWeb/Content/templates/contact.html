@@ -23,7 +23,7 @@
 					<label for="email">Email</label>
 					<input type="email" id="email" name="email" class="form-control" placeholder="Email Address" ng-model="data.email" required data-parsley-group="{{valGroup}}" data-parsley-type="email" />
 				</div>
-				<div class="form-group">
+				<div class="form-group" ng-if="showPrimary">
 					<label for="isprimary" class="switch">
 						IsPrimary
 						<input id="isprimary" type="checkbox" ng-model="data.isPrimary" /><i></i>

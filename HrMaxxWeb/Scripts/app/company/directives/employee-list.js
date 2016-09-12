@@ -39,6 +39,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 							companyId: $scope.mainData.selectedCompany.id,
 							statusId: 1,
 							contact: {
+								isPrimary: true,
 								address: {}
 							},
 							rate:0,

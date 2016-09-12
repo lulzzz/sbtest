@@ -62,7 +62,7 @@
 				</div>
 				<div class="row" ng-if="selectedContact">
 					<form name="contactForm" data-parsley-validate="true">
-						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="0" val-group="newcontact"/>
+						<contact data="selectedContact" sourcetypeid="sourceTypeId" sourceid="sourceId" type="0" val-group="newcontact" show-primary="true"/>
 						<div class="row pull-right">
 							<button type="button" class="btn btn-sm btn-primary" ng-click="save()">Save</button>
 							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>

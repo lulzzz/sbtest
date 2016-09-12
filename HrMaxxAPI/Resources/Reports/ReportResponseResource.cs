@@ -14,5 +14,6 @@ namespace HrMaxxAPI.Resources.Reports
 		public PayrollAccumulation CompanyAccumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public List<PayCheckResource> PayChecks;
+		public List<CoaTypeBalanceDetail> AccountDetails { get; set; } 
 	}
 }

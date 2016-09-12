@@ -1,0 +1,102 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Payroll Register<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+		</div>
+		<div class="panel-body" >
+			<div class="row" ng-show="false">
+				<report-filter filter="mainData.reportFilter" callback="getReport()" />	
+			</div>
+			<div ng-show="data.response.accountDetails.length===0" class="table table-bordered">
+				No data found
+			</div>
+			<div ng-show="data.response.accountDetails.length>0" class="row text-center p-5">
+				<strong><em>Balance Sheet As of {{mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy'}}</em></strong>
+			</div>
+			<div class="col-sm-10 col-sm-offset-1" ng-show="data.response.accountDetails.length>0">
+				<ul class="list-group" >
+					<li class="list-group-item list-group-item-success list-group-item-heading"><strong>{{data.assets.text}}</strong></li>
+					<li class="list-group-item list-group-item-info list-group-item-heading"><strong>{{data.assets.text}}</strong></li>
+					<li class="list-group-item" ng-repeat="subtype in data.assets.subTypeDetails" style="margin:0;border:none; padding:5px">
+						<ul class="list-group" style="margin:0;">
+							<li class="list-group-item list-group-item-warning list-group-item-heading"><strong>{{subtype.text}}</strong></li>
+							<li class="list-group-item list-group-item-text clearfix" ng-repeat="account in subtype.accountDetails">
+								<div class="col-sm-6">{{account.name}} : </div>
+								<div class="col-sm-6 text-left">{{account.balance | currency:'$'}}</div>
+
+							</li>
+							<li class="list-group-item list-group-item-warning list-group-item-heading clearfix">
+								<div class="col-sm-6"><strong>Total {{subtype.text}} : </strong></div>
+								<div class="col-sm-6 text-center"><strong>{{subtype.balance | currency:'$'}}</strong></div>
+							</li>
+
+						</ul>
+					</li>
+					<li class="list-group-item list-group-item-info list-group-item-heading clearfix">
+						<div class="col-sm-6"><strong>Total {{data.assets.text}} : </strong></div>
+						<div class="col-sm-6 text-right"><strong>{{data.assets.balance | currency:'$'}}</strong></div>
+					</li>
+					
+					<li class="list-group-item list-group-item-success list-group-item-heading clearfix">
+						<div class="col-sm-6"><strong>Total {{data.assets.text}} : </strong></div>
+						<div class="col-sm-6 text-right"><strong>{{data.assets.balance | currency:'$'}}</strong></div>
+					</li>
+					
+				</ul>
+				<ul class="list-group">
+					<li class="list-group-item list-group-item-success list-group-item-heading"><strong>Liabilities + Equity</strong></li>
+					<li class="list-group-item list-group-item-info list-group-item-heading"><strong>{{data.liabilities.text}}</strong></li>
+					<li class="list-group-item" ng-repeat="subtype in data.liabilities.subTypeDetails" style="margin:0;border:none; padding:5px">
+						<ul class="list-group" style="margin:0;">
+							<li class="list-group-item list-group-item-warning list-group-item-heading"><strong>{{subtype.text}}</strong></li>
+							<li class="list-group-item list-group-item-text clearfix" ng-repeat="account in subtype.accountDetails">
+								<div class="col-sm-6">{{account.name}} : </div>
+								<div class="col-sm-6 text-left">{{account.balance | currency:'$'}}</div>
+
+							</li>
+							<li class="list-group-item list-group-item-warning list-group-item-heading clearfix">
+								<div class="col-sm-6"><strong>Total {{subtype.text}} : </strong></div>
+								<div class="col-sm-6 text-center"><strong>{{subtype.balance | currency:'$'}}</strong></div>
+							</li>
+
+						</ul>
+					</li>
+					<li class="list-group-item list-group-item-info list-group-item-heading clearfix">
+						<div class="col-sm-6"><strong>Total {{data.liabilities.text}} : </strong></div>
+						<div class="col-sm-6 text-right"><strong>{{data.liabilities.balance | currency:'$'}}</strong></div>
+					</li>
+					
+					<li class="list-group-item list-group-item-info list-group-item-heading"><strong>{{data.equity.text}}</strong></li>
+					<li class="list-group-item" ng-repeat="subtype in data.equity.subTypeDetails" style="margin:0;border:none; padding:5px">
+						<ul class="list-group" style="margin:0;">
+							<li class="list-group-item list-group-item-text clearfix" ng-repeat="account in subtype.accountDetails">
+								<div class="col-sm-6">{{account.name}} : </div>
+								<div class="col-sm-6 text-left">{{account.balance | currency:'$'}}</div>
+
+							</li>
+						</ul>
+					</li>
+					<li class="list-group-item list-group-item-info list-group-item-heading clearfix">
+						<div class="col-sm-6"><strong>Total {{data.equity.text}} : </strong></div>
+						<div class="col-sm-6 text-right"><strong>{{data.equity.balance | currency:'$'}}</strong></div>
+					</li>
+					<li class="list-group-item list-group-item-success list-group-item-heading clearfix">
+						<div class="col-sm-6"><strong>Total LIABILITIES + EQUITY : </strong></div>
+						<div class="col-sm-6 text-right"><strong>{{(data.liabilities.balance + data.equity.balance) | currency:'$'}}</strong></div>
+					</li>
+
+				</ul>
+				
+
+				
+			
+			</div>
+			
+			<!-- end panel -->
+		</div>
+	</div>
+
+	</div>
+
+

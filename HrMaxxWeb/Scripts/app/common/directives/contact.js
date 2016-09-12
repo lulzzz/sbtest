@@ -9,7 +9,8 @@ common.directive('contact', ['zionAPI','localStorageService','version',
 				data: "=data",
 				sourceTypeId: "=sourceTypeId",
 				sourceId: "=sourceId",
-				valGroup: "=?valGroup"
+				valGroup: "=?valGroup",
+				showPrimary: "=?showPrimary"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/contact.html?v=' + version,
 

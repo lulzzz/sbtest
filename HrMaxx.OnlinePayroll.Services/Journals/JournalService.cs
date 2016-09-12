@@ -363,6 +363,39 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
+		public List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes)
+		{
+			try
+			{
+				var dbcoas = _companyService.GetComanyAccounts(companyId);
+				var coas = Mapper.Map<List<Account>, List<AccountWithJournal>>(dbcoas).Where(c => accountTypes.Any(at => at == c.Type)).ToList();
+				var journals = _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
+				coas.ForEach(coa =>
+				{
+					coa.MakeRegister(journals.Where(j => j.MainAccountId == coa.Id || j.JournalDetails.Any(jd => jd.AccountId == coa.Id)).ToList(), dbcoas);
+					var openingBalance = (decimal)0;
+					if (!startDate.HasValue && !endDate.HasValue)
+						openingBalance = coa.OpeningBalance;
+					else if (!startDate.HasValue && coa.OpeningDate.Date <= endDate.Value.Date)
+						openingBalance = coa.OpeningBalance;
+					else if (startDate.HasValue && endDate.HasValue && coa.OpeningDate.Date >= startDate.Value.Date && coa.OpeningDate.Date <= endDate.Value.Date)
+					{
+						openingBalance = coa.OpeningBalance;
+					}
+					var credits = coa.Journals.Where(j => !j.IsVoid && !j.IsDebit).Sum(j => j.Amount);
+					var debits = coa.Journals.Where(j => !j.IsVoid && j.IsDebit).Sum(j => j.Amount);
+					coa.AccountBalance = Math.Round(openingBalance + credits - debits, 2, MidpointRounding.AwayFromZero);
+				});
+				return coas;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Account list with journals for company id and type =" + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private string PDFTemplate(PayCheckStock payCheckStock, TransactionType transactionType)
 		{
 			if (transactionType == TransactionType.RegularCheck)

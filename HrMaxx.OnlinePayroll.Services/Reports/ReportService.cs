@@ -1,4 +1,6 @@
 ﻿using System;
+using System.CodeDom;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Cache;
 using HrMaxx.Bus.Contracts;
@@ -7,6 +9,7 @@ using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Reports;
 
@@ -15,15 +18,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 	public class ReportService : BaseService, IReportService
 	{
 		private readonly IReportRepository _reportRepository;
+		private readonly IJournalService _journalService;
 		private readonly ICompanyRepository _companyRepository ;
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
-
+			_journalService = journalService;
 		}
 
 
@@ -35,9 +39,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetPayrollRegisterReport(request);
 				else if (request.ReportName.Equals("PayrollSummary"))
 					return GetPayrollSummaryReport(request);
-				else if (request.ReportName.Equals("PayrollSummary"))
+				else if (request.ReportName.Equals("Deductions"))
 					return GetDeductionsReport(request);
-				return GetWorkerCompensationReport(request);
+				else if (request.ReportName.Equals("WorkerCompensations"))
+					return GetWorkerCompensationReport(request);
+				else if (request.ReportName.Equals("IncomeStatement"))
+					return GetIncomeStatementReport(request);
+				else //if (request.ReportName.Equals("BalanceSheet"))
+					return GetBalanceSheet(request);
 			}
 			catch (Exception e)
 			{
@@ -45,6 +54,110 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		private ReportResponse GetIncomeStatementReport(ReportRequest request)
+		{
+
+			var coas = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, request.StartDate,
+				request.EndDate, new List<AccountType> {AccountType.Income, AccountType.Expense});
+
+			return GetAccountJournalReport(coas);
+		}
+
+		private ReportResponse GetBalanceSheet(ReportRequest request)
+		{
+
+			var coas = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, null,
+				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> {AccountType.Assets, AccountType.Liability});
+			var coasall = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, null,
+				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> { AccountType.Income, AccountType.Expense });
+			var coasty = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, new DateTime(DateTime.Now.Year, 1, 1),
+				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> { AccountType.Income, AccountType.Expense });
+
+			var allIncome = coasall.Where(c => c.Type == AccountType.Income).Sum(c => c.AccountBalance);
+			var thisyearIncome = coasty.Where(c => c.Type == AccountType.Income).Sum(c => c.AccountBalance);
+			var allExpense = coasall.Where(c => c.Type == AccountType.Expense).Sum(c => c.AccountBalance);
+			
+
+			var thisyearExpense = coasty.Where(c => c.Type == AccountType.Expense).Sum(c => c.AccountBalance);
+
+
+			var thisyearequity = Math.Round(thisyearIncome - thisyearExpense, 2, MidpointRounding.AwayFromZero);
+			var previousyearequity = Math.Round(allIncome - allExpense - thisyearequity, 2, MidpointRounding.AwayFromZero);
+			var equity = new CoaTypeBalanceDetail
+			{
+				Type = AccountType.Equity,
+				SubTypeDetails = new List<CoaSubTypeBalanceDetail>()
+			};
+			var retainedearningsubtype = new CoaSubTypeBalanceDetail
+			{
+				SubType = AccountSubType.RetainedEarnings,
+				AccountDetails = new List<CoaBalanceDetail>()
+			};
+			var rteAccount = new CoaBalanceDetail
+			{
+				Name = "Retained Earnings for Previous Years (system managed)	",
+				Balance = previousyearequity
+			};
+
+			var currentNetIncome = new CoaSubTypeBalanceDetail
+			{
+				SubType = AccountSubType.OtherIncome,
+				AccountDetails = new List<CoaBalanceDetail>()
+			};
+			var cnetincome = new CoaBalanceDetail
+			{
+				Name = "Current Net Income",
+				Balance = thisyearequity
+			};
+			retainedearningsubtype.AccountDetails.Add(rteAccount);
+			currentNetIncome.AccountDetails.Add(cnetincome);
+			equity.SubTypeDetails.Add(retainedearningsubtype);
+			equity.SubTypeDetails.Add(currentNetIncome);
+			
+			var returnVal = GetAccountJournalReport(coas);
+			returnVal.AccountDetails.Add(equity);
+
+			return returnVal;
+
+		}
+
+		private ReportResponse GetAccountJournalReport(IEnumerable<AccountWithJournal> coas)
+		{
+			var test =
+				coas.GroupBy(c => c.Type)
+					.Select(
+						c =>
+							new CoaTypeBalanceDetail
+							{
+								Type = c.Key,
+								SubTypeDetails =
+									c.ToList()
+										.GroupBy(s => s.SubType)
+										.Select(
+											st =>
+												new CoaSubTypeBalanceDetail
+												{
+													SubType = st.Key,
+													AccountDetails =
+														st.ToList()
+															.Select(
+																ac =>
+																	new CoaBalanceDetail
+																	{
+																		Name = ac.AccountName,
+																		Balance = ac.AccountBalance
+																	}).ToList().Where(a => a.Balance !=0).ToList()
+												}).ToList().Where(st => st.AccountDetails.Any()).ToList()
+							}).ToList();
+			
+
+			var response = new ReportResponse
+			{
+				AccountDetails = test
+			};
+			return response;
 		}
 
 		private ReportResponse GetWorkerCompensationReport(ReportRequest request)
