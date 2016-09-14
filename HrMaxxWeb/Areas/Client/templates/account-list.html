@@ -104,7 +104,7 @@
 							{{item.subTypeText}}
 						</td>
 						
-						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3 text-center">
+						<td data-title=" 'COA Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3 text-center">
 							{{item.name}}
 						</td>
 						<td data-title=" 'Balance' " sortable=" 'accountBalance' " class="col-sm-1 show-red text-center">
@@ -173,7 +173,7 @@
 							</div>
 							<div class="row">
 								<div class="form-group col-sm-12">
-									<label>Name</label>
+									<label>COA Name</label>
 									<input type="text" name="name" placeholder="Name" class="form-control" ng-model="selected.name" required data-parsley-group="account" />
 								</div>
 							</div>
@@ -219,13 +219,7 @@
 								<label>Bank Name</label>
 								<input type="text" required ng-model="selected.bankAccount.bankName" data-parsley-group="account" class="form-control" />
 							</div>
-							<div class="form-group">
-								<label>Account Name</label>
-								<div>
-									<input type="text" class="form-control" required data-parsley-group="account" name="accountname" ng-model="selected.bankAccount.accountName" />
-
-								</div>
-							</div>
+							
 							<div class="form-group">
 								<label>Account type</label>
 								<div>

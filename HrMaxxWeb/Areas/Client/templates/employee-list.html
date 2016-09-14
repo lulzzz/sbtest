@@ -108,7 +108,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Gender</label>
-														<select ng-model="selected.gender" name="gender" class="form-control" convert-to-number required data-parsley-group="wizard-step-1">
+														<select ng-model="selected.gender" name="gender" class="form-control" convert-to-number required data-parsley-group="wizard-step-1" data-parsley-type="number">
 															<option value="1">Male</option>
 															<option value="2">Female</option>
 														</select>
@@ -136,8 +136,8 @@
 											<div class="row">
 												<div class="col-sm-4">
 													<div class="form-group">
-														<label class="control-label">Hire Date</label>
-														<date-ctrl name="hiredate" required="true" model="selected.hireDate" disabled="false" />
+														<label class="control-label">Hire Date</label><span>hello {{employee.hiredate.$error}}</span>
+														<date-ctrl name="'hiredate'" required="true" model="selected.hireDate" disabled="false" />
 														
 													</div>
 												</div>
@@ -193,7 +193,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Payroll Schedule</label>
-														<select ng-model="selected.payrollSchedule" name="scheuled" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number>
+														<select ng-model="selected.payrollSchedule" name="scheuled" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number data-parsley-type="number">
 															<option value="1">Weekly</option>
 															<option value="2">Bi-Weekly</option>
 															<option value="3">Semi-Monthly</option>
@@ -240,17 +240,17 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Pay Type</label>
-														<select ng-model="selected.payType" name="paytype" class="form-control" convert-to-number required data-parsley-group="wizard-step-2">
+														<select ng-model="selected.payType" name="paytype" class="form-control" ng-change="payTypeChanged()" convert-to-number required data-parsley-group="wizard-step-2" data-parsley-type="number">
 															<option value="1">Hourly</option>
 															<option value="2">Salary</option>
 														</select>
 													</div>
 													<div class="form-group">
 														<label>Payment Method</label>
-														<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number>
+														<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number data-parsley-type="number">
 															<option value="1">Check</option>
 															<option value="2">Direct Debit</option>
-															
+
 														</select>
 													</div>
 												</div>
@@ -260,14 +260,14 @@
 														<input id="rate" type="number" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-min="0"/>{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 														
 													</div>
-													<div class="form-group" ng-if="selected.payType===1">
+													<!--<div class="form-group" ng-if="selected.payType===1">
 														<label>Base Hourly Rate $</label>
 														<input id="rate" type="number" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 
-													</div>
+													</div>-->
 													<div class="form-group" ng-if="selected.payType===1">
 														<label for="paycodes">Pay Code(s)</label>
-														<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayCodes" events="payCodeEvents" required></div>
+														<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-2"></div>
 
 													</div>
 													<div class="row" ng-if="selected.paymentMethod===2">
@@ -284,13 +284,7 @@
 															<label>Bank Name</label>
 															<input type="text" required ng-model="selected.bankAccount.bankName" data-parsley-group="wizard-step-2" class="form-control" />
 														</div>
-														<div class="form-group">
-															<label>Account Name</label>
-															<div>
-																<input type="text" class="form-control" required data-parsley-group="wizard-step-4" name="accountname" ng-model="selected.bankAccount.accountName" />
-
-															</div>
-														</div>
+														
 														<div class="form-group">
 															<label>Account type</label>
 															<div>
@@ -335,7 +329,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Tax Status</label>
-														<select ng-model="selected.taxCategory" name="category" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number>
+														<select ng-model="selected.taxCategory" name="category" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
 															<option value="1">US Worker non-visa</option>
 															<option value="2">Non Immigrant Alien (H1, F1, J1,)</option>
 														</select>
@@ -346,7 +340,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Federal Filing Status</label>
-														<select ng-model="selected.federalStatus" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number>
+														<select ng-model="selected.federalStatus" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
 															<option value="1">Single</option>
 															<option value="2">Married</option>
 															<option value="3">Unmarried Head of Household</option>
@@ -357,7 +351,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Federal Exemptions</label>
-														<select ng-model="selected.federalExemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number>
+														<select ng-model="selected.federalExemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
 															<option value="0">0</option>
 															<option value="1">1</option>
 															<option value="2">2</option>
@@ -392,7 +386,7 @@
 												<div class="col-sm-3">
 													<div class="form-group">
 														<label>State Filing Status</label>
-														<select ng-model="selected.state.taxStatus" name="sstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number>
+														<select ng-model="selected.state.taxStatus" name="sstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
 															<option value="1">Single</option>
 															<option value="2">Married</option>
 															<option value="3">Unmarried Head of Household</option>
@@ -403,7 +397,7 @@
 												<div class="col-sm-3">
 													<div class="form-group">
 														<label>Exemptions</label>
-														<select ng-model="selected.state.exemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number>
+														<select ng-model="selected.state.exemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
 															<option value="0">0</option>
 															<option value="1">1</option>
 															<option value="2">2</option>

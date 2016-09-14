@@ -83,6 +83,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EntityTypeId, opt => opt.MapFrom(src => src.SourceTypeId))
 				.ForMember(dest => dest.EntityType, opt => opt.Ignore())
 				.ForMember(dest => dest.Employees, opt => opt.Ignore())
+				.ForMember(dest => dest.AccountName, opt => opt.MapFrom(src=>src.BankName))
 				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore());
 
 			CreateMap<TaxByYear, Models.Tax>()

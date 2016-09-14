@@ -9,7 +9,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 				mainData: "=mainData",
 				isVendor: "=isVendor"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html?v='+version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
@@ -184,6 +184,14 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.stateSelected = function() {
 						$scope.selected.state.state = $scope.selectedState.state;
 					}
+					$scope.payTypeChanged = function() {
+						if ($scope.selected.payType === 1)
+							$scope.selected.rate = 0;
+						else {
+							$scope.selected.payCodes = [];
+							$scope.selectedPayCodes = [];
+						}
+					}
 
 					$scope.validate = function () {
 						return validateStep1() && validateStep2() && validateStep3();
@@ -204,11 +212,11 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.selected;
 						if (!c.payrollSchedule || !c.payType)
 							return false;
-						if ((c.payType === 1 && (!c.rate || c.payCodes.length === 0)) || (c.payType===2 && !c.rate))
+						if ((c.payType === 1 && (c.payCodes.length === 0)) || (c.payType===2 && !c.rate))
 							return false;
 						if (c.paymentMethod === 2) {
 							var b = c.bankAccount;
-							if (!b || !b.bankName || !b.accountName || !b.accountType || !$scope.validateRoutingNumber(b.routingNumber) || !b.routingNumber || !b.accountNumber)
+							if (!b || !b.bankName || !b.accountType || !$scope.validateRoutingNumber(b.routingNumber) || !b.routingNumber || !b.accountNumber)
 								return false;
 							
 						}

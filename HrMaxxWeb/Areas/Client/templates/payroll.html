@@ -51,8 +51,8 @@
 							</div>
 							<div class="row" ng-repeat="pc in listitem.payCodes">
 								<div class="col-sm-6">{{pc.payCode.description}}</div>
-								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" /></div>
-								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" /></div>
+								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" style="width:5em;" /></div>
+								<div class="col-sm-3"><input type="number" class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[0-9][0-9]*$/" data-parsley-type="number" style="width:5em;" /></div>
 							</div>
 						</div>
 

@@ -299,7 +299,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						if (c.billingOption === 2) {
 							var b = c.bankDetails;
-							if (!b || !b.bankName || !b.accountName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
+							if (!b || !b.bankName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
 								return false;
 						}
 						if (c.billingOption === 3 && (!c.invoiceCharge || !c.method))

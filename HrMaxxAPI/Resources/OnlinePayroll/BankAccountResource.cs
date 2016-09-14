@@ -12,7 +12,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int? Id { get; set; }
 		[Required]
 		public string BankName { get; set; }
-		[Required]
+		
 		public string AccountName { get; set; }
 		[Required]
 		public BankAccountType AccountType { get; set; }

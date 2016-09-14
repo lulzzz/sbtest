@@ -1,5 +1,5 @@
 ﻿<div class="input-group date">
-	<input name="{{name}}" type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="model" is-open="data.opened" datepicker-options="dateOptions" ng-required="{{required}}" close-text="Close" alt-input-formats="altInputFormats" ng-pattern="/^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/" ng-readonly="data.readonly" ng-class="{'parsley-error': !isValid()}" />
+	<input name="{{name}}" type="text" class="form-control" uib-datepicker-popup="MM/dd/yyyy" ng-model="model" is-open="data.opened" datepicker-options="dateOptions" ng-required="required" close-text="Close" alt-input-formats="altInputFormats" ng-pattern="/^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/" ng-readonly="data.readonly" ng-class="{'parsley-error': !isValid()}" />
 	<span class="input-group-addon" ng-if="!disabled">
 		<i class="fa fa-calendar" ng-click="open()"></i>
 	</span>
