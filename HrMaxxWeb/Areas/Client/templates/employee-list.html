@@ -257,7 +257,7 @@
 												<div class="col-sm-4" ng-if="selected.payType">
 													<div class="form-group" ng-if="selected.payType===2">
 														<label>Salary $</label>
-														<input id="rate" type="number" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-min="0"/>{{selected.payType===1? ' per hour' : ' per pay schedule'}}
+														<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 														
 													</div>
 													<!--<div class="form-group" ng-if="selected.payType===1">

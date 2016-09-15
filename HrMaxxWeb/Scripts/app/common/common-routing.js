@@ -15,7 +15,7 @@
 	$routeProvider.when('/Admin/UserList', {
 		templateUrl: zionAPI.Web + '/Areas/Administration/templates/user-list.html'
 	});
-	$routeProvider.when('/Client/Company', {
+	$routeProvider.when('/Client/Company/:time', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/company.html'
 	});
 	$routeProvider.when('/My/News', {
@@ -32,6 +32,9 @@
 	});
 	$routeProvider.when('/Client/Accounts', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/accounts.html'
+	});
+	$routeProvider.when('/Client/Employees/:time', {
+		templateUrl: zionAPI.Web + '/Areas/Client/templates/employees.html'
 	});
 	$routeProvider.when('/Client/Employees', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/employees.html'

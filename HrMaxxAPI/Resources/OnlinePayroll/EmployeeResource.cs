@@ -19,7 +19,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public Contact Contact { get; set; }
 		public GenderType Gender { get; set; }
 		public string SSN { get; set; }
-		public DateTime BirthDate { get; set; }
+		public DateTime? BirthDate { get; set; }
 		//Employment
 		public DateTime HireDate { get; set; }
 		public string Department { get; set; }

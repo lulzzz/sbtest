@@ -40,7 +40,10 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 							statusId: 1,
 							contact: {
 								isPrimary: true,
-								address: {}
+								address: {
+									countryId: 1,
+									stateId:1
+								}
 							},
 							rate:0,
 							payCodes:[],
@@ -48,11 +51,12 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 							federalAdditionalAmount: 0,
 							federalExemptions: 0,
 							state: {
-								state: null,
+								state: dataSvc.companyStates[0],
 								exemptions: 0,
 								additionalAmount:0
 							},
-							workerCompnesation: null
+							workerCompensation: $scope.mainData.selectedCompany.workerCompensations.length===1? $scope.mainData.selectedCompany.workerCompensations[0] : null,
+							taxCategory: 1
 
 						};
 						

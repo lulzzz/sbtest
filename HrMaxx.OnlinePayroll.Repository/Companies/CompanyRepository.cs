@@ -349,7 +349,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 
 			_dbContext.SaveChanges();
-			var dbemp = _dbContext.Employees.First(e => e.Id == me.Id);
+			var dbemp = _dbContext.Employees.Include("CompanyWorkerCompensation").First(e => e.Id == me.Id);
 			return _mapper.Map<Models.DataModel.Employee, Employee>(dbemp);
 		}
 
