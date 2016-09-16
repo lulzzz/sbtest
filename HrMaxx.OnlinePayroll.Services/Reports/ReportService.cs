@@ -239,12 +239,29 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = _companyRepository.GetCompanyById(request.CompanyId);
-			response.EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false);
-			response.CompanyAccumulation = new PayrollAccumulation();
-			response.EmployeeAccumulations.ForEach(ea=>response.CompanyAccumulation.Add(ea.Accumulation));
+			response.CompanyAccumulation = _reportRepository.GetCompanyPayrollCube(request);
+			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
 			
 			return response;
 		}
+
+		private List<EmployeeAccumulation> getEmployeeAccumulations(List<PayCheck> paychecks)
+		{
+			var result = new List<EmployeeAccumulation>();
+			var empchecks = paychecks.GroupBy(p => p.Employee.Id).ToList();
+			foreach (var group in empchecks)
+			{
+				var ea = new EmployeeAccumulation
+				{
+					PayChecks = group.ToList(),
+					Accumulation = new PayrollAccumulation()
+				};
+				ea.Accumulation.AddPayChecks(ea.PayChecks);
+				ea.Employee = ea.PayChecks.OrderByDescending(p=>p.LastModified).First().Employee;
+				result.Add(ea);
+			}
+			return result;
+		} 
 
 		private ReportResponse GetPayrollRegisterReport(ReportRequest request)
 		{
@@ -270,7 +287,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("thirdQuarter", "", cubes.Any(c => c.Quarter == 3) ? cubes.First(c => c.Quarter == 3).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
 			argList.AddParam("fourthQuarter", "", cubes.Any(c => c.Quarter == 4) ? cubes.First(c => c.Quarter == 4).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
 			argList.AddParam("immigrantsIncluded", "", response.CompanyAccumulation.PayChecks.Any(pc => pc.Employee.TaxCategory == EmployeeTaxCategory.NonImmigrantAlien && pc.GrossWage > 0));
-			return GetReportTransformedAndPrinted(request, response, argList);
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/940/Fed940-" + request.Year + ".xslt");
 			
 		}
 
@@ -304,13 +321,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return cubes;
 
 		} 
-		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response, XsltArgumentList argList)
+		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response, XsltArgumentList argList, string template)
 		{
 			var xml = GetXml<ReportResponse>(response);
 			
 
 			var transformed = TransformXml(xml,
-				string.Format("{0}{1}", _templatePath, "transformers/reports/940/Fed940-" + request.Year + ".xslt"), argList);
+				string.Format("{0}{1}", _templatePath, template), argList);
 
 			return _pdfService.PrintReport(transformed);
 		}

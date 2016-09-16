@@ -199,7 +199,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 								id: -1,
 								companyId: $scope.selected.companyId,
 								code: 'PW',
-								description: 'Piece-wise',
+								description: 'Piece-work',
 								hourlyRate:0
 							});
 						}

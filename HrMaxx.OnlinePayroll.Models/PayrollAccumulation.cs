@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollDeduction> Deductions { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
 		public List<PayCheck> PayChecks { get; set; }
+		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; } 
 
 		public decimal EmployeeTaxes
 		{
@@ -80,6 +81,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			Deductions=new List<PayrollDeduction>();
 			Taxes=new List<PayrollTax>();
 			PayChecks = new List<PayCheck>();
+			
 		}
 
 		public void Add(PayrollAccumulation add)
@@ -169,6 +171,8 @@ namespace HrMaxx.OnlinePayroll.Models
 			payroll.PayChecks.ForEach(AddPayCheck);
 		}
 
+		
+		
 		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp)
 		{
 			if (wcomp != null)
@@ -185,6 +189,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 			}
 		}
+
 
 		private void AddPayCodes(IEnumerable<PayrollPayCode> paycode)
 		{
