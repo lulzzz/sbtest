@@ -6,17 +6,18 @@
 <xsl:import href="../Utils.xslt" />
   <xsl:param name="selectedYear"/>
   <xsl:param name="todaydate"/>
+	<xsl:param name="firstQuarter"/>
+	<xsl:param name="secondQuarter"/>
+	<xsl:param name="thirdQuarter"/>
+	<xsl:param name="fourthQuarter"/>
+	<xsl:param name="immigrantsIncluded"/>
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	<xsl:variable name="totalGrossWages" select="ReportResponse/CompanyAccumulation/GrossWage"/>
 	<xsl:variable name="totalMDWages" select="ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
 	<xsl:variable name="totalFUTAWages" select="ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FUTA']/TaxableWage"/>
-	<xsl:variable name="firstQuarter" select="sum(/ReportResponse/Cubes/CompanyPayrollCube[Quarter=1]/Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount)"/>
-	<xsl:variable name="secondQuarter" select="sum(/ReportResponse/Cubes/CompanyPayrollCube[Quarter=2]/Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount)"/>
-	<xsl:variable name="thirdQuarter" select="/ReportResponse/Cubes/CompanyPayrollCube[Quarter=3]/Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount"/>
-	<xsl:variable name="fourthQuarter" select="/ReportResponse/Cubes/CompanyPayrollCube[Quarter=4]/Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount"/>
-
-	<xsl:variable name="quarterSum" select="$thirdQuarter + $fourthQuarter"/>
+	
+	<xsl:variable name="quarterSum" select="$firstQuarter + $secondQuarter + $thirdQuarter + $fourthQuarter"/>
 
 	<xsl:variable name="line3" select="$totalGrossWages"/>
 	<xsl:variable name="line4" select="$totalGrossWages - $totalMDWages"/>
@@ -81,7 +82,7 @@
 			<xsl:with-param name="val1" select="'On'"/>
 		</xsl:call-template>
 	</xsl:if>
-	<xsl:if test="count(/ReportResponse/EmployeeAccumulations/EmployeeAccumulation[Employee/TaxCategory='NonImmigrantAlien']/Accumulation[GrossWage>0])>0">
+	<xsl:if test="$immigrantsIncluded">
 		<xsl:call-template name="CheckTemplate">
 			<xsl:with-param name="name1" select="'c1_11(0)'"/>
 			<xsl:with-param name="val1" select="'On'"/>

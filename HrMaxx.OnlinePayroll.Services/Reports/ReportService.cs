@@ -79,9 +79,32 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public FileDto GetReportDocument(ReportRequest request)
 		{
-			if (request.ReportName.Equals("Federal940"))
-				return GetFederal940(request);
-			return null;
+			try
+			{
+				if (request.ReportName.Equals("Federal940"))
+					return GetFederal940(request);
+				return null;
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == NoData || e.Message == ReportNotAvailable)
+				{
+					message = e.Message;
+				}
+				else if (e.Message.ToLower().StartsWith("could not find file"))
+				{
+					message = ReportNotAvailable;
+				}
+				else
+				{
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+				}
+
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
 		}
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
@@ -233,64 +256,58 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private FileDto GetFederal940(ReportRequest request)
 		{
-			try
-			{
-				//var response = GetPayrollSummaryReport(request);
-				var response = new ReportResponse();
-				response.Cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, request.Year);
-				if (response.Cubes == null || !response.Cubes.Any())
-				{
-					throw new Exception(NoData);
-				}
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.Company = GetCompany(request.CompanyId);
+			response.Contact = getCompanyContact(request.CompanyId);
 				
-				response.CompanyAccumulation = response.Cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
-				if(response.CompanyAccumulation.GrossWage<=0)
-					throw new Exception(NoData);
-
-				response.Company = _companyRepository.GetCompanyById(request.CompanyId);
-				response.EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false);
-
-				var contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Company, EntityTypeEnum.Contact,
-					request.CompanyId);
-				if (contacts.Any(c=>c.IsPrimary))
-				{
-					response.Contact = contacts.First(c => c.IsPrimary);
-				}
-				else
-				{
-					response.Contact = contacts.FirstOrDefault();
-				}
-
-				return GetReportTransformedAndPrinted(request, response);
-			}
-			catch (Exception e)
-			{
-				var message = string.Empty;
-				if (e.Message == NoData || e.Message==ReportNotAvailable)
-				{
-					message = e.Message;
-				}
-				else if (e.Message.ToLower().StartsWith("could not find file"))
-				{
-					message = ReportNotAvailable;
-				}
-				else
-				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));	
-				}
-				
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		
-		}
-
-		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response)
-		{
-			var xml = GetXml<ReportResponse>(response);
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("firstQuarter", "", cubes.Any(c=>c.Quarter==1) ? cubes.First(c=>c.Quarter==1).Accumulation.Taxes.Where(t=>t.Tax.Code.Equals("FUTA")).Sum(t=>t.Amount) : 0);
+			argList.AddParam("secondQuarter", "", cubes.Any(c => c.Quarter == 2) ? cubes.First(c => c.Quarter == 2).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("thirdQuarter", "", cubes.Any(c => c.Quarter == 3) ? cubes.First(c => c.Quarter == 3).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("fourthQuarter", "", cubes.Any(c => c.Quarter == 4) ? cubes.First(c => c.Quarter == 4).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("immigrantsIncluded", "", response.CompanyAccumulation.PayChecks.Any(pc => pc.Employee.TaxCategory == EmployeeTaxCategory.NonImmigrantAlien && pc.GrossWage > 0));
+			return GetReportTransformedAndPrinted(request, response, argList);
+			
+		}
+
+		private Company GetCompany(Guid companyId)
+		{
+			return _companyRepository.GetCompanyById(companyId);
+		}
+		private Contact getCompanyContact(Guid companyId)
+		{
+			var contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Company, EntityTypeEnum.Contact,
+					companyId);
+			if (contacts.Any(c => c.IsPrimary))
+			{
+				return contacts.First(c => c.IsPrimary);
+			}
+			else
+			{
+				return contacts.FirstOrDefault();
+			}
+		}
+		private List<CompanyPayrollCube> GetCompanyPayrollCubes(ReportRequest request)
+		{
+			var cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, request.Year);
+			if (cubes == null || !cubes.Any() )
+			{
+				throw new Exception(NoData);
+			}
+			var relevantCube = cubes.FirstOrDefault(c => ((request.Quarter>0 && request.Quarter==c.Quarter) || (request.Quarter==0 && !c.Quarter.HasValue)));
+			if (relevantCube==null || relevantCube.Accumulation.GrossWage <= 0)
+				throw new Exception(NoData);
+			return cubes;
+
+		} 
+		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response, XsltArgumentList argList)
+		{
+			var xml = GetXml<ReportResponse>(response);
+			
 
 			var transformed = TransformXml(xml,
 				string.Format("{0}{1}", _templatePath, "transformers/reports/940/Fed940-" + request.Year + ".xslt"), argList);

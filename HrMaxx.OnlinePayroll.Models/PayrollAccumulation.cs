@@ -21,7 +21,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollPayType> Compensations { get; set; }
 		public List<PayrollDeduction> Deductions { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
-		public List<int> PayCheckIds { get; set; }
+		public List<PayCheck> PayChecks { get; set; }
 
 		public decimal EmployeeTaxes
 		{
@@ -79,7 +79,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			Compensations=new List<PayrollPayType>();
 			Deductions=new List<PayrollDeduction>();
 			Taxes=new List<PayrollTax>();
-			PayCheckIds = new List<int>();
+			PayChecks = new List<PayCheck>();
 		}
 
 		public void Add(PayrollAccumulation add)
@@ -96,7 +96,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			AddCompensations(add.Compensations);
 			AddDeductions(add.Deductions);
 			AddTaxes(add.Taxes);
-			PayCheckIds.AddRange(add.PayCheckIds);
+			PayChecks.AddRange(add.PayChecks);
 		}
 
 		public void Remove(PayrollAccumulation remove)
@@ -112,11 +112,12 @@ namespace HrMaxx.OnlinePayroll.Models
 			RemoveCompensations(remove.Compensations);
 			RemoveDeductions(remove.Deductions);
 			RemoveTaxes(remove.Taxes);
+			PayChecks.RemoveAll(pc => remove.PayChecks.Any(pc1 => pc1.Id == pc.Id));
 		}
 
 		public void AddPayCheck(PayCheck add)
 		{
-			if (PayCheckIds.All(pci => pci != add.Id))
+			if (PayChecks.All(pci => pci.Id != add.Id))
 			{
 				Salary += Math.Round(add.CalculatedSalary, 2, MidpointRounding.AwayFromZero);
 				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -129,7 +130,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				AddCompensations(add.Compensations);
 				AddDeductions(add.Deductions);
 				AddTaxes(add.Taxes);
-				PayCheckIds.Add(add.Id);
+				PayChecks.Add(add);
 			}
 		}
 
@@ -144,7 +145,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void RemovePayCheck(PayCheck add)
 		{
-			if (PayCheckIds.Any(pci => pci == add.Id))
+			if (PayChecks.Any(pci => pci.Id == add.Id))
 			{
 				Salary -= Math.Round(add.CalculatedSalary, 2, MidpointRounding.AwayFromZero);
 				GrossWage -= Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -158,7 +159,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				RemoveDeductions(add.Deductions);
 				RemoveTaxes(add.Taxes);
 
-				PayCheckIds.Remove(add.Id);
+				PayChecks.Remove(add);
 			}
 			
 		}
