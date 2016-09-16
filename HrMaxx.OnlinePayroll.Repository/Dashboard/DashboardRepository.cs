@@ -76,5 +76,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 			}
 			_dbContext.SaveChanges();
 		}
+
+		public void DeleteCubesForCompanyAndYear(Guid companyId, int year)
+		{
+			var _dbCubes = _dbContext.CompanyPayrollCubes.Where(c => c.CompanyId == companyId && c.Year == year);
+			_dbContext.CompanyPayrollCubes.RemoveRange(_dbCubes);
+			_dbContext.SaveChanges();
+		}
 	}
 }

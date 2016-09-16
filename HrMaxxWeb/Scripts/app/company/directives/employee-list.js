@@ -191,6 +191,18 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.payTypeChanged = function() {
 						if ($scope.selected.payType === 1)
 							$scope.selected.rate = 0;
+						else if ($scope.selected.payType == 3) {
+							$scope.selected.payCodes = [];
+							$scope.selectedPayCodes = [];
+							$scope.selected.rate = 0;
+							$scope.selected.payCodes.push({
+								id: -1,
+								companyId: $scope.selected.companyId,
+								code: 'PW',
+								description: 'Piece-wise',
+								hourlyRate:0
+							});
+						}
 						else {
 							$scope.selected.payCodes = [];
 							$scope.selectedPayCodes = [];

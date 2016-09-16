@@ -15,5 +15,6 @@
 		public const string Print = "Payroll/Print";
 		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";
 		public const string PrintPayroll = "Payroll/PrintPayroll";
+		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{companyId:guid}/{year:int}";
 	}
 }

@@ -308,6 +308,10 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="templates\transformers\reports\940\Fed940-2015.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="templates\transformers\reports\Utils.xslt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -342,6 +346,8 @@
     <Content Include="templates\RegCheckMiddle.pdf" />
     <Content Include="templates\RegCheckQB.pdf" />
     <Content Include="templates\DepositTicket.pdf" />
+    <Content Include="templates\GovtForms\940\f940-2015.pdf" />
+    <Content Include="templates\GovtForms\940\f940sa-2015.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

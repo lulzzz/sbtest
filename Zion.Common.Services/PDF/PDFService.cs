@@ -18,6 +18,7 @@ namespace HrMaxx.Common.Services.PDF
 		private readonly IFileRepository _fileRepository;
 		private readonly string _filePath;
 		private readonly string _templatePath;
+		private const string ReportNotAvailable = "The report template is not available yet";
 
 		public PDFService(IDocumentService documentService, IFileRepository fileRepository, string filePath, string templatePath)
 		{
@@ -66,7 +67,7 @@ namespace HrMaxx.Common.Services.PDF
 				
 
 				// Save, generate unique file name to avoid overwriting existing file.
-				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), false);
+				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), true);
 				objDoc.Close();
 				Guid target = Guid.Empty;
 				int test = 0;
@@ -121,6 +122,75 @@ namespace HrMaxx.Common.Services.PDF
 			catch (Exception e)
 			{
 				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " Print PDF for " +fileName);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public FileDto PrintReport(ReportTransformed pdfModels)
+		{
+			try
+			{
+				var result = new List<string>();
+				var objPDF = new PdfManager();
+				var counter = 0;
+				var objDoc1 = objPDF.CreateDocument();
+				foreach (var report in pdfModels.Reports)
+				{
+					var objDoc = objPDF.OpenDocument(_templatePath + report.TemplatePath + report.Template);
+					if(objDoc==null)
+						throw new Exception(ReportNotAvailable);
+					// Obtain font.
+					var objFont = objDoc.Fonts["Helvetica"];
+					
+					objDoc.Form.RemoveXFA();
+					foreach (var field in report.Fields)
+					{
+						var objField = objDoc.Form.FindField(field.Name);
+						if (objField != null)
+						{
+							if (field.Type == "Text")
+							{
+								objField.SetFieldValue(field.Value, objFont);
+							}
+							else
+							{
+								if(!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes")))
+								{
+									objField.SetFieldValue(objField.FieldOnValue, null);
+								}
+								
+							}
+						}
+							
+					}
+					objDoc1.AppendDocument(objPDF.OpenDocument(objDoc.SaveToMemory()));
+					
+					objDoc.Close();
+					objDoc.Dispose();
+					
+					counter++;
+				}
+				
+				var resultbytes = objDoc1.SaveToMemory();
+				objDoc1.Close();
+				objDoc1.Dispose();
+				
+				return new FileDto
+				{
+					Data = resultbytes,
+					Filename = string.Format("Result-{0}{1}", pdfModels.Name,DateTime.Now.Millisecond),
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == ReportNotAvailable)
+					message = e.Message;
+				else
+					message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " Print PDF for report");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

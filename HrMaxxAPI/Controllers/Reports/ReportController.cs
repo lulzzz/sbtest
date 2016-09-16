@@ -40,5 +40,26 @@ namespace HrMaxxAPI.Controllers.Reports
 			return Mapper.Map<ReportResponse, ReportResponseResource>(response);
 
 		}
+
+		[HttpPost]
+		[Route(ReportRoutes.ReportDocument)]
+		public HttpResponseMessage GetReportDocment(ReportRequestResource resource)
+		{
+			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
+			var response = MakeServiceCall(() => _reportService.GetReportDocument(request), string.Format("getting report for request for company={0}", request.CompanyId));
+			return Printed(response);
+
+		}
+		private HttpResponseMessage Printed(FileDto document)
+		{
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(document.MimeType);
+
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = document.Filename
+			};
+			return response;
+		}
 	}
 }

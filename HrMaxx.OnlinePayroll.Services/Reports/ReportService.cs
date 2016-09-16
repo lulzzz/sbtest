@@ -1,9 +1,18 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Cache;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Xml.Xsl;
 using HrMaxx.Bus.Contracts;
+using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
@@ -20,14 +29,25 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly IReportRepository _reportRepository;
 		private readonly IJournalService _journalService;
 		private readonly ICompanyRepository _companyRepository ;
+		private readonly IPDFService _pdfService;
+		private readonly ICommonService _commonService;
+		private readonly string _filePath;
+		private readonly string _templatePath;
+
+		private const string NoData = "No Payroll Data exists for this time period and company";
+		private const string ReportNotAvailable = "The report template(s) are not available yet";
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
 			_journalService = journalService;
+			_pdfService = pdfService;
+			_filePath = filePath;
+			_templatePath = templatePath;
+			_commonService = commonService;
 		}
 
 
@@ -47,6 +67,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetIncomeStatementReport(request);
 				else //if (request.ReportName.Equals("BalanceSheet"))
 					return GetBalanceSheet(request);
+			
 			}
 			catch (Exception e)
 			{
@@ -54,6 +75,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public FileDto GetReportDocument(ReportRequest request)
+		{
+			if (request.ReportName.Equals("Federal940"))
+				return GetFederal940(request);
+			return null;
 		}
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
@@ -189,13 +217,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 			response.Company = _companyRepository.GetCompanyById(request.CompanyId);
 			response.EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false);
-			if (request.Month > 0 || request.Quarter > 0)
-				response.CompanyAccumulation = _reportRepository.GetCompanyPayrollCube(request);
-			else
-			{
-				response.CompanyAccumulation = new PayrollAccumulation();
-				response.EmployeeAccumulations.ForEach(ea=>response.CompanyAccumulation.Add(ea.Accumulation));
-			}
+			response.CompanyAccumulation = new PayrollAccumulation();
+			response.EmployeeAccumulations.ForEach(ea=>response.CompanyAccumulation.Add(ea.Accumulation));
+			
 			return response;
 		}
 
@@ -205,6 +229,119 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.PayChecks = _reportRepository.GetReportPayChecks(request, true);
 			return response;
 
+		}
+
+		private FileDto GetFederal940(ReportRequest request)
+		{
+			try
+			{
+				//var response = GetPayrollSummaryReport(request);
+				var response = new ReportResponse();
+				response.Cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, request.Year);
+				if (response.Cubes == null || !response.Cubes.Any())
+				{
+					throw new Exception(NoData);
+				}
+				
+				response.CompanyAccumulation = response.Cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+				if(response.CompanyAccumulation.GrossWage<=0)
+					throw new Exception(NoData);
+
+				response.Company = _companyRepository.GetCompanyById(request.CompanyId);
+				response.EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false);
+
+				var contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Company, EntityTypeEnum.Contact,
+					request.CompanyId);
+				if (contacts.Any(c=>c.IsPrimary))
+				{
+					response.Contact = contacts.First(c => c.IsPrimary);
+				}
+				else
+				{
+					response.Contact = contacts.FirstOrDefault();
+				}
+
+				return GetReportTransformedAndPrinted(request, response);
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == NoData || e.Message==ReportNotAvailable)
+				{
+					message = e.Message;
+				}
+				else if (e.Message.ToLower().StartsWith("could not find file"))
+				{
+					message = ReportNotAvailable;
+				}
+				else
+				{
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));	
+				}
+				
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		
+		}
+
+		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response)
+		{
+			var xml = GetXml<ReportResponse>(response);
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+
+			var transformed = TransformXml(xml,
+				string.Format("{0}{1}", _templatePath, "transformers/reports/940/Fed940-" + request.Year + ".xslt"), argList);
+
+			return _pdfService.PrintReport(transformed);
+		}
+
+		private XmlDocument GetXml<T>(T response)
+		{
+			var ser = new XmlSerializer(typeof(T));
+			XmlDocument xd = null;
+
+			using (var memStm = new MemoryStream())
+			{
+				ser.Serialize(memStm, response);
+
+				memStm.Position = 0;
+
+				var settings = new XmlReaderSettings();
+				settings.IgnoreWhitespace = true;
+
+				using (var xtr = XmlReader.Create(memStm, settings))
+				{
+					xd = new XmlDocument();
+					xd.Load(xtr);
+				}
+			}
+
+			return xd;
+		}
+
+		private ReportTransformed TransformXml(XmlDocument source, string transformer, XsltArgumentList args)
+		{
+			string strOutput = null;
+			var sb = new System.Text.StringBuilder();
+			var xslt = new Mvp.Xml.Exslt.ExsltTransform();
+
+
+			
+			xslt.Load(transformer);
+			using (TextWriter xtw = new StringWriter(sb))
+			{
+				xslt.Transform(source, args, xtw);
+				xtw.Flush();
+			}
+			strOutput = sb.ToString();
+			strOutput = strOutput.Replace("encoding=\"utf-16\"", string.Empty);
+			var serializer = new XmlSerializer(typeof(ReportTransformed));
+			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput));
+			return (ReportTransformed)serializer.Deserialize(memStream);
+			
 		}
 	}
 }

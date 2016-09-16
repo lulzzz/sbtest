@@ -141,6 +141,7 @@
     <Compile Include="Mementos\MementoPersistenceDto.cs" />
     <Compile Include="Mementos\StagingDataDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportTransformed.cs" />
     <Compile Include="UserEventLogModel.cs" />
     <Compile Include="UserEventLogFilter.cs" />
     <Compile Include="UserProfile.cs" />

@@ -73,14 +73,33 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						var employeePayChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id).ToList();
 						if (paycheck.Employee.PayType == EmployeeType.Hourly)
+						{
 							paycheck.Salary = 0;
-						else
+							
+						}
+						else if (paycheck.Employee.PayType == EmployeeType.Salary)
 						{
 							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+							paycheck.PayCodes = new List<PayrollPayCode>();
 						}
-						paycheck.YTDSalary = Math.Round(employeePayChecks.Sum(p => p.Salary) + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
-						
+						else
+						{
+							var pc = paycheck.PayCodes[0];
+							paycheck.Notes.Add(new Comment
+							{
+								Content = string.Format("{0} piece @ {1} Reg Hr {2} OT Hr", pc.Amount.ToString("c"), pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"))
+							});
+							if ((pc.Amount/(pc.Hours + pc.OvertimeHours)) < 10)
+							{
+								pc.PayCode.HourlyRate = 10;
+							}
+							else
+							{
+								pc.PayCode.HourlyRate = Math.Round(pc.Amount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+							}
+						}
 						paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, employeePayChecks);
+						paycheck.YTDSalary = Math.Round(employeePayChecks.Sum(p => p.Salary) + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 						
 						var grossWage = GetGrossWage(paycheck);
 						paycheck.Compensations = ProcessCompensations(paycheck.Compensations, employeePayChecks);
@@ -203,7 +222,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		private decimal CalculatePayTypeAccumulation(PayCheck paycheck, decimal ratePerHour)
 		{
-			if (paycheck.Employee.PayType == EmployeeType.Hourly)
+			if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWise)
 			{
 				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours)*ratePerHour;
 			}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
@@ -16,12 +17,27 @@ namespace HrMaxxAPI.Controllers.Payrolls
 	{
 		private readonly IPayrollService _payrollService;
 		private readonly IDocumentService _documentService;
+		private readonly IDashboardService _dashboardService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
+			_dashboardService = dashboardService;
 		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.FixCompanyCubes)]
+		public HttpStatusCode FixCompanyCubes(Guid companyId, int year)
+		{
+			var payrolls = _payrollService.GetCompanyPayrolls(companyId, new DateTime(year, 1, 1).Date,
+				new DateTime(year, 12, 31));
+			var done = MakeServiceCall(() => _dashboardService.FixCompanyCubes(payrolls, companyId, year), "Fix cubes for company", true);
+			if (done!=null)
+				return HttpStatusCode.OK;
+			return HttpStatusCode.ExpectationFailed;
+		}
+
 
 		[HttpPost]
 		[Route(PayrollRoutes.Print)]

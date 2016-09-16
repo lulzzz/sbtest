@@ -81,5 +81,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 				return _mapper.Map<Models.DataModel.CompanyPayrollCube, CompanyPayrollCube>(result.First()).Accumulation;
 			return null;
 		}
+
+		public List<Models.CompanyPayrollCube> GetCompanyCubesForYear(Guid companyId, int year)
+		{
+			var cubes = _dbContext.CompanyPayrollCubes.Where(c => c.CompanyId == companyId && c.Year == year).ToList();
+			return _mapper.Map<List<Models.DataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes);
+		}
 	}
 }

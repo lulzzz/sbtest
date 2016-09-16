@@ -9,6 +9,7 @@ namespace HrMaxx.Common.Models.Enum
 {
 	public enum AddressType
 	{
+		NA=0,
 		Personal=1,
 		Business=2
 	}

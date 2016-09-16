@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
@@ -11,7 +12,11 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class ReportResponse
 	{
 		public Company Company { get; set; }
+		public Contact Contact { get; set; }
 		public PayrollAccumulation CompanyAccumulation { get; set; }
+		public List<CompanyPayrollCube> Cubes { get; set; }
+		
+		 
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public List<PayCheck> PayChecks;
 		public List<CoaTypeBalanceDetail> AccountDetails { get; set; } 
@@ -61,4 +66,5 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Decimal Balance { get; set; }
 		
 	}
+
 }

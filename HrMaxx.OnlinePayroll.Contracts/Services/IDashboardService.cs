@@ -13,5 +13,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	{
 		void AddPayrollToCubes(Payroll payroll);
 		void RemovePayCheckFromCubes(PayCheck payCheck);
+		List<Payroll> FixCompanyCubes(List<Payroll> payrolls, Guid companyId, int year);
 	}
 }

@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System.Configuration;
+using System.Web;
+using Autofac;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Services;
 using HrMaxx.OnlinePayroll.Services.Dashboard;
@@ -14,6 +16,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
+			string _templatePath = HttpContext.Current.Server.MapPath("~/Templates/");
 			
 			builder.RegisterType<HostService>()
 				.As<IHostService>()
@@ -51,6 +55,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<ReportService>()
+				.WithParameter(new NamedParameter("filePath", _pdfPath))
+				.WithParameter(new NamedParameter("templatePath", _templatePath))
 				.As<IReportService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
