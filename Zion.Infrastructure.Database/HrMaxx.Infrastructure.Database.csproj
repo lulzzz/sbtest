@@ -118,6 +118,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\006a_Journal Printing.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\006b_company min wage.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>

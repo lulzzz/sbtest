@@ -65,7 +65,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								var pc = {
 									payCode: paycode,
 									hours: 0,
-									overtimeHours: 0
+									overtimeHours: 0,
+									pwAmount: 0
 								};
 								paycheck.payCodes.push(pc);
 							});

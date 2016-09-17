@@ -55,6 +55,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.DateTime LastModified { get; set; }
         public bool IsFiler944 { get; set; }
         public Nullable<System.DateTime> LastPayrollDate { get; set; }
+        public decimal MinWage { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

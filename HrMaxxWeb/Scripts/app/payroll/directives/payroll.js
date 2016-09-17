@@ -60,11 +60,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 																$filter('filter')($scope.list, params.filter()) :
 																$scope.list;
 							if (filterbypaytype) {
-								dataSvc.payTypeFilter = filterbypaytype;
+								//dataSvc.payTypeFilter = filterbypaytype;
 								orderedData = $filter('filter')(orderedData, { employee: { payType: filterbypaytype } });
-							} else {
-								filterbypaytype = dataSvc.payTypeFilter;
-							}
+							} 
 
 							orderedData = params.sorting() ?
 														$filter('orderBy')(orderedData, params.orderBy()) :
@@ -130,6 +128,10 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var comps = 0;
 						$.each(pc.payCodes, function (index1, paycode) {
 							payCodeSum += (paycode.hours + paycode.overtimeHours);
+							if (paycode.payCode.id === -1 && paycode.pwAmount <= 0) {
+								payCodeSum = 0;
+								return;
+							}
 						});
 						$.each(pc.compensations, function (index1, comp) {
 							comps += comp.amount;

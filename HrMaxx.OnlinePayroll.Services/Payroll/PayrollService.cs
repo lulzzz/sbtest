@@ -87,15 +87,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var pc = paycheck.PayCodes[0];
 							paycheck.Notes.Add(new Comment
 							{
-								Content = string.Format("{0} piece @ {1} Reg Hr {2} OT Hr", pc.Amount.ToString("c"), pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"))
+								Content = string.Format("{0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"), pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"))
 							});
-							if ((pc.Amount/(pc.Hours + pc.OvertimeHours)) < 10)
+							if ((pc.PWAmount/(pc.Hours + pc.OvertimeHours)) < 10)
 							{
 								pc.PayCode.HourlyRate = 10;
 							}
 							else
 							{
-								pc.PayCode.HourlyRate = Math.Round(pc.Amount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+								pc.PayCode.HourlyRate = Math.Round(pc.PWAmount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
 							}
 						}
 						paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, employeePayChecks);

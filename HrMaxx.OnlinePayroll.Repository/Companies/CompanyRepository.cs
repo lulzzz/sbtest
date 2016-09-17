@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using HrMaxx.Common.Models.Enum;
@@ -73,7 +74,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.PayrollSchedule = dbMappedCompany.PayrollSchedule;
 				dbCompany.StatusId = dbMappedCompany.StatusId;
 				dbCompany.TaxFilingName = dbMappedCompany.TaxFilingName;
-				
+				dbCompany.MinWage = dbMappedCompany.MinWage;
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);
@@ -156,6 +157,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			if (mappedwc.Id == 0)
 			{
 				_dbContext.CompanyWorkerCompensations.Add(mappedwc);
+				var employeesWithoutWC =
+					_dbContext.Employees.Where(e => e.CompanyId == mappedwc.CompanyId && !e.WorkerCompensationId.HasValue);
+				if (employeesWithoutWC.Any())
+				{
+					employeesWithoutWC.ForEachAsync(e => e.WorkerCompensationId = mappedwc.Id);
+				}
 			}
 			else
 			{

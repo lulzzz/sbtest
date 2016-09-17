@@ -110,6 +110,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public CompanyPayCodeResource PayCode { get; set; }
 		public decimal Hours { get; set; }
 		public decimal OvertimeHours { get; set; }
+		public decimal PWAmount { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
 		public decimal OvertimeAmount { get; set; }
