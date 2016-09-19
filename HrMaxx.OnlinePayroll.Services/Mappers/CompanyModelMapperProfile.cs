@@ -32,6 +32,35 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 		protected override void Configure()
 		{
 			base.Configure();
+
+			CreateMap<Models.Host, Models.DataModel.Host>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.FirmName, opt => opt.MapFrom(src => src.FirmName))
+				.ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
+				.ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
+				.ForMember(dest => dest.TerminationDate, opt => opt.MapFrom(src => src.TerminationDate))
+				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
+				.ForMember(dest => dest.Status, opt => opt.Ignore())
+				.ForMember(dest => dest.HomePage, opt => opt.Ignore())
+				.ForMember(dest => dest.Companies, opt => opt.Ignore())
+				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
+
+			CreateMap<Models.DataModel.Host, Models.Host>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.FirmName, opt => opt.MapFrom(src => src.FirmName))
+				.ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
+				.ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
+				.ForMember(dest => dest.TerminationDate, opt => opt.MapFrom(src => src.TerminationDate))
+				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
+				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId))
+				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src.Company))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
+			.ForMember(dest => dest.UserId, opt => opt.Ignore());
+
 			CreateMap<Models.DataModel.Company, Models.Company>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CompanyName))
@@ -72,6 +101,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.Company, Models.DataModel.Company>()
 				.ForMember(dest => dest.Host, opt => opt.Ignore())
+				.ForMember(dest => dest.Hosts, opt => opt.Ignore())
 				.ForMember(dest => dest.Status, opt => opt.Ignore())
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
 				.ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Name))

@@ -85,6 +85,9 @@
 					<div class="panel-body tab-content">
 						<div class="tab-pane fade active in" id="info">
 							<form data-parsley-validate="true" name="form-wizard">
+								<div class="alert alert-info" ng-show="selectedCompany.isHostCompany">
+									This company is the Host's own.
+								</div>
 								<div id="wizard">
 									<ol>
 										<li>
@@ -132,7 +135,7 @@
 												<!-- end col-4 -->
 												<!-- begin col-4 -->
 												<div class="col-sm-2">
-													<div class="form-group">
+													<div class="form-group" ng-show="!selectedCompany.isHostCompany">
 														<label></label>
 														<div>
 															<label for="visibleToHost" class="switch">
@@ -142,7 +145,7 @@
 														</div>
 													</div>
 
-													<div class="form-group">
+													<div class="form-group" ng-show="!selectedCompany.isHostCompany">
 														<label></label>
 														<div>
 															<label for="fileUnderHost" class="switch">
@@ -279,7 +282,7 @@
 														<label></label>
 														<div>
 															<label for="taxpayments" class="switch">
-																Allow HrMaxx to manage Tax Payments
+																Allow Host to manage Tax Payments
 																<input id="taxpayments" type="checkbox" ng-model="selectedCompany.allowTaxPayments" /><i></i>
 															</label>
 														</div>
@@ -290,7 +293,7 @@
 														<label></label>
 														<div>
 															<label for="efileforms" class="switch">
-																Allow HrMaxx to manage E-File forms
+																Allow Host to manage E-File forms
 																<input id="efileforms" type="checkbox" ng-model="selectedCompany.allowEFileFormFiling" /><i></i>
 															</label>
 														</div>
@@ -346,12 +349,13 @@
 										<fieldset>
 											<legend class="pull-left width-full">States <i class="fa fa-plus-circle" ng-show="availableStates().length>0" ng-click="addState()"></i></legend>
 											<!-- begin row -->
+											<div ng-show="availableStates().length>0 && selectedCompany.states.length===0" class="row show-red">Please select atleast one state</div>
 											<div class="row" ng-repeat="state in selectedCompany.states">
 												<div class="col-sm-3">
 													<div class="form-group">
 														<label>State</label>
 														<div>
-															<select id="state" class="form-control" ng-model="state.state" ng-disabled="!state.isNew" ng-options="st.stateName for st in data.companyMetaData.countries[0].states track by st.stateId" required></select>
+															<select id="state" class="form-control" ng-model="state.state" ng-disabled="!state.isNew" ng-options="st.stateName for st in data.companyMetaData.countries[0].states track by st.stateId" required data-parsley-group="wizard-step-3" ng-class="{'parsley-error': !state.state.stateId}"></select>
 														</div>
 													</div>
 												</div>

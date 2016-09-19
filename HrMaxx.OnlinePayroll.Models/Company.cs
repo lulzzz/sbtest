@@ -20,7 +20,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsVisibleToHost { get; set; }
 		public StatusOption StatusId { get; set; }
 		public bool FileUnderHost { get; set; }
-
+		public bool IsHostCompany { get; set; }
 		//Payroll fields
 		public int PayrollDaysInPast { get; set; }
 		public bool DirectDebitPayer { get; set; }

@@ -180,62 +180,62 @@
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_011(0)'"/>
-		<xsl:with-param name="val1" select="translate(/hrmaxx/@Designee_name_941_940,$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(/ReportResponse/Host/DesigneeName940941,$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_039(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,1,3)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,1,3)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_040(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,5,3)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,4,3)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_041(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,9,4)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,7,4)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_012(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@PIN_941_940,1,1)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Host/PIN940941,1,1)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_013(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@PIN_941_940,2,1)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Host/PIN940941,2,1)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_014(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@PIN_941_940,3,1)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Host/PIN940941,3,1)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_015(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@PIN_941_940,4,1)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Host/PIN940941,4,1)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_016(0)'"/>
-		<xsl:with-param name="val1" select="substring(/hrmaxx/@PIN_941_940,5,1)"/>
+		<xsl:with-param name="val1" select="substring(/ReportResponse/Host/PIN940941,5,1)"/>
 	</xsl:call-template>
 
 	<xsl:choose>
-		<xsl:when test="@processtaxpayments=1">
+		<xsl:when test="/ReportResponse/Company/AllowTaxPayments">
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_025(0)'"/>
-				<xsl:with-param name="val1" select="translate(/hrmaxx/@FirmName,$smallcase,$uppercase)"/>
+				<xsl:with-param name="val1" select="translate(/ReportResponse/Host/FirmName,$smallcase,$uppercase)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_031(0)'"/>
-				<xsl:with-param name="val1" select="translate(/hrmaxx/@FirmName,$smallcase,$uppercase)"/>
+				<xsl:with-param name="val1" select="translate(/ReportResponse/Host/FirmName,$smallcase,$uppercase)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_033(0)'"/>
-				<xsl:with-param name="val1" select="translate(concat(/hrmaxx/@AddressLine1,/hrmaxx/@AddressLine2),$smallcase,$uppercase)"/>
+				<xsl:with-param name="val1" select="translate(/ReportResponse/Host/Company/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_034(0)'"/>
-				<xsl:with-param name="val1" select="translate(/hrmaxx/@City,$smallcase,$uppercase)"/>
+				<xsl:with-param name="val1" select="translate(/ReportResponse/Host/Company/BusinessAddress/City,$smallcase,$uppercase)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_035(0)'"/>
-				<xsl:with-param name="val1" select="translate(/hrmaxx/@State,$smallcase,$uppercase)"/>
+				<xsl:with-param name="val1" select="translate('ca',$smallcase,$uppercase)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_028(0)'"/>
@@ -251,27 +251,27 @@
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_042(0)'"/>
-				<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,1,3)"/>
+				<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,1,3)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_043(0)'"/>
-				<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,5,3)"/>
+				<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,4,3)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_044(0)'"/>
-				<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,9,4)"/>
+				<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,7,4)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_032(0)'"/>
-				<xsl:with-param name="val1" select="/hrmaxx/@EIN"/>
+				<xsl:with-param name="val1" select="concat(substring(/ReportResponse/Host/Company/FederalEIN,1,2),'-',substring(/ReportResponse/Host/Company/FederalEIN,3,7))"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_036(0)'"/>
-				<xsl:with-param name="val1" select="/hrmaxx/@Zip"/>
+				<xsl:with-param name="val1" select="/ReportResponse/Host/Company/BusinessAddress/Zip"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_027(0)'"/>
-				<xsl:with-param name="val1" select="/hrmaxx/@PTIN"/>
+				<xsl:with-param name="val1" select="/ReportResponse/Host/PTIN"/>
 			</xsl:call-template>
 		</xsl:when>
 		<xsl:otherwise>
@@ -293,15 +293,15 @@
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_022(0)'"/>
-				<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,1,3)"/>
+				<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,1,3)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_023(0)'"/>
-				<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,5,3)"/>
+				<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,4,3)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_024(0)'"/>
-				<xsl:with-param name="val1" select="substring(/hrmaxx/@Phone,9,4)"/>
+				<xsl:with-param name="val1" select="substring(/ReportResponse/Contact/Phone,8,4)"/>
 			</xsl:call-template>
 
 		</xsl:otherwise>
@@ -325,7 +325,7 @@
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_010(0)'"/><xsl:with-param name="val1" select="translate(TaxFilingName,$smallcase,$uppercase)"/></xsl:call-template>				
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_011(0)'"/><xsl:with-param name="val1" select="translate(TaxFilingName,$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f2_037(0)'"/><xsl:with-param name="val1" select="translate(TaxFilingName,$smallcase,$uppercase)"/></xsl:call-template>
-	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f2_038(0)'"/><xsl:with-param name="val1" select="FederalEIN"/></xsl:call-template>
+	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f2_038(0)'"/><xsl:with-param name="val1" select="concat(substring(FederalEIN,1,2),'-',substring(FederalEIN,3,7))"/></xsl:call-template>
 	
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_016(0)'"/><xsl:with-param name="val1" select="substring(States/CompanyTaxState/State/Abbreviation,1,1)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_017(0)'"/><xsl:with-param name="val1" select="substring(States/CompanyTaxState/State/Abbreviation,2,1)"/></xsl:call-template>

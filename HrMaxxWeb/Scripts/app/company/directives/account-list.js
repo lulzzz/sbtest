@@ -48,6 +48,8 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 
 
 					$scope.add = function () {
+						dataSvc.selectedType = null;
+						dataSvc.selectedSubType = null;
 						var selected = {
 							companyId: $scope.mainData.selectedCompany.id,
 							type: null,

@@ -12,14 +12,15 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IHostService
 	{
 		IList<Host> GetHostList(Guid host);
-		Host GetHost(Guid cpaId);
+		Host GetHost(Guid hostId);
 		void Save(Host cpa);
 
-		HostHomePage GetHostHomePage(Guid cpaId);
-		HostHomePage SaveHomePage(Guid stagingId, Guid cpaId, HostHomePage homePage);
+		HostHomePage GetHostHomePage(Guid hostId);
+		HostHomePage SaveHomePage(Guid stagingId, Guid hostId, HostHomePage homePage);
 		void AddHomePageImageToStaging(HostHomePageDocument homePageDocument);
 		object GetHostHomePageByUrl(string url, Guid host);
 		object GetNewsfeedMetaData(RoleTypeEnum role, Guid? entityId);
 		object GetHostHomePageByFirmName(string firmName, Guid host);
+		
 	}
 }

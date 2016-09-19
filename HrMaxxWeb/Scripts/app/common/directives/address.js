@@ -37,24 +37,32 @@ common.directive('address', ['zionAPI','localStorageService','version',
 
 				$scope.countrySelected = function() {
 					$scope.data.countryId = $scope.data.selectedCountry.countryId;
+					if ($scope.data.selectedCountry.states.length === 1 && !$scope.data.stateId) {
+						$scope.data.selectedState = $scope.data.selectedCountry.states[0];
+						$scope.stateSelected();
+					}
 				}
 				$scope.stateSelected = function() {
 					$scope.data.stateId = $scope.data.selectedState.stateId;
 				}
 
-				var defaultCountryState = function() {
-					if ($scope.data && $scope.data.countryId) {
+				var defaultCountryState = function () {
+					if (!$scope.data)
+						$scope.data = {};
+					if ($scope.data.countryId) {
 						$scope.data.selectedCountry = $filter('filter')($scope.countries, { countryId: $scope.data.countryId })[0];
-
-					} else {
-						if ($scope.data && $scope.countries.length === 1) {
+						if ($scope.data.stateId) {
+							$scope.data.selectedState = $filter('filter')($scope.data.selectedCountry.states, { stateId: $scope.data.stateId })[0];
+						}
+					}
+					else {
+						if ($scope.countries.length === 1) {
 							$scope.data.selectedCountry = $scope.countries[0];
 							$scope.countrySelected();
 						}
+
 					}
-					if ($scope.data && $scope.data.stateId) {
-						$scope.data.selectedState = $filter('filter')($scope.data.selectedCountry.states, { stateId: $scope.data.stateId })[0];
-					}
+					
 				}
 				if ($scope.type === 1) {
 					$scope.$on('refreshuserprofile', function() {

@@ -115,13 +115,19 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					});
 				}
 				var init = function () {
-					if (!$scope.mainData.selectedHost) {
+					if (!$scope.mainData.userHost) {
 						var querystring = $location.search();
 						hostRepository.getHostList().then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							if (querystring.host) {
+							if ($scope.mainData.selectedHost) {
+								var selected1 = $filter('filter')($scope.list, { id: $scope.mainData.selectedHost.id });
+								if (selected1.length > 0) {
+									$scope.setSelectedHost(selected1[0]);
+								}
+							}
+							else if (querystring.host) {
 								var selected = $filter('filter')($scope.list, { firmName: querystring.host });
 								if (selected.length > 0) {
 									$scope.setSelectedHost(selected[0]);

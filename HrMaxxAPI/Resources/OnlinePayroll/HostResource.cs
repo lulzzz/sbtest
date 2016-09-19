@@ -15,5 +15,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DateTime? TerminationDate { get; set; }
 		[Required]
 		public int StatusId { get; set; }
+		[Required]
+		public CompanyResource Company { get; set; }
+		public Guid? CompanyId { get; set; }
+		public string PTIN { get; set; }
+		public string DesigneeName940941 { get; set; }
+		public string PIN940941 { get; set; }
 	}
 }

@@ -11,6 +11,7 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class ReportResponse
 	{
+		public Host Host { get; set; }
 		public Company Company { get; set; }
 		public Contact Contact { get; set; }
 		public PayrollAccumulation CompanyAccumulation { get; set; }

@@ -82,6 +82,33 @@ namespace HrMaxx.OnlinePayroll.Services
 
 		}
 
+		public Company SaveHostCompany(Company company)
+		{
+			try
+			{
+					company.CompanyTaxRates.ForEach(ct =>
+					{
+						ct.CompanyId = company.Id;
+
+					});
+					var savedcompany = _companyRepository.SaveCompany(company);
+					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, company.Contract);
+					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
+					savedcompany.Contract = savedcontract;
+					savedcompany.States = savedstates;
+					
+					
+					return savedcompany;
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "company details for company " + company.Name);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public CompanyDeduction SaveDeduction(CompanyDeduction deduction)
 		{
 			try

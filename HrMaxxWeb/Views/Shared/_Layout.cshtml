@@ -64,7 +64,7 @@
 				</div>
 			</div>
 			<div class="row" ng-show="data.selectedCompany && data.selectedCompany.id">
-				<h4 class="pull-right">You are viewing company: {{data.selectedCompany.name}}</h4>
+				<h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}}</em></h5>
 			</div>
 			<div class="row">
 				<div ng-repeat="alert in alerts" class="alert" ng-class="{'alert-success':alert.type==='success', 'alert-danger':alert.type==='danger'}">

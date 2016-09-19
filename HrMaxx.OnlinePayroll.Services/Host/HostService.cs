@@ -25,20 +25,24 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 		private readonly IStagingDataService _stagingDataService;
 		private readonly IDocumentService _documentService;
 		private readonly ICommonService _commonService;
+		private readonly ICompanyService _companyService;
 		public IBus Bus { get; set; }
 
-		public HostService(IHostRepository hostRepository, IStagingDataService stagingDataService, IDocumentService documentService, ICommonService commonService)
+		public HostService(IHostRepository hostRepository, IStagingDataService stagingDataService, IDocumentService documentService, ICommonService commonService, ICompanyService companyService)
 		{
 			_hostRepository = hostRepository;
 			_stagingDataService = stagingDataService;
 			_documentService = documentService;
 			_commonService = commonService;
+			_companyService = companyService;
 		}
 		public IList<Models.Host> GetHostList(Guid host)
 		{
 			try
 			{
-				return _hostRepository.GetHostList(host);
+				var hosts = _hostRepository.GetHostList(host);
+				//hosts.Where(h=>h.CompanyId.HasValue).ToList().ForEach(h=>h.Company = _companyService.GetCompanyById(h.CompanyId.Value));
+				return hosts;
 			}
 			catch (Exception e)
 			{
@@ -53,6 +57,9 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			try
 			{
 				return _hostRepository.GetHost(hostId);
+				//if (host.CompanyId.HasValue)
+				//	host.Company = _companyService.GetCompanyById(host.CompanyId.Value);
+				//return host;
 			}
 			catch (Exception e)
 			{
@@ -69,19 +76,29 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 				var original = _hostRepository.GetHost(host.Id);
 				var notificationText = original == null ? "A new Host {0} has been created" : "{0} has been updated";
 				var eventType = original == null ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
-				_hostRepository.Save(host);
-				Bus.Publish<Notification>(new Notification
+				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					SavedObject = host,
-					SourceId = host.Id,
-					UserId = host.UserId,
-					Source = host.UserName,
-					TimeStamp = DateTime.Now,
-					Roles = new List<RoleTypeEnum> { RoleTypeEnum.Master, RoleTypeEnum.Admin },
-					Text = string.Format("{0} by {1}", string.Format(notificationText, host.FirmName), host.UserName),
-					ReturnUrl = "#!/?host="+host.FirmName,
-					EventType = eventType
-				});
+					host.Company.LastModified = host.LastModified;
+					host.Company.UserName = host.UserName;
+					host.Company.UserId = host.UserId;
+					var savedCompany = _companyService.SaveHostCompany(host.Company);
+					host.CompanyId = savedCompany.Id;
+					_hostRepository.Save(host);
+					txn.Complete();
+					Bus.Publish<Notification>(new Notification
+					{
+						SavedObject = host,
+						SourceId = host.Id,
+						UserId = host.UserId,
+						Source = host.UserName,
+						TimeStamp = DateTime.Now,
+						Roles = new List<RoleTypeEnum> { RoleTypeEnum.Master, RoleTypeEnum.Admin },
+						Text = string.Format("{0} by {1}", string.Format(notificationText, host.FirmName), host.UserName),
+						ReturnUrl = "#!/?host=" + host.FirmName,
+						EventType = eventType
+					});
+				}
+				
 			}
 			catch (Exception e)
 			{

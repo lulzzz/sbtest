@@ -29,9 +29,14 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string HomePage { get; set; }
         public string LastModifiedBy { get; set; }
         public System.DateTime LastModified { get; set; }
+        public Nullable<System.Guid> CompanyId { get; set; }
+        public string PTIN { get; set; }
+        public string DesigneeName940941 { get; set; }
+        public string PIN940941 { get; set; }
     
         public virtual Status Status { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Company> Companies { get; set; }
+        public virtual Company Company { get; set; }
     }
 }

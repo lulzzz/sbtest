@@ -13,6 +13,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	{
 		IList<Company> GetCompanies(Guid id, Guid hostId);
 		Company Save(Company mappedResource);
+		Company SaveHostCompany(Company company);
 		CompanyDeduction SaveDeduction(CompanyDeduction deduction);
 		CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation);
 		AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource);

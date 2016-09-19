@@ -53,6 +53,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 				dbCPA.EffectiveDate = mappedCPA.EffectiveDate;
 				dbCPA.TerminationDate = mappedCPA.TerminationDate;
 				dbCPA.StatusId = mappedCPA.StatusId;
+				dbCPA.CompanyId = mappedCPA.CompanyId;
+				dbCPA.PIN940941 = mappedCPA.PIN940941;
+				dbCPA.PTIN = mappedCPA.PTIN;
+				dbCPA.DesigneeName940941 = mappedCPA.DesigneeName940941;
 			}
 			_dbContext.SaveChanges();
 		}

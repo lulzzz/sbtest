@@ -31,15 +31,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly ICompanyRepository _companyRepository ;
 		private readonly IPDFService _pdfService;
 		private readonly ICommonService _commonService;
+		private readonly IHostService _hostService;
 		private readonly string _filePath;
 		private readonly string _templatePath;
 
 		private const string NoData = "No Payroll Data exists for this time period and company";
 		private const string ReportNotAvailable = "The report template(s) are not available yet";
+		private const string HostNotSetUp = "Please set up the Host properly to proceed";
+		private const string HostContactNA = "Please add at-least one contact for the Host";
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -48,6 +51,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_filePath = filePath;
 			_templatePath = templatePath;
 			_commonService = commonService;
+			_hostService = hostService;
 		}
 
 
@@ -88,7 +92,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoData || e.Message == ReportNotAvailable)
+				if (e.Message == NoData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message==HostNotSetUp)
 				{
 					message = e.Message;
 				}
@@ -276,8 +280,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 			var cubes = GetCompanyPayrollCubes(request);
 			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
-			response.Contact = getCompanyContact(request.CompanyId);
+			response.Contact = getHostContact(request.HostId);
 				
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
@@ -295,17 +300,29 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			return _companyRepository.GetCompanyById(companyId);
 		}
-		private Contact getCompanyContact(Guid companyId)
+
+		private Models.Host GetHost(Guid hostId)
 		{
-			var contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Company, EntityTypeEnum.Contact,
-					companyId);
+			var host = _hostService.GetHost(hostId);
+			if(host==null || host.Company==null || string.IsNullOrWhiteSpace(host.PTIN) || string.IsNullOrWhiteSpace(host.DesigneeName940941) || string.IsNullOrWhiteSpace(host.PIN940941))
+				throw new Exception(HostNotSetUp);
+			return host;
+		}
+
+		private Contact getHostContact(Guid hostId)
+		{
+			var contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Host, EntityTypeEnum.Contact,
+					hostId);
 			if (contacts.Any(c => c.IsPrimary))
 			{
 				return contacts.First(c => c.IsPrimary);
 			}
 			else
 			{
-				return contacts.FirstOrDefault();
+				var contact = contacts.FirstOrDefault();
+				if(contact==null)
+					throw new Exception(HostContactNA);
+				return contact;
 			}
 		}
 		private List<CompanyPayrollCube> GetCompanyPayrollCubes(ReportRequest request)
@@ -379,3 +396,4 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 	}
 }
+

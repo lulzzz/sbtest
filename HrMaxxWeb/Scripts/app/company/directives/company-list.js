@@ -11,8 +11,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'hostRepository',
-				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, hostRepository) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
+				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
 					var dataSvc = {
 						hostList: [],
 						selectedHost: null,
@@ -42,6 +42,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							isAddressSame: true,
 							isVisibleToHost: true,
 							fileUnderHost: true,
+							isHostCompany: false,
 							payrollDaysInPast: 0,
 							companyAddress: {},
 							states: [],
@@ -123,7 +124,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 										if (ui.index == 0) {
 											// step-1 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
-												return false;
+												return true;
 											}
 										} else if (ui.index == 1) {
 											// step-2 validation
@@ -176,12 +177,18 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						return states;
 					}
 					$scope.addState = function () {
-						$scope.selectedCompany.states.push({
+						var st = {
 							state: {},
 							stateEin: '',
 							statePin: '',
 							isNew: true
-						});
+						};
+						var available = $scope.availableStates();
+						if (available.length === 1) {
+							st.state = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: available[0].stateId })[0];
+						}
+						$scope.selectedCompany.states.push(st);
+
 					}
 					$scope.removeState = function (state) {
 						$scope.selectedCompany.states.splice($scope.selectedCompany.states.indexOf(state), 1);

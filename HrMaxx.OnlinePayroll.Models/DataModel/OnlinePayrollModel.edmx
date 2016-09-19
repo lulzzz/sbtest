@@ -60,6 +60,7 @@
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastPayrollDate" Type="datetime" />
           <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IsHostCompany" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -244,8 +245,12 @@
           <Property Name="TerminationDate" Type="datetime" />
           <Property Name="StatusId" Type="int" Nullable="false" />
           <Property Name="HomePage" Type="varchar(max)" />
+          <Property Name="CompanyId" Type="uniqueidentifier" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="PTIN" Type="varchar(max)" />
+          <Property Name="DesigneeName940941" Type="varchar(max)" />
+          <Property Name="PIN940941" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="Invoice">
           <Key>
@@ -689,6 +694,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Host_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
+          <End Role="Host" Type="Self.Host" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Host">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Journal_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="1" />
           <End Role="Journal" Type="Self.Journal" Multiplicity="*" />
@@ -916,6 +933,10 @@
             <End Role="Employee" EntitySet="Employee" />
             <End Role="EmployeeDeduction" EntitySet="EmployeeDeduction" />
           </AssociationSet>
+          <AssociationSet Name="FK_Host_Company" Association="Self.FK_Host_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="Host" EntitySet="Host" />
+          </AssociationSet>
           <AssociationSet Name="FK_Journal_Company" Association="Self.FK_Journal_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="Journal" EntitySet="Journal" />
@@ -1123,6 +1144,10 @@
             <End Role="Invoice" EntitySet="Invoices" />
             <End Role="Payroll" EntitySet="Payrolls" />
           </AssociationSet>
+          <AssociationSet Name="FK_Host_Company" Association="HrMaxxModel.FK_Host_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="Host" EntitySet="Hosts" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1139,6 +1164,11 @@
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_CPA_Status" FromRole="Host" ToRole="Status" />
           <NavigationProperty Name="Companies" Relationship="HrMaxxModel.FK_Company_Host" FromRole="Host" ToRole="Company" />
+          <Property Name="CompanyId" Type="Guid" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_Host_Company" FromRole="Host" ToRole="Company" />
+          <Property Name="PTIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DesigneeName940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PIN940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_CPA_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -1195,6 +1225,8 @@
           <Property Name="LastPayrollDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_Company" FromRole="Company" ToRole="Journal" />
           <Property Name="MinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="IsHostCompany" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_Host_Company" FromRole="Company" ToRole="Host" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -1969,6 +2001,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Host_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
+          <End Type="HrMaxxModel.Host" Role="Host" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Host">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1986,6 +2030,10 @@
           <EntitySetMapping Name="Hosts">
             <EntityTypeMapping TypeName="HrMaxxModel.Host">
               <MappingFragment StoreEntitySet="Host">
+                <ScalarProperty Name="PIN940941" ColumnName="PIN940941" />
+                <ScalarProperty Name="DesigneeName940941" ColumnName="DesigneeName940941" />
+                <ScalarProperty Name="PTIN" ColumnName="PTIN" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="LastModified" ColumnName="LastModified" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
                 <ScalarProperty Name="HomePage" ColumnName="HomePage" />
@@ -2001,6 +2049,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="IsHostCompany" ColumnName="IsHostCompany" />
                 <ScalarProperty Name="MinWage" ColumnName="MinWage" />
                 <ScalarProperty Name="LastPayrollDate" ColumnName="LastPayrollDate" />
                 <ScalarProperty Name="IsFiler944" ColumnName="IsFiler944" />

@@ -1,51 +1,478 @@
 ﻿<div class="col-sm-12">
 	
-		<div class="row">
-			<div class="col-sm-6 form-group" >
-				<label class="control-label" for="firmName">Firm Name <span class="text-danger">*</span></label>
-				<input type="text" class="form-control" ng-model="host.firmName" name="firmName" placeholder="Firm Name" required />
-
-			</div>
-			<div class="col-sm-6 form-group" >
-				<label class="control-label" for="url">Url sub domain<span class="text-danger">*</span></label>
-
-				<div class="input-group">
-					<input type="text" class="form-control" ng-model="host.url" name="url" placeholder="sub domain (between 4 and 10 charachters)" data-parsley-pattern="/^.{4,10}$/" required style="width:15em" />(http://{{host.url}}.hrmaxx.com)
-				</div>
-				
-
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-sm-6 form-group">
-				<label class="control-label">Effective Date <span class="text-danger">*</span></label>
-				<div class="input-group date">
-					<date-ctrl name="effectivedate" required="true" model="host.effectiveDate" disabled="false" />
+		
+	<div id="wizard" ng-show="host && selectedCompany">
+		<ol>
+			<li>
+				Information
+				<small>Host Data</small>
+			</li>
+			<li>
+				Company
+				<small>Name, Address etc</small>
+			</li>
+			<li>
+				Payroll
+				<small>Payroll processing details</small>
+			</li>
+			<li>
+				Taxation
+				<small>Taxation Address and Federal and State details</small>
+			</li>
+			<li>
+				Contract
+				<small>Details for billing and invoice</small>
+			</li>
+		</ol>
+		<div class="wizard-step-1">
+			<fieldset>
+				<legend class="pull-left width-full">Information</legend>
+				<div class="row">
+					<div class="row">
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="control-label" for="firmName">Firm Name <span class="text-danger">*</span></label>
+								<input type="text" class="form-control" ng-model="host.firmName" name="firmName" placeholder="Firm Name" required data-parsley-group="wizard-step-1" />
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="url">Url sub domain<span class="text-danger">*</span></label>
+								<div class="input-group">
+									<input type="text" class="form-control" ng-model="host.url" name="url" placeholder="sub domain (between 4 and 10 charachters)" data-parsley-group="wizard-step-1" data-parsley-pattern="/^.{4,10}$/" required style="width:15em" />(http://{{host.url}}.hrmaxx.com)
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="status">Status</label>
+								<select ng-model="host.statusId" name="status" class="form-control" convert-to-number>
+									<option value="1">Acive</option>
+									<option value="2">InAcive</option>
+									<option value="3">Terminated</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="control-label">Effective Date <span class="text-danger">*</span></label>
+								<date-ctrl name="effectivedate" required="true" model="host.effectiveDate" disabled="false" />
+							</div>
+							<div class="form-group">
+								<label class="control-label">Termination Date</label>
+								<date-ctrl name="terminationdate" required="host.statusId===3" model="host.terminationDate" max="dt" disabled="false" />
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<label class="control-label" for="ptin">PTIN</label>
+								<input type="text" class="form-control" ng-model="host.ptin" name="ptin" placeholder="PTIN" />
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="dname">Designee Name 940 941</label>
+								<input type="text" class="form-control" ng-model="host.designeeName940941" name="dname" placeholder="Designee Name 940 941" />
+							</div>
+							<div class="form-group">
+								<label class="control-label" for="pin940">PIN for 940 941</label>
+								<input type="text" class="form-control" ng-model="host.piN940941" name="pin940" placeholder="PIN for 940 941" />
+							</div>
+						</div>
+						
+					</div>
 					
 				</div>
-
-			</div>
-			<div class="col-sm-6 form-group">
-				
-				<label class="control-label">Termination Date</label>
-				<date-ctrl name="terminationdate" required="host.statusId===3" model="host.terminationDate" max="dt" disabled="false" />
-				
-
-			</div>
+			</fieldset>
+			
 		</div>
+		<!-- begin wizard step-2 -->
+		<div class="wizard-step-2">
+			<fieldset>
+				<legend class="pull-left width-full">Company Details</legend>
+				<!-- begin row -->
+				<div class="row">
+					<!-- begin col-4 -->
+					<div class="col-sm-4">
+						<div class="form-group block1">
+							<label>Company Name</label>
+							<input type="text" name="name" placeholder="Company Name" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.name" ng-change="namechanged()" required />
+						</div>
+						<div class="form-group">
+							<label>Company No</label>
+							<input type="text" name="companyNo" placeholder="Company No" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.companyNo" required />
+						</div>
+						<div class="form-group">
+							<label>Status</label>
+							<select ng-model="selectedCompany.statusId" name="status" class="form-control" convert-to-number>
+								<option value="1">Acive</option>
+								<option value="2">InAcive</option>
+								<option value="3">Terminated</option>
+							</select>
+						</div>
+					</div>
+					<!-- end col-4 -->
+					<!-- begin col-4 -->
+					<div class="col-sm-2">
+						
+					</div>
+					<!-- end col-4 -->
+					<!-- begin col-4 -->
+					<div class="col-sm-6">
+						<div class="form-group" ng-if="selectedCompany">
+							<address type="0" data="selectedCompany.companyAddress" source-type-id="2" source-id="selectedCompany.companyId" val-group="'wizard-step-2'"></address>
+						</div>
+					</div>
+					<!-- end col-4 -->
+				</div>
 
-		<div class="row">
-			<div class="col-sm-6  form-group">
-				<label class="control-label" for="status">Status</label>
-				<select ng-modle="host.statusId" name="status" class="form-control">
-					<option value="1">Acive</option>
-					<option value="2">InAcive</option>
-					<option value="3">Terminated</option>
-				</select>
-			</div>
-
-
+			</fieldset>
 		</div>
-		
+		<!-- end wizard step-2 -->
+		<!-- begin wizard step-3 -->
+		<div class="wizard-step-3">
+			<fieldset>
+				<legend class="pull-left width-full">Payroll</legend>
+				<!-- begin row -->
+				<div class="row">
+					<!-- begin col-6 -->
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label>Payroll Days in Past</label>
+							<input type="text" name="payrolldaysinpast" class="form-control" data-parsley-group="wizard-step-3" data-parsley-type="number" ng-model="selectedCompany.payrollDaysInPast" />
+						</div>
+						<div class="form-group">
+							<label>Payroll Schedule</label>
+							<select ng-model="selectedCompany.payrollSchedule" name="scheuled" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number>
+								<option value="1">Weekly</option>
+								<option value="2">Bi-Weekly</option>
+								<option value="3">Semi-Monthly</option>
+								<option value="4">Monthly</option>
 
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Minimum Wage</label>
+							<input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-3" data-parsley-type="number" ng-model="selectedCompany.minWage" />
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label>Insurance Group No</label>
+							<select ng-model="selectedCompany.insuranceGroupNo" name="insurance" class="form-control" convert-to-number>
+								<option value="0">All</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+								<option value="6">6</option>
+								<option value="7">7</option>
+
+							</select>
+						</div>
+						<div class="form-group">
+							<label>PayCheck Stock</label>
+							<select ng-model="selectedCompany.payCheckStock" name="stock" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number>
+								<option value="1">MICR Encoded Top</option>
+								<option value="2">Laser Middle</option>
+								<option value="3">Laser Top</option>
+								<option value="4">MICR QB</option>
+
+							</select>
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label></label>
+							<div>
+								<label for="directdebitpayer" class="switch">
+									Pay by Direct Debit
+									<input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" /><i></i>
+								</label>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<!-- end row -->
+			</fieldset>
+		</div>
+		<!-- end wizard step-3 -->
+		<!-- begin wizard step-4 -->
+		<div class="wizard-step-4">
+			<fieldset>
+				<legend class="pull-left width-full">Address</legend>
+				<!-- begin row -->
+				<div class="row">
+					<div class="col-sm-6">
+						<div class="form-group">
+							<label></label>
+							<div>
+								<label for="samebusinessaddress" class="switch">
+									Same as Company Address?
+									<input id="samebusinessaddress" type="checkbox" ng-model="selectedCompany.isAddressSame" ng-change="LinkCompanyAndBusinessAddress()" /><i></i>
+								</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label>Tax Filing Name</label>
+							<div>
+								<input type="text" name="taxfilingname" placeholder="Tax Filing Name" ng-disabled="selectedCompany.isAddressSame" class="form-control" data-parsley-group="wizard-step-4" ng-model="selectedCompany.taxFilingName" required />
+							</div>
+						</div>
+						<div class="form-group" ng-if="selectedCompany">
+							<address type="0" data="selectedCompany.businessAddress" source-type-id="2" source-id="selectedCompany.companyId" show-disabled="selectedCompany.isAddressSame" val-group="'wizard-step-3'"></address>
+
+						</div>
+					</div>
+
+				</div>
+				<!-- end row -->
+			</fieldset>
+
+			<fieldset>
+				<legend class="pull-left width-full">Tax Setup</legend>
+				<!-- begin row -->
+				<div class="row">
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label>Federal EIN</label>
+							<div>
+								<input type="text" ng-model="selectedCompany.federalEIN" class="form-control" required data-parsley-group="wizard-step-4" ui-mask="99-9999999" />
+							</div>
+						</div>
+
+					</div>
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label>Federal Tax PIN</label>
+							<div>
+								<input type="text" ng-model="selectedCompany.federalPin" class="form-control" required data-parsley-group="wizard-step-4" ui-mask="9999" />
+							</div>
+						</div>
+
+					</div>
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label>941 Deposit Schedule</label>
+							<select ng-model="selectedCompany.depositSchedule" name="deposit" class="form-control" convert-to-number>
+								<option value="1">Semi-Weekly</option>
+								<option value="2">Monthly</option>
+								<option value="3">Quarterly</option>
+
+							</select>
+						</div>
+
+					</div>
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label></label>
+							<div>
+								<label for="filer944" class="switch">
+									944 Filer
+									<input id="filer944" type="checkbox" ng-model="selectedCompany.isFiler944" /><i></i>
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</fieldset>
+			<fieldset>
+				<legend class="pull-left width-full">States <i class="fa fa-plus-circle" ng-show="availableStates().length>0" ng-click="addState()"></i></legend>
+				<!-- begin row -->
+				<div ng-show="availableStates().length>0 && selectedCompany.states.length===0" class="row show-red">Please select atleast one state</div>
+				<div class="row" ng-repeat="state in selectedCompany.states">
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label>State</label>
+							<div>
+								<select id="state" class="form-control" ng-model="state.state" ng-disabled="!state.isNew" ng-options="st.stateName for st in data2.companyMetaData.countries[0].states track by st.stateId" required data-parsley-group="wizard-step-4" ng-class="{'parsley-error': !state.state.stateId}"></select>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="form-group">
+							<label>State EIN</label>
+							<div>
+								<input type="text" ng-model="state.stateEIN" class="form-control" required data-parsley-group="wizard-step-4" ui-mask="999-9999-9" />
+							</div>
+						</div>
+
+					</div>
+					<div class="col-sm-2">
+						<div class="form-group">
+							<label>State Tax PIN</label>
+							<div>
+								<input type="text" ng-model="state.statePIN" class="form-control" required data-parsley-group="wizard-step-4" ui-mask="9999" />
+
+							</div>
+						</div>
+
+					</div>
+					<div class="col-sm-2" ng-if="state.isNew">
+						<div class="form-group">
+							<label>&nbsp;</label>
+							<div>
+								<i class="fa fa-trash-o fa-lg" ng-click="removeState(state)"></i>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<!-- end row -->
+			</fieldset>
+		</div>
+		<!-- end wizard step-4 -->
+		<div class="wizard-step-5">
+			<fieldset>
+				<legend class="pull-left width-full">Contract</legend>
+				<!-- begin row -->
+				<div class="row">
+					<!-- begin col-4 -->
+					<div class="col-sm-4">
+						<div class="form-group block1">
+							<label>Type</label>
+							<select ng-model="selectedCompany.contract.contractOption" ng-change="selectedCompany.contract.contractOption===1?selectedCompany.contract.prePaidSubscriptionOption=1:selectedCompany.contract.prePaidSubscriptionOption=null" name="contracttype" class="form-control" convert-to-number>
+								<option value="2">PostPaid</option>
+								<option value="1">PrePaid</option>
+							</select>
+						</div>
+						<div class="form-group" ng-if="selectedCompany.contract.contractOption===1">
+							<label>Subscription Type</label>
+							<select ng-model="selectedCompany.contract.prePaidSubscriptionOption" ng-change="selectedCompany.contract.prePaidSubscriptionOption===1?selectedCompany.contract.billingOption=0:selectedCompany.contract.billingOption=1" name="subscriptiontype" class="form-control" convert-to-number>
+								<option value="1">Free</option>
+								<option value="2">Basic</option>
+								<option value="3">Premium</option>
+								<option value="4">Gold</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Billing Type</label>
+							<select ng-model="selectedCompany.contract.billingOption" ng-change="billingOptionChanged()" name="billingoption" class="form-control" convert-to-number ng-disabled="selectedCompany.contract.prePaidSubscriptionOption===1">
+								<option value="0">NA</option>
+								<option value="1">Credit Card</option>
+								<option value="2">Direct Debit</option>
+								<option value="3">Invoice</option>
+							</select>
+						</div>
+						<div class="form-group" ng-if="selectedCompany.contract.contractOption===2 && selectedCompany.contract.billingOption===3">
+							<label>Invoice Rate Type</label>
+							<select ng-model="selectedCompany.contract.method" name="invoicemethod" class="form-control" convert-to-number required data-parsley-group="wizard-step-5">
+								<option value="1">Flat Rate (per payroll)</option>
+								<option value="2">Percentage</option>
+							</select>
+						</div>
+						<div class="form-group" ng-if="selectedCompany.contract.contractOption===2 && selectedCompany.contract.billingOption===3" ng-show="selectedCompany.contract.method">
+							<label>Invoice Rate</label>
+							<input class="form-control" name="invoicecharge" ng-model="selectedCompany.contract.invoiceCharge" data-parsley-type="number" required data-parsley-group="wizard-step-5" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" />
+						</div>
+
+
+					</div>
+					<div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===1">
+
+						<div class="form-group">
+							<label>Credit Card Type</label>
+							<select ng-model="selectedCompany.contract.creditCardDetails.cardType" name="cardtype" required data-parsley-group="wizard-step-5" class="form-control" convert-to-number ng-change="cardTypeChanged()">
+								<option value="1">Visa</option>
+								<option value="2">Master Card</option>
+								<option value="3">American Express</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Card Number</label>
+							<div>
+								<input type="text" class="form-control" required data-parsley-group="wizard-step-5" name="cardnumber" ng-model="selectedCompany.contract.creditCardDetails.cardNumber" ui-mask="9999-9999-9999-9999" ng-if="selectedCompany.contract.creditCardDetails.cardType<3" />
+								<input type="text" class="form-control" required data-parsley-group="wizard-step-5" name="cardnumber" ng-model="selectedCompany.contract.creditCardDetails.cardNumber" ui-mask="9999-9999-9999-999" ng-if="selectedCompany.contract.creditCardDetails.cardType===3" />
+							</div>
+						</div>
+						<div class="form-group col-sm-4">
+							<label>Expiry Month</label>
+							<div>
+								<select ng-model="selectedCompany.contract.creditCardDetails.expiryMonth" name="expirymonth" class="form-control">
+									<option value="01">January</option>
+									<option value="02">February</option>
+									<option value="03">March</option>
+									<option value="04">April</option>
+									<option value="05">May</option>
+									<option value="06">June</option>
+									<option value="07">July</option>
+									<option value="08">August</option>
+									<option value="09">September</option>
+									<option value="10">October</option>
+									<option value="11">November</option>
+									<option value="12">December</option>
+
+								</select>
+
+							</div>
+
+						</div>
+						<div class="form-group col-sm-4">
+							<label>Expiry Year</label>
+							<div>
+								<input type="text" class="form-control" required name="expiryyear" data-parsley-group="wizard-step-5" ng-disabled="!selectedCompany.contract.creditCardDetails.expiryMonth" ng-model="selectedCompany.contract.creditCardDetails.expiryYear" ui-mask="9999" ng-change="validateCCYear()" ng-class="{'has-error':!validateCCYear()}" />
+
+							</div>
+
+						</div>
+						<div class="form-group col-sm-4">
+							<label>Security Code</label>
+							<div>
+								<input type="password" required data-parsley-group="wizard-step-5" ng-model="selectedCompany.contract.creditCardDetails.securityCode" ui-mask="999" class="form-control" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label>Card Holder Name</label>
+							<div>
+								<input type="text" class="form-control" data-parsley-group="wizard-step-5" required name="cardname" ng-model="selectedCompany.contract.creditCardDetails.cardName" />
+
+							</div>
+
+						</div>
+						<div class="form-group">
+							<address type="0" data="selectedCompany.contract.creditCardDetails.billingAddress" source-type-id="2" source-id="selectedCompany.companyId" val-group="'wizard-step-4'"></address>
+						</div>
+					</div>
+
+					<div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===2">
+
+						<div class="form-group">
+							<label>Bank Name</label>
+							<input type="text" required ng-model="selectedCompany.contract.bankDetails.bankName" data-parsley-group="wizard-step-5" class="form-control" />
+						</div>
+						<div class="form-group">
+							<label>Account type</label>
+							<div>
+								<select ng-model="selectedCompany.contract.bankDetails.accountType" required data-parsley-group="wizard-step-5" name="accountType" class="form-control" convert-to-number>
+									<option value="1">Checking</option>
+									<option value="2">Savings</option>
+
+								</select>
+
+							</div>
+
+						</div>
+						<div class="form-group">
+							<label>Routing Number</label>
+							<div>
+								<input type="text" class="form-control" required data-parsley-group="wizard-step-5" data-parsley-pattern="/^[0-9]{9}$/" data-parsley-trigger="blur" name="routingnumber" ui-mask="999999999" ng-model="selectedCompany.contract.bankDetails.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selectedCompany.contract.bankDetails.routingNumber)}" />
+
+							</div>
+						</div>
+						<div class="form-group">
+							<label>Account Number</label>
+							<div>
+								<input type="text" class="form-control" placeholder="Account Number between 8-15 numbers" required data-parsley-group="wizard-step-5" name="accountnumber" ng-model="selectedCompany.contract.bankDetails.accountNumber" data-parsley-pattern="/^\d{8,15}$/" />
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			</fieldset>
+		</div>
+	</div>
+	<div class="row pull-right">
+		<button type="button" class="btn btn-sm btn-primary" ng-disabled="!validate()" ng-click="save()">Save</button>
+		<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
+	</div>
 </div>

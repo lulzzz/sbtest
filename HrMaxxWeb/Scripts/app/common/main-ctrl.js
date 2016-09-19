@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams',
-	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams) {
+	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams', '$document',
+	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
@@ -140,5 +140,11 @@
 		}
 		_init();
 		$interval(removeMessages, 15000);
+
+		$document.on('keydown', function (e) {
+			if (e.which === 8 && (e.target.nodeName !== "INPUT" && e.target.nodeName !== "SELECT" && e.target.nodeName !== "PASSWORD" && e.target.nodeName !== "TEXTAREA")) { // you can add others here inside brackets.
+				e.preventDefault();
+			}
+		});
 	}
 ]);

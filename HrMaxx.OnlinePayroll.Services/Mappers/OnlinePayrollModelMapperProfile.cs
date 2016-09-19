@@ -29,30 +29,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 		{
 			base.Configure();
 
-			CreateMap<Models.Host, Models.DataModel.Host>()
-				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-				.ForMember(dest => dest.FirmName, opt => opt.MapFrom(src=>src.FirmName))
-				.ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
-				.ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
-				.ForMember(dest => dest.TerminationDate, opt => opt.MapFrom(src => src.TerminationDate))
-				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
-				.ForMember(dest => dest.Status, opt => opt.Ignore())
-				.ForMember(dest=>dest.HomePage, opt=>opt.Ignore())
-				.ForMember(dest => dest.Companies, opt => opt.Ignore())
-				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
-				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
-
-			CreateMap<Models.DataModel.Host, Models.Host>()
-				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-				.ForMember(dest => dest.FirmName, opt => opt.MapFrom(src => src.FirmName))
-				.ForMember(dest => dest.Url, opt => opt.MapFrom(src => src.Url))
-				.ForMember(dest => dest.EffectiveDate, opt => opt.MapFrom(src => src.EffectiveDate))
-				.ForMember(dest => dest.TerminationDate, opt => opt.MapFrom(src => src.TerminationDate))
-				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
-				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
-				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
-			.ForMember(dest => dest.UserId, opt => opt.Ignore());
-
 			CreateMap<HostHomePageDocument, DocumentDto>()
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())

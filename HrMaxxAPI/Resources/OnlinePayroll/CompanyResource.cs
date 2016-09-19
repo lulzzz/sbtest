@@ -26,7 +26,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool IsVisibleToHost { get; set; }
 		public StatusOption StatusId { get; set; }
 		public bool FileUnderHost { get; set; }
-
+		public bool IsHostCompany { get; set; }
 		//Payroll fields
 		[Required]
 		public int PayrollDaysInPast { get; set; }
