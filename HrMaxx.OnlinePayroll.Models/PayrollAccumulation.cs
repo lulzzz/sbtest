@@ -22,7 +22,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollDeduction> Deductions { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
 		public List<PayCheck> PayChecks { get; set; }
-		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; } 
+		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
+
+		public List<DailyAccumulation> DailyAccumulations { get; set; } 
 
 		public decimal EmployeeTaxes
 		{
@@ -119,7 +121,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void AddPayCheck(PayCheck add)
 		{
-			if (PayChecks.All(pci => pci.Id != add.Id))
+			if (PayChecks.All(pci => pci.Id != add.Id) && !add.IsVoid)
 			{
 				Salary += Math.Round(add.CalculatedSalary, 2, MidpointRounding.AwayFromZero);
 				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -254,8 +256,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var t1 = Taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
-					t1.TaxableWage += Math.Round(t.TaxableWage, 2, MidpointRounding.AwayFromZero);
-					t1.Amount += Math.Round(t.Amount, 2, MidpointRounding.AwayFromZero);
+					t1.TaxableWage = Math.Round(t1.TaxableWage + t.TaxableWage, 2, MidpointRounding.AwayFromZero);
+					t1.Amount = Math.Round(t1.Amount + t.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 				else
 				{
@@ -332,6 +334,22 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 			});
 			
+		}
+
+		public void BuildDailyAccumulations(int quarter)
+		{
+			DailyAccumulations = new List<DailyAccumulation>();
+			var groups = PayChecks.GroupBy(p => p.PayDay);
+			foreach (var @group in groups)
+			{
+				var ea = new DailyAccumulation
+				{
+					Month = quarter>0 ? @group.Key.Month % 3 > 0 ? @group.Key.Month%3 : 3 : @group.Key.Month,
+					Day = @group.Key.Day,
+					Value = @group.ToList().SelectMany(p=>p.Taxes.Where(t=>t.Tax.Id<6)).ToList().Sum(t=>t.Amount)
+				};
+				DailyAccumulations.Add(ea);
+			}
 		}
 	}
 }

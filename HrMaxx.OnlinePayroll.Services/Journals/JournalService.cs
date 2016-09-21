@@ -155,7 +155,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					{
 						if (journal.EntityType == EntityTypeEnum.Vendor || journal.EntityType == EntityTypeEnum.Customer)
 						{
-							var vc = new VendorCustomer(CombGuid.Generate(), journal.CompanyId, journal.PayeeName,
+							var vc = new VendorCustomer();
+							vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, journal.PayeeName,
 								journal.EntityType == EntityTypeEnum.Vendor, journal.LastModifiedBy);
 							var savedVC = _companyService.SaveVendorCustomers(vc);
 							journal.PayeeId = savedVC.Id;
@@ -387,6 +388,21 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					coa.AccountBalance = Math.Round(openingBalance + credits - debits, 2, MidpointRounding.AwayFromZero);
 				});
 				return coas;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Account list with journals for company id and type =" + companyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<Journal> GetJournalList(Guid companyId, DateTime startDate, DateTime endDate)
+		{
+			try
+			{
+				var journals = _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
+				return journals.Where(j => !j.IsVoid && j.TransactionType == TransactionType.RegularCheck).ToList();
 			}
 			catch (Exception e)
 			{

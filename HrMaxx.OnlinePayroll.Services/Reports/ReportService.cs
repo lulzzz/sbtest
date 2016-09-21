@@ -87,6 +87,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				if (request.ReportName.Equals("Federal940"))
 					return GetFederal940(request);
+				else if (request.ReportName.Equals("Federal941"))
+					return GetFederal941(request);
+				else if (request.ReportName.Equals("Federal944"))
+					return GetFederal944(request);
+				else if (request.ReportName.Equals("W2Employee"))
+					return GetW2Report(request, true);
+				else if (request.ReportName.Equals("W2Employer"))
+					return GetW2Report(request, false);
+				else if (request.ReportName.Equals("W3"))
+					return GetW3Report(request);
+				else if (request.ReportName.Equals("Report1099"))
+					return Get1099Report(request);
+				else if (request.ReportName.Equals("CaliforniaDE7"))
+					return GetCaliforniaDE7(request);
+				else if (request.ReportName.Equals("CaliforniaDE6"))
+					return GetCaliforniaDE6(request);
+				else if (request.ReportName.Equals("CaliforniaDE9"))
+					return GetCaliforniaDE9(request);
+				else if (request.ReportName.Equals("CaliforniaDE9C"))
+					return GetCaliforniaDE9C(request);
 				return null;
 			}
 			catch (Exception e)
@@ -282,7 +302,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
-			response.Contact = getHostContact(request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
 				
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
@@ -295,7 +316,214 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/940/Fed940-" + request.Year + ".xslt");
 			
 		}
+		private FileDto GetFederal941(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
+			response.CompanyAccumulation.BuildDailyAccumulations(request.Quarter);
+			response.Host = GetHost(request.HostId);
+			response.Company = GetCompany(request.CompanyId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
 
+			var argList = new XsltArgumentList();
+			argList.AddParam("quarter", "", request.Quarter);
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("month1", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 2)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 2)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id!=6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month2", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 1)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 1)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id!=6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month3", "", cubes.Any(c => c.Month == (request.Quarter * 3)) ? cubes.First(c => c.Month == (request.Quarter * 3)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id!=6).Sum(t => t.Amount) : 0);
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/941/Fed941-" + request.Year + ".xslt");
+
+		}
+
+		private FileDto GetFederal944(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.CompanyAccumulation.BuildDailyAccumulations(0);
+			response.Host = GetHost(request.HostId);
+			response.Company = GetCompany(request.CompanyId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("month1", "", cubes.Any(c => c.Month == 1) ? cubes.First(c => c.Month == 1).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month2", "", cubes.Any(c => c.Month == 2) ? cubes.First(c => c.Month == 2).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month3", "", cubes.Any(c => c.Month == 3) ? cubes.First(c => c.Month == 3).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month4", "", cubes.Any(c => c.Month == 4) ? cubes.First(c => c.Month == 4).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month5", "", cubes.Any(c => c.Month == 5) ? cubes.First(c => c.Month == 5).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month6", "", cubes.Any(c => c.Month == 6) ? cubes.First(c => c.Month == 6).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month7", "", cubes.Any(c => c.Month == 7) ? cubes.First(c => c.Month == 7).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month8", "", cubes.Any(c => c.Month == 8) ? cubes.First(c => c.Month == 8).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month9", "", cubes.Any(c => c.Month == 9) ? cubes.First(c => c.Month == 9).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month10", "", cubes.Any(c => c.Month == 10) ? cubes.First(c => c.Month == 10).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month11", "", cubes.Any(c => c.Month == 11) ? cubes.First(c => c.Month == 11).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month12", "", cubes.Any(c => c.Month == 12) ? cubes.First(c => c.Month == 12).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/944/Fed944-" + request.Year + ".xslt");
+
+		}
+
+		private FileDto GetW2Report(ReportRequest request, bool isEmployee)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			var yearCube = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.EmployeeAccumulations = getEmployeeAccumulations(yearCube.PayChecks);
+			response.Company = GetCompany(request.CompanyId);
+			
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W2/W2-" + (isEmployee? string.Empty : "Employer-") + request.Year + ".xslt");
+
+		}
+
+		private FileDto GetW3Report(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.Company = GetCompany(request.CompanyId);
+
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("c", "", response.CompanyAccumulation.PayChecks.Select(p=>p.Employee.Id).Distinct().Count());
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W3/W3-" + request.Year + ".xslt");
+
+		}
+		private FileDto Get1099Report(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
+			var vendors = _companyRepository.GetVendorCustomers(request.CompanyId, true);
+			var journals = _journalService.GetJournalList(request.CompanyId,
+				new DateTime(2016, 1, 1).Date, new DateTime(2016, 12, 31));
+			response.VendorList = vendors.Where(v => v.IsVendor && v.IsVendor1099).Select(v => new CompanyVendor
+			{
+				Vendor = v,
+				Amount = Math.Round(journals.Where(j=>j.PayeeId==v.Id).Sum(j=>j.Amount),2,MidpointRounding.AwayFromZero)
+
+			}).Where(cv=>cv.Amount>0).ToList();
+			if (!response.VendorList.Any())
+			{
+				throw new Exception(NoData);
+			}
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/1099/F1099.xslt");
+
+		}
+		private FileDto GetCaliforniaDE7(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.Company = GetCompany(request.CompanyId);
+			var argList = new XsltArgumentList();
+			
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE7.xslt");
+
+		}
+		private FileDto GetCaliforniaDE6(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
+			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
+			response.Company = GetCompany(request.CompanyId); 
+			response.Host = GetHost(request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+
+			var twelve1 = new DateTime(request.Year, request.Quarter*3 - 2, 12);
+			var twelve2 = new DateTime(request.Year, request.Quarter * 3 - 1, 12);
+			var twelve3 = new DateTime(request.Year, request.Quarter * 3 , 12);
+			var quarterEndDate = new DateTime(request.Year, request.Quarter*3,
+				DateTime.DaysInMonth(request.Year, request.Quarter*3));
+			var dueDate = quarterEndDate.AddDays(1);
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("quarter", "", request.Quarter);
+			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("dueDate", "", dueDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("count1", "", response.CompanyAccumulation.PayChecks.Where(pc=>pc.StartDate<=twelve1 && pc.EndDate>=twelve1).Select(pc=>pc.Employee.Id).Distinct().Count());
+			argList.AddParam("count2", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve2 && pc.EndDate >= twelve2).Select(pc => pc.Employee.Id).Distinct().Count());
+			argList.AddParam("count3", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve3 && pc.EndDate >= twelve3).Select(pc => pc.Employee.Id).Distinct().Count());
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE6.xslt");
+
+		}
+		private FileDto GetCaliforniaDE9(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
+			response.Company = GetCompany(request.CompanyId);
+
+			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
+				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
+			var dueDate = quarterEndDate.AddDays(1);
+			var dueDate2 = quarterEndDate.AddMonths(1);
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("quarter", "", request.Quarter);
+			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("dueDate", "", dueDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("dueDate2", "", dueDate2.ToString("MM/dd/yyyy"));
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE9.xslt");
+
+		}
+		private FileDto GetCaliforniaDE9C(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter == request.Quarter && !c.Month.HasValue).Accumulation;
+			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
+			response.Company = GetCompany(request.CompanyId);
+			response.Host = GetHost(request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+
+			var twelve1 = new DateTime(request.Year, request.Quarter * 3 - 2, 12);
+			var twelve2 = new DateTime(request.Year, request.Quarter * 3 - 1, 12);
+			var twelve3 = new DateTime(request.Year, request.Quarter * 3, 12);
+			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
+				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
+			var dueDate = quarterEndDate.AddDays(1);
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("quarter", "", request.Quarter);
+			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("dueDate", "", dueDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("count1", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve1 && pc.EndDate >= twelve1).Select(pc => pc.Employee.Id).Distinct().Count());
+			argList.AddParam("count2", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve2 && pc.EndDate >= twelve2).Select(pc => pc.Employee.Id).Distinct().Count());
+			argList.AddParam("count3", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve3 && pc.EndDate >= twelve3).Select(pc => pc.Employee.Id).Distinct().Count());
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE9C.xslt");
+
+		}
+		
 		private Company GetCompany(Guid companyId)
 		{
 			return _companyRepository.GetCompanyById(companyId);
@@ -309,10 +537,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return host;
 		}
 
-		private Contact getHostContact(Guid hostId)
+		private Contact getContactForEntity(EntityTypeEnum source, Guid sourceId)
 		{
-			var contacts = _commonService.GetRelatedEntities<Contact>(EntityTypeEnum.Host, EntityTypeEnum.Contact,
-					hostId);
+			var contacts = _commonService.GetRelatedEntities<Contact>(source, EntityTypeEnum.Contact,
+					sourceId);
 			if (contacts.Any(c => c.IsPrimary))
 			{
 				return contacts.First(c => c.IsPrimary);
@@ -327,7 +555,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private List<CompanyPayrollCube> GetCompanyPayrollCubes(ReportRequest request)
 		{
-			var cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, request.Year);
+			var cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, 2016);
 			if (cubes == null || !cubes.Any() )
 			{
 				throw new Exception(NoData);

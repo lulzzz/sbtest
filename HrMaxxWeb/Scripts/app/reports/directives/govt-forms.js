@@ -85,16 +85,17 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 						getReport('W3', 'Federal W3', dataSvc.filterW3.year, null);
 					}
 					$scope.getReport1099 = function () {
-						getReport('Report1099', '1099', dataSvc.filterW3.year, null);
+						getReport('Report1099', '1099', dataSvc.filter1099.year, null);
 					}
 					$scope.getReportDE6 = function () {
 						getReport('CaliforniaDE6', 'California DE 6', dataSvc.filterde6.year, dataSvc.filterde6.quarter);
 					}
 					$scope.getReportDE7 = function () {
-						getReport('CaliforniaDE7', 'California DE 7', dataSvc.filterde7.year, dataSvc.filterde7.quarter);
+						getReport('CaliforniaDE7', 'California DE 7', dataSvc.filterde7.year, null);
 					}
 					$scope.getReportDE9 = function () {
 						getReport('CaliforniaDE9', 'California DE 9', dataSvc.filterde9.year, dataSvc.filterde9.quarter);
+						getReport('CaliforniaDE9C', 'California DE 9C', dataSvc.filterde9.year, dataSvc.filterde9.quarter);
 					}
 
 					var getReport = function(reportName, desc, year, quarter) {

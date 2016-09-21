@@ -151,7 +151,7 @@ namespace HrMaxx.Common.Services.PDF
 						{
 							if (field.Type == "Text")
 							{
-								objField.SetFieldValue(field.Value, objFont);
+								objField.SetFieldValue(field.Value.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine), objFont);
 							}
 							else
 							{

@@ -14,11 +14,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Host Host { get; set; }
 		public Company Company { get; set; }
 		public Contact Contact { get; set; }
+		public Contact CompanyContact { get; set; }
 		public PayrollAccumulation CompanyAccumulation { get; set; }
 		public List<CompanyPayrollCube> Cubes { get; set; }
 		
 		 
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
+		public List<CompanyVendor> VendorList { get; set; } 
 		public List<PayCheck> PayChecks;
 		public List<CoaTypeBalanceDetail> AccountDetails { get; set; } 
 	}
@@ -28,6 +30,19 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Employee Employee { get; set; }
 		public List<PayCheck> PayChecks { get; set; } 
 		public PayrollAccumulation Accumulation { get; set; }
+	}
+
+	public class CompanyVendor
+	{
+		public VendorCustomer Vendor { get; set; }
+		public decimal Amount { get; set; }
+	}
+
+	public class DailyAccumulation
+	{
+		public int Month { get; set; }
+		public int Day { get; set; }
+		public decimal Value { get; set; }
 	}
 
 	public class CoaTypeBalanceDetail
