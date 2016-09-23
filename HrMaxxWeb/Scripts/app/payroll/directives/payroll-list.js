@@ -197,15 +197,17 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.processed = null;
 						$scope.committed = null;
 						$scope.selectedPayCodes = [];
-						$timeout(function () {
-							if(item.status===1)
-								$scope.selected = item;
-							else if (item.status === 2)
-								$scope.processed = angular.copy(item);
-							else if (item.status > 2)
-								$scope.committed = angular.copy(item);
+						if(item){
+							$timeout(function () {
+								if(item.status===1)
+									$scope.selected = item;
+								else if (item.status === 2)
+									$scope.processed = angular.copy(item);
+								else if (item.status > 2)
+									$scope.committed = angular.copy(item);
 							
-						}, 1);
+							}, 1);
+						}
 
 					}
 					
@@ -251,6 +253,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								var match = $filter('filter')($scope.list, { id: selectedItemId })[0];
 								if (match)
 									$scope.set(match);
+							} else {
+								$scope.set(null);
 							}
 						}, function (error) {
 							$scope.addAlert('error getting payrolls', 'danger');

@@ -272,7 +272,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				{
 					var payrollAccount =
 						_dbContext.CompanyAccounts.FirstOrDefault(
-							c => c.Type == (int) AccountType.Assets && c.SubType == (int) AccountSubType.Bank && c.UsedInPayroll);
+							c => c.CompanyId==account.CompanyId && c.Type == (int) AccountType.Assets && c.SubType == (int) AccountSubType.Bank && c.UsedInPayroll);
 					if (payrollAccount != null)
 						payrollAccount.UsedInPayroll = false;
 				}

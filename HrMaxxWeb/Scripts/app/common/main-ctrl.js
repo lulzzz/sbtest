@@ -74,6 +74,7 @@
 			}
 		};
 		
+		
 		$scope.getCompanies = function () {
 			companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
 				dataSvc.companies = data;
@@ -92,7 +93,7 @@
 		}
 		$scope.companySelected = function ($item, $model, $label, $event) {
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
-				dataSvc.selectedCompany = dataSvc.selectedCompany1;
+				dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
 				dataSvc.isFilterOpen = false;
 			}
 		}

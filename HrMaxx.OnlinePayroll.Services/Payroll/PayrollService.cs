@@ -222,7 +222,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		private decimal CalculatePayTypeAccumulation(PayCheck paycheck, decimal ratePerHour)
 		{
-			if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWise)
+			if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWork)
 			{
 				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours)*ratePerHour;
 			}
