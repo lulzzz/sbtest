@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl"
-    
+    xmlns:math="http://exslt.org/math"
 >
 <xsl:template name="FieldTemplate">                 
 		<xsl:param name="name1"/> 
@@ -12,6 +12,24 @@
 			<Value><xsl:value-of select="$val1"/>
 		</Value>
 		</Field>    
+	</xsl:template>
+	<xsl:template name="Amount">
+		<xsl:param name="name1"/>
+		<xsl:param name="val1"/>
+		<Field>
+			<Name>
+				<xsl:value-of select="$name1"/>
+			</Name>
+			<Type>Text</Type>
+			<Value>
+				<xsl:choose>
+					<xsl:when test="$val1">
+						<xsl:value-of select="concat('$',format-number($val1,'#,##0.00'))"/>
+					</xsl:when>
+					<xsl:otherwise>$0.00</xsl:otherwise>
+				</xsl:choose>
+			</Value>
+		</Field>
 	</xsl:template>
 	<xsl:template name="CheckTemplate">                 
 		<xsl:param name="name1"/> 

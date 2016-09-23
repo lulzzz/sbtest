@@ -298,6 +298,10 @@
     <Content Include="Areas\Client\templates\employees.html" />
     <Content Include="Areas\Client\templates\vendors.html" />
     <Content Include="Areas\Reports\templates\balance-sheet.html" />
+    <Content Include="Areas\Reports\templates\deposit-coupons.html" />
+    <Content Include="Areas\Reports\templates\employer-forms.html" />
+    <Content Include="Areas\Reports\templates\blank-forms.html" />
+    <Content Include="Areas\Reports\templates\other-forms.html" />
     <Content Include="Areas\Reports\templates\govt-forms.html" />
     <Content Include="Areas\Reports\templates\income-statement.html" />
     <Content Include="Areas\Reports\templates\worker-compensation-report.html" />
@@ -1299,6 +1303,10 @@
     <Content Include="Scripts\app\payroll\payroll-app.js" />
     <Content Include="Scripts\app\payroll\payroll-repository.js" />
     <Content Include="Scripts\app\reports\directives\balance-sheet.js" />
+    <Content Include="Scripts\app\reports\directives\deposit-coupons.js" />
+    <Content Include="Scripts\app\reports\directives\employer-forms.js" />
+    <Content Include="Scripts\app\reports\directives\blank-forms.js" />
+    <Content Include="Scripts\app\reports\directives\other-forms.js" />
     <Content Include="Scripts\app\reports\directives\income-statement.js" />
     <Content Include="Scripts\app\reports\directives\govt-forms.js" />
     <Content Include="Scripts\app\reports\directives\worker-compensation-report.js" />

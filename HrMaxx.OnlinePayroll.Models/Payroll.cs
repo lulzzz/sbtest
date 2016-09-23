@@ -141,6 +141,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Employee.PayType == EmployeeType.Salary ? YTDSalary : Math.Round(PayCodes.Sum(pc => pc.YTD + pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); }
 		}
+		public decimal Regular
+		{
+			get { return PayCodes.Sum(p => p.Hours); }
+		}
+		public decimal Overtime
+		{
+			get { return PayCodes.Sum(p => p.OvertimeHours); }
+		}
 		public Guid DocumentId { get; set; }
 		public void AddToYTD(PayCheck paycheck)
 		{

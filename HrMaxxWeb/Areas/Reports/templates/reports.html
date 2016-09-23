@@ -21,4 +21,16 @@
 	<div class="row" ng-if="params['reportName']==='GovtForms'">
 		<govt-forms main-data="data" />
 	</div>
+	<div class="row" ng-if="params['reportName']==='OtherForms'">
+		<other-forms main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='EmployerForms'">
+		<employer-forms main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='DepositCoupons'">
+		<deposit-coupons main-data="data" />
+	</div>
+	<div class="row" ng-if="params['reportName']==='BlankGovtForms'">
+		<blank-forms main-data="data" />
+	</div>
 </div>

@@ -4,14 +4,14 @@
 		<thead>
 			<tr>
 				<th class="col-sm-4">
-					<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByDateRange, 'fa-minus-square':data.filter.filterByDateRange}" ng-click="data.filter.filterByDateRange=!data.filter.filterByDateRange"> Filter By Date Range</i>
+					<i class="fa" ng-show="showDates" ng-class="{'fa-plus-square': !data.filter.filterByDateRange, 'fa-minus-square':data.filter.filterByDateRange}" ng-click="data.filter.filterByDateRange=!data.filter.filterByDateRange"> Filter By Date Range</i>
 				</th>
 				<th class="col-sm-4">
 					<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByMonthYear, 'fa-minus-square':data.filter.filterByMonthYear}" ng-click="data.filter.filterByMonthYear=!data.filter.filterByMonthYear"> Filter By Month/Quarter & Year</i>
 				</th>
 				<th class="col-sm-4">
 
-					<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByPeriod, 'fa-minus-square':data.filter.filterByPeriod}" ng-click="data.filter.filterByPeriod=!data.filter.filterByPeriod"> Filter By Period</i>
+					<i class="fa" ng-show="showPeriods" ng-class="{'fa-plus-square': !data.filter.filterByPeriod, 'fa-minus-square':data.filter.filterByPeriod}" ng-click="data.filter.filterByPeriod=!data.filter.filterByPeriod"> Filter By Period</i>
 				</th>
 			</tr>
 
@@ -19,7 +19,7 @@
 		<tbody>
 			<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
 				<td class="col-sm-4">
-					<div class="row" ng-show="data.filter.filterByDateRange">
+					<div class="row" ng-show="showDates">
 						<div class="col-sm-12">
 							<div class="col-sm-2"><label>From: </label></div>
 							<date-ctrl name="startdate" model="data.filter.startDate" disabled="false" />
@@ -29,7 +29,10 @@
 							<div class="col-sm-2"><label>To: </label></div>
 							<date-ctrl name="enddate" model="data.filter.endDate" min="data.filter.startDate" />
 
-							<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button></div>
+							
+						</div>
+						<div class="col-sm-12">
+							<button class="btn btn-xs btn-success pull-right" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button>
 						</div>
 					</div>
 
@@ -75,7 +78,7 @@
 				</td>
 
 				<td class="col-sm-4">
-					<div class="row" ng-show="data.filter.filterByPeriod">
+					<div class="row" ng-show="showPeriods">
 						<div class="col-sm-8">
 							<select name="filterperiod" ng-model="data.filter.period" class="form-control" convert-to-number>
 								<option value="1">All</option>

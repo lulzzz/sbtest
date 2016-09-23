@@ -35,7 +35,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly string _filePath;
 		private readonly string _templatePath;
 
-		private const string NoData = "No Payroll Data exists for this time period and company";
+		private const string NoData = "No Data exists for this time period and company";
+		private const string NoPayrollData = "No Payroll Data exists for this time period and company";
 		private const string ReportNotAvailable = "The report template(s) are not available yet";
 		private const string HostNotSetUp = "Please set up the Host properly to proceed";
 		private const string HostContactNA = "Please add at-least one contact for the Host";
@@ -75,7 +76,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+				var message = string.Empty;
+				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+				}
+				else
+				{
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+				}
+
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -107,12 +117,39 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetCaliforniaDE9(request);
 				else if (request.ReportName.Equals("CaliforniaDE9C"))
 					return GetCaliforniaDE9C(request);
+
+				else if (request.ReportName.Equals("QuarterAnnualReport"))
+					return GetQuarterAnnualReport(request);
+				else if (request.ReportName.Equals("MonthlyQuarterAnnualReport"))
+					return GetMonthlyQuarterAnnualReport(request);
+				else if (request.ReportName.Equals("EmployeeJournalByCheckReport"))
+					return GetCaliforniaDE9(request);
+				else if (request.ReportName.Equals("EmployeeHourJournalByCheck"))
+					return GetCaliforniaDE9C(request);
+
+				else if (request.ReportName.Equals("W4_1"))
+					return GetW4Report(request, false);
+				else if (request.ReportName.Equals("W4_2"))
+					return GetW4Report(request, true);
+				else if (request.ReportName.Equals("I9_1"))
+					return GetI9Report(request, false);
+				else if (request.ReportName.Equals("I9_2"))
+					return GetI9Report(request, true);
+				else if (request.ReportName.Equals("CaliforniaDE34"))
+					return GetCaliforniaDE34(request);
+
+				else if (request.ReportName.StartsWith("Federal8109B"))
+					return GetFederal8109B(request);
+				else if (request.ReportName.StartsWith("CaliforniaDE88"))
+					return GetCaliforniaDE88(request);
+				else if (request.ReportName.StartsWith("Blank_"))
+					return GetBlankForms(request);
 				return null;
 			}
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message==HostNotSetUp)
+				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message==HostNotSetUp)
 				{
 					message = e.Message;
 				}
@@ -262,10 +299,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportResponse GetPayrollSummaryReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			response.Company = _companyRepository.GetCompanyById(request.CompanyId);
-			response.CompanyAccumulation = _reportRepository.GetCompanyPayrollCube(request);
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => ((request.Quarter > 0 && request.Quarter == c.Quarter) || (request.Quarter == 0 && !c.Quarter.HasValue))).Accumulation;
 			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
-			
+			response.Company = GetCompany(request.CompanyId);
 			return response;
 		}
 
@@ -400,6 +437,63 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W3/W3-" + request.Year + ".xslt");
 
 		}
+
+		private FileDto GetW4Report(ReportRequest request, bool isEmployeeFilled)
+		{
+			if (!isEmployeeFilled)
+				return _pdfService.GetTemplateFile("GovtForms\\EmployerForms\\fw4", DateTime.Now.Year, "W4");
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			response.Employees = _companyRepository.GetEmployeeList(request.CompanyId).Where(e => e.StatusId == StatusOption.Active).ToList();
+			if (!response.Employees.Any())
+				throw new Exception(NoData);
+
+
+			var argList = new XsltArgumentList();
+			
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/employer/FedW4.xslt");
+
+		}
+
+		private FileDto GetBlankForms(ReportRequest request)
+		{
+			var report = request.ReportName.Split('_')[1];
+			return _pdfService.GetTemplateFile("GovtForms\\BlankForms\\" + report, DateTime.Now.Year, report);
+			
+		}
+		private FileDto GetFederal8109B(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			var paychecks = _reportRepository.GetReportPayChecks(request, false);
+			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
+			var total = type == 1
+				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id == 6)).Sum(t => t.Amount)
+				: paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id < 6)).Sum(t => t.Amount);
+			var totalstr = total.ToString("000000000.00").Replace(".", string.Empty);
+			var argList = new XsltArgumentList();
+			argList.AddParam("type", "", type);
+			argList.AddParam("month", "", request.EndDate.Month);
+			argList.AddParam("total", "", totalstr);
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/depositcoupons/Fed8109B.xslt");
+
+		}
+		private FileDto GetI9Report(ReportRequest request, bool isEmployeeFilled)
+		{
+			if (!isEmployeeFilled)
+				return _pdfService.GetTemplateFile("GovtForms\\EmployerForms\\I9", DateTime.Now.Year, "I9");
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			response.Employees = _companyRepository.GetEmployeeList(request.CompanyId).Where(e => e.StatusId == StatusOption.Active).ToList();
+			if(!response.Employees.Any())
+				throw new Exception(NoData);
+
+			var argList = new XsltArgumentList();
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/employer/FedI9.xslt");
+
+		}
+
 		private FileDto Get1099Report(ReportRequest request)
 		{
 			var response = new ReportResponse();
@@ -407,7 +501,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
 			var vendors = _companyRepository.GetVendorCustomers(request.CompanyId, true);
 			var journals = _journalService.GetJournalList(request.CompanyId,
-				new DateTime(2016, 1, 1).Date, new DateTime(2016, 12, 31));
+				new DateTime(request.Year, 1, 1).Date, new DateTime(request.Year, 12, 31));
 			response.VendorList = vendors.Where(v => v.IsVendor && v.IsVendor1099).Select(v => new CompanyVendor
 			{
 				Vendor = v,
@@ -416,7 +510,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}).Where(cv=>cv.Amount>0).ToList();
 			if (!response.VendorList.Any())
 			{
-				throw new Exception(NoData);
+				throw new Exception(NoPayrollData);
 			}
 
 			var argList = new XsltArgumentList();
@@ -523,7 +617,77 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE9C.xslt");
 
 		}
-		
+
+		private FileDto GetCaliforniaDE34(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			var emps = _companyRepository.GetEmployeeList(request.CompanyId);
+			response.Employees = emps.Where(e=>e.StatusId==StatusOption.Active && e.HireDate>=request.StartDate ).ToList();
+			if(!response.Employees.Any())
+				throw new Exception(NoData);
+			var argList = new XsltArgumentList();
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/employer/CADE34.xslt");
+
+		}
+		private FileDto GetCaliforniaDE88(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			var paychecks = _reportRepository.GetReportPayChecks(request, false);
+			response.PayChecks = paychecks;
+			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
+			var total = type == 1
+				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id > 6 && t.Tax.Id < 11)).Sum(t => t.Amount)
+				: type == 2
+					? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id == 9 || t.Tax.Id == 10)).Sum(t => t.Amount)
+					: paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8)).Sum(t => t.Amount);
+			var totalstr = Math.Round(total,2, MidpointRounding.AwayFromZero).ToString("00000000.00").Replace(".", string.Empty);
+			var argList = new XsltArgumentList();
+			argList.AddParam("type", "", type);
+			argList.AddParam("month", "", request.EndDate.Month);
+			argList.AddParam("enddatestr", "", request.EndDate.ToString("MMddyy"));
+			argList.AddParam("total", "", totalstr);
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/depositcoupons/CADE88.xslt");
+
+		}
+
+
+		private FileDto GetQuarterAnnualReport(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.Cubes = cubes.Where(c => c.Quarter.HasValue || c.Month.HasValue).ToList();
+			response.Company = GetCompany(request.CompanyId);
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			
+			
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/other/quarterannualtaxsummary.xslt");
+
+		}
+		private FileDto GetMonthlyQuarterAnnualReport(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var cubes = GetCompanyPayrollCubes(request);
+			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			response.Cubes = cubes.Where(c => c.Quarter.HasValue || c.Month.HasValue).ToList();
+			response.Company = GetCompany(request.CompanyId);
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+
+
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/other/monthlyquarterannualtaxsummary.xslt");
+
+		}
+
+
 		private Company GetCompany(Guid companyId)
 		{
 			return _companyRepository.GetCompanyById(companyId);
@@ -555,14 +719,25 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private List<CompanyPayrollCube> GetCompanyPayrollCubes(ReportRequest request)
 		{
-			var cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, 2016);
+			var cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, request.Year);
 			if (cubes == null || !cubes.Any() )
 			{
-				throw new Exception(NoData);
+				throw new Exception(NoPayrollData);
 			}
 			var relevantCube = cubes.FirstOrDefault(c => ((request.Quarter>0 && request.Quarter==c.Quarter) || (request.Quarter==0 && !c.Quarter.HasValue)));
 			if (relevantCube==null || relevantCube.Accumulation.GrossWage <= 0)
-				throw new Exception(NoData);
+				throw new Exception(NoPayrollData);
+			for (var i = 1; i < 5; i++)
+			{
+				if(!cubes.Any(c=>c.Quarter==i))
+					cubes.Add(new CompanyPayrollCube { CompanyId = request.CompanyId, Accumulation = new PayrollAccumulation(), Quarter = i, Year = request.Year });
+			}
+			for (var i = 1; i < 13; i++)
+			{
+				if (!cubes.Any(c => c.Month == i))
+					cubes.Add(new CompanyPayrollCube { CompanyId = request.CompanyId, Accumulation = new PayrollAccumulation(), Month = i, Year = request.Year });
+			}
+				
 			return cubes;
 
 		} 

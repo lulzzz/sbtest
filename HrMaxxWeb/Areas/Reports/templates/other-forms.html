@@ -1,0 +1,204 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Other Reports</h4>
+		</div>
+		<div class="panel-body" >
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Quarter Annual Payroll Tax Report</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearQA" ng-model="data.filterQA.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-6">
+								<button class="btn btn-sm btn-primary" ng-click="getReportQA()" ng-disabled="!data.filterQA.year">Display</button>
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Monthly Quarter Annual Payroll Tax Report</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearMQA" ng-model="data.filterMQA.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3">
+
+							</div>
+							<div class="col-sm-6">
+								<button class="btn btn-sm btn-primary" ng-click="getReportMQA()" ng-disabled="!data.filterMQA.year">Display</button>
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Employee Journal By Check</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-6">
+								<button class="btn btn-sm btn-primary" ng-click="getReportEmployeeJournalByCheck()">Display</button>
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Employee Hour Journal By Check</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-6">
+								<button class="btn btn-sm btn-primary" ng-click="getReportEmployeeHourJournalByCheck()">Display</button>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+			<div class="col-sm-12" ng-show="data.responseEmployeeTaxJournal || data.responseEmployeeHourJournal">
+				<div class="row">
+					<report-filter filter="mainData.reportFilter" callback="getReportDisplay()" />
+				</div>
+				<div class="row" ng-if="data.responseEmployeeTaxJournal">
+					<div class="row text-center p-5">
+						<strong><em>Payroll Tax Summary Per Employee Per PayCheck <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+					</div>
+					<div class="col-sm-12">
+						<table class="table table-bordered table-condensed">
+							<thead>
+								<tr>
+									<th class="col-sm-1 text-center">SSN</th>
+									<th class="col-sm-1  text-center">Employee</th>
+									<th class="col-sm-1  text-center">Pay Day</th>
+									<th class="col-sm-1  text-center">Check#</th>
+									<th class="col-sm-1  text-center">Gross Pay</th>
+									<th class="col-sm-1  text-center">FIT</th>
+									<th class="col-sm-1  text-center">SS</th>
+									<th class="col-sm-1  text-center">MED</th>
+									<th class="col-sm-1  text-center">SIT</th>
+									<th class="col-sm-1  text-center">SDI</th>
+									<th class="col-sm-1  text-center">Net</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat-start="ea in data.responseEmployeeTaxJournal.employeeAccumulations">
+									<td class="text-center">{{ea.employee.ssn}}</td>
+									<td class="text-center">{{ea.employee.fullName}}</td>
+									<td colspan="9"></td>
+									
+								</tr>
+								<tr ng-repeat="pc in ea.payChecks" ng-show="ea.showDetails">
+									<td colspan="2"></td>
+									<td class="text-right">{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+									<td class="text-right">{{pc.checkNumber}}</td>
+									<td class="text-right">{{pc.grossWage | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(pc, 1) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(pc, 2) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(pc, 4) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(pc, 7) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(pc, 8) | currency:'$'}}</td>
+									<td class="text-right">{{pc.netWage | currency:'$'}}</td>
+								</tr>
+								<tr ng-repeat-end class="info">
+									<td colspan="4" class="text-center"><i class="fa fa-lg" ng-class="{'fa-plus-circle': !ea.showDetails, 'fa-minus-circle': ea.showDetails}" ng-click="ea.showDetails=!ea.showDetails"></i><em>Total</em></td>
+									<td class="text-right">{{ea.accumulation.grossWage | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(ea.accumulation, 1) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(ea.accumulation, 2) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(ea.accumulation, 4) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(ea.accumulation, 7) | currency:'$'}}</td>
+									<td class="text-right">{{getTaxValue(ea.accumulation, 8) | currency:'$'}}</td>
+									<td class="text-right">{{ea.accumulation.netWage | currency:'$'}}</td>
+								</tr>
+		
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="row" ng-if="data.responseEmployeeHourJournal">
+					<div class="row text-center p-5">
+						<strong><em>Hourly Payroll Tax Summary Per Employee Per PayCheck <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+					</div>
+					<div class="col-sm-12">
+						<table class="table table-bordered table-condensed">
+							<thead>
+								<tr>
+									<th class="col-sm-1 text-center">SSN</th>
+									<th class="col-sm-1  text-center">Employee</th>
+									<th class="col-sm-1  text-center">Pay Day</th>
+									<th class="col-sm-1  text-center">Check#</th>
+									<th class="col-sm-1  text-center">Gross Pay</th>
+									<th class="col-sm-1  text-center">Regular</th>
+									<th class="col-sm-1  text-center">OT</th>
+									<th class="col-sm-1  text-center">Other Comp</th>
+									<th class="col-sm-1  text-center">Net</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat-start="ea in data.responseEmployeeHourJournal.employeeAccumulations">
+									<td class="text-center">{{ea.employee.ssn}}</td>
+									<td class="text-center">{{ea.employee.fullName}}</td>
+									<td colspan="9"></td>
+
+								</tr>
+								<tr ng-repeat="pc in ea.payChecks" ng-show="ea.showDetails">
+									<td colspan="2"></td>
+									<td class="text-right">{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+									<td class="text-right">{{pc.checkNumber}}</td>
+									<td class="text-right">{{pc.grossWage | currency:'$'}}</td>
+									<td class="text-right">{{pc.regular | currency:''}}</td>
+									<td class="text-right">{{pc.overtime | currency:''}}</td>
+									<td class="text-right">{{(pc.compensationTaxableAmount + pc.compensationNonTaxableAmount) | currency:'$'}}</td>
+									<td class="text-right">{{pc.netWage | currency:'$'}}</td>
+								</tr>
+								<tr ng-repeat-end class="info">
+									<td colspan="4" class="text-center"><i class="fa fa-lg" ng-class="{'fa-plus-circle': !ea.showDetails, 'fa-minus-circle': ea.showDetails}" ng-click="ea.showDetails=!ea.showDetails"></i><em>Total</em></td>
+									<td class="text-right">{{ea.accumulation.grossWage | currency:'$'}}</td>
+									<td class="text-right">{{ea.accumulation.regular | currency:''}}</td>
+									<td class="text-right">{{ea.accumulation.overtime | currency:''}}</td>
+									<td class="text-right">{{ea.accumulation.totalCompensations | currency:'$'}}</td>
+									<td class="text-right">{{ea.accumulation.netWage | currency:'$'}}</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+			</div>
+			
+			
+		</div>
+	</div>
+
+	</div>
+
+

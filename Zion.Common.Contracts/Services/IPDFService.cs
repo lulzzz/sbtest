@@ -11,5 +11,6 @@ namespace HrMaxx.Common.Contracts.Services
 		FileDto Print(PDFModel model);
 		FileDto AppendAllDocuments(Guid name, string fileName, List<Guid> documents);
 		FileDto PrintReport(ReportTransformed pdfModels);
+		FileDto GetTemplateFile(string baseFile, int year, string w4);
 	}
 }

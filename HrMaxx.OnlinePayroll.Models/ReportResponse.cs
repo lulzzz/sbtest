@@ -13,6 +13,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public Host Host { get; set; }
 		public Company Company { get; set; }
+		public List<Employee> Employees { get; set; } 
 		public Contact Contact { get; set; }
 		public Contact CompanyContact { get; set; }
 		public PayrollAccumulation CompanyAccumulation { get; set; }

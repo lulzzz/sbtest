@@ -134,6 +134,7 @@ namespace HrMaxx.Common.Services.PDF
 				var result = new List<string>();
 				var objPDF = new PdfManager();
 				var counter = 0;
+				
 				var objDoc1 = objPDF.CreateDocument();
 				foreach (var report in pdfModels.Reports)
 				{
@@ -146,22 +147,38 @@ namespace HrMaxx.Common.Services.PDF
 					objDoc.Form.RemoveXFA();
 					foreach (var field in report.Fields)
 					{
-						var objField = objDoc.Form.FindField(field.Name);
-						if (objField != null)
+						if (field.Type.Equals("Bullet") && !string.IsNullOrWhiteSpace(field.Value) && !string.IsNullOrWhiteSpace(field.Name))
 						{
-							if (field.Type == "Text")
+							var bullet = objDoc.OpenImage(_templatePath + "colored bullet.bmp");
+							var page = objDoc.Pages[1];
+							var param = objPDF.CreateParam();
+
+							param["x"] = (float) Convert.ToDouble(field.Name);
+							param["y"] = (float) Convert.ToDouble(field.Value);
+							param["ScaleX"] = (float) 0.7;
+							param["ScaleY"] = (float) 0.7;
+							page.Canvas.DrawImage(bullet, param);
+						}
+						else
+						{
+							var objField = objDoc.Form.FindField(field.Name);
+							if (objField != null)
 							{
-								objField.SetFieldValue(field.Value.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine), objFont);
-							}
-							else
-							{
-								if(!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes")))
+								if (field.Type == "Text")
 								{
-									objField.SetFieldValue(objField.FieldOnValue, null);
+									objField.SetFieldValue(field.Value.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine), objFont);
 								}
-								
+								else
+								{
+									if (!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes")))
+									{
+										objField.SetFieldValue(objField.FieldOnValue, null);
+									}
+
+								}
 							}
 						}
+						
 							
 					}
 					objDoc1.AppendDocument(objPDF.OpenDocument(objDoc.SaveToMemory()));
@@ -194,6 +211,38 @@ namespace HrMaxx.Common.Services.PDF
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public FileDto GetTemplateFile(string baseFile, int year, string name)
+		{
+			var objPDF = new PdfManager();
+			try
+			{
+				var objDoc = objPDF.OpenDocument(string.Format("{2}{0}-{1}.pdf", baseFile, year, _templatePath));
+				var bytes = objDoc.SaveToMemory();
+				return new FileDto
+				{
+					Data = bytes,
+					Filename = string.Format("Result-{0}{1}", name, DateTime.Now.Millisecond),
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+			}
+			catch (Exception)
+			{
+			}
+			
+			
+				var objDoc1 = objPDF.OpenDocument(string.Format("{1}{0}.pdf", baseFile, _templatePath));
+				var bytes1 = objDoc1.SaveToMemory();
+				return new FileDto
+				{
+					Data = bytes1,
+					Filename = string.Format("Result-{0}{1}", name, DateTime.Now.Millisecond),
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+			
 		}
 
 		private Guid Int2Guid(int value)

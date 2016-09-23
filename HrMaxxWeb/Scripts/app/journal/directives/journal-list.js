@@ -30,7 +30,9 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						filter: {
 							years: [],
 							month: 0,
-							year:0
+							year: 0,
+							startDate: null,
+							endDate: null
 						}
 					}
 					var currentYear = new Date().getFullYear();

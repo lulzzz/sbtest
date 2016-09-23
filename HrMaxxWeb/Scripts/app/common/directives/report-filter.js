@@ -7,7 +7,9 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 			replace: true,
 			scope: {
 				filter: "=filter",
-				callback:"&"
+				callback: "&",
+				showDates: "=?showDates",
+				showPeriods: "=?showPeriods"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/report-filter.html?v=' + version,
 

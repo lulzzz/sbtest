@@ -173,7 +173,11 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/worker-compensation-report.js",
 				"~/Scripts/app/reports/directives/income-statement.js",
 				"~/Scripts/app/reports/directives/balance-sheet.js",
-				"~/Scripts/app/reports/directives/govt-forms.js"
+				"~/Scripts/app/reports/directives/govt-forms.js",
+				"~/Scripts/app/reports/directives/other-forms.js",
+				"~/Scripts/app/reports/directives/employer-forms.js",
+				"~/Scripts/app/reports/directives/deposit-coupons.js",
+				"~/Scripts/app/reports/directives/blank-forms.js"
 
 				
 

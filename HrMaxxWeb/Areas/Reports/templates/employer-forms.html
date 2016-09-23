@@ -1,0 +1,91 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Government Forms</h4>
+		</div>
+		<div class="panel-body" >
+			<div class="col-sm-6">
+				<div class="row">
+					<h4><u>Federal Forms</u></h4>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg"/><span class="m-l-10"><em>Employee Withholding Allowance – Form W4</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="reportW4" ng-model="data.filterW4.reportType" class="form-control" convert-to-number>
+								<option value="1"> Blank Form</option>
+								<option value="2"> Employee Filled</option>
+								
+							</select>
+						</div>
+						<div class="col-sm-3"></div>
+						<div class="col-sm-6">
+							<button class="btn btn-sm btn-primary" ng-click="getReportW4()" ng-disabled="!data.filterW4.reportType">Display W4</button>
+						</div>
+						
+					</div>
+					
+				</div>
+				
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Employee Eligibility Verification – Form I9</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="reporti9" ng-model="data.filterI9.reportType" class="form-control" convert-to-number>
+								<option value="1"> Blank Form</option>
+								<option value="2"> Employee Filled</option>
+
+							</select>
+						</div>
+						<div class="col-sm-3">
+							
+						</div>
+						<div class="col-sm-6">
+							<button class="btn btn-sm btn-primary" ng-click="getReportI9()" ng-disabled="!data.filterI9.reportType">Display I9</button>
+						</div>
+
+					</div>
+
+				</div>
+				
+			
+				
+			</div>
+			<div class="col-sm-6" ng-if="hasCalifornia()"> 
+				<div class="row">
+					<h4><u>California State Forms</u></h4>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>New Employee Registry - Form DE 34</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<date-ctrl name="enddate" model="data.filterDE34.hireDate" />
+						</div>
+						<div class="col-sm-3">
+							
+						</div>
+						<div class="col-sm-6">
+							<button class="btn btn-sm btn-primary" ng-click="getReportDE34()" ng-disabled="!data.filterDE34.hireDate">Display DE-34</button>
+						</div>
+
+					</div>
+
+				</div>
+
+			
+			</div>
+			
+			
+		</div>
+	</div>
+
+	</div>
+
+

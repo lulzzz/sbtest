@@ -42,7 +42,10 @@
 											<div class="col-sm-2"><label>To: </label></div>
 											<date-ctrl name="enddate" required="true" model="data.filter.endDate" min="data.filter.startDate" disabled="false" />
 											
-											<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button></div>
+											
+										</div>
+										<div class="col-sm-12">
+											<button class="btn btn-xs btn-success pull-right" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button>
 										</div>
 									</div>
 									

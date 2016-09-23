@@ -69,7 +69,16 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal Overtime
 		{
-			get { return PayCodes.Sum(p => p.OvertimeAmount); }
+			get { return PayCodes.Sum(p => p.OvertimeHours); }
+		}
+		public decimal Regular
+		{
+			get { return PayCodes.Sum(p => p.Hours); }
+		}
+
+		public decimal TotalCompensations
+		{
+			get { return Compensations.Sum(c => c.Amount); }
 		}
 
 		public PayrollAccumulation()
@@ -200,6 +209,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				var p1 = PayCodes.FirstOrDefault(pc => pc.PayCode.Id == p.PayCode.Id);
 				if (p1 != null)
 				{
+					p1.Hours += Math.Round(p.Hours, 2, MidpointRounding.AwayFromZero);
+					p1.OvertimeHours += Math.Round(p.OvertimeHours, 2, MidpointRounding.AwayFromZero);
 					p1.Amount += Math.Round(p.Amount, 2, MidpointRounding.AwayFromZero);
 					p1.OvertimeAmount += Math.Round(p.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				}

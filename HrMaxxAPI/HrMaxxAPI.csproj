@@ -308,19 +308,38 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="templates\colored bullet.bmp" />
+    <Content Include="templates\transformers\depositcoupons\CADE88.xslt" />
+    <Content Include="templates\transformers\depositcoupons\Fed8109B.xslt" />
+    <Content Include="templates\transformers\employer\CADE34.xslt" />
+    <Content Include="templates\transformers\employer\FedI9.xslt" />
+    <Content Include="templates\transformers\employer\FedW4.xslt" />
+    <Content Include="templates\transformers\other\monthlyquarterannualtaxsummary.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="templates\transformers\other\quarterannualtaxsummary.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\1099\F1099.xslt" />
+    <Content Include="templates\transformers\reports\940\Fed940-2016.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\940\Fed940-2015.xslt">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\reports\941\Fed941-2016.xslt" />
+    <Content Include="templates\transformers\reports\944\Fed944-2016.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944-2015.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE6.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE7.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-2015.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-Employer-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2015.xslt" />
+    <Content Include="templates\transformers\reports\W3\W3-2016.xslt" />
     <Content Include="templates\transformers\reports\W3\W3-2015.xslt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -376,6 +395,32 @@
     <Content Include="templates\GovtForms\CAForms\DE9C.pdf" />
     <Content Include="templates\GovtForms\CAForms\DE6.pdf" />
     <Content Include="templates\GovtForms\CAForms\DE7.pdf" />
+    <Content Include="templates\OtherForms\QuarterAnnualTaxSummary.pdf" />
+    <Content Include="templates\OtherForms\MonthlyQuarterAnnualTaxSummary.pdf" />
+    <Content Include="templates\GovtForms\1099\f1096-2016.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099div-2016.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099int-2016.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099msc-2016.pdf" />
+    <Content Include="templates\GovtForms\940\f940-2016.pdf" />
+    <Content Include="templates\GovtForms\940\f940sa-2016.pdf" />
+    <Content Include="templates\GovtForms\944\f944-2016-part1.pdf" />
+    <Content Include="templates\GovtForms\944\f944-2016-part2.pdf" />
+    <Content Include="templates\GovtForms\W2\W2-2016.pdf" />
+    <Content Include="templates\GovtForms\W2\W2-2016-Employer.pdf" />
+    <Content Include="templates\GovtForms\W3\W3-2016.pdf" />
+    <Content Include="templates\GovtForms\EmployerForms\fw4.pdf" />
+    <Content Include="templates\GovtForms\EmployerForms\I9.pdf" />
+    <Content Include="templates\GovtForms\EmployerForms\fw4-page1.pdf" />
+    <Content Include="templates\GovtForms\EmployerForms\fw4-page2.pdf" />
+    <Content Include="templates\GovtForms\EmployerForms\DE34.pdf" />
+    <Content Include="templates\GovtForms\DepositCoupons\de88all.pdf" />
+    <Content Include="templates\GovtForms\DepositCoupons\f8109.pdf" />
+    <Content Include="templates\GovtForms\BlankForms\W4-English.pdf" />
+    <Content Include="templates\GovtForms\BlankForms\I9-English.pdf" />
+    <Content Include="templates\GovtForms\BlankForms\W4-Spanish.pdf" />
+    <Content Include="templates\GovtForms\BlankForms\I9-Spanish.pdf" />
+    <Content Include="templates\GovtForms\BlankForms\FormDE26.pdf" />
+    <Content Include="templates\GovtForms\BlankForms\Form8655.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
