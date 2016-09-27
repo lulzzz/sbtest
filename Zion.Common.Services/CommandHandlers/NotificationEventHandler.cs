@@ -28,18 +28,22 @@ namespace HrMaxx.Common.Services.CommandHandlers
 		public void Consume(Notification event1)
 		{
 			var notificationList = new List<NotificationDto>();
-			var notifyUsers = event1.AffectedUsers.Any()? event1.AffectedUsers : _userService.GetUsersByRoleAndId(event1.Roles, null);
-			notifyUsers.ForEach(u => notificationList.Add(new NotificationDto
+			var notifyUsers = event1.AffectedUsers!=null && event1.AffectedUsers.Any()? event1.AffectedUsers : _userService.GetUsersByRoleAndId(event1.Roles, null);
+			if (notifyUsers != null)
 			{
-				CreatedOn = DateTime.Now,
-				IsRead = false,
-				LoginId = u.ToString(),
-				NotificationId = CombGuid.Generate(),
-				Text = event1.Text,
-				Type = event1.EventType.GetEnumDescription(),
-				MetaData = string.Format("{0}{1}", _baseUrl, event1.ReturnUrl)
-			}));
-			_NotificationService.CreateNotifications(notificationList);
+				notifyUsers.ForEach(u => notificationList.Add(new NotificationDto
+				{
+					CreatedOn = DateTime.Now,
+					IsRead = false,
+					LoginId = u.ToString(),
+					NotificationId = CombGuid.Generate(),
+					Text = event1.Text,
+					Type = event1.EventType.GetEnumDescription(),
+					MetaData = string.Format("{0}{1}", _baseUrl, event1.ReturnUrl)
+				}));
+				_NotificationService.CreateNotifications(notificationList);	
+			}
+			
 		}
 	}
 }
