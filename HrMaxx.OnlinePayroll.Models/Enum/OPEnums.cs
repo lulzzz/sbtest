@@ -355,4 +355,24 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Critical")]
 		Critical=4
 	}
+
+	public enum CompanyInvoiceType
+	{
+		[HrMaxxSecurity(DbName = "PEO ASO Co Chk")]
+		PEOASOCoCheck = 1,
+		[HrMaxxSecurity(DbName = "PEO ASO Client Chk")]
+		PEOASOClientCheck = 2,
+		[HrMaxxSecurity(DbName = "Straight and Conventional Payroll")]
+		ConventionalPayroll = 3,
+		[HrMaxxSecurity(DbName = "Straight and Conventional Payroll with WC")]
+		ConventioanlPayrollWC = 4,
+		[HrMaxxSecurity(DbName = "WC Only")]
+		WC = 5
+	}
+
+	public enum CompanyInvoiceStyle
+	{
+		Summary=1,
+		Detailed=2
+	}
 }

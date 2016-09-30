@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace HrMaxx.Common.Models
 {
@@ -17,6 +18,8 @@ namespace HrMaxx.Common.Models
 	{
 		public string TemplatePath { get; set; }
 		public string Template { get; set; }
+		public string ReportType { get; set; }
+		public XmlNode HtmlData { get; set; }
 		public List<Field> Fields { get; set; }
 	}
 

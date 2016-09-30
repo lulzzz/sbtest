@@ -291,7 +291,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					var getMetaData = function (companyId) {
 						journalRepository.getJournalMetaData(companyId).then(function (data) {
 							dataSvc.companyAccounts = data.accounts;
-							dataSvc.bankAccounts = $filter('filter')(dataSvc.companyAccounts, { isBank: true });
+							var bankAccounts = $filter('filter')(dataSvc.companyAccounts, { isBank: true });
+							dataSvc.bankAccounts = $filter('orderBy')(bankAccounts, 'userInPayroll', true );
 							dataSvc.vendors = data.vendors;
 							dataSvc.customers = data.customers;
 							dataSvc.startingCheckNumber = data.startingCheckNumber;

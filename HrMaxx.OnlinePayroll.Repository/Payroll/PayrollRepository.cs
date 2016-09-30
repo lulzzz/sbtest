@@ -8,6 +8,7 @@ using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
+using PayrollInvoice = HrMaxx.OnlinePayroll.Models.PayrollInvoice;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
@@ -68,7 +69,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		public List<Models.Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate)
 		{
-			var dbPayrolls = _dbContext.Payrolls.Where(p=>p.CompanyId==companyId).AsQueryable();
+			var company = _dbContext.Companies.First(c => c.Id == companyId);
+			var dbPayrolls = _dbContext.Payrolls.AsQueryable();
+			if (!company.IsHostCompany)
+				dbPayrolls = dbPayrolls.Where(p => p.CompanyId == companyId);
+			else
+			{
+				var allHostCompanies = _dbContext.Companies.Where(c => c.HostId == company.HostId).Select(c => c.Id).ToList();
+				dbPayrolls = dbPayrolls.Where(p => allHostCompanies.Any(c => c == p.CompanyId));
+				dbPayrolls = dbPayrolls.Where(p => p.CompanyId == companyId || p.PEOASOCoCheck);
+			}
 			if (startDate.HasValue)
 				dbPayrolls = dbPayrolls.Where(p => p.PayDay >= startDate);
 			if (endDate.HasValue)
@@ -192,6 +202,64 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 					check.Status = (int)PaycheckStatus.PrintedAndPaid;
 			}
 			_dbContext.SaveChanges();
+		}
+
+		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
+		{
+			var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
+			var dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
+			var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollInvoice.PayrollId);
+			if (dbPayrollInvoice == null)
+			{
+				_dbContext.PayrollInvoices.Add(mapped);
+				dbPayroll.InvoiceId = mapped.Id;
+			}
+			else
+			{
+				dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
+				dbPayrollInvoice.Total = mapped.Total;
+				dbPayrollInvoice.LastModified = mapped.LastModified;
+				dbPayrollInvoice.LastModifiedBy = mapped.LastModifiedBy;
+				dbPayrollInvoice.Status = mapped.Status;
+				dbPayrollInvoice.SubmittedBy = mapped.SubmittedBy;
+				dbPayrollInvoice.SubmittedOn = mapped.SubmittedOn;
+				dbPayrollInvoice.DeliveredBy = mapped.DeliveredBy;
+				dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
+				dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
+				dbPayrollInvoice.DueDate = mapped.DueDate;
+				dbPayrollInvoice.ExpiryDate = mapped.ExpiryDate;
+				dbPayrollInvoice.Deductions = mapped.Deductions;
+				dbPayrollInvoice.Payrments = mapped.Payrments;
+				dbPayrollInvoice.InvoiceNumber = mapped.InvoiceNumber;
+			}
+			_dbContext.SaveChanges();
+			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
+			return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(dbPayrollInvoice);
+		}
+
+		public List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId)
+		{
+			var invoices = _dbContext.PayrollInvoices.Where(pi => pi.Company.HostId == hostId).AsQueryable();
+			if (companyId.HasValue)
+				invoices = invoices.Where(pi => pi.CompanyId == companyId);
+			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
+		}
+
+		public PayrollInvoice GetPayrollInvoiceById(Guid id)
+		{
+			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == id);
+			return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(db);
+		}
+
+		public void DeletePayrollInvoice(Guid invoiceId)
+		{
+			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);
+			if (db != null)
+			{
+				db.Payroll.InvoiceId = null;
+				_dbContext.PayrollInvoices.Remove(db);
+				_dbContext.SaveChanges();
+			}
 		}
 	}
 }

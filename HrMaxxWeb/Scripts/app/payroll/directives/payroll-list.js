@@ -18,6 +18,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						
 						payTypes: [],
 						payrollAccount: null,
+						hostPayrollAccount: null,
 						employees: [],
 						startingCheckNumber: 0
 					}
@@ -92,7 +93,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							selected.payChecks.push(paycheck);
 						});
 						if ($scope.list.length > 0) {
-							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
+							var nonVoided = $filter('filter')($scope.list, { totalGrossWage: '!' + 0});
+							var sorted = $filter('orderBy')(nonVoided, 'endDate', true);
 							selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
 
 							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
@@ -157,6 +159,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					};
 					$scope.cancel = function () {
 						$scope.selected = null;
+						$scope.selectedInvoice = null;
 						$scope.data.isBodyOpen = true;
 					}
 					$scope.updateListAndItem = function (selectedItemId) {
@@ -211,32 +214,38 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 
 					}
 					
-					$scope.save = function () {
-						
-					}
-					$scope.invoiceSaved = function (item, payrollIds) {
-						$.each(payrollIds, function (index, p) {
-							var payroll = $filter('filter')($scope.list, { id: p })[0];
-							if (payroll) {
-								payroll.invoiceId = item.id;
-								payroll.status = 4;
-							}
-						});
-						$scope.tableParams.reload();
-						$scope.fillTableData($scope.tableParams);
-
-					}
+					
 					$scope.canRunPayroll = function() {
-						if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0)
+						var c = $scope.mainData.selectedCompany;
+						var hostcomp = $scope.mainData.selectedHost.company;
+						if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0 || (c.contract.billingOption===3 && !c.contract.invoiceSetup) || (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount))
 							return false;
 						else {
 							return true;
+						}
+					}
+					$scope.requiresHostPayrollAccount = function() {
+						var c = $scope.mainData.selectedCompany;
+						
+						if (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType===1 && !dataSvc.hostPayrollAccount)
+							return true;
+						else {
+							return false;
+						}
+					}
+					$scope.requiresCompanyPayrollAccount = function() {
+						var c = $scope.mainData.selectedCompany;
+						if (!dataSvc.payrollAccount)
+							return true;
+						else {
+							return false;
 						}
 					}
 					var getCompanyPayrollMetaData = function(companyId) {
 						companyRepository.getPayrollMetaData(companyId).then(function (data) {
 							dataSvc.payTypes = data.payTypes;
 							dataSvc.payrollAccount = data.payrollAccount;
+							dataSvc.hostPayrollAccount = data.hostPayrollAccount;
 							dataSvc.startingCheckNumber = data.startingCheckNumber;
 						}, function (error) {
 							$scope.addAlert('error getting payroll meta data', 'danger');
@@ -286,16 +295,46 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}
 					
-					$scope.viewInvoice = function(invoiceId) {
-						var payrolls = $filter('filter')($scope.list, { invoiceId: '!', status: 3 });
-						
-						dataSvc.payrolls = payrolls;
-						$scope.invoiceId = invoiceId;
+					$scope.viewInvoice = function($event, payroll) {
+						$event.stopPropagation();
+						$scope.selectedInvoice = payroll.invoice;
 					}
+					$scope.updateSelectedInvoice = function (invoice) {
+						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
+						if (match) {
+							match.invoice = invoice;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+						}
+						$scope.cancel();
+
+					}
+					$scope.deleteInvoice = function (invoice) {
+						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
+						if (match) {
+							match.invoice = null;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+						}
+						$scope.cancel();
+					}
+					$scope.createInvoice = function ($event, payroll) {
+						$event.stopPropagation();
+						var match = $filter('filter')($scope.list, { id: payroll.id })[0];
+						payrollRepository.createPayrollInvoice(match, $scope.mainData.selectedCompany).then(function (data) {
+							payroll.invoice = data;
+							$scope.addAlert('successfully created invoice', 'success');
+						}, function (error) {
+							$scope.addAlert('error generating invoice', 'danger');
+						});
+					}
+
+					
 					var init = function () {
 						
 						if ($scope.mainData.selectedCompany) {
 							getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
+							
 							getEmployees($scope.mainData.selectedCompany.id);
 							getPayrolls($scope.mainData.selectedCompany.id, null, null);
 

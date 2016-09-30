@@ -91,6 +91,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				contract.BankDetails.LastModifiedBy = savedcompany.UserName;
 				contract.BankDetails = _utilRepository.SaveBankAccount(contract.BankDetails);
 			}
+			if (contract.InvoiceSetup != null && contract.InvoiceSetup.RecurringCharges.Any(rc=>rc.Id==0))
+			{
+				contract.InvoiceSetup.RecurringCharges.Where(rc=>rc.Id==0).ToList().ForEach(rc =>
+				{
+					rc.Id = contract.InvoiceSetup.RecurringCharges.Max(rc1 => rc1.Id) + 1;
+				});
+			}
 			var mapped = _mapper.Map<ContractDetails, CompanyContract>(contract);
 			mapped.CompanyId = savedcompany.Id;
 			
@@ -107,7 +114,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbContract.InvoiceRate = mapped.InvoiceRate;
 				dbContract.Method = mapped.Method;
 				dbContract.Type = mapped.Type;
-				
+				dbContract.InvoiceSetup = mapped.InvoiceSetup;
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<CompanyContract, ContractDetails>(mapped);

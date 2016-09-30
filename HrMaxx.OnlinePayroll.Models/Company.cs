@@ -58,6 +58,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public CreditCard CreditCardDetails { get; set; }
 		public decimal InvoiceCharge { get; set; }
 		public int Method { get; set; }
+		public InvoiceSetup InvoiceSetup { get; set; }
 	}
 
 	public class CreditCard
@@ -129,5 +130,27 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Code { get; set; }
 		public string Description { get; set; }
 		public decimal HourlyRate { get; set; }
+	}
+
+	public class InvoiceSetup
+	{
+		public CompanyInvoiceType InvoiceType { get; set; }
+		public CompanyInvoiceStyle InvoiceStyle { get; set; }
+		public int AdminFeeMethod { get; set; }
+		public decimal AdminFee { get; set; }
+		public decimal SUIManagement { get; set; }
+		public bool ApplyStatuaryLimits { get; set; }
+		public bool ApplyEnvironmentalFee { get; set; }
+		public bool ApplyWCCharge { get; set; }
+		public List<RecurringCharge> RecurringCharges { get; set; } 
+	}
+
+	public class RecurringCharge
+	{
+		public int Id { get; set; }
+		public int? Year { get; set; }
+		public decimal Amount { get; set; }
+		public decimal? AnnualLimit { get; set; }
+		public string Description { get; set; }
 	}
 }

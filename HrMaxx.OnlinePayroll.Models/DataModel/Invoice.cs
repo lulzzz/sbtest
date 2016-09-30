@@ -14,12 +14,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class Invoice
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Invoice()
-        {
-            this.Payrolls = new HashSet<Payroll>();
-        }
-    
         public System.Guid Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public System.DateTime InvoiceDate { get; set; }
@@ -41,8 +35,5 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string DeliveredBy { get; set; }
         public int InvoiceMethod { get; set; }
         public decimal InvoiceRate { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Payroll> Payrolls { get; set; }
     }
 }

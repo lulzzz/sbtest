@@ -53,6 +53,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
         public string WorkerCompensation { get; set; }
+        public bool PEOASOCoCheck { get; set; }
     
         public virtual Payroll Payroll { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

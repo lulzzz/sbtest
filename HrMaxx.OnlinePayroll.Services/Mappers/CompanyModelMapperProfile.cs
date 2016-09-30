@@ -59,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src.Company))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
+				.ForMember(dest => dest.HomePage, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.HomePage) ? JsonConvert.DeserializeObject<HostHomePage>(src.HomePage) : null))
 			.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.Company, Models.Company>()
@@ -139,7 +140,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyTaxStates, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore())
 				.ForMember(dest => dest.Employees, opt => opt.Ignore())
-				.ForMember(dest => dest.Journals, opt => opt.Ignore());
+				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollInvoices, opt => opt.Ignore());
 			
 
 			CreateMap<Models.DataModel.CompanyContract, Models.ContractDetails>()
@@ -150,7 +152,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.InvoiceCharge, opt => opt.MapFrom(src => src.InvoiceRate))
 				.ForMember(dest => dest.PrePaidSubscriptionOption, opt => opt.MapFrom(src => src.PrePaidSubscriptionType.HasValue? (PrePaidSubscriptionOption)src.PrePaidSubscriptionType.Value : PrePaidSubscriptionOption.NA))
 				.ForMember(dest => dest.BankDetails,
-				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BankDetails)? JsonConvert.DeserializeObject<BankAccount>(src.BankDetails) : null));
+				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BankDetails)? JsonConvert.DeserializeObject<BankAccount>(src.BankDetails) : null))
+				.ForMember(dest => dest.InvoiceSetup,
+				opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
 
 			CreateMap<Models.ContractDetails, Models.DataModel.CompanyContract>()
 				.ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -163,7 +167,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.InvoiceRate, opt => opt.MapFrom(src => src.InvoiceCharge))
 				.ForMember(dest => dest.PrePaidSubscriptionType, opt => opt.MapFrom(src => src.PrePaidSubscriptionOption))
 				.ForMember(dest => dest.BankDetails,
-					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.BankDetails)));
+					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.BankDetails)))
+				.ForMember(dest => dest.InvoiceSetup,
+					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.InvoiceSetup)));
 
 			CreateMap<Models.DataModel.CompanyTaxRate, Models.CompanyTaxRate>()
 				.ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => src.Tax.Code));

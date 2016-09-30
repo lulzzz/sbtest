@@ -44,6 +44,8 @@ namespace HrMaxxAPI.Resources.Journals
 		public DateTime LastModified { get; set; }
 		public Guid? DocumentId { get; set; }
 
+		public bool PEOASOCoCheck { get; set; }
+
 		public decimal DisplayAmount
 		{
 			get { return (IsDebit ? Amount*-1 : Amount); }

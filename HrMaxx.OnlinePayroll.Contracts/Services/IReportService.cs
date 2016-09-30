@@ -14,5 +14,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	{
 		ReportResponse GetReport(ReportRequest request);
 		FileDto GetReportDocument(ReportRequest request);
+		FileDto PrintPayrollWithSummary(Payroll payroll, List<Guid> documents );
 	}
 }

@@ -9,6 +9,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxxAPI.Resources.OnlinePayroll;
 using HrMaxxAPI.Resources.Payroll;
 
 namespace HrMaxxAPI.Controllers.Payrolls
@@ -194,6 +195,44 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return MakeServiceCall(() => _payrollService.PrintPayCheck(checkId), string.Format("print paycheck with id={0}", checkId), true);
 			
 		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.CreatePayrollInvoice)]
+		public PayrollInvoiceResource CreatePayrollInvoice(PayrollResource payroll)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(payroll);
+			
+			var processed = MakeServiceCall(() => _payrollService.CreatePayrollInvoice(mappedResource, CurrentUser.FullName, true), string.Format("create payroll invoice for payroll={0}", payroll.Id));
+			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.PayrollInvoice)]
+		public PayrollInvoiceResource SavePayrollInvoice(PayrollInvoiceResource invoice)
+		{
+			var mappedResource = Mapper.Map<PayrollInvoiceResource, PayrollInvoice>(invoice);
+			mappedResource.LastModified = DateTime.Now;
+			mappedResource.UserName = CurrentUser.FullName;
+
+			var processed = MakeServiceCall(() => _payrollService.SavePayrollInvoice(mappedResource), string.Format("save payroll invoice for invoice={0}", invoice.Id));
+			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.HostInvoices)]
+		public List<PayrollInvoiceResource> GetHostInvoices(Guid hostId)
+		{
+			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(hostId), string.Format("get invoices for host with id={0}", hostId));
+			return Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+		}
+		[HttpGet]
+		[Route(PayrollRoutes.DeletePayrollInvoice)]
+		public void DeletePayrollInvoice(Guid invoiceId)
+		{
+			MakeServiceCall(() => _payrollService.DeletePayrollInvoice(invoiceId), string.Format("delete invoice with id={0}", invoiceId));
+			
+		}
+
 	}
 
 

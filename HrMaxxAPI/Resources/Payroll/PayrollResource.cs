@@ -25,11 +25,14 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<PayCheckResource> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public List<CommentResource> Notes { get; set; }
+		public PayrollInvoiceResource Invoice { get; set; }
 		public PayrollStatus Status { get; set; }
 
 		public decimal TotalGrossWage { get; set; }
 		public decimal TotalNetWage { get; set; }
 		public decimal TotalCost { get; set; }
+
+		public bool PEOASOCoCheck { get; set; }
 
 		public string StatusText
 		{
@@ -85,6 +88,8 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+
+		public bool PEOASOCoCheck { get; set; }
 
 		public string PaymentMethodText
 		{

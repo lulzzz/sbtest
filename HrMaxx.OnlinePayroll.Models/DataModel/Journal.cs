@@ -33,6 +33,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string PayeeName { get; set; }
         public int MainAccountId { get; set; }
         public System.Guid DocumentId { get; set; }
+        public bool PEOASOCoCheck { get; set; }
     
         public virtual EntityType EntityType1 { get; set; }
         public virtual PayrollPayCheck PayrollPayCheck { get; set; }

@@ -46,8 +46,9 @@ common.directive('payrollSummary', ['zionAPI', '$timeout', '$window', 'version',
 						reportRepository.getReport(request).then(function (data) {
 							dataSvc.response = data;
 							
-						}, function (erorr) {
-							addAlert('error getting report ' + request.reportName, 'danger');
+						}, function (error) {
+							dataSvc.response = null;
+							addAlert('error getting report ' + request.reportName + ': ' + error.statusText , 'danger');
 						});
 					}
 

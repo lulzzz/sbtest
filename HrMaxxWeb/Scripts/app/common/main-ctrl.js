@@ -100,6 +100,10 @@
 		$scope.$on('companyUpdated', function (event, args) {
 			var company = args.company;
 			updateInList(dataSvc.companies, company);
+			dataSvc.selectedCompany = company;
+			if (dataSvc.selectedHost.company.id === company.id) {
+				dataSvc.selectedHost.company = company;
+			}
 		});
 		$scope.$on('companyDeductionUpdated', function (event, args) {
 			var ded = args.ded;
@@ -149,3 +153,17 @@
 		});
 	}
 ]);
+
+common.controller('printerFriendlyCtrl', function ($scope, $uibModalInstance, content) {
+	$scope.content = content;
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	
+	$scope.save = function () {
+		
+		$uibModalInstance.close($scope);
+	};
+
+
+});

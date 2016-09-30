@@ -47,11 +47,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public Journal GetPayCheckJournal(int payCheckId)
+		public Journal GetPayCheckJournal(int payCheckId, bool PEOASOCoCheck = false)
 		{
 			try
 			{
-				return _journalRepository.GetPayCheckJournal(payCheckId);
+				return _journalRepository.GetPayCheckJournal(payCheckId, PEOASOCoCheck);
 			}
 			catch (Exception e)
 			{

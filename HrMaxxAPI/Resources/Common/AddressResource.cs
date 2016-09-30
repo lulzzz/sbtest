@@ -26,5 +26,6 @@ namespace HrMaxxAPI.Resources.Common
 		public EntityTypeEnum TargetTypeId { get; set; }
 		[Required]
 		public Guid SourceId { get; set; }
+		public string AddressLine2 { get; set; }
 	}
 }

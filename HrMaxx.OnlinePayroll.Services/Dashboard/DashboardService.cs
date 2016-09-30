@@ -64,7 +64,7 @@ namespace HrMaxx.OnlinePayroll.Services.Dashboard
 			}
 		}
 
-		public void RemovePayCheckFromCubes(PayCheck payroll)
+		public void RemovePayCheckFromCubes(PayCheck payroll, Guid? companyId = null)
 		{
 			try
 			{
@@ -72,20 +72,20 @@ namespace HrMaxx.OnlinePayroll.Services.Dashboard
 				accumulation.AddPayCheck(payroll);
 				var yearlyCube = new CompanyPayrollCube
 				{
-					CompanyId = payroll.Employee.CompanyId,
+					CompanyId = companyId.HasValue ? companyId.Value : payroll.Employee.CompanyId,
 					Year = payroll.PayDay.Year,
 					Accumulation = accumulation
 				};
 				var quarterlyCube = new CompanyPayrollCube
 				{
-					CompanyId = payroll.Employee.CompanyId,
+					CompanyId = companyId.HasValue ? companyId.Value : payroll.Employee.CompanyId,
 					Year = payroll.PayDay.Year,
 					Quarter = GetQuarterFromPayDay(payroll.PayDay),
 					Accumulation = accumulation
 				};
 				var monthlyCube = new CompanyPayrollCube
 				{
-					CompanyId = payroll.Employee.CompanyId,
+					CompanyId = companyId.HasValue ? companyId.Value : payroll.Employee.CompanyId,
 					Year = payroll.PayDay.Year,
 					Month = payroll.PayDay.Month,
 					Accumulation = accumulation
@@ -112,26 +112,26 @@ namespace HrMaxx.OnlinePayroll.Services.Dashboard
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					_dashboardRepository.DeleteCubesForCompanyAndYear(companyId, year);
-					foreach (var payroll in payrolls.OrderBy(p=>p.PayDay).ToList())
+					foreach (var payroll in payrolls.Where(p=>p.PayChecks.Any(pc=>!pc.IsVoid)).OrderBy(p=>p.PayDay).ToList())
 					{
 						var accumulation = new PayrollAccumulation();
 						accumulation.AddPayroll(payroll);
 						var yearlyCube = new CompanyPayrollCube
 						{
-							CompanyId = payroll.Company.Id,
+							CompanyId = companyId,
 							Year = payroll.PayDay.Year,
 							Accumulation = accumulation
 						};
 						var quarterlyCube = new CompanyPayrollCube
 						{
-							CompanyId = payroll.Company.Id,
+							CompanyId = companyId,
 							Year = payroll.PayDay.Year,
 							Quarter = GetQuarterFromPayDay(payroll.PayDay),
 							Accumulation = accumulation
 						};
 						var monthlyCube = new CompanyPayrollCube
 						{
-							CompanyId = payroll.Company.Id,
+							CompanyId = companyId,
 							Year = payroll.PayDay.Year,
 							Month = payroll.PayDay.Month,
 							Accumulation = accumulation

@@ -9,7 +9,7 @@
 @using HrMaxx.Infrastructure.Helpers
 @using HrMaxx.Infrastructure.Security
 
-<div id="sidebar" class="sidebar">
+<div id="sidebar" class="sidebar hidden-print">
 	<!-- begin sidebar scrollbar -->
 	<div data-scrollbar="true" data-height="100%">
 		<!-- begin sidebar user -->
@@ -40,6 +40,7 @@
 						<li><a href="#!/Admin/HostList">Manage Host</a></li>
 						<li><a href="#!/Admin/NewsList">News & Announcements</a></li>
 						<li><a href="#!/Admin/UserList">Users</a></li>
+						<li><a href="#!/Admin/Invoices">Invoices</a></li>
 						
 					</ul>
 				</li>
@@ -47,7 +48,8 @@
 			@if (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()))
 			{
 				<li><a href="#!/Admin/Host"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
-				
+				<li><a href="#!/Admin/Invoices"><i class="fa fa-home"></i><span>Invoices</span></a></li>
+
 			}
 			<li><a href="#" onclick="this.href='#!/Client/Company/' + (new Date().getTime());"><i class="fa fa-empire"></i><span>Company</span></a></li>
 			<li><a href="#" onclick="this.href='#!/Client/Employees/' + (new Date().getTime());"><i class="fa fa-users"></i><span>Employee</span></a></li>

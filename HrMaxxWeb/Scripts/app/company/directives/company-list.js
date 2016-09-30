@@ -53,7 +53,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 								billingOption: 3,
 								creditCardDetails: null,
 								bankDetails: null,
-								invoiceCharge: 0
+								invoiceCharge: 0,
+								invoiceSetup: null
 							}
 						};
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
@@ -115,6 +116,20 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedCompany = null;
 						$timeout(function () {
 							$scope.selectedCompany = angular.copy(item);
+							if ($scope.selectedCompany.contract.billingOption===3 && !$scope.selectedCompany.contract.invoiceSetup) {
+								$scope.selectedCompany.contract.invoiceSetup = {
+									invoiceType: 1,
+									invoiceStyle: 1,
+									adminFeeMethod: 1,
+									adminFee: 0,
+									suiManagement: 0,
+									applyWCCharge: true,
+									applyStatuaryLimits: true,
+									applyEnvironmentalFee: true,
+									recurringCharges: []
+								}
+							}
+							
 							$scope.selectedCompany.sourceTypeId = dataSvc.sourceTypeId;
 							$scope.data.isBodyOpen = false;
 							$scope.mainData.selectedCompany = item;
@@ -309,9 +324,22 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							if (!b || !b.bankName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
 								return false;
 						}
-						if (c.billingOption === 3 && (!c.invoiceCharge || !c.method))
-							return false;
-
+						if (c.billingOption === 3) {
+							var i = c.invoiceSetup;
+							if (!i || !i.adminFee || !i.suiManagement)
+								return false;
+							if (i.recurringCharges.length > 0) {
+								var invalidrc = false;
+								$.each(i.recurringCharges, function (index, rc) {
+									if (!rc.description || !rc.amount) {
+										invalidrc = true;
+										return false;
+									}
+								});
+								if (invalidrc)
+									return false;
+							}
+						}
 						return true;
 
 					}
@@ -339,9 +367,29 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 								sourceId: $scope.selectedCompany.id
 							}
 						}
-
+						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
+							$scope.selectedCompany.contract.invoiceSetup = {
+								invoiceType:1,
+								invoiceStyle:1,
+								adminFeeMethod: 1,
+								adminFee: 0,
+								suiManagement:0,
+								applyWCCharge: true,
+								applyStatuaryLimits: true,
+								applyEnvironmentalFee: true,
+								recurringCharges: []
+							}
+						}
 					}
+					$scope.addRecurringCharge = function () {
 
+						$scope.selectedCompany.contract.invoiceSetup.recurringCharges.push({
+							year: new Date().getFullYear(),
+							description: '',
+							amount: 0,
+							annualLimit: null
+						});
+					}
 					$scope.getRowClass = function (item) {
 						if ($scope.selectedCompany && $scope.selectedCompany.id === item.id)
 							return 'success';

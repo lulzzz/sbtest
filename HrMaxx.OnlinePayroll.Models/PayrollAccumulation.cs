@@ -130,7 +130,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void AddPayCheck(PayCheck add)
 		{
-			if (PayChecks.All(pci => pci.Id != add.Id) && !add.IsVoid)
+			if (PayChecks.All(pci => pci.Id != add.Id))
 			{
 				Salary += Math.Round(add.CalculatedSalary, 2, MidpointRounding.AwayFromZero);
 				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -179,7 +179,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public void AddPayroll(Payroll payroll)
 		{
-			payroll.PayChecks.ForEach(AddPayCheck);
+			payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(AddPayCheck);
 		}
 
 		

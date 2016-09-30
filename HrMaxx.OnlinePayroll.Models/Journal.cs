@@ -29,6 +29,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
 		public Guid DocumentId { get; set; }
+
+		public bool PEOASOCoCheck { get; set; }
 	}
 
 	public class JournalDetail

@@ -16,12 +16,14 @@ namespace HrMaxx.OnlinePayroll.Services
 	{
 		private readonly ICommonService _commonService;
 		private readonly ICompanyService _companyService;
+		private readonly IHostService _hostService;
 		private readonly IMetaDataRepository _metaDataRepository;
-		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService)
+		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IHostService hostService)
 		{
 			_metaDataRepository = metaDataRepository;
 			_commonService = commonService;
 			_companyService = companyService;
+			_hostService = hostService;
 		}
 
 		public object GetCompanyMetaData()
@@ -71,10 +73,14 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
+				var company = _companyService.GetCompanyById(companyId);
+				var host = _hostService.GetHost(company.HostId);
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var bankAccount = _metaDataRepository.GetPayrollAccount(companyId);
-				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber(companyId);
-				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount };
+				var hostAccount = _metaDataRepository.GetPayrollAccount(host.Company.Id);
+				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((company.Contract.BillingOption==BillingOptions.Invoice && company.Contract.InvoiceSetup!=null && company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck) ? host.Company.Id : companyId);
+				
+				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount };
 			}
 			catch (Exception e)
 			{

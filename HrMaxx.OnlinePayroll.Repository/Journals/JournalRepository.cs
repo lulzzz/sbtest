@@ -51,11 +51,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(mapped);
 		}
 
-		public Models.Journal GetPayCheckJournal(int payCheckId)
+		public Models.Journal GetPayCheckJournal(int payCheckId, bool peoasoCoCheck)
 		{
 			var journal =
 				_dbContext.Journals.First(
-					j => j.PayrollPayCheckId == payCheckId && j.TransactionType == (int) TransactionType.PayCheck);
+					j => j.PayrollPayCheckId == payCheckId && j.TransactionType == (int) TransactionType.PayCheck && j.PEOASOCoCheck==peoasoCoCheck);
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(journal);
 		}
 

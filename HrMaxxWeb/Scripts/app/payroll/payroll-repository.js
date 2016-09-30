@@ -97,6 +97,46 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			createPayrollInvoice: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('CreatePayrollInvoice').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getInvoicesForHost: function (hostId) {
+				var deferred = $q.defer();
+				payrollServer.one('HostInvoices').one(hostId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			savePayrollInvoice: function (invoice) {
+				var deferred = $q.defer();
+				payrollServer.all('PayrollInvoice').post(invoice).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			deletePayrollInvoice: function (invoice) {
+				var deferred = $q.defer();
+				payrollServer.one('DeletePayrollInvoice').one(invoice.id).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getInvoiceById: function (invoiceId) {
 				var deferred = $q.defer();
 				payrollServer.one('Invoice').one(invoiceId).get().then(function (data) {

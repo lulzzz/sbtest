@@ -48,8 +48,8 @@ common.directive('balanceSheet', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.assets = $filter('filter')(data.accountDetails, { type: 1 })[0];
 							dataSvc.liabilities = $filter('filter')(data.accountDetails, { type: 5 })[0];
 							dataSvc.equity = $filter('filter')(data.accountDetails, { type: 2 })[0];
-						}, function (erorr) {
-							addAlert('error getting report ' + request.reportName, 'danger');
+						}, function (error) {
+							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
 						});
 					}
 				

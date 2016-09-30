@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Web;
 using Autofac;
 using HrMaxx.OnlinePayroll.Contracts.Services;
@@ -18,6 +19,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 		{
 			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
 			string _templatePath = HttpContext.Current.Server.MapPath("~/Templates/");
+			decimal _environmentFeeRate = Convert.ToDecimal(ConfigurationManager.AppSettings["EnvironmentFeeRate"]);
 			
 			builder.RegisterType<HostService>()
 				.As<IHostService>()
@@ -45,6 +47,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<PayrollService>()
+				.WithParameter(new NamedParameter("environmentFeeRate", _environmentFeeRate))
 				.As<IPayrollService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

@@ -20,7 +20,7 @@
 	@Scripts.Render("~/bundles/bootstrapjquery")
 
 	@Scripts.Render("~/bundles/angular")
-	
+	<link rel="stylesheet" type="text/css" media="print" href="~/Content/print.css" />
 </head>
 <body>
 	<!-- begin #page-loader -->
@@ -41,7 +41,13 @@
 		<!-- end #sidebar -->
 		<!-- begin #content -->
 		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company">
-			<div class="panel panel-inverse" ng-show="data.showFilterPanel" ng-if="data.isReady">
+			<script type="text/ng-template" id="popover/printerfriendly.html">
+
+				<div class="modal-body col-sm-12 table-responsive" ng-bind-html="content">
+					
+				</div>				
+			</script>
+			<div class="panel panel-inverse  hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
 				<div class="panel-body">
 					<div class="row form-group">
 						<div class="col-sm-4">
@@ -58,7 +64,7 @@
 				</div>
 			</div>
 			
-			<div class="row">
+			<div class="row  hidden-print">
 				<div ng-repeat="alert in alerts" class="alert" ng-class="{'alert-success':alert.type==='success', 'alert-danger':alert.type==='danger'}">
 					{{alert.msg}}
 				</div>
@@ -66,12 +72,7 @@
 			<div ng-view></div>
 			@RenderBody()
 		</div>
-		<!-- end #content -->
-		<!-- Footer -->
-		<div id="footer" class="footer">
-			@Html.Partial("_Footer")
-		</div>
-
+		
 	</div>
 		
 

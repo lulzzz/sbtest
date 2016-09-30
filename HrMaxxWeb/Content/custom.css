@@ -209,3 +209,6 @@ label {
     border-color: #49b6d6;
 }
 
+@media print {
+	.hidden-print { display: none !important;height: 0 !important;visibility: hidden !important; }
+}

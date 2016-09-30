@@ -114,8 +114,8 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							
-						}, function (erorr) {
-							addAlert('error getting report ' + request.reportName, 'danger');
+						}, function (error) {
+							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
 						});
 					}
 					$scope.print = function (listitem) {

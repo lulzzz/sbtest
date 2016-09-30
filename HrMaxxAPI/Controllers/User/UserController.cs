@@ -148,20 +148,35 @@ namespace HrMaxxAPI.Controllers.User
 		[Route(UserRoutes.SaveUser)]
 		public async Task<UserResource> SaveUser(UserResource model)
 		{
-			if (model.UserId.HasValue)
-			{
-				var usermodel = Mapper.Map<UserResource, UserModel>(model);
-				MakeServiceCall(() => _userService.SaveUser(usermodel), string.Format("Save User details for User Id={0}", model.UserId));
-				return model;
-			}
 			var userExists = await UserManager.FindByNameAsync(model.UserName);
+			
 			if (userExists!=null)
 			{
-				throw new HttpResponseException(new HttpResponseMessage
+				if (model.UserId.HasValue)
 				{
-					StatusCode = HttpStatusCode.BadRequest,
-					ReasonPhrase = "A user already exists with this user name"
-				});
+					var usermodel = Mapper.Map<UserResource, UserModel>(model);
+					if (userExists.Email != usermodel.Email)
+					{
+						usermodel.Active = false;
+						userExists.EmailConfirmed = false;
+					}
+						
+					MakeServiceCall(() => _userService.SaveUser(usermodel),
+						string.Format("Save User details for User Id={0}", model.UserId));
+					await UserManager.UpdateAsync(userExists);
+					if (!userExists.EmailConfirmed)
+						await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
+					return model;
+				}
+				else
+				{
+					throw new HttpResponseException(new HttpResponseMessage
+					{
+						StatusCode = HttpStatusCode.BadRequest,
+						ReasonPhrase = "A user already exists with this user name"
+					});
+				}
+				
 			}
 			try
 			{

@@ -44,8 +44,8 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
 						reportRepository.getReport(request).then(function (data) {
 							dataSvc.response = data;
 							
-						}, function (erorr) {
-							addAlert('error getting report ' + request.reportName, 'danger');
+						}, function (error) {
+							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
 						});
 					}
 

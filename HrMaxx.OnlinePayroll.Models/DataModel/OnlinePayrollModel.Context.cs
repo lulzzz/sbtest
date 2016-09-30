@@ -51,5 +51,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<Journal> Journals { get; set; }
         public virtual DbSet<CompanyPayrollCube> CompanyPayrollCubes { get; set; }
         public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<PayrollInvoice> PayrollInvoices { get; set; }
     }
 }

@@ -292,6 +292,7 @@
     <Compile Include="Resources\OnlinePayroll\HostResource.cs" />
     <Compile Include="Resources\Journals\JournalFilterResource.cs" />
     <Compile Include="Resources\OnlinePayroll\VendorCustomerResource.cs" />
+    <Compile Include="Resources\Payroll\PayrollInvoiceResource.cs" />
     <Compile Include="Resources\Payroll\InvoiceResource.cs" />
     <Compile Include="Resources\Payroll\PayrollFilterResource.cs" />
     <Compile Include="Resources\Payroll\PayrollResource.cs" />
@@ -318,6 +319,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\other\quarterannualtaxsummary.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="templates\transformers\payroll\payrollsummary.xslt">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\reports\1099\F1099.xslt" />
@@ -353,6 +357,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="templates\Payroll\" />
     <Folder Include="Views\Company\" />
   </ItemGroup>
   <ItemGroup>

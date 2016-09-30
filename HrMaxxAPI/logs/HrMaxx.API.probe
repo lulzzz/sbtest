@@ -11,10 +11,10 @@ mt.transport: [loopback] LoopbackTransportFactory
 mt.version: 2.9.0.0
 net.version: 4.0.30319.42000
 os.bits: x64
-os.version: Microsoft Windows NT 10.0.10586.0
+os.version: Microsoft Windows NT 10.0.14393.0
 process.bits: x64
 process.fulltrust: True
-process.id: 2512
+process.id: 15040
 zz.mt.inbound_pipeline: Pipeline
 	Routed (MassTransit.IConsumeContext, MassTransit)
 		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts

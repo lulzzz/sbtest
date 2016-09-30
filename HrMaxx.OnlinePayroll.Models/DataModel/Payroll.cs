@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Payroll()
         {
             this.PayrollPayChecks = new HashSet<PayrollPayCheck>();
+            this.PayrollInvoices = new HashSet<PayrollInvoice>();
         }
     
         public System.Guid Id { get; set; }
@@ -31,9 +32,11 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
         public int Status { get; set; }
         public Nullable<System.Guid> InvoiceId { get; set; }
+        public bool PEOASOCoCheck { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
-        public virtual Invoice Invoice { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }
     }
 }

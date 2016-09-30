@@ -10,7 +10,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=1.2.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
@@ -86,7 +86,14 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('error printing pay check', 'danger');
 						});
 					}
-
+					$scope.isPrintable = function(payroll) {
+						var nonVoids = $filter('filter')(payroll.payChecks, { isVoid: false });
+						if (nonVoids.length > 0)
+							return true;
+						else {
+							return false;
+						}
+					}
 
 					$scope.voidcheck = function (listitem) {
 						if($window.confirm('Are you sure you want to mark this check Void?')){

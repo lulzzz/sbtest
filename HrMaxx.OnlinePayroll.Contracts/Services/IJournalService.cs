@@ -10,7 +10,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IJournalService
 	{
 		Journal SaveJournalForPayroll(Journal journal);
-		Journal GetPayCheckJournal(int payCheckId);
+		Journal GetPayCheckJournal(int payCheckId, bool PEOASOCoCheck = false);
 		Journal VoidJournal(int id, TransactionType payCheck, string name);
 		JournalList GetJournalListByCompanyAccount(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);
 		List<AccountWithJournal> GetCompanyAccountsWithJournals(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);

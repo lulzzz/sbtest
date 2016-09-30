@@ -21,5 +21,6 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string PTIN { get; set; }
 		public string DesigneeName940941 { get; set; }
 		public string PIN940941 { get; set; }
+		public HomePageResource HomePage { get; set; }
 	}
 }

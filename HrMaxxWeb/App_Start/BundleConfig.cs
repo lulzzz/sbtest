@@ -177,7 +177,9 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/other-forms.js",
 				"~/Scripts/app/reports/directives/employer-forms.js",
 				"~/Scripts/app/reports/directives/deposit-coupons.js",
-				"~/Scripts/app/reports/directives/blank-forms.js"
+				"~/Scripts/app/reports/directives/blank-forms.js",
+				"~/Scripts/app/payroll/directives/payroll-invoice-list.js",
+				"~/Scripts/app/payroll/directives/payroll-invoice.js"
 
 				
 

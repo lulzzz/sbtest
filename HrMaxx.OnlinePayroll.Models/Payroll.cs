@@ -19,7 +19,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int StartingCheckNumber { get; set; }
 		public List<Comment> Notes { get; set; }
 		public PayrollStatus Status { get; set; }
-		public Guid? InvoiceId { get; set; }
+		public PayrollInvoice Invoice { get; set; }
+		public bool PEOASOCoCheck { get; set; }
 		public decimal TotalGrossWage
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }
@@ -68,6 +69,8 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
+
+		public bool PEOASOCoCheck { get; set; }
 
 		public decimal CheckPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? NetWage : 0; } }
 		public decimal DDPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? 0 : NetWage; } }

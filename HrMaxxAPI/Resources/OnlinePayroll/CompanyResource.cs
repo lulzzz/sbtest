@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
-using HrMaxx.Infrastructure.Attributes;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -52,7 +50,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DepostiSchedule941 DepositSchedule { get; set; }
 
 		public DateTime? LastPayrollDate { get; set; }
-
+		
 		public List<CompanyTaxStateResource> States { get; set; }
 		public List<CompanyTaxRateResource> CompanyTaxRates { get; set; } 
 		public List<AccumulatedPayTypeResource> AccumulatedPayTypes { get; set; }
@@ -82,6 +80,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public BankAccountResource BankDetails { get; set; }
 		public decimal InvoiceCharge { get; set; }
 		public int Method { get; set; }
+		public InvoiceSetupResource InvoiceSetup { get; set; }
 	}
 
 	public class CreditCardResource
@@ -175,5 +174,33 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		{
 			get { return string.Format("{0}:{1} ({2} per hour)", Code, Description, HourlyRate.ToString("c")); }
 		}
+	}
+
+	public class InvoiceSetupResource
+	{
+		[Required]
+		public CompanyInvoiceType InvoiceType { get; set; }
+		[Required]
+		public CompanyInvoiceStyle InvoiceStyle { get; set; }
+		[Required]
+		public int AdminFeeMethod { get; set; }
+		[Required]
+		public decimal AdminFee { get; set; }
+		public decimal SUIManagement { get; set; }
+		public bool ApplyStatuaryLimits { get; set; }
+		public bool ApplyEnvironmentalFee { get; set; }
+		public bool ApplyWCCharge { get; set; }
+		public List<RecurringChargeResource> RecurringCharges { get; set; }
+	}
+
+	public class RecurringChargeResource
+	{
+		public int? Id { get; set; }
+		public int? Year { get; set; }
+		[Required]
+		public decimal Amount { get; set; }
+		public decimal? AnnualLimit { get; set; }
+		[Required]
+		public string Description { get; set; }
 	}
 }

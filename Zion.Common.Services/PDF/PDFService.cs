@@ -93,27 +93,29 @@ namespace HrMaxx.Common.Services.PDF
 			}
 		}
 
-		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<Guid> documents)
+		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<Guid> documents, byte[] data)
 		{
 			try
 			{
-				PdfManager objPDF = new PdfManager();
+				var objPDF = new PdfManager();
 				// Create new document.
 				var objDoc = objPDF.CreateDocument();
 				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
+				
+				if(data.Length>0)
+					objDoc.AppendDocument(objPDF.OpenDocument(data));
+				
 				foreach (var document in documents)
 				{
-					var pdf = objPDF.OpenDocument(pdfPath + document + ".pdf");
-					objDoc.AppendDocument(pdf);
+					objDoc.AppendDocument(objPDF.OpenDocument(pdfPath + document + ".pdf"));
 				}
-				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, fileName), true);
+				var resultBytes = objDoc.SaveToMemory();
+				
 				objDoc.Close();
-				var fileData = _documentService.GetFileBytesByPath(string.Format("{0}{1}", _filePath, fileName));
-				_fileRepository.DeleteTargetFile(string.Format("{0}{1}", _filePath, fileName));
+				
 				return new FileDto
 				{
-					DocumentId = identifier,
-					Data = fileData,
+					Data = resultBytes,
 					Filename = fileName.Split('.')[0],
 					DocumentExtension = ".pdf",
 					MimeType = "application/pdf"
@@ -127,60 +129,68 @@ namespace HrMaxx.Common.Services.PDF
 			}
 		}
 
-		public FileDto PrintReport(ReportTransformed pdfModels)
+		public FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false)
 		{
 			try
 			{
 				var result = new List<string>();
 				var objPDF = new PdfManager();
 				var counter = 0;
-				
+				var objDoc = objPDF.CreateDocument();
 				var objDoc1 = objPDF.CreateDocument();
 				foreach (var report in pdfModels.Reports)
 				{
-					var objDoc = objPDF.OpenDocument(_templatePath + report.TemplatePath + report.Template);
-					if(objDoc==null)
-						throw new Exception(ReportNotAvailable);
-					// Obtain font.
-					var objFont = objDoc.Fonts["Helvetica"];
 					
-					objDoc.Form.RemoveXFA();
-					foreach (var field in report.Fields)
+					if (report.ReportType.ToLower().Equals("html"))
 					{
-						if (field.Type.Equals("Bullet") && !string.IsNullOrWhiteSpace(field.Value) && !string.IsNullOrWhiteSpace(field.Name))
+						objDoc.ImportFromUrl(report.HtmlData.OuterXml);
+					}
+					else
+					{
+						objDoc = objPDF.OpenDocument(_templatePath + report.TemplatePath + report.Template);
+						if (objDoc == null)
+							throw new Exception(ReportNotAvailable);
+						// Obtain font.
+						var objFont = objDoc.Fonts["Helvetica"];
+						objDoc.Form.RemoveXFA();
+						foreach (var field in report.Fields)
 						{
-							var bullet = objDoc.OpenImage(_templatePath + "colored bullet.bmp");
-							var page = objDoc.Pages[1];
-							var param = objPDF.CreateParam();
-
-							param["x"] = (float) Convert.ToDouble(field.Name);
-							param["y"] = (float) Convert.ToDouble(field.Value);
-							param["ScaleX"] = (float) 0.7;
-							param["ScaleY"] = (float) 0.7;
-							page.Canvas.DrawImage(bullet, param);
-						}
-						else
-						{
-							var objField = objDoc.Form.FindField(field.Name);
-							if (objField != null)
+							if (field.Type.Equals("Bullet") && !string.IsNullOrWhiteSpace(field.Value) && !string.IsNullOrWhiteSpace(field.Name))
 							{
-								if (field.Type == "Text")
-								{
-									objField.SetFieldValue(field.Value.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine), objFont);
-								}
-								else
-								{
-									if (!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes")))
-									{
-										objField.SetFieldValue(objField.FieldOnValue, null);
-									}
+								var bullet = objDoc.OpenImage(_templatePath + "colored bullet.bmp");
+								var page = objDoc.Pages[1];
+								var param = objPDF.CreateParam();
 
+								param["x"] = (float)Convert.ToDouble(field.Name);
+								param["y"] = (float)Convert.ToDouble(field.Value);
+								param["ScaleX"] = (float)0.7;
+								param["ScaleY"] = (float)0.7;
+								page.Canvas.DrawImage(bullet, param);
+							}
+							else
+							{
+								var objField = objDoc.Form.FindField(field.Name);
+								if (objField != null)
+								{
+									if (field.Type == "Text")
+									{
+										objField.SetFieldValue(field.Value.Replace("\\N", Environment.NewLine).Replace("\\n", Environment.NewLine), objFont);
+									}
+									else
+									{
+										if (!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes")))
+										{
+											objField.SetFieldValue(objField.FieldOnValue, null);
+										}
+
+									}
 								}
 							}
+
+
 						}
-						
-							
 					}
+					
 					objDoc1.AppendDocument(objPDF.OpenDocument(objDoc.SaveToMemory()));
 					
 					objDoc.Close();
@@ -189,7 +199,15 @@ namespace HrMaxx.Common.Services.PDF
 					counter++;
 				}
 				
-				var resultbytes = objDoc1.SaveToMemory();
+				var resultbytes = new byte[1];
+				if (saveToDisk)
+				{
+					string strFilename = objDoc1.Save(string.Format("{0}{1}", _filePath.Replace("PDFTemp", string.Empty), pdfModels.Name), true);
+					objDoc1.Close();
+					objDoc1.Dispose();
+					return new FileDto();
+				}
+				objDoc1.SaveToMemory();
 				objDoc1.Close();
 				objDoc1.Dispose();
 				
@@ -243,6 +261,43 @@ namespace HrMaxx.Common.Services.PDF
 					MimeType = "application/pdf"
 				};
 			
+		}
+
+		public FileDto PrintHtml(Report report)
+		{
+			try
+			{
+				var objPDF = new PdfManager();
+				var objDoc = objPDF.CreateDocument();
+				
+				if (report.ReportType.ToLower().Equals("html"))
+				{
+					objDoc.ImportFromUrl(report.HtmlData.OuterXml);
+				}
+				
+				var result = objDoc.SaveToMemory();
+
+					objDoc.Close();
+					objDoc.Dispose();
+
+				return new FileDto
+				{
+					Data = result,
+					Filename = report.Template,
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == ReportNotAvailable)
+					message = e.Message;
+				else
+					message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " Print PDF for report");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 		}
 
 		private Guid Int2Guid(int value)

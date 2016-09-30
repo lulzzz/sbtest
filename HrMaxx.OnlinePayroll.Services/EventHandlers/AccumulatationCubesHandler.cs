@@ -9,20 +9,35 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 	{
 
 		private readonly IDashboardService _dashboardService;
-		public AccumulationCubesHandler(IDashboardService dashboardService)
+		private readonly IHostService _hostService;
+		public AccumulationCubesHandler(IDashboardService dashboardService, IHostService hostService)
 		{
 			_dashboardService = dashboardService;
+			_hostService = hostService;
 		}
 
 
 		public void Consume(PayrollSavedEvent message)
 		{
-			_dashboardService.AddPayrollToCubes(message.SavedObject);
+			var payroll = message.SavedObject;
+			_dashboardService.AddPayrollToCubes(payroll);
+			if (payroll.PEOASOCoCheck)
+			{
+				var host = _hostService.GetHost(payroll.Company.HostId);
+				payroll.Company = host.Company;
+				_dashboardService.AddPayrollToCubes(payroll);
+			}
 		}
 
 		public void Consume(PayCheckVoidedEvent message)
 		{
-			_dashboardService.RemovePayCheckFromCubes(message.SavedObject);
+			var paycheck = message.SavedObject;
+			_dashboardService.RemovePayCheckFromCubes(paycheck);
+			if (paycheck.PEOASOCoCheck)
+			{
+				var host = _hostService.GetHost(message.HostId);
+				_dashboardService.RemovePayCheckFromCubes(paycheck, host.Company.Id);
+			}
 		}
 	}
 }

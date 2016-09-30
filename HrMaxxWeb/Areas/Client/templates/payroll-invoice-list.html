@@ -1,0 +1,78 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse  hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedHost">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Invoice List<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div ng-show="list.length===0 && !selectedInvoice" class="table table-bordered">
+				No payrolls found
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selectedInvoice.id===item.id}">
+						<td data-title=" 'Company' " sortable=" 'company.name' " class="col-sm-1 text-center">
+							{{item.company.name}}
+						</td>
+						<td data-title=" 'Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+							{{item.invoiceDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Due Date' " sortable=" 'dueDate' " class="col-sm-1 text-center">
+							{{item.dueDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Expires on' " sortable=" 'expiryDate' " class="col-sm-1 text-center">
+							{{item.expiryDate | date:'MM/dd/yyyy'}}
+						</td>
+
+						<td data-title=" 'Total' " sortable=" 'total' " class="col-sm-1 text-center show-red">
+							{{item.total | currency:'$'}}
+						</td>
+						<td data-title=" 'Balance' " sortable=" 'balance' " class="col-sm-1 text-center show-red">
+							{{item.balance | currency:'$'}}
+						</td>
+						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+							{{item.statusText}}
+						</td>
+
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+
+			<!-- end panel -->
+		</div>
+	</div>
+	<div class="panel panel-info" ng-if="selectedInvoice">
+		<div class="panel-heading  hidden-print">
+			<h4 class="panel-title">Invoice Details</h4>
+		</div>
+		<div class="panel-body tab-content">
+			<form data-parsley-validate="true" name="invoice">
+				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" />
+			</form>
+		</div>
+	</div>
+	
+	
+</div>
+
+

@@ -97,6 +97,15 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<CompanyPayCodeResource, CompanyPayCode>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0));
 
+
+			CreateMap<InvoiceSetup, InvoiceSetupResource>();
+			CreateMap<InvoiceSetupResource, InvoiceSetup>();
+
+			CreateMap<RecurringCharge, RecurringChargeResource>();
+			CreateMap<RecurringChargeResource, RecurringCharge>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0)); ;
+
+
 			CreateMap<CreditCardResource, CreditCard>();
 			CreateMap<CreditCard, CreditCardResource>();
 
@@ -136,6 +145,9 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<PayrollResource, Payroll>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : CombGuid.Generate()))
+				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.Date))
+				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.Date))
+				.ForMember(dest => dest.PayDay, opt => opt.MapFrom(src => src.PayDay.Date))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now)); 
 
 			CreateMap<Payroll, PayrollResource>();
@@ -143,9 +155,9 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<PayCheckResource, PayCheck>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : 0))
 				.ForMember(dest => dest.PayrollId, opt => opt.Ignore())
-				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src=>src.StartDate))
-				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src=>src.EndDate))
-				.ForMember(dest => dest.PayDay, opt => opt.MapFrom(src=>src.PayDay))
+				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src=>src.StartDate.Value.Date))
+				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src=>src.EndDate.Value.Date))
+				.ForMember(dest => dest.PayDay, opt => opt.MapFrom(src=>src.PayDay.Value.Date))
 				.ForMember(dest => dest.YTDSalary, opt => opt.Ignore())
 				.ForMember(dest => dest.CheckNumber, opt => opt.MapFrom(src => src.CheckNumber.HasValue ? src.CheckNumber : default(int)));
 			CreateMap<PayCheck, PayCheckResource>();
@@ -208,6 +220,11 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : new DateTime(DateTime.Now.Year, 12, 31)));
 
 			CreateMap<ReportResponse, ReportResponseResource>();
+
+			CreateMap<PayrollInvoiceResource, PayrollInvoice>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
+			CreateMap<PayrollInvoice, PayrollInvoiceResource>();
 		}
 	}
 }
