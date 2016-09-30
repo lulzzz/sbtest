@@ -120,8 +120,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 								$scope.selectedCompany.contract.invoiceSetup = {
 									invoiceType: 1,
 									invoiceStyle: 1,
-									adminFeeMethod: 1,
-									adminFee: 0,
+									adminFeeMethod: $scope.selectedCompany.contract.method ? $scope.selectedCompany.contract.method : 1,
+									adminFee: $scope.selectedCompany.contract.invoiceCharge ? $scope.selectedCompany.contract.invoiceCharge : 0,
 									suiManagement: 0,
 									applyWCCharge: true,
 									applyStatuaryLimits: true,
@@ -404,6 +404,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.save = function () {
 						if (false === $('form[name="form-wizard"]').parsley().validate())
 							return false;
+						if ($scope.selectedCompany.contract.billingOption !== 3)
+							$scope.selectedCompany.contract.invoiceSetup = null;
 						if ($scope.selectedCompany.contract.billingOption === 0 || $scope.selectedCompany.contract.billingOption === 3) {
 							$scope.selectedCompany.contract.creditCardDetails = null;
 							$scope.selectedCompany.contract.bankDetails = null;
@@ -417,9 +419,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 								$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
 							}
 						}
-						if ($scope.selectedCompany.contract.contractOption === 1) {
-							$scope.selectedCompany.contract.invoiceCharge = 0;
-						}
+					
 						companyRepository.saveCompany($scope.selectedCompany).then(function (result) {
 
 							var exists = $filter('filter')($scope.list, { id: result.id });

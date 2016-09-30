@@ -424,19 +424,7 @@
 															<option value="3" ng-show="selectedCompany.contract.contractOption===2">Invoice</option>
 														</select>
 													</div>
-													<div class="form-group" ng-if="selectedCompany.contract.contractOption===2 && selectedCompany.contract.billingOption===3">
-														<label>Invoice Rate Type</label>
-														<select ng-model="selectedCompany.contract.method" name="invoicemethod" class="form-control" convert-to-number required data-parsley-group="wizard-step-4">
-															<option value="1">Flat Rate (per payroll)</option>
-															<option value="2">Percentage</option>
-														</select>
-													</div>
-													<div class="form-group" ng-if="selectedCompany.contract.contractOption===2 && selectedCompany.contract.billingOption===3" ng-show="selectedCompany.contract.method">
-														<label>Invoice Rate</label>
-														<input class="form-control" name="invoicecharge" ng-model="selectedCompany.contract.invoiceCharge" data-parsley-type="number" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" />
-													</div>
-
-
+													
 												</div>
 												<div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===1">
 
