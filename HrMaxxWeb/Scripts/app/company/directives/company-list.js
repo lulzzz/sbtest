@@ -126,7 +126,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 									applyWCCharge: true,
 									applyStatuaryLimits: true,
 									applyEnvironmentalFee: true,
-									recurringCharges: []
+									recurringCharges: [],
+									notSaved: true
 								}
 							}
 							
@@ -310,7 +311,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.selectedCompany.contract;
 						if (!c)
 							return false;
-						if (c.contractOption === 1 && (!c.billingOption || !c.prePaidSubscriptionOption || (c.prePaidSubscriptionOption > 1 && !c.billingOption)))
+						if (c.contractOption === 1 && (!c.prePaidSubscriptionOption || (c.prePaidSubscriptionOption > 1 && !c.billingOption)))
+							return false;
+						if (c.contractOption === 2 && !c.billingOption)
 							return false;
 						if (c.billingOption === 1) {
 							var cc = c.creditCardDetails;
@@ -324,9 +327,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							if (!b || !b.bankName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
 								return false;
 						}
-						if (c.billingOption === 3) {
+						if (c.contractOption === 2 && c.billingOption === 3) {
 							var i = c.invoiceSetup;
-							if (!i || !i.adminFee || !i.suiManagement)
+							if (!i )
 								return false;
 							if (i.recurringCharges.length > 0) {
 								var invalidrc = false;
