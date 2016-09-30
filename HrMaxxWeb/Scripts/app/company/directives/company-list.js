@@ -268,7 +268,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var validateStep1 = function () {
 						var c = $scope.selectedCompany;
-						if (!c.name || !c.companyNo)
+						if (!c.name)
 							return false;
 						else if (!c.companyAddress.addressLine1 || !c.companyAddress.countryId || !c.companyAddress.stateId || !c.companyAddress.zip)
 							return false;

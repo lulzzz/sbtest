@@ -1,4 +1,6 @@
-﻿ALTER TABLE [dbo].[Payroll] DROP CONSTRAINT [FK_Payroll_Invoice]
+﻿Alter table company alter column companyno varchar(max) null;
+Go
+ALTER TABLE [dbo].[Payroll] DROP CONSTRAINT [FK_Payroll_Invoice]
 GO
 IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
