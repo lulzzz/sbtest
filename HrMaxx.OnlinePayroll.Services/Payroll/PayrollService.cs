@@ -123,6 +123,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							paycheck.WCAmount = Math.Round(paycheck.GrossWage * paycheck.Employee.WorkerCompensation.Rate /100, 2, MidpointRounding.AwayFromZero);
 							paycheck.WorkerCompensation = new PayrollWorkerCompensation
 							{
+								Wage = paycheck.GrossWage,
 								WorkerCompensation = paycheck.Employee.WorkerCompensation,
 								Amount = paycheck.WCAmount,
 								YTD =

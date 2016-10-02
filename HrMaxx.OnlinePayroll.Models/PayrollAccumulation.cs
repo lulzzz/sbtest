@@ -191,6 +191,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var wc = WorkerCompensations.FirstOrDefault(w => w.WorkerCompensation.Id == wcomp.WorkerCompensation.Id);
 				if (wc != null)
 				{
+					wc.Wage += Math.Round(wcomp.Wage, 2, MidpointRounding.AwayFromZero);
 					wc.Amount += Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 				else
@@ -286,6 +287,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var wc = WorkerCompensations.FirstOrDefault(w => w.WorkerCompensation.Id == wcomp.WorkerCompensation.Id);
 				if (wc != null)
 				{
+					wc.Wage -= Math.Round(wcomp.Wage, 2, MidpointRounding.AwayFromZero);
 					wc.Amount -= Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			}

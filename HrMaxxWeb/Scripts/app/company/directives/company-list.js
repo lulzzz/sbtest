@@ -396,6 +396,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							annualLimit: null
 						});
 					}
+					$scope.removeRecurringCharge = function (rc, index) {
+						$scope.selectedCompany.contract.invoiceSetup.recurringCharges.splice(index,1);
+					}
 					$scope.getRowClass = function (item) {
 						if ($scope.selectedCompany && $scope.selectedCompany.id === item.id)
 							return 'success';

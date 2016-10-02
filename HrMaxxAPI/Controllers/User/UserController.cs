@@ -203,23 +203,7 @@ namespace HrMaxxAPI.Controllers.User
 				var result = await UserManager.CreateAsync(user, "HrMaxx1234!");
 				if (result.Succeeded)
 				{
-					var role = string.Empty;
-					if (!model.SourceTypeId.HasValue)
-					{
-						role = RoleTypeEnum.CorpStaff.GetDbName();
-					}
-					else
-					{
-						if (model.SourceTypeId.Value == EntityTypeEnum.Employee && model.Employee.HasValue)
-							role = RoleTypeEnum.Employee.GetDbName();
-						else if (model.SourceTypeId.Value == EntityTypeEnum.Company && model.Company.HasValue)
-							role = RoleTypeEnum.Company.GetDbName();
-						else
-						{
-							role = RoleTypeEnum.Host.GetDbName();
-						}
-					}
-					await UserManager.AddToRoleAsync(user.Id, role);
+					await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
 					model.UserId = new Guid(user.Id);
 					string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
 					return model;

@@ -306,7 +306,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 						}
-						$scope.cancel();
+						if (invoice.status !== 3)
+							$scope.cancel();
 
 					}
 					$scope.deleteInvoice = function (invoice) {

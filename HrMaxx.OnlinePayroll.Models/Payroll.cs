@@ -367,6 +367,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class PayrollWorkerCompensation
 	{
 		public CompanyWorkerCompensation WorkerCompensation { get; set; }
+		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
 	}

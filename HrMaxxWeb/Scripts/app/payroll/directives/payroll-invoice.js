@@ -149,17 +149,6 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.print = function () {
 						$window.print();
-						//var print = angular.element("#print");
-						//var modalInstance = $modal.open({
-						//	templateUrl: 'popover/printerfriendly.html',
-						//	controller: 'printerFriendlyCtrl',
-						//	size: 'lg',
-						//	resolve: {
-						//		content: function () {
-						//			return print.html();
-						//		}
-						//	}
-						//});
 					}
 					$scope.save = function() {
 						if (false === $('form[name="invoice"]').parsley().validate()) {
@@ -171,9 +160,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							addAlert(validation, 'warning');
 							return false;
 						}
-						//$.each($scope.item.payments, function (index, p) {
-						//	p.paymentDate = moment(p.paymentDate, 'MM/DD/YYYY').format("MM/DD/YYYY");
-						//});
+						
 						payrollRepository.savePayrollInvoice($scope.invoice).then(function(data) {
 							$timeout(function () {
 								$scope.invoice = data;
