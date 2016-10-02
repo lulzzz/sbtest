@@ -27,6 +27,7 @@
 			showCompanies: true,
 			userHost: null,
 			userCompany: null,
+			userRole: null,
 			isReady: false,
 			reportFilter: {
 				filterStartDate: null,
@@ -45,6 +46,7 @@
 			var auth = localStorageService.get('authorizationData');
 			if (auth) {
 				var dataInput = $element.data();
+				dataSvc.userRole = dataInput.role;
 				if (dataInput.host !== '00000000-0000-0000-0000-000000000000') {
 					dataSvc.userHost = dataInput.host;
 				}

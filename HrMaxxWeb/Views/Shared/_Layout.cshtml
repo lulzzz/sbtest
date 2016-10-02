@@ -40,7 +40,7 @@
 		
 		<!-- end #sidebar -->
 		<!-- begin #content -->
-		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company">
+		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-role="@CurrentUser.Role">
 			<script type="text/ng-template" id="popover/printerfriendly.html">
 
 				<div class="modal-body col-sm-12 table-responsive" ng-bind-html="content">

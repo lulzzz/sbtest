@@ -9,5 +9,6 @@
 		public const string SaveUserProfile = "User";
 		public const string SaveUser = "SaveUser";
 		public const string ResetPassword = "UserPasswordReset";
+		public const string UserMetaData = "MetaDataForUsers";
 	}
 }

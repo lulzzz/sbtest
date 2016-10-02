@@ -8,7 +8,7 @@
 				<div ng-show="list.length===0 && !selectedContact">
 					No Users found
 				</div>
-				<div class="col-sm-6" >
+				<div class="col-sm-8" >
 					<div class="row" ng-show="list.length>0">
 						<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
 							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedUser(item)" ng-class="{'success':selectedUser===item}">
@@ -29,6 +29,9 @@
 								</td>
 								<td data-title=" 'Active' " sortable=" 'active' " class="col-sm-1">
 									{{item.active? 'Active' : 'Not Active'}}
+								</td>
+								<td data-title=" 'Role' " sortable=" 'role.roleName' " class="col-sm-1">
+									{{item.role.roleName}}
 								</td>
 								<td>
 									<button type="button" class="btn btn-sm btn-primary" ng-click="setSelectedUser(item)">View</button>
@@ -62,7 +65,7 @@
 					</div>
 				</div>
 				
-				<div class="col-sm-6" ng-if="selectedUser">
+				<div class="col-sm-4" ng-if="selectedUser">
 					<pre ng-show="!selectedUser.userId">New User</pre>
 					<table class="table table-profile">
 						<tbody>
@@ -93,6 +96,24 @@
 							<tr>
 								<td class="field">Phone <i class="fa fa-mobile"></i></td>
 								<td> <a href="#" editable-text="selectedUser.phone" e-ui-mask="(999) 999-9999">{{ selectedUser.phone || 'empty' }}</a></td>
+							</tr>
+							<tr>
+								<td class="field">Role <i class="fa fa-users"></i></td>
+								<td>
+									<select id="roles" class="form-control" ng-change="roleChanged()" ng-model="selectedUser.role" ng-options="m.roleName for m in data.roles | filter:{show:true} track by m.roleId">
+										
+									</select>
+								</td>
+							</tr>
+							<tr ng-if="selectedUser.host || selectedUser.role.roleId>2">
+								<td class="field">Host</td>
+								<td>
+									<select id="host" class="form-control" ng-change="hostSelected()" ng-model="data.selectedHost" ng-options="host1.name for host1 in data.hosts track by host1.id"></select>
+								</td>
+							</tr>
+							<tr ng-if="selectedUser.company || selectedUser.role.roleId===4 || selectedUser.role.roleId===5">
+								<td class="field">Company</td>
+								<td><select id="company" class="form-control" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.companies track by c.id"></select></td>
 							</tr>
 							<tr>
 								<td class="field">Active</td>

@@ -32,7 +32,7 @@ namespace HrMaxx.Infrastructure.Helpers
 		public static void RunDatabaseScript(string arguments, string mode = "Debug")
 		{
 			DirectoryInfo info = GetSolutionRoot();
-			string path = Path.Combine(info.FullName, string.Format(@"HrMaxx.Infrastructure.Database\bin\{0}\", mode));
+			string path = Path.Combine(info.FullName, string.Format(@"Zion.Infrastructure.Database\bin\{0}\", mode));
 
 			var dbCreateProcess = new Process
 			{

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Resources.OnlinePayroll;
@@ -51,6 +53,10 @@ namespace HrMaxxAPI.Controllers.Companies
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{
 			var companies =  MakeServiceCall(() => _companyService.GetCompanies(hostId, CurrentUser.Company), "Get companies for hosts", true);
+			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName())
+			{
+				companies = companies.Where(c => !c.IsHostCompany).ToList();
+			}
 			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.ToList());
 		}
 

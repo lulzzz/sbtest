@@ -93,6 +93,9 @@ namespace HrMaxx.Common.Repository.Security
 			user.PhoneNumber = usermodel.Phone;
 			user.Active = usermodel.Active;
 			user.UserName = usermodel.UserName;
+			user.Host = usermodel.Host;
+			user.Company = usermodel.Company;
+			
 			_dbContext.SaveChanges();
 		}
 	}

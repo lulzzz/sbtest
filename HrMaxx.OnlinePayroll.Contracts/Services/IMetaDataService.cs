@@ -18,5 +18,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		object GetJournalMetaData(Guid companyId);
 		object GetInvoiceMetaData(Guid companyId);
+		object GetUsersMetaData(Guid? host, Guid? company, Guid? employee);
 	}
 }

@@ -125,5 +125,19 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public object GetUsersMetaData(Guid? host, Guid? company, Guid? employee)
+		{
+			try
+			{
+				return _metaDataRepository.GetMetaDataForUser(host==Guid.Empty? null : host, company==Guid.Empty?null : company, employee==Guid.Empty?null : employee);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Usrs ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

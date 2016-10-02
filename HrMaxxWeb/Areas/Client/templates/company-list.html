@@ -102,7 +102,7 @@
 											Taxation
 											<small>Taxation Address and Federal and State details</small>
 										</li>
-										<li>
+										<li ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff' || mainData.userRole==='Host' || mainData.userRole==='HostStaff'">
 											Contract
 											<small>Details for billing and invoice</small>
 										</li>
@@ -392,7 +392,7 @@
 										</fieldset>
 									</div>
 									<!-- end wizard step-3 -->
-									<div class="wizard-step-4">
+									<div class="wizard-step-4" ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff' || mainData.userRole==='Host' || mainData.userRole==='HostStaff'">
 										<fieldset>
 											<legend class="pull-left width-full">Contract <span class="show-red" ng-show="selectedCompany.contract.invoiceSetup.notSaved">Invoice configurations are not saved</span></legend>
 											<!-- begin row -->
@@ -424,7 +424,7 @@
 															<option value="3" ng-show="selectedCompany.contract.contractOption===2">Invoice</option>
 														</select>
 													</div>
-													
+
 												</div>
 												<div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===1">
 
@@ -537,20 +537,20 @@
 															<option value="5">WC Only</option>
 														</select>
 													</div>
-													
-													<div class="form-group" >
+
+													<div class="form-group">
 														<label>Admin Fee Type</label>
 														<select ng-model="selectedCompany.contract.invoiceSetup.adminFeeMethod" name="adminfeemethod" class="form-control" convert-to-number>
 															<option value="1">Flat Rate (per payroll)</option>
 															<option value="2">Percentage</option>
 														</select>
 													</div>
-													
+
 													<div class="form-group">
 														<label>SUI Management</label>
 														<input class="form-control" name="suimanagement" ng-model="selectedCompany.contract.invoiceSetup.suiManagement" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
 													</div>
-													
+
 													<div class="form-group">
 														<label></label>
 														<div>
@@ -560,7 +560,7 @@
 															</label>
 														</div>
 													</div>
-													
+
 												</div>
 												<div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===3">
 													<div class="form-group">
@@ -572,7 +572,8 @@
 													</div>
 													<div class="form-group">
 														<label>Admin Fee</label>
-														<input class="form-control" name="adminfee" ng-model="selectedCompany.contract.invoiceSetup.adminFee" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="1" data-parsley-trigger="blur" step="0.01"></div>
+														<input class="form-control" name="adminfee" ng-model="selectedCompany.contract.invoiceSetup.adminFee" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="1" data-parsley-trigger="blur" step="0.01">
+													</div>
 													<div class="form-group">
 														<label></label>
 														<div>
@@ -606,7 +607,7 @@
 																	<th class="col-sm-2">Year</th>
 																	<th class="col-sm-2">Amount</th>
 																	<th class="col-sm-2">Annual Limit</th>
-																	
+
 																</tr>
 																<tr ng-repeat="rc in selectedCompany.contract.invoiceSetup.recurringCharges">
 																	<td><input type="text" ng-model="rc.description" class="form-control" required data-parsley-group="wizard-step-4" /></td>
@@ -630,7 +631,7 @@
 							</form>
 						</div>
 						<div class="tab-pane fade in" id="user" ng-if="selectedCompany.id">
-							<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="data"/>
+							<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="mainData"/>
 						</div>
 						<div class="tab-pane fade in" id="news" ng-if="selectedCompany.id">
 							<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data"/>

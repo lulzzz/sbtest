@@ -112,5 +112,20 @@ namespace HrMaxx.OnlinePayroll.Repository
 				return "1111".PadLeft(8, '0');
 			}
 		}
+
+		public object GetMetaDataForUser(Guid? host, Guid? company, Guid? employee)
+		{
+			var hosts = _dbContext.Hosts.Where(h => (host.HasValue && h.Id == host.Value) || (!host.HasValue)).Select(h=>new { h.Id, Name = h.FirmName }).ToList();
+			var companies = _dbContext.Companies.Where(c => ((host.HasValue && c.HostId == host.Value) || (!host.HasValue))
+																					&& ((company.HasValue && c.Id == company.Value) || (!company.HasValue))).Select(h => new { h.Id, Name = h.CompanyName }).ToList();
+			var employees = _dbContext.Employees.Where(e => ((employee.HasValue && e.Id == employee.Value) || !employee.HasValue)
+			                                                &&
+			                                                ((company.HasValue && e.CompanyId == company.Value) ||
+			                                                 !company.HasValue)
+			                                                &&
+			                                                ((host.HasValue && e.Company.HostId == host.Value) || !host.HasValue)
+				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName}).ToList();
+			return new {Hosts = hosts, Companies = companies, Employees = employees};
+		}
 	}
 }

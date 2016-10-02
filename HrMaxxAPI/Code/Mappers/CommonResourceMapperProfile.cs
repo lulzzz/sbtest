@@ -87,9 +87,6 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
 				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active))
 				.ForMember(dest => dest.SourceTypeId, opt => opt.Ignore())
-				.ForMember(dest => dest.HostId, opt => opt.Ignore())
-				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
-				.ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src=>src.UserName));
 		}
 	}

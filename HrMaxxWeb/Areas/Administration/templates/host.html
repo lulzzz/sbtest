@@ -19,7 +19,7 @@
 				Taxation
 				<small>Taxation Address and Federal and State details</small>
 			</li>
-			<li>
+			<li ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff'">
 				Contract
 				<small>Details for billing and invoice</small>
 			</li>
@@ -195,7 +195,7 @@
 		</div>
 		<!-- end wizard step-3 -->
 		<!-- begin wizard step-4 -->
-		<div class="wizard-step-4">
+		<div class="wizard-step-4" >
 			<fieldset>
 				<legend class="pull-left width-full">Address</legend>
 				<!-- begin row -->
@@ -320,7 +320,7 @@
 			</fieldset>
 		</div>
 		<!-- end wizard step-4 -->
-		<div class="wizard-step-5">
+		<div class="wizard-step-5" ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff'">
 			<fieldset>
 				<legend class="pull-left width-full">Contract</legend>
 				<!-- begin row -->

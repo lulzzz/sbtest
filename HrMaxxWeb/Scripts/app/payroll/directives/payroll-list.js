@@ -288,7 +288,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 				 );
 					$scope.showInvoices = function() {
 						var comp = $scope.mainData.selectedCompany;
-						if (comp && comp.contract.contractOption === 2 && comp.contract.billingOption === 3) {
+						if (comp && comp.contract.contractOption === 2 && comp.contract.billingOption === 3 && comp.contract.invoiceSetup) {
 							return true;
 						} else {
 							return false;

@@ -17,6 +17,9 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};
+				$scope.addAlert = function (error, type) {
+					$scope.$parent.$parent.addAlert(error, type);
+				};
 				
 				$scope.selectedHost = null;
 					$scope.isBodyOpen = true;

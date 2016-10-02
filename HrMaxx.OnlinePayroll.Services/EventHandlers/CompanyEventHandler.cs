@@ -22,7 +22,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		public void Consume(CompanyUpdatedEvent event1)
 		{
 			var users = _userService.GetUsers(event1.SavedObject.HostId, event1.SavedObject.Id).Select(u=>u.UserId).ToList();
-			var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() {RoleTypeEnum.Admin, RoleTypeEnum.Master}, null);
+			var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() {RoleTypeEnum.CorpStaff, RoleTypeEnum.Master}, null);
 			users.AddRange(adminUsers);
 			Bus.Publish<Notification>(new Notification
 			{

@@ -17,5 +17,9 @@ namespace HrMaxx.Common.Models.Dtos
 		public string Email { get; set; }
 		public Guid? Host { get; set; }
 		public Guid? Company { get; set; }
+		public Guid? Employee { get; set; }
+		public UserRole Role { get; set; }
 	}
+
+	
 }

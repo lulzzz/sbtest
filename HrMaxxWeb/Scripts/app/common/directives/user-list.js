@@ -16,9 +16,65 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/user-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commpnRepository, ngTableParams, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Contact;
 				$scope.list = [];
+
+				var dataSvc = {
+					companies: [],
+					hosts: [],
+					employees: [],
+					selectedHost: null,
+					selectedCompany: null,
+					roles: [
+					{
+						roleId: 1,
+						roleName: 'Master',
+						show: true
+			}, {
+						roleId: 2,
+						roleName: 'CorpStaff',
+						show: true
+					}, {
+						roleId: 3,
+						roleName: 'Host',
+						show: true
+					}, {
+						roleId: 6,
+						roleName: 'HostStaff',
+						show: true
+					}, {
+						roleId: 4,
+						roleName: 'Company',
+						show: true
+					}, {
+						roleId: 5,
+						roleName: 'Employee',
+						show: false
+					}]
+				}
+				
+
+				var setRoleList = function () {
+					if ($scope.mainData.userRole === 'Master') {
+					} else if ($scope.mainData.userRole === 'CorpStaff') {
+						$.each(dataSvc.roles, function(index, role) {
+							if (role.roleId === 1)
+								role.show = false;
+						});
+					} else if ($scope.mainData.userRole === 'Host' || $scope.mainData.userRole === 'HostStaff') {
+						$.each(dataSvc.roles, function (index, role) {
+							if (role.roleId === 1 || role.roleId === 2)
+								role.show = false;
+						});
+					} else if ($scope.mainData.userRole === 'Company') {
+						$.each(dataSvc.roles, function (index, role) {
+							if (role.roleId === 1 || role.roleId === 2 || role.roleId === 3 || role.roleId === 6)
+								role.show = false;
+						});
+					} 
+				}
+				$scope.data = dataSvc;
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};
@@ -83,22 +139,61 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					$scope.selectedUser = null;
 				}
 				$scope.setSelectedUser = function(item) {
+					$scope.originalUser = item;
 					$scope.selectedUser = angular.copy(item);
-					$scope.selectedUser.hostId = $scope.hostId;
-					$scope.selectedUser.companyId = $scope.companyId;
+					dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+					dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+				}
+				$scope.roleChanged = function () {
+					var item = $scope.selectedUser;
+					if (item.role.roleId === 1 || item.role.roleId === 2) {
+						item.host = null;
+						item.company = null;
+					}
+					if (item.role.roleId === 3 || item.role.roleId === 6) {
+						item.host = $scope.originalUser.host;
+						item.company = null;
+						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+					}
+					if (item.role.roleId === 4) {
+						item.host = $scope.originalUser.host;
+						item.company = $scope.originalUser.company;
+						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+						dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+					}
+					if (item.role.roleId === 5) {
+						item.host = $scope.originalUser.host;
+						item.company = $scope.originalUser.company;
+						item.employee = $scope.originalUser.employee;
+						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+						dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+						dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
+					}
+				}
+				
+				$scope.hostSelected = function() {
+					$scope.selectedUser.host = dataSvc.selectedHost.id;
+				}
+				$scope.companySelected = function () {
+					$scope.selectedUser.company = dataSvc.selectedCompany.id;
 				}
 				$scope.validateUser = function() {
-					if ($scope.selectedUser) {
-						if ($scope.selectedUser.firstName && $scope.selectedUser.lastName && $scope.selectedUser.email && $scope.selectedUser.phone && $scope.selectedUser.userName)
-							return true;
-						else
+					var u = $scope.selectedUser;
+					if (u) {
+						if (!u.firstName || !u.lastName || !u.email || !u.phone || !u.userName)
 							return false;
+						else if ((u.role.roleId >2) && (!u.host))
+							return false;
+						else if ((u.role.roleId === 4 || u.role.roleId === 5) && (!u.company))
+							return false;
+						else
+							return true;
 					} else
 						return false;
 				}
 				
 				$scope.save = function () {
-					commpnRepository.saveUser($scope.selectedUser).then(function (result) {
+					commonRepository.saveUser($scope.selectedUser).then(function (result) {
 						
 						var exists = $filter('filter')($scope.list, { userId:result.userId });
 						if (exists.length === 0) {
@@ -119,14 +214,23 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					});
 				}
 				$scope.resetPassword = function() {
-					commpnRepository.resetPassword($scope.selectedUser).then(function (result) {
+					commonRepository.resetPassword($scope.selectedUser).then(function (result) {
 						addAlert('successfully sent a password reset email to the user', 'success');
 					}, function (error) {
 						addAlert('Error: ' + error.statusText, 'danger');
 					});
 				}
 				var init = function () {
-					commpnRepository.getUsers($scope.hostId, $scope.companyId).then(function (data) {
+					setRoleList();
+					commonRepository.getUsersMetaData().then(function (result) {
+						dataSvc.hosts = angular.copy(result.hosts);
+						dataSvc.companies = angular.copy(result.companies);
+						dataSvc.employees = angular.copy(result.employees);
+						
+					}, function (erorr) {
+
+					});
+					commonRepository.getUsers($scope.hostId, $scope.companyId).then(function (data) {
 						$scope.list = data;
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);

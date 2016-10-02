@@ -14,8 +14,10 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
 using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Resources;
 using HrMaxxAPI.Resources.Common;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using RestSharp;
 
@@ -24,21 +26,29 @@ namespace HrMaxxAPI.Controllers.User
 	public class UserController : BaseApiController
 	{
 		private readonly IUserService _userService;
-		
-		
+		private readonly IMetaDataService _metaDataService;
 
-		public UserController(IUserService userService )
+
+		public UserController(IUserService userService, IMetaDataService metaDataService)
 		{
 			_userService = userService;
-			
+			_metaDataService = metaDataService;
+
 		}
+		[HttpGet]
+		[Route(UserRoutes.UserMetaData)]
+		public object GetUsersMetaData()
+		{
+			return MakeServiceCall(() => _metaDataService.GetUsersMetaData(CurrentUser.Host, CurrentUser.Company, null), string.Format("Get Metadata for users By User Id={0}", CurrentUser.UserId), true);
+		}
+
 		public ApplicationUserManager UserManager
 		{
 			get
 			{
-				return  HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+				return HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
 			}
-			
+
 		}
 		[HttpGet]
 		[Route(UserRoutes.User)]
@@ -102,8 +112,8 @@ namespace HrMaxxAPI.Controllers.User
 					ReasonPhrase = "Unexpected error occured while sending a reset password request"
 				});
 			}
-			
-			
+
+
 		}
 
 		[HttpPost]
@@ -141,59 +151,68 @@ namespace HrMaxxAPI.Controllers.User
 					ReasonPhrase = "Failed to complete change user password"
 				});
 			}
-			
+
 		}
 
 		[HttpPost]
 		[Route(UserRoutes.SaveUser)]
 		public async Task<UserResource> SaveUser(UserResource model)
 		{
-			var userExists = await UserManager.FindByNameAsync(model.UserName);
-			
-			if (userExists!=null)
-			{
-				if (model.UserId.HasValue)
-				{
-					var usermodel = Mapper.Map<UserResource, UserModel>(model);
-					if (userExists.Email != usermodel.Email)
-					{
-						usermodel.Active = false;
-						userExists.EmailConfirmed = false;
-					}
-						
-					MakeServiceCall(() => _userService.SaveUser(usermodel),
-						string.Format("Save User details for User Id={0}", model.UserId));
-					await UserManager.UpdateAsync(userExists);
-					if (!userExists.EmailConfirmed)
-						await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
-					return model;
-				}
-				else
-				{
-					throw new HttpResponseException(new HttpResponseMessage
-					{
-						StatusCode = HttpStatusCode.BadRequest,
-						ReasonPhrase = "A user already exists with this user name"
-					});
-				}
-				
-			}
 			try
 			{
-				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.HostId, Company = model.CompanyId, Active = model.Active, PhoneNumber = model.Phone };
+				var userExists = await UserManager.FindByNameAsync(model.UserName);
+
+				if (userExists != null)
+				{
+					if (model.UserId.HasValue)
+					{
+						userExists.FirstName = model.FirstName;
+						userExists.LastName = model.LastName;
+						userExists.Host = model.Host;
+						userExists.Company = model.Company;
+						userExists.PhoneNumber = model.Phone;
+						if (userExists.Email != model.Email)
+						{
+							userExists.Active = false;
+							userExists.EmailConfirmed = false;
+						}
+						userExists.Email = model.Email;
+
+						await UserManager.UpdateAsync(userExists);
+						if (userExists.Roles.First().RoleId != model.Role.RoleId.ToString())
+						{
+							await UserManager.RemoveFromRoleAsync(userExists.Id, ((RoleTypeEnum)Convert.ToInt32(userExists.Roles.First().RoleId)).GetDbName());
+							await UserManager.AddToRoleAsync(userExists.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
+						}
+						if (!userExists.EmailConfirmed)
+							await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
+						return model;
+					}
+					else
+					{
+						throw new HttpResponseException(new HttpResponseMessage
+						{
+							StatusCode = HttpStatusCode.BadRequest,
+							ReasonPhrase = "A user already exists with this user name"
+						});
+					}
+
+				}
+
+				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Active = model.Active, PhoneNumber = model.Phone };
 				var result = await UserManager.CreateAsync(user, "HrMaxx1234!");
 				if (result.Succeeded)
 				{
 					var role = string.Empty;
 					if (!model.SourceTypeId.HasValue)
 					{
-						role = RoleTypeEnum.Admin.GetDbName();
+						role = RoleTypeEnum.CorpStaff.GetDbName();
 					}
 					else
 					{
-						if (model.SourceTypeId.Value == EntityTypeEnum.Employee && model.EmployeeId.HasValue)
+						if (model.SourceTypeId.Value == EntityTypeEnum.Employee && model.Employee.HasValue)
 							role = RoleTypeEnum.Employee.GetDbName();
-						else if (model.SourceTypeId.Value == EntityTypeEnum.Company && model.CompanyId.HasValue)
+						else if (model.SourceTypeId.Value == EntityTypeEnum.Company && model.Company.HasValue)
 							role = RoleTypeEnum.Company.GetDbName();
 						else
 						{
@@ -207,7 +226,7 @@ namespace HrMaxxAPI.Controllers.User
 				}
 				else
 				{
-					
+
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.Conflict,
@@ -225,16 +244,16 @@ namespace HrMaxxAPI.Controllers.User
 					ReasonPhrase = "Failed to complete user creation"
 				});
 			}
-			
-			
+
+
 		}
 		private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
 		{
 			string code = GetCode(userID, true);//await UserManager.GenerateEmailConfirmationTokenAsync(userID));
-			
+
 			var callbackUrl = string.Format("{0}/{1}/{2}?userId={3}&code={4}", ConfigurationManager.AppSettings["WebURL"],
 				"Account", "ConfirmEmail", userID, HttpUtility.UrlEncode(code));
-			
+
 			await UserManager.SendEmailAsync(userID, subject,
 				 "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
@@ -260,7 +279,7 @@ namespace HrMaxxAPI.Controllers.User
 				Logger.Error("Error getting email token from Web", e);
 				return string.Empty;
 			}
-			
+
 		}
 	}
 }

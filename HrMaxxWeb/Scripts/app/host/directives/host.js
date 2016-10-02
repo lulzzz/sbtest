@@ -8,7 +8,8 @@ common.directive('host', ['zionAPI','localStorageService','version',
 			scope: {
 				host: "=data",
 				sourceTypeId: "=sourceTypeId",
-				sourceId: "=sourceId"
+				sourceId: "=sourceId",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host.html?v=' + version,
 

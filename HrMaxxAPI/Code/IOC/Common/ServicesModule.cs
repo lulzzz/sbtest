@@ -21,7 +21,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 			string webUrl = ConfigurationManager.AppSettings["WebURL"];
 			string tokenVersion = ConfigurationManager.AppSettings["TokenVersion"];
 			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
-			string _templatePath = HttpContext.Current.Server.MapPath("~/Templates/");
+			string _templatePath = HttpContext.Current==null? string.Empty : HttpContext.Current.Server.MapPath("~/Templates/");
 
 
 			builder.RegisterType<StagingDataService>()

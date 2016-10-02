@@ -73,13 +73,13 @@
 			<div class="tab-pane fade active in" id="info">
 				<div class="col-sm-12">
 					<form name="hostForm" data-parsley-validate="true">
-						<host data="selectedHost" sourcetypeid="sourceTypeId" />
+						<host data="selectedHost" sourcetypeid="sourceTypeId" main-data="mainData" />
 						
 					</form>
 				</div>
 			</div>
 			<div class="tab-pane fade in" id="user">
-				<user-list host-id="selectedHost.id" company-id="null" employee-id="null" heading="'Host Users'" show-reset-password="true" parent-type-id="sourceTypeId" main-data="data" />
+				<user-list host-id="selectedHost.id" company-id="null" employee-id="null" main-data="mainData" heading="'Host Users'" show-reset-password="true" parent-type-id="sourceTypeId" main-data="data" />
 			</div>
 			<div class="tab-pane fade in" id="news">
 				<news-list audience-type-id="3" audience-id="selectedHost.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data" />

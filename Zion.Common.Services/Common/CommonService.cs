@@ -221,7 +221,7 @@ namespace HrMaxx.Common.Services.Common
 			{
 				if (!string.IsNullOrWhiteSpace(role) &&
 				    ((RoleTypeEnum.Master == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role)) ||
-				     (RoleTypeEnum.Admin == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role))))
+				     (RoleTypeEnum.CorpStaff == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role))))
 					return _commonRepository.GetNewsListforUser(null, null);
 				
 				return _commonRepository.GetUserNewsfeed(host, company, userId);
