@@ -64,6 +64,9 @@
     <Compile Include="DataModel\AccountTemplate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\ApplicationConfiguration.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\BankAccount.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -233,6 +236,7 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>OnlinePayrollModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <Compile Include="ApplicationConfig.cs" />
     <None Include="DataModel\OnlinePayrollModel.edmx.diagram">
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
     </None>

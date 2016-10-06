@@ -13,11 +13,13 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository',
-				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
+				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository, hostRepository) {
 					var dataSvc = {
 						hostContact: null,
-						companyContact: null
+						companyContact: null,
+						hostHomePage: null,
+						config: null
 
 				}
 					$scope.company = $scope.invoice.company;
@@ -43,9 +45,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						return linesAmount;
 					}
 					$scope.getHostLogo = function() {
-						var h = $scope.host;
-						if (h.homePage && h.homePage.logo) {
-							var photo = h.homePage.logo;
+						if (dataSvc.hostHomePage && dataSvc.hostHomePage.logo) {
+							var photo = dataSvc.hostHomePage.logo;
 							return zionAPI.URL + 'DocumentById/' + photo.id + '/' + photo.documentExtension + '/' + photo.documentName;
 						} else {
 							return "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
@@ -127,9 +128,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 					$scope.isInvoiceInvalid = function() {
 						var invoice = $scope.invoice;
-						if (!invoice.dueDate)
-							return 'Please enter a valid Due Date';
-						else if (!invoice.invoiceNumber)
+						if (!invoice.invoiceNumber)
 							return 'Please enter a valid Invoice Number';
 						else if (!invoice.total || invoice.total<=0)
 							return 'The invoice total must be greated than 0';
@@ -160,10 +159,11 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							addAlert(validation, 'warning');
 							return false;
 						}
-						
+					
 						payrollRepository.savePayrollInvoice($scope.invoice).then(function(data) {
 							$timeout(function () {
 								$scope.invoice = data;
+								fixDates();
 								$scope.updateParent();
 								addAlert('successfully saved invoice', 'success');
 							});
@@ -207,7 +207,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							return 'danger';
 					}
 					var getHostContact = function() {
-						commonRepository.getRelatedEntities(EntityTypes.Host, EntityTypes.Contact, $scope.host.id).then(function (data) {
+						commonRepository.getRelatedEntities(EntityTypes.Host, EntityTypes.Contact, $scope.invoice.company.hostId).then(function (data) {
 							var primary = $filter('filter')(data, { isPrimary: true })[0];
 							if (primary)
 								dataSvc.hostContact = primary;
@@ -215,6 +215,11 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								dataSvc.hostContact = data[0];
 						}, function (error) {
 							
+						});
+						hostRepository.getHomePage($scope.invoice.company.hostId).then(function (data) {
+							dataSvc.hostHomePage = data;
+						}, function (error) {
+
 						});
 					}
 					var getCompanyContact = function () {
@@ -240,15 +245,25 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							return '';
 						}
 					}
+					var fixDates = function() {
+						$.each($scope.invoice.payments, function (index, p) {
+							p.paymentDate = moment(p.paymentDate).toDate();
+
+						});
+						$scope.invoice.invoiceDate = moment($scope.invoice.invoiceDate).toDate();
+					
+					}
 					var init = function () {
 						if ($scope.invoice) {
-							$.each($scope.invoice.payments, function (index, p) {
-								p.paymentDate = moment(p.paymentDate).toDate();
-							});
-							$scope.invoice.dueDate = moment($scope.invoice.dueDate).toDate();
-							$scope.invoice.expiryDate = moment($scope.invoice.expiryDate).toDate();
+							fixDates();
 							getHostContact();
 							getCompanyContact();
+							commonRepository.getConfigData().then(function (result) {
+								dataSvc.config = angular.copy(result);
+
+							}, function (error) {
+								
+							});
 						}
 						$scope.datasvc.isBodyOpen = false;
 						

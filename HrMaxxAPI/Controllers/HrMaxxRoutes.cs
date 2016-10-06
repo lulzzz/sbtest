@@ -37,5 +37,7 @@
 
 		public const string UserNewsfeed = "Common/UserNewsfeed";
 		public const string AccountsMetaData = "AccountsMetaData";
+		public const string Configs = "Configurations";
+		public const string ClearAll = "ClearAllNotifications";
 	}
 }

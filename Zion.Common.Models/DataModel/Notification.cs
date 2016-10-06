@@ -21,5 +21,6 @@ namespace HrMaxx.Common.Models.DataModel
         public string LoginId { get; set; }
         public Nullable<bool> IsRead { get; set; }
         public Nullable<System.DateTime> CreatedOn { get; set; }
+        public bool IsVisible { get; set; }
     }
 }

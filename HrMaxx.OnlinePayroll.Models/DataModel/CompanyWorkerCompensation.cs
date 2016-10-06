@@ -25,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int Code { get; set; }
         public string Description { get; set; }
         public decimal Rate { get; set; }
+        public Nullable<decimal> MinGrossWage { get; set; }
     
         public virtual Company Company { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

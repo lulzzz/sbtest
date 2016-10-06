@@ -43,6 +43,7 @@
     <Compile Include="Messages\Events\NotificationEvent.cs" />
     <Compile Include="Messages\Events\UserEventLogEntry.cs" />
     <Compile Include="Services\ICommonService.cs" />
+    <Compile Include="Services\IExcelService.cs" />
     <Compile Include="Services\IPDFService.cs" />
     <Compile Include="Services\IUserService.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />

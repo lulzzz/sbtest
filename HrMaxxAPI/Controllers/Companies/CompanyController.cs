@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http;
+using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.OnlinePayroll;
 
 namespace HrMaxxAPI.Controllers.Companies
@@ -14,11 +22,15 @@ namespace HrMaxxAPI.Controllers.Companies
   {
 	  private readonly IMetaDataService _metaDataService;
 		private readonly ICompanyService _companyService;
+		private readonly IExcelService _excelServce ;
+	  private readonly IFileRepository _fileRepository;
 
-	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService)
+	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, IFileRepository fileRepository)
 	  {
 			_metaDataService = metaDataService;
 		  _companyService = companyService;
+		  _excelServce = excelService;
+		  _fileRepository = fileRepository;
 	  }
 
 	  [HttpGet]
@@ -180,6 +192,107 @@ namespace HrMaxxAPI.Controllers.Companies
 		public void DeleteEmployeeDeduction(int deductionId)
 		{
 			MakeServiceCall(() => _companyService.DeleteEmployeeDeduction(deductionId), string.Format("deleting deduction id {0}", deductionId));
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.GetEmployeeImportTemplate)]
+		public HttpResponseMessage GetEmployeeImportTemplate(Guid companyId)
+		{
+			
+			var printed = MakeServiceCall(() => _excelServce.GetEmployeeImportTemplate(companyId), "get employee import template for " + companyId, true);
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(printed.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(printed.MimeType);
+
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = printed.Filename
+			};
+			return response;
+		}
+
+
+		/// <summary>
+		/// Upload Entity Document for a given entity
+		/// </summary>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.ImportEmployees)]
+		public async Task<HttpResponseMessage> ImportEmployees()
+		{
+			var filename = string.Empty;
+			try
+			{
+				var fileUploadObj = await ProcessMultipartContent();
+				filename = fileUploadObj.file.FullName;
+				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
+				var importedRows = _excelServce.ImportEmployees(fileUploadObj.file);
+				var employees = new List<EmployeeResource>();
+				var error = string.Empty;
+				importedRows.ForEach(er =>
+				{
+					try
+					{
+						var empresource = new EmployeeResource().FillFromImport(er, company);
+						empresource.UserName = CurrentUser.FullName;
+						employees.Add(empresource);
+					}
+					catch (Exception ex)
+					{
+						error += ex.Message + "<br>";
+					}
+				});
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error);
+
+				var employeeList = _companyService.GetEmployeeList(company.Id.Value);
+				if (employeeList.Any(e=>employees.Any(e1=>e1.SSN==e.SSN)))
+				{
+					var exists = employeeList.Where(e=>employees.Any(e1=>e1.SSN==e.SSN)).Aggregate(string.Empty, (current, emp) => current + (emp.SSN + ", "));
+					if(!string.IsNullOrWhiteSpace(exists))
+						throw new Exception("Employees already exist with these SSNs " + exists + "<br>");
+				}
+				
+				var mappedResource = Mapper.Map<List<EmployeeResource>, List<Employee>>(employees);
+				var savedEmployees = _companyService.SaveEmployees(mappedResource);
+				return this.Request.CreateResponse(HttpStatusCode.OK, Mapper.Map<List<Employee>, List<EmployeeResource>>(savedEmployees));
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error importing employees", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message
+				});
+			}
+			finally
+			{
+				if(!string.IsNullOrWhiteSpace(filename))
+					File.Delete(filename);
+			}
+		}
+
+		private async Task<EmployeeImportResource> ProcessMultipartContent()
+		{
+			if (!Request.Content.IsMimeMultipartContent())
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.UnsupportedMediaType
+				});
+			}
+
+			var provider = FileUploadHelpers.GetMultipartProvider();
+			var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+			var fileUploadObj = FileUploadHelpers.GetFormData<EmployeeImportResource>(result);
+
+			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
+			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);
+			fileUploadObj.FileName = originalFileName;
+			fileUploadObj.file = uploadedFileInfo;
+			return fileUploadObj;
 		}
   }
 }

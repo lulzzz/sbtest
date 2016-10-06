@@ -21,7 +21,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 								value: 'Percentage'
 							}, {
 								key: 2,
-								value: 'Fixed Rate'
+								value: 'Amount'
 							}
 						]
 					};

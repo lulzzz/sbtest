@@ -30,9 +30,68 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
+
+					$scope.onFileSelect = function ($files) {
+						$scope.files = [];
+						for (var i = 0; i < $files.length; i++) {
+							var $file = $files[i];
+
+							var fileReader = new FileReader();
+							fileReader.readAsDataURL($files[i]);
+							var loadFile = function (fileReader, index) {
+								fileReader.onload = function (e) {
+									$timeout(function () {
+										$scope.files.push({
+											doc: {
+												file: $files[index],
+												file_data: e.target.result,
+												uploaded: false
+											},
+											data: JSON.stringify({
+												companyId: $scope.mainData.selectedCompany.id
+											}),
+											currentProgress: 0,
+											completed: false
+										});
+										uploadDocument();
+									});
+								}
+							}(fileReader, i);
+						}
+						
+					};
+					var uploadDocument = function () {
+						companyRepository.importEmployees($scope.files[0]).then(function (employees) {
+							$.each(employees, function(ind, emp) {
+								$scope.list.push(emp);
+							});
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							$scope.selected = null;
+							addAlert('successfully imported ' + employees.length + 'employees', 'success');
+						}, function (error) {
+							addAlert('error in importing employees: ' + error, 'danger');
+
+							});
+
+						
+					}
 					
 					$scope.selected = null;
-
+					$scope.files = [];
+					$scope.getEmployeeImportTemplate = function() {
+						companyRepository.getEmployeeImportTemplate($scope.mainData.selectedCompany.id).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
+						}, function (error) {
+							addAlert('error getting employee import template', 'danger');
+						});
+					}
 
 					$scope.add = function () {
 						var selected = {
@@ -56,7 +115,9 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 								additionalAmount:0
 							},
 							workerCompensation: $scope.mainData.selectedCompany.workerCompensations.length===1? $scope.mainData.selectedCompany.workerCompensations[0] : null,
-							taxCategory: 1
+							taxCategory: 1,
+							payrollSchedule: $scope.mainData.selectedCompany.payrollSchedule,
+							paymentMethod: 1
 
 						};
 						
@@ -115,6 +176,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 								$scope.selected.hireDate = moment($scope.selected.hireDate).toDate();
 
 							$.each($scope.selected.payCodes, function (index, pc) {
+								if(pc.id>0)
 								$scope.selectedPayCodes.push({id:pc.id});
 							});
 							//$scope.selectedstate = $scope.selected.state.state;
@@ -228,7 +290,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.selected;
 						if (!c.payrollSchedule || !c.payType)
 							return false;
-						if ((c.payType === 1 && (c.payCodes.length === 0)) || (c.payType===2 && !c.rate))
+						if (c.payType!==3 && !c.rate)
 							return false;
 						if (c.paymentMethod === 2) {
 							var b = c.bankAccount;
@@ -292,6 +354,20 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.save = function () {
 						if (false === $('form[name="employee"]').parsley().validate())
 							return false;
+						if ($scope.selected.payType === 1) {
+							var baseRatePC = $filter('filter')($scope.selected.payCodes, { id: 0 })[0];
+							if (baseRatePC)
+								baseRatePC.hourlyRate = $scope.selected.rate;
+							else {
+								$scope.selected.payCodes.push({
+									id: 0,
+									companyId: $scope.selected.companyId,
+									code: 'Default',
+									description: 'Base Rate',
+									hourlyRate: $scope.selected.rate
+								});
+							}
+						}
 						companyRepository.saveEmployee($scope.selected).then(function (result) {
 
 							var exists = $filter('filter')($scope.list, { id: result.id });

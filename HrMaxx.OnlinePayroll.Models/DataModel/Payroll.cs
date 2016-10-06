@@ -33,6 +33,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int Status { get; set; }
         public Nullable<System.Guid> InvoiceId { get; set; }
         public bool PEOASOCoCheck { get; set; }
+        public string Notes { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }

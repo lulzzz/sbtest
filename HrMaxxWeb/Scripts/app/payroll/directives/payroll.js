@@ -10,7 +10,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=1.1.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
@@ -170,13 +170,16 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								},
 								companydeductions: function () {
 									return $scope.company.deductions;
+								},
+								companyRepository: function() {
+									return companyRepository;
 								}
 							}
 						});
 					}
 					var init = function () {
 						$scope.list = $scope.item.payChecks;
-						$scope.tableParams.reload();
+						//$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.datasvc.isBodyOpen = false;
 						$scope.minPayDate = moment();
@@ -268,7 +271,7 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 	_init();
 });
 
-common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions) {
+common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, companyRepository) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.dedList = angular.copy(paycheck.deductions);
@@ -286,7 +289,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 	$scope.permanentSave = function () {
 		$scope.original.deductions = [];
 		$.each($scope.dedList, function (index, dd) {
-			dd.updateEmployee = true;
+			companyRepository.saveEmployeeDeduction(dd);
 			$scope.original.deductions.push(dd);
 		});
 		$uibModalInstance.close($scope);

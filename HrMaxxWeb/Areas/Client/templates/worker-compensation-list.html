@@ -5,9 +5,10 @@
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-3">Code</td>
+				<td class="col-sm-2">Code</td>
 				<td class="col-sm-3">Description</td>
-				<td class="col-sm-3">Rate %</td>
+				<td class="col-sm-2">Rate %</td>
+				<td class="col-sm-2">Min Gross Wage</td>
 				<td class="col-sm-3"></td>
 			</tr>
 		</thead>
@@ -15,7 +16,7 @@
 			<tr ng-repeat="item in list track by $index">
 				<td>
 					<span e-ng-change="item.code = $data" editable-text="item.code" e-name="code" e-form="rowform" e-ng-pattern="/^\d{1,4}$/">
-						{{ item.code }}
+						{{ !item.code? '0000' : item.code }}
 					</span>
 				</td>
 				<td>
@@ -27,6 +28,12 @@
 					<!-- editable comment (text with validation) -->
 					<span editable-number="item.rate" e-name="rate" e-form="rowform" e-ng-change="item.rate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
 						{{ item.rate }} %
+					</span>
+				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<span editable-number="item.minGrossWage" e-name="mingrosswage" e-form="rowform" e-ng-change="item.minGrossWage = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						{{ item.minGrossWage }}
 					</span>
 				</td>
 				<td style="white-space: nowrap">

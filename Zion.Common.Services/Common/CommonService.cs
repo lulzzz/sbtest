@@ -14,6 +14,7 @@ using HrMaxx.Infrastructure.Attributes;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.OnlinePayroll.Models;
 using Magnum;
 
 namespace HrMaxx.Common.Services.Common
@@ -26,8 +27,9 @@ namespace HrMaxx.Common.Services.Common
 		public CommonService(ICommonRepository commonRepository)
 		{
 			_commonRepository = commonRepository;
+			
 		}
-
+		
 		public IList<T> GetRelatedEntities<T>(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId)
 		{
 			try

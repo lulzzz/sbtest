@@ -138,6 +138,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 
 		public CompanyDeduction SaveDeduction(CompanyDeduction deduction)
 		{
+			
 			var mappeddeduction = _mapper.Map<CompanyDeduction, Models.DataModel.CompanyDeduction>(deduction);
 			if (mappeddeduction.Id == 0)
 			{
@@ -155,7 +156,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				}
 			}
 			_dbContext.SaveChanges();
-			return _mapper.Map<Models.DataModel.CompanyDeduction, CompanyDeduction>(mappeddeduction);
+			
+			var ret = _mapper.Map<Models.DataModel.CompanyDeduction, CompanyDeduction>(mappeddeduction);
+			ret.Type = deduction.Type;
+			return ret;
 		}
 
 		public CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation)
@@ -179,6 +183,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.Code = mappedwc.Code;
 					wc.Description = mappedwc.Description;
 					wc.Rate = mappedwc.Rate;
+					wc.MinGrossWage = mappedwc.MinGrossWage;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -202,7 +207,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				}
 			}
 			_dbContext.SaveChanges();
-			return _mapper.Map<Models.DataModel.CompanyAccumlatedPayType, AccumulatedPayType>(mappedwc);
+			var ret = _mapper.Map<Models.DataModel.CompanyAccumlatedPayType, AccumulatedPayType>(mappedwc);
+			ret.PayType = mappedAccPayType.PayType;
+			return ret;
 		}
 
 		public CompanyPayCode SavePayCode(CompanyPayCode mappedResource)
@@ -326,7 +333,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				employee.BankAccount = _utilRepository.SaveBankAccount(employee.BankAccount);
 			}
 			var me = _mapper.Map<Employee, Models.DataModel.Employee>(employee);
-			var dbEmployee = _dbContext.Employees.FirstOrDefault(e => e.Id == me.Id);
+			var dbEmployee = _dbContext.Employees.FirstOrDefault(e => e.Id == me.Id || e.SSN.Equals(me.SSN));
 			if (dbEmployee == null)
 			{
 				_dbContext.Employees.Add(me);
@@ -456,5 +463,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var db = _dbContext.VendorCustomers.First(vc => vc.Id == vcId);
 			return _mapper.Map<Models.DataModel.VendorCustomer, VendorCustomer>(db);
 		}
+
 	}
 }

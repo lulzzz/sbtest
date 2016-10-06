@@ -39,9 +39,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum PayrollSchedule
 	{
+		[HrMaxxSecurity(DbId = 1, HrMaxxName = "Weekly")]
 		Weekly=1,
+		[HrMaxxSecurity(DbId = 2,HrMaxxName = "Bi-Weekly")]
 		BiWeekly=2,
+		[HrMaxxSecurity(DbId = 3,HrMaxxName = "Semi-Monthly")]
 		SemiMonthly=3,
+		[HrMaxxSecurity(DbId = 4,HrMaxxName = "Monthly")]
 		Monthly=4
 	}
 
@@ -249,7 +253,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	public enum DeductionMethod
 	{
 		Percentage=1,
-		FixedRate=2
+		Amount=2
 	}
 
 	public enum PaycheckStatus
@@ -321,7 +325,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Submitted=2,
 		[HrMaxxSecurity(DbName = "Delivered")]
 		Delivered = 3,
-		[HrMaxxSecurity(DbName = "Paid")]
+		[HrMaxxSecurity(DbName = "Closed")]
 		Paid=4,
 		[HrMaxxSecurity(DbName = "On Hold")]
 		OnHold=5,

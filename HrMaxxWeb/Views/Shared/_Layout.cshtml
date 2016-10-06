@@ -44,8 +44,8 @@
 			<script type="text/ng-template" id="popover/printerfriendly.html">
 
 				<div class="modal-body col-sm-12 table-responsive" ng-bind-html="content">
-					
-				</div>				
+
+				</div>
 			</script>
 			<div class="panel panel-inverse  hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
 				<div class="panel-body">
@@ -63,7 +63,7 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="row  hidden-print">
 				<div ng-repeat="alert in alerts" class="alert" ng-class="{'alert-success':alert.type==='success', 'alert-danger':alert.type==='danger'}">
 					{{alert.msg}}

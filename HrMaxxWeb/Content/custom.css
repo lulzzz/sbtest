@@ -208,7 +208,6 @@ label {
     background: #49b6d6;
     border-color: #49b6d6;
 }
-
-@media print {
-	.hidden-print { display: none !important;height: 0 !important;visibility: hidden !important; }
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+    border: none;
 }

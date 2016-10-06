@@ -12,10 +12,10 @@
 				<thead>
 					<tr>
 						<th class="col-sm-2">Date</th>
-						<th class="col-sm-2">Type</th>
-						<th class="col-sm-1">Check Number</th>
-						<th class="col-sm-1">Amount</th>
-						<th class="col-sm-3">Notes</th>
+						<th class="col-sm-1">Type</th>
+						<th class="col-sm-2">Check Number</th>
+						<th class="col-sm-2">Amount</th>
+						<th class="col-sm-2">Notes</th>
 						<th class="col-sm-3">
 							<i class="fa fa-lg fa-plus-circle" ng-click="addPayment()" ng-show="paymentRemaining()"></i>
 						</th>
@@ -59,71 +59,64 @@
 		</div>
 	</div>
 	<div class="col-sm-12">
-		<div class="col-sm-8" id="print">
+		<div class="col-sm-8 invoice" id="print">
 			<div class="col-sm-12 hidden-print">
-				<button class="btn btn-sm btn-info pull-right" ng-click="print()" ng-show="invoice.status===2"><i class="fa fa-print m-r-5"></i> print</button>
-				<button class="btn btn-sm btn-danger pull-right" ng-click="delete()" ng-show="!mainData.userCompany && invoice.status===1"><i class="fa fa-recycle m-r-5"></i> Delete</button>
-				<button class="btn btn-sm btn-default pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<div class="col-sm-2 form-group">
+					<select name="courier" ng-model="invoice.courier" class="form-control pull-right" ng-show="!mainData.userCompany && invoice.status===2" ng-options="ctx for ctx in data.config.couriers">
+						<option value="">Select Courier</option>
+					</select>
+				</div>
+				<div class="col-sm-10">
+					<button class="btn btn-sm btn-success pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2"><i class="fa fa-truck m-r-5"></i> Delivered</button>
 
-				<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
-				<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(3)" ng-show="!mainData.userCompany && invoice.status===2"><i class="fa fa-truck m-r-5"></i> Delivered</button>
-				<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && invoice.status!==4" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
+					<button class="btn btn-sm btn-info pull-right" ng-click="print()" ng-show="invoice.status===2"><i class="fa fa-print m-r-5"></i> print</button>
+					<button class="btn btn-sm btn-danger pull-right" ng-click="delete()" ng-show="!mainData.userCompany && invoice.status===1"><i class="fa fa-recycle m-r-5"></i> Delete</button>
+					<button class="btn btn-sm btn-default pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+
+					<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
+
+					<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && invoice.status!==4" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
 
 
+				</div>
 			</div>
-			<div class="col-sm-12 m-t-5">
-				<table class="table " style="border-top:0">
-					<tbody>
-						<tr>
-							<td>
-								<img ng-src="{{getHostLogo()}}" style="width:200px;height:40px" /><br />
-								<strong>{{company.name}}</strong><br />
-								{{company.companyAddress.addressLine1}}<br />
-								{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}<br />
-								{{ getContactPhone(data.companyContact) }}<br />
-								{{ data.companyContact.firstName + ' ' + data.companyContact.lastName}}
-							</td>
-							<td class="text-right" ng-class="{'visible-print': invoice.status===1}">
-								<small>Invoice {{invoice.invoiceNumber}}</small>
-								<div class="date m-t-5 text-bold">{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</div>
-								<div class="invoice-detail">
-									Due Date: {{invoice.dueDate | date:'MM/dd/yyyy'}}<br />
-									Expiry Date: {{invoice.expiryDate | date:'MM/dd/yyyy'}}<br />
-									No. of Checks: {{invoice.noOfChecks}}
-								</div>
-							</td>
-							<td class="text-right hidden-print" ng-if="invoice.status===1">
-								<div class="col-sm-12 form-group">
-									<div class="col-sm-6 "><label class="control-label pull-right">Due Date <span class="text-danger">*</span></label></div>
-									<div class="col-sm-6">
+			<div class="col-sm-12 table-responsive">
+				<table class="table table-borderless" >
+					<tr>
+						<td>
+							<img ng-src="{{getHostLogo()}}" style="width:200px;height:40px" /><br />
+							<h4>{{company.name}}</h4><br />
+							{{company.companyAddress.addressLine1}}<br />
+							{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}<br />
+							{{ getContactPhone(data.companyContact) }}<br />
+							{{ data.companyContact.firstName + ' ' + data.companyContact.lastName}}
+						</td>
+						<td class="text-right" ng-class="{'visible-print': invoice.status===1}">
+							<div class="invoice-detail">Invoice# {{invoice.invoiceNumber}}</div>
+							<div class="date m-t-5 text-bold"><h5>{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</h5></div>
+							<div class="invoice-detail">
+								No. of Checks: {{invoice.noOfChecks}}
+							</div>
+						</td>
+						<td class="text-right hidden-print" ng-if="invoice.status===1">
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label text-right">Invoice Date <span class="text-danger">*</span></label></div>
+								<div class="col-sm-6"><date-ctrl name="invoicedate" required="true" model="invoice.invoiceDate" /></div>
+							</div>
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label text-right">Invoice Number <span class="text-danger">*</span></label></div>
+								<div class="col-sm-6"><input type="text" ng-model="invoice.invoiceNumber" class="form-control" required /></div>
+							</div>
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label text-right">Number of Checks</label></div>
+								<div class="col-sm-6 text-left">{{invoice.noOfChecks}}</div>
+							</div>
+						</td>
+					</tr>
 
-										<date-ctrl name="duedate" required="true" model="invoice.dueDate" disabled="false" />
-
-									</div>
-								</div>
-
-								<div class="col-sm-12 form-group">
-									<div class="col-sm-6 "><label class="control-label pull-right">Invoice Date <span class="text-danger">*</span></label></div>
-									<div class="col-sm-6">{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</div>
-								</div>
-								<div class="col-sm-12 form-group">
-									<div class="col-sm-6 "><label class="control-label pull-right">Expiry Date <span class="text-danger">*</span></label></div>
-									<div class="col-sm-6">{{invoice.expiryDate | date:'MM/dd/yyyy'}}</div>
-								</div>
-								<div class="col-sm-12 form-group">
-									<div class="col-sm-6 "><label class="control-label pull-right">Invoice Number <span class="text-danger">*</span></label></div>
-									<div class="col-sm-6"><input type="text" ng-model="invoice.invoiceNumber" class="form-control" required /></div>
-								</div>
-								<div class="col-sm-12 form-group">
-									<div class="col-sm-6 "><label class="control-label pull-right">Number of Checks</label></div>
-									<div class="col-sm-6">{{invoice.noOfChecks}}</div>
-								</div>
-							</td>
-						</tr>
-					</tbody>
 				</table>
 			</div>
-
+			
 			<div class="col-sm-12">
 				<div class="table-responsive">
 					<table class="table table-invoice">
@@ -178,11 +171,11 @@
 							<tr ng-repeat="wc in invoice.workerCompensations | orderBy:'tax.id'" ng-if="invoice.workerCompensations.length>0">
 								<td>{{wc.workerCompensation.code + ': ' + wc.workerCompensation.description}}</td>
 								<td>{{wc.wage | currency:'$'}}</td>
-								<td>{{wc.workerCompensation.rate | currency:''}}</td>
+								<td>{{wc.workerCompensation.rate | currency:''}}%</td>
 								<td class="text-left">{{wc.amount | currency:'$'}}</td>
 							</tr>
 							<tr class="info">
-								<td colspan="3"><strong>Fee(s) & Charge(s) <i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ng-show="invoice.status===1"></i></strong></td>
+								<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ng-show="invoice.status===1"></i></strong></td>
 								<td class="text-right"><em><u>{{getLineItemTotal() | currency:'$'}}</u></em></td>
 							</tr>
 
@@ -200,41 +193,43 @@
 								<td>{{invoice.environmentalFee | currency:'$'}}</td>
 
 							</tr>
-							<tr ng-repeat="lineitem in invoice.miscCharges track by $index">
+							<tr ng-repeat="lineitem in invoice.miscCharges track by $index" ng-class="{'danger': lineitem.amount<0}">
 								<td>
-									<i class="fa fa-remove fa-lg" ng-click="deletelineitem($index)" ng-show="invoice.status===1"></i>
-									<input class="form-control" type="text" ng-model="lineitem.description" required ng-disabled="invoice.status!==1" />
+									<div class="input-group">
+										<i class="fa fa-remove fa-lg input-group-addon" ng-click="deletelineitem($index)" ng-show="invoice.status===1"></i>
+										<input class="form-control" type="text" ng-model="lineitem.description" required ng-show="invoice.status===1" />
+										<span class="input-group-addon" ng-show="invoice.status>1">{{lineitem.description}}</span>
+									</div>
 								</td>
 								<td></td>
 								<td></td>
-								<td>
-									<input name="lineamount{{$index}}" class="form-control" ng-model="lineitem.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" ng-disabled="invoice.status!==1" data-parsley-type="number" />
+								<td class="text-left">
+									<input name="lineamount{{$index}}" class="form-control" ng-show="invoice.status===1" style="width:7em;" ng-model="lineitem.amount" required data-parsley-pattern="/^-?[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" ng-disabled="invoice.status!==1" data-parsley-type="number" />
+									<span ng-show="invoice.status>1">{{lineitem.amount | currency:'$'}}</span>
 								</td>
 
 							</tr>
-							<tr class="info">
-								<td colspan="3" class="text-left"><strong><em><u>Credits</u></em></strong></td>
-								<td class="text-right "><em><u>{{invoice.deductionsCredit*-1 | currency:'$'}}</u></em></td>
-							</tr>
-							<tr ng-repeat="ded in invoice.deductions track by $index">
-								<td>
-									{{ded.description}}
-								</td>
-								<td>{{ded.method}}</td>
-								<td>
-									{{ded.rate | currency:''}}
-								</td>
-								<td>
-									{{ded.amount*-1 | currency:'$'}}
-								</td>
-							</tr>
-
+						
 							<tr class="success">
 
 								<td colspan="3" class="text-left"><em><u>Grand Total</u></em></td>
 
 								<td class="text-right"><em><u>{{invoice.status===1? getTotal() : invoice.total | currency:'$'}}</u></em></td>
 
+							</tr>
+							<tr>
+								<td colspan="4" ng-if="invoice.status<2">
+									<div class="form-group">
+										<label>Notes</label>
+										<textarea class="form-control" ng-model="invoice.notes" rows="4"></textarea>
+									</div>
+								</td>
+								<td ng-if="invoice.status>1">
+									<em><u>Notes: </u></em>
+								</td>
+								<td class="visible-print" ng-if="invoice.status>1">
+									{{invoice.notes}}
+								</td>
 							</tr>
 
 						</tbody>

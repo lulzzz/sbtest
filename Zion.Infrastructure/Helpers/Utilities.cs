@@ -57,5 +57,17 @@ namespace HrMaxx.Infrastructure.Helpers
 			return words;
 		}
 
+		public static bool IsValidEmail(string email)
+		{
+			try
+			{
+				var mail = new System.Net.Mail.MailAddress(email);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 	}
 }

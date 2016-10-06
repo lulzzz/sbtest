@@ -9,7 +9,7 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 				companyId: "=companyId",
 				list: "=list"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html?v=1.0.' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {
@@ -49,15 +49,17 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 				$scope.cancel = function (index) {
 					if ($scope.selected.id === 0) {
 						$scope.list.splice(index, 1);
-					}
+					} 
 					$scope.selected = null;
 				}
 				$scope.setSelected = function(index) {
 					$scope.selected = $scope.list[index];
+					if (!$scope.selected.code)
+						$scope.selected.code = '0000';
 				}
 
 				$scope.isItemValid = function(item) {
-					if (!item.code || !item.description || !item.rate)
+					if (!item.code || !item.description || item.rate<0)
 						return false;
 					else
 						return true;

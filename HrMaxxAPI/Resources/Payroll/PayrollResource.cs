@@ -24,7 +24,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		[Required]
 		public List<PayCheckResource> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
-		public List<CommentResource> Notes { get; set; }
+		public string Notes { get; set; }
 		public PayrollInvoiceResource Invoice { get; set; }
 		public PayrollStatus Status { get; set; }
 
@@ -106,6 +106,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	{
 		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
 		public decimal Amount { get; set; }
+		public decimal Wage { get; set; }
 		public decimal YTD { get; set; }
 	}
 

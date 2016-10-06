@@ -226,11 +226,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.DeliveredBy = mapped.DeliveredBy;
 				dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
 				dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
-				dbPayrollInvoice.DueDate = mapped.DueDate;
-				dbPayrollInvoice.ExpiryDate = mapped.ExpiryDate;
 				dbPayrollInvoice.Deductions = mapped.Deductions;
 				dbPayrollInvoice.Payrments = mapped.Payrments;
 				dbPayrollInvoice.InvoiceNumber = mapped.InvoiceNumber;
+				dbPayrollInvoice.Courier = mapped.Courier;
 			}
 			_dbContext.SaveChanges();
 			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
@@ -239,7 +238,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		public List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId)
 		{
-			var invoices = _dbContext.PayrollInvoices.Where(pi => pi.Company.HostId == hostId).AsQueryable();
+			var invoices = _dbContext.PayrollInvoices.Where(pi => (hostId!=Guid.Empty && pi.Company.HostId == hostId) || hostId==Guid.Empty).AsQueryable();
 			if (companyId.HasValue)
 				invoices = invoices.Where(pi => pi.CompanyId == companyId);
 			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
@@ -258,6 +257,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			{
 				db.Payroll.InvoiceId = null;
 				_dbContext.PayrollInvoices.Remove(db);
+				_dbContext.SaveChanges();
+			}
+		}
+
+		public void SavePayCheck(PayCheck pc)
+		{
+			var mapped = _mapper.Map<Models.PayCheck, Models.DataModel.PayrollPayCheck>(pc);
+			var dbPaycheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == mapped.Id);
+			if (dbPaycheck != null)
+			{
+				dbPaycheck.WorkerCompensation = mapped.WorkerCompensation;
 				_dbContext.SaveChanges();
 			}
 		}

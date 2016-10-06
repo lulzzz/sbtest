@@ -37,6 +37,10 @@
 						<span>Administration</span>
 					</a>
 					<ul class="sub-menu">
+						@if (CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
+						{
+							<li><a href="#!/Admin/Config">Configuration</a></li>
+						}
 						<li><a href="#!/Admin/HostList">Manage Host</a></li>
 						<li><a href="#!/Admin/NewsList">News & Announcements</a></li>
 						<li><a href="#!/Admin/UserList">Users</a></li>

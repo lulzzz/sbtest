@@ -1,6 +1,6 @@
 ﻿<div class="row">
 	<!-- begin panel -->
-	<div class="panel panel-inverse  hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedHost">
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Invoice List<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
@@ -11,18 +11,18 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selectedInvoice.id===item.id}">
-						<td data-title=" 'Company' " sortable=" 'company.name' " class="col-sm-1 text-center">
-							{{item.company.name}}
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selectedInvoice.id===item.id, 'danger':selectedIvoice.daysOverdue>15, 'warning': selectedInvocie.daysOverdue>5 && selectedInvocie.daysOverdue<16}">
+						<td data-title=" 'Company' " filter="{ 'companyName': 'text' }" sortable=" 'companyName' " class="col-sm-1 text-center">
+							{{item.companyName}}
 						</td>
 						<td data-title=" 'Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
 							{{item.invoiceDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" 'Due Date' " sortable=" 'dueDate' " class="col-sm-1 text-center">
-							{{item.dueDate | date:'MM/dd/yyyy'}}
+						<td data-title=" 'Days Overdue' " sortable=" 'daysOverdue' " class="col-sm-1 text-center">
+							{{item.daysOverdue}}
 						</td>
-						<td data-title=" 'Expires on' " sortable=" 'expiryDate' " class="col-sm-1 text-center">
-							{{item.expiryDate | date:'MM/dd/yyyy'}}
+						<td data-title=" 'Late Tax Penalty (Appx)' " sortable=" 'lateTaxPenalty' " class="col-sm-1 text-center show-red">
+							{{item.lateTaxPenalty | currency : '$'}}
 						</td>
 
 						<td data-title=" 'Total' " sortable=" 'total' " class="col-sm-1 text-center show-red">
@@ -31,9 +31,25 @@
 						<td data-title=" 'Balance' " sortable=" 'balance' " class="col-sm-1 text-center show-red">
 							{{item.balance | currency:'$'}}
 						</td>
-						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+						<td data-title=" 'Status' " filter="{'status1':'status'}" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
+						<td data-title=" 'Submitted By' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
+							{{item.submittedBy}}
+						</td>
+						<td data-title=" 'Submitted' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
+							{{item.submittedOn | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Delivered By' " sortable=" 'deliveredBy' " class="col-sm-1 text-center">
+							{{item.deliveredBy}}
+						</td>
+						<td data-title=" 'Delivered On' " sortable=" 'deliveredOn' " class="col-sm-1 text-center">
+							{{item.deliveredOn | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Courier' " sortable=" 'courier' " class="col-sm-1 text-center">
+							{{item.courier}}
+						</td>
+						
 
 					</tr>
 
@@ -56,13 +72,25 @@
 						</li>
 					</ul>
 				</script>
+				<script type="text/ng-template" id="ng-table/filters/status.html">
+					<select id="statuslist" class="form-control" ng-model="params.filter()[name]" name="filter-status1" convert-to-number>
+						<option value="0">All</option>
+						<option value="1">Draft</option>
+						<option value="2">Approved</option>
+						<option value="3">Delivered</option>
+						<option value="3">Delivered</option>
+						<option value="4">Closed</option>
+						<option value="6">Payment Bounced</option>
+						<option value="7">Partial Payment</option>
+					</select>
+				</script>
 			</div>
 
 			<!-- end panel -->
 		</div>
 	</div>
 	<div class="panel panel-info" ng-if="selectedInvoice">
-		<div class="panel-heading  hidden-print">
+		<div class="panel-heading hidden-print">
 			<h4 class="panel-title">Invoice Details</h4>
 		</div>
 		<div class="panel-body tab-content">

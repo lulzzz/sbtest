@@ -79,6 +79,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int Code { get; set; }
 		public decimal Rate { get; set; }
 		public string Description { get; set; }
+		public decimal? MinGrossWage { get; set; }
 	}
 
 	public class CompanyDeduction

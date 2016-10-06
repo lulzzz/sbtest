@@ -20,8 +20,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string InvoiceSetup { get; set; }
         public string EmployerTaxes { get; set; }
         public System.DateTime InvoiceDate { get; set; }
-        public System.DateTime DueDate { get; set; }
-        public System.DateTime ExpiryDate { get; set; }
         public int NoOfChecks { get; set; }
         public string WorkerCompensations { get; set; }
         public decimal EmployeeContribution { get; set; }
@@ -43,6 +41,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.DateTime PeriodEnd { get; set; }
         public string Payrments { get; set; }
         public string Deductions { get; set; }
+        public string Courier { get; set; }
+        public string EmployeeTaxes { get; set; }
+        public string Notes { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual Payroll Payroll { get; set; }

@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		private readonly ITaxationRepository _taxationRepository;
 		private readonly IMetaDataRepository _metaDataRepository;
 		private USTaxTables TaxTables;
+		public ApplicationConfig Configurations { get; set; }
 		public USTaxationService(ITaxationRepository taxationRepository, IMetaDataRepository metaDataRepository)
 		{
 			_taxationRepository = taxationRepository;
@@ -32,7 +33,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			{
 				TaxTables = _taxationRepository.FillTaxTables();
 				TaxTables.Taxes = _metaDataRepository.GetAllTaxes().ToList();
-				
+				Configurations = _metaDataRepository.GetConfigurations();
 			}
 			catch (Exception e)
 			{
@@ -43,6 +44,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
+		
 		public List<PayrollTax> ProcessTaxes(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks)
 		{
 			try
@@ -66,6 +68,36 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				throw new HrMaxxApplicationException(message, e);
 
 			}
+		}
+
+		public ApplicationConfig GetApplicationConfig()
+		{
+			if (Configurations != null)
+			{
+				return Configurations;
+			}
+			Configurations = _metaDataRepository.GetConfigurations();
+			return Configurations;
+		}
+
+		public ApplicationConfig SaveApplicationConfiguration(ApplicationConfig configs)
+		{
+			try
+			{
+				if (configs != null)
+				{
+					_metaDataRepository.SaveApplicationConfig(configs);
+					Configurations = configs;
+				}
+				return Configurations;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save application configs");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
 		}
 
 		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, TaxByYear tax)
@@ -302,7 +334,17 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		private decimal GetTaxExemptedDeductionAmount(Company company, PayCheck payCheck, decimal grossWage,
 			List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
 		{
-			return Math.Round(payCheck.Deductions.Where(d => TaxTables.TaxDeductionPrecendences.Any(tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(tax.Tax.Code))).Sum(ded => ded.Amount), 2, MidpointRounding.AwayFromZero);
+			var exempt =
+				payCheck.Deductions.Where(
+					d =>
+						TaxTables.TaxDeductionPrecendences.Any(
+							tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(tax.Tax.Code))).ToList();
+			if(exempt.Any())
+				return Math.Round(exempt.Sum(ded => ded.Amount), 2, MidpointRounding.AwayFromZero);
+			else
+			{
+				return 0;
+			}
 		}
 	}
 }

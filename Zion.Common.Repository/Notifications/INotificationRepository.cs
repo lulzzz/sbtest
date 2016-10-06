@@ -9,6 +9,7 @@ namespace HrMaxx.Common.Repository.Notifications
 		List<NotificationDto> GetNotifications(string LoginId);
 		void CreateNotifications(List<NotificationDto> notificationList);
 
-		void NotificationRead(Guid NotificationId);
+		void NotificationRead(Guid notificationId);
+		void ClearAllNotiifications(string userId);
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.OnlinePayroll.Models;
 
 namespace HrMaxx.Common.Repository.Common
 {
@@ -19,5 +20,7 @@ namespace HrMaxx.Common.Repository.Common
 		List<News> GetNewsListforUser(int? audienceScope, Guid? audienceId);
 		void SaveNewsfeedItem(News news);
 		List<News> GetUserNewsfeed(Guid host, Guid company, string userId);
+		
+		
 	}
 }

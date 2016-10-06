@@ -17,7 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime PayDay { get; set; }
 		public List<PayCheck> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
-		public List<Comment> Notes { get; set; }
+		public string Notes { get; set; }
 		public PayrollStatus Status { get; set; }
 		public PayrollInvoice Invoice { get; set; }
 		public bool PEOASOCoCheck { get; set; }

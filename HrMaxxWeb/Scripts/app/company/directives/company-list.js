@@ -137,6 +137,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selectedCompany.sourceTypeId = dataSvc.sourceTypeId;
 							$scope.data.isBodyOpen = false;
 							$scope.mainData.selectedCompany = item;
+							$scope.mainData.selectedCompany1 = item;
 							$timeout(function () {
 								$("#wizard").bwizard({
 									validating: function (e, ui) {
@@ -479,6 +480,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						}, function (error) {
 							addAlert('error getting company meta data', 'danger');
 						});
+						
 						$scope.list = $scope.mainData.companies;
 						var querystring = $location.search();
 						if ($scope.mainData.userCompany !== '00000000-0000-0000-0000-000000000000') {

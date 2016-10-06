@@ -29,6 +29,14 @@
 			$scope.myNotifications = [];
 			$scope.getMyNotifications();
 		};
+		$scope.clear = function() {
+			notificationRepository.clearAllNotifications().then(function (data) {
+				$scope.myNotifications = [];
+				$scope.unreadNotificationsCount = 0;
+			}, function (error) {
+				//$scope.addAlert('Unable to read the notification.', 'danger');
+			});
+		}
 		$scope.NotificationRead = function(notification) {
 			notificationRepository.notificationRead(notification.notificationID).then(function (data) {
 				if (notification.metadata) {

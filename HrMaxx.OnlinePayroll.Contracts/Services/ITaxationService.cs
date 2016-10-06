@@ -12,5 +12,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface ITaxationService
 	{
 		List<PayrollTax> ProcessTaxes(Company company, PayCheck employee, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks);
+		ApplicationConfig GetApplicationConfig();
+		ApplicationConfig SaveApplicationConfiguration(ApplicationConfig configs);
 	}
 }

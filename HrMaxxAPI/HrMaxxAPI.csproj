@@ -286,6 +286,7 @@
     <Compile Include="Resources\OnlinePayroll\AccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\BankAccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\CompanyResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\EmployeeImportResource.cs" />
     <Compile Include="Resources\OnlinePayroll\EmployeeResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HostHomePageDocumentResource.cs" />
     <Compile Include="Resources\OnlinePayroll\HomePageResource.cs" />
@@ -370,7 +371,7 @@
     <None Include="Project_Readme.html" />
     <None Include="Properties\PublishProfiles\hrmaxxapi.pubxml" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
-    <Content Include="templates\MICRPayChecl.pdf" />
+    <Content Include="templates\MICRPayCheck.pdf" />
     <Content Include="templates\LaserTopPayCheck.pdf" />
     <Content Include="templates\LaserMiddlePayCheck.pdf" />
     <Content Include="templates\MICRQBPayCheck.pdf" />

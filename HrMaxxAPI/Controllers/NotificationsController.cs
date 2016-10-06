@@ -35,5 +35,11 @@ namespace HrMaxxAPI.Controllers
 		{
 			MakeServiceCall(() => _notificationService.NotificationRead(NotificationID), "Mark Notification as Read");
 		}
+		[HttpGet]
+		[Route(HrMaxxRoutes.ClearAll)]
+		public void ClearAll()
+		{
+			MakeServiceCall(() => _notificationService.ClearAllUserNotifications(CurrentUser.UserId), "Clear all user notificaitons for " + CurrentUser.UserId);
+		}
 	}
 }

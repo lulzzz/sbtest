@@ -5,6 +5,7 @@ using System.Web;
 using Autofac;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Repository.Common;
+using HrMaxx.Common.Repository.Excel;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Repository.Notifications;
@@ -93,6 +94,12 @@ namespace HrMaxxAPI.Code.IOC.Common
 			.As<ICommonRepository>()
 			.InstancePerLifetimeScope()
 			.PropertiesAutowired();
+			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
+			builder.RegisterType<ExcelRepository>()
+				.WithParameter(new NamedParameter("filePath", _pdfPath))
+				.As<IExcelRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
 		}
 	}
 }

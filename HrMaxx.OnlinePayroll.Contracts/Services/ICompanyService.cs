@@ -23,12 +23,13 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Account> GetComanyAccounts(Guid companyId);
 		Account SaveCompanyAccount(Account mappedResource);
 		List<Employee> GetEmployeeList(Guid companyId);
-		Employee SaveEmployee(Employee mappedResource);
+		Employee SaveEmployee(Employee mappedResource, bool sendNotification = true);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction mappedResource);
 		void DeleteEmployeeDeduction(int deductionId);
 		List<Account> GetCompanyPayrollAccounts(Guid id);
 		CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource);
 		Company GetCompanyById(Guid companyId);
 		VendorCustomer GetVendorCustomersById(Guid vcId);
+		List<Employee> SaveEmployees(List<Employee> employees);
 	}
 }

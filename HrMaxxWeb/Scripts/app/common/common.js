@@ -1,11 +1,11 @@
-var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable', 'ngTable', 'angularFileUpload', 'restangular', 'ui.mask', 'ngSanitize', 'angularjs-dropdown-multiselect', 'ngRoute']);
+var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable', 'ngTable', 'angularFileUpload', 'restangular', 'ui.mask', 'ngSanitize', 'angularjs-dropdown-multiselect', 'ngRoute', 'ngTagsInput']);
 
 common.constant('zionPaths', {
 	Login: 'Account/Login',
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.0.7');
+common.constant('version', '1.0.0.8');
 common.constant('EntityTypes', {
 	Host:1,
 	Company:2,

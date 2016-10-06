@@ -19,12 +19,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		private readonly IPayrollService _payrollService;
 		private readonly IDocumentService _documentService;
 		private readonly IDashboardService _dashboardService;
+		private readonly ITaxationService _taxationService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService, ITaxationService taxationService)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
 			_dashboardService = dashboardService;
+			_taxationService = taxationService;
 		}
 
 		[HttpGet]
@@ -35,6 +37,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				new DateTime(year, 12, 31));
 			var done = MakeServiceCall(() => _dashboardService.FixCompanyCubes(payrolls, companyId, year), "Fix cubes for company", true);
 			if (done!=null)
+				return HttpStatusCode.OK;
+			return HttpStatusCode.ExpectationFailed;
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.FixPayrollData)]
+		public HttpStatusCode FixPayrollData(Guid payrollId)
+		{
+			var done = MakeServiceCall(() => _payrollService.FixPayrollData(payrollId), "Fix payroll data", true);
+			if (done != null)
 				return HttpStatusCode.OK;
 			return HttpStatusCode.ExpectationFailed;
 		}
@@ -201,9 +213,10 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public PayrollInvoiceResource CreatePayrollInvoice(PayrollResource payroll)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(payroll);
-			
 			var processed = MakeServiceCall(() => _payrollService.CreatePayrollInvoice(mappedResource, CurrentUser.FullName, true), string.Format("create payroll invoice for payroll={0}", payroll.Id));
-			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
+			var returnInvocie = Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
+			returnInvocie.TaxPaneltyConfig = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
+			return returnInvocie;
 		}
 
 		[HttpPost]
@@ -215,15 +228,20 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			mappedResource.UserName = CurrentUser.FullName;
 
 			var processed = MakeServiceCall(() => _payrollService.SavePayrollInvoice(mappedResource), string.Format("save payroll invoice for invoice={0}", invoice.Id));
-			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
+			var returnInvocie = Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
+			returnInvocie.TaxPaneltyConfig = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
+			return returnInvocie;
 		}
 
 		[HttpGet]
 		[Route(PayrollRoutes.HostInvoices)]
-		public List<PayrollInvoiceResource> GetHostInvoices(Guid hostId)
+		public List<PayrollInvoiceResource> GetHostInvoices()
 		{
-			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(hostId), string.Format("get invoices for host with id={0}", hostId));
-			return Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+			var ic =_taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
+			result.ForEach(i=>i.TaxPaneltyConfig = ic);
+			return result;
 		}
 		[HttpGet]
 		[Route(PayrollRoutes.DeletePayrollInvoice)]

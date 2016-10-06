@@ -257,6 +257,10 @@
     <Compile Include="Code\IOC\IOCBootstrapper.cs" />
     <Compile Include="Code\IOC\LoggingModule.cs" />
     <Compile Include="Code\Security\HrMaxxViewPage.cs" />
+    <Content Include="Areas\Administration\templates\config.html" />
+    <Content Include="Areas\Administration\templates\Configurations.html" />
+    <Content Include="Areas\Client\templates\test-invoice.html" />
+    <Content Include="Content\ng-tags-input.bootstrap.css" />
     <Content Include="Content\print.css" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -1239,6 +1243,7 @@
     <Content Include="Scripts\angular1.5\multipleDatePicker.min.js" />
     <Content Include="Scripts\angular1.5\ng-google-chart.js" />
     <Content Include="Scripts\angular1.5\ng-table.js" />
+    <Content Include="Scripts\angular1.5\ng-tags-input.js" />
     <Content Include="Scripts\angular1.5\restangular\restangular.js" />
     <Content Include="Scripts\angular1.5\restangular\restangular.min.js" />
     <Content Include="Scripts\angular1.5\version.txt" />
@@ -1254,6 +1259,7 @@
     <Content Include="Scripts\app\common\common.js" />
     <Content Include="Scripts\app\common\directives\date-ctrl.js" />
     <Content Include="Scripts\app\common\directives\report-filter.js" />
+    <Content Include="Scripts\app\common\directives\config.js" />
     <Content Include="Scripts\app\common\directives\userprofile.js" />
     <Content Include="Scripts\app\common\directives\user-list.js" />
     <Content Include="Scripts\app\common\directives\usernews.js" />

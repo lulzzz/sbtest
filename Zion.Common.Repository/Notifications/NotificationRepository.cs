@@ -25,6 +25,7 @@ namespace HrMaxx.Common.Repository.Notifications
 			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7);
 			List<Notification> userNotifications = _dbContext.Notifications
 				.Where(notifications => notifications.LoginId.Equals(LoginId)
+																&& notifications.IsVisible
 				                        && (notifications.IsRead == false || notifications.CreatedOn >= sevenDaysBefore)
 				)
 				.OrderByDescending(notification => notification.CreatedOn).ToList();
@@ -33,20 +34,28 @@ namespace HrMaxx.Common.Repository.Notifications
 
 		public void CreateNotifications(List<NotificationDto> notificationList)
 		{
-			List<Notification> newNotifications =
+			var newNotifications =
 				_mapper.Map<List<NotificationDto>, List<Notification>>(notificationList);
-			foreach (Notification notification in newNotifications)
+			foreach (var notification in newNotifications)
 			{
+				notification.IsVisible = true;
 				_dbContext.Notifications.Add(notification);
 			}
 			_dbContext.SaveChanges();
 		}
 
-		public void NotificationRead(Guid NotificationId)
+		public void NotificationRead(Guid notificationId)
 		{
-			Notification selectedNotification =
-				_dbContext.Notifications.Where(notification => notification.NotificationId.Equals(NotificationId)).FirstOrDefault();
-			selectedNotification.IsRead = true;
+			var selectedNotification =
+				_dbContext.Notifications.FirstOrDefault(notification => notification.NotificationId.Equals(notificationId));
+			if (selectedNotification != null) selectedNotification.IsRead = true;
+			_dbContext.SaveChanges();
+		}
+
+		public void ClearAllNotiifications(string userId)
+		{
+			var notifications = _dbContext.Notifications.Where(n => n.LoginId == userId).ToList();
+			notifications.ForEach(n=>n.IsVisible=false);
 			_dbContext.SaveChanges();
 		}
 	}

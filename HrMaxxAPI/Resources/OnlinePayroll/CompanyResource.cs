@@ -17,7 +17,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public Guid HostId { get; set; }
 		[Required]
 		public string Name { get; set; }
-		[Required]
+		
 		public string CompanyNo { get; set; }
 		[Required]
 		public AddressResource CompanyAddress { get; set; }
@@ -108,14 +108,19 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int Code { get; set; }
 		public decimal Rate { get; set; }
 		public string Description { get; set; }
+		public decimal? MinGrossWage { get; set; }
 	}
 
 	public class CompanyDeductionResource
 	{
 		public int? Id { get; set; }
+		[Required]
 		public Guid CompanyId { get; set; }
+		[Required]
 		public DeductionType Type { get; set; }
+		[Required]
 		public string DeductionName { get; set; }
+		[Required]
 		public string Description { get; set; }
 		public decimal AnnualMax { get; set; }
 		public string W2_12 { get; set; }

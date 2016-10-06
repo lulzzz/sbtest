@@ -154,7 +154,7 @@
 									<div class="form-group">
 										<label>Type</label>
 										
-										<select id="type" class="form-control" ng-change="typeSelected()" ng-model="data.selectedType" ng-options="t.value for t in data.types track by t.key" required data-parsley-group="account">
+										<select id="type" class="form-control" ng-change="typeSelected()" ng-disabled="selected.id" ng-model="data.selectedType" ng-options="t.value for t in data.types track by t.key" required data-parsley-group="account">
 											<option value="">Please select...</option>
 										</select>
 										
@@ -164,7 +164,7 @@
 									<div class="form-group">
 										<label>Sub Type</label>
 
-										<select id="subtype" class="form-control" ng-disbaled="!selected.type" ng-change="subTypeSelected()" ng-model="data.selectedSubType" ng-options="t.value for t in data.selectableSubTypes track by t.key" required data-parsley-group="account">
+										<select id="subtype" class="form-control" ng-disbaled="!selected.type" ng-disabled="selected.id" ng-change="subTypeSelected()" ng-model="data.selectedSubType" ng-options="t.value for t in data.selectableSubTypes track by t.key" required data-parsley-group="account">
 											<option value="">Please select...</option>
 										</select>
 

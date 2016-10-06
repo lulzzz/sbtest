@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enum\CommonEnums.cs" />
+    <Compile Include="ExcelRead.cs" />
     <Compile Include="PDFModel.cs" />
     <Compile Include="DataModel\Country.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>

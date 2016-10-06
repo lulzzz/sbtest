@@ -6,6 +6,7 @@ using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.OnlinePayroll.Models;
 using Magnum;
 using Newtonsoft.Json;
 using News = HrMaxx.Common.Models.Dtos.News;
@@ -172,5 +173,7 @@ namespace HrMaxx.Common.Repository.Common
 				).ToList();
 			return _mapper.Map<List<Models.DataModel.News>, List<News>>(news);
 		}
+
+		
 	}
 }

@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\Events\InvoiceCreatedEvent.cs" />
     <Compile Include="Messages\Events\PayCheckVoidedEvent.cs" />
     <Compile Include="Messages\Events\PayrollSavedEvent.cs" />
     <Compile Include="Messages\Events\EmployeeUpdatedEvent.cs" />

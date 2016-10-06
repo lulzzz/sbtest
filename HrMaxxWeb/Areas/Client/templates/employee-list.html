@@ -12,7 +12,7 @@
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id}">
-						<td data-title="' No'" filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-1">
+						<td data-title="' No'" filter="{ 'employeeNo': 'text' }" sortable=" 'employeeNo' " class="col-sm-1">
 							{{item.employeeNo}}
 						</td>
 						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3">
@@ -24,7 +24,7 @@
 						<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-2">
 							{{item.department}}
 						</td>
-						<td data-title=" 'Hire Date' " filter="{ 'hireDate': 'text' }" sortable=" 'hireDaate' " class="col-sm-2">
+						<td data-title=" 'Hire Date' "  sortable=" 'hireDate' " class="col-sm-2">
 							{{item.hireDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
@@ -57,7 +57,14 @@
 				</script>
 			</div>
 			<div class="row">
-				<button class="btn btn-sm btn-primary" ng-show="mainData.selectedCompany && !selected" ng-click="add()">Add</button>
+				<button class="btn btn-sm btn-primary pull-left" ng-show="mainData.selectedCompany && !selected" ng-click="add()">Add</button>
+				
+				<button class="btn btn-sm btn-info attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+					<i class="fa fa-upload"></i>Import Employees
+				</button>
+				&nbsp;
+				<button class="btn btn-sm btn-success pull-right" ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template</button>
+				
 			</div>
 
 			<!-- end panel -->
@@ -256,8 +263,8 @@
 													</div>
 												</div>
 												<div class="col-sm-4" ng-if="selected.payType">
-													<div class="form-group" ng-if="selected.payType===2">
-														<label>Salary $</label>
+													<div class="form-group" ng-if="selected.payType!==3">
+														<label>{{selected.payType===1 ? 'Base Hourly Rate' : 'Salary $'}}</label>
 														<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 														
 													</div>
@@ -370,7 +377,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Federal Additional Amout</label>
-														<input type="number" name="faddamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.federalAdditionalAmount" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+														<input name="faddamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.federalAdditionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
 													</div>
 												</div>
 												
@@ -417,7 +424,7 @@
 												<div class="col-sm-3" >
 													<div class="form-group">
 														<label>Additional Amout</label>
-														<input type="number" name="addamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.state.additionalAmount" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+														<input name="addamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.state.additionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
 													</div>
 
 												</div>

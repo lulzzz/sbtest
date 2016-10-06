@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -52,6 +53,22 @@ namespace HrMaxx.Infrastructure.Excel
 			}
 		}
 
+		public Excel(FileInfo file)
+		{
+			if (file.Exists)
+			{
+				_package = new ExcelPackage(file);
+				if(_package.Workbook.Worksheets.Count!=1)
+					throw new Exception("File contains multiple sheets");
+				_worksheet = _package.Workbook.Worksheets[1];
+				
+			}
+			else
+			{
+				throw new FileLoadException();
+			}
+		}
+		
 		public ExcelWorksheet Worksheet
 		{
 			get { return _worksheet; }
@@ -142,6 +159,16 @@ namespace HrMaxx.Infrastructure.Excel
 			_package.Save();
 			_saved = true;
 			return _file;
+		}
+
+		public byte[] Save()
+		{
+			
+			using (var ms = new MemoryStream())
+			{
+				_package.SaveAs(ms);
+				return ms.ToArray();
+			}
 		}
 
 		/// <summary>
@@ -473,7 +500,6 @@ namespace HrMaxx.Infrastructure.Excel
 			_file = new FileInfo(d.FullName + "/temp.xlsx");
 
 			_package = new ExcelPackage(_file);
-			_worksheet = _package.Workbook.Worksheets.Add("Export");
 			_tempfile = true;
 		}
 
@@ -489,6 +515,11 @@ namespace HrMaxx.Infrastructure.Excel
 			return d;
 		}
 
+		public void AddWorksheet(string title)
+		{
+			_package.Workbook.Worksheets.Add(title);
+			SetCurrentWorksheet(title);
+		}
 		/// <summary>
 		///   Set the current worksheet being accessed by the class
 		/// </summary>

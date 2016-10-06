@@ -22,6 +22,17 @@
 				});
 				return deferred.promise;
 				
+			},
+			clearAllNotifications: function () {
+				var deferred = $q.defer();
+
+				commonServer.one('ClearAllNotifications').get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+
 			}
 
 		};

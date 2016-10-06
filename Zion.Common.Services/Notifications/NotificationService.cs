@@ -59,5 +59,19 @@ namespace HrMaxx.Common.Services.Notifications
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void ClearAllUserNotifications(string userId)
+		{
+			try
+			{
+				_notificationRepository.ClearAllNotiifications(userId);
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, "Mark All Notifications for User as Invisiable" + userId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

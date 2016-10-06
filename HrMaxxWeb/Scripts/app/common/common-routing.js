@@ -9,6 +9,9 @@
 	$routeProvider.when('/Admin/Invoices', {
 		templateUrl: zionAPI.Web + '/Areas/Administration/templates/InvoiceList.html'
 	});
+	$routeProvider.when('/Admin/Config', {
+		templateUrl: zionAPI.Web + '/Areas/Administration/templates/Configurations.html'
+	});
 	$routeProvider.when('/Admin/Host', {
 		templateUrl: zionAPI.Web + '/Areas/Administration/templates/hostprofile.html'
 	});

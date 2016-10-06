@@ -76,6 +76,7 @@
           <Property Name="LoginId" Type="varchar" MaxLength="100" />
           <Property Name="IsRead" Type="bit" />
           <Property Name="CreatedOn" Type="datetime" />
+          <Property Name="IsVisible" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="UserEventLog">
           <Key>
@@ -190,6 +191,7 @@
           <Property Name="LoginId" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="IsRead" Type="Boolean" />
           <Property Name="CreatedOn" Type="DateTime" Precision="3" />
+          <Property Name="IsVisible" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="UserEventLog">
           <Key>
@@ -303,6 +305,7 @@
           <EntitySetMapping Name="Notifications">
             <EntityTypeMapping TypeName="CommonModel.Notification">
               <MappingFragment StoreEntitySet="Notifications">
+                <ScalarProperty Name="IsVisible" ColumnName="IsVisible" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="IsRead" ColumnName="IsRead" />
                 <ScalarProperty Name="LoginId" ColumnName="LoginId" />

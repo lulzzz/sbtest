@@ -52,5 +52,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<CompanyPayrollCube> CompanyPayrollCubes { get; set; }
         public virtual DbSet<Invoice> Invoices { get; set; }
         public virtual DbSet<PayrollInvoice> PayrollInvoices { get; set; }
+        public virtual DbSet<ApplicationConfiguration> ApplicationConfigurations { get; set; }
     }
 }

@@ -97,6 +97,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angularjs-dropdown-multiselect.min.js",
 				"~/Scripts/angular1.5/angular-scrollable-table.js",
 				"~/Scripts/angular1.5/mask.min.js",
+				"~/Scripts/angular1.5/ng-tags-input.js",
 				
 				"~/Scripts/app/common/common.js",
 				"~/Scripts/app/common/directives/date-ctrl.js",
@@ -179,7 +180,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/deposit-coupons.js",
 				"~/Scripts/app/reports/directives/blank-forms.js",
 				"~/Scripts/app/payroll/directives/payroll-invoice-list.js",
-				"~/Scripts/app/payroll/directives/payroll-invoice.js"
+				"~/Scripts/app/payroll/directives/payroll-invoice.js",
+				"~/Scripts/app/common/directives/config.js"
 
 				
 

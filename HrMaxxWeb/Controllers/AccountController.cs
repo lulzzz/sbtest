@@ -208,7 +208,7 @@ namespace HrMaxxWeb.Controllers
 					}
 				}
         //
-        // GET: /Account/ConfirmEmail
+        // GET: /Account/conail
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {

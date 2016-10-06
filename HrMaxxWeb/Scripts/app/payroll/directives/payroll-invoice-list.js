@@ -21,7 +21,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					
 
 					$scope.data = dataSvc;
-					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
+					$scope.mainData.showFilterPanel = false;
 					$scope.mainData.showCompanies = false;
 
 
@@ -36,9 +36,11 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
-
+						filter: {
+							status1: 0,       // initial filter
+						},
 						sorting: {
-							payDay: 'desc'     // initial sorting
+							invoiceDate: 'desc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -51,14 +53,18 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
+							var filterbystatus = params.$params.filter.status1;
+							delete params.$params.filter.status1;
 							var orderedData = params.filter() ?
 																$filter('filter')($scope.list, params.filter()) :
 																$scope.list;
-
+							if (filterbystatus) {
+								orderedData = $filter('filter')(orderedData, { status: filterbystatus });
+							}
 							orderedData = params.sorting() ?
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
-
+							params.$params.filter.status1 = filterbystatus;
 							$scope.tableParams = params;
 							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 
@@ -97,7 +103,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						if(item){
 							$timeout(function () {
 								
-								$scope.selectedInvoice = item;
+								$scope.selectedInvoice = angular.copy(item);
 							
 							}, 1);
 						}
@@ -108,8 +114,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						
 					}
 					
-					var getInvoices = function (hostId, selectedInvoiceId) {
-						payrollRepository.getInvoicesForHost(hostId).then(function (data) {
+					var getInvoices = function (selectedInvoiceId) {
+						payrollRepository.getInvoicesForHost().then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
@@ -136,13 +142,11 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 				 );
 					
 					var init = function () {
-						
-						if ($scope.mainData.selectedHost) {
-							getInvoices($scope.mainData.selectedHost.id, null);
-
-						}
-						
-
+						var invoice = null;
+						var querystring = $location.search();
+						if (querystring.invoice)
+							invoice = querystring.invoice;
+						getInvoices(invoice);
 					}
 					init();
 

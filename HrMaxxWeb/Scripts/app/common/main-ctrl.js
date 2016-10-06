@@ -6,10 +6,17 @@
 
 		$scope.addAlert = function (error, type) {
 			$scope.alerts = [];
-			$scope.alerts.push({
-				msg: error,
-				type: type
+			var rows = error.split('<br>');
+			$.each(rows, function (index, er) {
+				if (er) {
+					$scope.alerts.push({
+						msg: er,
+						type: type
+					});
+				}
+				
 			});
+			
 		};
 
 		$scope.closeAlert = function (index) {

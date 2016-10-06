@@ -32,11 +32,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IPDFService _pdfService;
 		private readonly IFileRepository _fileRepository;
 		private readonly IHostService _hostService;
-		private readonly decimal _environmentFeeRate;
 		private readonly IReportService _reportService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, decimal environmentFeeRate)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -46,7 +45,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_fileRepository = fileRepository;
 			_hostService = hostService;
 			_reportService = reportService;
-			_environmentFeeRate = environmentFeeRate;
+			
 		}
 
 
@@ -123,7 +122,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							paycheck.WCAmount = Math.Round(paycheck.GrossWage * paycheck.Employee.WorkerCompensation.Rate /100, 2, MidpointRounding.AwayFromZero);
 							paycheck.WorkerCompensation = new PayrollWorkerCompensation
 							{
-								Wage = paycheck.GrossWage,
+								Wage = paycheck.Employee.WorkerCompensation.MinGrossWage.HasValue ? (paycheck.GrossWage < paycheck.Employee.WorkerCompensation.MinGrossWage.Value ? paycheck.Employee.WorkerCompensation.MinGrossWage.Value : paycheck.GrossWage) : paycheck.GrossWage,
 								WorkerCompensation = paycheck.Employee.WorkerCompensation,
 								Amount = paycheck.WCAmount,
 								YTD =
@@ -337,6 +336,17 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						EventType = NotificationTypeEnum.Created,
 						AffectedChecks = affectedChecks
 					});
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
+					{
+						Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
+						{
+							SavedObject = savedPayroll.Invoice,
+							EventType = NotificationTypeEnum.Created,
+							TimeStamp = DateTime.Now,
+							UserId = savedPayroll.UserId,
+							UserName = savedPayroll.UserName
+						});
+					}
 					return savedPayroll;
 				}
 				
@@ -626,8 +636,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var company = fetchCompany ? _companyService.GetCompanyById(payroll.Company.Id) : payroll.Company;
 				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, payroll.Company.Id);
 				var payrollInvoice = new PayrollInvoice{Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now};
-				payrollInvoice.Initialize(payroll, previousInvoices, _environmentFeeRate, company );
-				return _payrollRepository.SavePayrollInvoice(payrollInvoice);
+				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company);
+				
+				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
+				Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
+				{
+					SavedObject = savedInvoice,
+					EventType = NotificationTypeEnum.Created,
+					TimeStamp = DateTime.Now,
+					UserId = savedInvoice.UserId,
+					UserName = savedInvoice.UserName
+				});
+				return savedInvoice;
 			}
 			catch (Exception e)
 			{
@@ -718,6 +738,29 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Delete Invoice with id=" + invoiceId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Models.Payroll FixPayrollData(Guid payrollId)
+		{
+			try
+			{
+				var payroll = _payrollRepository.GetPayrollById(payrollId);
+				payroll.PayChecks.ForEach(pc =>
+				{
+					if (pc.WorkerCompensation != null)
+					{
+						pc.WorkerCompensation.Wage = pc.GrossWage;
+						_payrollRepository.SavePayCheck(pc);
+					}
+				});
+				return payroll;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Fix Payroll Data with id=" + payrollId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1105,7 +1148,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var localGrossWage = grossWage - payCheck.EmployeeTaxes;
 			payCheck.Deductions.ForEach(d =>
 			{
-				if (d.Method == DeductionMethod.FixedRate)
+				if (d.Method == DeductionMethod.Amount)
 					d.Amount = d.Rate;
 				else
 					d.Amount = localGrossWage * d.Rate / 100;

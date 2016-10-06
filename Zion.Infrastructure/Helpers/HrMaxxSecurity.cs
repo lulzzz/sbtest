@@ -36,6 +36,19 @@ namespace HrMaxx.Infrastructure.Helpers
 			}
 			return null;
 		}
+		public static T? GetEnumFromHrMaxxName<T>(string hrMaxxName) where T : struct, IConvertible
+		{
+			foreach (T enumValue in Enum.GetValues(typeof(T)))
+			{
+				FieldInfo fieldInfo = typeof(T).GetField(enumValue.ToString());
+				var attribs = fieldInfo.GetCustomAttributes(typeof(HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
+				if (attribs.Length == 0) continue;
+
+				if (attribs[0].HrMaxxName == hrMaxxName)
+					return enumValue;
+			}
+			return null;
+		}
 
 		public static T? GetEnumFromHrMaxxId<T>(Guid hrMaxxid) where T : struct, IConvertible
 		{

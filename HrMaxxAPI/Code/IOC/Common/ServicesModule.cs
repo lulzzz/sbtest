@@ -4,6 +4,7 @@ using Autofac;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Services.Common;
 using HrMaxx.Common.Services.Document;
+using HrMaxx.Common.Services.Excel;
 using HrMaxx.Common.Services.Mementos;
 using HrMaxx.Common.Services.Notifications;
 using HrMaxx.Common.Services.PDF;
@@ -73,6 +74,11 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.WithParameter(new NamedParameter("filePath", _pdfPath))
 				.WithParameter(new NamedParameter("templatePath", _templatePath))
 				.As<IPDFService>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ExcelService>()
+				.As<IExcelService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

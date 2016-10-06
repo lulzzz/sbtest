@@ -6,6 +6,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
+using Newtonsoft.Json;
 using DeductionType = HrMaxx.OnlinePayroll.Models.DeductionType;
 using PayType = HrMaxx.OnlinePayroll.Models.PayType;
 
@@ -126,6 +127,20 @@ namespace HrMaxx.OnlinePayroll.Repository
 			                                                ((host.HasValue && e.Company.HostId == host.Value) || !host.HasValue)
 				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName}).ToList();
 			return new {Hosts = hosts, Companies = companies, Employees = employees};
+		}
+
+		public ApplicationConfig GetConfigurations()
+		{
+			var config = _dbContext.ApplicationConfigurations.First().config;
+			return JsonConvert.DeserializeObject<ApplicationConfig>(config);
+		}
+
+		public void SaveApplicationConfig(ApplicationConfig config)
+		{
+			var dbConfig = _dbContext.ApplicationConfigurations.First();
+			dbConfig.config = JsonConvert.SerializeObject(config);
+			_dbContext.SaveChanges();
+
 		}
 	}
 }

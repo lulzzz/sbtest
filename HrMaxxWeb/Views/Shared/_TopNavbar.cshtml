@@ -34,7 +34,14 @@
 					</a>
 					<ul class="dropdown-menu media-list pull-right animated fadeInDown col-sm-12">
 
-						<li class="dropdown-header">Notifications ({{unreadNotificationsCount}})</li>
+						<li class="dropdown-header">
+							<div class="input-group">
+								Notifications ({{unreadNotificationsCount}})
+								<i class="input-group-addon fa fa-eraser" ng-click="clear()">clear all</i>
+								
+							</div>
+							
+						</li>
 						<li ng-click="refreshNotifications()">
 							<div class="dropdown-messages-box">
 								<center>  <span class="glyphicon glyphicon-refresh icon-refresh" aria-hidden="true"></span></center>
@@ -46,7 +53,7 @@
 							<div class="media-body" ng-click="NotificationRead(notification)">
 								<h6 class="media-heading">{{notification.type}}</h6>
 								<div class="text-muted f-s-11">
-									<small class="pull-right">{{notification.createdOn}}</small>
+									<small class="pull-right">{{notification.createdOn | date:'MM/dd/yyyy hh:mm:a'}}</small>
 									<br />{{notification.text}}.
 								</div>
 							</div>

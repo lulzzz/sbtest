@@ -197,3 +197,4 @@ common.directive('confirmationNeeded', function () {
 		}
 	};
 });
+

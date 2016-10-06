@@ -256,7 +256,28 @@ common.factory('commonRepository', [
 				});
 
 				return deferred.promise;
+			},
+			getConfigData: function () {
+				var deferred = $q.defer();
+				commonServer.one('Configurations').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveConfigData: function (configs) {
+				var deferred = $q.defer();
+				commonServer.all('Configurations').post(configs).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
 			}
+
 		};
 	}
 ]);

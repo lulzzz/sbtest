@@ -78,7 +78,7 @@ namespace HrMaxx.Common.Repository.Security
 				}
 				else
 				{
-					users = users.Where(u => u.Host.Value == hostId.Value);
+					users = users.Where(u => u.Host.Value == hostId.Value && !u.Company.HasValue);
 				}
 			}
 			

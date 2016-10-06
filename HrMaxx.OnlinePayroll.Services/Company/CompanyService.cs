@@ -22,10 +22,14 @@ namespace HrMaxx.OnlinePayroll.Services
 	{
 		private readonly ICompanyRepository _companyRepository;
 		public IBus Bus { get; set; }
+		public ApplicationConfig Configurations { get; set; }
 		public CompanyService(ICompanyRepository companyRepository)
 		{
 			_companyRepository = companyRepository;
+			
 		}
+
+		
 
 		public IList<Company> GetCompanies(Guid hostId, Guid companyId)
 		{
@@ -234,8 +238,28 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-
-		public Employee SaveEmployee(Employee employee)
+		public List<Employee> SaveEmployees(List<Employee> employees)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					
+					var result = new List<Employee>();
+					employees.ForEach(e=>result.Add(SaveEmployee(e, false)));
+					txn.Complete();
+					return result;
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "imported employees for company ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
+		}
+		public Employee SaveEmployee(Employee employee, bool sendNotification = true)
 		{
 			try
 			{
@@ -243,14 +267,19 @@ namespace HrMaxx.OnlinePayroll.Services
 				var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
 				var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 				var savedEmployee = _companyRepository.SaveEmployee(employee);
-				Bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
+				if (sendNotification)
 				{
-					SavedObject = savedEmployee,
-					UserId = savedEmployee.UserId,
-					TimeStamp = DateTime.Now,
-					NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedEmployee.FullName), savedEmployee.UserName),
-					EventType = eventType
-				});
+					Bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
+					{
+						SavedObject = savedEmployee,
+						UserId = savedEmployee.UserId,
+						TimeStamp = DateTime.Now,
+						NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedEmployee.FullName), savedEmployee.UserName),
+						EventType = eventType
+					});
+					
+				}
+				
 				return savedEmployee;
 			}
 			catch (Exception e)
@@ -347,5 +376,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		
 	}
 }

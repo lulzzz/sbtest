@@ -107,9 +107,9 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			getInvoicesForHost: function (hostId) {
+			getInvoicesForHost: function () {
 				var deferred = $q.defer();
-				payrollServer.one('HostInvoices').one(hostId).getList().then(function (data) {
+				payrollServer.one('HostInvoices').getList().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

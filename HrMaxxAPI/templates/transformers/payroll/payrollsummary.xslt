@@ -51,9 +51,14 @@
 							<td></td>
 						</tr>
 						<tr>
-							<td>Starting Check Number: <xsl:value-of select="$payroll/StartingCheckNumber"/>
-						</td>
+							<td>Starting Check Number: <xsl:value-of select="$payroll/StartingCheckNumber"/></td>
 							<td></td>
+						</tr>
+						<tr>
+							<td>Notes:</td>
+							<td>
+								<xsl:value-of select="$payroll/Notes"/>
+							</td>
 						</tr>
 					</table>
 

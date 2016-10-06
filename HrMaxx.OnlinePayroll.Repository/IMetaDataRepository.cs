@@ -19,5 +19,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		List<Models.Payroll> GetUnInvoicedPayrolls(Guid companyId);
 		string GetMaxInvoiceNumber(Guid companyId);
 		object GetMetaDataForUser(Guid? host, Guid? company, Guid? employee);
+		ApplicationConfig GetConfigurations();
+		void SaveApplicationConfig(ApplicationConfig config);
 	}
 }

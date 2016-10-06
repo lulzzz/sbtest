@@ -192,6 +192,53 @@ common.factory('companyRepository', [
 				});
 
 				return deferred.promise;
+			},
+			getEmployeeImportTemplate: function (companyId) {
+				var deferred = $q.defer();
+				$http.get(zionAPI.URL + "Company/EmployeeImport/" + companyId, { responseType: "arraybuffer" }).success(
+					function (data, status, headers) {
+						var type = headers('Content-Type');
+						var disposition = headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}).error(function (data, status) {
+						var e = /* error */
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
+			importEmployees: function (attachment) {
+				var url = zionAPI.URL + 'Company/ImportEmployees';
+				var deferred = $q.defer();
+				upload.upload({
+					url: url,
+					method: 'POST',
+					data: {
+						inspection: attachment.data
+					},
+					file: attachment.doc.file,
+				}).success(function (data, status, headers, config) {
+					attachment.doc.uploaded = true;
+					attachment.completed = true;
+					deferred.resolve(data);
+
+				})
+				.error(function (data, status, statusText, headers, config) {
+					deferred.reject(statusText);
+				});
+				return deferred.promise;
 			}
 
 		};

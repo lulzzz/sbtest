@@ -15,6 +15,13 @@
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
           <Property Name="TaxCode" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="ApplicationConfiguration">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="config" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="BankAccount">
           <Key>
             <PropertyRef Name="Id" />
@@ -36,7 +43,7 @@
           </Key>
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CompanyName" Type="varchar(max)" Nullable="false" />
-          <Property Name="CompanyNo" Type="varchar(max)" Nullable="false" />
+          <Property Name="CompanyNo" Type="varchar(max)" />
           <Property Name="HostId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="StatusId" Type="int" Nullable="false" />
           <Property Name="IsVisibleToHost" Type="bit" Nullable="false" />
@@ -169,6 +176,7 @@
           <Property Name="Code" Type="int" Nullable="false" />
           <Property Name="Description" Type="varchar(max)" Nullable="false" />
           <Property Name="Rate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MinGrossWage" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="DeductionType">
           <Key>
@@ -320,6 +328,7 @@
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
+          <Property Name="Notes" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="PayrollInvoice">
           <Key>
@@ -335,8 +344,6 @@
           <Property Name="GrossWages" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="EmployerTaxes" Type="varchar(max)" Nullable="false" />
           <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
-          <Property Name="DueDate" Type="datetime" Nullable="false" />
-          <Property Name="ExpiryDate" Type="datetime" Nullable="false" />
           <Property Name="NoOfChecks" Type="int" Nullable="false" />
           <Property Name="Deductions" Type="varchar(max)" Nullable="false" />
           <Property Name="WorkerCompensations" Type="varchar(max)" Nullable="false" />
@@ -354,6 +361,9 @@
           <Property Name="Payrments" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="Courier" Type="varchar(max)" />
+          <Property Name="EmployeeTaxes" Type="varchar(max)" Nullable="false" />
+          <Property Name="Notes" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -866,6 +876,7 @@
         </Association>
         <EntityContainer Name="HrMaxxModelStoreContainer">
           <EntitySet Name="AccountTemplate" EntityType="Self.AccountTemplate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ApplicationConfiguration" EntityType="Self.ApplicationConfiguration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BankAccount" EntityType="Self.BankAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyAccount" EntityType="Self.CompanyAccount" Schema="dbo" store:Type="Tables" />
@@ -1208,6 +1219,7 @@
             <End Role="Payroll" EntitySet="Payrolls" />
             <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
           </AssociationSet>
+          <EntitySet Name="ApplicationConfigurations" EntityType="HrMaxxModel.ApplicationConfiguration" />
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1248,7 +1260,7 @@
           </Key>
           <Property Name="Id" Type="Guid" Nullable="false" />
           <Property Name="CompanyName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="CompanyNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CompanyNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="HostId" Type="Guid" Nullable="false" />
           <Property Name="StatusId" Type="Int32" Nullable="false" />
           <Property Name="IsVisibleToHost" Type="Boolean" Nullable="false" />
@@ -1479,6 +1491,7 @@
           <Property Name="Rate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyWorkerCompensation_Company" FromRole="CompanyWorkerCompensation" ToRole="Company" />
           <NavigationProperty Name="Employees" Relationship="HrMaxxModel.FK_Employee_CompanyWorkerCompensation" FromRole="CompanyWorkerCompensation" ToRole="Employee" />
+          <Property Name="MinGrossWage" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_CompanyWorkerCompensation_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -1873,6 +1886,7 @@
           <Property Name="InvoiceId" Type="Guid" />
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="Payroll" ToRole="PayrollInvoice" />
           <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -2075,8 +2089,6 @@
           <Property Name="InvoiceSetup" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="EmployerTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="InvoiceDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="DueDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ExpiryDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="NoOfChecks" Type="Int32" Nullable="false" />
           <Property Name="WorkerCompensations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="EmployeeContribution" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
@@ -2100,6 +2112,9 @@
           <Property Name="PeriodEnd" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Payrments" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Deductions" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Courier" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EmployeeTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2125,6 +2140,13 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ApplicationConfiguration">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="config" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2273,6 +2295,7 @@
           <EntitySetMapping Name="CompanyWorkerCompensations">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyWorkerCompensation">
               <MappingFragment StoreEntitySet="CompanyWorkerCompensation">
+                <ScalarProperty Name="MinGrossWage" ColumnName="MinGrossWage" />
                 <ScalarProperty Name="Rate" ColumnName="Rate" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
@@ -2454,6 +2477,7 @@
           <EntitySetMapping Name="Payrolls">
             <EntityTypeMapping TypeName="HrMaxxModel.Payroll">
               <MappingFragment StoreEntitySet="Payroll">
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
                 <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
@@ -2577,6 +2601,9 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="EmployeeTaxes" ColumnName="EmployeeTaxes" />
+                <ScalarProperty Name="Courier" ColumnName="Courier" />
                 <ScalarProperty Name="Deductions" ColumnName="Deductions" />
                 <ScalarProperty Name="Payrments" ColumnName="Payrments" />
                 <ScalarProperty Name="PeriodEnd" ColumnName="PeriodEnd" />
@@ -2598,14 +2625,20 @@
                 <ScalarProperty Name="EmployeeContribution" ColumnName="EmployeeContribution" />
                 <ScalarProperty Name="WorkerCompensations" ColumnName="WorkerCompensations" />
                 <ScalarProperty Name="NoOfChecks" ColumnName="NoOfChecks" />
-                <ScalarProperty Name="ExpiryDate" ColumnName="ExpiryDate" />
-                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
                 <ScalarProperty Name="InvoiceDate" ColumnName="InvoiceDate" />
                 <ScalarProperty Name="EmployerTaxes" ColumnName="EmployerTaxes" />
                 <ScalarProperty Name="InvoiceSetup" ColumnName="InvoiceSetup" />
                 <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ApplicationConfigurations">
+            <EntityTypeMapping TypeName="HrMaxxModel.ApplicationConfiguration">
+              <MappingFragment StoreEntitySet="ApplicationConfiguration">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="config" ColumnName="config" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

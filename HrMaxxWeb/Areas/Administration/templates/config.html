@@ -1,0 +1,57 @@
+﻿<div class="panel panel-inverse">
+
+	<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+		<h4 class="panel-title">Manage Configurations</h4>
+
+	</div>
+	<div class="panel-body">
+		<form name="configForm" data-parsley-validate="true">
+			<div class="col-sm-12">
+
+
+				<div class="col-sm-4">
+					<div class="form-group">
+						<label>Environment Charge Rate</label>
+						<input class="form-control" name="ecrate" ng-model="data.configs.environmentalChargeRate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="form-group">
+						<label>Couriers</label>
+						<tags-input ng-model="data.tags" ></tags-input>
+						
+					</div>
+				</div>
+				<div class="col-sm-4">
+					<div class="col-sm-12">
+						<table class="table table-bordered">
+							<thead>
+								<tr >
+									<th colspan="3">
+										Invoice Late Tax Penalty Rates	<i class="fa fa-plus-circle" ng-click="addTaxPanelty()"></i>
+									</th>
+								</tr>
+								<tr>
+									<th>From Day</th>
+									<th>To Day</th>
+									<th>Rate</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="rate in data.configs.invoiceLateFeeConfigs | orderBy:'daysFrom'">
+									<td><input class="form-control" type="number" ng-model="rate.daysFrom" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
+									<td><input class="form-control" type="number" ng-model="rate.daysTo" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
+									<td><input class="form-control" ng-model="rate.rate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" /></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-12">
+				<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-save"></i> Save</button>
+			</div>
+		</form>
+
+	</div>
+</div>

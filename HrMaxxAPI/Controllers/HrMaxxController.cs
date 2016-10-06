@@ -4,6 +4,8 @@ using System.Configuration;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Resources;
 
 namespace HrMaxxAPI.Controllers
@@ -14,9 +16,11 @@ namespace HrMaxxAPI.Controllers
 	public class HrMaxxController : BaseApiController
 	{
 		public readonly ICommonService _commonService;
-		public HrMaxxController(ICommonService commonService)
+		public readonly ITaxationService _taxationService;
+		public HrMaxxController(ICommonService commonService, ITaxationService taxationService)
 		{
 			_commonService = commonService;
+			_taxationService = taxationService;
 		}
 		/// <summary>
 		///   Retrieve the current version of the deployed application
@@ -46,6 +50,20 @@ namespace HrMaxxAPI.Controllers
 		public IList<Country> GetCountries()
 		{
 			return MakeServiceCall(() => _commonService.GetCountries(), "Get Countries in the System", true);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.Configs)]
+		public ApplicationConfig Configs()
+		{
+			return MakeServiceCall(() => _taxationService.GetApplicationConfig(), "Get Application config", true);
+		}
+
+		[HttpPost]
+		[Route(HrMaxxRoutes.Configs)]
+		public ApplicationConfig SaveConfigs(ApplicationConfig configs)
+		{
+			return MakeServiceCall(() => _taxationService.SaveApplicationConfiguration(configs), "Save Application config", true);
 		}
 	}
 }
