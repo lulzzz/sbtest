@@ -71,5 +71,9 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
 		public string Notes { get; set; }
+		public string StatusText
+		{
+			get { return Status.GetDbName(); }
+		}
 	}
 }

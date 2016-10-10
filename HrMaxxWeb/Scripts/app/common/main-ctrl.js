@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams', '$document',
-	function ($scope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document) {
+	'$scope', '$rootScope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams', '$document',
+	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
@@ -97,8 +97,11 @@
 		}
 		$scope.hostSelected = function () {
 			dataSvc.selectedCompany = null;
-			if (dataSvc.selectedHost)
+			if (dataSvc.selectedHost) {
 				$scope.getCompanies();
+				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+			}
+				
 		}
 		$scope.companySelected = function ($item, $model, $label, $event) {
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {

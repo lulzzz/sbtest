@@ -15,41 +15,48 @@
 						<th class="col-sm-1">Type</th>
 						<th class="col-sm-2">Check Number</th>
 						<th class="col-sm-2">Amount</th>
-						<th class="col-sm-2">Notes</th>
-						<th class="col-sm-3">
+						<th class="col-sm-3">Notes</th>
+						<th class="col-sm-2">
 							<i class="fa fa-lg fa-plus-circle" ng-click="addPayment()" ng-show="paymentRemaining()"></i>
 						</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr ng-repeat="payment in invoice.payments track by $index">
-						<td>
+						<td ng-show="payment.status===1">
 							<date-ctrl name="paydate" required="true" model="payment.paymentDate" disabled="payment.status!==1" />
 						</td>
+						<td ng-show="payment.status!==1">
+							{{payment.paymentDate | date:'MM/dd/yyyy'}}
+						</td>
 						<td>
-							<select class="form-control" ng-model="payment.method" convert-to-number ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" required>
+							<select class="form-control" ng-model="payment.method" convert-to-number ng-show="payment.status===1" ng-change="payment.hasChanged=true" required>
 								<option value="1">Check</option>
 								<option value="2">Cash</option>
 							</select>
+							<span ng-show="payment.status!==1">{{payment.statusText}}</span>
 						</td>
 						<td>
-							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
+							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1 && payment.status===1" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
+							<span ng-show="payment.method===1 && payment.status!==1">{{payment.checkNumber}}</span>
 						</td>
 						<td>
-							<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-disabled="payment.status!==1" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
+							<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-show="payment.status===1" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
+							<span ng-show="payment.status!==1">{{payment.amount | currency:'$'}}</span>
 						</td>
 						<td>
 							<input class="form-control" type="text" ng-model="payment.notes" />
 						</td>
 						<td>
-							<div class="alert alert-danger" ng-if="payment.status===4 && !payment.marker">Check has bounced</div>
-							<div class="alert alert-success" ng-if="payment.status===3 && !payment.marker">Paid</div>
-							<div class="alert alert-danger" ng-if="payment.status===4 && payment.marker">Check will be marked as bounced When you save</div>
-							<div class="alert alert-success" ng-if="payment.status===3 && payment.marker">Will be marked as Paid When you save</div>
-
-							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
-							<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;" ng-show="payment.status===2">Mark Paid</button>
-							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index)" ng-show="payment.status===1"></i>
+							<div class="label label-success" ng-if="payment.status===3 && !payment.marker">Paid</div>
+							<div class="label label-danger" ng-if="payment.status===4 && !payment.marker">Bounced</div>
+							
+							<label class="label label-success" ng-if="payment.status===3 && payment.marker">Will be marked Paid when saved</label>
+							<label class="label label-danger" ng-if="payment.status===4 && payment.marker">Will be marked Bounced when saved</label>
+							
+							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
+							<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;unsavedPayments=true" ng-show="payment.status===2">Paid?</button>
+							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="payment.status===1"></i>
 						</td>
 					</tr>
 
@@ -66,6 +73,7 @@
 						<option value="">Select Courier</option>
 					</select>
 				</div>
+				<div class="col-sm-2 show-red" ng-if="unsavedPayments">changes will apply when you save</div>
 				<div class="col-sm-10">
 					<button class="btn btn-sm btn-success pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2"><i class="fa fa-truck m-r-5"></i> Delivered</button>
 
@@ -248,15 +256,24 @@
 					</p>
 				</div>
 				<div class="col-sm-12 hidden-print">
-					<button class="btn btn-sm btn-info pull-right" ng-click="print()" ng-show="invoice.status===2"><i class="fa fa-print m-r-5"></i> print</button>
-					<button class="btn btn-sm btn-danger pull-right" ng-click="delete()" ng-show="!mainData.userCompany && invoice.status===1"><i class="fa fa-recycle m-r-5"></i> Delete</button>
-					<button class="btn btn-sm btn-default pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+					<div class="col-sm-2 form-group">
+						<select name="courier" ng-model="invoice.courier" class="form-control pull-right" ng-show="!mainData.userCompany && invoice.status===2" ng-options="ctx for ctx in data.config.couriers">
+							<option value="">Select Courier</option>
+						</select>
+					</div>
+					<div class="col-sm-10">
+						<button class="btn btn-sm btn-success pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2"><i class="fa fa-truck m-r-5"></i> Delivered</button>
 
-					<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
-					<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(3)" ng-show="!mainData.userCompany && invoice.status===2"><i class="fa fa-truck m-r-5"></i> Delivered</button>
-					<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && invoice.status!==4" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
+						<button class="btn btn-sm btn-info pull-right" ng-click="print()" ng-show="invoice.status===2"><i class="fa fa-print m-r-5"></i> print</button>
+						<button class="btn btn-sm btn-danger pull-right" ng-click="delete()" ng-show="!mainData.userCompany && invoice.status===1"><i class="fa fa-recycle m-r-5"></i> Delete</button>
+						<button class="btn btn-sm btn-default pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+
+						<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
+
+						<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && invoice.status!==4" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
 
 
+					</div>
 				</div>
 
 			</div>

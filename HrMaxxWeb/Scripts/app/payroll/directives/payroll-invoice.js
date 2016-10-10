@@ -111,6 +111,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						});
 						return +($scope.invoice.total - paidamount).toFixed(2);
 					}
+					$scope.unsavedPayments = false;
 					$scope.deletelineitem = function(index) {
 						$scope.invoice.miscCharges.splice(index, 1);
 						

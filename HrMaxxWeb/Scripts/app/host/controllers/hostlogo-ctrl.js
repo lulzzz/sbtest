@@ -1,6 +1,6 @@
 ﻿common.controller('hostlogo', [
-	'$scope', 'localStorageService', 'zionAPI',
-	function ($scope, localStorageService, zionAPI) {
+	'$scope', 'localStorageService', 'zionAPI', 'hostRepository',
+	function ($scope, localStorageService, zionAPI, hostRepository) {
 		$scope.zionAPI = zionAPI;
 		$scope.logo = null;
 		$scope.getDocumentUrl = function (photo) {
@@ -11,7 +11,15 @@
 			return zionAPI.Web + "/Content/images/logo.png";
 
 		};
-		
+		$scope.$on('hostChanged', function(event, args) {
+			var host = args.host;
+			hostRepository.getHomePage(host.id).then(function(homepage) {
+					$scope.logo = homepage.logo;
+				},
+				function(error) {
+
+				});
+		});
 		function _init() {
 			var homepage = localStorageService.get('hostlogo');
 			if (homepage) {
