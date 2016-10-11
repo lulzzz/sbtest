@@ -93,8 +93,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							selected.payChecks.push(paycheck);
 						});
 						if ($scope.list.length > 0) {
-							var nonVoided = $filter('filter')($scope.list, { totalGrossWage: '!' + 0});
-							var sorted = $filter('orderBy')(nonVoided, 'endDate', true);
+							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
 							selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
 
 							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {

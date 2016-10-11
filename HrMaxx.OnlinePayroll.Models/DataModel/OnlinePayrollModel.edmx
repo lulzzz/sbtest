@@ -364,6 +364,7 @@
           <Property Name="Courier" Type="varchar(max)" />
           <Property Name="EmployeeTaxes" Type="varchar(max)" Nullable="false" />
           <Property Name="Notes" Type="varchar(max)" />
+          <Property Name="ProcessedBy" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -2115,6 +2116,7 @@
           <Property Name="Courier" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="EmployeeTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2601,6 +2603,7 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="ProcessedBy" ColumnName="ProcessedBy" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="EmployeeTaxes" ColumnName="EmployeeTaxes" />
                 <ScalarProperty Name="Courier" ColumnName="Courier" />

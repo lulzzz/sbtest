@@ -23,29 +23,30 @@
 				</thead>
 				<tbody>
 					<tr ng-repeat="payment in invoice.payments track by $index">
-						<td ng-show="payment.status===1">
-							<date-ctrl name="paydate" required="true" model="payment.paymentDate" disabled="payment.status!==1" />
+						<td ng-show="isPaymentEditable(payment)">
+							<date-ctrl name="paydate" required="true" model="payment.paymentDate" />
 						</td>
-						<td ng-show="payment.status!==1">
+						<td ng-show="!isPaymentEditable(payment)">
 							{{payment.paymentDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td>
-							<select class="form-control" ng-model="payment.method" convert-to-number ng-show="payment.status===1" ng-change="payment.hasChanged=true" required>
+							<select class="form-control" ng-model="payment.method" convert-to-number ng-show="isPaymentEditable(payment)" ng-change="payment.hasChanged=true" required>
 								<option value="1">Check</option>
 								<option value="2">Cash</option>
 							</select>
-							<span ng-show="payment.status!==1">{{payment.statusText}}</span>
+							<span ng-show="!isPaymentEditable(payment)">{{payment.statusText}}</span>
 						</td>
 						<td>
-							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1 && payment.status===1" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
-							<span ng-show="payment.method===1 && payment.status!==1">{{payment.checkNumber}}</span>
+							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1 && isPaymentEditable(payment)" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
+							<span ng-show="payment.method===1 && !isPaymentEditable(payment)">{{payment.checkNumber}}</span>
 						</td>
 						<td>
-							<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-show="payment.status===1" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
-							<span ng-show="payment.status!==1">{{payment.amount | currency:'$'}}</span>
+							<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-show="isPaymentEditable(payment)" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
+							<span ng-show="!isPaymentEditable(payment)">{{payment.amount | currency:'$'}}</span>
 						</td>
 						<td>
-							<input class="form-control" type="text" ng-model="payment.notes" />
+							<input class="form-control" type="text" ng-model="payment.notes" ng-show="isPaymentEditable()"/>
+							<span ng-show="!isPaymentEditable()">{{payment.notes}}</span>
 						</td>
 						<td>
 							<div class="label label-success" ng-if="payment.status===3 && !payment.marker">Paid</div>
@@ -56,7 +57,7 @@
 							
 							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
 							<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;unsavedPayments=true" ng-show="payment.status===2">Paid?</button>
-							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="payment.status===1"></i>
+							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="isPaymentEditable(payment)"></i>
 						</td>
 					</tr>
 
@@ -83,7 +84,7 @@
 
 					<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
 
-					<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && invoice.status!==4" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
+					<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable()" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
 
 
 				</div>
@@ -204,16 +205,16 @@
 							<tr ng-repeat="lineitem in invoice.miscCharges track by $index" ng-class="{'danger': lineitem.amount<0}">
 								<td>
 									<div class="input-group">
-										<i class="fa fa-remove fa-lg input-group-addon" ng-click="deletelineitem($index)" ng-show="invoice.status===1"></i>
-										<input class="form-control" type="text" ng-model="lineitem.description" required ng-show="invoice.status===1" />
-										<span class="input-group-addon" ng-show="invoice.status>1">{{lineitem.description}}</span>
+										<i class="fa fa-remove fa-lg input-group-addon" ng-click="deletelineitem($index)" ng-show="isInvoiceEditable()"></i>
+										<input class="form-control" type="text" ng-model="lineitem.description" required ng-show="isInvoiceEditable()" />
+										<span class="input-group-addon" ng-show="invoice.status>1 && !isInvoiceEditable()">{{lineitem.description}}</span>
 									</div>
 								</td>
 								<td></td>
 								<td></td>
 								<td class="text-left">
-									<input name="lineamount{{$index}}" class="form-control" ng-show="invoice.status===1" style="width:7em;" ng-model="lineitem.amount" required data-parsley-pattern="/^-?[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" ng-disabled="invoice.status!==1" data-parsley-type="number" />
-									<span ng-show="invoice.status>1">{{lineitem.amount | currency:'$'}}</span>
+									<input name="lineamount{{$index}}" class="form-control" ng-show="isInvoiceEditable()" style="width:7em;" ng-model="lineitem.amount" required data-parsley-pattern="/^-?[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" data-parsley-type="number" />
+									<span ng-show="invoice.status>1 && !isInvoiceEditable()">{{lineitem.amount | currency:'$'}}</span>
 								</td>
 
 							</tr>
@@ -226,16 +227,16 @@
 
 							</tr>
 							<tr>
-								<td colspan="4" ng-if="invoice.status<2">
+								<td colspan="4" ng-if="invoice.status<2 || isInvoiceEditable()">
 									<div class="form-group">
 										<label>Notes</label>
 										<textarea class="form-control" ng-model="invoice.notes" rows="4"></textarea>
 									</div>
 								</td>
-								<td ng-if="invoice.status>1">
+								<td ng-if="!isInvoiceEditable()">
 									<em><u>Notes: </u></em>
 								</td>
-								<td class="visible-print" ng-if="invoice.status>1">
+								<td class="visible-print" ng-if="!isInvoiceEditable()">
 									{{invoice.notes}}
 								</td>
 							</tr>
@@ -270,7 +271,7 @@
 
 						<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
 
-						<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && invoice.status!==4" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
+						<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable()" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
 
 
 					</div>

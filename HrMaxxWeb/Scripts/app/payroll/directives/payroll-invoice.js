@@ -100,7 +100,18 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						};
 						$scope.invoice.payments.push(payment);
 					}
-					
+					$scope.isInvoiceEditable = function() {
+						if ($scope.invoice.status !== 4 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
+							return true;
+						else
+							return false;
+					}
+					$scope.isPaymentEditable = function (p) {
+						if (p.status === 1 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
+							return true;
+						else
+							return false;
+					}
 					$scope.paymentRemaining = function() {
 						var paidamount = 0;
 						$.each($scope.invoice.payments, function (index, lineitem) {
@@ -266,8 +277,6 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								
 							});
 						}
-						$scope.datasvc.isBodyOpen = false;
-						
 					}
 					
 					init();

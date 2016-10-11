@@ -43,6 +43,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Company Company { get; set; }
 		public string Courier { get; set; }
 		public string Notes { get; set; }
+		public string ProcessedBy { get; set; }
 		public List<InvoicePayment> Payments { get; set; }
 		public decimal PaidAmount
 		{
@@ -89,6 +90,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			CalculateTotal();
 
 			Status = InvoiceStatus.Draft; 
+			
 
 		}
 		private void AddDeductions(IEnumerable<PayrollDeduction> deds)

@@ -20,7 +20,7 @@ namespace HrMaxx.Common.Repository.Excel
 		}
 		public FileDto GetImportTemplate(string fileName, List<string> columms)
 		{
-			var e = new Infrastructure.Excel.Excel(string.Empty);
+			var e = new Infrastructure.Excel.Excel(_filePath);
 			e.AddWorksheet("Sheet1");
 			int rowCounter = 1;
 			int colummCounter = 1;

@@ -34,12 +34,13 @@
 						<td data-title=" 'Status' " filter="{'status1':'status'}" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
-						<td data-title=" 'Submitted By' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
+						<td data-title=" 'Processed By' " sortable=" 'processedBy' " class="col-sm-1 text-center">
+							{{item.processedBy}}
+						</td>
+						<td data-title=" 'Approved By' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
 							{{item.submittedBy}}
 						</td>
-						<td data-title=" 'Submitted' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
-							{{item.submittedOn | date:'MM/dd/yyyy'}}
-						</td>
+						
 						<td data-title=" 'Delivered By' " sortable=" 'deliveredBy' " class="col-sm-1 text-center">
 							{{item.deliveredBy}}
 						</td>

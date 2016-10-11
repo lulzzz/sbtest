@@ -33,9 +33,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IFileRepository _fileRepository;
 		private readonly IHostService _hostService;
 		private readonly IReportService _reportService;
+		private readonly ICommonService _commonService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -45,7 +46,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_fileRepository = fileRepository;
 			_hostService = hostService;
 			_reportService = reportService;
-			
+			_commonService = commonService;
 		}
 
 
@@ -635,10 +636,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var company = fetchCompany ? _companyService.GetCompanyById(payroll.Company.Id) : payroll.Company;
 				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, payroll.Company.Id);
-				var payrollInvoice = new PayrollInvoice{Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now};
+				var payrollInvoice = new PayrollInvoice{Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName};
 				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company);
 				
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
+				if (!string.IsNullOrWhiteSpace(payroll.Notes))
+				{
+					_commonService.AddToList<Comment>(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, savedInvoice.Id, new Comment{Content = payroll.Notes, TimeStamp = savedInvoice.LastModified});
+				}
 				Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
 				{
 					SavedObject = savedInvoice,

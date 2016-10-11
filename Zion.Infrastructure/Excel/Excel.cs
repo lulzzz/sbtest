@@ -32,13 +32,15 @@ namespace HrMaxx.Infrastructure.Excel
 		private bool _saved;
 		private bool _tempfile;
 		private ExcelWorksheet _worksheet;
+		private string _temporaryPath;
 
 		/// <summary>
 		///   Create instance of excel class
 		/// </summary>
 		/// <param name="filename">Name of excel file to open.  A new file is created if not specified</param>
-		public Excel(string filename = "")
+		public Excel(string path, string filename = "")
 		{
+			_temporaryPath = path;
 			if (!string.IsNullOrEmpty(filename))
 			{
 				_file = new FileInfo(filename);
@@ -86,7 +88,7 @@ namespace HrMaxx.Infrastructure.Excel
 
 		private string TemporaryPath
 		{
-			get { return "c:\\temp\\"; }
+			get { return _temporaryPath; }
 		}
 
 		public List<ExcelWorksheet> Worksheets
@@ -496,8 +498,8 @@ namespace HrMaxx.Infrastructure.Excel
 			if (string.IsNullOrEmpty(TemporaryPath))
 				throw new Exception("TempPath key value has not been set in sharedweb.config file");
 
-			DirectoryInfo d = CreateTempFolder();
-			_file = new FileInfo(d.FullName + "/temp.xlsx");
+			//DirectoryInfo d = CreateTempFolder();
+			_file = new FileInfo(TemporaryPath + "/temp.xlsx");
 
 			_package = new ExcelPackage(_file);
 			_tempfile = true;
