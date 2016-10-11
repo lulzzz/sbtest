@@ -182,9 +182,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						//$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.datasvc.isBodyOpen = false;
-						$scope.minPayDate = moment();
+						$scope.minPayDate = moment().startOf('day');
 						if ($scope.company.payrollDaysInPast > 0) {
-							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast*-1, 'day').toDate();
+							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast * -1, 'day').toDate().startOf('day');
 						}
 					}
 					init();
