@@ -11,7 +11,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 				host: "=host",
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=2.2.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository, hostRepository) {
@@ -78,6 +78,15 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							total = +($scope.invoice.workerCompensationCharges).toFixed(2);
 						}
 						return total;
+					}
+					$scope.updateWC = function(wc) {
+						wc.amount = +(wc.wage * wc.workerCompensation.rate / 100).toFixed(2);
+						var wctotal = 0;
+						$.each($scope.invoice.workerCompensations, function(index, wc1) {
+							wctotal += wc1.amount;
+						});
+						$scope.invoice.workerCompensationCharges = wctotal;
+						$scope.invoice.total = $scope.getTotal();
 					}
 					$scope.addLineItem = function() {
 						var lineitem = {

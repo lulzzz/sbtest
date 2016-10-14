@@ -61,6 +61,7 @@
     <Compile Include="BankAccount.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="CompanyPayrollCube.cs" />
+    <Compile Include="DashboardData.cs" />
     <Compile Include="DataModel\AccountTemplate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>

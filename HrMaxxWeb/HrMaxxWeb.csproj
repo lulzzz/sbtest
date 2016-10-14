@@ -259,6 +259,8 @@
     <Compile Include="Code\Security\HrMaxxViewPage.cs" />
     <Content Include="Areas\Administration\templates\config.html" />
     <Content Include="Areas\Administration\templates\Configurations.html" />
+    <Content Include="Areas\Reports\templates\Dashboard.html" />
+    <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
     <Content Include="Content\ng-tags-input.bootstrap.css" />
     <Content Include="Content\print.css" />
@@ -1321,6 +1323,7 @@
     <Content Include="Scripts\app\reports\directives\other-forms.js" />
     <Content Include="Scripts\app\reports\directives\income-statement.js" />
     <Content Include="Scripts\app\reports\directives\govt-forms.js" />
+    <Content Include="Scripts\app\reports\directives\user-dashboard.js" />
     <Content Include="Scripts\app\reports\directives\worker-compensation-report.js" />
     <Content Include="Scripts\app\reports\directives\deduction-report.js" />
     <Content Include="Scripts\app\reports\directives\payroll-summary.js" />

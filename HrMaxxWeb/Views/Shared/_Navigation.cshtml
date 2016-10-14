@@ -53,6 +53,10 @@
 			{
 				<li><a href="#!/Admin/Host"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
 				<li><a href="#!/Admin/Invoices"><i class="fa fa-home"></i><span>Invoices</span></a></li>
+			}
+			@if (!CurrentUser.IsInRole(RoleTypeEnum.Company.GetDbName()) && !CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))
+			{
+				<li><a href="#!/"><i class="fa fa-bar-chart"></i><span>Dashboard</span></a></li>
 
 			}
 			@if (!CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))
@@ -68,7 +72,7 @@
 				<li class="has-sub">
 					<a href="javascript:;">
 						<b class="caret pull-right"></b>
-						<i class="fa fa-bar-chart"></i>
+						<i class="fa fa-line-chart"></i>
 						<span>Reports</span>
 					</a>
 					<ul class="sub-menu">

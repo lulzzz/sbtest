@@ -8,10 +8,10 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice-list.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice-list.html?v=2.1' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository',
-				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll',
+				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, $anchorScroll) {
 					var dataSvc = {
 						
 						isBodyOpen: true,
@@ -99,12 +99,13 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 
 					$scope.set = function (item) {
 						$scope.selectedInvoice = null;
-						
+						$location.hash('#invoice');
 						if(item){
 							$timeout(function () {
 								
 								$scope.selectedInvoice = angular.copy(item);
-							
+								
+								$anchorScroll();
 							}, 1);
 						}
 
@@ -117,7 +118,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					var getInvoices = function (selectedInvoiceId) {
 						payrollRepository.getInvoicesForHost().then(function (data) {
 							$scope.list = data;
-							$scope.tableParams.reload();
+							//$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							$scope.selectedInvoice = null;
 							if (selectedInvoiceId) {
@@ -146,6 +147,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						var querystring = $location.search();
 						if (querystring.invoice)
 							invoice = querystring.invoice;
+						else if (querystring.company)
+							$scope.tableParams.$params.filter.companyName = querystring.company;
 						getInvoices(invoice);
 					}
 					init();

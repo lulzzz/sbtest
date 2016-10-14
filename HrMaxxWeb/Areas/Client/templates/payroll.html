@@ -117,7 +117,7 @@
 					<div class="col-sm-3">
 						<input class="form-control"
 									 type="number"
-									 ng-model="paytype.amount" required data-parsley-pattern="/^[1-9][0-9]*$/" />
+									 ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
 					</div>
 					<div class="col-sm-1">
 						<button class="btn btn-sm btn-danger" ng-show="!item.id" ng-click="remove($index)"><i class="fa fa-remove"></i></button>

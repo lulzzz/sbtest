@@ -37,13 +37,13 @@
 						<td data-title=" 'Processed By' " sortable=" 'processedBy' " class="col-sm-1 text-center">
 							{{item.processedBy}}
 						</td>
+						<td data-title=" 'Processed On' " sortable=" 'processedOn' " class="col-sm-1 text-center">
+							{{item.processedOn | date:'MM/dd/yyyy'}}
+						</td>
 						<td data-title=" 'Approved By' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
 							{{item.submittedBy}}
 						</td>
 						
-						<td data-title=" 'Delivered By' " sortable=" 'deliveredBy' " class="col-sm-1 text-center">
-							{{item.deliveredBy}}
-						</td>
 						<td data-title=" 'Delivered On' " sortable=" 'deliveredOn' " class="col-sm-1 text-center">
 							{{item.deliveredOn | date:'MM/dd/yyyy'}}
 						</td>
@@ -79,7 +79,6 @@
 						<option value="1">Draft</option>
 						<option value="2">Approved</option>
 						<option value="3">Delivered</option>
-						<option value="3">Delivered</option>
 						<option value="4">Closed</option>
 						<option value="6">Payment Bounced</option>
 						<option value="7">Partial Payment</option>
@@ -90,11 +89,11 @@
 			<!-- end panel -->
 		</div>
 	</div>
-	<div class="panel panel-info" ng-if="selectedInvoice">
-		<div class="panel-heading hidden-print">
+	<div class="panel panel-info" id="invoice">
+		<div class="panel-heading hidden-print" ng-if="selectedInvoice">
 			<h4 class="panel-title">Invoice Details</h4>
 		</div>
-		<div class="panel-body tab-content">
+		<div class="panel-body tab-content" ng-if="selectedInvoice">
 			<form data-parsley-validate="true" name="invoice">
 				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" />
 			</form>

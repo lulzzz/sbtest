@@ -34,14 +34,15 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				Text = event1.NotificationText,
 				ReturnUrl = "#!/Client/Company/?name=" + event1.SavedObject.Name,
 				EventType = event1.EventType,
-				AffectedUsers = users.Distinct().ToList()
+				AffectedUsers = users.Distinct().ToList(),
+				Roles = new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master }
 			});
 
 
 		}
 		public void Consume(EmployeeUpdatedEvent event1)
 		{
-			var users = _userService.GetUsers(event1.SavedObject.CompanyId, event1.SavedObject.Id).Select(u => u.UserId).ToList();
+			var users = _userService.GetUsers(null, event1.SavedObject.CompanyId).Select(u => u.UserId).ToList();
 			
 			Bus.Publish<Notification>(new Notification
 			{

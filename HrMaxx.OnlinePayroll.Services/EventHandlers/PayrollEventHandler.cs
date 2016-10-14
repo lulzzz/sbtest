@@ -75,6 +75,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				Text = "A new invoice has been created for " + event1.SavedObject.Company.Name + " with Invoice date " + event1.SavedObject.InvoiceDate,
 				ReturnUrl = "#!/Admin/Invoices/?invoice=" + event1.SavedObject.Id,
 				EventType = event1.EventType,
+				Roles = new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master },
 				AffectedUsers = users.Distinct().ToList()
 			});
 

@@ -231,6 +231,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.InvoiceNumber = mapped.InvoiceNumber;
 				dbPayrollInvoice.Courier = mapped.Courier;
 				dbPayrollInvoice.Notes = mapped.Notes;
+				dbPayrollInvoice.Balance = mapped.Balance;
+				dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
 			}
 			_dbContext.SaveChanges();
 			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);

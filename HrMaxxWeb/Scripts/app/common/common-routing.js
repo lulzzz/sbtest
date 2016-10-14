@@ -1,6 +1,9 @@
 ﻿common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI', function ($httpProvider, $routeProvider, $locationProvider, zionAPI) {
 	$httpProvider.interceptors.push('authInterceptorService');
 	$routeProvider.when('/', {
+		templateUrl: zionAPI.Web + '/Areas/Reports/templates/Dashboard.html'
+	});
+	$routeProvider.when('/welcome', {
 		templateUrl: zionAPI.Web + '/Areas/Administration/templates/welcome.html'
 	});
 	$routeProvider.when('/Admin/HostList', {
@@ -56,6 +59,9 @@
 	});
 	$routeProvider.when('/Reports/:reportName', {
 		templateUrl: zionAPI.Web + '/Areas/Reports/templates/reports.html'
+	});
+	$routeProvider.when('/Admin/Dashboard', {
+		templateUrl: zionAPI.Web + '/Areas/Reports/templates/Dashboard.html'
 	});
 	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.

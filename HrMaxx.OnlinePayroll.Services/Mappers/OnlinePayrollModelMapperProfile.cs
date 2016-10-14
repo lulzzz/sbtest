@@ -171,6 +171,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.Deductions.Any() ? JsonConvert.SerializeObject(src.Deductions) : string.Empty))
 				.ForMember(dest => dest.Payrments, opt => opt.MapFrom(src => src.Payments.Any() ? JsonConvert.SerializeObject(src.Payments) : string.Empty))
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName))
+				.ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.Payroll, opt => opt.Ignore());
 

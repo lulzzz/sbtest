@@ -45,6 +45,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string EmployeeTaxes { get; set; }
         public string Notes { get; set; }
         public string ProcessedBy { get; set; }
+        public decimal Balance { get; set; }
+        public System.DateTime ProcessedOn { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual Payroll Payroll { get; set; }

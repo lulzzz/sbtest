@@ -37,6 +37,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 			var namedParameters = new List<NamedParameter>();
 			namedParameters.Add(new NamedParameter("domain", ConfigurationManager.AppSettings["Domain"]));
 
+			var sqlCon = new NamedParameter("sqlCon", _connectionString);
+
 			builder.RegisterType<HostRepository>()
 				.WithParameters(namedParameters)
 				.As<IHostRepository>()
@@ -79,6 +81,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<ReportRepository>()
+				.WithParameter(sqlCon)
 				.As<IReportRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

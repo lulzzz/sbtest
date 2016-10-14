@@ -226,6 +226,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
 			CreateMap<PayrollInvoice, PayrollInvoiceResource>()
 				.ForMember(dest => dest.TaxPaneltyConfig, opt => opt.Ignore());
+
+			CreateMap<DashboardRequestResource, DashboardRequest>();
 		}
 	}
 }

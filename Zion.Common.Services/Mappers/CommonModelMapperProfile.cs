@@ -36,7 +36,8 @@ namespace HrMaxx.Common.Services.Mappers
 
 			CreateMap<Models.DataModel.Notification, NotificationDto>();
 				
-			CreateMap<NotificationDto, Models.DataModel.Notification>();
+			CreateMap<NotificationDto, Models.DataModel.Notification>()
+				.ForMember(dest => dest.IsVisible, opt => opt.Ignore());
 
 
 			CreateMap<UserEventLogEntry, UserEventLog>()

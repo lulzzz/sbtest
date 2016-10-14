@@ -321,7 +321,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	{
 		[HrMaxxSecurity(DbName = "Draft")]
 		Draft=1,
-		[HrMaxxSecurity(DbName = "Submitted")]
+		[HrMaxxSecurity(DbName = "Approved")]
 		Submitted=2,
 		[HrMaxxSecurity(DbName = "Delivered")]
 		Delivered = 3,

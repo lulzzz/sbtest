@@ -180,6 +180,21 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, summary.Data);
 		}
 
+		public DashboardData GetDashboardData(DashboardRequest dashboardRequest)
+		{
+			try
+			{
+				return _reportRepository.GetDashboardData(dashboardRequest);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+					"Dashboard for report " + dashboardRequest.Report);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
 		{
 

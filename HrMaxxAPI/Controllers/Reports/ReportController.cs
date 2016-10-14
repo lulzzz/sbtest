@@ -61,5 +61,17 @@ namespace HrMaxxAPI.Controllers.Reports
 			};
 			return response;
 		}
+
+		[HttpPost]
+		[Route(ReportRoutes.GetDashBoardReport)]
+		public DashboardData GetDashboardData(DashboardRequestResource request)
+		{
+			var dashboardRequest = Mapper.Map<DashboardRequestResource, DashboardRequest>(request);
+			if(CurrentUser.Host!=Guid.Empty)
+				dashboardRequest.Host = CurrentUser.Host;
+			dashboardRequest.Role = CurrentUser.Role;
+			return MakeServiceCall(() => _reportService.GetDashboardData(dashboardRequest), "Get Dashboard Data for a Request", true);
+
+		}
 	}
 }

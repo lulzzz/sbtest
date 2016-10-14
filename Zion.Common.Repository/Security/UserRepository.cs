@@ -69,7 +69,7 @@ namespace HrMaxx.Common.Repository.Security
 		public List<UserModel> GetUsers(Guid? hostId, Guid? companyId)
 		{
 			var users = _dbContext.Users.AsQueryable();
-			
+
 			if (hostId.HasValue)
 			{
 				if (companyId.HasValue)
@@ -80,6 +80,11 @@ namespace HrMaxx.Common.Repository.Security
 				{
 					users = users.Where(u => u.Host.Value == hostId.Value && !u.Company.HasValue);
 				}
+			}
+			else
+			{
+				if (companyId.HasValue)
+					users = users.Where(u => u.Company.Value == companyId.Value);
 			}
 			
 			return _mapper.Map<List<User>, List<UserModel>>(users.Distinct().ToList());

@@ -44,6 +44,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Courier { get; set; }
 		public string Notes { get; set; }
 		public string ProcessedBy { get; set; }
+		public DateTime ProcessedOn { get; set; }
 		public List<InvoicePayment> Payments { get; set; }
 		public decimal PaidAmount
 		{
