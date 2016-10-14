@@ -29,7 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollTax> EmployeeTaxes { get; set; }
 
 		public List<PayrollDeduction> Deductions { get; set; } 
-		public List<PayrollWorkerCompensation> WorkerCompensations { get; set; }
+		public List<InvoiceWorkerCompensation> WorkerCompensations { get; set; }
 		public decimal Total { get; set; }
 		public decimal WorkerCompensationCharges { get { return WorkerCompensations.Sum(w => w.Amount); } }
 		public List<MiscFee> MiscCharges { get; set; }
@@ -46,6 +46,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ProcessedBy { get; set; }
 		public DateTime ProcessedOn { get; set; }
 		public List<InvoicePayment> Payments { get; set; }
+		public List<int> PayChecks { get; set; }
+		public List<int> VoidedCreditedChecks { get; set; }
+		public bool ApplyWCMinWageLimit { get; set; }
 		public decimal PaidAmount
 		{
 			get { return Math.Round(Payments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount), 2, MidpointRounding.AwayFromZero); }
@@ -55,14 +58,16 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return Math.Round(Total - PaidAmount, 2, MidpointRounding.AwayFromZero); }
 		}
 
-		public void Initialize(Payroll payroll, List<PayrollInvoice> prevInvoices, decimal envFeePerCheck, Company company)
+		public void Initialize(Payroll payroll, List<PayrollInvoice> prevInvoices, decimal envFeePerCheck, Company company, List<PayCheck> voidedPayChecks)
 		{
-			WorkerCompensations = new List<PayrollWorkerCompensation>();
+			WorkerCompensations = new List<InvoiceWorkerCompensation>();
 			EmployerTaxes = new List<PayrollTax>();
 			EmployeeTaxes = new List<PayrollTax>();
 			MiscCharges = new List<MiscFee>();
 			Payments = new List<InvoicePayment>();
 			Deductions = new List<PayrollDeduction>();
+			PayChecks = new List<int>();
+			VoidedCreditedChecks = new List<int>();
 			
 
 			InvoiceNumber = prevInvoices.Any() ? prevInvoices.Max(i => i.InvoiceNumber) + 1 : 1001;
@@ -75,7 +80,9 @@ namespace HrMaxx.OnlinePayroll.Models
 			GrossWages = payroll.TotalGrossWage;
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddTaxes(pc.Taxes));
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation));
+			
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddDeductions(pc.Deductions));
+			PayChecks.AddRange(payroll.PayChecks.Where(pc=>!pc.IsVoid).Select(pc=>pc.Id));
 			
 			NoOfChecks = payroll.PayChecks.Count(pc => !pc.IsVoid);
 			
@@ -83,6 +90,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			CalculateAdminFee(payroll);
 			
 			CalculateRecurringCharges(prevInvoices, payroll);
+			HandleVoidedChecks(prevInvoices, company, voidedPayChecks);
 			CalculateCASUTA(company, payroll.PayDay.Year);
 
 			EmployeeContribution = payroll.TotalGrossWage - payroll.TotalNetWage;
@@ -90,10 +98,45 @@ namespace HrMaxx.OnlinePayroll.Models
 			EnvironmentalFee = CompanyInvoiceSetup.ApplyEnvironmentalFee ? envFeePerCheck*NoOfChecks : 0;
 			CalculateTotal();
 
-			Status = InvoiceStatus.Draft; 
-			
+			Status = InvoiceStatus.Draft;
+			ProcessedOn = DateTime.Now;
 
 		}
+
+		private void HandleVoidedChecks(List<PayrollInvoice> prevInvoices, Company company, List<PayCheck> voidedPayChecks)
+		{
+			voidedPayChecks.ForEach(vpc =>
+			{
+				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)))
+				{
+					var prevInv = prevInvoices.First(pi => pi.PayChecks.Contains(vpc.Id));
+					var pcCredit = new MiscFee
+					{
+						PayCheckId = vpc.Id,
+						RecurringChargeId = -1,
+						Amount = 0,
+						Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod==EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
+						isEditable = false
+					};
+					if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+					{
+						pcCredit.Amount += Math.Round(vpc.GrossWage, 2, MidpointRounding.AwayFromZero);
+						pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
+					}
+					else if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
+					{
+						pcCredit.Amount += Math.Round(vpc.EmployeeTaxes, 2, MidpointRounding.AwayFromZero);
+						pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
+					
+
+					}
+					pcCredit.Amount *= -1;
+					VoidedCreditedChecks.Add(vpc.Id);
+					MiscCharges.Add(pcCredit);
+				}
+			});
+		}
+
 		private void AddDeductions(IEnumerable<PayrollDeduction> deds)
 		{
 			deds.Where(d=>d.Deduction.Type.Id==4).ToList().ForEach(d =>
@@ -209,8 +252,9 @@ namespace HrMaxx.OnlinePayroll.Models
 					{
 						RecurringChargeId = rc.Id,
 						Amount = calcAmount,
-						Description = rc.Description
-
+						Description = rc.Description,
+						PayCheckId = 0,
+						isEditable = true
 					});
 				}
 			});
@@ -218,8 +262,9 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				RecurringChargeId = d.Deduction.Id*-1,
 				Amount = d.Amount*-1,
-				Description = d.Name
-
+				Description = d.Name,
+				PayCheckId = 0,
+				isEditable = true
 			}));
 		
 		}
@@ -233,11 +278,20 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					wc.Amount += Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
 					wc.Wage += Math.Round(wcomp.Wage, 2, MidpointRounding.AwayFromZero);
+					wc.OriginalAmount = wc.Amount;
+					wc.OriginalWage = wc.Wage;
 				}
 				else
 				{
-					var temp = JsonConvert.SerializeObject(wcomp);
-					WorkerCompensations.Add(JsonConvert.DeserializeObject<PayrollWorkerCompensation>(temp));
+					var temp = new InvoiceWorkerCompensation
+					{
+						Amount = wcomp.Amount,
+						OriginalAmount = wcomp.Amount,
+						OriginalWage = wcomp.Wage,
+						WorkerCompensation = wcomp.WorkerCompensation,
+						Wage = wcomp.Wage
+					};
+					WorkerCompensations.Add(temp);
 				}
 			}
 		}
@@ -251,10 +305,20 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class MiscFee
 	{
 		public int RecurringChargeId { get; set; }
+		public int PayCheckId { get; set; }
 		public string Description { get; set; }
 		public decimal Amount { get; set; }
 		public decimal Rate { get; set; }
+		public bool isEditable { get; set; }
 	}
 
-	
+	public class InvoiceWorkerCompensation
+	{
+		public CompanyWorkerCompensation WorkerCompensation { get; set; }
+		public decimal Wage { get; set; }
+		public decimal Amount { get; set; }
+		public decimal OriginalWage { get; set; }
+		public decimal OriginalAmount { get; set; }
+		
+	}
 }

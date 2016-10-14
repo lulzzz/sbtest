@@ -91,6 +91,12 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public bool PEOASOCoCheck { get; set; }
 
+		public Guid? InvoiceId { get; set; }
+		public DateTime? VoidedOn { get; set; }
+		public DateTime? TaxesPaidOn { get; set; }
+		public Guid? CreditInvoiceId { get; set; }
+		public DateTime? TaxesCreditedOn { get; set; }
+
 		public string PaymentMethodText
 		{
 			get { return PaymentMethod.GetDbName(); }

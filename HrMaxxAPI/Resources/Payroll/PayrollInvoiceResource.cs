@@ -28,8 +28,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal EnvironmentalFee { get; set; }
 		public List<PayrollTaxResource> EmployerTaxes { get; set; }
 		public List<PayrollTaxResource> EmployeeTaxes { get; set; }
-		public List<PayrollDeductionResource> Deductions { get; set; } 
-		public List<PayrollWorkerCompensationResource> WorkerCompensations { get; set; }
+		public List<PayrollDeductionResource> Deductions { get; set; }
+		public List<InvoiceWorkerCompensation> WorkerCompensations { get; set; }
 		public List<MiscFee> MiscCharges { get; set; }
 
 		public decimal WorkerCompensationCharges { get; set; }
@@ -51,7 +51,9 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal PaidAmount { get; set; }
 		
 		public decimal Balance { get; set; }
-
+		public List<int> PayChecks { get; set; }
+		public List<int> VoidedCreditedChecks { get; set; }
+		public bool ApplyWCMinWageLimit { get; set; }
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }

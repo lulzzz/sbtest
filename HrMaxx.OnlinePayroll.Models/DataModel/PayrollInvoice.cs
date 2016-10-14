@@ -14,6 +14,13 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class PayrollInvoice
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public PayrollInvoice()
+        {
+            this.Payrolls = new HashSet<Payroll>();
+            this.PayrollPayChecks = new HashSet<PayrollPayCheck>();
+        }
+    
         public System.Guid Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public System.Guid PayrollId { get; set; }
@@ -47,8 +54,15 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string ProcessedBy { get; set; }
         public decimal Balance { get; set; }
         public System.DateTime ProcessedOn { get; set; }
+        public string PayChecks { get; set; }
+        public string VoidedCreditChecks { get; set; }
+        public bool ApplyWCMinWageLimit { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual Payroll Payroll { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Payroll> Payrolls { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
     }
 }

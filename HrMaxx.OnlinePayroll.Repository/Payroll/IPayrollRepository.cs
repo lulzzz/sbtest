@@ -29,5 +29,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		PayrollInvoice GetPayrollInvoiceById(Guid id);
 		void DeletePayrollInvoice(Guid invoiceId);
 		void SavePayCheck(PayCheck pc);
+		List<PayCheck> GetUnclaimedVoidedchecks(Guid companyId);
+		List<Models.Payroll> GetAllPayrolls();
 	}
 }

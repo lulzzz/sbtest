@@ -10,7 +10,55 @@ IF NOT EXISTS(SELECT *
                  AND COLUMN_NAME = 'ProcessedOn')
 Alter table PayrollInvoice Add ProcessedOn DateTime not null Default(getdate());
 Go
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'PayrollInvoice'
+                 AND COLUMN_NAME = 'PayChecks')
+Alter table PayrollInvoice Add PayChecks varchar(max) not null Default('');
+Alter table PayrollInvoice Add VoidedCreditChecks varchar(max) not null Default('');
+Alter table PayrollInvoice Add ApplyWCMinWageLimit bit not null Default(0);
+Go
 Update PayrollInvoice Set ProcessedOn = LastModified;
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'PayrollPayCheck'
+                 AND COLUMN_NAME = 'InvoiceId')
+Alter table PayrollPayCheck Add InvoiceId uniqueidentifier;
+Alter table PayrollPayCheck Add VoidedOn DateTime;
+Alter table PayrollPayCheck Add TaxesPaidOn DateTime;
+Alter table PayrollPayCheck Add CreditInvoiceId uniqueidentifier;
+Alter table PayrollPayCheck Add TaxesCreditedOn DateTime;
+Go
+
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'PayrollPayCheck'
+                 AND COLUMN_NAME = 'InvoiceId')
+ALTER TABLE [dbo].[PayrollPayCheck]  WITH CHECK ADD  CONSTRAINT [FK_PayrollPayCheck_PayrollInvoice] FOREIGN KEY([InvoiceId])
+REFERENCES [dbo].[PayrollInvoice] ([Id])
+ON DELETE SET NULL
+GO
+
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'PayrollPayCheck'
+                 AND COLUMN_NAME = 'InvoiceId')
+ALTER TABLE [dbo].[PayrollPayCheck]  WITH CHECK ADD  CONSTRAINT [FK_PayrollPayCheck_PayrollInvoice11] FOREIGN KEY(CreditInvoiceId)
+REFERENCES [dbo].[PayrollInvoice] ([Id])
+ON DELETE SET NULL
+GO
+
+
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'PayrollPayCheck'
+                 AND COLUMN_NAME = 'InvoiceId')
+ALTER TABLE [dbo].[Payroll]  WITH CHECK ADD  CONSTRAINT [FK_Payroll_PayrollInvoice] FOREIGN KEY([InvoiceId])
+REFERENCES [dbo].[PayrollInvoice] ([Id])
+ON DELETE SET NULL
+GO
+
+
 
 /****** Object:  StoredProcedure [dbo].[GetPayrollChartData]    Script Date: 13/10/2016 3:43:32 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetPayrollChartData]') AND type in (N'P', N'PC'))

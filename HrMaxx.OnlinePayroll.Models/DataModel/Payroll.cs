@@ -39,5 +39,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }
+        public virtual PayrollInvoice PayrollInvoice { get; set; }
     }
 }

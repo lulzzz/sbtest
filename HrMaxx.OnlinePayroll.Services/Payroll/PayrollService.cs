@@ -123,7 +123,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							paycheck.WCAmount = Math.Round(paycheck.GrossWage * paycheck.Employee.WorkerCompensation.Rate /100, 2, MidpointRounding.AwayFromZero);
 							paycheck.WorkerCompensation = new PayrollWorkerCompensation
 							{
-								Wage = paycheck.Employee.WorkerCompensation.MinGrossWage.HasValue ? (paycheck.GrossWage < paycheck.Employee.WorkerCompensation.MinGrossWage.Value ? paycheck.Employee.WorkerCompensation.MinGrossWage.Value : paycheck.GrossWage) : paycheck.GrossWage,
+								Wage = paycheck.GrossWage,
 								WorkerCompensation = paycheck.Employee.WorkerCompensation,
 								Amount = paycheck.WCAmount,
 								YTD =
@@ -637,7 +637,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var company = fetchCompany ? _companyService.GetCompanyById(payroll.Company.Id) : payroll.Company;
 				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, payroll.Company.Id);
 				var payrollInvoice = new PayrollInvoice{Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName};
-				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company);
+				var voidedPayChecks = _payrollRepository.GetUnclaimedVoidedchecks(payroll.Company.Id);
+				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 				
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
 				if (!string.IsNullOrWhiteSpace(payroll.Notes))
@@ -748,24 +749,25 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public Models.Payroll FixPayrollData(Guid payrollId)
+		public List<Models.Payroll> FixPayrollData()
 		{
 			try
 			{
-				var payroll = _payrollRepository.GetPayrollById(payrollId);
-				payroll.PayChecks.ForEach(pc =>
+				var payrolls = _payrollRepository.GetAllPayrolls();
+				payrolls.ForEach(payroll => payroll.PayChecks.ForEach(pc =>
 				{
 					if (pc.WorkerCompensation != null)
 					{
 						pc.WorkerCompensation.Wage = pc.GrossWage;
 						_payrollRepository.SavePayCheck(pc);
 					}
-				});
-				return payroll;
+				}));
+				
+				return payrolls;
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Fix Payroll Data with id=" + payrollId);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Fix Payroll Data for all" );
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

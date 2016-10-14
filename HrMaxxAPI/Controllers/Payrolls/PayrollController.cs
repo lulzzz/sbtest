@@ -43,9 +43,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.FixPayrollData)]
-		public HttpStatusCode FixPayrollData(Guid payrollId)
+		public HttpStatusCode FixPayrollData()
 		{
-			var done = MakeServiceCall(() => _payrollService.FixPayrollData(payrollId), "Fix payroll data", true);
+			var done = MakeServiceCall(() => _payrollService.FixPayrollData(), "Fix payroll data", true);
 			if (done != null)
 				return HttpStatusCode.OK;
 			return HttpStatusCode.ExpectationFailed;

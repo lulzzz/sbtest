@@ -79,13 +79,19 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						}
 						return total;
 					}
-					$scope.updateWC = function(wc) {
-						wc.amount = +(wc.wage * wc.workerCompensation.rate / 100).toFixed(2);
+					$scope.updateWC = function() {
 						var wctotal = 0;
-						$.each($scope.invoice.workerCompensations, function(index, wc1) {
+						$.each($scope.invoice.workerCompensations, function (index, wc1) {
+							if ($scope.invoice.applyWCMinWageLimit && wc1.workerCompensation.minGrossWage && wc1.originalWage < wc1.workerCompensation.minGrossWage)
+								wc1.wage = wc1.workerCompensation.minGrossWage;
+							else {
+								wc1.wage = wc1.originalWage;
+							}
+							
+							wc1.amount = +(wc1.wage * wc1.workerCompensation.rate / 100).toFixed(2);
 							wctotal += wc1.amount;
 						});
-						$scope.invoice.workerCompensationCharges = wctotal;
+						$scope.invoice.workerCompensationCharges = +wctotal.toFixed(2);
 						$scope.invoice.total = $scope.getTotal();
 					}
 					$scope.addLineItem = function() {
@@ -132,7 +138,10 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						return +($scope.invoice.total - paidamount).toFixed(2);
 					}
 					$scope.unsavedPayments = false;
-					$scope.deletelineitem = function(index) {
+					$scope.deletelineitem = function (index, lineitem) {
+						if (lineitem.payCheckId) {
+							$scope.invoice.voidedCreditedChecks.splice($scope.invoice.voidedCreditedChecks.indexOf(lineitem.payCheckId), 1);
+						}
 						$scope.invoice.miscCharges.splice(index, 1);
 						
 					}

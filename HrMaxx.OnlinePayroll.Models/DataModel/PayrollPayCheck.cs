@@ -54,9 +54,15 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
         public string WorkerCompensation { get; set; }
         public bool PEOASOCoCheck { get; set; }
+        public Nullable<System.Guid> InvoiceId { get; set; }
+        public Nullable<System.DateTime> VoidedOn { get; set; }
+        public Nullable<System.DateTime> TaxesPaidOn { get; set; }
+        public Nullable<System.Guid> CreditInvoiceId { get; set; }
+        public Nullable<System.DateTime> TaxesCreditedOn { get; set; }
     
         public virtual Payroll Payroll { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }
+        public virtual PayrollInvoice PayrollInvoice { get; set; }
     }
 }

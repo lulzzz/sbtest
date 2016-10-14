@@ -10,8 +10,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice-list.html?v=2.1' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll',
-				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, $anchorScroll) {
+			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll','anchorSmoothScroll',
+				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, anchorSmoothScroll) {
 					var dataSvc = {
 						
 						isBodyOpen: true,
@@ -99,13 +99,15 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 
 					$scope.set = function (item) {
 						$scope.selectedInvoice = null;
-						$location.hash('#invoice');
+						
 						if(item){
 							$timeout(function () {
 								
 								$scope.selectedInvoice = angular.copy(item);
-								
-								$anchorScroll();
+								$location.hash('invoice');
+
+								// call $anchorScroll()
+								anchorSmoothScroll.scrollTo('invoice');
 							}, 1);
 						}
 

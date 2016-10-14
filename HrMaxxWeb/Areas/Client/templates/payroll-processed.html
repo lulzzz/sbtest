@@ -50,7 +50,7 @@
 				<td>{{listitem.statusText}}</td>
 				<td>
 					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2? 'review' : 'view'}}</button>
-					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void1</button>
+					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void</button>
 					<button class="btn btn-sm btn-success" ng-show="item.status>2 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-print m-r-5"></i> print</button>
 				</td>
 				

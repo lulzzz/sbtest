@@ -105,6 +105,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			{
 				pc.IsVoid = paycheck.IsVoid;
 				pc.Status = (int)paycheck.Status;
+				pc.VoidedOn = DateTime.Now;
 				pc.LastModified = DateTime.Now;
 				pc.LastModifiedBy = name;
 				_dbContext.SaveChanges();
@@ -209,13 +210,20 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
 			var dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
 			var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollInvoice.PayrollId);
+			var dbPayChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.PayChecks.Any(pc1 => pc1 == pc.Id)).ToList();
+			var dbCreditedChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.VoidedCreditedChecks.Any(vpc => vpc == pc.Id) && pc.IsVoid && pc.InvoiceId.HasValue).ToList();
 			if (dbPayrollInvoice == null)
 			{
 				_dbContext.PayrollInvoices.Add(mapped);
 				dbPayroll.InvoiceId = mapped.Id;
+				dbPayChecks.ForEach(pc=>pc.InvoiceId=mapped.Id);
+				dbCreditedChecks.ForEach(pc=>pc.CreditInvoiceId=mapped.Id);
 			}
 			else
 			{
+				var linkedVoidedChecks = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == dbPayrollInvoice.Id).ToList();
+				linkedVoidedChecks.ForEach(lvc=>lvc.CreditInvoiceId=null);
+				dbCreditedChecks.ForEach(pc=>pc.CreditInvoiceId=dbPayrollInvoice.Id);
 				dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
 				dbPayrollInvoice.Total = mapped.Total;
 				dbPayrollInvoice.LastModified = mapped.LastModified;
@@ -233,6 +241,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.Notes = mapped.Notes;
 				dbPayrollInvoice.Balance = mapped.Balance;
 				dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
+				dbPayrollInvoice.ApplyWCMinWageLimit = mapped.ApplyWCMinWageLimit;
 			}
 			_dbContext.SaveChanges();
 			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
@@ -258,6 +267,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);
 			if (db != null)
 			{
+				var creditInvoices = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == invoiceId).ToList();
+				creditInvoices.ForEach(ci=>ci.CreditInvoiceId=null);
 				db.Payroll.InvoiceId = null;
 				_dbContext.PayrollInvoices.Remove(db);
 				_dbContext.SaveChanges();
@@ -273,6 +284,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPaycheck.WorkerCompensation = mapped.WorkerCompensation;
 				_dbContext.SaveChanges();
 			}
+		}
+
+		public List<PayCheck> GetUnclaimedVoidedchecks(Guid companyId)
+		{
+			var dbChecks =
+				_dbContext.PayrollPayChecks.Where(pc => pc.CompanyId==companyId && pc.IsVoid && pc.InvoiceId.HasValue && !pc.CreditInvoiceId.HasValue);
+			return _mapper.Map<List<PayrollPayCheck>, List<PayCheck>>(dbChecks.ToList());
+		}
+
+		public List<Models.Payroll> GetAllPayrolls()
+		{
+			var payrolls = _dbContext.Payrolls.ToList();
+			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls);
 		}
 	}
 }

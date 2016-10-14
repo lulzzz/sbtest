@@ -10,8 +10,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll','anchorSmoothScroll',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, anchorSmoothScroll) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
@@ -295,8 +295,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					$scope.viewInvoice = function($event, payroll) {
-						$event.stopPropagation();
+						
 						$scope.selectedInvoice = payroll.invoice;
+						$timeout(function () {
+							$location.hash("invoice");
+							anchorSmoothScroll.scrollTo('invoice');
+						});
 					}
 					$scope.updateSelectedInvoice = function (invoice) {
 						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
