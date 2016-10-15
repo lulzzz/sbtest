@@ -701,6 +701,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
 						{
 							invoice.SubmittedOn = DateTime.Now;
+							invoice.InvoiceDate = invoice.SubmittedOn.Value;
 							invoice.SubmittedBy = invoice.UserName;
 						}
 						if (dbIncvoice.Status == InvoiceStatus.Submitted && invoice.Status == InvoiceStatus.Delivered)
@@ -712,7 +713,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							if (invoice.Balance == 0)
 								invoice.Status = InvoiceStatus.Paid;
-							else if (invoice.Balance < invoice.Total)
+							else if (invoice.Balance <= invoice.Total)
 								invoice.Status = invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)
 									? InvoiceStatus.PaymentBounced
 									: InvoiceStatus.PartialPayment;

@@ -379,8 +379,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							$scope.selected = null;
-							dataSvc.isBodyOpen = true;
+							$scope.set(result);
 							addAlert('successfully saved employee', 'success');
 						}, function (error) {
 							addAlert('error saving employee', 'danger');

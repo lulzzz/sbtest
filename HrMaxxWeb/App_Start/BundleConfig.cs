@@ -77,6 +77,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular1.5/i18n/angular-locale_en-us.js",
 				"~/Scripts/angular1.5/angular-animate.min.js",
 				"~/Scripts/angular1.5/angular-route.min.js",
+				"~/Scripts/angular1.5/angular-resource.min.js",
 				"~/Scripts/angular1.5/angular-loader.min.js",
 				"~/Scripts/angular1.5/angular-ui/ui-bootstrap-tpls-2.1.3.min.js",
 				"~/Scripts/angular1.5/angular-file-upload/angular-file-upload.js",
@@ -84,6 +85,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular1.5/angular-sanitize.min.js",
 				"~/Scripts/angular1.5/angular-ui-tree/angular-ui-tree.js",
 				"~/Scripts/angular1.5/angular-loading-bar/loading-bar.js",
+				
 				"~/Scripts/angular1.5/angular-local-storage/angular-local-storage.min.js",
 				"~/Scripts/angular1.5/angular-google-maps.js",
 				"~/Scripts/angular1.5/ng-google-chart.js",

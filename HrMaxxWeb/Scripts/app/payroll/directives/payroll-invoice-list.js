@@ -130,8 +130,10 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							} else {
 								$scope.set(null);
 							}
+							
 						}, function (error) {
 							$scope.addAlert('error getting invoices', 'danger');
+							
 						});
 					}
 					

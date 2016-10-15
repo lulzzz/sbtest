@@ -75,6 +75,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 									title: "Age"
 								},
 								seriesType: "bars",
+								isStacked: true,
 								'width': '100%',
 								'height': 400,
 								'chartKey': 'InvoiceChartData'
@@ -104,7 +105,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 									title: "Days to Next Payroll"
 								},
 								seriesType: "bars",
-
+								isStacked: true,
 								'width': '50%',
 								'height': 400,
 								'chartKey': 'PayrollChartData'

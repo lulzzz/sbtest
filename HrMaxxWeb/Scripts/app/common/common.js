@@ -1,4 +1,4 @@
-var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable', 'ngTable', 'angularFileUpload', 'restangular', 'ui.mask', 'ngSanitize', 'angularjs-dropdown-multiselect', 'ngRoute', 'ngTagsInput', 'googlechart']);
+var common = angular.module('common', ['ngAnimate', 'LocalStorageModule', 'ui.bootstrap', 'angular-loading-bar', 'mgcrea.ngStrap.popover', 'xeditable', 'ngTable', 'angularFileUpload', 'restangular', 'ui.mask', 'ngSanitize', 'angularjs-dropdown-multiselect', 'ngRoute', 'ngTagsInput', 'googlechart', 'ngResource']);
 
 common.service('anchorSmoothScroll', function () {
 
@@ -188,4 +188,6 @@ common.filter('tel', function () {
 		return (country + " (" + city + ") " + number).trim();
 	};
 });
+
+
 
