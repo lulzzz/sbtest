@@ -5,6 +5,7 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -45,7 +46,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public Models.Company SaveCompany(Models.Company company)
 		{
 			var dbMappedCompany = _mapper.Map<Models.Company, Models.DataModel.Company>(company);
-			var dbCompany = _dbContext.Companies.FirstOrDefault(c => c.Id == company.Id);
+			var dbCompany = _dbContext.Companies.FirstOrDefault(c => c.Id == company.Id || c.FederalEIN==dbMappedCompany.FederalEIN);
 			if (dbCompany == null)
 			{
 				_dbContext.Companies.Add(dbMappedCompany);
@@ -312,9 +313,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<CompanyAccount, Account>(mapped);
 		}
 
-		public bool CompanyExists(Guid companyId)
+		public bool CompanyExists(Guid companyId, string federalEIN)
 		{
-			return _dbContext.Companies.Any(c => c.Id == companyId);
+			var fein = Crypto.Encrypt(federalEIN);
+			return _dbContext.Companies.Any(c => c.Id == companyId || c.FederalEIN.Equals(fein));
 		}
 
 		public List<Employee> GetEmployeeList(Guid companyId)

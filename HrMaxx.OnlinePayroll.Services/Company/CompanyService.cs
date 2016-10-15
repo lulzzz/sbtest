@@ -50,7 +50,7 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var exists = _companyRepository.CompanyExists(company.Id);
+				var exists = _companyRepository.CompanyExists(company.Id, company.FederalEIN);
 				var notificationText = !exists ? "A new Company {0} has been created" : "{0} has been updated";
 				var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 				using (var txn = TransactionScopeHelper.Transaction())

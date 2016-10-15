@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		VendorCustomer SaveVendorCustomer(VendorCustomer mappedResource);
 		List<Account> GetCompanyAccounts(Guid companyId);
 		Account SaveCompanyAccount(Account mappedResource);
-		bool CompanyExists(Guid companyId);
+		bool CompanyExists(Guid companyId, string name);
 		List<Employee> GetEmployeeList(Guid companyId);
 		Employee SaveEmployee(Employee mappedResource);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction);
