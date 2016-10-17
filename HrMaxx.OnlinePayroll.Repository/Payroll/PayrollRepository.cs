@@ -243,6 +243,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.Balance = mapped.Balance;
 				dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
 				dbPayrollInvoice.ApplyWCMinWageLimit = mapped.ApplyWCMinWageLimit;
+				dbPayrollInvoice.VoidedCreditChecks = mapped.VoidedCreditChecks;
 			}
 			_dbContext.SaveChanges();
 			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);

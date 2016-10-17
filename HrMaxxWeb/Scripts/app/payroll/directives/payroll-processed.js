@@ -10,7 +10,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=2.1.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
@@ -20,6 +20,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					$scope.cancel = function () {
 						if ($scope.item.status > 2) {
 							$scope.$parent.$parent.committed = null;
+							$scope.$parent.$parent.selectedInvoice = null;
 						} else {
 							$.each($scope.item.payChecks, function (index1, paycheck) {
 								paycheck.employeeNo = paycheck.employee.employeeNo;
@@ -38,6 +39,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						
 						$scope.datasvc.isBodyOpen = true;
 					}
+					
 					$scope.getDocumentUrl = function (check) {
 						return zionAPI.URL + 'Payroll/Print/'  + check.documentId + '/' + check.payrollId + '/' + check.id ;
 					};

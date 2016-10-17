@@ -21,6 +21,66 @@
 					
 				</div>
 			</div>
+			<br />
+			<br />
+			<div class="row col-sm-12">
+				<div class="col-md-6">
+					<table class="table table-bordered table-condensed" ng-show="data.approachingPayrolls.length>1">
+						<thead>
+							<tr>
+								<th colspan="4">Companies with Payrolls without Invoice</th>
+							</tr>
+							<tr>
+								<th>Host</th>
+								<th>Company</th>
+								<th>Number of payrolls</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="ctx in data.payrollsWithoutInvoice track by $index" ng-if="$index>0">
+								<td ng-repeat="d in ctx track by $index" ng-if="$index>1">
+									{{d}}
+								</td>
+								<td>
+									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
+								</td>
+
+							</tr>
+						</tbody>
+					</table>
+
+
+
+				</div>
+				<div class="col-sm-6">
+					<table class="table table-bordered table-condensed" ng-show="data.approachingPayrolls.length>1">
+						<thead>
+							<tr>
+								<th colspan="4">Companies with Approaching Payrolls</th>
+							</tr>
+							<tr>
+								<th>Host</th>
+								<th>Company</th>
+								<th>Next Payroll Due</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="ctx in data.approachingPayrolls track by $index" ng-if="$index>0">
+								<td ng-repeat="d in ctx track by $index" ng-if="$index>1">
+									{{d}}
+								</td>
+								<td>
+									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
+								</td>
+								
+							</tr>
+						</tbody>
+					</table>
+					
+				</div>
+			</div>
 			
 			<br />
 		</div>

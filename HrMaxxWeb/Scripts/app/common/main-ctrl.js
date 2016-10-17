@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$rootScope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams', '$document',
-	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document) {
+	'$scope', '$rootScope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window',
+	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
@@ -45,7 +45,8 @@
 					year: 0,
 					quarter: 0
 				}
-			}
+			},
+			
 		};
 		$scope.data = dataSvc;
 		
@@ -83,7 +84,29 @@
 			}
 		};
 		
-		
+		$scope.setHostandCompany = function (hostId, companyId, url) {
+			if(!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id!==hostId))
+				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
+			
+			if (dataSvc.selectedHost) {
+				if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
+					dataSvc.selectedCompany = null;
+					companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function(data) {
+						dataSvc.companies = data;
+						var selected = $filter('filter')(dataSvc.companies, { id: companyId })[0];
+						dataSvc.selectedCompany = selected;
+						$window.location.href = url;
+					}, function(erorr) {
+						$scope.addAlert('error getting company list', 'danger');
+					});
+					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+				} else {
+					$window.location.href = url;
+				}
+				
+			}
+		}
+
 		$scope.getCompanies = function () {
 			companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
 				dataSvc.companies = data;
@@ -92,7 +115,7 @@
 					dataSvc.selectedCompany = selected;
 				}
 			}, function (erorr) {
-				addAlert('error getting company list', 'danger');
+				$scope.addAlert('error getting company list', 'danger');
 			});
 		}
 		$scope.hostSelected = function () {

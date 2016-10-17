@@ -65,17 +65,20 @@ namespace HrMaxx.OnlinePayroll.Services
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
+					savedcompany = _companyRepository.GetCompanyById(savedcompany.Id);
 					txn.Complete();
-					Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
-					{
-						SavedObject = savedcompany,
-						UserId = savedcompany.UserId,
-						TimeStamp = DateTime.Now,
-						NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedcompany.Name), savedcompany.UserName),
-						EventType = eventType
-					});
 					return savedcompany;
+					//Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
+					//{
+					//	SavedObject = savedcompany,
+					//	UserId = savedcompany.UserId,
+					//	TimeStamp = DateTime.Now,
+					//	NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedcompany.Name), savedcompany.UserName),
+					//	EventType = eventType
+					//});
+					
 				}
+				
 			}
 			catch (Exception e)
 			{

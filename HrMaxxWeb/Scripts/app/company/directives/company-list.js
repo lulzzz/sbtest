@@ -71,7 +71,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 								rate: taxyearrate.rate
 							});
 						});
-						$scope.setCompany(selectedCompany);
+						$scope.setCompany(selectedCompany, 1);
 					}
 
 					$scope.tableData = [];
@@ -114,8 +114,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedCompany = null;
 						$scope.data.isBodyOpen = true;
 					}
-
-					$scope.setCompany = function (item) {
+					
+					$scope.setCompany = function (item, tab) {
 						$scope.selectedCompany = null;
 						$timeout(function () {
 							$scope.selectedCompany = angular.copy(item);
@@ -167,6 +167,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 									}
 								});
 							});
+
+							$scope.tab = tab;
+
 						}, 1);
 
 
@@ -438,9 +441,10 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							$scope.setCompany(result);
+							$scope.setCompany(result, 2);
 							$rootScope.$broadcast('companyUpdated', { company: result });
 							addAlert('successfully saved Company', 'success');
+							
 						}, function (error) {
 							addAlert('error saving Company', 'danger');
 						});
@@ -485,13 +489,13 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						if ($scope.mainData.userCompany !== '00000000-0000-0000-0000-000000000000') {
 							var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userCompany }, true)[0];
 							if (exists1) {
-								$scope.setCompany(exists1);
+								$scope.setCompany(exists1, 1);
 							}
 						}
 						else if (querystring.name) {
 							var exists = $filter('filter')($scope.list, { name: querystring.name }, true)[0];
 							if (exists) {
-								$scope.setCompany(exists);
+								$scope.setCompany(exists, 1);
 							}
 						}
 					}

@@ -18,7 +18,7 @@
 				</div>
 				<div class="row" ng-show="list.length>0">
 					<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
-						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedContact(item)" ng-class="{'success':selectedContact===item}">
+						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':selectedContact.id===item.id}">
 							<td data-title="' No'" class="col-sm-1">
 								{{$index+1}}
 							</td>

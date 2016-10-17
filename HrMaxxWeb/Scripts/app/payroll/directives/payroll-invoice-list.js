@@ -79,8 +79,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						$scope.list.push(invoice);
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
-						if(invoice.status!==3)
-							$scope.cancel();
+						
 					}
 					$scope.deleteInvoice = function(invoice) {
 						var match = $filter('filter')($scope.list, { id: invoice.id })[0];

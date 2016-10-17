@@ -1095,7 +1095,7 @@ var App = function () {
 		    this.initTopMenu();
 		    this.initPageLoad();
 		    this.initComponent();
-		    
+		    $('[data-toggle="tooltip"]').tooltip();
 		},
 		initSidebar: function() {
 			handleSidebarMenu();

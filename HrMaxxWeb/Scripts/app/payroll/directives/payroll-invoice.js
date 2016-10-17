@@ -11,7 +11,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 				host: "=host",
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=2.2.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=2.3.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository, hostRepository) {
@@ -98,7 +98,9 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						var lineitem = {
 							description:'',
 							amount: 0,
-							recurringChargeId:0
+							recurringChargeId: 0,
+							payCheckId: -1,
+							isEditable:true
 						}
 						$scope.invoice.miscCharges.push(lineitem);
 						
@@ -143,6 +145,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							$scope.invoice.voidedCreditedChecks.splice($scope.invoice.voidedCreditedChecks.indexOf(lineitem.payCheckId), 1);
 						}
 						$scope.invoice.miscCharges.splice(index, 1);
+						$scope.invoice.miscFees -= +lineitem.amount.toFixed(2);
+						$scope.invoice.total = $scope.getTotal();
 						
 					}
 					$scope.deletepayment = function (index) {

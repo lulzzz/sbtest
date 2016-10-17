@@ -46,8 +46,10 @@
 				<td>{{listitem.netWage | currency:"$"}}</td>
 				<td>{{listitem.employerTaxes | currency:"$"}}</td>
 				<td>{{listitem.grossWage + listitem.employerTaxes | currency:"$"}}</td>
-				<td>{{listitem.paymentMethodText}}</td>
-				<td>{{listitem.statusText}}</td>
+				<td>{{listitem.paymentMethodText}}<span ng-show="listitem.paymentMethod===1">&nbsp;#{{listitem.checkNumber}}</span></td>
+				<td>
+					{{listitem.statusText}}
+				</td>
 				<td>
 					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2? 'review' : 'view'}}</button>
 					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void</button>

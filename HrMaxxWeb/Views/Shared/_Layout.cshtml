@@ -53,7 +53,7 @@
 							</select>
 						</div>
 						<div class="col-sm-4">
-							<input type="text" placeholder="Type Company Name" ng-disabled="data.companies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null" ng-mouseleave="data.selectedCompany1=data.selectedCompany" typeahead-show-hint="true" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.companies | filter:$viewValue" class="form-control">
+							<input type="text" placeholder="Type Company Name" ng-disabled="data.companies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null" ng-mouseleave="data.selectedCompany1=data.selectedCompany" typeahead-show-hint="true" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.companies | filter:{name:$viewValue}" class="form-control">
 						</div>
 						<div class="col-sm-4" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}}</em></h5></div>
 
@@ -99,7 +99,8 @@
 		$(document).ready(function() {
 			App.init();
 			angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
-			
+			var min = $('a[data-click=sidebar-minify]:first');
+			min.click();
 		});
 	</script>
 

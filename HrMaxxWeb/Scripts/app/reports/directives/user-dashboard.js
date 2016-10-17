@@ -8,14 +8,15 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=2.2.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window',
 				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window) {
 					var dataSvc = {
 						isBodyOpen: true,
-						response: null
-
+						response: null,
+						approachingPayrolls: [],
+						payrollsWithoutInvoice: []
 					}
 
 
@@ -36,6 +37,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.chartData = [];
 						$scope.drawPayrollChart();
 						$scope.drawInvoiceChart();
+						$scope.drawPayrollWithoutInvoiceChart();
+						$scope.drawCompaniesWithApproachingPayrolls();
 
 					};
 					var mapListToDataTable = function (input) {
@@ -120,6 +123,25 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 					};
 
+					$scope.drawPayrollWithoutInvoiceChart = function () {
+						reportRepository.getDashboardData('GetPayrollsWithoutInvoice', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+							dataSvc.payrollsWithoutInvoice = data.data;
+
+						}, function (error) {
+							console.log(error);
+						});
+
+					};
+
+					$scope.drawCompaniesWithApproachingPayrolls = function () {
+						reportRepository.getDashboardData('GetCompaniesNextPayrollChartData', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+							dataSvc.approachingPayrolls = data.data;
+						}, function (error) {
+							console.log(error);
+						});
+
+					};
+
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
@@ -145,6 +167,10 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							return true;
 						else
 							return false;
+					}
+
+					$scope.viewPayrolls = function(d) {
+						$scope.$parent.$parent.setHostandCompany(d[0], d[1], "#!/Client/Payrolls#invoice");
 					}
 
 					function _init() {

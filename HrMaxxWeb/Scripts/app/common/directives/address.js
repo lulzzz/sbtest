@@ -13,7 +13,7 @@ common.directive('address', ['zionAPI','localStorageService','version',
 				showDisabled: "=?showDisabled",
 				valGroup: "=?valGroup"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=1.24' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
@@ -37,10 +37,15 @@ common.directive('address', ['zionAPI','localStorageService','version',
 
 				$scope.countrySelected = function() {
 					$scope.data.countryId = $scope.data.selectedCountry.countryId;
-					if ($scope.data.selectedCountry.states.length === 1 && !$scope.data.stateId) {
-						$scope.data.selectedState = $scope.data.selectedCountry.states[0];
-						$scope.stateSelected();
+					if ($scope.data.stateId) {
+						$scope.data.selectedState = $filter('filter')($scope.data.selectedCountry.states, { stateId: $scope.data.stateId })[0];
+					} else {
+						if ($scope.data.selectedCountry.states.length === 1) {
+							$scope.data.selectedState = $scope.data.selectedCountry.states[0];
+							$scope.stateSelected();
+						}
 					}
+					
 				}
 				$scope.stateSelected = function() {
 					$scope.data.stateId = $scope.data.selectedState.stateId;
@@ -51,9 +56,8 @@ common.directive('address', ['zionAPI','localStorageService','version',
 						$scope.data = {};
 					if ($scope.data.countryId) {
 						$scope.data.selectedCountry = $filter('filter')($scope.countries, { countryId: $scope.data.countryId })[0];
-						if ($scope.data.stateId) {
-							$scope.data.selectedState = $filter('filter')($scope.data.selectedCountry.states, { stateId: $scope.data.stateId })[0];
-						}
+						$scope.countrySelected();
+						
 					}
 					else {
 						if ($scope.countries.length === 1) {

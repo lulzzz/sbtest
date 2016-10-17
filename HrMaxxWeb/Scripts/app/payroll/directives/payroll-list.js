@@ -309,9 +309,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 						}
-						if (invoice.status !== 3)
-							$scope.cancel();
-
+						
 					}
 					$scope.deleteInvoice = function (invoice) {
 						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
@@ -325,6 +323,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.createInvoice = function ($event, payroll) {
 						$event.stopPropagation();
 						var match = $filter('filter')($scope.list, { id: payroll.id })[0];
+						match.company = $scope.mainData.selectedCompany;
 						payrollRepository.createPayrollInvoice(match, $scope.mainData.selectedCompany).then(function (data) {
 							payroll.invoice = data;
 							$scope.addAlert('successfully created invoice', 'success');

@@ -10,7 +10,7 @@ common.directive('contactList', ['zionAPI', '$timeout', '$window','version',
 				sourceId: "=sourceId",
 				heading: "=heading"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/contact-list.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Content/templates/contact-list.html?v=2.1.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Contact;
@@ -80,10 +80,14 @@ common.directive('contactList', ['zionAPI', '$timeout', '$window','version',
 				$scope.cancel=function() {
 					$scope.selectedContact = null;
 				}
-				$scope.setSelectedContact = function(item) {
-					$scope.selectedContact = angular.copy(item);
-					$scope.selectedContact.sourceTypeId = $scope.sourceTypeId;
-					$scope.selectedContact.sourceId = $scope.sourceId;
+				$scope.setSelectedContact = function (item) {
+					$scope.selectedContact = null;
+					$timeout(function() {
+						$scope.selectedContact = angular.copy(item);
+						$scope.selectedContact.sourceTypeId = $scope.sourceTypeId;
+						$scope.selectedContact.sourceId = $scope.sourceId;
+					}, 1);
+					
 				}
 				$scope.getRowClass = function(item) {
 					if ($scope.selectedContact && $scope.selectedContact.id === item.id)
