@@ -6,14 +6,15 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 			restrict: 'E',
 			replace: true,
 			scope: {
-
+				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Administration/templates/config.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Administration/templates/config.html?v=1.1.' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', function ($scope, $element, $location, $filter, commonRepository) {
 				var dataSvc = {
 					configs: null,
-					tags:[]
+					tags: [],
+					rootHost: null
 				}
 
 				$scope.data = dataSvc;
@@ -50,6 +51,10 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 
 					commonRepository.getConfigData().then(function (result) {
 						dataSvc.configs = angular.copy(result);
+						if (result.rootHostId) {
+							dataSvc.rootHost = $filter('filter')($scope.mainData.hosts, { id: result.rootHostId })[0];
+						}
+						
 						if (dataSvc.configs.couriers.length > 0) {
 							$.each(dataSvc.configs.couriers, function(i, c) {
 								dataSvc.tags.push({

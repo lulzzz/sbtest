@@ -11,6 +11,12 @@
 
 				<div class="col-sm-4">
 					<div class="form-group">
+						<lable>Corporate Host <span class="show-red">(CorpStaff users wont have access to this host's compan)</span></lable>
+						<select id="host" class="form-control" ng-change="data.configs.rootHostId = data.rootHost.id" ng-model="data.rootHost" ng-options="host1.firmName for host1 in mainData.hosts track by host1.id">
+							<option value="">Select Host</option>
+						</select>
+					</div>
+					<div class="form-group">
 						<label>Environment Charge Rate</label>
 						<input class="form-control" name="ecrate" ng-model="data.configs.environmentalChargeRate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
 					</div>

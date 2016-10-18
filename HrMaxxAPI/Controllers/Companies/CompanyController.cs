@@ -23,14 +23,14 @@ namespace HrMaxxAPI.Controllers.Companies
 	  private readonly IMetaDataService _metaDataService;
 		private readonly ICompanyService _companyService;
 		private readonly IExcelService _excelServce ;
-	  private readonly IFileRepository _fileRepository;
-
-	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, IFileRepository fileRepository)
+	  private readonly ITaxationService _taxationService;
+	  
+	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, ITaxationService taxationService)
 	  {
 			_metaDataService = metaDataService;
 		  _companyService = companyService;
 		  _excelServce = excelService;
-		  _fileRepository = fileRepository;
+		  _taxationService = taxationService;
 	  }
 
 	  [HttpGet]
@@ -68,6 +68,11 @@ namespace HrMaxxAPI.Controllers.Companies
 			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName())
 			{
 				companies = companies.Where(c => !c.IsHostCompany).ToList();
+			}
+			var appConfig = _taxationService.GetApplicationConfig();
+			if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName() && appConfig.RootHostId.HasValue)
+			{
+				companies = companies.Where(c => !(c.HostId==appConfig.RootHostId.Value && c.IsHostCompany)).ToList();
 			}
 			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.ToList());
 		}

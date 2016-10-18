@@ -37,7 +37,7 @@
 						<span>Administration</span>
 					</a>
 					<ul class="sub-menu">
-						@if (CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
+						@if (CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()))
 						{
 							<li><a href="#!/Admin/Config">Configuration</a></li>
 						}
