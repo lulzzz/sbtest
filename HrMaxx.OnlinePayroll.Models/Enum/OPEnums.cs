@@ -329,9 +329,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Paid=4,
 		[HrMaxxSecurity(DbName = "On Hold")]
 		OnHold=5,
-		[HrMaxxSecurity(DbName = "Payment Bounced")]
+		[HrMaxxSecurity(DbName = "Bounced")]
 		PaymentBounced = 6,
-		[HrMaxxSecurity(DbName = "Partially Paid")]
+		[HrMaxxSecurity(DbName = "Partial Payment")]
 		PartialPayment = 7
 		
 	}
@@ -342,9 +342,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Draft = 1,
 		[HrMaxxSecurity(DbName = "Submitted")]
 		Submitted = 2,
-		[HrMaxxSecurity(DbName = "Paid")]
+		[HrMaxxSecurity(DbName = "Deposited")]
 		Paid = 3,
-		[HrMaxxSecurity(DbName = "Payment Bounced")]
+		[HrMaxxSecurity(DbName = "Bounced")]
 		PaymentBounced = 4
 	}
 

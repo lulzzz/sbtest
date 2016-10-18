@@ -96,15 +96,15 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							return false;
 						}
 					}
-
+					
 					$scope.voidcheck = function (listitem) {
-						if($window.confirm('Are you sure you want to mark this check Void?')){
-						payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function (data) {
-							$scope.$parent.$parent.updateListAndItem($scope.item.id);
-						}, function (error) {
-							addAlert('error voiding pay check', 'danger');
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to mark this check Void?', 'info', function() {
+							payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function(data) {
+								$scope.$parent.$parent.updateListAndItem($scope.item.id);
+							}, function(error) {
+								addAlert('error voiding pay check', 'danger');
+							});
 						});
-						}
 					}
 					$scope.viewcheck = function(listitem) {
 						var modalInstance = $modal.open({

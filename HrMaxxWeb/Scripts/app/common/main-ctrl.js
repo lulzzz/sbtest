@@ -1,23 +1,60 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$rootScope', '$element', 'hostRepository','zionAPI', 'companyRepository','localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window',
-	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window) {
+	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal',
+	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
 		$scope.addAlert = function (error, type) {
-			$scope.alerts = [];
+			var alerts = [];
 			var rows = error.split('<br>');
 			$.each(rows, function (index, er) {
 				if (er) {
-					$scope.alerts.push({
+					alerts.push({
 						msg: er,
 						type: type
 					});
 				}
 				
 			});
+			var modalInstance = $modal.open({
+				templateUrl: 'popover/messages.html',
+				controller: 'messageCtrl',
+				backdrop: true,
+				keyboard: true,
+				backdropClick: true,
+				size: 'lg',
+				resolve: {
+					alerts: function () {
+						return alerts;
+					}
+				}
+			});
 			
 		};
+		$scope.confirmDialog = function(message, type, callback) {
+			var modalInstance = $modal.open({
+				templateUrl: 'popover/confirm.html',
+				controller: 'confirmDialogCtrl',
+				backdrop: true,
+				keyboard: true,
+				backdropClick: true,
+				size: 'lg',
+				resolve: {
+					message: function () {
+						return message;
+					},
+					type: function () {
+						return type;
+					}
+				}
+			});
+			modalInstance.result.then(function (result) {
+				if (result)
+					callback();
+			}, function () {
+				return false;
+			});
+		}
 
 		$scope.closeAlert = function (index) {
 			$scope.alerts.splice(index, 1);
@@ -94,7 +131,8 @@
 					companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function(data) {
 						dataSvc.companies = data;
 						var selected = $filter('filter')(dataSvc.companies, { id: companyId })[0];
-						dataSvc.selectedCompany = selected;
+						dataSvc.selectedCompany1 = selected;
+						$scope.companySelected();
 						$window.location.href = url;
 					}, function(erorr) {
 						$scope.addAlert('error getting company list', 'danger');
@@ -198,6 +236,33 @@ common.controller('printerFriendlyCtrl', function ($scope, $uibModalInstance, co
 	$scope.save = function () {
 		
 		$uibModalInstance.close($scope);
+	};
+
+
+});
+
+common.controller('messageCtrl', function ($scope, $uibModalInstance, alerts) {
+	$scope.alerts = alerts;
+	
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	
+	$scope.ok = function () {
+		$uibModalInstance.close($scope);
+	};
+
+
+});
+common.controller('confirmDialogCtrl', function ($scope, $uibModalInstance, message, type) {
+	$scope.message = message;
+	$scope.type = type ? type : 'info';
+	$scope.cancel = function () {
+		$uibModalInstance.close(false);
+	};
+
+	$scope.ok = function () {
+		$uibModalInstance.close(true);
 	};
 
 

@@ -44,6 +44,41 @@
 		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-role="@CurrentUser.Role">
 			<div id="page-loader1" class="fade in" ng-if="loading"><span class="spinner"></span></div>
 			<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
+			<script type="text/ng-template" id="popover/messages.html">
+
+				<div class="modal-body" style="padding:0px">
+					<div ng-repeat="alert in alerts" class="alert alert-{{alert.type}}" style="margin-bottom:0px">
+						<button type="button" class="close" data-ng-click="cancel()">
+							<span class="glyphicon glyphicon-remove-circle"></span>
+						</button>
+						<i class="fa fa-check text-succcess fa-lg" ng-if="alert.type==='success'"></i>
+						<i class="fa fa-exclamation-triangle text-danger fa-lg" ng-if="alert.type==='danger'"></i>
+						<i class="fa fa-exclamation-triangle text-warning fa-lg" ng-if="alert.type==='warning'"></i>
+						<i class="fa fa-info-circle text-info fa-lg" ng-if="alert.type==='info'"></i>{{alert.msg}}
+					</div>
+				</div>
+				
+			</script>
+			<script type="text/ng-template" id="popover/confirm.html">
+				<div class="modal-header">
+					
+				</div>
+				<div class="modal-body" >
+					<div class="alert alert-{{type}}">
+						{{message}}<i class="fa fa-lg fa-question-circle text-info"></i>
+					</div>					
+				</div>
+				<div class="modal-footer text-center">
+				
+					<button type="button" class="btn btn-sm btn-primary pull-center" data-ng-click="ok()">
+						<span class="glyphicon glyphicon-check"></span> Yes
+					</button>
+					<button type="button" class="btn btn-sm btn-default pull-center" data-ng-click="cancel()">
+						<span class="glyphicon glyphicon-remove-circle"></span> No
+					</button>
+				</div>
+
+			</script>
 			<div class="panel panel-inverse  hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
 				<div class="panel-body">
 					<div class="row form-group">
@@ -58,12 +93,6 @@
 						<div class="col-sm-4" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}}</em></h5></div>
 
 					</div>
-				</div>
-			</div>
-
-			<div class="row  hidden-print">
-				<div ng-repeat="alert in alerts" class="alert" ng-class="{'alert-success':alert.type==='success', 'alert-danger':alert.type==='danger'}">
-					{{alert.msg}}
 				</div>
 			</div>
 			<div ng-view></div>

@@ -10,7 +10,7 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 				list: "=list",
 				metaData: "=metaData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-year-rate-list.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-year-rate-list.html?v=2.3.' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {
@@ -49,7 +49,7 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 
 				$scope.isItemValid = function (item) {
 					var matching = $filter('filter')($scope.metaData, { id: item.taxId, taxYear: item.taxYear })[0];
-					if (!item.id || !item.rate || !matching || (matching.taxRateLimit && item.rate>matching.taxRateLimit))
+					if (!item.id || item.rate===null || item.rate===undefined || !matching || (matching.taxRateLimit && item.rate>matching.taxRateLimit))
 						return false;
 					else
 						return true;

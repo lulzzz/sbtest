@@ -141,12 +141,15 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.unsavedPayments = false;
 					$scope.deletelineitem = function (index, lineitem) {
-						if (lineitem.payCheckId) {
-							$scope.invoice.voidedCreditedChecks.splice($scope.invoice.voidedCreditedChecks.indexOf(lineitem.payCheckId), 1);
-						}
-						$scope.invoice.miscCharges.splice(index, 1);
-						$scope.invoice.miscFees -= +lineitem.amount.toFixed(2);
-						$scope.invoice.total = $scope.getTotal();
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete this line item?', 'warning', function () {
+							if (lineitem.payCheckId) {
+								$scope.invoice.voidedCreditedChecks.splice($scope.invoice.voidedCreditedChecks.indexOf(lineitem.payCheckId), 1);
+							}
+							$scope.invoice.miscCharges.splice(index, 1);
+							$scope.invoice.miscFees -= +lineitem.amount.toFixed(2);
+							$scope.invoice.total = $scope.getTotal();
+						});
+						
 						
 					}
 					$scope.deletepayment = function (index) {
