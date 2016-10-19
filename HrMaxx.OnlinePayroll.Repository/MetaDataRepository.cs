@@ -139,6 +139,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		{
 			var dbConfig = _dbContext.ApplicationConfigurations.First();
 			dbConfig.config = JsonConvert.SerializeObject(config);
+			dbConfig.RootHostId = config.RootHostId;
 			_dbContext.SaveChanges();
 
 		}

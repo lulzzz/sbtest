@@ -116,7 +116,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 						cmd.Parameters.AddWithValue("@criteria", criteria);
 					if (host.HasValue)
 						cmd.Parameters.AddWithValue("@host", host);
-					if (role==RoleTypeEnum.HostStaff.GetDbName())
+					if (role==RoleTypeEnum.HostStaff.GetDbName() || role==RoleTypeEnum.CorpStaff.GetDbName())
 						cmd.Parameters.AddWithValue("@role", role);
 					
 

@@ -332,7 +332,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Bounced")]
 		PaymentBounced = 6,
 		[HrMaxxSecurity(DbName = "Partial Payment")]
-		PartialPayment = 7
+		PartialPayment = 7,
+		[HrMaxxSecurity(DbName = "Deposited")]
+		Deposited = 8
 		
 	}
 
@@ -342,7 +344,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Draft = 1,
 		[HrMaxxSecurity(DbName = "Submitted")]
 		Submitted = 2,
-		[HrMaxxSecurity(DbName = "Deposited")]
+		[HrMaxxSecurity(DbName = "Paid")]
 		Paid = 3,
 		[HrMaxxSecurity(DbName = "Bounced")]
 		PaymentBounced = 4

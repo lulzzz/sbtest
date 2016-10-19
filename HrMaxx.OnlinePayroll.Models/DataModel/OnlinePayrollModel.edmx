@@ -21,6 +21,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="config" Type="varchar(max)" Nullable="false" />
+          <Property Name="RootHostId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="BankAccount">
           <Key>
@@ -2212,6 +2213,7 @@
           </Key>
           <Property Name="config" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RootHostId" Type="Guid" />
         </EntityType>
         <Association Name="FK_Payroll_PayrollInvoice">
           <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="0..1" />
@@ -2738,6 +2740,7 @@
           <EntitySetMapping Name="ApplicationConfigurations">
             <EntityTypeMapping TypeName="HrMaxxModel.ApplicationConfiguration">
               <MappingFragment StoreEntitySet="ApplicationConfiguration">
+                <ScalarProperty Name="RootHostId" ColumnName="RootHostId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="config" ColumnName="config" />
               </MappingFragment>

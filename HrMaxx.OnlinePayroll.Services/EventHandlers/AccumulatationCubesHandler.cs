@@ -24,8 +24,8 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			if (payroll.PEOASOCoCheck)
 			{
 				var host = _hostService.GetHost(payroll.Company.HostId);
-				payroll.Company = host.Company;
-				_dashboardService.AddPayrollToCubes(payroll);
+				//payroll.Company = host.Company;
+				_dashboardService.AddPayrollToCubes(payroll, host.Company);
 			}
 		}
 

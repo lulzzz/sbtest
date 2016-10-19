@@ -295,7 +295,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					$scope.viewInvoice = function($event, payroll) {
-						
+						$event.stopPropagation();
 						$scope.selectedInvoice = payroll.invoice;
 						$timeout(function () {
 							$location.hash("invoice");

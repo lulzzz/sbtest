@@ -155,6 +155,49 @@ namespace HrMaxx.OnlinePayroll.Services.Dashboard
 			}
 		}
 
+		public void AddPayrollToCubes(Models.Payroll payroll, Company company)
+		{
+			try
+			{
+				var accumulation = new PayrollAccumulation();
+				accumulation.AddPayroll(payroll);
+				var yearlyCube = new CompanyPayrollCube
+				{
+					CompanyId = company.Id,
+					Year = payroll.PayDay.Year,
+					Accumulation = accumulation
+				};
+				var quarterlyCube = new CompanyPayrollCube
+				{
+					CompanyId = company.Id,
+					Year = payroll.PayDay.Year,
+					Quarter = GetQuarterFromPayDay(payroll.PayDay),
+					Accumulation = accumulation
+				};
+				var monthlyCube = new CompanyPayrollCube
+				{
+					CompanyId =company.Id,
+					Year = payroll.PayDay.Year,
+					Month = payroll.PayDay.Month,
+					Accumulation = accumulation
+				};
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_dashboardRepository.UpdateCube(yearlyCube, CubeType.Yearly, true);
+					_dashboardRepository.UpdateCube(quarterlyCube, CubeType.Quarterly, true);
+					_dashboardRepository.UpdateCube(monthlyCube, CubeType.Monthly, true);
+					txn.Complete();
+
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Add to Payroll Cubes for host company. Payroll Id=" + payroll.Id + " company id = " + company.Id);
+				Log.Error(message, e);
+
+			}
+		}
+
 		private int GetQuarterFromPayDay(DateTime payDay)
 		{
 			var month = payDay.Month;

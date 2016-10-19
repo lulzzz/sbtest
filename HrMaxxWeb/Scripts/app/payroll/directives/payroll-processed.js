@@ -20,7 +20,6 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					$scope.cancel = function () {
 						if ($scope.item.status > 2) {
 							$scope.$parent.$parent.committed = null;
-							$scope.$parent.$parent.selectedInvoice = null;
 						} else {
 							$.each($scope.item.payChecks, function (index1, paycheck) {
 								paycheck.employeeNo = paycheck.employee.employeeNo;

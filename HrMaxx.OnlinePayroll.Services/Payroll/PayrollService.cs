@@ -709,14 +709,26 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							invoice.DeliveredOn = DateTime.Now;
 							invoice.DeliveredBy = invoice.UserName;
 						}
-						if (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced)
+						if (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status==InvoiceStatus.Paid || invoice.Status==InvoiceStatus.Deposited)
 						{
 							if (invoice.Balance == 0)
 								invoice.Status = InvoiceStatus.Paid;
 							else if (invoice.Balance <= invoice.Total)
-								invoice.Status = invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)
-									? InvoiceStatus.PaymentBounced
-									: InvoiceStatus.PartialPayment;
+							{
+								if(invoice.Payments.Any(p=>p.Status==PaymentStatus.PaymentBounced))
+									invoice.Status = InvoiceStatus.PaymentBounced;
+								else if(invoice.Payments.Any(p=>p.Status==PaymentStatus.Submitted))
+									invoice.Status = InvoiceStatus.Deposited;
+								else if(invoice.Payments.Any())
+								{
+									invoice.Status = InvoiceStatus.PartialPayment;
+								}
+								else
+								{
+									invoice.Status = InvoiceStatus.Delivered;
+									
+								}
+							}
 						}
 
 					}

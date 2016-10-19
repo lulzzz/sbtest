@@ -16,5 +16,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     {
         public string config { get; set; }
         public int Id { get; set; }
+        public Nullable<System.Guid> RootHostId { get; set; }
     }
 }

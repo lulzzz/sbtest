@@ -148,12 +148,17 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							$scope.invoice.miscCharges.splice(index, 1);
 							$scope.invoice.miscFees -= +lineitem.amount.toFixed(2);
 							$scope.invoice.total = $scope.getTotal();
+							$scope.invoice.deleted = true;
 						});
 						
 						
 					}
 					$scope.deletepayment = function (index) {
-						$scope.invoice.payments.splice(index, 1);
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete this payment?', 'warning', function () {
+							$scope.invoice.payments.splice(index, 1);
+							$scope.invoice.deleted = true;
+						});
+						
 					}
 					
 					$scope.isLineItemValid = function(li) {
@@ -196,8 +201,16 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							addAlert(validation, 'warning');
 							return false;
 						}
-					
-						payrollRepository.savePayrollInvoice($scope.invoice).then(function(data) {
+						if ($scope.invoice.deleted) {
+							$scope.$parent.$parent.$parent.$parent.confirmDialog('you have delete charges/payments. Do you want to proceed?', 'danger', saveInvoice);
+						}
+						else
+							saveInvoice();
+
+
+					};
+					var saveInvoice = function() {
+						payrollRepository.savePayrollInvoice($scope.invoice).then(function (data) {
 							$timeout(function () {
 								$scope.invoice = data;
 								fixDates();
@@ -206,10 +219,10 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							});
 
 
-						}, function(error) {
+						}, function (error) {
 							addAlert('error saving invoice', 'danger');
 						});
-					};
+					}
 					$scope.delete = function () {
 						payrollRepository.deletePayrollInvoice($scope.invoice).then(function (data) {
 							$timeout(function () {
