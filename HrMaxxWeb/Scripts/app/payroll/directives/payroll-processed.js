@@ -45,6 +45,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					$scope.save = function () {
 						payrollRepository.commitPayroll($scope.item).then(function (data) {
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
+							if ($scope.mainData.selectedCompany.lastPayrollDate < $scope.item.payDay)
+								$scope.mainData.selectedCompany.lastPayrollDate = $scope.item.payDay;
 						}, function (error) {
 							addAlert('error committing payroll', 'danger');
 						});
