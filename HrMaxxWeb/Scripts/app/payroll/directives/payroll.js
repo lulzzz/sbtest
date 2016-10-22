@@ -90,8 +90,11 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							var errors = $('.parsley-error');
 							return false;
 						}
-						
-						payrollRepository.processPayroll($scope.item).then(function (data) {
+						var payroll = angular.copy($scope.item);
+						payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
+						payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
+						payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
+						payrollRepository.processPayroll(payroll).then(function (data) {
 							$timeout(function () {
 								$scope.cancel();
 								$scope.$parent.$parent.set(data);
