@@ -275,13 +275,14 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error getting employee list', 'danger');
 						});
 					}
-					$scope.$watch('mainData.selectedCompany',
+					$scope.$watch('mainData.selectedCompany.id',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue) {
 						 		getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 						 		getEmployees($scope.mainData.selectedCompany.id);
 						 		getPayrolls($scope.mainData.selectedCompany.id);
-						 	}
+								 data.isBodyOpen = true;
+							 }
 
 						 }, true
 				 );

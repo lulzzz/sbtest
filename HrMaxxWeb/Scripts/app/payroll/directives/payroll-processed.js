@@ -10,7 +10,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=2.1.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {

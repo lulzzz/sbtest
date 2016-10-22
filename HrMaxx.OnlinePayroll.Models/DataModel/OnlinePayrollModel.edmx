@@ -69,6 +69,7 @@
           <Property Name="LastPayrollDate" Type="datetime" />
           <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="IsHostCompany" Type="bit" Nullable="false" />
+          <Property Name="Memo" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1352,6 +1353,7 @@
           <Property Name="IsHostCompany" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_Host_Company" FromRole="Company" ToRole="Host" />
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
+          <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2275,6 +2277,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
                 <ScalarProperty Name="IsHostCompany" ColumnName="IsHostCompany" />
                 <ScalarProperty Name="MinWage" ColumnName="MinWage" />
                 <ScalarProperty Name="LastPayrollDate" ColumnName="LastPayrollDate" />

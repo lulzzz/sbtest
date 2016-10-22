@@ -9,6 +9,7 @@ using HrMaxx.OnlinePayroll.Services.Host;
 using HrMaxx.OnlinePayroll.Services.Journals;
 using HrMaxx.OnlinePayroll.Services.Payroll;
 using HrMaxx.OnlinePayroll.Services.Reports;
+using HrMaxx.OnlinePayroll.Services.ScheduledJobs;
 using HrMaxx.OnlinePayroll.Services.USTax;
 
 namespace HrMaxxAPI.Code.IOC.OnlinePayroll
@@ -60,6 +61,11 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.WithParameter(new NamedParameter("templatePath", _templatePath))
 				.As<IReportService>()
 				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ScheduledJobService>()
+				.As<IScheduledJobService>()
+				.SingleInstance()
 				.PropertiesAutowired();
 
 		}

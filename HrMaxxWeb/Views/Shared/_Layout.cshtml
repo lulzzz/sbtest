@@ -59,6 +59,17 @@
 				</div>
 				
 			</script>
+			<script type="text/ng-template" id="popover/company.html">
+
+				<div class="modal-header">
+					<h2 class="modal-title">{{company.name}} Details</h2>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<company company="company" main-data="mainData" is-popup="true" />
+					</div>
+				</div>
+			</script>
 			<script type="text/ng-template" id="popover/confirm.html">
 				<div class="modal-header">
 					

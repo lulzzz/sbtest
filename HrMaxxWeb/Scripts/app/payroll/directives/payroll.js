@@ -10,7 +10,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 				datasvc: "=datasvc",
 				company: "=company"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=1.1.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
@@ -177,6 +177,53 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							}
 						});
 					}
+
+					$scope.showemployee = function (listitem) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/employee.html',
+							controller: 'employeeCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								paycheck: function () {
+									return listitem;
+								},
+								mainData: function() {
+									return $scope.$parent.$parent.mainData;
+								}
+							}
+						});
+					}
+					$scope.showcompany = function () {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/company.html',
+							controller: 'companyCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								invoice: function () {
+									return $scope.item;
+								},
+								mainData: function () {
+									return $scope.$parent.$parent.mainData;
+								}
+							}
+						});
+						modalInstance.result.then(function (companyUpdated, result) {
+							if (result) {
+								$scope.$parent.$parent.mainData.selectedCompany = result;
+								$scope.item.company = result;
+							}
+						}, function () {
+							return false;
+						});
+					}
 					var init = function () {
 						$scope.list = $scope.item.payChecks;
 						//$scope.tableParams.reload();
@@ -303,4 +350,45 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 	};
 
 	
+});
+common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, paycheck, mainData) {
+	$scope.original = paycheck.employee;
+	$scope.employee = angular.copy(paycheck.employee);
+	$scope.paycheck = paycheck;
+	$scope.mainData = mainData;
+	
+
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	
+	$scope.save = function (result) {
+		$scope.paycheck.employee = result;
+		$scope.paycheck.employeeNo = result.employeeNo;
+		$scope.paycheck.name = result.name;
+		$scope.paycheck.department = result.department;
+		$scope.paycheck.salary = result.payType === 2 ? result.rate : 0;
+		$scope.paycheck.payCodes = [];
+		$scope.paycheck.compensations = [];
+		$.each(result.payCodes, function (index1, paycode) {
+			var pc = {
+				payCode: paycode,
+				hours: 0,
+				overtimeHours: 0,
+				pwAmount: 0
+			};
+			$scope.paycheck.payCodes.push(pc);
+		});
+		$.each(result.compensations, function (index2, comp) {
+			var pt = {
+				payType: comp.payType,
+				amount: comp.amount,
+				ytd: 0
+			}
+			$scope.paycheck.compensations.push(pt);
+		});
+		$uibModalInstance.close($scope);
+	};
+
+
 });

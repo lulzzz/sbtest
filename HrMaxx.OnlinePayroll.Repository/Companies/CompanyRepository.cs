@@ -76,6 +76,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.StatusId = dbMappedCompany.StatusId;
 				dbCompany.TaxFilingName = dbMappedCompany.TaxFilingName;
 				dbCompany.MinWage = dbMappedCompany.MinWage;
+				dbCompany.Memo = dbMappedCompany.Memo;
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);

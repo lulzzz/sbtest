@@ -9,7 +9,7 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 				companyId: "=companyId",
 				list: "=list"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html?v=1.0.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/worker-compensation-list.html?v=' + version,
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope, $rootScope, $filter, companyRepository) {

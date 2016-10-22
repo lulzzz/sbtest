@@ -300,5 +300,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var payrolls = _dbContext.Payrolls.ToList();
 			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls);
 		}
+
+		public List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits()
+		{
+			var invoices =
+				_dbContext.PayrollInvoices.Where(
+					i => i.Status == (int) InvoiceStatus.Deposited || i.Status == (int) InvoiceStatus.PartialPayment);
+			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
+		}
 	}
 }

@@ -8,7 +8,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice-list.html?v=2.2' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll','anchorSmoothScroll',
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, anchorSmoothScroll) {

@@ -31,6 +31,9 @@
 						<td data-title=" 'Balance' " sortable=" 'balance' " class="col-sm-1 text-center show-red">
 							{{item.balance | currency:'$'}}
 						</td>
+						<td data-title=" 'Last Deposit Date' " sortable=" 'lastDepositDate' " class="col-sm-1 text-center">
+							{{item.lastDepositDate | date:'MM/dd/yyyy'}}
+						</td>
 						<td data-title=" 'Status' " filter="{'status1':'status'}" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
@@ -39,9 +42,6 @@
 						</td>
 						<td data-title=" 'Processed On' " sortable=" 'processedOn' " class="col-sm-1 text-center">
 							{{item.processedOn | date:'MM/dd/yyyy hh:mm:a'}}
-						</td>
-						<td data-title=" 'Approved By' " sortable=" 'submittedBy' " class="col-sm-1 text-center">
-							{{item.submittedBy}}
 						</td>
 						
 						<td data-title=" 'Delivered On' " sortable=" 'deliveredOn' " class="col-sm-1 text-center">
@@ -80,8 +80,9 @@
 						<option value="2">Approved</option>
 						<option value="3">Delivered</option>
 						<option value="4">Closed</option>
-						<option value="6">Payment Bounced</option>
+						<option value="6">Bounced</option>
 						<option value="7">Partial Payment</option>
+						<option value="8">Deposited</option>
 					</select>
 				</script>
 			</div>

@@ -8,7 +8,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=2.2.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window',
 				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window) {

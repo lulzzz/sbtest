@@ -250,6 +250,13 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			MakeServiceCall(() => _payrollService.DeletePayrollInvoice(invoiceId), string.Format("delete invoice with id={0}", invoiceId));
 			
 		}
+		[HttpGet]
+		[Route(PayrollRoutes.RecreateInvoice)]
+		public PayrollInvoiceResource RecreateInvoice(Guid invoiceId)
+		{
+			var invoice = MakeServiceCall(() => _payrollService.RecreateInvoice(invoiceId, CurrentUser.FullName), string.Format("recreate invoice with id={0}", invoiceId));
+			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
+		}
 
 	}
 

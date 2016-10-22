@@ -53,7 +53,7 @@ namespace HrMaxx.Common.Services.PDF
 					else
 					{
 						var objField = objDoc.Form.FindField(field.Key);
-						if (objField != null)
+						if (objField != null && field.Value!=null)
 							objField.SetFieldValue(field.Value, objFont);	
 					}
 					

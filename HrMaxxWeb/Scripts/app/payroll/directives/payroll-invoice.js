@@ -11,7 +11,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 				host: "=host",
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=2.3.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository, hostRepository) {
@@ -22,7 +22,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						config: null
 
 				}
-					$scope.company = $scope.invoice.company;
+					
 					$scope.list = [];
 					$scope.dt = new Date();
 					
@@ -172,8 +172,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						var invoice = $scope.invoice;
 						if (!invoice.invoiceNumber)
 							return 'Please enter a valid Invoice Number';
-						else if (!invoice.total || invoice.total<=0)
-							return 'The invoice total must be greated than 0';
+						else if (!invoice.total)
+							return 'The invoice total cannot be blank';
 						else if (invoice.miscCharges.length > 0) {
 							var returnVal = true;
 							$.each(invoice.miscCharges, function (index, p) {
@@ -233,6 +233,20 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 						}, function (error) {
 							addAlert('error deleting invoice', 'danger');
+						});
+					};
+					$scope.recreate = function () {
+						payrollRepository.recreateInvoice($scope.invoice).then(function (data) {
+							$timeout(function () {
+								$scope.invoice = data;
+								fixDates();
+								$scope.updateParent();
+								addAlert('successfully re-created invoice', 'success');
+							});
+
+
+						}, function (error) {
+							addAlert('error re-created invoice', 'danger');
 						});
 					};
 					$scope.saveWithStatus = function (status) {
@@ -303,6 +317,25 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						$scope.invoice.invoiceDate = moment($scope.invoice.invoiceDate).toDate();
 					
 					}
+					$scope.showcompany = function () {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/company.html',
+							controller: 'companyCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								invoice: function () {
+									return $scope.invoice;
+								},
+								mainData: function () {
+									return $scope.$parent.$parent.mainData;
+								}
+							}
+						});
+					}
 					var init = function () {
 						if ($scope.invoice) {
 							fixDates();
@@ -324,3 +357,18 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 		}
 	}
 ]);
+common.controller('companyCtrl', function ($scope, $uibModalInstance, $filter, invoice, mainData) {
+	$scope.original = invoice.company;
+	$scope.company = angular.copy(invoice.company);
+	$scope.mainData = mainData;
+	
+	$scope.cancel = function () {
+		$uibModalInstance.close();
+	};
+
+	$scope.save = function (result) {
+		$uibModalInstance.close(true, result);
+	};
+
+
+});

@@ -31,5 +31,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SavePayCheck(PayCheck pc);
 		List<PayCheck> GetUnclaimedVoidedchecks(Guid companyId);
 		List<Models.Payroll> GetAllPayrolls();
+		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 	}
 }

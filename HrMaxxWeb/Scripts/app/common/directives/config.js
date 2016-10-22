@@ -8,7 +8,7 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Administration/templates/config.html?v=1.1.' + version,
+			templateUrl: zionAPI.Web + 'Areas/Administration/templates/config.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', function ($scope, $element, $location, $filter, commonRepository) {
 				var dataSvc = {

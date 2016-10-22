@@ -96,6 +96,11 @@ namespace HrMaxxAPI.Resources.Payroll
 				return penalty;
 			}
 		}
+
+		public DateTime? LastDepositDate
+		{
+			get { return Payments.Any() ? Payments.OrderByDescending(p => p.PaymentDate).First().PaymentDate : default(DateTime?); }
+		}
 	}
 	
 }

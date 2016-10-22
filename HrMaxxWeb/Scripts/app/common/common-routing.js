@@ -64,7 +64,7 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 		templateUrl: zionAPI.Web + '/Areas/Administration/templates/user-list.html'
 	});
 	$routeProvider.when('/Client/Company/:time', {
-		templateUrl: zionAPI.Web + '/Areas/Client/templates/company.html'
+		templateUrl: zionAPI.Web + '/Areas/Client/templates/companies.html'
 	});
 	$routeProvider.when('/My/News', {
 		templateUrl: zionAPI.Web + '/Content/templates/mynews.html'

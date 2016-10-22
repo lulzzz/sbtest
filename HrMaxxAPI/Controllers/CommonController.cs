@@ -16,6 +16,7 @@ namespace HrMaxxAPI.Controllers
 	{
 		public readonly ICommonService _commonService;
 		public readonly IMetaDataService _metaDataService;
+		
 		public CommonController(ICommonService commonService, IMetaDataService metaDataService)
 		{
 			_commonService = commonService;

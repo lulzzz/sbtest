@@ -13,7 +13,7 @@ common.directive('address', ['zionAPI','localStorageService','version',
 				showDisabled: "=?showDisabled",
 				valGroup: "=?valGroup"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=1.24' + version,
+			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;

@@ -59,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.DateTime> LastPayrollDate { get; set; }
         public decimal MinWage { get; set; }
         public bool IsHostCompany { get; set; }
+        public string Memo { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

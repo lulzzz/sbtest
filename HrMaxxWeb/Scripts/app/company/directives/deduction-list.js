@@ -36,12 +36,12 @@ common.directive('deductionList', ['zionAPI', 'version',
 					$scope.list.push($scope.selected);
 				},
 				
-				$scope.showDeductionType = function(item) {
+				$scope.showDeductionType = function (item) {
 					var selected = [];
 					if (item.type) {
 						selected = $filter('filter')($scope.types, { id: item.type.id }, true);
 					}
-					return selected.length ? selected[0].categoryText + ' - ' + selected[0].name : 'Not set';
+					return selected && selected.length ? selected[0].categoryText + ' - ' + selected[0].name : 'Not set';
 				},
 				$scope.save = function(item) {
 					companyRepository.saveCompanyDeduction(item).then(function(deduction) {

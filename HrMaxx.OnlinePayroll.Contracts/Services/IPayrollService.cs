@@ -31,5 +31,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
 		void DeletePayrollInvoice(Guid invoiceId);
 		List<Payroll> FixPayrollData();
+		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName);
+		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 	}
 }

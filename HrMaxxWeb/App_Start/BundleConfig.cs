@@ -152,10 +152,12 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/accumulated-pay-type-list.js",
 				"~/Scripts/app/company/directives/pay-code-list.js",
 				"~/Scripts/app/company/directives/company-list.js",
+				"~/Scripts/app/company/directives/company.js",
 				"~/Scripts/app/common/main-ctrl.js",
 				"~/Scripts/app/company/directives/vendor-customer-list.js",
 				"~/Scripts/app/company/directives/account-list.js",
 				"~/Scripts/app/company/directives/employee-list.js",
+				"~/Scripts/app/company/directives/employee.js",
 				"~/Scripts/app/company/directives/employee-deduction-list.js",
 
 				"~/Scripts/app/payroll/directives/payroll-list.js", 

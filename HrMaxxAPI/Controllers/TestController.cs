@@ -1,27 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿
 using System.Web.Http;
-using HrMaxx.Infrastructure.Tracing;
+using HrMaxx.OnlinePayroll.Contracts.Services;
 
 namespace HrMaxxAPI.Controllers
 {
-	[Authorize]
 	public class TestController : BaseApiController
 	{
-		public TestController()
+		private readonly IScheduledJobService _scheduledJobService;
+		public TestController(IScheduledJobService scheduledJobService)
 		{
-			
+			_scheduledJobService = scheduledJobService;
 		}
-		[Route("api/users")]
-		public List<string> GetUsers()
+		[HttpGet]
+		[AllowAnonymous]
+		[Route("Scheduled/UpdateInvoicePayments")]
+		public void UpdateInvoicePayments()
 		{
-			Logger.Info("test Get Users");
-			var user = (User as ClaimsPrincipal);
-			HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), "Get users",
-					CurrentUser.FullName);
-			return new List<string> { "one", "two" };
-		
+			MakeServiceCall(() => _scheduledJobService.UpdateInvoicePayments(), "Update Invoice Payments for deposited checks");
+			
 		}
 	}
 }

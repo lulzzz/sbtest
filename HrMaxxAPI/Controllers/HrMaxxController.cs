@@ -17,6 +17,7 @@ namespace HrMaxxAPI.Controllers
 	{
 		public readonly ICommonService _commonService;
 		public readonly ITaxationService _taxationService;
+		
 		public HrMaxxController(ICommonService commonService, ITaxationService taxationService)
 		{
 			_commonService = commonService;

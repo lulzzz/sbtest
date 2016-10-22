@@ -11,7 +11,7 @@
 			<table class="table table-invoice">
 				<thead>
 					<tr>
-						<th class="col-sm-2">Date</th>
+						<th class="col-sm-2">Deposit Date</th>
 						<th class="col-sm-1">Type</th>
 						<th class="col-sm-2">Check Number</th>
 						<th class="col-sm-2">Amount</th>
@@ -85,6 +85,7 @@
 					<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
 
 					<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable()" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
+					<button class="btn btn-sm btn-info pull-right" ng-click="recreate()" ng-show="invoice.status===1 && !mainData.userCompany && isInvoiceEditable()" ng-disabled="isInvoiceInvalid()"><i class="fa fa-refresh m-r-5"></i> Re-calculate</button>
 
 
 				</div>
@@ -94,9 +95,9 @@
 					<tr>
 						<td>
 							<img ng-src="{{getHostLogo()}}" style="width:200px;height:40px" /><br />
-							<h4>{{company.name}}</h4><br />
-							{{company.companyAddress.addressLine1}}<br />
-							{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}<br />
+							<h4>{{invoice.company.name}}<i class="fa fa-lg fa-info-circle hidden-print" ng-click="showcompany()"></i></h4><br />
+							{{invoice.company.companyAddress.addressLine1}}<br />
+							{{invoice.company.companyAddress.city}}, CA {{invoice.company.companyAddress.zip}}{{invoice.company.companyAddress.zipExtension? ' - ' + invoice.company.companyAddress.zipExtension : ''}}<br />
 							{{ getContactPhone(data.companyContact) }}<br />
 							{{ data.companyContact.firstName + ' ' + data.companyContact.lastName}}
 						</td>
@@ -189,7 +190,7 @@
 							<td class="text-left">{{wc.amount | currency:'$'}}</td>
 						</tr>
 						<tr class="info">
-							<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ng-show="invoice.status===1"></i></strong></td>
+							<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ></i></strong></td>
 							<td class="text-right"><em><u>{{getLineItemTotal() | currency:'$'}}</u></em></td>
 						</tr>
 
@@ -283,7 +284,7 @@
 						<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
 
 						<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable()" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
-
+						<button class="btn btn-sm btn-info pull-right" ng-click="recreate()" ng-show="invoice.status===1 && !mainData.userCompany && isInvoiceEditable()" ng-disabled="isInvoiceInvalid()"><i class="fa fa-refresh m-r-5"></i> Re-calculate</button>
 
 					</div>
 				</div>
@@ -298,5 +299,6 @@
 		</div>
 
 	</div>
+	
 </div>
 

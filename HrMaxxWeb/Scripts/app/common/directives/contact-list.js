@@ -10,7 +10,7 @@ common.directive('contactList', ['zionAPI', '$timeout', '$window','version',
 				sourceId: "=sourceId",
 				heading: "=heading"
 			},
-			templateUrl: zionAPI.Web + 'Content/templates/contact-list.html?v=2.1.' + version,
+			templateUrl: zionAPI.Web + 'Content/templates/contact-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Contact;

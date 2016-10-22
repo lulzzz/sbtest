@@ -632,18 +632,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		public PayrollInvoice CreatePayrollInvoice(Models.Payroll payroll, string fullName, bool fetchCompany)
 		{
+			var payrollInvoice = new PayrollInvoice { Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName };
+			return CreateInvoice(payroll, payrollInvoice, fetchCompany);
+		}
+
+		private PayrollInvoice CreateInvoice(Models.Payroll payroll, PayrollInvoice payrollInvoice, bool fetchCompany)
+		{
 			try
 			{
 				var company = fetchCompany ? _companyService.GetCompanyById(payroll.Company.Id) : payroll.Company;
 				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, payroll.Company.Id);
-				var payrollInvoice = new PayrollInvoice{Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName};
 				var voidedPayChecks = _payrollRepository.GetUnclaimedVoidedchecks(payroll.Company.Id);
 				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
-				
+
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
 				if (!string.IsNullOrWhiteSpace(payroll.Notes))
 				{
-					_commonService.AddToList<Comment>(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, savedInvoice.Id, new Comment{Content = payroll.Notes, TimeStamp = savedInvoice.LastModified});
+					_commonService.AddToList<Comment>(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, savedInvoice.Id, new Comment { Content = payroll.Notes, TimeStamp = savedInvoice.LastModified });
 				}
 				Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
 				{
@@ -662,7 +667,33 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var invoice = _payrollRepository.GetPayrollInvoiceById(invoiceId);
+					var payroll = _payrollRepository.GetPayrollById(invoice.PayrollId);
+					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName, InvoiceNumber = invoice.InvoiceNumber};
+					_payrollRepository.DeletePayrollInvoice(invoiceId);
+					var recreated = CreateInvoice(payroll, payrollInvoice, true);
+					txn.Complete();
 
+					return recreated;
+				}
+			
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " re-create invoice for invoice id=" + invoiceId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		
 		public List<PayrollInvoice> GetHostInvoices(Guid hostId)
 		{
 			try
@@ -786,6 +817,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		
 		private FileDto PrintPayCheck(Models.Payroll payroll, PayCheck payCheck, Journal journal)
 		{
 			try
@@ -816,6 +848,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", payroll.Company.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo", payroll.Company.Memo));
 				if (payroll.Company.PayCheckStock == PayCheckStock.MICREncodedTop || payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
 				{
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName3", payCheck.Employee.FullName));
@@ -894,11 +927,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8", text8));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2-1", sum2));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8-1", text8));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", string.Empty));
+					
 
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2-1", payCheck.Employee.FullName));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", journal.Memo));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", string.Empty));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", payroll.Company.Memo));
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", payroll.Company.Name));
 					if (payCheck.Employee.PayType == EmployeeType.Salary)
 					{
@@ -1002,6 +1035,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					}
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd", prwytd.ToString("C")));
+					if (payCheck.Employee.PayType == EmployeeType.PieceWork)
+					{
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", payCheck.Notes.Any() ? payCheck.Notes[0].Content.ToString() : string.Empty));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", payCheck.Notes.Any() ? payCheck.Notes[0].Content.ToString() : string.Empty));
+					}
 				}
 
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", journal.Memo));
@@ -1186,6 +1224,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				d.YTD = Math.Round(ytdVal + d.Amount, 2, MidpointRounding.AwayFromZero);
 			});
 			return payCheck.Deductions;
+		}
+
+		public List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits()
+		{
+			try
+			{
+				return _payrollRepository.GetAllPayrollInvoicesWithDeposits();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payroll Invoices deposits and partial payments");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 		}
 	}
 }

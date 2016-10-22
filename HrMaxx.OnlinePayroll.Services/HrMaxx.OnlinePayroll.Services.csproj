@@ -84,6 +84,7 @@
     <Compile Include="Payroll\PayrollService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reports\ReportService.cs" />
+    <Compile Include="ScheduledJobs\ScheduledJobService.cs" />
     <Compile Include="USTax\USTaxationService.cs" />
   </ItemGroup>
   <ItemGroup>

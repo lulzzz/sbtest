@@ -59,11 +59,14 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 				}
 				$scope.availablePayTypes = function() {
 					var _available = [];
-					$.each($scope.metaData, function (index, type) {
-						var exists = $filter('filter')($scope.list, { payType: {id: type.id} })[0];
-						if (!exists)
-							_available.push(type);
-					});
+					if ($scope.metaData) {
+						$.each($scope.metaData, function (index, type) {
+							var exists = $filter('filter')($scope.list, { payType: { id: type.id } })[0];
+							if (!exists)
+								_available.push(type);
+						});
+					}
+					
 					return _available;
 				}
 
