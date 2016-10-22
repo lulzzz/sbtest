@@ -36,7 +36,7 @@ namespace HrMaxxAPI
 						JsonMediaTypeFormatter jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
 						jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 						jsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-						jsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
+						jsonFormatter.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
 
         }
     }
