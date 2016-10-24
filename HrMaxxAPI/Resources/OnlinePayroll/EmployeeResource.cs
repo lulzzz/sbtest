@@ -109,7 +109,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			{
 				error += "Zip, ";
 			}
-			if (string.IsNullOrWhiteSpace(er.Value("employee no")))
+			if (string.IsNullOrWhiteSpace(er.Value("employee no")) || Int32.Parse(er.Value("employee no"))==0)
 			{
 				error += "Employee No, ";
 			}

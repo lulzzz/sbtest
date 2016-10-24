@@ -81,9 +81,9 @@
 						</div>
 						<div class="row">
 							<div class="col-sm-4">
-								<div class="form-group">
+								<div class="form-group" ng-hide="!selected.id">
 									<label>Employee No</label>
-									<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" />
+									<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
 								</div>
 							</div>
 							<div class="col-sm-4">
