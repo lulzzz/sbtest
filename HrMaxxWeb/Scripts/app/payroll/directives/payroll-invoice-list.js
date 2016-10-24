@@ -40,7 +40,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							status1: 0,       // initial filter
 						},
 						sorting: {
-							invoiceDate: 'desc'     // initial sorting
+							invoiceNumber: 'desc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -114,6 +114,15 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					
 					$scope.save = function () {
 						
+					}
+					$scope.companyUpdated = function(company) {
+						var affectedInvoices = $filter('filter')($scope.list, { company: { id: company.id } });
+						$.each(affectedInvoices, function(index, i) {
+							i.company = angular.copy(company);
+							i.companyName = company.name;
+						});
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
 					}
 					
 					var getInvoices = function (selectedInvoiceId) {

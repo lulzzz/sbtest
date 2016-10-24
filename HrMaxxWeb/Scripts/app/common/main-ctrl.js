@@ -173,9 +173,13 @@
 		$scope.$on('companyUpdated', function (event, args) {
 			var company = args.company;
 			updateInList(dataSvc.companies, company);
-			dataSvc.selectedCompany = company;
-			if (dataSvc.selectedHost.company.id === company.id) {
+			
+			if (dataSvc.selectedHost && dataSvc.selectedHost.company.id === company.id) {
 				dataSvc.selectedHost.company = company;
+			}
+			if (dataSvc.selectedCompany && dataSvc.selectedCompany.id === company.id) {
+				dataSvc.selectedCompany = company;
+				dataSvc.sleectedCompany1 = angular.copy(company);
 			}
 		});
 		$scope.$on('companyDeductionUpdated', function (event, args) {

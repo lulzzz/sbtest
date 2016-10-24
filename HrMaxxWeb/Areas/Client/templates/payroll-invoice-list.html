@@ -15,6 +15,9 @@
 						<td data-title=" 'Company' " filter="{ 'companyName': 'text' }" sortable=" 'companyName' " class="col-sm-1 text-center">
 							{{item.companyName}}
 						</td>
+						<td data-title=" 'Invoice #' " filter="{'invoiceNumber':'text'}" sortable=" 'invoiceNumber' " class="col-sm-1 text-center">
+							{{item.invoiceNumber}}
+						</td>
 						<td data-title=" 'Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
 							{{item.invoiceDate | date:'MM/dd/yyyy'}}
 						</td>

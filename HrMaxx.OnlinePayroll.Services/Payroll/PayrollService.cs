@@ -641,9 +641,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				var company = fetchCompany ? _companyService.GetCompanyById(payroll.Company.Id) : payroll.Company;
-				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, payroll.Company.Id);
+				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, null);
 				var voidedPayChecks = _payrollRepository.GetUnclaimedVoidedchecks(payroll.Company.Id);
-				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
+				if(payrollInvoice.InvoiceNumber==0)
+				payrollInvoice.InvoiceNumber = previousInvoices.Any() ? previousInvoices.Max(i => i.InvoiceNumber) + 1 : 1001;
+				payrollInvoice.Initialize(payroll, previousInvoices.Where(p=>p.CompanyId==payroll.Company.Id).ToList(), _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
 				if (!string.IsNullOrWhiteSpace(payroll.Notes))

@@ -506,7 +506,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Payments, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Payrments) ? JsonConvert.DeserializeObject<List<InvoicePayment>>(src.Payrments) : new List<InvoicePayment>()))
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.PayChecks) ? JsonConvert.DeserializeObject<List<int>>(src.PayChecks) : new List<int>()))
 				.ForMember(dest => dest.VoidedCreditedChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.VoidedCreditChecks) ? JsonConvert.DeserializeObject<List<int>>(src.VoidedCreditChecks) : new List<int>()))
-				.ForMember(dest => dest.UserId, opt => opt.Ignore());
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src=>src.Payroll.PayDay));
 		}
 	}
 }

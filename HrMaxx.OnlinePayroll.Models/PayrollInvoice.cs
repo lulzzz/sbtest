@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime PeriodStart { get; set; }
 		public DateTime PeriodEnd { get; set; }
 		public DateTime InvoiceDate { get; set; }
+		public DateTime PayrollPayDay { get; set; }
 		
 		public int NoOfChecks { get; set; }
 		public decimal GrossWages { get; set; }
@@ -70,7 +71,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			VoidedCreditedChecks = new List<int>();
 			
 
-			InvoiceNumber = prevInvoices.Any() ? prevInvoices.Max(i => i.InvoiceNumber) + 1 : 1001;
+			
 			PeriodEnd = payroll.EndDate;
 			PeriodStart = payroll.StartDate;
 			CompanyId = payroll.Company.Id;

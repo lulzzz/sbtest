@@ -138,8 +138,6 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
-						//$scope.setCompany(result, 2);
-						$rootScope.$broadcast('companyUpdated', { company: result });
 						addAlert('successfully saved Company', 'success');
 					}
 

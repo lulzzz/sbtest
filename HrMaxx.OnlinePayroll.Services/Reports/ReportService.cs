@@ -172,9 +172,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var fileName = string.Format("Payroll_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
 			var xml = GetXml<Models.Payroll>(payroll);
-
+		
+			var args = new XsltArgumentList();
+				
 			var transformed = TransformXml(xml,
-				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrollsummary.xslt"), new XsltArgumentList());
+				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrollsummary.xslt"), args);
 
 			var summary = _pdfService.PrintHtml(transformed.Reports.First());
 			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, summary.Data);

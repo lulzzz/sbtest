@@ -19,6 +19,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime PeriodStart { get; set; }
 		public DateTime PeriodEnd { get; set; }
 		public DateTime InvoiceDate { get; set; }
+		public DateTime PayrollPayDay { get; set; }
 		
 		public int NoOfChecks { get; set; }
 		public decimal GrossWages { get; set; }

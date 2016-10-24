@@ -11,7 +11,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 				host: "=host",
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=1.1.0' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository, hostRepository) {
@@ -19,7 +19,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						hostContact: null,
 						companyContact: null,
 						hostHomePage: null,
-						config: null
+						config: null,
+						companyUpdated : false
 
 				}
 					
@@ -335,6 +336,18 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								}
 							}
 						});
+						modalInstance.result.then(function (company) {
+							if (company) {
+								if(!angular.equals($scope.invoice.companyInvoiceSetup, company.contract.invoiceSetup))
+									dataSvc.companyUpdated = true;
+								$scope.$parent.$parent.companyUpdated(company);
+								$scope.invoice.company = company;
+								getCompanyContact();
+								
+							}
+						}, function () {
+							return false;
+						});
 					}
 					var init = function () {
 						if ($scope.invoice) {
@@ -363,11 +376,11 @@ common.controller('companyCtrl', function ($scope, $uibModalInstance, $filter, i
 	$scope.mainData = mainData;
 	
 	$scope.cancel = function () {
-		$uibModalInstance.close();
+		$uibModalInstance.dismiss();
 	};
 
 	$scope.save = function (result) {
-		$uibModalInstance.close(true, result);
+		$uibModalInstance.close(result);
 	};
 
 

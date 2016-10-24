@@ -269,10 +269,16 @@ namespace HrMaxx.Common.Services.PDF
 			{
 				var objPDF = new PdfManager();
 				var objDoc = objPDF.CreateDocument();
+				var param = objPDF.CreateParam();
+
+				
+				param["RightMargin"] = (float)20;
+				param["LeftMargin"] = (float)20;
 				
 				if (report.ReportType.ToLower().Equals("html"))
 				{
-					objDoc.ImportFromUrl(report.HtmlData.OuterXml);
+					objDoc.ImportFromUrl(report.HtmlData.OuterXml, param);
+					
 				}
 				
 				var result = objDoc.SaveToMemory();

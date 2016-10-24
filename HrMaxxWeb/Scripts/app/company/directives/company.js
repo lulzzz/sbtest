@@ -302,7 +302,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							} else {
 								$scope.$parent.save(result);
 							}
-							
+							$rootScope.$broadcast('companyUpdated', { company: result });
 						}, function (error) {
 							addAlert('error saving Company', 'danger');
 						});
