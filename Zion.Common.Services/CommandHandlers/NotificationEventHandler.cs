@@ -7,6 +7,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Enums;
+using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using Magnum;
 using MassTransit;
@@ -27,22 +28,32 @@ namespace HrMaxx.Common.Services.CommandHandlers
 		}
 		public void Consume(Notification event1)
 		{
-			var notificationList = new List<NotificationDto>();
-			var notifyUsers = event1.AffectedUsers!=null && event1.AffectedUsers.Any()? event1.AffectedUsers : event1.Roles!=null && event1.Roles.Any() ? _userService.GetUsersByRoleAndId(event1.Roles, null) : null;
-			if (notifyUsers != null)
+			try
 			{
-				notifyUsers.ForEach(u => notificationList.Add(new NotificationDto
+				var notificationList = new List<NotificationDto>();
+				var notifyUsers = event1.AffectedUsers != null && event1.AffectedUsers.Any() ? event1.AffectedUsers : event1.Roles != null && event1.Roles.Any() ? _userService.GetUsersByRoleAndId(event1.Roles, null) : null;
+				if (notifyUsers != null)
 				{
-					CreatedOn = DateTime.Now,
-					IsRead = false,
-					LoginId = u.ToString(),
-					NotificationId = CombGuid.Generate(),
-					Text = event1.Text,
-					Type = event1.EventType.GetEnumDescription(),
-					MetaData = string.Format("{0}{1}", _baseUrl, event1.ReturnUrl)
-				}));
-				_NotificationService.CreateNotifications(notificationList);	
+					notifyUsers.ForEach(u => notificationList.Add(new NotificationDto
+					{
+						CreatedOn = DateTime.Now,
+						IsRead = false,
+						LoginId = u.ToString(),
+						NotificationId = CombGuid.Generate(),
+						Text = event1.Text,
+						Type = event1.EventType.GetEnumDescription(),
+						MetaData = string.Format("{0}{1}", _baseUrl, event1.ReturnUrl)
+					}));
+					_NotificationService.CreateNotifications(notificationList);
+				}
 			}
+			catch (Exception e)
+			{
+				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Notification Event NotificationEventHandler", event1.SavedObject.Id);
+				Log.Error(message1, e);
+				throw new HrMaxxApplicationException(message1, e);
+			}
+			
 			
 		}
 	}

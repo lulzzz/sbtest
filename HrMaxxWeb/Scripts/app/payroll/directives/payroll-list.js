@@ -60,7 +60,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								deductions: [],
 								isVoid: false,
 								status: 1,
-								memo:''
+								memo: '',
+								included: true
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
 								var pc = {

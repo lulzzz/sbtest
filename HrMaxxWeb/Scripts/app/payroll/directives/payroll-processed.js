@@ -43,6 +43,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						return zionAPI.URL + 'Payroll/Print/'  + check.documentId + '/' + check.payrollId + '/' + check.id ;
 					};
 					$scope.save = function () {
+						$scope.item.payChecks = $filter('filter')($scope.item.payChecks, {included:true});
 						payrollRepository.commitPayroll($scope.item).then(function (data) {
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
 							if ($scope.mainData.selectedCompany.lastPayrollDate < $scope.item.payDay)

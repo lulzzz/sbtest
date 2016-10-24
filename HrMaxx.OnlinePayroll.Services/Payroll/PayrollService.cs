@@ -75,7 +75,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(payroll.PayDay);
 					var payCheckCount = 0;
-					foreach (var paycheck in payroll.PayChecks)
+					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included))
 					{
 						var employeePayChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id).ToList();
 						if (paycheck.Employee.PayType == EmployeeType.Hourly)

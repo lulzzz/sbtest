@@ -38,7 +38,8 @@
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/pager">
 			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'danger': isPayCheckInvalid(listitem)}">
 				<td data-title="'No'" filter="{ 'employeeNo': 'text' }" sortable=" 'employeeNo' " class="col-sm-1">
-					{{listitem.employeeNo}}
+					<label class="checkbox-inline"><input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)">{{listitem.employeeNo}}</label>
+					
 				</td>
 				<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
 					<button type="button" class="btn btn-link" data-ng-click="showemployee(listitem)">{{listitem.name}}</button>
@@ -87,7 +88,7 @@
 					<input type="text" class="form-control" ng-model="listitem.notes[0].content" />
 				</td>
 				<td class="col-sm-2">
-					<button class="btn btn-sm btn-danger" ng-show="false" ng-click="removePayCheck(listitem)">remove</button>
+					
 					<button class="btn btn-info btn-sm" ng-click="showcomps(listitem)">Compensations <span class="badge">{{listitem.compensations.length}}</span></button>
 					<button class="btn btn-info btn-sm" ng-click="showdeds(listitem)">Deducitons <span class="badge">{{listitem.deductions.length}}</span></button>
 				</td>
@@ -100,6 +101,7 @@
 	<div class="col-sm-12">
 		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+		<button class="btn btn-sm btn-warning" ng-click="includeAll()"><i class="fa fa-check m-r-5"></i> Include all</button>
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">
 		<select id="paytypelist" class="form-control" ng-model="params.filter()[name]" name="filter-paytype" convert-to-number>

@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Services;
@@ -32,52 +34,82 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		}
 		public void Consume(PayrollSavedEvent event1)
 		{
-			foreach (var paycheck in event1.SavedObject.PayChecks)
+			try
 			{
-				if (!paycheck.Employee.LastPayrollDate.HasValue || paycheck.Employee.LastPayrollDate < event1.SavedObject.PayDay)
-					_companyRepository.UpdateLastPayrollDateEmployee(paycheck.Employee.Id, event1.SavedObject.PayDay);
-			}
-			if (!event1.SavedObject.Company.LastPayrollDate.HasValue ||
-			    event1.SavedObject.Company.LastPayrollDate < event1.SavedObject.PayDay)
-			{
-				_companyRepository.UpdateLastPayrollDateCompany(event1.SavedObject.Company.Id, event1.SavedObject.PayDay);
-			}
-			foreach (var pc in event1.AffectedChecks)
-			{
-				_payrollService.PrintPayCheck(pc);
-			}
+				foreach (var paycheck in event1.SavedObject.PayChecks)
+				{
+					if (!paycheck.Employee.LastPayrollDate.HasValue || paycheck.Employee.LastPayrollDate < event1.SavedObject.PayDay)
+						_companyRepository.UpdateLastPayrollDateEmployee(paycheck.Employee.Id, event1.SavedObject.PayDay);
+				}
+				if (!event1.SavedObject.Company.LastPayrollDate.HasValue ||
+						event1.SavedObject.Company.LastPayrollDate < event1.SavedObject.PayDay)
+				{
+					_companyRepository.UpdateLastPayrollDateCompany(event1.SavedObject.Company.Id, event1.SavedObject.PayDay);
+				}
+				foreach (var pc in event1.AffectedChecks)
+				{
+					_payrollService.PrintPayCheck(pc);
+				}
 
+			}
+			catch (Exception e)
+			{
+				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Payroll Saved Event PayrollEventHandler", event1.SavedObject.Id);
+				Log.Error(message1, e);
+				throw new HrMaxxApplicationException(message1, e);
+			}
+			
 		}
 
 		public void Consume(PayCheckVoidedEvent event1)
 		{
-			if (!event1.SavedObject.Employee.LastPayrollDate.HasValue || event1.SavedObject.Employee.LastPayrollDate == event1.SavedObject.PayDay)
-				_companyRepository.UpdateLastPayrollDateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.PayDay);
-			foreach (var pc in event1.AffectedChecks)
+			try
 			{
-				_payrollService.PrintPayCheck(pc);
+				if (!event1.SavedObject.Employee.LastPayrollDate.HasValue || event1.SavedObject.Employee.LastPayrollDate == event1.SavedObject.PayDay)
+					_companyRepository.UpdateLastPayrollDateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.PayDay);
+				foreach (var pc in event1.AffectedChecks)
+				{
+					_payrollService.PrintPayCheck(pc);
+				}
 			}
+			catch (Exception e)
+			{
+				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Payroll Voided Event PayrollEventHandler", event1.SavedObject.Id);
+				Log.Error(message1, e);
+				throw new HrMaxxApplicationException(message1, e);
+			}
+			
 		}
 
 		public void Consume(InvoiceCreatedEvent event1)
 		{
-			var users = _userService.GetUsers(event1.SavedObject.Company.HostId, null).Select(u => u.UserId).ToList();
-			var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master }, null);
-			users.AddRange(adminUsers);
-			Bus.Publish<Notification>(new Notification
+			try
 			{
+				var users = _userService.GetUsers(event1.SavedObject.Company.HostId, null).Select(u => u.UserId).ToList();
+				var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master }, null);
+				users.AddRange(adminUsers);
+				Bus.Publish<Notification>(new Notification
+				{
 
-				SavedObject = event1.SavedObject,
-				SourceId = event1.SavedObject.Id,
-				UserId = event1.UserId,
-				Source = event1.UserName,
-				TimeStamp = event1.TimeStamp,
-				Text = "A new invoice has been created for " + event1.SavedObject.Company.Name + " with Invoice date " + event1.SavedObject.InvoiceDate,
-				ReturnUrl = "#!/Admin/Invoices/?invoice=" + event1.SavedObject.Id,
-				EventType = event1.EventType,
-				Roles = new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master },
-				AffectedUsers = users.Distinct().ToList()
-			});
+					SavedObject = event1.SavedObject,
+					SourceId = event1.SavedObject.Id,
+					UserId = event1.UserId,
+					Source = event1.UserName,
+					TimeStamp = event1.TimeStamp,
+					Text = "A new invoice has been created for " + event1.SavedObject.Company.Name + " with Invoice date " + event1.SavedObject.InvoiceDate,
+					ReturnUrl = "#!/Admin/Invoices/?invoice=" + event1.SavedObject.Id,
+					EventType = event1.EventType,
+					Roles = new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master },
+					AffectedUsers = users.Distinct().ToList()
+				});
+			}
+			catch (Exception e)
+			{
+				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Invoice Created Event PayrollEventHandler", event1.SavedObject.Id);
+				Log.Error(message1, e);
+				throw new HrMaxxApplicationException(message1, e);
+			}
+			
 
 		}
 	}

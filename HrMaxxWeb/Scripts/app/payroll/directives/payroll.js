@@ -83,6 +83,18 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						}
 						$scope.tableData.splice($scope.tableData.indexOf(listitem), 1);
 					}
+					$scope.includeAll = function() {
+						$.each($scope.list, function(index, p) {
+							p.included = true;
+						});
+					}
+					$scope.itemIncluded = function(pc) {
+						if (!pc.included) {
+							pc.status = 1;
+							pc.paymentMethod = 1;
+						}
+
+					}
 					
 					
 					$scope.process = function () {
@@ -122,6 +134,11 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								return returnVal;
 							}
 						});
+						if (returnVal) {
+							var included = $filter('filter')($scope.list, { included: true });
+							if (included.length === 0)
+								returnVal = false;
+						}
 						return returnVal;
 					}
 					$scope.isPayCheckInvalid = function(pc) {
@@ -129,6 +146,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var salary = pc.salary;
 						var payCodeSum = 0;
 						var comps = 0;
+						if (!pc.included)
+							return false;
 						$.each(pc.payCodes, function (index1, paycode) {
 							payCodeSum += (paycode.hours + paycode.overtimeHours);
 							if (paycode.payCode.id === -1 && paycode.pwAmount <= 0) {

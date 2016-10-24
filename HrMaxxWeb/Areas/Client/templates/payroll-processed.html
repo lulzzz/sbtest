@@ -36,7 +36,7 @@
 				<th>Status</th>
 				<th></th>
 			</tr>
-			<tr ng-repeat="listitem in item.payChecks track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid}">
+			<tr ng-repeat="listitem in item.payChecks | filter:{included:true} track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid}">
 				<td colspan="2">
 					{{listitem.employee.name}}
 				</td>
