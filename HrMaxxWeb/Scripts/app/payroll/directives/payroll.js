@@ -128,17 +128,20 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					$scope.isPayrollInvalid = function () {
 						var returnVal = false;
+						var includedChecks = 0;
 						$.each($scope.item.payChecks, function (index1, paycheck) {
-							if ($scope.isPayCheckInvalid(paycheck)) {
-								returnVal = true;
-								return returnVal;
+							if (paycheck.included) {
+								includedChecks++;
+								if ($scope.isPayCheckInvalid(paycheck)) {
+									returnVal = true;
+									return returnVal;
+								}
 							}
+							
 						});
-						if (returnVal) {
-							var included = $filter('filter')($scope.list, { included: true });
-							if (included.length === 0)
-								returnVal = false;
-						}
+						if (includedChecks === 0)
+							returnVal = true;
+						
 						return returnVal;
 					}
 					$scope.isPayCheckInvalid = function(pc) {

@@ -8,7 +8,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 			scope: {
 				item: "=item",
 				datasvc: "=datasvc",
-				company: "=company"
+				company: "=company",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-processed.html?v=' + version,
 

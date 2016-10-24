@@ -91,7 +91,7 @@
 			<h4 class="panel-title">Payroll Details - Payroll Step 2</h4>
 		</div>
 		<div class="panel-body tab-content">
-			<payroll-processed item="processed" datasvc="data" company="mainData.selectedCompany"/>
+			<payroll-processed item="processed" datasvc="data" company="mainData.selectedCompany" main-data="mainData"/>
 		</div>
 	</div>
 	<div class="panel panel-info hidden-print" ng-if="committed">
@@ -99,7 +99,7 @@
 			<h4 class="panel-title">Payroll Details</h4>
 		</div>
 		<div class="panel-body tab-content">
-			<payroll-processed item="committed" datasvc="data" company="mainData.selectedCompany" />
+			<payroll-processed item="committed" datasvc="data" company="mainData.selectedCompany" main-data="mainData" />
 		</div>
 	</div>
 	<div class="panel panel-info" id="invoice">
