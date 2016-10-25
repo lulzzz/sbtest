@@ -250,6 +250,40 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							addAlert('error re-created invoice', 'danger');
 						});
 					};
+					$scope.delayTaxes = function () {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delay the taxes on this invoice?', 'danger', function () {
+							payrollRepository.delayTaxes($scope.invoice).then(function (data) {
+								$timeout(function () {
+									$scope.invoice = data;
+									fixDates();
+									$scope.updateParent();
+									addAlert('successfully delayed taxes on the invoice', 'success');
+								});
+
+
+							}, function (error) {
+								addAlert('error re-created invoice', 'danger');
+							});
+						});
+						
+					};
+					$scope.reDateInvoicePayroll = function () {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you re-date the invoice? this will re-date the payroll and paychecks as well', 'danger', function () {
+							payrollRepository.redateInvoiceAndPayroll($scope.invoice, moment(dataSvc.reDate).format("MM/DD/YYYY")).then(function (data) {
+								$timeout(function () {
+									$scope.invoice = data;
+									fixDates();
+									$scope.updateParent();
+									addAlert('successfully re-dated the invoice and its payroll', 'success');
+								});
+
+
+							}, function (error) {
+								addAlert('error re-dating the invoice', 'danger');
+							});
+						});
+
+					};
 					$scope.saveWithStatus = function (status) {
 						$scope.invoice.status = status;
 						$scope.save();

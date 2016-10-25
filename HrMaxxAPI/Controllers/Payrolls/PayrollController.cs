@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxxAPI.Code.Helpers;
+using HrMaxxAPI.Controllers.Companies;
 using HrMaxxAPI.Resources.OnlinePayroll;
 using HrMaxxAPI.Resources.Payroll;
 
@@ -20,13 +24,17 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		private readonly IDocumentService _documentService;
 		private readonly IDashboardService _dashboardService;
 		private readonly ITaxationService _taxationService;
+		private readonly ICompanyService _companyService;
+		private readonly IExcelService _excelService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService, ITaxationService taxationService)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
 			_dashboardService = dashboardService;
 			_taxationService = taxationService;
+			_companyService = companyService;
+			_excelService = excelService;
 		}
 
 		[HttpGet]
@@ -256,6 +264,116 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var invoice = MakeServiceCall(() => _payrollService.RecreateInvoice(invoiceId, CurrentUser.FullName), string.Format("recreate invoice with id={0}", invoiceId));
 			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.DelayTaxes)]
+		public PayrollInvoiceResource DelayTaxes(Guid invoiceId)
+		{
+			var invoice = MakeServiceCall(() => _payrollService.DelayTaxes(invoiceId, CurrentUser.FullName), string.Format("delay taxes on invoice with id={0}", invoiceId));
+			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.RedateInvoice)]
+		public PayrollInvoiceResource RedateInvoice(PayrollInvoiceResource resource)
+		{
+			var mapped = Mapper.Map<PayrollInvoiceResource, PayrollInvoice>(resource);
+			mapped.UserName = CurrentUser.FullName;
+			var invoice = MakeServiceCall(() => _payrollService.RedateInvoice(mapped), string.Format("redate invoice with id={0}", mapped.Id));
+			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.ImportTimesheetsTemplate)]
+		public HttpResponseMessage GetTimesheetImportTemplate(TimesheetImportResource resource)
+		{
+
+			var printed = MakeServiceCall(() => _excelService.GetTimesheetImportTemplate(resource.CompanyId, resource.PayTypes.Select(p=>p.Name).ToList()), "get timesheet import template for " + resource.CompanyId, true);
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(printed.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(printed.MimeType);
+
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = printed.Filename
+			};
+			return response;
+		}
+		/// <summary>
+		/// Upload Entity Document for a given entity
+		/// </summary>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(PayrollRoutes.ImportTimesheets)]
+		public async Task<HttpResponseMessage> ImportTimesheets()
+		{
+			var filename = string.Empty;
+			try
+			{
+				var fileUploadObj = await ProcessMultipartContent();
+				filename = fileUploadObj.file.FullName;
+				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
+				var importedRows = _excelService.ImportEmployees(fileUploadObj.file);
+				var timesheets = new List<TimesheetResource>();
+				var error = string.Empty;
+				company.PayCodes.Add(new CompanyPayCodeResource
+				{
+					Code = "Default", Description = "Base Rate", CompanyId = company.Id.Value, Id=0, HourlyRate = 0
+				});
+				importedRows.ForEach(er =>
+				{
+					try
+					{
+						var timesheet = new TimesheetResource();
+						timesheet.FillFromImport(er, company, fileUploadObj.PayTypes);
+						timesheets.Add(timesheet);
+					}
+					catch (Exception ex)
+					{
+						error += ex.Message + "<br>";
+					}
+				});
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error);
+				
+				return this.Request.CreateResponse(HttpStatusCode.OK, timesheets);
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error importing timesheets", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message
+				});
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(filename))
+					File.Delete(filename);
+			}
+		}
+
+		private async Task<TimesheetImportResource> ProcessMultipartContent()
+		{
+			if (!Request.Content.IsMimeMultipartContent())
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.UnsupportedMediaType
+				});
+			}
+
+			var provider = FileUploadHelpers.GetMultipartProvider();
+			var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+			var fileUploadObj = FileUploadHelpers.GetFormData<TimesheetImportResource>(result);
+
+			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
+			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);
+			fileUploadObj.FileName = originalFileName;
+			fileUploadObj.file = uploadedFileInfo;
+			return fileUploadObj;
 		}
 
 	}

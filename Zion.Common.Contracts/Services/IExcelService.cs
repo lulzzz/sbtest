@@ -10,5 +10,6 @@ namespace HrMaxx.Common.Contracts.Services
 	{
 		FileDto GetEmployeeImportTemplate(Guid companyId);
 		List<ExcelRead> ImportEmployees(FileInfo readAllBytes);
+		FileDto GetTimesheetImportTemplate(Guid companyId, List<string> payTypes);
 	}
 }

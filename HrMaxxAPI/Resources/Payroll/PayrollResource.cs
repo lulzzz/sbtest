@@ -52,7 +52,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<PayrollDeductionResource> Deductions { get; set; }
 		public int? CheckNumber { get; set; }
 		public List<PayrollTaxResource> Taxes { get; set; }
-		public List<CommentResource> Notes { get; set; }
+		public string Notes { get; set; }
 		public List<PayTypeAccumulationResource> Accumulations { get; set; }
 		public PaycheckStatus Status { get; set; }
 		public EmployeePaymentMethod PaymentMethod { get; set; }

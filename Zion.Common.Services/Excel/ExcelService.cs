@@ -78,8 +78,18 @@ namespace HrMaxx.Common.Services.Excel
 				throw new HrMaxxApplicationException(e.Message, e);
 			}
 		}
-		
 
-		
+		public FileDto GetTimesheetImportTemplate(Guid companyId, List<string> payTypes)
+		{
+			var company = _companyService.GetCompanyById(companyId);
+			var columnList = new List<string> { "SSN", "Employee No", "Salary", "Base Rate", "Base Rate Hours", "Base Rate Overtime" };
+			company.PayCodes.ForEach(pc =>
+			{
+				columnList.Add(pc.Code + " Hours");
+				columnList.Add(pc.Code + " Overtime");
+			});
+			columnList.AddRange(payTypes);
+			return _excelRepository.GetImportTemplate(company.Name + "_TimesheetImport.xlsx", columnList);
+		}
 	}
 }

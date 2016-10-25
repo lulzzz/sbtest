@@ -1,6 +1,6 @@
 common.factory('payrollRepository', [
-	'$http', 'zionAPI', 'zionPaths', '$q', 'payrollServer', 
-	function ($http, zionAPI, zionPaths, $q, payrollServer) {
+	'$http', 'zionAPI', 'zionPaths', '$q', 'payrollServer', '$upload',
+	function ($http, zionAPI, zionPaths, $q, payrollServer, upload) {
 		return {
 			
 			savePayroll: function(payroll) {
@@ -147,6 +147,27 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			delayTaxes: function (invoice) {
+				var deferred = $q.defer();
+				payrollServer.one('DelayTaxes').one(invoice.id).get().then(function (result) {
+					deferred.resolve(result);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			redateInvoiceAndPayroll: function (invoice, redate) {
+				var deferred = $q.defer();
+				invoice.invoiceDate = redate;
+				payrollServer.all('RedateInvoice').post(invoice).then(function (result) {
+					deferred.resolve(result);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getInvoiceById: function (invoiceId) {
 				var deferred = $q.defer();
 				payrollServer.one('Invoice').one(invoiceId).get().then(function (data) {
@@ -222,6 +243,56 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			getTimesheetImportTemplate: function (companyId, payTypes) {
+				var deferred = $q.defer();
+				$http.post(zionAPI.URL + "Payroll/TimesheetImportTemplate", {
+					companyId: companyId,
+					payTypes: payTypes
+				}, { responseType: "arraybuffer" }).success(
+					function (data, status, headers) {
+						var type = headers('Content-Type');
+						var disposition = headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}).error(function (data, status) {
+						var e = /* error */
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
+			importTimesheets: function (attachment) {
+				var url = zionAPI.URL + 'Payroll/ImportTimesheets';
+				var deferred = $q.defer();
+				upload.upload({
+					url: url,
+					method: 'POST',
+					data: {
+						inspection: attachment.data
+					},
+					file: attachment.doc.file,
+				}).success(function (data, status, headers, config) {
+					attachment.doc.uploaded = true;
+					attachment.completed = true;
+					deferred.resolve(data);
+
+				})
+				.error(function (data, status, statusText, headers, config) {
+					deferred.reject(statusText);
+				});
+				return deferred.promise;
+			}
 		};
 	}
 ]);

@@ -308,5 +308,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 					i => i.Status == (int) InvoiceStatus.Deposited || i.Status == (int) InvoiceStatus.PartialPayment);
 			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
 		}
+
+		public void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date)
+		{
+			var dbPayroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == payrollId);
+			if (dbPayroll != null)
+			{
+				dbPayroll.PayDay = date.Date;
+				var dbPayChecks = dbPayroll.PayrollPayChecks.Where(pc => payChecks.Contains(pc.Id)).ToList();
+				dbPayChecks.ForEach(pc=>pc.PayDay=date.Date);
+				_dbContext.SaveChanges();
+			}
+
+		}
 	}
 }

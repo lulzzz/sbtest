@@ -33,5 +33,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Payroll> FixPayrollData();
 		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName);
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
+		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
+		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
 	}
 }

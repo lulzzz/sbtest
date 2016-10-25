@@ -27,7 +27,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
-
+					$scope.files = [];
 					$scope.onFileSelect = function ($files) {
 						$scope.files = [];
 						for (var i = 0; i < $files.length; i++) {
@@ -75,7 +75,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					$scope.selected = null;
-					$scope.files = [];
+					
 					$scope.getEmployeeImportTemplate = function() {
 						companyRepository.getEmployeeImportTemplate($scope.mainData.selectedCompany.id).then(function (data) {
 							var a = document.createElement('a');

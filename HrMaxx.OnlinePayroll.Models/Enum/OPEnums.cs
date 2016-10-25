@@ -327,7 +327,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Delivered = 3,
 		[HrMaxxSecurity(DbName = "Closed")]
 		Paid=4,
-		[HrMaxxSecurity(DbName = "On Hold")]
+		[HrMaxxSecurity(DbName = "Taxes Delayed")]
 		OnHold=5,
 		[HrMaxxSecurity(DbName = "Bounced")]
 		PaymentBounced = 6,

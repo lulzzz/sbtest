@@ -1,0 +1,149 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Web;
+using Antlr.Runtime.Misc;
+using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxxAPI.Resources.OnlinePayroll;
+using Newtonsoft.Json;
+
+namespace HrMaxxAPI.Resources.Payroll
+{
+	public class TimesheetResource
+	{
+		public string EmployeeNo { get; set; }
+		public string SSN { get; set; }
+		public decimal Salary { get; set; }
+		public List<PayrollPayCodeResource> PayCodes { get; set; }
+		public List<PayrollPayTypeResource> Compensations { get; set; }
+
+		public void FillFromImport(ExcelRead er, CompanyResource company, List<PayType> payTypes)
+		{
+			PayCodes = new List<PayrollPayCodeResource>();
+			Compensations = new ListStack<PayrollPayTypeResource>();
+			var error = string.Empty;
+			const string ssnRegex = @"^(\d{3}-\d{2}-\d{4})$";
+			if (!Regex.IsMatch(er.Value("ssn"), ssnRegex))
+			{
+				error += "SSN, ";
+			}
+			else
+			{
+				SSN = er.Value("ssn").Replace("-", string.Empty);
+			}
+			if (string.IsNullOrWhiteSpace(er.Value("employee no")))
+			{
+				error += "Employee No, ";
+			}
+			else
+			{
+				EmployeeNo = er.Value("employee no");
+			}
+			if (!string.IsNullOrWhiteSpace(er.Value("salary")))
+			{
+				decimal sala = 0;
+				decimal.TryParse(er.Value("salary"), out sala);
+				if (sala > 0)
+					Salary = sala;
+			}
+			if (string.IsNullOrWhiteSpace(error))
+			{
+				company.PayCodes.ForEach(pc =>
+				{
+					var ratestr = er.Value("Base Rate");
+					var h = er.Value(pc.Code + " hours");
+					var o = er.Value(pc.Code + " overtime");
+					var h1 = er.Value(pc.Description + " hours");
+					var o1 = er.Value(pc.Description + " overtime");
+					if (!string.IsNullOrWhiteSpace(h) || !string.IsNullOrWhiteSpace(o))
+					{
+						var hval = (decimal) 0;
+						var oval = (decimal) 0;
+						decimal.TryParse(h, out hval);
+						decimal.TryParse(o, out oval);
+						if (hval > 0 || oval > 0)
+						{
+							decimal rate = 0;
+							decimal.TryParse(ratestr, out rate);
+							var pcode = new PayrollPayCodeResource
+							{
+								PayCode = pc,
+								Hours = hval,
+								OvertimeHours = oval
+							};
+							if (rate > 0 && pc.Id == 0)
+							{
+								pcode.PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(pc));
+								pcode.PayCode.HourlyRate = rate;
+							}
+							
+							PayCodes.Add(pcode);
+							
+
+						}
+					}
+					else if (!string.IsNullOrWhiteSpace(h1) || !string.IsNullOrWhiteSpace(o1))
+					{
+						var hval = (decimal) 0;
+						var oval = (decimal) 0;
+						decimal.TryParse(h1, out hval);
+						decimal.TryParse(o1, out oval);
+						if (hval > 0 || oval > 0)
+						{
+							decimal rate = 0;
+							decimal.TryParse(ratestr, out rate);
+							var pcode = new PayrollPayCodeResource
+							{
+								PayCode = pc,
+								Hours = hval,
+								OvertimeHours = oval
+							};
+							if (rate > 0 && pc.Id == 0)
+							{
+								pcode.PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(pc));
+								pcode.PayCode.HourlyRate = rate;
+							}
+
+							PayCodes.Add(pcode);
+						}
+					}
+				});
+				payTypes.ForEach(pt =>
+				{
+					var cname = er.Value(pt.Name);
+					var cdesc = er.Value(pt.Description);
+					var amount = (decimal) 0;
+					if (!string.IsNullOrWhiteSpace(cname))
+					{
+						decimal.TryParse(cname, out amount);
+					}
+					else if (!string.IsNullOrWhiteSpace(cdesc))
+					{
+						decimal.TryParse(cdesc, out amount);
+					}
+					if (amount > 0)
+					{
+						Compensations.Add(new PayrollPayTypeResource
+						{
+							PayType = pt,
+							Amount = amount
+						});
+					}
+				});
+			}
+			else
+			{
+				error = "Employee at row# " + er.Row + " has invalid " + error;
+				throw new Exception(error);
+			}
+			
+			
+		}
+	}
+}

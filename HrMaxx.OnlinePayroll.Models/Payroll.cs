@@ -48,7 +48,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollDeduction> Deductions { get; set; }
 		public int? CheckNumber { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
-		public List<Comment> Notes { get; set; }
+		public string Notes { get; set; }
 		public List<PayTypeAccumulation> Accumulations { get; set; } 
 		public EmployeePaymentMethod PaymentMethod { get; set; }
 		public PaycheckStatus Status { get; set; }

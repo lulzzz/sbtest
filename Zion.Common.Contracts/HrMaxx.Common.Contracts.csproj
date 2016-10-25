@@ -70,6 +70,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.Models\HrMaxx.OnlinePayroll.Models.csproj">
+      <Project>{47DF73FF-0053-4E97-9477-06CE38AD3020}</Project>
+      <Name>HrMaxx.OnlinePayroll.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Zion.Bus\HrMaxx.Bus.csproj">
       <Project>{b2a5cffe-f357-4687-ac08-3a005872e300}</Project>
       <Name>HrMaxx.Bus</Name>

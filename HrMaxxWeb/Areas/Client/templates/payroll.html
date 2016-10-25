@@ -85,7 +85,7 @@
 				</td>
 
 				<td data-title=" 'Notes' " class="col-sm-2">
-					<input type="text" class="form-control" ng-model="listitem.notes[0].content" />
+					<input type="text" class="form-control" ng-model="listitem.notes" />
 				</td>
 				<td class="col-sm-2">
 					
@@ -102,6 +102,10 @@
 		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 		<button class="btn btn-sm btn-warning" ng-click="includeAll()"><i class="fa fa-check m-r-5"></i> Include all</button>
+		<button class="btn btn-sm btn-success attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+			<i class="fa fa-upload"></i>Import Timesheets
+		</button>
+		<button class="btn btn-sm btn-info pull-right" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Import Template</button>
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">
 		<select id="paytypelist" class="form-control" ng-model="params.filter()[name]" name="filter-paytype" convert-to-number>

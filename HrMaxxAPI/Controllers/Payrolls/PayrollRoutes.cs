@@ -21,6 +21,10 @@
 		public const string PayrollInvoice = "Payroll/PayrollInvoice";
 		public const string DeletePayrollInvoice = "Payroll/DeletePayrollInvoice/{invoiceId:guid}";
 		public const string FixPayrollData = "Payroll/FixPayrollData";
-		public const string RecreateInvoice = "Payroll/RecreateInvoice/{invoiceId:guid}";
+		public const string RecreateInvoice = "Payroll/RecreateInvoice/{invoiceId:guid}"; 
+		public const string DelayTaxes = "Payroll/DelayTaxes/{invoiceId:guid}";
+		public const string RedateInvoice = "Payroll/RedateInvoice";
+		public const string ImportTimesheets = "Payroll/ImportTimesheets";
+		public const string ImportTimesheetsTemplate = "Payroll/TimesheetImportTemplate";
 	}
 }

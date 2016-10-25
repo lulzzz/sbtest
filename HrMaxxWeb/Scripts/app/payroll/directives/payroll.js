@@ -106,6 +106,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
 						payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
 						payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
+						
 						payrollRepository.processPayroll(payroll).then(function (data) {
 							$timeout(function () {
 								$scope.cancel();
@@ -249,6 +250,113 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							return false;
 						});
 					}
+
+					$scope.files = [];
+					$scope.onFileSelect = function ($files) {
+						$scope.files = [];
+						for (var i = 0; i < $files.length; i++) {
+							var $file = $files[i];
+
+							var fileReader = new FileReader();
+							fileReader.readAsDataURL($files[i]);
+							var loadFile = function (fileReader, index) {
+								fileReader.onload = function (e) {
+									$timeout(function () {
+										$scope.files.push({
+											doc: {
+												file: $files[index],
+												file_data: e.target.result,
+												uploaded: false
+											},
+											data: JSON.stringify({
+												companyId: $scope.item.company.id,
+												payTypes: dataSvc.payTypes
+											}),
+											currentProgress: 0,
+											completed: false
+										});
+										uploadDocument();
+									});
+								}
+							}(fileReader, i);
+						}
+
+					};
+					$scope.getTimesheetmportTemplate = function () {
+						payrollRepository.getTimesheetImportTemplate($scope.item.company.id, dataSvc.payTypes).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+						}, function (error) {
+							addAlert('error getting timesheet import template', 'danger');
+						});
+					}
+					var uploadDocument = function () {
+						payrollRepository.importTimesheets($scope.files[0]).then(function (timesheets) {
+							var counter = 0;
+							$.each(timesheets, function (ind, t) {
+								var pc = null;
+								if (t.ssn)
+									pc = $filter('filter')($scope.list, { employee: { ssn: t.ssn } })[0];
+								else if (t.employeeNo) {
+									pc = $filter('filter')($scope.list, { employee: { employeeNo: t.employeeNo } })[0];
+								}
+								
+								if (pc) {
+									counter++;
+									if (pc.employee.payType === 2)
+										pc.salary = t.salary;
+									else if (pc.employee.payType === 1) {
+										$.each(t.payCodes, function(pcind, paycode) {
+											var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
+											if (ec) {
+												var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
+												if (exists.length > 0) {
+													exists[0].hours = paycode.hours;
+													exists[0].overtimeHours = paycode.overtimeHours;
+													if (paycode.payCode.id === 0 && paycode.payCode.hourlyRate) {
+														exists[0].payCode.hourlyRate = paycode.payCode.hourlyRate;
+													}
+												} else
+													pc.payCodes.push(paycode);
+											}
+										});
+									} else {
+										var pw = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
+										if (pw.length > 0 && pc.payCodes.length===1) {
+											pc.payCodes[0].pwAmount = pw[0].payCode.hourlyRate;
+											pc.payCodes[0].hours = pw[0].hours;
+											pc.payCodes[0].overtimeHours = pw[0].overtimeHours;
+										}
+									}
+									$.each(t.compensations, function (cind, comp) {
+											var exists = $filter('filter')(pc.compensations, { payType: { id: comp.payType.id } });
+											if (exists.length > 0)
+												exists[0].amount = comp.amount;
+											else
+												pc.compensations.push(comp);
+										});
+								}
+								
+							});
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							
+							addAlert('successfully imported ' + counter + " rows from "+ timesheets.length + ' rows of timesheet', 'success');
+						}, function (error) {
+							addAlert('error in importing timesheets: ' + error, 'danger');
+
+						});
+
+
+					}
+
+
+
 					var init = function () {
 						$scope.list = $scope.item.payChecks;
 						//$scope.tableParams.reload();

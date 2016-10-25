@@ -91,10 +91,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else
 						{
 							var pc = paycheck.PayCodes[0];
-							paycheck.Notes.Add(new Comment
-							{
-								Content = string.Format("{0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"), pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"))
-							});
+							paycheck.Notes = string.Format("{0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
+								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
+							
 							if ((pc.PWAmount/(pc.Hours + pc.OvertimeHours)) < 10)
 							{
 								pc.PayCode.HourlyRate = 10;
@@ -741,7 +740,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							invoice.DeliveredOn = DateTime.Now;
 							invoice.DeliveredBy = invoice.UserName;
 						}
-						if (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status==InvoiceStatus.Paid || invoice.Status==InvoiceStatus.Deposited)
+						
+						if (invoice.Status!=InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status==InvoiceStatus.Paid || invoice.Status==InvoiceStatus.Deposited))
 						{
 							if (invoice.Balance == 0)
 								invoice.Status = InvoiceStatus.Paid;
@@ -1038,8 +1038,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd", prwytd.ToString("C")));
 					if (payCheck.Employee.PayType == EmployeeType.PieceWork)
 					{
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", payCheck.Notes.Any() ? payCheck.Notes[0].Content.ToString() : string.Empty));
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", payCheck.Notes.Any() ? payCheck.Notes[0].Content.ToString() : string.Empty));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
 					}
 				}
 
@@ -1236,6 +1236,78 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payroll Invoices deposits and partial payments");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public PayrollInvoice DelayTaxes(Guid invoiceId, string fullName)
+		{
+			try
+			{
+				var invoice = _payrollRepository.GetPayrollInvoiceById(invoiceId);
+				invoice.Status = InvoiceStatus.OnHold;
+				invoice.LastModified = DateTime.Now;
+				invoice.UserName = fullName;
+				var saved = _payrollRepository.SavePayrollInvoice(invoice);
+				_commonService.AddToList(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, saved.Id, new Comment
+				{
+					Content = string.Format("Invoice has been marked as Taxes Delayed"), LastModified = saved.LastModified, UserName = fullName, TimeStamp = DateTime.Now
+				});
+				return saved;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Delay Taxes on invoice id=" + invoiceId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public PayrollInvoice RedateInvoice(PayrollInvoice invoice)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					if (invoice.Balance == 0)
+						invoice.Status = InvoiceStatus.Paid;
+					else if (invoice.Balance <= invoice.Total)
+					{
+						if (invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced))
+							invoice.Status = InvoiceStatus.PaymentBounced;
+						else if (invoice.Payments.Any(p => p.Status == PaymentStatus.Submitted))
+							invoice.Status = InvoiceStatus.Deposited;
+						else if (invoice.Payments.Any())
+						{
+							invoice.Status = InvoiceStatus.PartialPayment;
+						}
+						else
+						{
+							invoice.Status = InvoiceStatus.Delivered;
+
+						}
+					}
+					
+					invoice.LastModified = DateTime.Now;
+				
+					var saved = _payrollRepository.SavePayrollInvoice(invoice);
+					_commonService.AddToList(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, saved.Id, new Comment
+					{
+						Content = string.Format("Invoice and related Payroll and Paychecks have been re-dated to {0}", invoice.InvoiceDate.ToString("MM/dd/yyyy")),
+						LastModified = saved.LastModified,
+						UserName = invoice.UserName,
+						TimeStamp = DateTime.Now
+					});
+					_payrollRepository.UpdatePayrollPayDay(invoice.PayrollId, invoice.PayChecks, invoice.InvoiceDate);
+					txn.Complete();
+					return saved;
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Delay Taxes on invoice id=" + invoice.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

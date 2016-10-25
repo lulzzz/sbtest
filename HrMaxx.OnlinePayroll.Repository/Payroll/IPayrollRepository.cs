@@ -32,5 +32,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		List<PayCheck> GetUnclaimedVoidedchecks(Guid companyId);
 		List<Models.Payroll> GetAllPayrolls();
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
+		void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date);
 	}
 }

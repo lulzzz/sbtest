@@ -297,6 +297,8 @@
     <Compile Include="Resources\Payroll\InvoiceResource.cs" />
     <Compile Include="Resources\Payroll\PayrollFilterResource.cs" />
     <Compile Include="Resources\Payroll\PayrollResource.cs" />
+    <Compile Include="Resources\Payroll\TimesheetImportResource.cs" />
+    <Compile Include="Resources\Payroll\TimesheetResource.cs" />
     <Compile Include="Resources\Reports\DashboardRequestResource.cs" />
     <Compile Include="Resources\Reports\ReportRequestResource.cs" />
     <Compile Include="Resources\Reports\ReportResponseResource.cs" />
