@@ -350,6 +350,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						});
 					}
 					var init = function () {
+						
 						if ($scope.invoice) {
 							fixDates();
 							getHostContact();
@@ -374,7 +375,6 @@ common.controller('companyCtrl', function ($scope, $uibModalInstance, $filter, i
 	$scope.original = invoice.company;
 	$scope.company = angular.copy(invoice.company);
 	$scope.mainData = mainData;
-	
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();
 	};

@@ -729,8 +729,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 					if (dbIncvoice != null)
 					{
-						if (dbIncvoice.Status == InvoiceStatus.Draft)
-							invoice.CalculateTotal();
+						invoice.CalculateTotal();
 						if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
 						{
 							invoice.SubmittedOn = DateTime.Now;

@@ -568,7 +568,7 @@
 						</form>
 					</div>
 					<div class="tab-pane fade in" id="user" ng-if="selectedCompany.id" ng-class="{'active':tab===3}">
-						<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="mainData" />
+						<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="data" />
 					</div>
 					<div class="tab-pane fade in" id="news" ng-if="selectedCompany.id" ng-class="{'active':tab===4}">
 						<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data" />

@@ -78,11 +78,11 @@
 						<thead>
 							<tr >
 								<th style="width:15%">Employee</th>
-								<th style="width:10%">Wage(s)</th>
+								<th style="width:15%">Wage(s)</th>
 								<th style="width:10%">Amount</th>
-								<th style="width:30%">PayCode(s)</th>
+								<th style="width:20%">PayCode(s)</th>
 								
-								<th style="width:15%">Deductions</th>
+								<th style="width:20%">Tax/Deductions</th>
 								<th style="width:10%">Amount</th>
 								<th style="width:10%">YTD</th>
 								
@@ -99,6 +99,7 @@
 					<table style="font-size:9pt; width:100%;border-collapse:collapse" class="border">
 						<tbody>
 							<tr>
+								<th style="width:25%">No. Checks</th>
 								<th style="width:25%">Total Gross Pay</th>
 								<th style="width:25%">Total Deductions</th>
 								<th style="width:25%">Total Taxes EE</th>
@@ -107,6 +108,9 @@
 							
 
 							<tr>
+								<td style="text-align:right">
+									<xsl:value-of select="count(PayChecks/PayCheck)"/>
+								</td>
 								<td style="text-align:right">
 									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck/GrossWage),'#,##0.00')"/>
 								</td>
@@ -135,12 +139,25 @@
 			
 		</html>
 	</xsl:template>
-	<xsl:template match="PayrollPayType">
+	<xsl:template match="PayrollTax">
 		<tr>
 			<td style="width:50%; text-align:left;">
+				<xsl:value-of select="Tax/Name"/>
+			</td>
+			<td style="width:25%; text-align:right;">
+				$<xsl:value-of select="format-number(Amount,'#,##0.00')"/>
+			</td>
+			<td style="width:30%; text-align:right;">
+				$<xsl:value-of select="format-number(YTDTax,'#,##0.00')"/>
+			</td>
+		</tr>
+	</xsl:template>
+	<xsl:template match="PayrollPayType">
+		<tr>
+			<td style="width:60%; text-align:left;">
 				<xsl:value-of select="PayType/Name"/>
 			</td>
-			<td style="width:50%; text-align:right;">
+			<td style="width:40%; text-align:right;">
 				$<xsl:value-of select="format-number(Amount,'#,##0.00')"/>
 			</td>
 		</tr>
@@ -228,18 +245,18 @@
 			<td colspan="2" valign="top">
 				<table style="font-size:8px;width:100%" class="noborder">
 					<tr>
-						<td style="width:50%; text-align:left;">
+						<td style="width:60%; text-align:left;">
 							Gross Wage
 						</td>
-						<td style="width:50%; text-align:right;">
+						<td style="width:40%; text-align:right;">
 							$<xsl:value-of select="format-number(GrossWage,'#,##0.00')"/>
 						</td>
 					</tr>
 					<tr>
-						<td style="width:50%; text-align:left;">
+						<td style="width:60%; text-align:left;">
 							Salary
 						</td>
-						<td style="width:50%; text-align:right;">
+						<td style="width:40%; text-align:right;">
 							$<xsl:value-of select="format-number(Salary,'#,##0.00')"/>
 						</td>
 					</tr>
@@ -263,29 +280,10 @@
 					</table>
 				</xsl:if>
 				
-				<xsl:if test="Employee/PayType='PieceWork'">
-					<xsl:for-each select="Notes/Comment">
-						<span style="width:100%; font-size:8px;">
-							<xsl:value-of select="Content"/>
-						</span>
-				 </xsl:for-each>
-					
-				</xsl:if>
-					
 			</td>
 			<td colspan="3" valign="top">
 				<table style="font-size:8px;width:100%" class="noborder">
-					<tr>
-						<td style="width:45%; text-align:left;">
-							Employee Taxes
-						</td>
-						<td style="width:25%; text-align:right;">
-							$<xsl:value-of select="format-number(sum(Taxes/PayrollTax[Tax/IsEmployeeTax='true']/Amount),'#,##0.00')"/>
-						</td>
-						<td style="width:25%; text-align:right;">
-							$<xsl:value-of select="format-number(sum(Taxes/PayrollTax[Tax/IsEmployeeTax='true']/YTDTax),'#,##0.00')"/>
-						</td>
-					</tr>
+					<xsl:apply-templates select="Taxes/PayrollTax[Tax/IsEmployeeTax='true']"/>
 					<xsl:apply-templates select="Deductions/PayrollDeduction"/>
 					
 				</table>

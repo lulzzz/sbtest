@@ -97,7 +97,7 @@
 				<table class="table table-borderless" >
 					<tr>
 						<td>
-							<img ng-src="{{getHostLogo()}}" style="width:200px;height:40px" /><br />
+							<img ng-src="{{getHostLogo()}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:200px;height:40px" /><br />
 							<h4>{{invoice.company.name}}<i class="fa fa-lg fa-info-circle hidden-print" ng-click="showcompany()"></i></h4><br />
 							{{invoice.company.companyAddress.addressLine1}}<br />
 							{{invoice.company.companyAddress.city}}, CA {{invoice.company.companyAddress.zip}}{{invoice.company.companyAddress.zipExtension? ' - ' + invoice.company.companyAddress.zipExtension : ''}}<br />
@@ -250,7 +250,7 @@
 
 							<td colspan="3" class="text-left"><em><u>Grand Total</u></em></td>
 
-							<td class="text-right"><em><u>{{invoice.status===1? getTotal() : invoice.total | currency:'$'}}</u></em></td>
+							<td class="text-right"><em><u>{{ getTotal() | currency:'$'}}</u></em></td>
 
 						</tr>
 						<tr class="hidden-print">

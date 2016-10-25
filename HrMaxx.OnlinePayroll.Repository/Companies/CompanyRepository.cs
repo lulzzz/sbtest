@@ -170,11 +170,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			if (mappedwc.Id == 0)
 			{
 				_dbContext.CompanyWorkerCompensations.Add(mappedwc);
+				_dbContext.SaveChanges();
 				var employeesWithoutWC =
 					_dbContext.Employees.Where(e => e.CompanyId == mappedwc.CompanyId && !e.WorkerCompensationId.HasValue);
 				if (employeesWithoutWC.Any())
 				{
 					employeesWithoutWC.ForEachAsync(e => e.WorkerCompensationId = mappedwc.Id);
+					_dbContext.SaveChanges();
 				}
 			}
 			else
@@ -186,9 +188,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.Description = mappedwc.Description;
 					wc.Rate = mappedwc.Rate;
 					wc.MinGrossWage = mappedwc.MinGrossWage;
+					_dbContext.SaveChanges();
 				}
 			}
-			_dbContext.SaveChanges();
+			
 			return _mapper.Map<Models.DataModel.CompanyWorkerCompensation, CompanyWorkerCompensation>(mappedwc);
 		}
 
