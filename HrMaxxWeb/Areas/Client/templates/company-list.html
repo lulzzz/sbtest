@@ -26,6 +26,7 @@
 						</td>
 						<td>
 							<button type="button" class="btn btn-sm btn-primary">View</button>
+							<button type="button" class="btn btn-sm btn-info" ng-show="false" ng-click="copycompany($event, item)">Copy Company</button>
 						</td>
 					</tr>
 
@@ -61,7 +62,75 @@
 		<company company="selectedCompany" main-data="mainData" is-popup="false" />	
 	</div>
 	
+	<script type="text/ng-template" id="popover/copycompany.html">
 
+		<div class="modal-header">
+			<h2 class="modal-title">Copy Company {{company.name}}<i class="fa fa-plus-circle fa-lg"></i></h2>
+		</div>
+		<div class="modal-body">
+			
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="form-group">
+						<label>Host</label>
+						<select id="host" class="form-control" ng-model="selectedHost" ng-options="host1.firmName for host1 in mainData.hosts | filter:{ id:'!' + company.hostId} track by host1.id">
+							<option value="">Select new Host</option>
+						</select>
+					</div>
+					
+					
+					
+				</div>
+				<div class="col-sm-4">
+					<div class="form-group">
+						<label></label>
+						<div>
+							<label for="copyemployees" class="switch">
+								Copy Employees?
+								<input id="copyemployees" type="checkbox" ng-model="copyemployees" /><i></i>
+							</label>
+						</div>
+					</div>
+					<div class="form-group"></div>
+					
+				</div>
+				<div class="col-sm-4">
+					<div class="form-group">
+						<label></label>
+						<div>
+							<label for="copypayrolls" class="switch">
+								Copy Payrolls?
+								<input id="copypayrolls" type="checkbox" ng-model="copypayrolls" /><i></i>
+							</label>
+						</div>
+					</div>
+					<div class="form-group" ng-if="copypayrolls">
+						<div class="col-sm-6">
+							<label>Payrolls From</label>
+							<date-ctrl name="startdate" model="startDate" disabled="false" />
+						</div>
+						<div class="col-sm-6">
+							<label>Payrolls To</label>
+							<date-ctrl name="startdate" model="startDate" disabled="false" />
+						</div>
+
+					</div>
+					
+				</div>
+
+			</div>
+
+			
+		</div>
+		<div class="modal-footer">
+			<div class="col-sm-12" >
+				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!isValid()"><i class="fa fa-save m-r-5"></i> Save</button>
+			</div>
+
+		</div>
+
+	</script>
 
 </div>
 

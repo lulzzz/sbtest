@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Xml.Serialization;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
@@ -96,6 +99,41 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		public DashboardData GetDashboardData(DashboardRequest dashboardRequest)
 		{
 			return getDashboardData(dashboardRequest.Report, dashboardRequest.Host, dashboardRequest.Role, dashboardRequest.StartDate, dashboardRequest.EndDate, dashboardRequest.Criteria);
+		}
+
+		public ExtractReport GetExtractReport(ReportRequest extractReport)
+		{
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand("GetExtractData"))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@startDate", extractReport.StartDate);
+					cmd.Parameters.AddWithValue("@endDate", extractReport.EndDate);
+
+					cmd.Connection = con;
+					con.Open();
+
+
+					var data = string.Empty;
+					using (var reader = cmd.ExecuteXmlReader())
+					{
+						var sb = new StringBuilder();
+
+						while (reader.Read())
+							sb.AppendLine(reader.ReadOuterXml());
+
+						data = sb.ToString();
+					}
+					con.Close();
+					var serializer = new XmlSerializer(typeof(ExtractReportDB));
+					var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+					var dbReport = (ExtractReportDB)serializer.Deserialize(memStream);
+
+					return _mapper.Map<ExtractReportDB, ExtractReport>(dbReport);
+
+				}
+			}
 		}
 
 

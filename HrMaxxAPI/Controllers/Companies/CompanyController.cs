@@ -299,5 +299,13 @@ namespace HrMaxxAPI.Controllers.Companies
 			fileUploadObj.file = uploadedFileInfo;
 			return fileUploadObj;
 		}
+
+		[HttpPost]
+		[Route(CompanyRoutes.CopyCompany)]
+		public CompanyResource CopyCompany(CopyCompanyResource resource)
+		{
+			var newcompany = MakeServiceCall(() => _companyService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName), "copy company", true);
+			return Mapper.Map<Company, CompanyResource>(newcompany);
+		}
   }
 }

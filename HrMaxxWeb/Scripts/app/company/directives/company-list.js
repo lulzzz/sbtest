@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$uibModal',
+	function (zionAPI, $timeout, $window, version, $modal) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -40,6 +40,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							isAddressSame: true,
 							isVisibleToHost: true,
 							fileUnderHost: true,
+							allowTaxPayments: true,
+							allowEFileFormFiling: true,
 							isHostCompany: false,
 							payrollDaysInPast: 0,
 							companyAddress: {},
@@ -56,16 +58,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							}
 						};
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
-						$.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
-							selectedCompany.companyTaxRates.push({
-								id: 0,
-								taxId: taxyearrate.tax.id,
-								companyId: null,
-								taxCode: taxyearrate.tax.code,
-								taxYear: taxyearrate.taxYear,
-								rate: taxyearrate.rate
-							});
-						});
+						
 						$scope.setCompany(selectedCompany, 1);
 					}
 
@@ -116,8 +109,11 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selectedCompany = angular.copy(item);
 							
 							$scope.data.isBodyOpen = false;
-							$scope.mainData.selectedCompany = item;
-							$scope.mainData.selectedCompany1 = item;
+							if (item.id) {
+								$scope.mainData.selectedCompany = item;
+								$scope.mainData.selectedCompany1 = item;
+							}
+							
 						
 
 							$scope.tab = tab;
@@ -132,6 +128,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 						var exists = $filter('filter')($scope.list, { id: result.id });
 						if (exists.length === 0) {
 							$scope.list.push(result);
+							$scope.setCompany(result);
 						} else {
 							$scope.list.splice($scope.list.indexOf(exists[0]), 1);
 							$scope.list.push(result);
@@ -152,6 +149,37 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 
 						 }, true
 				 );
+					$scope.copycompany = function (event, item) {
+						event.stopPropagation();
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/copycompany.html',
+							controller: 'copyCompanyCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								company: function () {
+									return item;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								},
+								companyRepository : function() {
+									return companyRepository;
+								}
+							}
+						});
+						modalInstance.result.then(function (companyUpdated, result) {
+							if (result) {
+								$scope.$parent.$parent.mainData.selectedCompany = result;
+								$scope.item.company = result;
+							}
+						}, function () {
+							return false;
+						});
+					}
 					var init = function () {
 
 						$scope.list = $scope.mainData.companies;
@@ -176,3 +204,29 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
+common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository) {
+	$scope.original = company;
+	$scope.company = angular.copy(company);
+	$scope.mainData = mainData;
+	$scope.copyemployees = true;
+	$scope.copypayrolls = false;
+	$scope.startDate = null;
+	$scope.endDate = null;
+	$scope.selectedHost = null;
+
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	$scope.save = function () {
+		
+		$uibModalInstance.close($scope);
+	};
+	$scope.isValid = function() {
+		if (!$scope.selectedHost)
+			return false;
+		else
+			return true;
+	}
+	
+});
+

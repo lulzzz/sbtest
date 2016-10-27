@@ -649,7 +649,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
 				if (!string.IsNullOrWhiteSpace(payroll.Notes))
 				{
-					_commonService.AddToList<Comment>(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, savedInvoice.Id, new Comment { Content = payroll.Notes, TimeStamp = savedInvoice.LastModified });
+					_commonService.AddToList<Comment>(EntityTypeEnum.Company, EntityTypeEnum.Comment, company.Id, new Comment { Content = string.Format("Invoice #{0}: {1}", payrollInvoice.InvoiceNumber, payroll.Notes), TimeStamp = savedInvoice.LastModified });
 				}
 				Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
 				{
@@ -747,8 +747,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								invoice.Status = InvoiceStatus.Paid;
 							else if (invoice.Balance <= invoice.Total)
 							{
-								if(invoice.Payments.Any(p=>p.Status==PaymentStatus.PaymentBounced))
+								if (invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced))
+								{
 									invoice.Status = InvoiceStatus.PaymentBounced;
+									_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment{ Content = string.Format("Invoice #{0} - Payment Bounced",invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName});
+								}
 								else if(invoice.Payments.Any(p=>p.Status==PaymentStatus.Submitted))
 									invoice.Status = InvoiceStatus.Deposited;
 								else if(invoice.Payments.Any())
@@ -1250,9 +1253,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				invoice.LastModified = DateTime.Now;
 				invoice.UserName = fullName;
 				var saved = _payrollRepository.SavePayrollInvoice(invoice);
-				_commonService.AddToList(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, saved.Id, new Comment
+				_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.CompanyId, new Comment
 				{
-					Content = string.Format("Invoice has been marked as Taxes Delayed"), LastModified = saved.LastModified, UserName = fullName, TimeStamp = DateTime.Now
+					Content = string.Format("Invoice #{0} has been marked as Taxes Delayed", invoice.InvoiceNumber), LastModified = saved.LastModified, UserName = fullName, TimeStamp = DateTime.Now
 				});
 				return saved;
 			}
@@ -1292,9 +1295,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					invoice.LastModified = DateTime.Now;
 				
 					var saved = _payrollRepository.SavePayrollInvoice(invoice);
-					_commonService.AddToList(EntityTypeEnum.Invoice, EntityTypeEnum.Comment, saved.Id, new Comment
+					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.CompanyId, new Comment
 					{
-						Content = string.Format("Invoice and related Payroll and Paychecks have been re-dated to {0}", invoice.InvoiceDate.ToString("MM/dd/yyyy")),
+						Content = string.Format("Invoice #{1} and related Payroll and Paychecks have been re-dated to {0}", invoice.InvoiceDate.ToString("MM/dd/yyyy"), invoice.InvoiceNumber),
 						LastModified = saved.LastModified,
 						UserName = invoice.UserName,
 						TimeStamp = DateTime.Now

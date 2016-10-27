@@ -105,6 +105,9 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Admin/Dashboard', {
 		templateUrl: zionAPI.Web + '/Areas/Reports/templates/Dashboard.html'
 	});
+	$routeProvider.when('/Admin/Extracts', {
+		templateUrl: zionAPI.Web + '/Areas/Reports/templates/Extracts.html'
+	});
 	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.hashPrefix('!');

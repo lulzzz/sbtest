@@ -50,6 +50,15 @@ namespace HrMaxxAPI.Controllers.Reports
 			return Printed(response);
 
 		}
+		[HttpPost]
+		[Route(ReportRoutes.ExtractDocument)]
+		public HttpResponseMessage GetExtractDocment(ReportRequestResource resource)
+		{
+			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
+			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract for request", request.ReportName));
+			return Printed(response);
+
+		}
 		private HttpResponseMessage Printed(FileDto document)
 		{
 			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };

@@ -51,6 +51,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			{
 				_dbContext.Companies.Add(dbMappedCompany);
 			}
+			else if(dbCompany.Id!=dbMappedCompany.Id && dbCompany.HostId==dbMappedCompany.HostId)
+				throw new Exception("FEIN already exists for another Company withing the same Host");
 			else
 			{
 				dbCompany.BusinessAddress = dbMappedCompany.BusinessAddress;

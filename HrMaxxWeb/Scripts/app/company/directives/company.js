@@ -295,7 +295,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					
 						companyRepository.saveCompany($scope.selectedCompany).then(function (result) {
-
+							
 							if (!$scope.isPopup) {
 								$scope.$parent.$parent.save(result);
 								$scope.tab = 2;
@@ -304,19 +304,22 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							$rootScope.$broadcast('companyUpdated', { company: result });
 						}, function (error) {
-							addAlert('error saving Company', 'danger');
+							addAlert(error.statusText, 'danger');
 						});
 					}
-
-					var init = function () {
-
-						companyRepository.getCompanyMetaData().then(function (data) {
-							dataSvc.companyMetaData = data;
-						}, function (error) {
-							addAlert('error getting company meta data', 'danger');
-						});
-						
-						
+					var ready = function () {
+						if (!$scope.selectedCompany.id) {
+							$.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
+								$scope.selectedCompany.companyTaxRates.push({
+									id: 0,
+									taxId: taxyearrate.tax.id,
+									companyId: null,
+									taxCode: taxyearrate.tax.code,
+									taxYear: taxyearrate.taxYear,
+									rate: taxyearrate.rate
+								});
+							});
+						}
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
 								invoiceType: 1,
@@ -333,7 +336,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 
 						$scope.selectedCompany.sourceTypeId = dataSvc.sourceTypeId;
-						
+
 						$timeout(function () {
 							$("#wizard").bwizard({
 								validating: function (e, ui) {
@@ -364,6 +367,18 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							});
 						});
 						$scope.tab = 1;
+					}
+					var init = function () {
+
+						companyRepository.getCompanyMetaData().then(function (data) {
+							dataSvc.companyMetaData = data;
+							ready();
+						}, function (error) {
+							addAlert('error getting company meta data', 'danger');
+						});
+						
+						
+						
 					}
 					init();
 

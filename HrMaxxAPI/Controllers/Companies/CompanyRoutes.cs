@@ -24,5 +24,6 @@
 		public const string InvoiceMetaData = "Company/InvoiceMetaData/{companyId:guid}";
 		public const string GetEmployeeImportTemplate = "Company/EmployeeImport/{companyId:guid}";
 		public const string ImportEmployees = "Company/ImportEmployees";
+		public const string CopyCompany = "Company/Copy";
 	}
 }

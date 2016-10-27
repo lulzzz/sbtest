@@ -168,6 +168,73 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 		}
 
+		public FileDto GetExtractDocument(ReportRequest request)
+		{
+			try
+			{
+				CalculateDates(ref request);
+				if (request.ReportName.Equals("Paperless941"))
+					return GetPaperless941(request);
+				else
+				{
+					throw new Exception(ReportNotAvailable);
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+				}
+				else if (e.Message.ToLower().StartsWith("could not find file"))
+				{
+					message = ReportNotAvailable;
+				}
+				else
+				{
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+				}
+
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private FileDto GetPaperless941(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.BuildDailyAccumulations(request.Quarter);
+				c.Accumulation.SetCounts(request.Year, request.Quarter);
+			});
+			var argList = new XsltArgumentList();
+			argList.AddParam("quarter", "", request.Quarter);
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("startdate", "", request.StartDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+			
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/941/Paperless941-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 941-{0}-{1}.xls", request.Year, request.Quarter));
+		}
+		private FileDto GetExtractTransformed(ReportRequest request, ExtractReport data, XsltArgumentList argList, string template, string extension, string filename)
+		{
+			var xml = GetXml<ExtractReport>(data);
+
+			var transformed = XmlTransform(xml,
+				string.Format("{0}{1}", _templatePath, template), argList);
+
+			return new FileDto
+			{
+				Data = Encoding.UTF8.GetBytes(transformed), DocumentExtension = extension, Filename = filename, MimeType = "application/octet-stream"
+			};
+		}
+
 		public FileDto PrintPayrollWithSummary(Models.Payroll payroll, List<Guid> documents )
 		{
 			var fileName = string.Format("Payroll_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
@@ -807,12 +874,20 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private ReportTransformed TransformXml(XmlDocument source, string transformer, XsltArgumentList args)
 		{
+			var strOutput = XmlTransform(source, transformer, args);
+			var serializer = new XmlSerializer(typeof(ReportTransformed));
+			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput));
+			return (ReportTransformed)serializer.Deserialize(memStream);
+			
+		}
+		private string XmlTransform(XmlDocument source, string transformer, XsltArgumentList args)
+		{
 			string strOutput = null;
 			var sb = new System.Text.StringBuilder();
 			var xslt = new Mvp.Xml.Exslt.ExsltTransform();
 
 
-			
+
 			xslt.Load(transformer);
 			using (TextWriter xtw = new StringWriter(sb))
 			{
@@ -820,11 +895,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				xtw.Flush();
 			}
 			strOutput = sb.ToString();
-			strOutput = strOutput.Replace("encoding=\"utf-16\"", string.Empty);
-			var serializer = new XmlSerializer(typeof(ReportTransformed));
-			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput));
-			return (ReportTransformed)serializer.Deserialize(memStream);
-			
+			return strOutput.Replace("encoding=\"utf-16\"", string.Empty);
+		}
+
+		private void CalculateDates(ref ReportRequest request)
+		{
+			if (request.Quarter > 0)
+			{
+				request.StartDate = new DateTime(request.Year, request.Quarter*3 -2, 1 ).Date;
+				request.EndDate = new DateTime(request.Year, request.Quarter * 3, DateTime.DaysInMonth(request.Year, request.Quarter*3)).Date;
+			}
+			else if (request.Month > 0)
+			{
+				request.StartDate = new DateTime(request.Year, request.Month, 1).Date;
+				request.EndDate = new DateTime(request.Year, request.Month, DateTime.DaysInMonth(request.Year, request.Month)).Date;
+			}
+			else
+			{
+				request.StartDate = new DateTime(request.Year, 1, 1).Date;
+				request.EndDate = new DateTime(request.Year, 12, 31).Date;
+			}
 		}
 	}
 }

@@ -15,6 +15,7 @@ using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
+using Magnum;
 
 namespace HrMaxx.OnlinePayroll.Services
 {
@@ -65,9 +66,9 @@ namespace HrMaxx.OnlinePayroll.Services
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
-					savedcompany = _companyRepository.GetCompanyById(savedcompany.Id);
+					
 					txn.Complete();
-					return savedcompany;
+					
 					//Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
 					//{
 					//	SavedObject = savedcompany,
@@ -78,11 +79,16 @@ namespace HrMaxx.OnlinePayroll.Services
 					//});
 					
 				}
+				return _companyRepository.GetCompanyById(company.Id);
 				
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "company details for company " + company.Name);
+				var message = string.Empty;
+				if(e.Message.StartsWith("FEIN"))
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, e.Message);
+				else
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "company details for company " + company.Name);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -262,6 +268,47 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 			
 		}
+
+		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate,
+			DateTime? endDate, string fullName)
+		{
+			var company = _companyRepository.GetCompanyById(companyId);
+			company.Id = CombGuid.Generate();
+			company.HostId = hostId;
+			company.UserName = fullName;
+			company.Deductions.ForEach(d =>
+			{
+				d.CompanyId = company.Id;
+				d.Id = 0;
+			});
+			company.WorkerCompensations.ForEach(w =>
+			{
+				w.CompanyId = company.Id;
+				w.Id = 0;
+			});
+			company.CompanyTaxRates.ForEach(t =>
+			{
+				t.CompanyId = company.Id;
+				t.Id = 0;
+			});
+			company.PayCodes.ForEach(p =>
+			{
+				p.Id = 0;
+				p.CompanyId = company.Id;
+			});
+			company.AccumulatedPayTypes.ForEach(apt =>
+			{
+				apt.CompanyId = company.Id;
+				apt.Id = 0;
+			});
+			using (var txn = TransactionScopeHelper.Transaction())
+			{
+				var saved = Save(company);
+				
+			}
+			return company;
+		}
+
 		public Employee SaveEmployee(Employee employee, bool sendNotification = true)
 		{
 			try

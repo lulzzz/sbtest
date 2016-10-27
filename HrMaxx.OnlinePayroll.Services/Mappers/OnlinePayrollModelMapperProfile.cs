@@ -143,6 +143,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore())
 				.ForMember(dest => dest.Employees, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src=>string.IsNullOrWhiteSpace(src.Memo) ? string.Empty: src.Memo))
 				.ForMember(dest => dest.PayrollInvoices, opt => opt.Ignore());
 
 
@@ -510,6 +511,80 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.VoidedCreditedChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.VoidedCreditChecks) ? JsonConvert.DeserializeObject<List<int>>(src.VoidedCreditChecks) : new List<int>()))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src=>src.Payroll.PayDay));
+
+			CreateMap<Models.ExtractReportDB, Models.ExtractReport>();
+			CreateMap<Models.ExtractDBCompany, Models.ExtractCompany>()
+				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src))
+				.ForMember(dest => dest.Host, opt => opt.MapFrom(src => src.Host))
+				.ForMember(dest => dest.Contacts, opt => opt.Ignore())
+				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
+				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>src.PayChecks))
+				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks));
+
+			CreateMap<Models.ExtractHost, Models.Host>()
+				.ForMember(dest => dest.Company, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
+				.ForMember(dest => dest.HomePage, opt => opt.Ignore())
+				.ForMember(dest => dest.Id, opt => opt.Ignore())
+				.ForMember(dest => dest.Url, opt => opt.Ignore())
+				.ForMember(dest => dest.TerminationDate, opt => opt.Ignore())
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.UserName, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
+				.ForMember(dest => dest.StatusId, opt => opt.Ignore())
+				
+				.ForMember(dest => dest.EffectiveDate, opt => opt.Ignore());
+
+			CreateMap<Models.ExtractDBCompany, Models.Company>()
+				.ForMember(dest => dest.BusinessAddress, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.BusinessAddress)))
+				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.CompanyAddress)))
+				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)))
+				.ForMember(dest => dest.FederalPin, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalPin)))
+				.ForMember(dest => dest.HostId, opt => opt.Ignore())
+				.ForMember(dest => dest.Name, opt => opt.MapFrom(src=>src.CompanyName))
+				.ForMember(dest => dest.DepositSchedule, opt => opt.MapFrom(src => src.DepositSchedule941))
+				.ForMember(dest => dest.MinWage, opt => opt.Ignore())
+				.ForMember(dest => dest.AllowTaxPayments, opt => opt.MapFrom(src=>src.ManageTaxPayment))
+				.ForMember(dest => dest.AllowEFileFormFiling, opt => opt.MapFrom(src=>src.ManageEFileForms))
+				.ForMember(dest => dest.LastPayrollDate, opt => opt.Ignore())
+				.ForMember(dest => dest.States, opt => opt.Ignore())
+				.ForMember(dest => dest.AccumulatedPayTypes, opt => opt.Ignore())
+				.ForMember(dest => dest.Deductions, opt => opt.Ignore())
+				.ForMember(dest => dest.WorkerCompensations, opt => opt.Ignore())
+				.ForMember(dest => dest.Contract, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyTaxRates, opt => opt.Ignore())
+				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.UserName, opt => opt.Ignore());
+
+			CreateMap<Models.ExtractPayCheck, Models.PayCheck>()
+				.ForMember(dest => dest.Employee, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Employee>(src.Employee)))
+				.ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.Taxes)))
+				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollDeduction>>(src.Deductions)))
+				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayType>>(src.Compensations)))
+				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayCode>>(src.PayCodes)))
+				.ForMember(dest => dest.PayrollId, opt => opt.Ignore())
+				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
+				.ForMember(dest => dest.Salary, opt => opt.Ignore())
+				.ForMember(dest => dest.Notes, opt => opt.Ignore())
+				.ForMember(dest => dest.Accumulations, opt => opt.Ignore())
+				.ForMember(dest => dest.WCAmount, opt => opt.Ignore())
+				.ForMember(dest => dest.WorkerCompensation, opt => opt.Ignore())
+				.ForMember(dest => dest.StartDate, opt => opt.Ignore())
+				.ForMember(dest => dest.EndDate, opt => opt.Ignore())
+				.ForMember(dest => dest.YTDSalary, opt => opt.Ignore())
+				.ForMember(dest => dest.YTDGrossWage, opt => opt.Ignore())
+				.ForMember(dest => dest.YTDNetWage, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
+				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.Ignore())
+				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
+				.ForMember(dest => dest.VoidedOn, opt => opt.Ignore())
+				.ForMember(dest => dest.TaxesPaidOn, opt => opt.Ignore())
+				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())
+				.ForMember(dest => dest.TaxesCreditedOn, opt => opt.Ignore())
+				.ForMember(dest => dest.Included, opt => opt.Ignore())
+				.ForMember(dest => dest.DocumentId, opt => opt.Ignore());
 		}
 	}
 }

@@ -262,6 +262,8 @@
     <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\employee.html" />
     <Content Include="Areas\Reports\templates\Dashboard.html" />
+    <Content Include="Areas\Reports\templates\data-extracts.html" />
+    <Content Include="Areas\Reports\templates\Extracts.html" />
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
     <Content Include="Content\ng-tags-input.bootstrap.css" />
@@ -1324,6 +1326,7 @@
     <Content Include="Scripts\app\reports\directives\deposit-coupons.js" />
     <Content Include="Scripts\app\reports\directives\employer-forms.js" />
     <Content Include="Scripts\app\reports\directives\blank-forms.js" />
+    <Content Include="Scripts\app\reports\directives\data-extracts.js" />
     <Content Include="Scripts\app\reports\directives\other-forms.js" />
     <Content Include="Scripts\app\reports\directives\income-statement.js" />
     <Content Include="Scripts\app\reports\directives\govt-forms.js" />
