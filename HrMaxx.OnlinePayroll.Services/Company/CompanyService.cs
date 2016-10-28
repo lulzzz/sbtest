@@ -22,12 +22,12 @@ namespace HrMaxx.OnlinePayroll.Services
 	public class CompanyService : BaseService, ICompanyService
 	{
 		private readonly ICompanyRepository _companyRepository;
+		
 		public IBus Bus { get; set; }
 		public ApplicationConfig Configurations { get; set; }
 		public CompanyService(ICompanyRepository companyRepository)
 		{
 			_companyRepository = companyRepository;
-			
 		}
 
 		
@@ -269,45 +269,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			
 		}
 
-		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate,
-			DateTime? endDate, string fullName)
-		{
-			var company = _companyRepository.GetCompanyById(companyId);
-			company.Id = CombGuid.Generate();
-			company.HostId = hostId;
-			company.UserName = fullName;
-			company.Deductions.ForEach(d =>
-			{
-				d.CompanyId = company.Id;
-				d.Id = 0;
-			});
-			company.WorkerCompensations.ForEach(w =>
-			{
-				w.CompanyId = company.Id;
-				w.Id = 0;
-			});
-			company.CompanyTaxRates.ForEach(t =>
-			{
-				t.CompanyId = company.Id;
-				t.Id = 0;
-			});
-			company.PayCodes.ForEach(p =>
-			{
-				p.Id = 0;
-				p.CompanyId = company.Id;
-			});
-			company.AccumulatedPayTypes.ForEach(apt =>
-			{
-				apt.CompanyId = company.Id;
-				apt.Id = 0;
-			});
-			using (var txn = TransactionScopeHelper.Transaction())
-			{
-				var saved = Save(company);
-				
-			}
-			return company;
-		}
+		
 
 		public Employee SaveEmployee(Employee employee, bool sendNotification = true)
 		{

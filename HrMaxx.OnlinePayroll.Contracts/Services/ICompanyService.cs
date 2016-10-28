@@ -31,6 +31,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Company GetCompanyById(Guid companyId);
 		VendorCustomer GetVendorCustomersById(Guid vcId);
 		List<Employee> SaveEmployees(List<Employee> employees);
-		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName);
+		
 	}
 }

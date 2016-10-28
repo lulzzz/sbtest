@@ -35,5 +35,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
 		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
+		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName);
 	}
 }

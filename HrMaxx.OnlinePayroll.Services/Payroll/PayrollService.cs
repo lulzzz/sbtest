@@ -17,6 +17,7 @@ using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository;
+using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using Magnum;
 using Magnum.Extensions;
@@ -28,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IPayrollRepository _payrollRepository;
 		private readonly ITaxationService _taxationService;
 		private readonly ICompanyService _companyService;
+		private readonly ICompanyRepository _companyRepository;
 		private readonly IJournalService _journalService;
 		private readonly IPDFService _pdfService;
 		private readonly IFileRepository _fileRepository;
@@ -36,7 +38,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly ICommonService _commonService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -47,6 +49,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_hostService = hostService;
 			_reportService = reportService;
 			_commonService = commonService;
+			_companyRepository = companyRepository;
 		}
 
 
@@ -360,6 +363,85 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		public Models.Payroll ConfirmPayrollForMigration(Models.Payroll payroll)
+		{
+			try
+			{
+				
+					payroll.Status = PayrollStatus.Committed;
+					payroll.PayChecks.ForEach(pc => pc.Status = PaycheckStatus.Saved);
+					var companyIdForPayrollAccount = payroll.Company.Id;
+
+					var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+					var savedPayroll = _payrollRepository.SavePayroll(payroll);
+					savedPayroll.PayChecks.ForEach(pc =>
+					{
+						var j = CreateJournalEntry(pc, coaList, payroll.UserName);
+						pc.DocumentId = j.DocumentId;
+					});
+
+					//PEO/ASO Co Check
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice && payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+					{
+						var host = _hostService.GetHost(payroll.Company.HostId);
+						companyIdForPayrollAccount = host.Company.Id;
+						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+						savedPayroll.PayChecks.ForEach(pc =>
+						{
+							var j = CreateJournalEntry(pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
+							pc.DocumentId = j.DocumentId;
+						});
+					}
+
+					var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPayroll.Company.Id, savedPayroll.PayDay);
+					var affectedChecks = new List<PayCheck>();
+					foreach (var paycheck in savedPayroll.PayChecks)
+					{
+						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id).ToList();
+						foreach (var employeeFutureCheck in employeeFutureChecks)
+						{
+							employeeFutureCheck.AddToYTD(paycheck);
+							_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+							affectedChecks.Add(employeeFutureCheck);
+						}
+					}
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
+					{
+						savedPayroll.Invoice = CreatePayrollInvoice(savedPayroll, payroll.UserName, false);
+					}
+					
+					Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
+					{
+						SavedObject = savedPayroll,
+						UserId = savedPayroll.UserId,
+						TimeStamp = DateTime.Now,
+						EventType = NotificationTypeEnum.Created,
+						AffectedChecks = affectedChecks
+					});
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
+					{
+						Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
+						{
+							SavedObject = savedPayroll.Invoice,
+							EventType = NotificationTypeEnum.Created,
+							TimeStamp = DateTime.Now,
+							UserId = savedPayroll.UserId,
+							UserName = savedPayroll.UserName
+						});
+					}
+					return savedPayroll;
+				
+
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Models.Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string user)
 		{
 			try
@@ -407,6 +489,53 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						AffectedChecks = employeeFutureChecks
 					});
 				}
+				return _payrollRepository.GetPayrollById(payrollId);
+
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private Models.Payroll VoidPayCheckForMigration(Guid payrollId, int payCheckId, string name)
+		{
+			try
+			{
+				
+					var payroll = _payrollRepository.GetPayrollById(payrollId);
+					var paycheck = _payrollRepository.GetPayCheckById(payrollId, payCheckId);
+					var journal = _journalService.GetPayCheckJournal(payCheckId, paycheck.PEOASOCoCheck);
+					paycheck.Status = PaycheckStatus.Void;
+					paycheck.IsVoid = true;
+					var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, name);
+
+					journal.IsVoid = true;
+					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name);
+					if (paycheck.PEOASOCoCheck)
+					{
+						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
+						if (journal1 != null)
+						{
+							journal1.IsVoid = true;
+							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name);
+						}
+
+					}
+
+					var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPaycheck.Employee.CompanyId, savedPaycheck.PayDay);
+					var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id).ToList();
+					foreach (var employeeFutureCheck in employeeFutureChecks)
+					{
+						employeeFutureCheck.SubtractFromYTD(paycheck);
+						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+					}
+
+
+
 				return _payrollRepository.GetPayrollById(payrollId);
 
 
@@ -773,6 +902,78 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					return savedInvoice;
 				}
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Invoice for company id=" + invoice.CompanyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public PayrollInvoice SavePayrollInvoiceForMigration(PayrollInvoice invoice)
+		{
+			try
+			{
+			
+					invoice.Payments.ForEach(p =>
+					{
+						if (p.Status == PaymentStatus.Draft)
+						{
+							p.Status = p.Method == VendorDepositMethod.Cash ? PaymentStatus.Paid : PaymentStatus.Submitted;
+						}
+
+					});
+					var dbIncvoice = _payrollRepository.GetPayrollInvoiceById(invoice.Id);
+
+					if (dbIncvoice != null)
+					{
+						invoice.CalculateTotal();
+						if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
+						{
+							invoice.SubmittedOn = DateTime.Now;
+							invoice.InvoiceDate = invoice.SubmittedOn.Value;
+							invoice.SubmittedBy = invoice.UserName;
+						}
+						if (dbIncvoice.Status == InvoiceStatus.Submitted && invoice.Status == InvoiceStatus.Delivered)
+						{
+							invoice.DeliveredOn = DateTime.Now;
+							invoice.DeliveredBy = invoice.UserName;
+						}
+
+						if (invoice.Status != InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited))
+						{
+							if (invoice.Balance == 0)
+								invoice.Status = InvoiceStatus.Paid;
+							else if (invoice.Balance <= invoice.Total)
+							{
+								if (invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced))
+								{
+									invoice.Status = InvoiceStatus.PaymentBounced;
+									_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment { Content = string.Format("Invoice #{0} - Payment Bounced", invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName });
+								}
+								else if (invoice.Payments.Any(p => p.Status == PaymentStatus.Submitted))
+									invoice.Status = InvoiceStatus.Deposited;
+								else if (invoice.Payments.Any())
+								{
+									invoice.Status = InvoiceStatus.PartialPayment;
+								}
+								else
+								{
+									invoice.Status = InvoiceStatus.Delivered;
+
+								}
+							}
+						}
+
+					}
+					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice);
+
+					
+
+					return savedInvoice;
+				
 
 			}
 			catch (Exception e)
@@ -1311,6 +1512,146 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Delay Taxes on invoice id=" + invoice.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+
+		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate,
+			DateTime? endDate, string fullName)
+		{
+			try
+			{
+				var company = _companyRepository.GetCompanyById(companyId);
+				company.Id = CombGuid.Generate();
+
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var saved = _companyRepository.CopyCompany(companyId, company.Id, company.HostId, hostId, copyEmployees, copyPayrolls, startDate, endDate, fullName);
+					if (copyEmployees)
+					{
+						var employees = _companyRepository.GetEmployeeList(company.Id);
+						employees.ForEach(e =>
+						{
+							if (e.PayCodes.Any(p => p.Id > 0))
+							{
+								e.PayCodes.Where(p => p.Id > 0).ToList().ForEach(pc =>
+								{
+									pc.Id = saved.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
+								});
+								_companyService.SaveEmployee(e, false);
+							}
+						});
+						if (copyPayrolls)
+							MigratePayrolls(companyId, saved, employees, startDate, endDate);
+					}
+					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
+					{
+						Content =
+							string.Format("Company {0} copied from another host with Copy Employees={1}, Copy Payrolls={2}", saved.Name,
+								copyEmployees ? "Yes" : "No", copyPayrolls ? "Yes" : "No"),
+						LastModified = DateTime.Now,
+						UserName = fullName
+					});
+					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
+					{
+						Content =
+							string.Format("Company {0} copied to another host with Copy Employees={1}, Copy Payrolls={2}", company.Name,
+								copyEmployees ? "Yes" : "No", copyPayrolls ? "Yes" : "No"),
+						LastModified = DateTime.Now,
+						UserName = fullName
+					});
+					txn.Complete();
+				}
+				return company;
+			}
+			catch (Exception e)
+			{
+				var message = e.Message;
+				if (e.Message.ToLower().StartsWith("subquery"))
+					message = "An unexpected error occurred caused by the company data. Please contact your administrator.";
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
+		}
+		private void MigratePayrolls(Guid oldCompanyId, Company company, List<Employee> employees, DateTime? startDate, DateTime? endDate)
+		{
+			try
+			{
+				var payrolls = GetCompanyPayrolls(oldCompanyId, startDate, endDate);
+				payrolls.OrderBy(p=>p.PayDay).ThenBy(p=>p.LastModified).ToList().ForEach(payroll =>
+				{
+					var original = Utilities.GetCopy(payroll);
+					payroll.Company = company;
+					payroll.Id = CombGuid.Generate();
+					payroll.PayChecks.ForEach(paycheck =>
+					{
+						paycheck.Id = 0;
+						paycheck.Employee = employees.First(e => e.SSN.Equals(paycheck.Employee.SSN));
+						paycheck.PayCodes.ForEach(pc =>
+						{
+							var hourlyrate = pc.PayCode.HourlyRate;
+							pc.PayCode = paycheck.Employee.PayCodes.First(pc1 => pc1.Code.Equals(pc.PayCode.Code));
+							pc.PayCode.HourlyRate = hourlyrate;
+						});
+						paycheck.Deductions.ForEach(ded =>
+						{
+							ded.Deduction =
+								company.Deductions.First(
+									d => d.Type.Id == ded.Deduction.Type.Id && d.DeductionName.Equals(ded.Deduction.DeductionName));
+							
+						});
+						if(paycheck.WorkerCompensation!=null)
+							paycheck.WorkerCompensation.WorkerCompensation =
+								company.WorkerCompensations.First(wc => wc.Code.Equals(paycheck.WorkerCompensation.WorkerCompensation.Code));
+					}
+					);
+					var processed = ProcessPayroll(payroll);
+					var confirmed = ConfirmPayrollForMigration(processed);
+					original.PayChecks.Where(pc=>pc.IsVoid).ToList().ForEach(pc =>
+					{
+						var newone = confirmed.PayChecks.First(pc1 => pc1.Employee.SSN.Equals(pc.Employee.SSN));
+						VoidPayCheckForMigration(confirmed.Id, newone.Id, pc.LastModifiedBy);
+					});
+					if (confirmed.Invoice != null)
+					{
+						if (payroll.Invoice != null)
+						{
+							var oldInvoice = Utilities.GetCopy(payroll.Invoice);
+							var invoice = confirmed.Invoice;
+							invoice.InvoiceDate = oldInvoice.InvoiceDate;
+							invoice.InvoiceNumber = oldInvoice.InvoiceNumber;
+							invoice.MiscCharges = oldInvoice.MiscCharges;
+							invoice.ApplyWCMinWageLimit = oldInvoice.ApplyWCMinWageLimit;
+							invoice.CompanyInvoiceSetup = oldInvoice.CompanyInvoiceSetup;
+							invoice.VoidedCreditedChecks = oldInvoice.VoidedCreditedChecks;
+							invoice.CalculateTotal();
+							invoice.Payments = oldInvoice.Payments;
+							invoice.Status = oldInvoice.Status;
+							invoice.SubmittedBy = oldInvoice.SubmittedBy;
+							invoice.SubmittedOn = oldInvoice.SubmittedOn;
+							invoice.DeliveredBy = oldInvoice.DeliveredBy;
+							invoice.DeliveredOn = oldInvoice.DeliveredOn;
+							invoice.Courier = oldInvoice.Courier;
+							invoice.Deductions = oldInvoice.Deductions;
+							invoice.ProcessedBy = oldInvoice.ProcessedBy;
+							invoice.Notes = oldInvoice.Notes;
+							SavePayrollInvoiceForMigration(invoice);
+						}
+						else
+						{
+							DeletePayrollInvoice(confirmed.Invoice.Id);
+						}
+						
+					}
+					
+				});
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Failed to migrate payrolls during copy. Please make sure that the target host is set up with COA and a payroll bank account.");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

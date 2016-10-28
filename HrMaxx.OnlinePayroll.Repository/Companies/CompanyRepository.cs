@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Xml.Serialization;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
@@ -27,12 +32,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		private readonly IUtilRepository _utilRepository;
+		private string _sqlCon;
 
-		public CompanyRepository(IMapper mapper, OnlinePayrollEntities dbContext, IUtilRepository utilRepository)
+		public CompanyRepository(IMapper mapper, OnlinePayrollEntities dbContext, IUtilRepository utilRepository, string sqlCon)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
 			_utilRepository = utilRepository;
+			_sqlCon = sqlCon;
 		}
 
 		public IList<Company> GetCompanies(Guid hostId, Guid companyId)
@@ -481,5 +488,38 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.VendorCustomer, VendorCustomer>(db);
 		}
 
+		public Company CopyCompany(Guid oldCompanyId, Guid companyId, Guid oldHostId, Guid newHostId, bool copyEmployees,
+			bool copyPayrolls, DateTime? startDate, DateTime? endDate, string user)
+		{
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand("CopyCompany"))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@oldHost", oldHostId);
+					cmd.Parameters.AddWithValue("@newHost", newHostId);
+					cmd.Parameters.AddWithValue("@oldCompanyId", oldCompanyId);
+					cmd.Parameters.AddWithValue("@CompanyId", companyId);
+					cmd.Parameters.AddWithValue("@LastModifiedBy", user);
+					cmd.Parameters.AddWithValue("@copyEmployees", copyEmployees);
+					cmd.Parameters.AddWithValue("@copyPayrolls", copyPayrolls);
+					if(startDate.HasValue)
+						cmd.Parameters.AddWithValue("@payrollStart", startDate.Value);
+					if(endDate.HasValue)
+						cmd.Parameters.AddWithValue("@payrollEnd", endDate.Value);
+
+					cmd.Connection = con;
+					con.Open();
+
+
+					var data = string.Empty;
+					cmd.ExecuteNonQuery();
+					con.Close();
+					var dbCompany = _dbContext.Companies.First(c => c.Id == companyId);
+					return _mapper.Map<Models.DataModel.Company, Models.Company>(dbCompany);
+
+				}
+			}
+		}
 	}
 }

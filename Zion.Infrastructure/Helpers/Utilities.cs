@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace HrMaxx.Infrastructure.Helpers
 {
@@ -68,6 +69,11 @@ namespace HrMaxx.Infrastructure.Helpers
 			{
 				return false;
 			}
+		}
+
+		public static T GetCopy<T>(T source)
+		{
+			return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source));
 		}
 	}
 }

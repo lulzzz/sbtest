@@ -61,6 +61,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								isVoid: false,
 								status: 1,
 								memo: '',
+								notes:'',
 								included: true
 							};
 							$.each(employee.payCodes, function(index1, paycode) {

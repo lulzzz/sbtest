@@ -158,6 +158,7 @@
 		}
 		$scope.hostSelected = function () {
 			dataSvc.selectedCompany = null;
+			dataSvc.selectedCompany1 = null;
 			if (dataSvc.selectedHost) {
 				$scope.getCompanies();
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });

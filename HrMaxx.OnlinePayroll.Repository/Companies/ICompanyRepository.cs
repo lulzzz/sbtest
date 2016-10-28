@@ -30,5 +30,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		CompanyTaxRate SaveCompanyTaxRate(CompanyTaxRate mappedResource);
 		Company GetCompanyById(Guid companyId);
 		VendorCustomer GetVendorCustomersById(Guid vcId);
+		Company CopyCompany(Guid oldCompanyId, Guid companyId, Guid oldHostId, Guid newHostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string user);
 	}
 }

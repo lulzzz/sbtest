@@ -22,15 +22,17 @@ namespace HrMaxxAPI.Controllers.Companies
   {
 	  private readonly IMetaDataService _metaDataService;
 		private readonly ICompanyService _companyService;
+		private readonly IPayrollService _payrollService;
 		private readonly IExcelService _excelServce ;
 	  private readonly ITaxationService _taxationService;
 	  
-	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, ITaxationService taxationService)
+	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, ITaxationService taxationService, IPayrollService payrollService)
 	  {
 			_metaDataService = metaDataService;
 		  _companyService = companyService;
 		  _excelServce = excelService;
 		  _taxationService = taxationService;
+		  _payrollService = payrollService;
 	  }
 
 	  [HttpGet]
@@ -304,7 +306,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		[Route(CompanyRoutes.CopyCompany)]
 		public CompanyResource CopyCompany(CopyCompanyResource resource)
 		{
-			var newcompany = MakeServiceCall(() => _companyService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName), "copy company", true);
+			var newcompany = MakeServiceCall(() => _payrollService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName), "copy company", true);
 			return Mapper.Map<Company, CompanyResource>(newcompany);
 		}
   }

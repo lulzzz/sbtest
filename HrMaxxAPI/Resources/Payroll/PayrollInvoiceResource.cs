@@ -71,8 +71,8 @@ namespace HrMaxxAPI.Resources.Payroll
 				if (Balance == 0)
 				{
 					var lastPayment =
-						Payments.Where(p => p.Status == PaymentStatus.Paid).OrderByDescending(p => p.PaymentDate).First();
-					return lastPayment.PaymentDate.Subtract(InvoiceDate).Days;
+						Payments.Where(p => p.Status == PaymentStatus.Paid).OrderByDescending(p => p.PaymentDate.Date).First();
+					return lastPayment.PaymentDate.Date.Subtract(InvoiceDate.Date).Days;
 
 				}
 				return DateTime.Today.Subtract(InvoiceDate).Days;

@@ -56,6 +56,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<CompanyRepository>()
+				.WithParameter(sqlCon)
 				.As<ICompanyRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

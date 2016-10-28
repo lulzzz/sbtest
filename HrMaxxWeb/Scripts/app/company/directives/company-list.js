@@ -149,6 +149,10 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 
 						 }, true
 				 );
+					$scope.$on('hostChanged', function() {
+						$scope.selectedCompany = null;
+						dataSvc.isBodyOpen = true;
+					});
 					$scope.copycompany = function (event, item) {
 						event.stopPropagation();
 						var modalInstance = $modal.open({
@@ -171,10 +175,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								}
 							}
 						});
-						modalInstance.result.then(function (companyUpdated, result) {
-							if (result) {
-								$scope.$parent.$parent.mainData.selectedCompany = result;
-								$scope.item.company = result;
+						modalInstance.result.then(function (scope) {
+							if (scope) {
+								addAlert('successfully copied company to the new host: ' + scope.selectedHost.firmName, 'success');
 							}
 						}, function () {
 							return false;
@@ -213,13 +216,27 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.startDate = null;
 	$scope.endDate = null;
 	$scope.selectedHost = null;
-
+	$scope.error = null;
 	$scope.cancel = function () {
-		$uibModalInstance.close($scope);
+		$uibModalInstance.dismiss();
 	};
 	$scope.save = function () {
+		$scope.error = null;
+		companyRepository.copyCompany({
+			companyId: $scope.company.id,
+			hostId: $scope.selectedHost.id,
+			copyEmployees: $scope.copyemployees,
+			copyPayrolls: $scope.copypayrolls,
+			startDate: $scope.startDate,
+			endDate: $scope.endDate
+		}).then(function (result) {
+			$uibModalInstance.close($scope);
+			
+
+		}, function (error) {
+			$scope.error = error.statusText;
+		});
 		
-		$uibModalInstance.close($scope);
 	};
 	$scope.isValid = function() {
 		if (!$scope.selectedHost)

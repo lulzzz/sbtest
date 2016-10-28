@@ -70,8 +70,6 @@ namespace HrMaxx.OnlinePayroll.Models
 			PayChecks = new List<int>();
 			VoidedCreditedChecks = new List<int>();
 			
-
-			
 			PeriodEnd = payroll.EndDate;
 			PeriodStart = payroll.StartDate;
 			CompanyId = payroll.Company.Id;
@@ -87,7 +85,6 @@ namespace HrMaxx.OnlinePayroll.Models
 			
 			NoOfChecks = payroll.PayChecks.Count(pc => !pc.IsVoid);
 			
-			
 			CalculateAdminFee(payroll);
 			
 			CalculateRecurringCharges(prevInvoices, payroll);
@@ -102,6 +99,11 @@ namespace HrMaxx.OnlinePayroll.Models
 			Status = InvoiceStatus.Draft;
 			ProcessedOn = DateTime.Now;
 
+			Notes = string.Empty;
+			if (prevInvoices.Any(i => i.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)))
+			{
+				Notes = string.Format("Alert: Payment bounced for Invoices #{0}; ", prevInvoices.Where(i => i.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", "));
+			}
 		}
 
 		private void HandleVoidedChecks(List<PayrollInvoice> prevInvoices, Company company, List<PayCheck> voidedPayChecks)

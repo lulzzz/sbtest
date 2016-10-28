@@ -26,7 +26,7 @@
 						</td>
 						<td>
 							<button type="button" class="btn btn-sm btn-primary">View</button>
-							<button type="button" class="btn btn-sm btn-info" ng-show="false" ng-click="copycompany($event, item)">Copy Company</button>
+							<button type="button" class="btn btn-sm btn-info" ng-click="copycompany($event, item)">Copy Company</button>
 						</td>
 					</tr>
 
@@ -95,16 +95,16 @@
 					
 				</div>
 				<div class="col-sm-4">
-					<div class="form-group">
+					<div class="form-group" ng-show="copyemployees">
 						<label></label>
 						<div>
-							<label for="copypayrolls" class="switch">
+							<label for="copypayroll" class="switch">
 								Copy Payrolls?
-								<input id="copypayrolls" type="checkbox" ng-model="copypayrolls" /><i></i>
+								<input id="copypayroll" type="checkbox" ng-model="copypayrolls" /><i></i>
 							</label>
 						</div>
 					</div>
-					<div class="form-group" ng-if="copypayrolls">
+					<div class="form-group" ng-show="copyemployees && copypayrolls">
 						<div class="col-sm-6">
 							<label>Payrolls From</label>
 							<date-ctrl name="startdate" model="startDate" disabled="false" />
@@ -124,6 +124,9 @@
 		</div>
 		<div class="modal-footer">
 			<div class="col-sm-12" >
+				<div class="alert alert-danger" ng-if="error">
+					{{error}}
+				</div>
 				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!isValid()"><i class="fa fa-save m-r-5"></i> Save</button>
 			</div>
