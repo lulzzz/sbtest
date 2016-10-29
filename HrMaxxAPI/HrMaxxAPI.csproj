@@ -320,6 +320,7 @@
     <Content Include="templates\transformers\employer\CADE34.xslt" />
     <Content Include="templates\transformers\employer\FedI9.xslt" />
     <Content Include="templates\transformers\employer\FedW4.xslt" />
+    <Content Include="templates\transformers\extracts\940\Paperless940-2016.xslt" />
     <Content Include="templates\transformers\extracts\941\Paperless941-2016.xslt" />
     <Content Include="templates\transformers\other\monthlyquarterannualtaxsummary.xslt">
       <SubType>Designer</SubType>

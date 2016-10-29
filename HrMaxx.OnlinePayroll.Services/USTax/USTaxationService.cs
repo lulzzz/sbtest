@@ -141,14 +141,15 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 			var taxableWage = GetTaxExemptedDeductionAmount(company, payCheck, grossWage, employeePayChecks, payDay, tax);
 			withholdingAllowance -= taxableWage;
+			var withholdingAllowanceTest = withholdingAllowance < 0 ? 0 : withholdingAllowance;
 			taxableWage = grossWage - taxableWage;
 			var fitTaxTableRow =
 				TaxTables.FITTaxTable.First(
 					r =>
 						r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
 						(int) r.FilingStatus == (int) payCheck.Employee.FederalStatus
-						&& r.RangeStart<= (withholdingAllowance<0? 0 : withholdingAllowance)
-						&& r.RangeEnd >= (withholdingAllowance < 0 ? 0 : withholdingAllowance));
+						&& r.RangeStart<= withholdingAllowanceTest
+						&& (r.RangeEnd >= withholdingAllowanceTest || r.RangeEnd==0));
 
 			var taxAmount = (decimal)0;
 			if (payCheck.Employee.FederalExemptions == 10)
@@ -299,7 +300,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 						r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
 						(int)r.FilingStatus == (int)payCheck.Employee.FederalStatus
 						&& r.RangeStart <= taxableWage
-						&& r.RangeEnd >= taxableWage);
+						&& (r.RangeEnd >= taxableWage || r.RangeEnd==0));
 
 				taxAmount = sitTaxTableRow.FlatRate +
 				            (taxableWage - sitTaxTableRow.ExcessOverAmoutt)*sitTaxTableRow.AdditionalPercentage/100;

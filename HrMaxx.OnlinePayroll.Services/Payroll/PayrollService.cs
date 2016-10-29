@@ -405,30 +405,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					}
-					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
-					{
-						savedPayroll.Invoice = CreatePayrollInvoice(savedPayroll, payroll.UserName, false);
-					}
 					
-					Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
-					{
-						SavedObject = savedPayroll,
-						UserId = savedPayroll.UserId,
-						TimeStamp = DateTime.Now,
-						EventType = NotificationTypeEnum.Created,
-						AffectedChecks = affectedChecks
-					});
-					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
-					{
-						Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
-						{
-							SavedObject = savedPayroll.Invoice,
-							EventType = NotificationTypeEnum.Created,
-							TimeStamp = DateTime.Now,
-							UserId = savedPayroll.UserId,
-							UserName = savedPayroll.UserName
-						});
-					}
 					return savedPayroll;
 				
 
@@ -1581,7 +1558,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				var payrolls = GetCompanyPayrolls(oldCompanyId, startDate, endDate);
-				payrolls.OrderBy(p=>p.PayDay).ThenBy(p=>p.LastModified).ToList().ForEach(payroll =>
+				payrolls.OrderBy(p=>p.LastModified).ToList().ForEach(payroll =>
 				{
 					var original = Utilities.GetCopy(payroll);
 					payroll.Company = company;
@@ -1615,37 +1592,37 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						var newone = confirmed.PayChecks.First(pc1 => pc1.Employee.SSN.Equals(pc.Employee.SSN));
 						VoidPayCheckForMigration(confirmed.Id, newone.Id, pc.LastModifiedBy);
 					});
-					if (confirmed.Invoice != null)
-					{
-						if (payroll.Invoice != null)
-						{
-							var oldInvoice = Utilities.GetCopy(payroll.Invoice);
-							var invoice = confirmed.Invoice;
-							invoice.InvoiceDate = oldInvoice.InvoiceDate;
-							invoice.InvoiceNumber = oldInvoice.InvoiceNumber;
-							invoice.MiscCharges = oldInvoice.MiscCharges;
-							invoice.ApplyWCMinWageLimit = oldInvoice.ApplyWCMinWageLimit;
-							invoice.CompanyInvoiceSetup = oldInvoice.CompanyInvoiceSetup;
-							invoice.VoidedCreditedChecks = oldInvoice.VoidedCreditedChecks;
-							invoice.CalculateTotal();
-							invoice.Payments = oldInvoice.Payments;
-							invoice.Status = oldInvoice.Status;
-							invoice.SubmittedBy = oldInvoice.SubmittedBy;
-							invoice.SubmittedOn = oldInvoice.SubmittedOn;
-							invoice.DeliveredBy = oldInvoice.DeliveredBy;
-							invoice.DeliveredOn = oldInvoice.DeliveredOn;
-							invoice.Courier = oldInvoice.Courier;
-							invoice.Deductions = oldInvoice.Deductions;
-							invoice.ProcessedBy = oldInvoice.ProcessedBy;
-							invoice.Notes = oldInvoice.Notes;
-							SavePayrollInvoiceForMigration(invoice);
-						}
-						else
-						{
-							DeletePayrollInvoice(confirmed.Invoice.Id);
-						}
+					//if (confirmed.Invoice != null)
+					//{
+					//	if (payroll.Invoice != null)
+					//	{
+					//		var oldInvoice = Utilities.GetCopy(payroll.Invoice);
+					//		var invoice = confirmed.Invoice;
+					//		invoice.InvoiceDate = oldInvoice.InvoiceDate;
+					//		invoice.InvoiceNumber = oldInvoice.InvoiceNumber;
+					//		invoice.MiscCharges = oldInvoice.MiscCharges;
+					//		invoice.ApplyWCMinWageLimit = oldInvoice.ApplyWCMinWageLimit;
+					//		invoice.CompanyInvoiceSetup = oldInvoice.CompanyInvoiceSetup;
+					//		invoice.VoidedCreditedChecks = oldInvoice.VoidedCreditedChecks;
+					//		invoice.CalculateTotal();
+					//		invoice.Payments = oldInvoice.Payments;
+					//		invoice.Status = oldInvoice.Status;
+					//		invoice.SubmittedBy = oldInvoice.SubmittedBy;
+					//		invoice.SubmittedOn = oldInvoice.SubmittedOn;
+					//		invoice.DeliveredBy = oldInvoice.DeliveredBy;
+					//		invoice.DeliveredOn = oldInvoice.DeliveredOn;
+					//		invoice.Courier = oldInvoice.Courier;
+					//		invoice.Deductions = oldInvoice.Deductions;
+					//		invoice.ProcessedBy = oldInvoice.ProcessedBy;
+					//		invoice.Notes = oldInvoice.Notes;
+					//		SavePayrollInvoiceForMigration(invoice);
+					//	}
+					//	else
+					//	{
+					//		DeletePayrollInvoice(confirmed.Invoice.Id);
+					//	}
 						
-					}
+					//}
 					
 				});
 			}

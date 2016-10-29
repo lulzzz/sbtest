@@ -144,6 +144,8 @@ namespace HrMaxx.Infrastructure.Helpers
 		public static string GetDbName(this Enum enumValue)
 		{
 			FieldInfo fieldInfo = enumValue.GetType().GetField(enumValue.ToString());
+			if (fieldInfo == null)
+				return null;
 			var attribs = fieldInfo.GetCustomAttributes(typeof (HrMaxxSecurityAttribute), false) as HrMaxxSecurityAttribute[];
 			if (attribs.Length == 0) return null;
 			return attribs[0].DbName;

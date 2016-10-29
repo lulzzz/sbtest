@@ -521,5 +521,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				}
 			}
 		}
+
+		public List<Company> GetAllCompanies()
+		{
+			var dbComps = _dbContext.Companies.ToList();
+			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(dbComps);
+		}
 	}
 }

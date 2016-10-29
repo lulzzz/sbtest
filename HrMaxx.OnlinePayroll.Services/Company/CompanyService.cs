@@ -47,6 +47,21 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
+		public List<Company> GetAllCompanies()
+		{
+			try
+			{
+				var companies = _companyRepository.GetAllCompanies();
+				return companies;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "all companies in the system");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Company Save(Company company)
 		{
 			try
@@ -270,6 +285,7 @@ namespace HrMaxx.OnlinePayroll.Services
 		}
 
 		
+
 
 		public Employee SaveEmployee(Employee employee, bool sendNotification = true)
 		{

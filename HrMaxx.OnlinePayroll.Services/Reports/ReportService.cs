@@ -175,6 +175,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				CalculateDates(ref request);
 				if (request.ReportName.Equals("Paperless941"))
 					return GetPaperless941(request);
+				else if (request.ReportName.Equals("Paperless940"))
+					return GetPaperless940(request);
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -199,6 +201,28 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		private FileDto GetPaperless940(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.SetQuarters();
+				
+			});
+			var argList = new XsltArgumentList();
+			argList.AddParam("quarter", "", request.Quarter);
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			argList.AddParam("startdate", "", request.StartDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/940/Paperless940-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 940-{0}-{1}.xls", request.Year, request.Quarter));
 		}
 
 		private FileDto GetPaperless941(ReportRequest request)

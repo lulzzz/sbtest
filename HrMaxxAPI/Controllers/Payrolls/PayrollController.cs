@@ -39,14 +39,27 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.FixCompanyCubes)]
-		public HttpStatusCode FixCompanyCubes(Guid companyId, int year)
+		public HttpStatusCode FixCompanyCubes(int year)
 		{
-			var payrolls = _payrollService.GetCompanyPayrolls(companyId, new DateTime(year, 1, 1).Date,
-				new DateTime(year, 12, 31));
-			var done = MakeServiceCall(() => _dashboardService.FixCompanyCubes(payrolls, companyId, year), "Fix cubes for company", true);
-			if (done!=null)
+			try
+			{
+				var companies = _companyService.GetAllCompanies();
+				companies.ForEach(c =>
+				{
+					var payrolls = _payrollService.GetCompanyPayrolls(c.Id, new DateTime(year, 1, 1).Date,
+					new DateTime(year, 12, 31));
+					if (payrolls.Any())
+					{
+						_dashboardService.FixCompanyCubes(payrolls, c.Id, year);
+					}
+				});
 				return HttpStatusCode.OK;
-			return HttpStatusCode.ExpectationFailed;
+			}
+			catch (Exception)
+			{
+
+				return HttpStatusCode.ExpectationFailed;
+			}
 		}
 
 		[HttpGet]

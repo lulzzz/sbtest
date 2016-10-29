@@ -66,7 +66,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.getReport940 = function() {
-						getReport('Federal940', 'Federal 940', dataSvc.filter940.year, null);
+						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null);
 					}
 					$scope.getReport941 = function () {
 						getReport('Paperless941', 'Paperless 941', dataSvc.filter941.year, dataSvc.filter941.quarter);

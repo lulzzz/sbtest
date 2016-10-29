@@ -14,6 +14,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int Count1 { get; set; }
 		public int Count2 { get; set; }
 		public int Count3 { get; set; }
+		public decimal Q1Wage { get; set; }
+		public decimal Q2Wage { get; set; }
+		public decimal Q3Wage { get; set; }
+		public decimal Q4Wage { get; set; }
+		public decimal Q1Amount { get; set; }
+		public decimal Q2Amount { get; set; }
+		public decimal Q3Amount { get; set; }
+		public decimal Q4Amount { get; set; }
 		public List<PayrollPayType> Compensations { get; set; }
 		public List<PayrollDeduction> Deductions { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
@@ -178,6 +186,42 @@ namespace HrMaxx.OnlinePayroll.Models
 			Count1 = PayChecks.Count(p => p.StartDate.Date <= q1date && p.EndDate >= q1date);
 			Count2 = PayChecks.Count(p => p.StartDate.Date <= q2date && p.EndDate >= q2date);
 			Count3 = PayChecks.Count(p => p.StartDate.Date <= q3date && p.EndDate >= q3date);
+		}
+
+		public void SetQuarters()
+		{
+			Q1Wage =
+				PayChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.TaxableWage);
+			Q1Amount =
+				PayChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.Amount);
+			Q2Wage =
+				PayChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.TaxableWage);
+			Q2Amount =
+				PayChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.Amount);
+			Q3Wage =
+				PayChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.TaxableWage);
+			Q3Amount =
+				PayChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.Amount);
+			Q4Wage =
+				PayChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.TaxableWage);
+			Q4Amount =
+				PayChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
+					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Sum(t => t.Amount);
 		}
 
 		public void BuildDailyAccumulations(int quarter)

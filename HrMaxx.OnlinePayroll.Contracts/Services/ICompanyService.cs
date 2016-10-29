@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Company GetCompanyById(Guid companyId);
 		VendorCustomer GetVendorCustomersById(Guid vcId);
 		List<Employee> SaveEmployees(List<Employee> employees);
-		
+
+		List<Company> GetAllCompanies();
 	}
 }

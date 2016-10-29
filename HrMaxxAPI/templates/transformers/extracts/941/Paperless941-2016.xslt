@@ -373,7 +373,7 @@
                 </Row>
             
    <Row></Row>
-   <xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]" mode="CompanyInfo"/>
+   <xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]/Company" mode="CompanyInfo"/>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
                 <PageSetup>
@@ -1129,7 +1129,7 @@
 	<xsl:template match="Company" mode="CompanyInfo">
 		
 			<Row>
-				<Cell><Data ss:Type="String"><xsl:value-of select="concat(substring(FederalEIN,1,2),'-',substring(FederalEIN,2,7))"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="concat(substring(FederalEIN,1,2),'-',substring(FederalEIN,3,7))"/></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="substring(translate(TaxFilingName,1,4), $smallcase, $uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="translate(TaxFilingName,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>

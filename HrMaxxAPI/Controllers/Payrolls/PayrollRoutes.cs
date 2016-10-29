@@ -15,7 +15,7 @@
 		public const string Print = "Payroll/Print";
 		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";
 		public const string PrintPayroll = "Payroll/PrintPayroll";
-		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{companyId:guid}/{year:int}";
+		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{year:int}";
 		public const string CreatePayrollInvoice = "Payroll/CreatePayrollInvoice";
 		public const string HostInvoices = "Payroll/HostInvoices";
 		public const string PayrollInvoice = "Payroll/PayrollInvoice";
