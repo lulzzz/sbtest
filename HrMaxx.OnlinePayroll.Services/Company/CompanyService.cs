@@ -24,7 +24,7 @@ namespace HrMaxx.OnlinePayroll.Services
 		private readonly ICompanyRepository _companyRepository;
 		
 		public IBus Bus { get; set; }
-		public ApplicationConfig Configurations { get; set; }
+		
 		public CompanyService(ICompanyRepository companyRepository)
 		{
 			_companyRepository = companyRepository;

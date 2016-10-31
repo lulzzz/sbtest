@@ -75,11 +75,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						getReport('Federal944', 'Federal 944', dataSvc.filter944.year, null);
 					}
 					$scope.getReportW2Employee = function () {
-						getReport('W2Employee', 'Federal W2 (Employee version)', dataSvc.filterW2.year, null);
+						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null);
 					}
-					$scope.getReportW2Employer = function () {
-						getReport('W2Employer', 'Federal W2 (Employer version)', dataSvc.filterW2.year, null);
-					}
+					
 					$scope.getReportW3 = function () {
 						getReport('W3', 'Federal W3', dataSvc.filterW3.year, null);
 					}

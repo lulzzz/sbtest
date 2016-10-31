@@ -25,7 +25,8 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					$scope.isBodyOpen = true;
 				$scope.addHost = function () {
 					$scope.selectedHost = {
-						statusId: 1
+						statusId: 1,
+						isPeoHost: true
 					};
 				}
 				
@@ -79,7 +80,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						$scope.selectedHost = angular.copy(item);
 						$scope.selectedHost.sourceTypeId = $scope.sourceTypeId;
 						$scope.isBodyOpen = false;
-						if ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id) {
+						if (!$scope.mainData.selectedHost || ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id)) {
 							$scope.mainData.selectedHost = item;
 							$scope.$parent.$parent.hostSelected();
 						}

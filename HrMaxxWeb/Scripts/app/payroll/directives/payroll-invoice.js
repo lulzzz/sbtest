@@ -11,7 +11,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 				host: "=host",
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=1.1.0' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, commonRepository, hostRepository) {

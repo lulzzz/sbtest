@@ -85,9 +85,9 @@
           <Property Name="OpeningBalance" Type="decimal" Precision="18" Scale="2" />
           <Property Name="OpeningDate" Type="datetime" Nullable="false" />
           <Property Name="BankAccountId" Type="int" />
-          <Property Name="UsedInPayroll" Type="bit" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="UsedInPayroll" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccumlatedPayType">
           <Key>
@@ -222,10 +222,10 @@
           <Property Name="FederalExemptions" Type="int" Nullable="false" />
           <Property Name="FederalAdditionalAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="State" Type="varchar(max)" Nullable="false" />
-          <Property Name="WorkerCompensationId" Type="int" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastPayrollDate" Type="datetime" />
+          <Property Name="WorkerCompensationId" Type="int" />
         </EntityType>
         <EntityType Name="EmployeeDeduction">
           <Key>
@@ -256,12 +256,13 @@
           <Property Name="TerminationDate" Type="datetime" />
           <Property Name="StatusId" Type="int" Nullable="false" />
           <Property Name="HomePage" Type="varchar(max)" />
-          <Property Name="CompanyId" Type="uniqueidentifier" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" />
           <Property Name="PTIN" Type="varchar(max)" />
           <Property Name="DesigneeName940941" Type="varchar(max)" />
           <Property Name="PIN940941" Type="varchar(max)" />
+          <Property Name="IsPeoHost" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Invoice">
           <Key>
@@ -326,9 +327,9 @@
           <Property Name="StartingCheckNumber" Type="int" Nullable="false" />
           <Property Name="Status" Type="int" Nullable="false" />
           <Property Name="Company" Type="varchar(max)" Nullable="false" />
-          <Property Name="InvoiceId" Type="uniqueidentifier" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="InvoiceId" Type="uniqueidentifier" />
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
           <Property Name="Notes" Type="varchar(max)" />
         </EntityType>
@@ -815,18 +816,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Payroll_PayrollInvoice">
-          <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="0..1" />
-          <End Role="Payroll" Type="Self.Payroll" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PayrollInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Payroll">
-              <PropertyRef Name="InvoiceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PayrollDetail_Payroll">
           <End Role="Payroll" Type="Self.Payroll" Multiplicity="1" />
           <End Role="PayrollPayCheck" Type="Self.PayrollPayCheck" Multiplicity="*" />
@@ -860,18 +849,6 @@
             </Principal>
             <Dependent Role="PayrollInvoice">
               <PropertyRef Name="PayrollId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PayrollPayCheck_PayrollInvoice">
-          <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="0..1" />
-          <End Role="PayrollPayCheck" Type="Self.PayrollPayCheck" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PayrollInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayrollPayCheck">
-              <PropertyRef Name="InvoiceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1052,10 +1029,6 @@
             <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
             <End Role="Journal" EntitySet="Journal" />
           </AssociationSet>
-          <AssociationSet Name="FK_Payroll_PayrollInvoice" Association="Self.FK_Payroll_PayrollInvoice">
-            <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
-            <End Role="Payroll" EntitySet="Payroll" />
-          </AssociationSet>
           <AssociationSet Name="FK_PayrollDetail_Payroll" Association="Self.FK_PayrollDetail_Payroll">
             <End Role="Payroll" EntitySet="Payroll" />
             <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
@@ -1067,10 +1040,6 @@
           <AssociationSet Name="FK_PayrollInvoice_Payroll" Association="Self.FK_PayrollInvoice_Payroll">
             <End Role="Payroll" EntitySet="Payroll" />
             <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PayrollPayCheck_PayrollInvoice" Association="Self.FK_PayrollPayCheck_PayrollInvoice">
-            <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
-            <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
           </AssociationSet>
           <AssociationSet Name="FK_TaxYearRate_Tax" Association="Self.FK_TaxYearRate_Tax">
             <End Role="Tax" EntitySet="Tax" />
@@ -1294,6 +1263,7 @@
           <Property Name="PTIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="DesigneeName940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="PIN940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsPeoHost" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CPA_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -2258,6 +2228,7 @@
           <EntitySetMapping Name="Hosts">
             <EntityTypeMapping TypeName="HrMaxxModel.Host">
               <MappingFragment StoreEntitySet="Host">
+                <ScalarProperty Name="IsPeoHost" ColumnName="IsPeoHost" />
                 <ScalarProperty Name="PIN940941" ColumnName="PIN940941" />
                 <ScalarProperty Name="DesigneeName940941" ColumnName="DesigneeName940941" />
                 <ScalarProperty Name="PTIN" ColumnName="PTIN" />

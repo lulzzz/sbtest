@@ -32,6 +32,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly IPDFService _pdfService;
 		private readonly ICommonService _commonService;
 		private readonly IHostService _hostService;
+		private readonly ITaxationService _taxationService;
+
 		private readonly string _filePath;
 		private readonly string _templatePath;
 
@@ -43,7 +45,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -53,6 +55,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_templatePath = templatePath;
 			_commonService = commonService;
 			_hostService = hostService;
+			_taxationService = taxationService;
 		}
 
 
@@ -177,6 +180,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetPaperless941(request);
 				else if (request.ReportName.Equals("Paperless940"))
 					return GetPaperless940(request);
+				else if (request.ReportName.Equals("SSAW2Magnetic"))
+					return GetSSAMagnetic(request);
+				else if (request.ReportName.Equals("Report1099"))
+					return Get1099Extract(request);
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -203,6 +210,29 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		private FileDto Get1099Extract(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+
+				c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
+
+			});
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("MagFileUserId", "", config.BatchFilerId);
+			argList.AddParam("tcc", "", config.TCC);
+			argList.AddParam("currentYear", "", DateTime.Now.Year);
+			argList.AddParam("selectedYear", "", request.Year);
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
+			
+		}
+
 		private FileDto GetPaperless940(ReportRequest request)
 		{
 			var data = _reportRepository.GetExtractReport(request);
@@ -222,7 +252,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
 
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/940/Paperless940-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 940-{0}-{1}.xls", request.Year, request.Quarter));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Paperless940-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 940-{0}.xls", request.Year));
 		}
 
 		private FileDto GetPaperless941(ReportRequest request)
@@ -244,7 +274,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
 			
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/941/Paperless941-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 941-{0}-{1}.xls", request.Year, request.Quarter));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Paperless941-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 941-{0}-{1}.xls", request.Year, request.Quarter));
+		}
+		private FileDto GetSSAMagnetic(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+
+				c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
+
+			});
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("MagFileUserId", "", config.BatchFilerId);
+			argList.AddParam("selectedYear", "", request.Year);
+			
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
 		}
 		private FileDto GetExtractTransformed(ReportRequest request, ExtractReport data, XsltArgumentList argList, string template, string extension, string filename)
 		{
@@ -252,6 +301,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			var transformed = XmlTransform(xml,
 				string.Format("{0}{1}", _templatePath, template), argList);
+
+			if (extension.Equals("txt"))
+				transformed = Transform(transformed);
 
 			return new FileDto
 			{
@@ -939,6 +991,22 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				request.StartDate = new DateTime(request.Year, 1, 1).Date;
 				request.EndDate = new DateTime(request.Year, 12, 31).Date;
 			}
+		}
+
+		private string Transform(string result)
+		{
+			result = result.Replace("\r\n", "");
+			result = result.Replace("\n", "");
+			result = result.Replace("&amp;", "&");
+			result = result.Replace("$$n", Environment.NewLine);
+			result = result.Replace("$$spaces100$$", "".PadRight(100));
+			result = result.Replace("$$spaces20$$", "".PadRight(20));
+			result = result.Replace("$$spaces10$$", "".PadRight(10));
+			result = result.Replace("$$spaces5$$", "".PadRight(5));
+			result = result.Replace("$$spaces2$$", "".PadRight(2));
+			result = result.Replace("$$spaces1$$", "".PadRight(1));
+			result = result.Replace("$$n", Environment.NewLine);
+			return result;
 		}
 	}
 }

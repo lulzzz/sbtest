@@ -11,7 +11,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? RootHostId { get; set; }
 		public decimal EnvironmentalChargeRate { get; set; }
 		public List<string> Couriers { get; set; } 
-		public List<InvoiceLateFeeConfig> InvoiceLateFeeConfigs { get; set; } 
+		public List<InvoiceLateFeeConfig> InvoiceLateFeeConfigs { get; set; }
+		public string BatchFilerId { get; set; }
+		public string MasterInquiryPin { get; set; }
+		public string MagneticFileId { get; set; }
+		public string TCC { get; set; }
+		public string SsaBsoW2MagneticFileId { get; set; }
 		 
   }
 	public class InvoiceLateFeeConfig

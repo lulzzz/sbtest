@@ -518,6 +518,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Host, opt => opt.MapFrom(src => src.Host))
 				.ForMember(dest => dest.Contacts, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeAccumulations, opt => opt.Ignore())
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>src.PayChecks))
 				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks));
 
@@ -532,7 +533,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.StatusId, opt => opt.Ignore())
-				
+				.ForMember(dest => dest.IsPeoHost, opt => opt.Ignore())
 				.ForMember(dest => dest.EffectiveDate, opt => opt.Ignore());
 
 			CreateMap<Models.ExtractDBCompany, Models.Company>()
@@ -564,7 +565,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayType>>(src.Compensations)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollPayCode>>(src.PayCodes)))
 				.ForMember(dest => dest.PayrollId, opt => opt.Ignore())
-				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
 				.ForMember(dest => dest.Salary, opt => opt.Ignore())
 				.ForMember(dest => dest.Notes, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulations, opt => opt.Ignore())

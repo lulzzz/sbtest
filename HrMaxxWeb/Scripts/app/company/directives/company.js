@@ -10,7 +10,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 				selectedCompany: "=company",
 				isPopup: "=isPopup"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Client/templates/company.html?v=' + version,
+			templateUrl: zionAPI.Web + 'Areas/Client/templates/company.html?v=1.2' + version,
 
 			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes',
 				function ($scope, $rootScope, $element, $location, $filter, companyRepository, EntityTypes) {
@@ -27,6 +27,13 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
+					$scope.isFileUnderHostDisabled = function () {
+						if($scope.mainData.selectedHost.isPeoHost || ($scope.selectedCompany.lastPayrollDate && moment($scope.selectedCompany.lastPayrollDate).year()===moment().year()))
+							return true;
+							else {
+							return false;
+						}
+					}
 
 					
 					$scope.cancel = function () {

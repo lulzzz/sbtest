@@ -37,6 +37,9 @@
 						<td data-title=" 'Invoice Status' " sortable=" 'invoice.statusText' " class="col-sm-1 text-center" ng-show="showInvoices()">
 							{{item.invoice.statusText}}
 						</td>
+						<td data-title=" 'Invoice Total' " sortable=" 'invoice.total' " class="col-sm-1 text-center" ng-show="showInvoices()">
+							{{item.invoice.total | currency:'$'}}
+						</td>
 						<td class="col-sm-1 text-center" ng-if="showInvoices()">
 							<button class="btn btn-sm btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice">view invoice</button>
 							<button class="btn btn-sm btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0">create invoice</button>

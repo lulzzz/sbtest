@@ -57,6 +57,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 				dbCPA.PIN940941 = mappedCPA.PIN940941;
 				dbCPA.PTIN = mappedCPA.PTIN;
 				dbCPA.DesigneeName940941 = mappedCPA.DesigneeName940941;
+				dbCPA.IsPeoHost = mappedCPA.IsPeoHost;
 			}
 			_dbContext.SaveChanges();
 		}

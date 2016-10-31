@@ -20,13 +20,33 @@
 						<label>Environment Charge Rate</label>
 						<input class="form-control" name="ecrate" ng-model="data.configs.environmentalChargeRate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
 					</div>
+					<div class="form-group">
+						<label>Batch Filer ID</label>
+						<input class="form-control" name="batchfilterid" ng-model="data.configs.batchFilerId" />
+					</div>
+					<div class="form-group">
+						<label>Master Inquiry PIN</label>
+						<input class="form-control" name="masterpin" ng-model="data.configs.masterInquiryPin" data-parsley-type="number" data-parsley-pattern="/^d{4}$/" data-parsley-trigger="blur" />
+					</div>
+					<div class="form-group">
+						<label>SSA BSO W-2 Mag File Identification</label>
+						<input class="form-control" name="ssaw2magnetic" ng-model="data.configs.ssaBsoW2MagneticFileId" />
+
+					</div>
+					<div class="form-group">
+						<label>TCC</label>
+						<input class="form-control" name="tcc" ng-model="data.configs.tcc" />
+					</div>
 				</div>
 				<div class="col-sm-4">
 					<div class="form-group">
 						<label>Couriers</label>
-						<tags-input ng-model="data.tags" ></tags-input>
+						<tags-input ng-model="data.tags"></tags-input>
+						
 						
 					</div>
+					
+					
 				</div>
 				<div class="col-sm-4">
 					<div class="col-sm-12">

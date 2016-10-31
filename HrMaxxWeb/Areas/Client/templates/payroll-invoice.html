@@ -98,7 +98,7 @@
 
 				</div>
 			</div>
-			<div class="alert alert-warning" ng-if="data.companyUpdated">
+			<div class="alert alert-warning hidden-print" ng-if="data.companyUpdated">
 				Changes made to company invoice set up will not fully take affect until you refresh
 			</div>
 			<div class="col-sm-12 table-responsive">
@@ -164,19 +164,19 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1}">
+						<tr ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1, 'hidden-print': invoice.companyInvoiceSetup.invoiceType!==1}" style="height:5px;">
 							<td><em><u>Gross Payroll</u></em></td>
 							<td></td>
 							<td></td>
 							<td class="text-right"><em><u>{{invoice.grossWages | currency:'$'}}</u></em></td>
 						</tr>
-						<tr ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===2}">
+						<tr ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType!==2}">
 							<td><em><u>Employee Contribution</u></em></td>
 							<td></td>
 							<td></td>
 							<td class="text-right"><em><u>{{invoice.employeeContribution | currency:'$'}}</u></em></td>
 						</tr>
-						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===1" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2}">
+						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===1" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType > 2}">
 							<td colspan="3">
 								<em>
 									<u>
@@ -188,7 +188,7 @@
 
 							<td class="text-right"><em><u>{{invoice.employerContribution | currency:'$'}}</u></em></td>
 						</tr>
-						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===2" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2}">
+						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===2" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType>2}">
 							<td colspan="3"><em><u>Employer Contributions</u></em></td>
 							<td class="text-right"><em><u>{{invoice.employerContribution | currency:'$'}}</u></em></td>
 						</tr>
@@ -275,8 +275,8 @@
 								{{invoice.notes}}
 							</td>
 						</tr>
-						<tr class="visible-print">
-							<td colspan="4">
+						<tr class="visible-print" ng-show="invoice.notes">
+							<td colspan="4" style="border:1px solid black">
 								<em><u>Notes: </u></em>&nbsp;&nbsp;&nbsp;{{invoice.notes}}
 							</td>
 							

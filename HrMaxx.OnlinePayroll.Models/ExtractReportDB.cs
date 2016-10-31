@@ -21,6 +21,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheck> PayChecks { get; set; }
 		public List<PayCheck> VoidedPayChecks { get; set; }
 		public ExtractAccumulation Accumulation { get; set; }
+		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; } 
 	}
 	public class ExtractReport
 	{
@@ -76,6 +77,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
+		
 		public string Compensations { get; set; }
 		public string Deductions { get; set; }
 		public string PayCodes { get; set; }

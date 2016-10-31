@@ -33,6 +33,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string PTIN { get; set; }
         public string DesigneeName940941 { get; set; }
         public string PIN940941 { get; set; }
+        public bool IsPeoHost { get; set; }
     
         public virtual Status Status { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

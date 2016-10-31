@@ -21,7 +21,7 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Display 940</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Extract</button>
 						</div>
 						
 					</div>
@@ -48,7 +48,7 @@
 							</select>
 						</div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.filter941.year || !data.filter941.quarter">Display 941</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.filter941.year || !data.filter941.quarter">Extract</button>
 						</div>
 
 					</div>
@@ -57,26 +57,7 @@
 				
 				<div class="col-sm-12">
 					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Employer's Quarterly Federal SS, Medicare and Income Tax Return - Form 944</em></span></h5>
-					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-3">
-							<select name="year944" ng-model="data.filter944.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport944()" ng-disabled="!data.filter944.year">Display 944</button>
-						</div>
-
-					</div>
-
-				</div>
-				
-				<div class="col-sm-12">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Wage and Tax Statement – Form W2</em></span></h5>
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal SSA W2 Magnetic File </em></span></h5>
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
@@ -86,36 +67,17 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Display W2 - Employee</button>
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">Display W2 - Employer</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Extract</button>
 						</div>
 
 					</div>
 
 				</div>
 				
-				<div class="col-sm-12">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Transmittal of Wage and Tax Statements – Form W3</em></span></h5>
-					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-3">
-							<select name="yearw3" ng-model="data.filterW3.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReportW3()" ng-disabled="!data.filterW3.year">Display W3</button>
-						</div>
-
-					</div>
-
-				</div>
 				
 				<div class="col-sm-12">
 					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Non-wage Payment Statement – Form 1099</em></span></h5>
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal/State Form 1099 Magnetic File </em></span></h5>
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
@@ -125,7 +87,7 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Display 1099</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Extract</button>
 						</div>
 
 					</div>

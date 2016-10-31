@@ -58,6 +58,15 @@
 								<label class="control-label">Termination Date</label>
 								<date-ctrl name="terminationdate" required="host.statusId===3" model="host.terminationDate" max="dt" disabled="false" />
 							</div>
+							<div class="form-group">
+								<label></label>
+								<div>
+									<label for="ispeohost" class="switch">
+										PEO Host?
+										<input id="ispeohost" type="checkbox" ng-model="host.isPeoHost" /><i></i>
+									</label>
+								</div>
+							</div>
 						</div>
 						<div class="col-sm-4">
 							<div class="form-group">
