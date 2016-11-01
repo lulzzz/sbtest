@@ -33,28 +33,28 @@ RF$$spaces5$$<xsl:call-template name="padLeft"><xsl:with-param name="data" selec
   </xsl:template>
 	<xsl:template match="ExtractCompany">
 		<xsl:variable name="totalTips" select="sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="fitWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
-		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage"/>
-		<xsl:variable name="SSETax" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount"/>
-		<xsl:variable name="MDETax" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount"/>
+		<xsl:variable name="fitWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage)"/>
+		<xsl:variable name="totalSSWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage)"/>
+		<xsl:variable name="SSETax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount)"/>
+		<xsl:variable name="MDETax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount)"/>
 
-		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="totalSSTax" select="(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount)"/>
-		<xsl:variable name="totalMDTax" select="(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount)"/>
+		<xsl:variable name="totalMDWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage)"/>
+		<xsl:variable name="totalFITTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount)"/>
+		<xsl:variable name="totalSSTax" select="(sum(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount) + sum(Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount))"/>
+		<xsl:variable name="totalMDTax" select="(sum(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount) + sum(Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount))"/>
 RE<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:value-of select="translate(Company/FederalEIN,'-','')"/>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 0$$spaces10$$$$spaces2$$$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Company/TaxFilingName,$smallcase,$uppercase)"/><xsl:with-param name="count" select="57"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="22"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Company/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/><xsl:with-param name="count" select="22"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Company/BusinessAddress/City,$smallcase,$uppercase)"/><xsl:with-param name="count" select="22"/></xsl:call-template>
-<xsl:value-of select="'CA'"/><xsl:value-of select="Company/BusinessAddress/Zip"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="Company/BusinessAddress/ZipExtension"/><xsl:with-param name="count" select="4"/></xsl:call-template>
+<xsl:value-of select="States/CompanyTaxState[position()=1]/State/Abbreviation"/><xsl:value-of select="Company/BusinessAddress/Zip"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="Company/BusinessAddress/ZipExtension"/><xsl:with-param name="count" select="4"/></xsl:call-template>
 N<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="19"/></xsl:call-template>$$spaces20$$$$spaces5$$
 <xsl:choose><xsl:when test="Company/IsFiler944">F</xsl:when><xsl:otherwise>R</xsl:otherwise></xsl:choose>$$spaces1$$0
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(concat(contact/@contactfirstname,' ',contact/@contactmiddlename,' ',contact/@contactlastname),$smallcase,$uppercase)"/><xsl:with-param name="count" select="27"/></xsl:call-template>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(contact/@phone1,'-','')"/><xsl:with-param name="count" select="20"/></xsl:call-template>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(contact/@fax,'-','')"/><xsl:with-param name="count" select="10"/></xsl:call-template>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="contact/@email1"/><xsl:with-param name="count" select="40"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(concat(Contact/FirstName,' ',Contact/MiddleInitial,' ',Contact/LastName),$smallcase,$uppercase)"/><xsl:with-param name="count" select="27"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Contact/Phone,'-','')"/><xsl:with-param name="count" select="20"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Contact/Fax,'-','')"/><xsl:with-param name="count" select="10"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="Contact/Email"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="194"/></xsl:call-template>
 <xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="EmployeeAccumulations/EmployeeAccumulation[Accumulation/GrossWage>0]"/>

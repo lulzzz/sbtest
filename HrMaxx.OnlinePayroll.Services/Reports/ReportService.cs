@@ -188,7 +188,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return FederalQuarterly940(request);
 				else if (request.ReportName.Equals("Federal941"))
 					return Federal941(request);
-			
+				else if (request.ReportName.Equals("StateCAPIT"))
+					return StateCAPIT(request);
+				else if (request.ReportName.Equals("StateCAUI"))
+					return StateCAUI(request);
+				else if (request.ReportName.Equals("StateCADE6"))
+					return StateCADE6(request);
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -269,6 +274,84 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
+		}
+		private FileDto StateCAPIT(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			if (data.Companies.All(c => !c.PayChecks.Any()))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.SetQuarters();
+
+			});
+			
+			var argList = new XsltArgumentList();
+		
+			argList.AddParam("reportConst", "", request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104");
+			argList.AddParam("enddate", "",request.EndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
+			argList.AddParam("selectedYear", "", request.Year);
+			
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPS.xslt", "txt", string.Format("California State {2} PIT & DI GovOneFile-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
+		}
+
+		private FileDto StateCAUI(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			if (data.Companies.All(c => !c.PayChecks.Any()))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.SetQuarters();
+
+			});
+
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("reportConst", "", "01300");
+			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
+			argList.AddParam("selectedYear", "", request.Year);
+
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPS.xslt", "txt", string.Format("California State Quarterly UI & ETT GovOneFile-{0}-{1}.txt", request.Year, request.Quarter));
+		}
+		private FileDto StateCADE6(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			if (data.Companies.All(c => !c.PayChecks.Any()))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.SetCounts(request.Year, request.Quarter);
+				c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
+
+			});
+
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
+			argList.AddParam("selectedYear", "", request.Year);
+
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE6Transformer.xslt", "txt", string.Format("California State Quarterly DE 6 Reporting File-{0}-{1}.txt", request.Year, request.Quarter));
 		}
 		
 		private FileDto Get1099Extract(ReportRequest request)
@@ -1036,6 +1119,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private void CalculateDates(ref ReportRequest request)
 		{
+			if (request.StartDate != DateTime.MinValue && request.EndDate != DateTime.MinValue)
+			{
+				return;
+			}
 			if (request.Quarter > 0)
 			{
 				request.StartDate = new DateTime(request.Year, request.Quarter*3 -2, 1 ).Date;

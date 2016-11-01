@@ -1838,7 +1838,7 @@
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate('CA',$smallcase,$uppercase)" />
+						<xsl:value-of select="translate(../States/CompanyTaxState[position()=1]/State/Abbreviation,$smallcase,$uppercase)" />
 					</Data>
 				</Cell>
 				<Cell>
@@ -1855,14 +1855,14 @@
 					<Data ss:Type="String"></Data>
 				</Cell>
 				<Cell>
-					<Data ss:Type="String"></Data>
+					<Data ss:Type="String"><xsl:value-of select="translate(concat(../Contact/FirstName, ' ', ../Contact/LastName),$smallcase,$uppercase)"/></Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String"></Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="1234" />
+						<xsl:value-of select="../Contact/Phone" />
 					</Data>
 				</Cell>
 				<Cell>

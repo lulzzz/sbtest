@@ -16,8 +16,9 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class ExtractCompany
 	{
 		public Company Company { get; set; }
+		public List<CompanyTaxState> States { get; set; } 
 		public Host Host { get; set; }
-		public List<Contact> Contacts { get; set; } 
+		public Contact Contact { get; set; } 
 		public List<PayCheck> PayChecks { get; set; }
 		public List<PayCheck> VoidedPayChecks { get; set; }
 		public ExtractAccumulation Accumulation { get; set; }
@@ -55,12 +56,27 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsFiler944 { get; set; }
 		public bool IsHostCompany { get; set; }
 		public string Memo { get; set; }
+		public List<ExtractTaxState> States { get; set; } 
 		public ExtractHost Host { get;set; }
-		public List<string> Contacts { get; set; } 
+		public List<ExtractContact> Contacts { get; set; } 
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; } 
 	}
 
+	public class ExtractContact
+	{
+		public string ContactObject { get; set; }
+	}
+	public class ExtractTaxState
+	{
+		public int Id { get; set; }
+		public int CountryId { get; set; }
+		public int StateId { get; set; }
+		public string StateCode { get; set; }
+		public string StateName { get; set; }
+		public string EIN { get; set; }
+		public string Pin { get; set; }
+	}
 	public class ExtractHost
 	{
 		public string FirmName { get; set; }

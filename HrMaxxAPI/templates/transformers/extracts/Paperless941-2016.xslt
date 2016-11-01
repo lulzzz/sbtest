@@ -1136,13 +1136,15 @@
 				<Cell><Data ss:Type="String"><xsl:value-of select="translate(BusinessAddress/AddressLine1,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="translate(BusinessAddress/City,$smallcase,$uppercase)"/></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate('CA',$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(../States/CompanyTaxState[position()=1]/State/Abbreviation,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="Number"><xsl:value-of select="BusinessAddress/Zip"/></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="translate(../Host/FirmName,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
+				<Cell><Data ss:Type="String">
+					<xsl:value-of select="translate(concat(../Contact/FirstName, ' ', ../Contact/LastName), $smallcase, $uppercase)"/>
+				</Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
-				<Cell><Data ss:Type="String"></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="1234"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="../Contact/Phone"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="$todaydate"/></Data></Cell>

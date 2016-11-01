@@ -216,8 +216,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<Invoice, InvoiceResource>();
 
 			CreateMap<ReportRequestResource, ReportRequest>()
-				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.HasValue ? src.StartDate.Value : new DateTime(DateTime.Now.Year, 1, 1)))
-				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : new DateTime(DateTime.Now.Year, 12, 31)));
+				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.HasValue ? src.StartDate.Value : DateTime.MinValue))
+				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : DateTime.MinValue));
 
 			CreateMap<ReportResponse, ReportResponseResource>();
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Serialization;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
@@ -134,7 +135,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 					var dbReport = (ExtractReportDB)serializer.Deserialize(memStream);
 
-					return _mapper.Map<ExtractReportDB, ExtractReport>(dbReport);
+					var returnVal = _mapper.Map<ExtractReportDB, ExtractReport>(dbReport);
+					
+					dbReport.Companies.ForEach(c =>
+					{
+						var contact = new List<Contact>();
+						c.Contacts.ForEach(ct=>contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+						var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
+						if (selcontact != null)
+						{
+							returnVal.Companies.First(comp => comp.Company.Id == c.Id).Contact = selcontact;
+						}
+					});
+					return returnVal;
 
 				}
 			}

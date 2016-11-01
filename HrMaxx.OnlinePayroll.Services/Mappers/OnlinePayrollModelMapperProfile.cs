@@ -515,12 +515,24 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.ExtractReportDB, Models.ExtractReport>();
 			CreateMap<Models.ExtractDBCompany, Models.ExtractCompany>()
 				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src))
+				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.States))
 				.ForMember(dest => dest.Host, opt => opt.MapFrom(src => src.Host))
-				.ForMember(dest => dest.Contacts, opt => opt.Ignore())
+				.ForMember(dest => dest.Contact, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.EmployeeAccumulations, opt => opt.Ignore())
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>src.PayChecks))
 				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks));
+
+			
+
+			CreateMap<Models.ExtractTaxState, Models.CompanyTaxState>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.CountryId, opt => opt.MapFrom(src => src.CountryId))
+				.ForMember(dest => dest.State, opt => opt.MapFrom(src => new State{StateId=src.StateId, StateName = src.StateName, Abbreviation=src.StateCode}))
+				.ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src=>Crypto.Decrypt(src.EIN)))
+				.ForMember(dest => dest.StatePIN, opt => opt.MapFrom(src=>Crypto.Decrypt(src.Pin)));
+
+			
 
 			CreateMap<Models.ExtractHost, Models.Host>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
