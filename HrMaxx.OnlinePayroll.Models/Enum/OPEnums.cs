@@ -30,7 +30,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		MICRQb=4
 	}
 
-	public enum DepostiSchedule941
+	public enum DepositSchedule941
 	{
 		SemiWeekly=1,
 		Monthly=2,
@@ -207,7 +207,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Single=1,
 		[HrMaxxSecurity(DbName = "Married")]
 		Married=2,
-		[HrMaxxSecurity(DbName = "Unmarried Head of Household")]
+		[HrMaxxSecurity(DbName = "HeadofHousehold")]
 		HeadofHousehold=3
 	}
 

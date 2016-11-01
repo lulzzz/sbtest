@@ -146,6 +146,9 @@
     <Compile Include="DataModel\PayType.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\ReportConstant.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\SITLowIncomeTaxTable.cs">
       <DependentUpon>USTaxTablesModel.tt</DependentUpon>
     </Compile>

@@ -15,20 +15,37 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 						isBodyOpen: true,
 						response: null,
+						minYear: 2016,
 						filter: {
 							years: []
 						},
 						filter940: {
 							year : 0
 						},
-						filter944: {
-							year : 0
-						},
+						
 						filterW2: {
 							year : 0
 						},
-						filterW3: {
-							year : 0
+						filter940Q: {
+							year: 0,
+							quarter: 0,
+							depositDate: moment().startOf('day').toDate()
+						},
+						filter941S: {
+							year: 0,
+							payPeriods: [],
+							payPeriod: null,
+							depositDate: moment().startOf('day').toDate()
+						},
+						filter941M: {
+							year: 0,
+							month: 0,
+							depositDate: moment().startOf('day').toDate()
+						},
+						filter941Q: {
+							year: 0,
+							quarter: 0,
+							depositDate: moment().startOf('day').toDate()
 						},
 						filter1099: {
 							year : 0
@@ -50,9 +67,11 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: 0
 						}
 					}
+					$scope.minDepositDate = moment().startOf('day').toDate();
 					var currentYear = new Date().getFullYear();
 					for (var i = currentYear - 4; i <= currentYear; i++) {
-						dataSvc.filter.years.push(i);
+						if(i >= dataSvc.minYear)
+							dataSvc.filter.years.push(i);
 					}
 					
 
@@ -60,26 +79,106 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showFilterPanel = false;
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
+					$scope.fill941PayPeriods = function () {
+						dataSvc.filter941S.payPeriods = [];
+						var startDate = moment("01-01-" + dataSvc.filter941S.year, "MM-DD-YYYY");
+						var endDate = moment("12-31-" + dataSvc.filter941S.year, "MM-DD-YYYY");
+						var currDate = startDate.clone().startOf('day');
+						var lastDate = endDate.clone().startOf('day');
+						var startingQuarter = 0;
+						var dayofquarter = 0;
+						if (!dataSvc.filter941S.year)
+							return;
 
+						while (currDate.diff(lastDate) <= 0) {
+							var quarter = Math.floor((currDate.month() + 3) / 3);
+							if (quarter !== startingQuarter) {
+								dayofquarter = 1;
+								startingQuarter = quarter;
+							}
+							if (currDate.format("dddd") === 'Wednesday' || currDate.format("dddd") === 'Friday') {
+								
+								if (dayofquarter === 2) {
+									if (quarter === 1) {
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-4th Q"
+										});
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-1st Q"
+										});
+
+
+									} else if (quarter === 2) {
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-1st Q"
+										});
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-2nd Q"
+										});
+									} else if (quarter === 3) {
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-2nd Q"
+										});
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-3rd Q"
+										});
+									} else if (quarter === 4) {
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-3rd Q"
+										});
+										dataSvc.filter941S.payPeriods.push({
+											key: currDate.format("MM/DD/YYYY"),
+											val: currDate.format("ddd, MMMM DD, YY") + "-4th Q"
+										});
+									}
+
+
+								} else {
+									dataSvc.filter941S.payPeriods.push({
+										key: currDate.format("MM/DD/YYYY"),
+										val: currDate.format("ddd, MMMM DD, YY")
+									});
+								}
+								dayofquarter++;
+								
+							}
+							
+							currDate = currDate.add('days', 1);
+						}
+					}
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 
 					$scope.getReport940 = function() {
-						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null);
+						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null, null, null, null);
 					}
 					$scope.getReport941 = function () {
-						getReport('Paperless941', 'Paperless 941', dataSvc.filter941.year, dataSvc.filter941.quarter);
-					}
-					$scope.getReport944 = function () {
-						getReport('Federal944', 'Federal 944', dataSvc.filter944.year, null);
-					}
-					$scope.getReportW2Employee = function () {
-						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null);
+						getReport('Paperless941', 'Paperless 941', dataSvc.filter941.year, dataSvc.filter941.quarter, null, null, null);
 					}
 					
-					$scope.getReportW3 = function () {
-						getReport('W3', 'Federal W3', dataSvc.filterW3.year, null);
+					$scope.getReportW2Employee = function () {
+						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null);
+					}
+					
+					$scope.getReport940Q = function () {
+						getReport('FederalQuarterly940', 'Federal Quarterly 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, null, dataSvc.filter940Q.depositDate, null);
+					}
+					$scope.getReport941S = function () {
+						getReport('Federal941', 'Federal Semi-Weekly 941 EFTPS File', dataSvc.filter941S.year, null, 1, dataSvc.filter941S.depositDate, null);
+					}
+					$scope.getReport941M = function () {
+						getReport('Federal941', 'Federal Monthly 941 EFTPS File', dataSvc.filter941M.year, null, 2, dataSvc.filter941M.depositDate, dataSvc.filter941M.month);
+					}
+					$scope.getReport941Q = function () {
+						getReport('Federal941', 'Federal Quarterly 941 EFTPS File', dataSvc.filter941Q.year, dataSvc.filter941Q.quarter, 3, dataSvc.filter941Q.depositDate, null);
 					}
 					$scope.getReport1099 = function () {
 						getReport('Report1099', '1099', dataSvc.filter1099.year, null);
@@ -95,15 +194,17 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						getReport('CaliforniaDE9C', 'California DE 9C', dataSvc.filterde9.year, dataSvc.filterde9.quarter);
 					}
 
-					var getReport = function(reportName, desc, year, quarter) {
+					var getReport = function(reportName, desc, year, quarter, depositSchedule, depositDate, month) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
 							year: year,
 							quarter: quarter,
-							month: null,
+							month: month,
 							startDate:null,
-							endDate: null
+							endDate: null,
+							depositSchedule: depositSchedule,
+							depositDate: depositDate ? moment(depositDate).format("MM/DD/YYYY") : null
 						}
 						reportRepository.getExtractDocument(request).then(function (data) {
 							var a = document.createElement('a');

@@ -110,6 +110,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Parameters.AddWithValue("@startDate", extractReport.StartDate);
 					cmd.Parameters.AddWithValue("@endDate", extractReport.EndDate);
+					if (extractReport.DepositSchedule != null)
+					{
+						cmd.Parameters.AddWithValue("@depositSchedule", (int)extractReport.DepositSchedule);	
+					}
 
 					cmd.Connection = con;
 					con.Open();

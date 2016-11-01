@@ -21,5 +21,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		object GetMetaDataForUser(Guid? host, Guid? company, Guid? employee);
 		ApplicationConfig GetConfigurations();
 		void SaveApplicationConfig(ApplicationConfig config);
+		int PullReportConstat(string form940, int quarterly);
 	}
 }

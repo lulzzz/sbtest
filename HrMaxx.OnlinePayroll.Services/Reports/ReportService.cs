@@ -184,6 +184,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetSSAMagnetic(request);
 				else if (request.ReportName.Equals("Report1099"))
 					return Get1099Extract(request);
+				else if (request.ReportName.Equals("FederalQuarterly940"))
+					return FederalQuarterly940(request);
+				else if (request.ReportName.Equals("Federal941"))
+					return Federal941(request);
+			
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -210,6 +215,62 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		private FileDto FederalQuarterly940(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			if (data.Companies.All(c => !c.PayChecks.Any()))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.SetQuarters();
+
+			});
+			var reportConst = _taxationService.PullReportConstant("Form940", (int)DepositSchedule941.Quarterly);
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("batchFilerId", "", config.BatchFilerId);
+			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
+			argList.AddParam("fileSeq", "", reportConst);
+			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
+			argList.AddParam("selectedYear", "", request.Year);
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal Quarterly 940 Extract-{0}-{1}.txt", request.Year, request.Quarter));
+		}
+		private FileDto Federal941(ReportRequest request)
+		{
+			var data = _reportRepository.GetExtractReport(request);
+			if (data.Companies.All(c => !c.PayChecks.Any()))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			data.Companies.ForEach(c =>
+			{
+				c.Accumulation = new ExtractAccumulation();
+				c.Accumulation.AddPayChecks(c.PayChecks);
+				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+				c.Accumulation.SetQuarters();
+
+			});
+			var reportConst = _taxationService.PullReportConstant("Form941", (int)request.DepositSchedule.Value);
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("batchFilerId", "", config.BatchFilerId);
+			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
+			argList.AddParam("fileSeq", "", reportConst);
+			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
+		}
+		
 		private FileDto Get1099Extract(ReportRequest request)
 		{
 			var data = _reportRepository.GetExtractReport(request);
@@ -218,15 +279,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				c.Accumulation = new ExtractAccumulation();
 				c.Accumulation.AddPayChecks(c.PayChecks);
 				c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
-
-				c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
-
 			});
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new XsltArgumentList();
-			argList.AddParam("MagFileUserId", "", config.BatchFilerId);
-			argList.AddParam("tcc", "", config.TCC);
-			argList.AddParam("currentYear", "", DateTime.Now.Year);
+			argList.AddParam("batchFilerId", "", config.BatchFilerId);
+			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
+			argList.AddParam("fileSeq", "", config.TCC);
+			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date);
 			argList.AddParam("selectedYear", "", request.Year);
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));

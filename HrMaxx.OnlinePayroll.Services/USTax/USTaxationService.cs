@@ -11,6 +11,7 @@ using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using HrMaxx.OnlinePayroll.Models.USTaxModels;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Taxation;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services.USTax
 {
@@ -63,7 +64,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " process taxes for payroll");
+				var info = string.Format("Company {0}, GrossWage={2}, PayCheck={1}", company.Id, JsonConvert.SerializeObject(payCheck), grossWage);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " process taxes for payroll--" + info);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 
@@ -98,6 +100,20 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				throw new HrMaxxApplicationException(message, e);
 			}
 			
+		}
+
+		public int PullReportConstant(string form940, int quarterly)
+		{
+			try
+			{
+				return _metaDataRepository.PullReportConstat(form940, quarterly);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " pull file sequence for form " + form940);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 		}
 
 		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, TaxByYear tax)

@@ -69,6 +69,7 @@
         <EntityTypeShape EntityType="HrMaxxModel.ApplicationConfiguration" Width="1.5" PointX="0.75" PointY="12.75" />
         <AssociationConnector Association="HrMaxxModel.FK_Payroll_PayrollInvoice" />
         <AssociationConnector Association="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" />
+        <EntityTypeShape EntityType="HrMaxxModel.ReportConstant" Width="1.5" PointX="0.75" PointY="15.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

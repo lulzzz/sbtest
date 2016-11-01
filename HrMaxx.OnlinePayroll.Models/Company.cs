@@ -37,7 +37,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool AllowEFileFormFiling { get; set; }
 		public string FederalEIN { get; set; }
 		public string FederalPin { get; set; }
-		public DepostiSchedule941 DepositSchedule { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 		public bool IsFiler944 { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
 		

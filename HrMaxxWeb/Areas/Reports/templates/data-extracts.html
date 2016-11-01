@@ -94,6 +94,128 @@
 
 				</div>
 				
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal Quarterly 940 EFTPS File </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="year941" ng-model="data.filter940Q.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarter941" ng-model="data.filter940Q.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<date-ctrl name="dep940q" model="data.filter940Q.depositDate" min="minDepositDate" disabled="false" />
+						</div>
+						<div class="col-sm-3">
+							<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!data.filter940Q.year || !data.filter940Q.quarter || !data.filter940Q.depositDate">Extract</button>
+						</div>
+
+					</div>
+
+				</div>
+				
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal Semi-Weekly 941 EFTPS File  </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="year941" ng-model="data.filter941S.year" class="form-control" ng-change="fill941PayPeriods()" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarter941" ng-model="data.filter941S.payPeriod" ng-disabled="!data.filter941S.year" class="form-control" convert-to-number ng-options="payperiod.key as payperiod.val for payperiod in data.filter941S.payPeriods track by payperiod.key">
+								<option value=""> Please select</option>
+								
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<date-ctrl name="dep940q" model="data.filter941S.depositDate" min="minDepositDate" disabled="false" />
+						</div>
+						<div class="col-sm-3">
+							<button class="btn btn-sm btn-primary" ng-click="getReport941S()" ng-disabled="!data.filter941S.year || !data.filter941S.payPeriod || !data.filter941S.depositDate">Extract</button>
+						</div>
+
+					</div>
+
+				</div>
+				
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal Monthly 941 EFTPS File  </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="year941" ng-model="data.filter941M.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarter941" ng-model="data.filter941M.month" class="form-control" convert-to-number>
+								<option value="1"> January</option>
+								<option value="2"> February</option>
+								<option value="3"> March</option>
+								<option value="4"> April</option>
+								<option value="5"> May</option>
+								<option value="6"> June</option>
+								<option value="7"> July</option>
+								<option value="8"> August</option>
+								<option value="9"> September</option>
+								<option value="10"> October</option>
+								<option value="11"> November</option>
+								<option value="12"> December</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<date-ctrl name="dep940q" model="data.filter941M.depositDate" min="minDepositDate" disabled="false" />
+						</div>
+						<div class="col-sm-3">
+							<button class="btn btn-sm btn-primary" ng-click="getReport941M()" ng-disabled="!data.filter941M.year || !data.filter941M.month || !data.filter941M.depositDate">Extract</button>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal Quarterly 941 EFTPS File  </em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="year941" ng-model="data.filter941Q.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarter941" ng-model="data.filter941Q.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<date-ctrl name="dep940q" model="data.filter941Q.depositDate" min="minDepositDate" disabled="false" />
+						</div>
+						<div class="col-sm-3">
+							<button class="btn btn-sm btn-primary" ng-click="getReport941Q()" ng-disabled="!data.filter941Q.year || !data.filter941Q.quarter || !data.filter941Q.depositDate">Extract</button>
+						</div>
+
+					</div>
+
+				</div>
 			</div>
 			<div class="col-sm-6" > 
 				<div class="row">

@@ -48,7 +48,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public string FederalPin { get; set; }
 		public bool isFiler944 { get; set; }
-		public DepostiSchedule941 DepositSchedule { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 
 		public DateTime? LastPayrollDate { get; set; }
 		

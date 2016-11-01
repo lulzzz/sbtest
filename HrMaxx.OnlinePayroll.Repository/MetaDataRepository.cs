@@ -131,8 +131,9 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public ApplicationConfig GetConfigurations()
 		{
-			var config = _dbContext.ApplicationConfigurations.First().config;
-			return JsonConvert.DeserializeObject<ApplicationConfig>(config);
+			var db = _dbContext.ApplicationConfigurations.First();
+			var returnVal = JsonConvert.DeserializeObject<ApplicationConfig>(db.config);
+			return returnVal;
 		}
 
 		public void SaveApplicationConfig(ApplicationConfig config)
@@ -141,6 +142,25 @@ namespace HrMaxx.OnlinePayroll.Repository
 			dbConfig.config = JsonConvert.SerializeObject(config);
 			dbConfig.RootHostId = config.RootHostId;
 			_dbContext.SaveChanges();
+
+		}
+
+		public int PullReportConstat(string form940, int quarterly)
+		{
+			var returnVal = 1;
+			
+			var dbReportConstants =
+				_dbContext.ReportConstants.FirstOrDefault(r => r.Form.Equals(form940) && r.DepositSchedule == quarterly);
+			if (dbReportConstants == null)
+			{
+				_dbContext.ReportConstants.Add(new ReportConstant {DepositSchedule = quarterly, Form = form940, FileSequence = 1});
+			}
+			else
+			{
+				returnVal = dbReportConstants.FileSequence++;
+			}
+			_dbContext.SaveChanges();
+			return returnVal;
 
 		}
 	}

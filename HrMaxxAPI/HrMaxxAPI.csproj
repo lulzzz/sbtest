@@ -320,6 +320,8 @@
     <Content Include="templates\transformers\employer\CADE34.xslt" />
     <Content Include="templates\transformers\employer\FedI9.xslt" />
     <Content Include="templates\transformers\employer\FedW4.xslt" />
+    <Content Include="templates\transformers\extracts\Federal941EFTPS.xslt" />
+    <Content Include="templates\transformers\extracts\Federal940EFTPS.xslt" />
     <Content Include="templates\transformers\extracts\Paperless940-2016.xslt" />
     <Content Include="templates\transformers\extracts\Paperless941-2016.xslt" />
     <Content Include="templates\transformers\extracts\SSAW2-2016.xslt" />

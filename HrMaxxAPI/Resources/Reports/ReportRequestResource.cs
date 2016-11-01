@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxxAPI.Resources.Reports
 {
@@ -16,5 +17,7 @@ namespace HrMaxxAPI.Resources.Reports
 		public int? Month { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
+		public DepositSchedule941? DepositSchedule { get; set; }
+		public DateTime? DepositDate { get; set; }
 	}
 }
