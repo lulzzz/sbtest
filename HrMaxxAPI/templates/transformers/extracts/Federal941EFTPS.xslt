@@ -19,13 +19,13 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractReport/Companies/ExtractCompany" >	
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >	
 
 </xsl:apply-templates>
     
   </xsl:template>
   
-  <xsl:template match="ExtractCompany">
+  <xsl:template match="ExtractHost">
 		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
 		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
 		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>

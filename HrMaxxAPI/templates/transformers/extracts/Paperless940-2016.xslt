@@ -432,7 +432,7 @@
 			<xsl:apply-templates />
 		</Workbook>
 	</xsl:template>
-	<xsl:template match="ExtractReport">
+	<xsl:template match="ExtractResponse">
 		<Worksheet ss:Name="Company Information">
 			<Table x:FullColumns="1" x:FullRows="1">
 				<Column ss:StyleID="s70" ss:AutoFitWidth="0" ss:Width="60" />
@@ -582,7 +582,7 @@
 					<Cell ss:StyleID="s97" />
 				</Row>
 				<Row></Row>
-				<xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]/Company" mode="CompanyInfo"/>
+				<xsl:apply-templates select="Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" mode="CompanyInfo"/>
 				
 			</Table>
 			<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1781,7 +1781,7 @@
 					<Cell ss:StyleID="s103" />
 				</Row>
 				<Row></Row>
-				<xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]" mode="i940"/>
+				<xsl:apply-templates select="Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" mode="i940"/>
 				
 			</Table>
 			<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1803,29 +1803,21 @@
 			</WorksheetOptions>
 		</Worksheet>
 	</xsl:template>
-	<xsl:template match="Company" mode="CompanyInfo">
+	<xsl:template match="ExtractHost" mode="CompanyInfo">
 		<Row>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="concat(substring(FederalEIN,1,2),'-',substring(FederalEIN,3,7))"/>
+						<xsl:value-of select="concat(substring(HostCompany/FederalEIN,1,2),'-',substring(HostCompany/FederalEIN,3,7))"/>
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate(substring(TaxFilingName,1,4),$smallcase,$uppercase)" />
+						<xsl:value-of select="translate(substring(HostCompany/TaxFilingName,1,4),$smallcase,$uppercase)" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate(TaxFilingName,$smallcase,$uppercase)" />
-					</Data>
-				</Cell>
-				<Cell>
-					<Data ss:Type="String"></Data>
-				</Cell>
-				<Cell>
-					<Data ss:Type="String">
-						<xsl:value-of select="translate(BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
+						<xsl:value-of select="translate(HostCompany/TaxFilingName,$smallcase,$uppercase)" />
 					</Data>
 				</Cell>
 				<Cell>
@@ -1833,36 +1825,44 @@
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate(BusinessAddress/City,$smallcase,$uppercase)"/>
+						<xsl:value-of select="translate(HostCompany/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
+					</Data>
+				</Cell>
+				<Cell>
+					<Data ss:Type="String"></Data>
+				</Cell>
+				<Cell>
+					<Data ss:Type="String">
+						<xsl:value-of select="translate(HostCompany/BusinessAddress/City,$smallcase,$uppercase)"/>
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate(../States/CompanyTaxState[position()=1]/State/Abbreviation,$smallcase,$uppercase)" />
+						<xsl:value-of select="translate(States/CompanyTaxState[position()=1]/State/Abbreviation,$smallcase,$uppercase)" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="BusinessAddress/Zip"/>
+						<xsl:value-of select="HostCompany/BusinessAddress/Zip"/>
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate(../Host/FirmName,$smallcase,$uppercase)"/>
+						<xsl:value-of select="translate(Host/FirmName,$smallcase,$uppercase)"/>
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String"></Data>
 				</Cell>
 				<Cell>
-					<Data ss:Type="String"><xsl:value-of select="translate(concat(../Contact/FirstName, ' ', ../Contact/LastName),$smallcase,$uppercase)"/></Data>
+					<Data ss:Type="String"><xsl:value-of select="translate(concat(Contact/FirstName, ' ', Contact/LastName),$smallcase,$uppercase)"/></Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String"></Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="../Contact/Phone" />
+						<xsl:value-of select="Contact/Phone" />
 					</Data>
 				</Cell>
 				<Cell>
@@ -1878,16 +1878,16 @@
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
-						<xsl:value-of select="translate(../Host/PTIN,$smallcase,$uppercase)"/>
+						<xsl:value-of select="translate(Host/PTIN,$smallcase,$uppercase)"/>
 					</Data>
 				</Cell>
 			</Row>
 		
 	</xsl:template>
-	<xsl:template match="ExtractCompany" mode="i940">
+	<xsl:template match="ExtractHost" mode="i940">
 		
 		
-			<xsl:variable name="fein1" select="translate(Company/FederalEIN,'-','')" />
+			<xsl:variable name="fein1" select="translate(HostCompany/FederalEIN,'-','')" />
 			<xsl:variable name="totalGrossWages" select="Accumulation/GrossWage" />
 			<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage" />
 			<xsl:variable name="totalFUTAWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=6]/TaxableWage" />

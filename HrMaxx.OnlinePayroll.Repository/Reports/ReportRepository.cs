@@ -102,7 +102,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return getDashboardData(dashboardRequest.Report, dashboardRequest.Host, dashboardRequest.Role, dashboardRequest.StartDate, dashboardRequest.EndDate, dashboardRequest.Criteria);
 		}
 
-		public ExtractReport GetExtractReport(ReportRequest extractReport)
+		public ExtractResponse GetExtractReport(ReportRequest extractReport)
 		{
 			using (var con = new SqlConnection(_sqlCon))
 			{
@@ -131,20 +131,20 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 						data = sb.ToString();
 					}
 					con.Close();
-					var serializer = new XmlSerializer(typeof(ExtractReportDB));
+					var serializer = new XmlSerializer(typeof(ExtractResponseDB));
 					var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-					var dbReport = (ExtractReportDB)serializer.Deserialize(memStream);
+					var dbReport = (ExtractResponseDB)serializer.Deserialize(memStream);
 
-					var returnVal = _mapper.Map<ExtractReportDB, ExtractReport>(dbReport);
+					var returnVal = _mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
 					
-					dbReport.Companies.ForEach(c =>
+					dbReport.Hosts.ForEach(c =>
 					{
 						var contact = new List<Contact>();
 						c.Contacts.ForEach(ct=>contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
 						var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
 						if (selcontact != null)
 						{
-							returnVal.Companies.First(comp => comp.Company.Id == c.Id).Contact = selcontact;
+							returnVal.Hosts.First(host=>host.Host.Id==c.Id).Contact = selcontact;
 						}
 					});
 					return returnVal;

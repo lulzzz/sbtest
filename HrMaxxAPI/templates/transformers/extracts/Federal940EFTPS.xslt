@@ -18,12 +18,12 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractReport/Companies/ExtractCompany" >	
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >	
 </xsl:apply-templates>
     
   </xsl:template>
   
-  <xsl:template match="ExtractCompany">
+  <xsl:template match="ExtractHost">
 		<xsl:variable name="totalFUTATax" select="Accumulation/Taxes/PayrollTax[Tax/Id=6]/Amount"/>
 		<xsl:variable name="FUTASum" select="format-number($totalFUTATax,'000000000000.00')"/>		
 		<xsl:if test="$totalFUTATax>0">

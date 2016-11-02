@@ -56,12 +56,13 @@ namespace HrMaxxAPI.Controllers.Reports
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
 			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract for request", request.ReportName));
-			return Printed(response);
+			return Printed(response.File);
 
 		}
 		private HttpResponseMessage Printed(FileDto document)
 		{
 			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };
+			
 			response.Content.Headers.ContentType = new MediaTypeHeaderValue(document.MimeType);
 
 			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")

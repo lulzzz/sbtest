@@ -15,12 +15,12 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractReport/Companies/ExtractCompany" >	
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >	
 </xsl:apply-templates>
     
   </xsl:template>
   
-  <xsl:template match="ExtractCompany">
+  <xsl:template match="ExtractHost">
 		<xsl:variable name="UISum" select="Accumulation/Taxes/PayrollTax[Tax/Id=10]/Amount"/>
 		<xsl:variable name="ETTSum" select="Accumulation/Taxes/PayrollTax[Tax/Id=9]/Amount"/>
 		<xsl:variable name="totalTax" select="$UISum + $ETTSum"/>

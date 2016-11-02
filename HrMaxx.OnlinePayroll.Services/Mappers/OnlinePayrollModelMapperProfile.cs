@@ -512,18 +512,35 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src=>src.Payroll.PayDay));
 
-			CreateMap<Models.ExtractReportDB, Models.ExtractReport>();
-			CreateMap<Models.ExtractDBCompany, Models.ExtractCompany>()
-				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src))
+
+			CreateMap<Models.ExtractResponseDB, Models.ExtractResponse>();
+			CreateMap<Models.ExtractHostDB, Models.ExtractHost>()
+				.ForMember(dest => dest.Host, opt => opt.MapFrom(src => src))
 				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.States))
-				.ForMember(dest => dest.Host, opt => opt.MapFrom(src => src.Host))
 				.ForMember(dest => dest.Contact, opt => opt.Ignore())
+				.ForMember(dest => dest.HostCompany, opt => opt.MapFrom(src=>src.HostCompany))
 				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.EmployeeAccumulations, opt => opt.Ignore())
-				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>src.PayChecks))
-				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks));
+				.ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src.Companies));
 
-			
+
+			CreateMap<Models.ExtractDBCompany, Models.ExtractCompany>()
+				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src))
+				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>src.PayChecks))
+				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks))
+				.ForMember(dest => dest.Vendors, opt => opt.MapFrom(src => src.Vendors.Where(v=>v.Amount>0).ToList()));
+
+			CreateMap<Models.ExtractVendor, Models.CompanyVendor>()
+				.ForMember(dest => dest.Vendor, opt => opt.MapFrom(src => src))
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+			CreateMap<Models.ExtractVendor, Models.VendorCustomer>()
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<Contact>(src.Contact)))
+				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Decrypt(src.IndividualSSN) : src.IndividualSSN))
+				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN) : src.BusinessFIN))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.UserName, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModified, opt => opt.Ignore());
 
 			CreateMap<Models.ExtractTaxState, Models.CompanyTaxState>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -534,11 +551,10 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			
 
-			CreateMap<Models.ExtractHost, Models.Host>()
+			CreateMap<Models.ExtractHostDB, Models.Host>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.HomePage, opt => opt.Ignore())
-				.ForMember(dest => dest.Id, opt => opt.Ignore())
 				.ForMember(dest => dest.Url, opt => opt.Ignore())
 				.ForMember(dest => dest.TerminationDate, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())

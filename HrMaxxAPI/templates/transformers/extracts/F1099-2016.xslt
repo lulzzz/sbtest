@@ -23,18 +23,18 @@ T<xsl:value-of select="$selectedYear"/>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="'2750 N BELLFLOWER BLVD'"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="'LONG BEACH'"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="'CA90815'"/><xsl:with-param name="count" select="26"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(cpa/company[@efiler=0]/contact/vendor[@amount>0])"/><xsl:with-param name="count" select="8"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/Companies/ExtractCompany/Vendors/CompanyVendor)"/><xsl:with-param name="count" select="8"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="'JAY SHEN'"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="'5624252005'"/><xsl:with-param name="count" select="15"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="'JSHEN@CALEMP.COM'"/><xsl:with-param name="count" select="50"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="91"/></xsl:call-template>mainCounter
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="10"/></xsl:call-template>I
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="232"/></xsl:call-template><xsl:text>$$n</xsl:text>
-<xsl:apply-templates select="cpa/company[@efiler=0 and contact/vendor[@amount>0]]"/>
-F<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(cpa/company[@efiler=0 and contact/vendor[@type1099='1099-MISC' and @amount>0]])+count(cpa/company[@efiler=0 and contact/vendor[@type1099='1099-DIV' and @amount>0]])+count(cpa/company[@efiler=0 and contact/vendor[@type1099='1099-INT' and @amount>0]])"/><xsl:with-param name="count" select="8"/></xsl:call-template>
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Companies/ExtractCompany/Vendors/CompanyVendor)>0]/HostCompany"/>
+F<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='MISC'])+count(ExtractResponse/Hosts/ExtractHost/Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='DIV'])+count(ExtractResponse/Hosts/ExtractHost/Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='INT'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="21"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="19"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(cpa/company[@efiler=0]/contact/vendor[@amount>0])"/><xsl:with-param name="count" select="8"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/Companies/ExtractCompany/Vendors/CompanyVendor)"/><xsl:with-param name="count" select="8"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="442"/></xsl:call-template>
 mainCounter
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="243"/></xsl:call-template>
@@ -42,15 +42,15 @@ mainCounter
 </xsl:template>
   
   
-<xsl:template match="company">
-<xsl:if test="count(contact/vendor[@type1099='1099-MISC' and @amount>0])>0">
+<xsl:template match="HostCompany">
+<xsl:if test="count(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='MISC'])>0">
 	<xsl:apply-templates select="." mode="type">
 		<xsl:with-param name="vType" select="'1099-MISC'"/>
 	</xsl:apply-templates>
-C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(contact/vendor[@amount>0 and @type1099='1099-MISC'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>$$spaces5$$$$spaces1$$
-<xsl:variable name="sumRents" select="sum(contact/vendor[@type1099='1099-MISC' and @subtype1099='Rents']/@amount)"/>
-<xsl:variable name="sumOtherIncome" select="sum(contact/vendor[@type1099='1099-MISC' and @subtype1099='Other Income']/@amount)"/>
-<xsl:variable name="sumNonEmp" select="sum(contact/vendor[@type1099='1099-MISC' and @subtype1099='Non-Employee Comp']/@amount)"/>
+C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='MISC'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>$$spaces5$$$$spaces1$$
+<xsl:variable name="sumRents" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='MISC' and Vendor/SubType1099='Rents']/Amount)"/>
+<xsl:variable name="sumOtherIncome" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='MISC' and Vendor/SubType1099='OtherIncome']/Amount)"/>
+<xsl:variable name="sumNonEmp" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='MISC' and Vendor/SubType1099='NonEmployeeComp']/Amount)"/>
 
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="concat(floor($sumRents),format-number(($sumRents - floor($sumRents))*100,'00'))"/><xsl:with-param name="count" select="18"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="18"/></xsl:call-template>
@@ -71,15 +71,15 @@ C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(con
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="243"/></xsl:call-template>
 <xsl:text>$$n</xsl:text>
 </xsl:if>
-<xsl:if test="count(contact/vendor[@type1099='1099-DIV' and @amount>0])>0">
+<xsl:if test="count(Vendors/CompanyVendor[Vendor/Type1099='DIV'])>0">
 	<xsl:apply-templates select="." mode="type">
 		<xsl:with-param name="vType" select="'1099-DIV'"/>
 	</xsl:apply-templates>
-C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(contact/vendor[@amount>0 and @type1099='1099-DIV'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>$$spaces5$$$$spaces1$$
-<xsl:variable name="sumODiv" select="sum(contact/vendor[@type1099='1099-DIV' and @subtype1099='Ordinary Dividend']/@amount)"/>
-<xsl:variable name="sumQDiv" select="sum(contact/vendor[@type1099='1099-DIV' and @subtype1099='Qualified Dividend']/@amount)"/>
-<xsl:variable name="sumCGD" select="sum(contact/vendor[@type1099='1099-DIV' and @subtype1099='Capital Gain Dist']/@amount)"/>
-<xsl:variable name="sumNDD" select="sum(contact/vendor[@type1099='1099-DIV' and @subtype1099='Non Dividend Dist']/@amount)"/>
+C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='DIV'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>$$spaces5$$$$spaces1$$
+<xsl:variable name="sumODiv" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='DIV']/Amount)"/>
+<xsl:variable name="sumQDiv" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='DIV' and Vendor/SubType1099='QualifiedDividend']/Amount)"/>
+<xsl:variable name="sumCGD" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='DIV' and Vendor/SubType1099='CaptialGainDist']/Amount)"/>
+<xsl:variable name="sumNDD" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='DIV' and Vendor/SubType1099='NonDividendDist']/Amount)"/>
 
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="concat(floor($sumODiv),format-number(($sumODiv - floor($sumODiv))*100,'00'))"/><xsl:with-param name="count" select="18"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="concat(floor($sumQDiv),format-number(($sumQDiv - floor($sumQDiv))*100,'00'))"/><xsl:with-param name="count" select="18"/></xsl:call-template>
@@ -100,12 +100,12 @@ C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(con
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="243"/></xsl:call-template>
 <xsl:text>$$n</xsl:text>
 </xsl:if>
-<xsl:if test="count(contact/vendor[@type1099='1099-INT' and @amount>0])>0">
+<xsl:if test="count(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='INT'])>0">
 	<xsl:apply-templates select="." mode="type">
 		<xsl:with-param name="vType" select="'1099-INT'"/>
 	</xsl:apply-templates>
-C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(contact/vendor[@amount>0 and @type1099='1099-INT'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>$$spaces5$$$$spaces1$$
-<xsl:variable name="sumINT" select="sum(contact/vendor[@type1099='1099-INT' and @subtype1099='Interest Income']/@amount)"/>
+C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='INT'])"/><xsl:with-param name="count" select="8"/></xsl:call-template>$$spaces5$$$$spaces1$$
+<xsl:variable name="sumINT" select="sum(../Companies/ExtractCompany/Vendors/CompanyVendor[Vendor/Type1099='INT' and Vendor/SubType1099='InterestIncome']/Amount)"/>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="concat(floor($sumINT),format-number(($sumINT - floor($sumINT))*100,'00'))"/><xsl:with-param name="count" select="18"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="18"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="18"/></xsl:call-template>
@@ -126,54 +126,54 @@ C<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(con
 <xsl:text>$$n</xsl:text>
 </xsl:if>
 </xsl:template>
-<xsl:template match="company" mode="type">
+<xsl:template match="HostCompany" mode="type">
 <xsl:param name="vType"/>
-A<xsl:value-of select="$selectedYear"/>$$spaces5$$$$spaces1$$<xsl:value-of select="translate(@fein,'-','')"/>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(substring(@taxfilingname,1,4),$smallcase,$uppercase)"/><xsl:with-param name="count" select="4"/></xsl:call-template>$$spaces1$$
+A<xsl:value-of select="$selectedYear"/>$$spaces5$$$$spaces1$$<xsl:value-of select="translate(FederalEIN,'-','')"/>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(substring(TaxFilingName,1,4),$smallcase,$uppercase)"/><xsl:with-param name="count" select="4"/></xsl:call-template>$$spaces1$$
 <xsl:call-template name="getTypeCode"><xsl:with-param name="type" select="$vType"/></xsl:call-template>$$spaces1$$
 <xsl:variable name="amCode">
 <xsl:call-template name="getAmountCode"><xsl:with-param name="type" select="$vType"/></xsl:call-template>
 </xsl:variable>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="$amCode"/><xsl:with-param name="count" select="14"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="10"/></xsl:call-template>$$spaces1$$
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(@taxfilingname,$smallcase,$uppercase)"/><xsl:with-param name="count" select="80"/></xsl:call-template>0
-<xsl:variable name="mailingAddress" select="translate(substring(contact/@addressline1,1,40),$smallcase,$uppercase)"/>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(TaxFilingName,$smallcase,$uppercase)"/><xsl:with-param name="count" select="80"/></xsl:call-template>0
+<xsl:variable name="mailingAddress" select="translate(substring(../Contact/Address/AddressLine1,1,40),$smallcase,$uppercase)"/>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="$mailingAddress"/><xsl:with-param name="count" select="40"/></xsl:call-template>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(contact/@city,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>CA
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(concat('',contact/@zip,contact/@zipextension),$smallcase,$uppercase)"/><xsl:with-param name="count" select="9"/></xsl:call-template>
-<xsl:variable name="phone" select="substring(concat('',translate(contact/@Phone1,'-','')),1,15)"/>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(../Contact/Address/City,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>CA
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(concat('',../Contact/Address/Zip,../Contact/Address/ZipExtension),$smallcase,$uppercase)"/><xsl:with-param name="count" select="9"/></xsl:call-template>
+<xsl:variable name="phone" select="substring(concat('',translate(../Contact/Phone,'-','')),1,15)"/>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="$phone"/><xsl:with-param name="count" select="15"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="260"/></xsl:call-template>
 mainCounter
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="243"/></xsl:call-template>
 <xsl:text>$$n</xsl:text>
-<xsl:apply-templates select="contact/vendor[@amount>0 and @type1099=$vType]"/>
+<xsl:apply-templates select="../Companies/ExtractCompany/Vendors/CompanyVendor"/>
 </xsl:template>
 
 
 
-<xsl:template match="vendor">
-<xsl:variable name="amt" select="concat(floor(@amount),format-number((@amount - floor(@amount))*100,'00'))"/>
-B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(substring(@contactlastname,1,4),$smallcase,$uppercase)"/><xsl:with-param name="count" select="4"/></xsl:call-template>
+<xsl:template match="CompanyVendor">
+<xsl:variable name="amt" select="concat(floor(Amount),format-number((Amount - floor(Amount))*100,'00'))"/>
+B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(substring(Vendor/Contact/LastName,1,4),$smallcase,$uppercase)"/><xsl:with-param name="count" select="4"/></xsl:call-template>
 <xsl:choose>
-<xsl:when test="@individualssn!=''">
-	<xsl:choose><xsl:when test="starts-with(@individualssn,'9')">3</xsl:when><xsl:otherwise>2</xsl:otherwise></xsl:choose>
-	<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(@individualssn,'-','')"/><xsl:with-param name="count" select="9"/></xsl:call-template></xsl:when>
+<xsl:when test="Vednor/IndividualSSN!=''">
+	<xsl:choose><xsl:when test="starts-with(Vednor/IndividualSSN,'9')">3</xsl:when><xsl:otherwise>2</xsl:otherwise></xsl:choose>
+	<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vednor/IndividualSSN,'-','')"/><xsl:with-param name="count" select="9"/></xsl:call-template></xsl:when>
 <xsl:otherwise>
 	<xsl:choose>
-		<xsl:when test="@businessfin!=''">1<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(@businessfin,'-','')"/><xsl:with-param name="count" select="9"/></xsl:call-template></xsl:when>
+		<xsl:when test="Vendor/BusinessFIN!=''">1<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vendor/BusinessFIN,'-','')"/><xsl:with-param name="count" select="9"/></xsl:call-template></xsl:when>
 		<xsl:otherwise><xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="10"/></xsl:call-template></xsl:otherwise>
 	</xsl:choose>
 	
 </xsl:otherwise>
 </xsl:choose>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="@accountnumber"/><xsl:with-param name="count" select="20"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="Vendor/AccountNo"/><xsl:with-param name="count" select="20"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="4"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="10"/></xsl:call-template>
 <xsl:choose>
-	<xsl:when test="@type1099='1099-MISC'">
+	<xsl:when test="Vendor/Type1099='MISC'">
 		<xsl:choose>
-			<xsl:when test="@subtype1099='Non-Employee Comp'">
+			<xsl:when test="Vendor/SubType1099='NonEmployeeComp'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -189,7 +189,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 			</xsl:when>
-			<xsl:when test="@subtype1099='Other Income'">
+			<xsl:when test="Vendor/SubType1099='OtherIncome'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="$amt"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -205,7 +205,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 			</xsl:when>
-			<xsl:when test="@subtype1099='Rents'">
+			<xsl:when test="Vendor/SubType1099='Rents'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="$amt"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -225,9 +225,9 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 		</xsl:choose>
 	
 	</xsl:when>
-	<xsl:when test="@type1099='1099-DIV'">
+	<xsl:when test="Vendor/Type1099='DIV'">
 		<xsl:choose>
-			<xsl:when test="@subtype1099='Ordinary Dividend'">
+			<xsl:when test="Vendor/SubType1099='OrdinaryDividend'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="$amt"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -243,7 +243,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 			</xsl:when>
-			<xsl:when test="@subtype1099='Qualified Dividend'">
+			<xsl:when test="Vendor/SubType1099='QualifiedDividend'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="$amt"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -259,7 +259,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 			</xsl:when>
-			<xsl:when test="@subtype1099='Capital Gain Dist'">
+			<xsl:when test="Vendor/SubType1099='CaptialGainDist'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="$amt"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -275,7 +275,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>		
 			</xsl:when>
-			<xsl:when test="@subtype1099='Non Dividend Dist'">
+			<xsl:when test="Vendor/SubType1099='NonDividendDist'">
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 				<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -295,7 +295,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 		</xsl:choose>
 		
 	</xsl:when>
-	<xsl:when test="@type1099='1099-INT'">
+	<xsl:when test="Vendor/Type1099='INT'">
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="$amt"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
@@ -316,27 +316,27 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 
 </xsl:choose>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="24"/></xsl:call-template>$$spaces1$$
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(@vendorcustomername,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vendor/Name,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="' '"/><xsl:with-param name="count" select="40"/></xsl:call-template>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(@address,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vendor/Contact/Address/AddressLine1,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="40"/></xsl:call-template>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(@city,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
-<xsl:value-of select="@state"/>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="@zip"/><xsl:with-param name="count" select="9"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vendor/Contact/Address/City,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
+<xsl:value-of select="'CA'"/>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="Vendor/Contact/Address/Zip"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 $$spaces1$$mainCounter<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="36"/></xsl:call-template>
 <xsl:choose>
-	<xsl:when test="@type1099='1099-MISC'">
+	<xsl:when test="Vendor/Type1099='MISC'">
 		<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="179"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>$$spaces2$$
 </xsl:when>
-	<xsl:when test="@type1099='1099-DIV'">
+	<xsl:when test="Vendor/Type1099='DIV'">
 		<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="179"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>$$spaces2$$$$spaces2$$
 </xsl:when>
-	<xsl:when test="@type1099='1099-INT'">
+	<xsl:when test="Vendor/Type1099='INT'">
 		<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="179"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>
 		<xsl:call-template name="padLeft"><xsl:with-param name="data" select="'0'"/><xsl:with-param name="count" select="12"/></xsl:call-template>$$spaces2$$$$spaces2$$

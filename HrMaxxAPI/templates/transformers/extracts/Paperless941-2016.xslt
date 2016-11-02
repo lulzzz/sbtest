@@ -222,7 +222,7 @@
 	</xsl:template>
 
 
-	<xsl:template match="ExtractReport">
+	<xsl:template match="ExtractResponse">
 	
 		<Worksheet ss:Name="QEX 2016 Company Information">
             <Table >
@@ -373,7 +373,7 @@
                 </Row>
             
    <Row></Row>
-   <xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]/Company" mode="CompanyInfo"/>
+   <xsl:apply-templates select="Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" mode="CompanyInfo"/>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
                 <PageSetup>
@@ -1054,7 +1054,7 @@
                     <Cell ss:StyleID="s91" />
                 </Row>
    <Row></Row>
-   <xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]" mode="i941"/>
+   <xsl:apply-templates select="Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" mode="i941"/>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
                 <PageSetup>
@@ -1103,7 +1103,7 @@
     <Cell ss:StyleID="s23"><Data ss:Type="String">g</Data></Cell>
    </Row>
    <Row></Row>
-   <xsl:apply-templates select="Companies/ExtractCompany[count(PayChecks/PayCheck)>0]" mode="i777"/>
+   <xsl:apply-templates select="Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" mode="i777"/>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -1126,33 +1126,33 @@
 	</xsl:template>
 
 
-	<xsl:template match="Company" mode="CompanyInfo">
+	<xsl:template match="ExtractHost" mode="CompanyInfo">
 		
 			<Row>
-				<Cell><Data ss:Type="String"><xsl:value-of select="concat(substring(FederalEIN,1,2),'-',substring(FederalEIN,3,7))"/></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="substring(translate(TaxFilingName,1,4), $smallcase, $uppercase)"/></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate(TaxFilingName,$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="concat(substring(HostCompany/FederalEIN,1,2),'-',substring(HostCompany/FederalEIN,3,7))"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="substring(translate(HostCompany/TaxFilingName,1,4), $smallcase, $uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(HostCompany/TaxFilingName,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate(BusinessAddress/AddressLine1,$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(HostCompany/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate(BusinessAddress/City,$smallcase,$uppercase)"/></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate(../States/CompanyTaxState[position()=1]/State/Abbreviation,$smallcase,$uppercase)"/></Data></Cell>
-				<Cell><Data ss:Type="Number"><xsl:value-of select="BusinessAddress/Zip"/></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate(../Host/FirmName,$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(HostCompany/BusinessAddress/City,$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(States/CompanyTaxState[position()=1]/State/Abbreviation,$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="Number"><xsl:value-of select="HostCompany/BusinessAddress/Zip"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(Host/FirmName,$smallcase,$uppercase)"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String">
-					<xsl:value-of select="translate(concat(../Contact/FirstName, ' ', ../Contact/LastName), $smallcase, $uppercase)"/>
+					<xsl:value-of select="translate(concat(Contact/FirstName, ' ', Contact/LastName), $smallcase, $uppercase)"/>
 				</Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="../Contact/Phone"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="Contact/Phone"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="$todaydate"/></Data></Cell>
-				<Cell><Data ss:Type="String"><xsl:value-of select="translate(../Host/PTIN,$smallcase,$uppercase)"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(Host/PTIN,$smallcase,$uppercase)"/></Data></Cell>
 			</Row>
 		
 	</xsl:template>
-	<xsl:template match="ExtractCompany" mode="i941">
+	<xsl:template match="ExtractHost" mode="i941">
 		<xsl:variable name="ssConst" select="(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Tax/Rate + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Tax/Rate) div 100"/>
 		<xsl:variable name="mdConst" select="(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Tax/Rate + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Tax/Rate) div 100"/>
 		<xsl:variable name="totalTips" select="sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
@@ -1173,7 +1173,7 @@
 		
 		
 			<Row>
-				<Cell><Data ss:Type="Number"><xsl:value-of select="translate(Company/FederalEIN,'-','')"/></Data></Cell>
+				<Cell><Data ss:Type="Number"><xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="$enddate"/></Data></Cell>
 				<Cell><Data ss:Type="Number">
 				<xsl:choose>
@@ -1205,7 +1205,7 @@
 				<Cell><Data ss:Type="String"></Data></Cell>
 				
 				<xsl:choose>
-					<xsl:when test="Company/DepositSchedule='Monthly'">
+					<xsl:when test="HostCompany//DepositSchedule='Monthly'">
 							<Cell><Data ss:Type="String">M</Data></Cell>
 							<Cell><Data ss:Type="Number"><xsl:choose><xsl:when test="Accumulation/DailyAccumulations/DailyAccumulation[Month=1]"><xsl:value-of select="format-number(sum(Accumulation/DailyAccumulations/DailyAccumulation[Month=1]/Value),'#,###,##0.00')"/></xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose></Data></Cell>
 						<Cell>
@@ -1236,7 +1236,7 @@
 					</xsl:when>
 					<xsl:otherwise>
 						<xsl:choose>
-							<xsl:when test="Company/DepositSchedule='SemiWeekly'">
+							<xsl:when test="HostCompany/DepositSchedule='SemiWeekly'">
 							<Cell><Data ss:Type="String">S</Data></Cell>
 							<Cell><Data ss:Type="Number">0</Data></Cell>
 							<Cell><Data ss:Type="Number">0</Data></Cell>
@@ -1353,7 +1353,7 @@
 			</Row>
 		
 	</xsl:template>
-	<xsl:template match="ExtractCompany" mode="i777">
+	<xsl:template match="ExtractHost" mode="i777">
 		
 		<xsl:variable name="totalTips" select="sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
 		<xsl:variable name="fitWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
@@ -1370,7 +1370,7 @@
 		
 			
 			<Row>
-				<Cell><Data ss:Type="String"><xsl:value-of select="Company/FederalEIN"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="HostCompany/FederalEIN"/></Data></Cell>
 				<Cell><Data ss:Type="Number"><xsl:value-of select="format-number($fitWages,'#,###,##0.00')"/></Data></Cell>
 				<Cell><Data ss:Type="Number"><xsl:value-of select="format-number($totalFITTax,'#,###,##0.00')"/></Data></Cell>
 				<Cell><Data ss:Type="Number"><xsl:value-of select="format-number($totalSSWages,'#,###,##0.00')"/></Data></Cell>

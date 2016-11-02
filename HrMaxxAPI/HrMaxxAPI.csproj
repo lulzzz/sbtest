@@ -323,6 +323,7 @@
     <Content Include="templates\transformers\extracts\CAPITEFTPS.xslt" />
     <Content Include="templates\transformers\extracts\CAUIETTEFTPS.xslt" />
     <Content Include="templates\transformers\extracts\DE6Transformer.xslt" />
+    <Content Include="templates\transformers\extracts\F1099-2016.xslt" />
     <Content Include="templates\transformers\extracts\Federal941EFTPS.xslt" />
     <Content Include="templates\transformers\extracts\Federal940EFTPS.xslt" />
     <Content Include="templates\transformers\extracts\Paperless940-2016.xslt" />

@@ -13,12 +13,12 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractReport/Companies/ExtractCompany[Accumulation/GrossWage>0]" >
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >
 </xsl:apply-templates>
     
   </xsl:template>
-  <xsl:template match="ExtractCompany">
-E$$spaces20$$$$spaces2$$<xsl:value-of select="substring(concat(translate(Company/TaxFilingName,$smallcase,$uppercase),'                                                  '),1,50)"/>
+  <xsl:template match="ExtractHost">
+E$$spaces20$$$$spaces2$$<xsl:value-of select="substring(concat(translate(HostCompany/TaxFilingName,$smallcase,$uppercase),'                                                  '),1,50)"/>
 <xsl:apply-templates select="Contact"/>
 <xsl:apply-templates select="EmployeeAccumulations/EmployeeAccumulation"/>
 T<xsl:value-of select="format-number(count(EmployeeAccumulations/EmployeeAccumulation),'0000000')"/>$$spaces10$$$$spaces5$$$$spaces2$$$$spaces1$$
