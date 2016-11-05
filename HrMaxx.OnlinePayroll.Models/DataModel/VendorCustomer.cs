@@ -15,7 +15,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     public partial class VendorCustomer
     {
         public System.Guid Id { get; set; }
-        public System.Guid CompanyId { get; set; }
+        public Nullable<System.Guid> CompanyId { get; set; }
         public string Name { get; set; }
         public int StatusId { get; set; }
         public string AccountNo { get; set; }

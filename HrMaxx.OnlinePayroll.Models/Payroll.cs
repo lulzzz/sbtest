@@ -74,9 +74,9 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
-		public DateTime? TaxesPaidOn { get; set; }
+		
 		public Guid? CreditInvoiceId { get; set; }
-		public DateTime? TaxesCreditedOn { get; set; }
+		
 		public bool Included { get; set; }
 
 		public decimal CheckPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? NetWage : 0; } }

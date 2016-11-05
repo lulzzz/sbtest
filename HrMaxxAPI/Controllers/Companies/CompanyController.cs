@@ -134,9 +134,16 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.VendorCustomerList)]
-		public List<VendorCustomerResource> SavePayCode(Guid companyId, bool isVendor)
+		public List<VendorCustomerResource> SavePayCode(Guid? companyId, bool isVendor)
 		{
 			var vendors = MakeServiceCall(() => _companyService.GetVendorCustomers(companyId, isVendor), string.Format("getting list of vendor or customer for {0}, {1}", companyId, isVendor), true);
+			return Mapper.Map<List<VendorCustomer>, List<VendorCustomerResource>>(vendors);
+		}
+		[HttpGet]
+		[Route(CompanyRoutes.GlobalVendors)]
+		public List<VendorCustomerResource> GlobalVendors()
+		{
+			var vendors = MakeServiceCall(() => _companyService.GetVendorCustomers(null, true), string.Format("getting list of global vendors"), true);
 			return Mapper.Map<List<VendorCustomer>, List<VendorCustomerResource>>(vendors);
 		}
 

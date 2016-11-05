@@ -1,0 +1,119 @@
+﻿<div class="row">
+	<div class="col-sm-10 col-sm-offset-1" style="background-color:lightgray">
+		<div class="row p-10">
+			<div class="col-sm-8 text-bold" style="color: darkgreen">
+				<div class="col-sm-12">
+					{{company.name}}
+				</div>
+				<div class="col-sm-12">
+					{{company.companyAddress.addressLine1}}
+				</div>
+				<div class="col-sm-12">
+					{{company.companyAddress.city}}, CA {{company.companyAddress.zip}}{{company.companyAddress.zipExtension? ' - ' + company.companyAddress.zipExtension : ''}}
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Check No.<span class="text-danger">*</span></label></div>
+					<div class="col-sm-6"><label ng-show="item.paymentMethod">EFT</label><input type="number" ng-model="item.checkNumber" ng-show="!item.paymentMethod" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,5}$/" data-parsley-type="number" step="1" /></div>
+
+				</div>
+
+
+			</div>
+		</div>
+		<div class="row p-10">
+			<div class="col-sm-8"></div>
+			<div class="col-sm-4">
+				<div>
+					<div class="col-sm-6"><label class="control-label">Check Date:<span class="text-danger">*</span></label></div>
+					<div class="col-sm-6">
+						{{item.transactionDate | date:'MM/dd/yyyy'}}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row p-10 form-group">
+			<div class="col-sm-8">
+				<div class="col-sm-2">
+					<label>Pay to the Order of</label>
+				</div>
+				<div class="col-sm-6">
+					<div class="col-sm-10 text-bold">
+						{{data.selectedPayee.name}}
+						
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="form-group">
+					<div class="col-sm-6"><label class="control-label">Amount: <span class="text-danger">*</span></label></div>
+					<div class="col-sm-6">{{item.amount | currency:'$'}}</div>
+				</div>
+			</div>
+		</div>
+		<div class="row p-10 form-group" ng-if="item.amount">
+			<div class="col-sm-8">
+				<div class="col-sm-8">
+					<label><em>{{item.amount | words}}</em></label>
+				</div>
+
+			</div>
+		</div>
+		<div class="row p-10 form-group">
+			<div class="col-sm-8">
+				<div class="col-sm-2">
+					<label>Memo: </label>
+				</div>
+				<div class="col-sm-6">
+					<div class="col-sm-10">
+						{{item.memo}}
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+	<div class="col-sm-10 col-sm-offset-1">
+		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid && !hasChanged()"><i class="fa fa-print m-r-5"></i>print</button>
+		
+	</div>
+	<div class="col-sm-10 col-sm-offset-1" ng-if="item && item.journalDetails.length>0">
+		<table class="table table-header table-bordered table-condensed form-controls input-sm">
+			<thead>
+				<tr>
+					<th class="col-sm-5">Account</th>
+					<th class="col-sm-2">Amount</th>
+					<th class="col-sm-4">Memo</th>
+					<th class="col-sm-1"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} track by $index" ng-class="{'success':!jd.isDebit, 'danger':jd.isDebit}">
+					<td>
+						{{jd.accountName}}
+						
+					</td>
+					<td>
+						{{jd.amount | currency:'$'}}
+						
+					</td>
+					<td>
+						{{jd.memo}}
+						
+					</td>
+					<td style="white-space: nowrap">
+						
+					</td>
+
+				</tr>
+				
+
+			</tbody>
+		</table>
+	</div>
+</div>
+

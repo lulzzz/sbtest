@@ -141,7 +141,7 @@ namespace HrMaxx.Common.Services.PDF
 				foreach (var report in pdfModels.Reports)
 				{
 					
-					if (report.ReportType.ToLower().Equals("html"))
+					if (!string.IsNullOrWhiteSpace(report.ReportType) && report.ReportType.ToLower().Equals("html"))
 					{
 						objDoc.ImportFromUrl(report.HtmlData.OuterXml);
 					}

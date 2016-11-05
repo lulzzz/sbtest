@@ -17,5 +17,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Extract GetExtractDocument(ReportRequest request);
 		FileDto PrintPayrollWithSummary(Payroll payroll, List<Guid> documents );
 		DashboardData GetDashboardData(DashboardRequest dashboardRequest);
+		List<MasterExtract> GetExtractList(string report);
 	}
 }

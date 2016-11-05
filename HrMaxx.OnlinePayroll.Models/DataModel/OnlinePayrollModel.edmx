@@ -315,6 +315,32 @@
           <Property Name="DocumentId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="MasterExtracts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Extract" Type="varchar(max)" Nullable="false" />
+          <Property Name="StartDate" Type="datetime" Nullable="false" />
+          <Property Name="EndDate" Type="datetime" Nullable="false" />
+          <Property Name="ExtractName" Type="varchar(max)" Nullable="false" />
+          <Property Name="IsFederal" Type="bit" Nullable="false" />
+          <Property Name="DepositDate" Type="datetime" Nullable="false" />
+          <Property Name="Journals" Type="varchar(max)" Nullable="false" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PayCheckExtract">
+          <Key>
+            <PropertyRef Name="PayrollPayCheckId" />
+            <PropertyRef Name="Extract" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="PayrollPayCheckId" Type="int" Nullable="false" />
+          <Property Name="MasterExtractId" Type="int" Nullable="false" />
+          <Property Name="Extract" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Payroll">
           <Key>
             <PropertyRef Name="Id" />
@@ -414,9 +440,7 @@
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
           <Property Name="InvoiceId" Type="uniqueidentifier" />
           <Property Name="VoidedOn" Type="datetime" />
-          <Property Name="TaxesPaidOn" Type="datetime" />
           <Property Name="CreditInvoiceId" Type="uniqueidentifier" />
-          <Property Name="TaxesCreditedOn" Type="datetime" />
         </EntityType>
         <EntityType Name="PayType">
           <Key>
@@ -473,7 +497,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" />
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
           <Property Name="StatusId" Type="int" Nullable="false" />
           <Property Name="AccountNo" Type="varchar(max)" />
@@ -825,6 +849,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PayCheckExtract_MasterExtracts">
+          <End Role="MasterExtracts" Type="Self.MasterExtracts" Multiplicity="1" />
+          <End Role="PayCheckExtract" Type="Self.PayCheckExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterExtracts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayCheckExtract">
+              <PropertyRef Name="MasterExtractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PayCheckExtract_PayrollPayCheck">
+          <End Role="PayrollPayCheck" Type="Self.PayrollPayCheck" Multiplicity="1" />
+          <End Role="PayCheckExtract" Type="Self.PayCheckExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollPayCheck">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayCheckExtract">
+              <PropertyRef Name="PayrollPayCheckId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PayrollDetail_Payroll">
           <End Role="Payroll" Type="Self.Payroll" Multiplicity="1" />
           <End Role="PayrollPayCheck" Type="Self.PayrollPayCheck" Multiplicity="*" />
@@ -874,7 +922,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_VendorCustomer_Company">
-          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
           <End Role="VendorCustomer" Type="Self.VendorCustomer" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Company">
@@ -918,6 +966,8 @@
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Journal" EntityType="Self.Journal" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MasterExtracts" EntityType="Self.MasterExtracts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PayCheckExtract" EntityType="Self.PayCheckExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Payroll" EntityType="Self.Payroll" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayrollInvoice" EntityType="Self.PayrollInvoice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayrollPayCheck" EntityType="Self.PayrollPayCheck" Schema="dbo" store:Type="Tables" />
@@ -1039,6 +1089,14 @@
             <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
             <End Role="Journal" EntitySet="Journal" />
           </AssociationSet>
+          <AssociationSet Name="FK_PayCheckExtract_MasterExtracts" Association="Self.FK_PayCheckExtract_MasterExtracts">
+            <End Role="MasterExtracts" EntitySet="MasterExtracts" />
+            <End Role="PayCheckExtract" EntitySet="PayCheckExtract" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PayCheckExtract_PayrollPayCheck" Association="Self.FK_PayCheckExtract_PayrollPayCheck">
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
+            <End Role="PayCheckExtract" EntitySet="PayCheckExtract" />
+          </AssociationSet>
           <AssociationSet Name="FK_PayrollDetail_Payroll" Association="Self.FK_PayrollDetail_Payroll">
             <End Role="Payroll" EntitySet="Payroll" />
             <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
@@ -1076,8 +1134,8 @@
           <Property Name="StatusName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_CPA_Status" FromRole="Status" ToRole="Host" />
           <NavigationProperty Name="Companies" Relationship="HrMaxxModel.FK_Company_Status" FromRole="Status" ToRole="Company" />
-          <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Status" FromRole="Status" ToRole="VendorCustomer" />
           <NavigationProperty Name="Employees" Relationship="HrMaxxModel.FK_Employee_Status" FromRole="Status" ToRole="Employee" />
+          <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Status" FromRole="Status" ToRole="VendorCustomer" />
         </EntityType>
         <EntityContainer Name="OnlinePayrollEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Status" EntityType="Self.Status" />
@@ -1149,15 +1207,6 @@
           <AssociationSet Name="FK_CompanyPayCode_Company" Association="HrMaxxModel.FK_CompanyPayCode_Company">
             <End Role="Company" EntitySet="Companies" />
             <End Role="CompanyPayCode" EntitySet="CompanyPayCodes" />
-          </AssociationSet>
-          <EntitySet Name="VendorCustomers" EntityType="HrMaxxModel.VendorCustomer" />
-          <AssociationSet Name="FK_VendorCustomer_Company" Association="HrMaxxModel.FK_VendorCustomer_Company">
-            <End Role="Company" EntitySet="Companies" />
-            <End Role="VendorCustomer" EntitySet="VendorCustomers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_VendorCustomer_Status" Association="HrMaxxModel.FK_VendorCustomer_Status">
-            <End Role="Status" EntitySet="Status" />
-            <End Role="VendorCustomer" EntitySet="VendorCustomers" />
           </AssociationSet>
           <EntitySet Name="AccountTemplates" EntityType="HrMaxxModel.AccountTemplate" />
           <EntitySet Name="BankAccounts" EntityType="HrMaxxModel.BankAccount" />
@@ -1253,6 +1302,25 @@
             <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
           </AssociationSet>
           <EntitySet Name="ReportConstants" EntityType="HrMaxxModel.ReportConstant" />
+          <EntitySet Name="VendorCustomers" EntityType="HrMaxxModel.VendorCustomer" />
+          <AssociationSet Name="FK_VendorCustomer_Company" Association="HrMaxxModel.FK_VendorCustomer_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="VendorCustomer" EntitySet="VendorCustomers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_VendorCustomer_Status" Association="HrMaxxModel.FK_VendorCustomer_Status">
+            <End Role="Status" EntitySet="Status" />
+            <End Role="VendorCustomer" EntitySet="VendorCustomers" />
+          </AssociationSet>
+          <EntitySet Name="MasterExtracts" EntityType="HrMaxxModel.MasterExtract" />
+          <EntitySet Name="PayCheckExtracts" EntityType="HrMaxxModel.PayCheckExtract" />
+          <AssociationSet Name="FK_PayCheckExtract_MasterExtracts" Association="HrMaxxModel.FK_PayCheckExtract_MasterExtracts">
+            <End Role="MasterExtract" EntitySet="MasterExtracts" />
+            <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PayCheckExtract_PayrollPayCheck" Association="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck">
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
+            <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1325,7 +1393,6 @@
           <NavigationProperty Name="CompanyWorkerCompensations" Relationship="HrMaxxModel.FK_CompanyWorkerCompensation_Company" FromRole="Company" ToRole="CompanyWorkerCompensation" />
           <NavigationProperty Name="CompanyAccumlatedPayTypes" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_Company" FromRole="Company" ToRole="CompanyAccumlatedPayType" />
           <NavigationProperty Name="CompanyPayCodes" Relationship="HrMaxxModel.FK_CompanyPayCode_Company" FromRole="Company" ToRole="CompanyPayCode" />
-          <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="Company" ToRole="VendorCustomer" />
           <NavigationProperty Name="CompanyAccounts" Relationship="HrMaxxModel.FK_CompanyAccount_Company" FromRole="Company" ToRole="CompanyAccount" />
           <NavigationProperty Name="Employees" Relationship="HrMaxxModel.FK_Employee_Company1" FromRole="Company" ToRole="Employee" />
           <Property Name="LastPayrollDate" Type="DateTime" Precision="3" />
@@ -1335,6 +1402,7 @@
           <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_Host_Company" FromRole="Company" ToRole="Host" />
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
           <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="Company" ToRole="VendorCustomer" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -1634,53 +1702,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="VendorCustomer">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="CompanyId" Type="Guid" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="StatusId" Type="Int32" Nullable="false" />
-          <Property Name="AccountNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="IsVendor" Type="Boolean" Nullable="false" />
-          <Property Name="IsVendor1099" Type="Boolean" Nullable="false" />
-          <Property Name="Contact" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Type1099" Type="Int32" />
-          <Property Name="SubType1099" Type="Int32" />
-          <Property Name="IdentifierType" Type="Int32" />
-          <Property Name="IndividualSSN" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="BusinessFIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="VendorCustomer" ToRole="Company" />
-          <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_VendorCustomer_Status" FromRole="VendorCustomer" ToRole="Status" />
-        </EntityType>
-        <Association Name="FK_VendorCustomer_Company">
-          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
-          <End Type="HrMaxxModel.VendorCustomer" Role="VendorCustomer" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Company">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="VendorCustomer">
-              <PropertyRef Name="CompanyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_VendorCustomer_Status">
-          <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
-          <End Type="HrMaxxModel.VendorCustomer" Role="VendorCustomer" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Status">
-              <PropertyRef Name="StatusId" />
-            </Principal>
-            <Dependent Role="VendorCustomer">
-              <PropertyRef Name="StatusId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="AccountTemplate">
           <Key>
             <PropertyRef Name="Id" />
@@ -1966,10 +1987,9 @@
           <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
           <Property Name="InvoiceId" Type="Guid" />
           <Property Name="VoidedOn" Type="DateTime" Precision="3" />
-          <Property Name="TaxesPaidOn" Type="DateTime" Precision="3" />
           <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollPayCheck" ToRole="PayrollInvoice" />
           <Property Name="CreditInvoiceId" Type="Guid" />
-          <Property Name="TaxesCreditedOn" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="PayCheckExtract" />
         </EntityType>
         <Association Name="FK_PayrollDetail_Payroll">
           <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="1" />
@@ -2231,6 +2251,106 @@
           <Property Name="DepositSchedule" Type="Int32" Nullable="false" />
           <Property Name="FileSequence" Type="Int32" Nullable="false" />
         </EntityType>
+        <EntityType Name="VendorCustomer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="CompanyId" Type="Guid" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StatusId" Type="Int32" Nullable="false" />
+          <Property Name="AccountNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsVendor" Type="Boolean" Nullable="false" />
+          <Property Name="IsVendor1099" Type="Boolean" Nullable="false" />
+          <Property Name="Contact" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Type1099" Type="Int32" />
+          <Property Name="SubType1099" Type="Int32" />
+          <Property Name="IdentifierType" Type="Int32" />
+          <Property Name="IndividualSSN" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BusinessFIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="VendorCustomer" ToRole="Company" />
+          <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_VendorCustomer_Status" FromRole="VendorCustomer" ToRole="Status" />
+        </EntityType>
+        <Association Name="FK_VendorCustomer_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
+          <End Type="HrMaxxModel.VendorCustomer" Role="VendorCustomer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VendorCustomer">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_VendorCustomer_Status">
+          <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
+          <End Type="HrMaxxModel.VendorCustomer" Role="VendorCustomer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Status">
+              <PropertyRef Name="StatusId" />
+            </Principal>
+            <Dependent Role="VendorCustomer">
+              <PropertyRef Name="StatusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MasterExtract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Extract" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ExtractName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsFederal" Type="Boolean" Nullable="false" />
+          <Property Name="DepositDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Journals" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="MasterExtract" ToRole="PayCheckExtract" />
+        </EntityType>
+        <EntityType Name="PayCheckExtract">
+          <Key>
+            <PropertyRef Name="PayrollPayCheckId" />
+            <PropertyRef Name="Extract" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="PayrollPayCheckId" Type="Int32" Nullable="false" />
+          <Property Name="MasterExtractId" Type="Int32" Nullable="false" />
+          <Property Name="Extract" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MasterExtract" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="PayCheckExtract" ToRole="MasterExtract" />
+          <NavigationProperty Name="PayrollPayCheck" Relationship="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" FromRole="PayCheckExtract" ToRole="PayrollPayCheck" />
+        </EntityType>
+        <Association Name="FK_PayCheckExtract_MasterExtracts">
+          <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayCheckExtract" Role="PayCheckExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterExtract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayCheckExtract">
+              <PropertyRef Name="MasterExtractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PayCheckExtract_PayrollPayCheck">
+          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayCheckExtract" Role="PayCheckExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollPayCheck">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayCheckExtract">
+              <PropertyRef Name="PayrollPayCheckId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2435,28 +2555,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="VendorCustomers">
-            <EntityTypeMapping TypeName="HrMaxxModel.VendorCustomer">
-              <MappingFragment StoreEntitySet="VendorCustomer">
-                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
-                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
-                <ScalarProperty Name="BusinessFIN" ColumnName="BusinessFIN" />
-                <ScalarProperty Name="IndividualSSN" ColumnName="IndividualSSN" />
-                <ScalarProperty Name="IdentifierType" ColumnName="IdentifierType" />
-                <ScalarProperty Name="SubType1099" ColumnName="SubType1099" />
-                <ScalarProperty Name="Type1099" ColumnName="Type1099" />
-                <ScalarProperty Name="Note" ColumnName="Note" />
-                <ScalarProperty Name="Contact" ColumnName="Contact" />
-                <ScalarProperty Name="IsVendor1099" ColumnName="IsVendor1099" />
-                <ScalarProperty Name="IsVendor" ColumnName="IsVendor" />
-                <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
-                <ScalarProperty Name="StatusId" ColumnName="StatusId" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AccountTemplates">
             <EntityTypeMapping TypeName="HrMaxxModel.AccountTemplate">
               <MappingFragment StoreEntitySet="AccountTemplate">
@@ -2582,9 +2680,7 @@
           <EntitySetMapping Name="PayrollPayChecks">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
               <MappingFragment StoreEntitySet="PayrollPayCheck">
-                <ScalarProperty Name="TaxesCreditedOn" ColumnName="TaxesCreditedOn" />
                 <ScalarProperty Name="CreditInvoiceId" ColumnName="CreditInvoiceId" />
-                <ScalarProperty Name="TaxesPaidOn" ColumnName="TaxesPaidOn" />
                 <ScalarProperty Name="VoidedOn" ColumnName="VoidedOn" />
                 <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
                 <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
@@ -2747,6 +2843,54 @@
                 <ScalarProperty Name="DepositSchedule" ColumnName="DepositSchedule" />
                 <ScalarProperty Name="Form" ColumnName="Form" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VendorCustomers">
+            <EntityTypeMapping TypeName="HrMaxxModel.VendorCustomer">
+              <MappingFragment StoreEntitySet="VendorCustomer">
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="BusinessFIN" ColumnName="BusinessFIN" />
+                <ScalarProperty Name="IndividualSSN" ColumnName="IndividualSSN" />
+                <ScalarProperty Name="IdentifierType" ColumnName="IdentifierType" />
+                <ScalarProperty Name="SubType1099" ColumnName="SubType1099" />
+                <ScalarProperty Name="Type1099" ColumnName="Type1099" />
+                <ScalarProperty Name="Note" ColumnName="Note" />
+                <ScalarProperty Name="Contact" ColumnName="Contact" />
+                <ScalarProperty Name="IsVendor1099" ColumnName="IsVendor1099" />
+                <ScalarProperty Name="IsVendor" ColumnName="IsVendor" />
+                <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
+                <ScalarProperty Name="StatusId" ColumnName="StatusId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MasterExtracts">
+            <EntityTypeMapping TypeName="HrMaxxModel.MasterExtract">
+              <MappingFragment StoreEntitySet="MasterExtracts">
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Journals" ColumnName="Journals" />
+                <ScalarProperty Name="DepositDate" ColumnName="DepositDate" />
+                <ScalarProperty Name="IsFederal" ColumnName="IsFederal" />
+                <ScalarProperty Name="ExtractName" ColumnName="ExtractName" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="Extract" ColumnName="Extract" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PayCheckExtracts">
+            <EntityTypeMapping TypeName="HrMaxxModel.PayCheckExtract">
+              <MappingFragment StoreEntitySet="PayCheckExtract">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Extract" ColumnName="Extract" />
+                <ScalarProperty Name="MasterExtractId" ColumnName="MasterExtractId" />
+                <ScalarProperty Name="PayrollPayCheckId" ColumnName="PayrollPayCheckId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

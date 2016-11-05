@@ -134,6 +134,12 @@
     <Compile Include="DataModel\Journal.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\MasterExtract.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\PayCheckExtract.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Payroll.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -157,6 +163,9 @@
     </Compile>
     <Compile Include="DataModel\StandardDeductionTable.cs">
       <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\Status.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\Tax.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
@@ -207,13 +216,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="DataModel\Status.cs">
-      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="HostHomePageDocument.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="JournalList.cs" />
+    <Compile Include="MasterExtract.cs" />
     <Compile Include="MetaDataModels\TaxDefinition.cs" />
     <Compile Include="MetaDataModels\TaxYear.cs" />
     <Compile Include="Payroll.cs" />

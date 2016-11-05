@@ -2,9 +2,9 @@
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" >
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Data Extracts</h4>
+			<h4 class="panel-title">Data Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 		</div>
-		<div class="panel-body" >
+		<div class="panel-body" ng-show="data.isBodyOpen">
 			<div class="col-sm-6">
 				<div class="row">
 					<h4><u>Federal Forms</u></h4>
@@ -21,7 +21,7 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Review</button>
 						</div>
 						
 					</div>
@@ -34,12 +34,12 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
-							<select name="year941" ng-model="data.filter941.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+							<select ng-model="data.paperless941.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
 						<div class="col-sm-3">
-							<select name="quarter941" ng-model="data.filter941.quarter" class="form-control" convert-to-number >
+							<select ng-model="data.paperless941.quarter" class="form-control" convert-to-number >
 								<option value="0"> select quarter</option>
 								<option value="1"> First Quarter</option>
 								<option value="2"> Second Quarter</option>
@@ -48,7 +48,7 @@
 							</select>
 						</div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.filter941.year || !data.filter941.quarter">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.paperless941.year || !data.paperless941.quarter">Review</button>
 						</div>
 
 					</div>
@@ -67,7 +67,7 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Review</button>
 						</div>
 
 					</div>
@@ -87,7 +87,7 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Review</button>
 						</div>
 
 					</div>
@@ -117,7 +117,8 @@
 							<date-ctrl name="dep940q" model="data.filter940Q.depositDate" min="minDepositDate" disabled="false" />
 						</div>
 						<div class="col-sm-3">
-							<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!data.filter940Q.year || !data.filter940Q.quarter || !data.filter940Q.depositDate">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!data.filter940Q.year || !data.filter940Q.quarter || !data.filter940Q.depositDate">Review</button>
+							<button class="btn btn-sm btn-info" ng-click="selectedReport='FederalQuarterly940'; data.isBodyOpen=false">History</button>
 						</div>
 
 					</div>
@@ -131,7 +132,7 @@
 					<div class="col-sm-12">
 						<div class="col-sm-3 form-group">
 							<label>Deposit Schedule</label>
-							<select name="depsc" ng-model="data.filter941.depositSchedule" class="form-control" convert-to-number>
+							<select name="depsc" ng-model="data.filter941.depositSchedule" ng-change="data.filter941.year=0" class="form-control" convert-to-number>
 								<option value="1"> Semi-Weekly</option>
 								<option value="2"> Monthly</option>
 								<option value="3"> Quarterly</option>
@@ -180,7 +181,8 @@
 						</div>
 						<div class="col-sm-1 form-group">
 							<label>&nbsp;</label>
-							<button class="btn btn-sm btn-primary" ng-click="getReportFederal941()" ng-disabled="!is941Valid()">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportFederal941()" ng-disabled="!is941Valid()">Review</button>
+							<button class="btn btn-sm btn-info" ng-click="selectedReport='Federal941';data.isBodyOpen=false">History</button>
 						</div>
 
 					</div>
@@ -199,7 +201,7 @@
 					<div class="col-sm-12">
 						<div class="col-sm-3 form-group">
 							<label>Deposit Schedule</label>
-							<select ng-model="data.filterCAPIT.depositSchedule" class="form-control" convert-to-number>
+							<select ng-model="data.filterCAPIT.depositSchedule" ng-change="data.filterCAPIT.year=0" class="form-control" convert-to-number>
 								<option value=""> deposit schedule</option>
 								<option value="1"> Semi-Weekly</option>
 								<option value="2"> Monthly</option>
@@ -250,7 +252,8 @@
 						</div>
 						<div class="col-sm-1 form-group">
 							<label>&nbsp;</label>
-							<button class="btn btn-sm btn-primary" ng-click="getReportCAPIT()" ng-disabled="!isCAPITValid()">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportCAPIT()" ng-disabled="!isCAPITValid()">Review</button>
+							<button class="btn btn-sm btn-info" ng-click="selectedReport='StateCAPIT';data.isBodyOpen=false">History</button>
 						</div>
 
 					</div>
@@ -280,7 +283,8 @@
 							<date-ctrl name="dep940q" model="data.filterCAUIQ.depositDate" min="minDepositDate" disabled="false" />
 						</div>
 						<div class="col-sm-3">
-							<button class="btn btn-sm btn-primary" ng-click="getReportCAUIQ()" ng-disabled="!data.filterCAUIQ.year || !data.filterCAUIQ.quarter || !data.filterCAUIQ.depositDate">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportCAUIQ()" ng-disabled="!data.filterCAUIQ.year || !data.filterCAUIQ.quarter || !data.filterCAUIQ.depositDate">Review</button>
+							<button class="btn btn-sm btn-info" ng-click="selectedReport='StateCAPIT';data.isBodyOpen=false">History</button>
 						</div>
 
 					</div>
@@ -307,7 +311,7 @@
 							</select>
 						</div>
 						<div class="col-sm-6">
-							<button class="btn btn-sm btn-primary" ng-click="getReportDE6()" ng-disabled="!data.filterDE6Q.year || !data.filterDE6Q.quarter">Extract</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportDE6()" ng-disabled="!data.filterDE6Q.year || !data.filterDE6Q.quarter">Review</button>
 						</div>
 
 					</div>
@@ -318,7 +322,28 @@
 			
 		</div>
 	</div>
-
+	<div class="row" ng-if="selectedReport">
+		<extract-view-list report="selectedReport" main-data="mainData"/>
 	</div>
+	<script type="text/ng-template" id="popover/extractView.html">
+
+		<div class="modal-header">
+			<h3 class="modal-title">{{masterExtract.extract.report.description}} Data</h3><br/>
+			<h5><u><i><strong>Date Range: {{masterExtract.extract.report.startDate | date:'MM/dd/yyyy'}} - {{masterExtract.extract.report.endDate | date:'MM/dd/yyyy'}}</strong></i></u></h5>
+			<div class="alert" ng-if="alerts.length>0" ng-class="'alert-' + alerts[0].status">
+				{{alerts[0].message}}
+			</div>
+		</div>
+		<div class="modal-body">
+			<div class="row m-b-5 p-b-5">
+				<span ng-show="masterExtract.extract.report.allowFiling && masterExtract.extract.report.depositDate"><u><i><strong>Deposit Date: {{masterExtract.extract.report.depositDate | date:'MM/dd/yyyy'}}</strong></i></u></span>
+				<button class="btn btn-sm btn-info" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id" ng-click="fileTaxes()">File Taxes</button>
+				<button class="btn btn-sm btn-primary pull-right" ng-click="downloadFile()">View File</button>
+			</div>
+			<extract-view master-extract="masterExtract"  />
+			
+		</div>
+	</script>
+</div>
 
 

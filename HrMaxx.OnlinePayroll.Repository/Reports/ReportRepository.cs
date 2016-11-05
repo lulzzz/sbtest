@@ -16,6 +16,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using Newtonsoft.Json;
 using CompanyPayrollCube = HrMaxx.OnlinePayroll.Models.CompanyPayrollCube;
+using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
 
 namespace HrMaxx.OnlinePayroll.Repository.Reports
 {
@@ -109,6 +110,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 				using (var cmd = new SqlCommand("GetExtractData"))
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@report", extractReport.ReportName);
 					cmd.Parameters.AddWithValue("@startDate", extractReport.StartDate);
 					cmd.Parameters.AddWithValue("@endDate", extractReport.EndDate);
 					if (extractReport.DepositSchedule != null)
@@ -151,6 +153,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 
 				}
 			}
+		}
+
+		public List<MasterExtract> GetExtractList(string report)
+		{
+			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();
+			return _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.MasterExtract>>(extracts);
 		}
 
 

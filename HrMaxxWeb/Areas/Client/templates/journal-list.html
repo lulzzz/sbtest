@@ -187,7 +187,9 @@
 		<div class="panel-body tab-content">
 			<div class="col-sm-12  m-10">
 				<div class="col-sm-10">
-					
+					<div class="alert alert-info" ng-show="selected.peoasoCoCheck">
+						This is a PEO ASO Co Check recorded in both the Company and it's Host
+					</div>
 				</div>
 				<div class="col-sm-2 pull-right">
 					<button class="btn btn-sm btn-success" ng-show="!selected.isVoid" ng-click="markPrinted(selected)"><i class="fa fa-print m-r-5"></i> print</button>
@@ -207,6 +209,13 @@
 		<div class="panel-body tab-content">
 			<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" />	
 			
+		</div>
+
+	</div>
+	<div class="panel panel-info" ng-if="selected && selected.transactionType===5">
+		<div class="panel-body tab-content">
+			<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" />
+
 		</div>
 
 	</div>

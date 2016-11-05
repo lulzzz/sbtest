@@ -15,7 +15,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation);
 		AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource);
 		CompanyPayCode SavePayCode(CompanyPayCode mappedResource);
-		List<VendorCustomer> GetVendorCustomers(Guid companyId, bool isVendor);
+		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor);
 		VendorCustomer SaveVendorCustomer(VendorCustomer mappedResource);
 		List<Account> GetCompanyAccounts(Guid companyId);
 		Account SaveCompanyAccount(Account mappedResource);

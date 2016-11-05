@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
@@ -15,6 +16,7 @@ using HrMaxxAPI.Controllers.Journals;
 using HrMaxxAPI.Resources;
 using HrMaxxAPI.Resources.Journals;
 using HrMaxxAPI.Resources.Reports;
+using RestSharp;
 
 namespace HrMaxxAPI.Controllers.Reports
 {
@@ -24,11 +26,12 @@ namespace HrMaxxAPI.Controllers.Reports
 	public class ReportController : BaseApiController
 	{
 		public readonly IReportService _reportService;
-		
+		public readonly IJournalService _journalService;
 
-		public ReportController(IReportService reportService)
+		public ReportController(IReportService reportService, IJournalService journalService)
 		{
 			_reportService = reportService;
+			_journalService = journalService;
 		}
 		
 		[HttpPost]
@@ -52,12 +55,11 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 		[HttpPost]
 		[Route(ReportRoutes.ExtractDocument)]
-		public HttpResponseMessage GetExtractDocment(ReportRequestResource resource)
+		public Extract GetExtractDocment(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract for request", request.ReportName));
-			return Printed(response.File);
-
+			return MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract for request", request.ReportName));
+			
 		}
 		private HttpResponseMessage Printed(FileDto document)
 		{
@@ -73,6 +75,13 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 
 		[HttpPost]
+		[Route(ReportRoutes.DownloadReport)]
+		public HttpResponseMessage DownloadReport(FileDto document)
+		{
+			return Printed(document);
+		}
+
+		[HttpPost]
 		[Route(ReportRoutes.GetDashBoardReport)]
 		public DashboardData GetDashboardData(DashboardRequestResource request)
 		{
@@ -81,6 +90,21 @@ namespace HrMaxxAPI.Controllers.Reports
 				dashboardRequest.Host = CurrentUser.Host;
 			dashboardRequest.Role = CurrentUser.Role;
 			return MakeServiceCall(() => _reportService.GetDashboardData(dashboardRequest), "Get Dashboard Data for a Request", true);
+
+		}
+
+		[HttpPost]
+		[Route(ReportRoutes.FileTaxes)]
+		public MasterExtract FileTaxes(Extract extract)
+		{
+			return MakeServiceCall(() => _journalService.FileTaxes(extract, CurrentUser.FullName), "File Taxes for " + extract.Report.Description, true);
+			
+		}
+		[HttpGet]
+		[Route(ReportRoutes.ExtractList)]
+		public List<MasterExtract> ExtractList(string report)
+		{
+			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for report " + report, true);
 
 		}
 	}

@@ -247,9 +247,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.CompanyPayCode, CompanyPayCode>(mappedpc);
 		}
 
-		public List<VendorCustomer> GetVendorCustomers(Guid companyId, bool isVendor)
+		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
 		{
-			var list = _dbContext.VendorCustomers.Where(vc => vc.CompanyId == companyId && vc.IsVendor == isVendor);
+			var list = _dbContext.VendorCustomers.Where(vc => ((companyId.HasValue && vc.CompanyId.HasValue && vc.CompanyId == companyId.Value) || (!companyId.HasValue && !vc.CompanyId.HasValue)) && vc.IsVendor == isVendor);
 			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<VendorCustomer>>(list.ToList());
 		}
 

@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.1.5.8');
+common.constant('version', '1.0.1.6.0');
 common.constant('EntityTypes', {
 	Host:1,
 	Company:2,

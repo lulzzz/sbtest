@@ -11,7 +11,8 @@
 		public const string SaveWorkerCompensation = "Company/WorkerCompensation";
 		public const string SaveAccumulatedPayType = "Company/AccumulatedPayType";
 		public const string SavePayCode = "Company/PayCode";
-		public const string VendorCustomerList = "Company/Vendors/{companyId:guid}/{isVendor:bool}";
+		public const string VendorCustomerList = "Company/Vendors/{isVendor:bool}/{companyId:guid?}";
+		public const string GlobalVendors = "Company/GlobalVendors";
 		public const string VendorCustomer = "Company/VendorCustomer";
 		public const string Accounts = "Company/Accounts/{companyId:guid}";
 		public const string SaveAccount = "Company/Accounts";

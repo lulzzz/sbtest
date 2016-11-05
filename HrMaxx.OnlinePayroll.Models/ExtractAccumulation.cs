@@ -40,6 +40,23 @@ namespace HrMaxx.OnlinePayroll.Models
 			CreditChecks = new List<PayCheck>();
 			
 		}
+
+		public decimal Wages940
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 6).Sum(t => t.TaxableWage); }
+		}
+		public decimal Wages941
+		{
+			get { return Taxes.Where(t => t.Tax.Id ==1 || t.Tax.Id==2 || t.Tax.Id==4).Sum(t => t.TaxableWage); }
+		}
+		public decimal Taxes940
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 6).Sum(t => t.Amount); }
+		}
+		public decimal Taxes941
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 1 || t.Tax.Id == 2 || t.Tax.Id == 4).Sum(t => t.Amount); }
+		}
 		public void AddPayChecks(IEnumerable<PayCheck> checks)
 		{
 			foreach (var add in checks)

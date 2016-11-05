@@ -193,7 +193,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public List<VendorCustomer> GetVendorCustomers(Guid companyId, bool isVendor)
+		public List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor)
 		{
 			try
 			{

@@ -7,14 +7,16 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 			replace: true,
 			scope: {
 				mainData: "=mainData",
-				isVendor: "=isVendor"
+				isVendor: "=isVendor",
+				isGlobal: "=isGlobal",
+				heading: "=heading"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/vendor-customer-list.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
 					var dataSvc = {
-						sourceTypeId: $scope.isVendor? EntityTypes.Vendor : EntityTypes.Customer,
+						sourceTypeId: $scope.isVendor ? EntityTypes.Vendor : EntityTypes.Customer,
 						isBodyOpen: true
 					}
 
@@ -26,13 +28,13 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
-					
+
 					$scope.selected = null;
 
 
 					$scope.add = function () {
 						var selected = {
-							companyId: $scope.mainData.selectedCompany.id,
+							companyId: $scope.isGlobal ? null : $scope.mainData.selectedCompany.id,
 							statusId: 1,
 							isVendor: $scope.isVendor,
 							contact: {
@@ -47,7 +49,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							isVendor1099: $scope.isVendor
 
 						};
-						
+
 						$scope.set(selected);
 					}
 					$scope.validate = function () {
@@ -68,7 +70,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 						}
 
 						return true;
-						
+
 
 					}
 
@@ -138,12 +140,12 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
-							addAlert('successfully saved ' + ($scope.isVendor? 'vendor' : 'customer'), 'success');
+							addAlert('successfully saved ' + ($scope.isVendor ? 'vendor' : 'customer'), 'success');
 						}, function (error) {
 							addAlert('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
 						});
 					}
-					$scope.getVendorCustomers = function(companyId) {
+					$scope.getVendorCustomers = function (companyId) {
 						companyRepository.getVendorCustomers(companyId, $scope.isVendor).then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
@@ -157,16 +159,21 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.$watch('mainData.selectedCompany',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue) {
-								 $scope.getVendorCustomers($scope.mainData.selectedCompany.id);
-							 }
+						 		$scope.getVendorCustomers($scope.mainData.selectedCompany.id);
+						 	}
 
 						 }, true
 				 );
 					var init = function () {
-						if ($scope.mainData.selectedCompany) {
-							$scope.getVendorCustomers($scope.mainData.selectedCompany.id);
+
+						if (!$scope.isGlobal) {
+							if ($scope.mainData.selectedCompany)
+								$scope.getVendorCustomers($scope.mainData.selectedCompany.id);
+						} else {
+							$scope.getVendorCustomers(null);
 						}
-						
+
+
 
 					}
 					init();

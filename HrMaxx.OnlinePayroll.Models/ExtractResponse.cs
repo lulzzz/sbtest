@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
 	public class Extract
 	{
+		public ReportRequest Report { get; set; }
 		public ExtractResponse Data { get; set; }
 		public FileDto File { get; set; }
 	}
@@ -28,7 +30,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<ExtractCompany> Companies { get; set; }
 
 		public ExtractAccumulation Accumulation { get; set; }
-		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; } 
+		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
+		public VendorAccumulation VendorAccumulation { get; set; }
 	}
 	public class ExtractResponseDB
 	{
@@ -68,7 +71,66 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Company Company { get; set; }
 		public List<PayCheck> PayChecks { get; set; }
 		public List<PayCheck> VoidedPayChecks { get; set; }
-		public List<CompanyVendor> Vendors { get; set; } 
+		public List<CompanyVendor> Vendors { get; set; }
+		public ExtractAccumulation Accumulation { get; set; }
+		public VendorAccumulation VendorAccumulation { get; set; }
+	}
+
+	public class VendorAccumulation
+	{
+		public List<VendorTypeGroup> Groups { get; set; }
+
+		public VendorAccumulation()
+		{
+			Groups = new List<VendorTypeGroup>();
+		}
+		public void Add(IEnumerable<CompanyVendor> vendors)
+		{
+			var typeGroups = vendors.GroupBy(v => v.Vendor.Type1099).ToList();
+			foreach (var typeGroup in typeGroups)
+			{
+				var tg = new VendorTypeGroup {Type = typeGroup.Key, SubTypeGroups = new List<VendorSubTypeGroup>()};
+				var subTypeGroups = typeGroup.GroupBy(v => v.Vendor.SubType1099).ToList();
+				foreach (var subTypeGroup in subTypeGroups)
+				{
+					var st = new VendorSubTypeGroup {SubType = subTypeGroup.Key, Vendors = subTypeGroup.ToList()};
+					tg.SubTypeGroups.Add(st);
+				}
+				Groups.Add(tg);
+			}
+
+		}
+		public decimal Total { get { return Groups.Sum(tg => tg.Total); } }
+	}
+
+	public class VendorTypeGroup
+	{
+		public F1099Type Type { get; set; }
+		public List<VendorSubTypeGroup> SubTypeGroups { get; set; }
+
+		public string TypeText
+		{
+			get { return Type.GetDbName(); }
+		}
+		public decimal Total
+		{
+			get { return SubTypeGroups.Sum(st=>st.Total); }
+		}
+	}
+
+	public class VendorSubTypeGroup
+	{
+		public F1099SubType SubType { get; set; }
+		public List<CompanyVendor> Vendors { get; set; }
+		public string SubTypeText
+		{
+			get { return SubType.GetDbName(); }
+		}
+
+		public decimal Total
+		{
+			get { return Vendors.Sum(v => v.Amount); }
+		}
 	}
 	public class ExtractDBCompany
 	{

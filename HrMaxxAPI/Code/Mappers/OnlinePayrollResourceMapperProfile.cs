@@ -112,6 +112,9 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<VendorCustomer, VendorCustomerResource>();
 			CreateMap<VendorCustomerResource, VendorCustomer>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.IdentifierType, opt => opt.MapFrom(src => src.IdentifierType.HasValue ? src.IdentifierType.Value : VCIdentifierType.NA))
+				.ForMember(dest => dest.Type1099, opt => opt.MapFrom(src => src.Type1099.HasValue ? src.Type1099.Value : F1099Type.NA))
+				.ForMember(dest => dest.SubType1099, opt => opt.MapFrom(src => src.SubType1099.HasValue ? src.SubType1099.Value : F1099SubType.NA))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
 
 			CreateMap<AccountResource, Account>()
@@ -216,6 +219,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<Invoice, InvoiceResource>();
 
 			CreateMap<ReportRequestResource, ReportRequest>()
+				.ForMember(dest => dest.Description, opt => opt.Ignore())
+				.ForMember(dest => dest.AllowFiling, opt => opt.Ignore())
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.HasValue ? src.StartDate.Value : DateTime.MinValue))
 				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : DateTime.MinValue));
 

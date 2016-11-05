@@ -432,6 +432,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.PrintStatus, opt => opt.MapFrom(src => 0))
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.PayCheckExtracts, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollInvoice, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrmentMethod, opt => opt.MapFrom(src => src.PaymentMethod))
 				.ForMember(dest => dest.Employee, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Employee)))
@@ -526,6 +527,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.ExtractDBCompany, Models.ExtractCompany>()
 				.ForMember(dest => dest.Company, opt => opt.MapFrom(src=>src))
+				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>src.PayChecks))
 				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks))
 				.ForMember(dest => dest.Vendors, opt => opt.MapFrom(src => src.Vendors.Where(v=>v.Amount>0).ToList()));
@@ -570,6 +572,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)))
 				.ForMember(dest => dest.FederalPin, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalPin)))
 				.ForMember(dest => dest.HostId, opt => opt.Ignore())
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src=>src.Id))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src=>src.CompanyName))
 				.ForMember(dest => dest.DepositSchedule, opt => opt.MapFrom(src => src.DepositSchedule941))
 				.ForMember(dest => dest.MinWage, opt => opt.Ignore())
@@ -608,11 +611,25 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.Ignore())
 				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
 				.ForMember(dest => dest.VoidedOn, opt => opt.Ignore())
-				.ForMember(dest => dest.TaxesPaidOn, opt => opt.Ignore())
+				
 				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())
-				.ForMember(dest => dest.TaxesCreditedOn, opt => opt.Ignore())
+				
 				.ForMember(dest => dest.Included, opt => opt.Ignore())
 				.ForMember(dest => dest.DocumentId, opt => opt.Ignore());
+
+			CreateMap<Models.MasterExtract, Models.DataModel.MasterExtract>()
+				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Extract)))
+				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Journals)))
+				.ForMember(dest => dest.ExtractName, opt => opt.MapFrom(src=>src.Extract.Report.ReportName))
+				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src=>src.Extract.Report.StartDate))
+				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src=>src.Extract.Report.EndDate))
+				.ForMember(dest => dest.DepositDate, opt => opt.MapFrom(src=>src.Extract.Report.DepositDate.Value))
+				.ForMember(dest=>dest.PayCheckExtracts, opt=>opt.Ignore())
+				.ForMember(dest => dest.IsFederal, opt => opt.MapFrom(src=>src.IsFederal));
+
+			CreateMap<Models.DataModel.MasterExtract, Models.MasterExtract>()
+				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Extract>(src.Extract)))
+				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<int>>(src.Journals)));
 		}
 	}
 }

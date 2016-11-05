@@ -39,7 +39,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
         public virtual DbSet<PayType> PayTypes { get; set; }
         public virtual DbSet<CompanyPayCode> CompanyPayCodes { get; set; }
-        public virtual DbSet<VendorCustomer> VendorCustomers { get; set; }
         public virtual DbSet<AccountTemplate> AccountTemplates { get; set; }
         public virtual DbSet<BankAccount> BankAccounts { get; set; }
         public virtual DbSet<CompanyAccount> CompanyAccounts { get; set; }
@@ -54,5 +53,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<PayrollInvoice> PayrollInvoices { get; set; }
         public virtual DbSet<ApplicationConfiguration> ApplicationConfigurations { get; set; }
         public virtual DbSet<ReportConstant> ReportConstants { get; set; }
+        public virtual DbSet<VendorCustomer> VendorCustomers { get; set; }
+        public virtual DbSet<MasterExtract> MasterExtracts { get; set; }
+        public virtual DbSet<PayCheckExtract> PayCheckExtracts { get; set; }
     }
 }

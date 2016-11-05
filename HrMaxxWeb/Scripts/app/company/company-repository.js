@@ -125,11 +125,20 @@ common.factory('companyRepository', [
 			},
 			getVendorCustomers: function (companyId, isVendor) {
 				var deferred = $q.defer();
-				companyServer.one('Vendors').one(companyId, isVendor).getList().then(function (data) {
-					deferred.resolve(data);
-				}, function (error) {
-					deferred.reject(error);
-				});
+				if (companyId) {
+					companyServer.one('Vendors').one(isVendor, companyId).getList().then(function (data) {
+						deferred.resolve(data);
+					}, function(error) {
+						deferred.reject(error);
+					});
+				} else {
+					companyServer.one('GlobalVendors').getList().then(function (data) {
+						deferred.resolve(data);
+					}, function (error) {
+						deferred.reject(error);
+					});
+				}
+				
 
 				return deferred.promise;
 			},

@@ -7,6 +7,7 @@ using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 using Journal = HrMaxx.OnlinePayroll.Models.DataModel.Journal;
+using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
 
 namespace HrMaxx.OnlinePayroll.Repository.Journals
 {
@@ -92,6 +93,32 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				journals = journals.Where(j => j.TransactionDate <= endDate);
 
 			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals.ToList());
+		}
+
+		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)
+		{
+			var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
+			_dbContext.MasterExtracts.Add(mapped);
+			_dbContext.SaveChanges();
+			var payChecks = _dbContext.PayrollPayChecks.Where(pc => payCheckIds.Any(pc1 => pc1 == pc.Id)).ToList();
+			payChecks.ForEach(pc => pc.PayCheckExtracts.Add(new PayCheckExtract
+			{
+				PayrollPayCheckId = pc.Id,
+				Extract = masterExtract.Extract.Report.ReportName,
+				Type=1,
+				MasterExtractId = mapped.Id
+			}));
+
+			var creditChecks = _dbContext.PayrollPayChecks.Where(pc => voidedCheckIds.Any(pc1 => pc1 == pc.Id)).ToList();
+			creditChecks.ForEach(pc => pc.PayCheckExtracts.Add(new PayCheckExtract
+			{
+				Type=2,
+				MasterExtractId = mapped.Id,
+				Extract = masterExtract.Extract.Report.ReportName,
+				PayrollPayCheckId=pc.Id
+			}));
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(mapped);
 		}
 	}
 }

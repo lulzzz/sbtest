@@ -261,8 +261,11 @@
     <Content Include="Areas\Administration\templates\Configurations.html" />
     <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\employee.html" />
+    <Content Include="Areas\Client\templates\tax-payment.html" />
     <Content Include="Areas\Reports\templates\Dashboard.html" />
     <Content Include="Areas\Reports\templates\data-extracts.html" />
+    <Content Include="Areas\Reports\templates\extract-view-list.html" />
+    <Content Include="Areas\Reports\templates\extract-view.html" />
     <Content Include="Areas\Reports\templates\Extracts.html" />
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
@@ -1310,6 +1313,7 @@
     <Content Include="Scripts\app\journal\directives\deposit-ticket.js" />
     <Content Include="Scripts\app\journal\directives\account-adjustment.js" />
     <Content Include="Scripts\app\journal\directives\regular-check.js" />
+    <Content Include="Scripts\app\journal\directives\tax-payment.js" />
     <Content Include="Scripts\app\journal\journal-app.js" />
     <Content Include="Scripts\app\journal\journal-repository.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-invoice.js" />
@@ -1327,6 +1331,8 @@
     <Content Include="Scripts\app\reports\directives\employer-forms.js" />
     <Content Include="Scripts\app\reports\directives\blank-forms.js" />
     <Content Include="Scripts\app\reports\directives\data-extracts.js" />
+    <Content Include="Scripts\app\reports\directives\extract-view-list.js" />
+    <Content Include="Scripts\app\reports\directives\extract-view.js" />
     <Content Include="Scripts\app\reports\directives\other-forms.js" />
     <Content Include="Scripts\app\reports\directives\income-statement.js" />
     <Content Include="Scripts\app\reports\directives\govt-forms.js" />

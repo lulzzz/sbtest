@@ -98,6 +98,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			try
 			{
+				CalculateDates(ref request);
 				if (request.ReportName.Equals("Federal940"))
 					return GetFederal940(request);
 				else if (request.ReportName.Equals("Federal941"))
@@ -220,23 +221,82 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
-		private Extract FederalQuarterly940(ReportRequest request)
+		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false)
 		{
 			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h=>h.Companies.All(c=>!c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
+			if (!request.ReportName.Contains("1099"))
 			{
-				throw new Exception(NoPayrollData);
+				if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
+				{
+					throw new Exception(NoPayrollData);
+				}
+				else
+				{
+					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
+				}
 			}
+			else
+			{
+				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
+				{
+
+					throw new Exception(NoPayrollData);
+				}
+				else
+				{
+					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.Vendors.Any(v => v.Amount > 0))).ToList();
+				}
+			}
+			
 			data.Hosts.ForEach(h =>
 			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.SetQuarters();
+
+				if (!request.ReportName.Contains("1099"))
+				{
+					h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
+					h.Accumulation = new ExtractAccumulation();
+					var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
+					var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
+					h.Accumulation.AddPayChecks(payChecks);
+					h.Accumulation.CreditPayChecks(voidedPayChecks);
+					h.Accumulation.SetQuarters();
+
+					if (buildEmployeeAccumulations)
+						h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
+					if (buildCounts)
+						h.Accumulation.SetCounts(request.Year, request.Quarter);
+					if (buildDaily)
+						h.Accumulation.BuildDailyAccumulations(request.Quarter);
+
+					h.Companies.ForEach(c =>
+					{
+						c.Accumulation = new ExtractAccumulation();
+						c.Accumulation.AddPayChecks(c.PayChecks);
+						c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+					});
+				}
+				else
+				{
+					h.Companies = h.Companies.Where(c => c.Vendors.Any(v=>v.Amount>0)).ToList();
+					h.Companies.ForEach(c =>
+					{
+						c.VendorAccumulation = new VendorAccumulation();
+						c.VendorAccumulation.Add(c.Vendors);
+					});
+					h.VendorAccumulation = new VendorAccumulation();
+					h.VendorAccumulation.Add(h.Companies.SelectMany(c => c.Vendors).ToList());
+				}
+				
 
 			});
+			return data;
+		}
+		private Extract FederalQuarterly940(ReportRequest request)
+		{
+			request.Description = string.Format("Federal 940 EFTPS for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request);
+
 			var reportConst = _taxationService.PullReportConstant("Form940", (int)DepositSchedule941.Quarterly);
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new XsltArgumentList();
@@ -251,21 +311,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract Federal941(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.SetQuarters();
-
-			});
+			request.Description = string.Format("Federal 941 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request);
 			
 			var reportConst = _taxationService.PullReportConstant("Form941", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
@@ -282,21 +330,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract StateCAPIT(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.SetQuarters();
-
-			});
+			request.Description = string.Format("California State PIT & SDI for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request);
 			
 			var argList = new XsltArgumentList();
 		
@@ -311,22 +347,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract StateCAUI(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.SetQuarters();
-
-			});
-
+			request.Description = string.Format("California State UI & ETT for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request);
+			
 			var argList = new XsltArgumentList();
 
 			argList.AddParam("reportConst", "", "01300");
@@ -339,22 +363,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract StateCADE6(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.SetCounts(request.Year, request.Quarter);
-				h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
-			});
-
+			request.Description = string.Format("California State DE6 for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request, true);
+			
 			var argList = new XsltArgumentList();
 
 			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
@@ -366,11 +378,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract Get1099Extract(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any())))
-			{
-				throw new Exception(NoData);
-			}
+			request.Description = string.Format("Megnatic 1099 for {0}", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request);
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new XsltArgumentList();
 			argList.AddParam("currentYear", "", DateTime.Today.Year);
@@ -384,21 +394,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetPaperless940(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.SetQuarters();
-
-			});
+			request.Description = string.Format("Paperless 940 for {0}", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request);
+			
 			var argList = new XsltArgumentList();
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("selectedYear", "", request.Year);
@@ -412,22 +411,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetPaperless941(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.Accumulation.BuildDailyAccumulations(request.Quarter);
-				h.Accumulation.SetQuarters();
-				h.Accumulation.SetCounts(request.Year, request.Quarter);
-			});
+			request.Description = string.Format("Paperless 941 for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request, buildCounts:true, buildDaily:true);
+			
 			var argList = new XsltArgumentList();
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("selectedYear", "", request.Year);
@@ -442,21 +429,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetSSAMagnetic(ReportRequest request)
 		{
-			var data = _reportRepository.GetExtractReport(request);
-			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-			{
-				throw new Exception(NoPayrollData);
-			}
-			data.Hosts.ForEach(h =>
-			{
-				h.Accumulation = new ExtractAccumulation();
-				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-				h.Accumulation.AddPayChecks(payChecks);
-				h.Accumulation.CreditPayChecks(voidedPayChecks);
-				h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
-
-			});
+			request.Description = string.Format("SSA W2 Megnatic for {0} ", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request, buildEmployeeAccumulations:true);
+			
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new XsltArgumentList();
 			argList.AddParam("MagFileUserId", "", config.BatchFilerId);
@@ -477,6 +453,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return new Extract()
 			{
+				Report = request,
 				Data = data,
 				File = new FileDto
 				{
@@ -512,6 +489,21 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
 					"Dashboard for report " + dashboardRequest.Report);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<MasterExtract> GetExtractList(string report)
+		{
+			try
+			{
+				return _reportRepository.GetExtractList(report);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+					"Extract List for report " + report);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -688,7 +680,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
-			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
 				
 			var argList = new XsltArgumentList();
@@ -1050,7 +1042,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return host;
 		}
 
-		private Contact getContactForEntity(EntityTypeEnum source, Guid sourceId)
+		private Contact getContactForEntity(EntityTypeEnum source, Guid sourceId, Guid? hostCompanyId = null)
 		{
 			var contacts = _commonService.GetRelatedEntities<Contact>(source, EntityTypeEnum.Contact,
 					sourceId);
@@ -1061,8 +1053,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			else
 			{
 				var contact = contacts.FirstOrDefault();
-				if(contact==null)
-					throw new Exception(HostContactNA);
+				if (contact==null && source == EntityTypeEnum.Host)
+				{
+					if (!hostCompanyId.HasValue)
+					{
+						throw new Exception(HostContactNA);	
+					}
+					contact = getContactForEntity(EntityTypeEnum.Company, hostCompanyId.Value);
+					if(contact==null)
+						throw new Exception(HostContactNA);
+				}
+					
 				return contact;
 			}
 		}

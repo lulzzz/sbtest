@@ -1,0 +1,183 @@
+﻿<div class="row table-responsive">
+	<div class="panel panel-inverse panel-with-tabs" data-sortable-id="ui-unlimited-tabs-1">
+		<div class="panel-heading p-5">
+			<!-- begin nav-tabs -->
+			<div class="tab-overflow">
+				<ul class="nav nav-tabs nav-tabs-inverse">
+					<li class="prev-button"><a href="javascript:;" data-click="prev-tab" class="text-success"><i class="fa fa-arrow-left"></i></a></li>
+					
+					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}"  ng-click="set(host)" ng-repeat="host in data.hosts track by $index" ><a data-toggle="tab">{{host.hostCompany.name}}</a></li>
+					
+					<li class="next-button"><a href="javascript:;" data-click="next-tab" class="text-success"><i class="fa fa-arrow-right"></i></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="tab-content">
+			<div class="tab-pane fade in" ng-if="selectedHost" ng-class="{'active':selectedHost}">
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName!=='Report1099'">
+					<thead>
+						<tr>
+							<th class="col-sm-4">Amounts</th>
+							<th class="col-sm-2">Companies</th>
+							<th class="col-sm-3">Company Amounts</th>
+							<th class="col-sm-3">PayChecks</th>
+						</tr>
+					</thead>
+					<tr>
+						<td class="col-sm-4">
+							<div class="row">
+								<div class="col-sm-6"><strong>Gross Wage</strong></div>
+								<div class="col-sm-6 text-right">{{selectedHost.accumulation.grossWage | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedHost.accumulation.compensations && selectedHost.accumulation.compensations.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Wages</div>
+							</div>
+							<div class="row" ng-repeat="comp in selectedHost.accumulation.compensations">
+								<div class="col-sm-6"><strong>{{comp.payType.name}}</strong></div>
+								<div class="col-sm-6 text-right">{{comp.amount | currency:'$'}}</div>
+
+							</div>
+							<div class="row">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Taxes</div>
+							</div>
+							<div class="row" ng-repeat="tax in selectedHost.accumulation.taxes">
+								<div class="col-sm-4"><strong>{{tax.tax.code}}</strong></div>
+								<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedHost.accumulation.deductions && selectedHost.accumulation.deductions.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Deductions</div>
+							</div>
+							<div class="row" ng-repeat="ded in selectedHost.accumulation.deductions">
+								<div class="col-sm-8"><strong>{{ded.deduction.deductionName}} ({{ded.deduction.type.name}})</strong></div>
+								<div class="col-sm-4 text-right">{{ded.amount | currency:'$'}}</div>
+
+							</div>
+						</td>
+						<td class="col-sm-2">
+							<div class="row" ng-repeat="comp in selectedHost.companies">
+								<button class="btn btn-xs m-t-5" ng-class="{'btn-info' : selectedCompany.company.id===comp.company.id}" ng-click="setCompany(comp)">{{comp.company.name}}</button>
+							</div>
+						</td>
+						<td class="col-sm-3" ng-show="selectedCompany">
+							<div class="row">
+								<div class="col-sm-6"><strong>Gross Wage</strong></div>
+								<div class="col-sm-6 text-right">{{selectedCompany.accumulation.grossWage | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedCompany.accumulation.compensations && selectedCompany.accumulation.compensations.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Wages</div>
+							</div>
+							<div class="row" ng-repeat="comp in selectedCompany.accumulation.compensations">
+								<div class="col-sm-6"><strong>{{comp.payType.name}}</strong></div>
+								<div class="col-sm-6 text-right">{{comp.amount | currency:'$'}}</div>
+
+							</div>
+							<div class="row">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Taxes</div>
+							</div>
+							<div class="row" ng-repeat="tax in selectedCompany.accumulation.taxes">
+								<div class="col-sm-4"><strong>{{tax.tax.code}}</strong></div>
+								<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedCompany.accumulation.deductions  && selectedCompany.accumulation.deductions.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Deductions</div>
+							</div>
+							<div class="row" ng-repeat="ded in selectedCompany.accumulation.deductions">
+								<div class="col-sm-8"><strong>{{ded.deduction.deductionName}} ({{ded.deduction.type.name}})</strong></div>
+								<div class="col-sm-4 text-right">{{ded.amount | currency:'$'}}</div>
+
+							</div>
+						</td>
+						<td class="col-sm-3" ng-show="selectedCompany">
+							<div class="row" ng-show="selectedCompany.payChecks.length>0">
+								<button class="btn btn-info btn-sm" ng-click="showPayChecks=!showPayChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Pay Checks <span class="badge">{{selectedCompany.payChecks.length}}</span></button>
+
+							</div>
+							<div class="row" ng-repeat="pc in selectedCompany.payChecks" ng-show="showPayChecks">
+								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
+							</div>
+							<div class="row" ng-show="selectedCompany.voidedPayChecks.length>0">
+								<button class="btn btn-info btn-sm" ng-click="showVoidedChecks=!showVoidedChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Voided Checks <span class="badge">{{selectedCompany.showVoidedChecks.length}}</span></button>
+
+							</div>
+							<div class="row" ng-repeat="pc in selectedCompany.voidedPayChecks" ng-show="showVoidedChecks">
+								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
+							</div>
+						</td>
+					</tr>
+				</table>
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='Report1099'">
+					<thead>
+						<tr>
+							<th class="col-sm-4">Host Amounts</th>
+							<th class="col-sm-2">Companies</th>
+							<th class="col-sm-4">Company Amounts</th>
+							<th class="col-sm-2">Vendors</th>
+							
+						</tr>
+					</thead>
+					<tr>
+						<td class="col-sm-4">
+							<div class="row">
+								<div class="col-sm-6"><strong>Total:</strong></div>
+								<div class="col-sm-6 text-right">{{selectedHost.vendorAccumulation.total | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedHost.vendorAccumulation && selectedHost.vendorAccumulation.groups.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Type and SubType Breakdown</div>
+							</div>
+							<div class="row" ng-repeat="group in selectedHost.vendorAccumulation.groups ">
+								<div class="col-sm-12">
+									<div class="col-sm-8"><strong>{{group.typeText}}</strong></div>
+									<div class="col-sm-4 text-right">{{group.total | currency:'$'}}</div>
+								</div>
+								<div class="col-sm-10 col-sm-offset-2" ng-repeat="sgroup in group.subTypeGroups">
+									<strong>{{sgroup.subTypeText}}</strong> {{sgroup.total | currency:'$'}}
+									
+								</div>
+								
+
+							</div>
+							
+						</td>
+						<td class="col-sm-2">
+							<div class="row" ng-repeat="comp in selectedHost.companies">
+								<button class="btn btn-xs m-t-5" ng-class="{'btn-info' : selectedCompany.company.id===comp.company.id}" ng-click="setCompany(comp)">{{comp.company.name}} <span class="badge">{{comp.vendorAmount | currency:'$'}}</span></button>
+							</div>
+						</td>
+						<td class="col-sm-4" ng-show="selectedCompany">
+							<div class="row">
+								<div class="col-sm-6"><strong>Total:</strong></div>
+								<div class="col-sm-6 text-right">{{selectedCompany.vendorAccumulation.total | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedCompany.vendorAccumulation && selectedCompany.vendorAccumulation.groups.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Type and SubType Breakdown</div>
+							</div>
+							<div class="row" ng-repeat="group in selectedCompany.vendorAccumulation.groups ">
+								<div class="col-sm-12">
+									<div class="col-sm-8"><strong>{{group.typeText}}</strong></div>
+									<div class="col-sm-4 text-right">{{group.total | currency:'$'}}</div>
+								</div>
+								<div class="col-sm-10 col-sm-offset-2" ng-repeat="sgroup in group.subTypeGroups">
+									<strong>{{sgroup.subTypeText}}</strong> {{sgroup.total | currency:'$'}}
+
+								</div>
+
+
+							</div>
+
+						</td>
+						<td class="col-sm-2" ng-show="selectedCompany">
+							<div class="row" ng-repeat="vendor in selectedCompany.vendors">
+								{{vendor.vendor.name}} <span class="badge">{{vendor.amount | currency:'$'}}</span>
+							</div>
+						</td>
+						
+					</tr>
+				</table>
+			</div>
+			
+		</div>
+	</div>
+	
+</div>

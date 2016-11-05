@@ -1,6 +1,6 @@
 ﻿'use strict';
-common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version','$uibModal',
+	function (zionAPI, $timeout, $window, version, $modal) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -21,6 +21,10 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						},
 						filter940: {
 							year : 0
+						},
+						paperless941: {
+							year: 0,
+							quarter:0
 						},
 						
 						filterW2: {
@@ -257,49 +261,68 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.getReport940 = function() {
-						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null, null, null, null, null, null);
+						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null, null, null, null, null, null, true);
 					}
 					$scope.getReport941 = function () {
-						getReport('Paperless941', 'Paperless 941', dataSvc.filter941.year, dataSvc.filter941.quarter, null, null, null, null, null);
+						getReport('Paperless941', 'Paperless 941', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, true);
 					}
 					
 					$scope.getReportW2Employee = function () {
-						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null);
+						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, true);
 					}
 					
 					$scope.getReport940Q = function () {
-						getReport('FederalQuarterly940', 'Federal Quarterly 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, null, dataSvc.filter940Q.depositDate, null, null, null);
+						getReport('FederalQuarterly940', 'Federal Quarterly 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, null, dataSvc.filter940Q.depositDate, null, null, null, true);
 					}
 					$scope.getReportFederal941 = function () {
 						if(dataSvc.filter941.depositSchedule===1)
-							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 1, dataSvc.filter941.depositDate, null, dataSvc.filter941.payPeriod.startDate, dataSvc.filter941.payPeriod.endDate);
+							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 1, dataSvc.filter941.depositDate, null, dataSvc.filter941.payPeriod.startDate, dataSvc.filter941.payPeriod.endDate, true);
 						else if(dataSvc.filter941.depositSchedule===2)
-							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 2, dataSvc.filter941.depositDate, dataSvc.filter941.month, null, null);
+							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 2, dataSvc.filter941.depositDate, dataSvc.filter941.month, null, null, true);
 						else {
-							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null);
+							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null, true);
 						}
 					}
 					$scope.getReportCAPIT = function () {
 						if (dataSvc.filterCAPIT.depositSchedule === 1)
-							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 1, dataSvc.filterCAPIT.depositDate, null, dataSvc.filterCAPIT.payPeriod.startDate, dataSvc.filterCAPIT.payPeriod.endDate);
+							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 1, dataSvc.filterCAPIT.depositDate, null, dataSvc.filterCAPIT.payPeriod.startDate, dataSvc.filterCAPIT.payPeriod.endDate, true);
 						else if (dataSvc.filterCAPIT.depositSchedule === 2)
-							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 2, dataSvc.filterCAPIT.depositDate, dataSvc.filterCAPIT.month, null, null);
+							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 2, dataSvc.filterCAPIT.depositDate, dataSvc.filterCAPIT.month, null, null, true);
 						else {
-							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null);
+							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null, true);
 						}
 					}
 					$scope.getReportCAUIQ = function () {
-						getReport('StateCAUI', 'California Quarterly UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, null, dataSvc.filterCAUIQ.depositDate, null, null, null);
+						getReport('StateCAUI', 'California Quarterly UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, null, dataSvc.filterCAUIQ.depositDate, null, null, null, true);
 					}
 
 					$scope.getReport1099 = function () {
-						getReport('Report1099', '1099', dataSvc.filter1099.year, null);
+						getReport('Report1099', '1099', dataSvc.filter1099.year, null, null, null, null, null, null, true);
 					}
 					$scope.getReportDE6 = function () {
-						getReport('StateCADE6', 'California Quarterly DE6 Reporting File', dataSvc.filterDE6Q.year, dataSvc.filterDE6Q.quarter, null, null, null, null, null);
+						getReport('StateCADE6', 'California Quarterly DE6 Reporting File', dataSvc.filterDE6Q.year, dataSvc.filterDE6Q.quarter, null, null, null, null, null, true);
 					}
-					
-					var getReport = function(reportName, desc, year, quarter, depositSchedule, depositDate, month, start, end) {
+					var showReview = function (report, extract) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/extractView.html',
+							controller: 'extractViewCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								extract: function () {
+									return extract;
+								},
+								reportRepository: function () {
+									return reportRepository;
+								}
+							}
+						});
+
+					}
+					var getReport = function(reportName, desc, year, quarter, depositSchedule, depositDate, month, start, end, review) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
@@ -311,16 +334,25 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: depositSchedule,
 							depositDate: depositDate ? moment(depositDate).format("MM/DD/YYYY") : null
 						}
-						reportRepository.getExtractDocument(request).then(function (data) {
-							var a = document.createElement('a');
-							a.href = data.file;
-							a.target = '_blank';
-							a.download = data.name;
-							document.body.appendChild(a);
-							a.click();
+						reportRepository.getExtract(request).then(function (extract) {
+							if (!review) {
+								reportRepository.downloadExtract(extract.file).then(function(data) {
 
+									var a = document.createElement('a');
+									a.href = data.file;
+									a.target = '_blank';
+									a.download = data.name;
+									document.body.appendChild(a);
+									a.click();
+								}, function(erorr) {
+									addAlert('Failed to download report ' + desc + ': ' + erorr, 'danger');
+								});
+							} else {
+								showReview(request, extract);
+							}
+							
 						}, function (erorr) {
-							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+							addAlert('Error generating extract ' + desc + ': ' + erorr.statusText, 'danger');
 						});
 					}
 					$scope.hasCalifornia = function() {
@@ -341,3 +373,54 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
+common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, reportRepository) {
+	
+	$scope.alerts = [];
+	var addAlert = function(message, status) {
+		$scope.alerts = [];
+		$scope.alerts.push({
+			message: message,
+			status: status
+		});
+	}
+	$scope.masterExtract = {
+		id: 0,
+		lastModified: new Date(),
+		lastModifiedBy: '',
+		extract: extract,
+		journals: []
+	};
+	
+	$scope.cancel = function () {
+		$uibModalInstance.close(false);
+	};
+
+	$scope.fileTaxes = function () {
+		reportRepository.fileTaxes($scope.masterExtract.extract).then(function (result) {
+			$scope.masterExtract.id = result.id;
+			$scope.masterExtract.lastModified = result.lastModified;
+			$scope.masterExtract.lastModifiedBy = result.lastModifiedBy;
+			$scope.masterExtract.isFederal = result.isFederal;
+			$scope.masterExtract.journal = result.journals;
+			addAlert('successfully filed taxes for report: ' + $scope.masterExtract.extract.report.description, 'success');
+		}, function (erorr) {
+			addAlert('Failed to download report ' + $scope.masterExtract.extract.description + ': ' + erorr, 'danger');
+		});
+		
+	};
+	$scope.downloadFile = function () {
+		reportRepository.downloadExtract($scope.masterExtract.extract.file).then(function (data) {
+
+			var a = document.createElement('a');
+			a.href = data.file;
+			a.target = '_blank';
+			a.download = data.name;
+			document.body.appendChild(a);
+			a.click();
+		}, function (erorr) {
+			addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+		});
+	};
+
+
+});

@@ -1,83 +1,87 @@
-﻿<div class="panel panel-inverse">
+﻿<div class="row">
+	<div class="panel panel-inverse">
 
-	<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-		<h4 class="panel-title">Manage Configurations</h4>
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Manage Configurations</h4>
 
+		</div>
+		<div class="panel-body">
+			<form name="configForm" data-parsley-validate="true">
+				<div class="col-sm-12">
+
+
+					<div class="col-sm-4">
+						<div class="form-group">
+							<lable>Corporate Host <span class="show-red">(CorpStaff users wont have access to this host's compan)</span></lable>
+							<select id="host" class="form-control" ng-change="data.configs.rootHostId = data.rootHost.id" ng-model="data.rootHost" ng-options="host1.firmName for host1 in mainData.hosts track by host1.id">
+								<option value="">Select Host</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label>Environment Charge Rate</label>
+							<input class="form-control" name="ecrate" ng-model="data.configs.environmentalChargeRate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
+						</div>
+						<div class="form-group">
+							<label>Batch Filer ID</label>
+							<input class="form-control" name="batchfilterid" ng-model="data.configs.batchFilerId" />
+						</div>
+						<div class="form-group">
+							<label>Master Inquiry PIN</label>
+							<input class="form-control" name="masterpin" ng-model="data.configs.masterInquiryPin" data-parsley-type="number" data-parsley-pattern="/^d{4}$/" data-parsley-trigger="blur" />
+						</div>
+						<div class="form-group">
+							<label>SSA BSO W-2 Mag File Identification</label>
+							<input class="form-control" name="ssaw2magnetic" ng-model="data.configs.ssaBsoW2MagneticFileId" />
+
+						</div>
+						<div class="form-group">
+							<label>TCC</label>
+							<input class="form-control" name="tcc" ng-model="data.configs.tcc" />
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label>Couriers</label>
+							<tags-input ng-model="data.tags"></tags-input>
+
+
+						</div>
+
+
+					</div>
+					<div class="col-sm-4">
+						<div class="col-sm-12">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th colspan="3">
+											Invoice Late Tax Penalty Rates	<i class="fa fa-plus-circle" ng-click="addTaxPanelty()"></i>
+										</th>
+									</tr>
+									<tr>
+										<th>From Day</th>
+										<th>To Day</th>
+										<th>Rate</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="rate in data.configs.invoiceLateFeeConfigs | orderBy:'daysFrom'">
+										<td><input class="form-control" type="number" ng-model="rate.daysFrom" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
+										<td><input class="form-control" type="number" ng-model="rate.daysTo" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
+										<td><input class="form-control" ng-model="rate.rate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" /></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-12">
+					<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-save"></i> Save</button>
+				</div>
+			</form>
+
+		</div>
 	</div>
-	<div class="panel-body">
-		<form name="configForm" data-parsley-validate="true">
-			<div class="col-sm-12">
-
-
-				<div class="col-sm-4">
-					<div class="form-group">
-						<lable>Corporate Host <span class="show-red">(CorpStaff users wont have access to this host's compan)</span></lable>
-						<select id="host" class="form-control" ng-change="data.configs.rootHostId = data.rootHost.id" ng-model="data.rootHost" ng-options="host1.firmName for host1 in mainData.hosts track by host1.id">
-							<option value="">Select Host</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label>Environment Charge Rate</label>
-						<input class="form-control" name="ecrate" ng-model="data.configs.environmentalChargeRate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
-					</div>
-					<div class="form-group">
-						<label>Batch Filer ID</label>
-						<input class="form-control" name="batchfilterid" ng-model="data.configs.batchFilerId" />
-					</div>
-					<div class="form-group">
-						<label>Master Inquiry PIN</label>
-						<input class="form-control" name="masterpin" ng-model="data.configs.masterInquiryPin" data-parsley-type="number" data-parsley-pattern="/^d{4}$/" data-parsley-trigger="blur" />
-					</div>
-					<div class="form-group">
-						<label>SSA BSO W-2 Mag File Identification</label>
-						<input class="form-control" name="ssaw2magnetic" ng-model="data.configs.ssaBsoW2MagneticFileId" />
-
-					</div>
-					<div class="form-group">
-						<label>TCC</label>
-						<input class="form-control" name="tcc" ng-model="data.configs.tcc" />
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="form-group">
-						<label>Couriers</label>
-						<tags-input ng-model="data.tags"></tags-input>
-						
-						
-					</div>
-					
-					
-				</div>
-				<div class="col-sm-4">
-					<div class="col-sm-12">
-						<table class="table table-bordered">
-							<thead>
-								<tr >
-									<th colspan="3">
-										Invoice Late Tax Penalty Rates	<i class="fa fa-plus-circle" ng-click="addTaxPanelty()"></i>
-									</th>
-								</tr>
-								<tr>
-									<th>From Day</th>
-									<th>To Day</th>
-									<th>Rate</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="rate in data.configs.invoiceLateFeeConfigs | orderBy:'daysFrom'">
-									<td><input class="form-control" type="number" ng-model="rate.daysFrom" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
-									<td><input class="form-control" type="number" ng-model="rate.daysTo" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
-									<td><input class="form-control" ng-model="rate.rate" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" /></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-			<div class="col-sm-12">
-				<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-save"></i> Save</button>
-			</div>
-		</form>
-
-	</div>
+	<vendor-customer-list heading="'Gloabl Vendors'" is-vendor="true" main-data="data" is-global="true" />
+	
 </div>

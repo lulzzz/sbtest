@@ -93,9 +93,9 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
-		public DateTime? TaxesPaidOn { get; set; }
+		
 		public Guid? CreditInvoiceId { get; set; }
-		public DateTime? TaxesCreditedOn { get; set; }
+		
 		public bool Included { get; set; }
 
 		public string PaymentMethodText

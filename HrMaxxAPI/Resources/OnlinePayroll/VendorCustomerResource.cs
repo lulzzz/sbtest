@@ -12,8 +12,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class VendorCustomerResource : BaseRestResource
 	{
-		[Required]
-		public Guid CompanyId { get; set; }
+		public Guid? CompanyId { get; set; }
 		[Required]
 		public string Name { get; set; }
 		[Required]
@@ -24,9 +23,9 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public Contact Contact { get; set; }
 		public string Note { get; set; }
-		public F1099Type Type1099 { get; set; }
-		public F1099SubType SubType1099 { get; set; }
-		public VCIdentifierType IdentifierType { get; set; }
+		public F1099Type? Type1099 { get; set; }
+		public F1099SubType? SubType1099 { get; set; }
+		public VCIdentifierType? IdentifierType { get; set; }
 		public string IndividualSSN { get; set; }
 		public string BusinessFIN { get; set; }
 		public bool IsVendor1099 { get; set; }

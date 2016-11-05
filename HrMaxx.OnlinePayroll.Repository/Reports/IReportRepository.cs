@@ -12,5 +12,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		List<CompanyPayrollCube> GetCompanyCubesForYear(Guid companyId, int year);
 		DashboardData GetDashboardData(DashboardRequest dashboardRequest);
 		ExtractResponse GetExtractReport(ReportRequest extractReport);
+		List<MasterExtract> GetExtractList(string report);
 	}
 }

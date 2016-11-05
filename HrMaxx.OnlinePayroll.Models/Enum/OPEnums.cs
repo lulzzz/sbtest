@@ -81,21 +81,32 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	public enum F1099Type
 	{
 		NA = 0,
+		[HrMaxxSecurity(DbId = 1, DbName = "1099 MISC")]
 		MISC=1,
+		[HrMaxxSecurity(DbId = 2, DbName = "1099 INT")]
 		INT=2,
+		[HrMaxxSecurity(DbId = 3, DbName = "1099 DIV")]
 		DIV=3
 	}
 
 	public enum F1099SubType
 	{
 		NA = 0,
+		[HrMaxxSecurity(DbId = 1, DbName = "Non Employee Comp")]
 		NonEmployeeComp = 1,
+		[HrMaxxSecurity(DbId = 2, DbName = "Other Income")]
 		OtherIncome = 2,
+		[HrMaxxSecurity(DbId = 3, DbName = "Rents")]
 		Rents = 3,
+		[HrMaxxSecurity(DbId = 4, DbName = "Interest Income")]
 		InterestIncome = 4,
+		[HrMaxxSecurity(DbId = 5, DbName = "Ordinary Dividend")]
 		OrdinaryDividend = 5,
+		[HrMaxxSecurity(DbId = 6, DbName = "Qualified Dividend")]
 		QualifiedDividend = 6,
+		[HrMaxxSecurity(DbId = 7, DbName = "Capital Gains Dist")]
 		CaptialGainDist = 7,
+		[HrMaxxSecurity(DbId = 8, DbName = "Non Dividend Dist")]
 		NonDividendDist = 8
 	}
 
@@ -298,7 +309,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Deposit")]
 		Deposit=3,
 		[HrMaxxSecurity(DbName = "Adjustment")]
-		Adjustment=4
+		Adjustment=4,
+		[HrMaxxSecurity(DbName = "Tax Payment")]
+		TaxPayment = 5
 
 	}
 
