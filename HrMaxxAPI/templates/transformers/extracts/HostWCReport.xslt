@@ -232,6 +232,7 @@
 		<xsl:variable name ="acc" select="Accumulation"/>
 		<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation">
 			<xsl:variable name ="wcid" select="WorkerCompensation/Id"/>
+			<xsl:variable name="overtime" select="sum($acc/PayChecks/PayCheck[WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="String">
@@ -255,12 +256,13 @@
 				</Cell>
 				<Cell ss:StyleID="s64">
 					<Data ss:Type="Number">
-						<xsl:value-of select="format-number(Wage,'######0.00')"/>
+						<xsl:value-of select="format-number(Wage - $overtime,'######0.00')"/>
 					</Data>
 				</Cell>
 				<Cell ss:StyleID="s64">
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum($acc/PayChecks/PayCheck[WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/></Data>
+						<xsl:value-of select="format-number($overtime,'######0.00')"/>
+					</Data>
 				</Cell>
 			</Row>
 		</xsl:for-each>
@@ -272,6 +274,7 @@
 			<xsl:variable name="acc" select="Accumulation"/>
 			<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation[Amount>0]">
 				<xsl:variable name="wcid" select="WorkerCompensation/Id"/>
+				<xsl:variable name="overtime" select="sum($acc/PayChecks/PayCheck[WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="String">
@@ -310,12 +313,12 @@
 				</Cell>
 				<Cell ss:StyleID="s64">
 					<Data ss:Type="Number">
-						<xsl:value-of select="format-number(Wage,'######0.00')"/>
+						<xsl:value-of select="format-number(Wage - $overtime,'######0.00')"/>
 					</Data>
 				</Cell>
 				<Cell ss:StyleID="s64">
 					<Data ss:Type="Number">
-						<xsl:value-of select="format-number(sum($acc/PayChecks/PayCheck[WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount),'######0.00')"/>
+						<xsl:value-of select="format-number($overtime,'######0.00')"/>
 					</Data>
 				</Cell>
 			</Row>
@@ -329,6 +332,7 @@
 			<xsl:variable name="acc" select="Accumulation"/>
 			<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation[Amount=0]">
 				<xsl:variable name="wcid" select="WorkerCompensation/Id"/>
+				<xsl:variable name="overtime" select="sum($acc/PayChecks/PayCheck[WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>
 				<Row>
 					<Cell>
 						<Data ss:Type="String">
@@ -367,12 +371,12 @@
 					</Cell>
 					<Cell ss:StyleID="s64">
 						<Data ss:Type="Number">
-							<xsl:value-of select="format-number(Wage,'######0.00')"/>
+							<xsl:value-of select="format-number(Wage - $overtime,'######0.00')"/>
 						</Data>
 					</Cell>
 					<Cell ss:StyleID="s64">
 						<Data ss:Type="Number">
-							<xsl:value-of select="format-number(sum($acc/PayChecks/PayCheck[WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount),'######0.00')"/>
+							<xsl:value-of select="format-number($overtime,'######0.00')"/>
 						</Data>
 					</Cell>
 				</Row>
