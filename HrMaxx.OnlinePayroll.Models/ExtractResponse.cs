@@ -74,6 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyVendor> Vendors { get; set; }
 		public ExtractAccumulation Accumulation { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
+		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 	}
 
 	public class VendorAccumulation
@@ -159,6 +160,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsFiler944 { get; set; }
 		public bool IsHostCompany { get; set; }
 		public string Memo { get; set; }
+		public string ClientNo { get; set; }
+		public string InsuranceGroup { get; set; }
+		public string InsuranceGroupName { get; set; }
+
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }
 		public List<ExtractVendor> Vendors { get; set; } 
@@ -196,6 +201,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Compensations { get; set; }
 		public string Deductions { get; set; }
 		public string PayCodes { get; set; }
+		public string WorkerCompensation { get; set; }
 		public string Taxes { get; set; }
 		public int Status { get; set; }
 		public bool IsVoid { get; set; }

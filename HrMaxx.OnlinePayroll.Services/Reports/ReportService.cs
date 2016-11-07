@@ -195,6 +195,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return StateCAUI(request);
 				else if (request.ReportName.Equals("StateCADE6"))
 					return StateCADE6(request);
+				else if (request.ReportName.Equals("HostWCReport"))
+					return GetHostWCReport(request);
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -221,7 +223,19 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
-		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false)
+		private Extract GetHostWCReport(ReportRequest request)
+		{
+			var data = GetExtractResponse(request, buildEmployeeAccumulations:true, buildCompanyEmployeeAccumulation:true);
+
+			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.Year, request.StartDate.ToString("MMMM"));
+			request.AllowFiling = false;
+
+			var argList = new XsltArgumentList();
+			
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostWCReport.xslt", "xls", request.Description + ".xls");
+		}
+
+		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false)
 		{
 			var data = _reportRepository.GetExtractReport(request);
 			if (!request.ReportName.Contains("1099"))
@@ -273,6 +287,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						c.Accumulation = new ExtractAccumulation();
 						c.Accumulation.AddPayChecks(c.PayChecks);
 						c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
+						if (buildCompanyEmployeeAccumulation)
+							c.EmployeeAccumulations = getEmployeeAccumulations(c.Accumulation.PayChecks);
 					});
 				}
 				else

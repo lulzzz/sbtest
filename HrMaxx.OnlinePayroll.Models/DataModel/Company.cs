@@ -60,6 +60,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal MinWage { get; set; }
         public bool IsHostCompany { get; set; }
         public string Memo { get; set; }
+        public string ClientNo { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }
@@ -89,5 +90,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<VendorCustomer> VendorCustomers { get; set; }
+        public virtual InsuranceGroup InsuranceGroup { get; set; }
     }
 }

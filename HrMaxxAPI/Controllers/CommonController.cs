@@ -118,6 +118,20 @@ namespace HrMaxxAPI.Controllers
 			var news = Mapper.Map<NewsResource, News>(resource);
 			MakeServiceCall(() => _commonService.SaveNewsItem(news), "save newsfeed");
 			return Mapper.Map<News, NewsResource>(news);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.InsuranceGroups)]
+		public List<InsuranceGroupDto> GetInsuranceGroups()
+		{
+			return MakeServiceCall(() => _commonService.GetInsuranceGroups(), "get insurance groups ", true);
+		}
+
+		[HttpPost]
+		[Route(HrMaxxRoutes.InsuranceGroup)]
+		public InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto resource)
+		{
+			return MakeServiceCall(() => _commonService.SaveInsuranceGroup(resource), "save insurance group ", true);
 		} 
 	}
 }

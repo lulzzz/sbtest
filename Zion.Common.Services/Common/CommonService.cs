@@ -217,6 +217,34 @@ namespace HrMaxx.Common.Services.Common
 			}
 		}
 
+		public List<InsuranceGroupDto> GetInsuranceGroups()
+		{
+			try
+			{
+				return _commonRepository.GetInsuranceGroups();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" insurance groups"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto insuranceGroup)
+		{
+			try
+			{
+				return _commonRepository.SaveInsuranceGroup(insuranceGroup);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" insurance groups"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public List<News> GetUserNewsfeed(Guid host, Guid company, string userId, string role)
 		{
 			try

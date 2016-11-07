@@ -117,6 +117,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					{
 						cmd.Parameters.AddWithValue("@depositSchedule", (int)extractReport.DepositSchedule);	
 					}
+					if (extractReport.HostId != Guid.Empty)
+					{
+						cmd.Parameters.AddWithValue("@host", extractReport.HostId);
+					}
 
 					cmd.Connection = con;
 					con.Open();

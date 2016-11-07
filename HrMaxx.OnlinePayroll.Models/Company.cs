@@ -40,7 +40,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DepositSchedule941 DepositSchedule { get; set; }
 		public bool IsFiler944 { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
-		
+
+		public string InsuranceClientNo { get; set; }
+		public InsuranceGroupDto InsuranceGroup { get; set; }
+
 		public List<CompanyTaxState> States { get; set; }
 		public List<AccumulatedPayType> AccumulatedPayTypes { get; set; }
 		public List<CompanyDeduction> Deductions { get; set; }

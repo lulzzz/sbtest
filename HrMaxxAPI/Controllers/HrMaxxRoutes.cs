@@ -39,5 +39,8 @@
 		public const string AccountsMetaData = "AccountsMetaData";
 		public const string Configs = "Configurations";
 		public const string ClearAll = "ClearAllNotifications";
+
+		public const string InsuranceGroups = "InsuranceGroups";
+		public const string InsuranceGroup = "InsuranceGroup";
 	}
 }

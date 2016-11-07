@@ -276,6 +276,26 @@ common.factory('commonRepository', [
 				});
 
 				return deferred.promise;
+			},
+			getInsuranceGroups: function () {
+				var deferred = $q.defer();
+				commonServer.one('InsuranceGroups').getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveInsuranceGroup: function (group) {
+				var deferred = $q.defer();
+				commonServer.all('InsuranceGroup').post(group).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
 			}
 
 		};

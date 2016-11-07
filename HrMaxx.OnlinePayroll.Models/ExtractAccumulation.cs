@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Q2Amount { get; set; }
 		public decimal Q3Amount { get; set; }
 		public decimal Q4Amount { get; set; }
+		public List<PayrollWorkerCompensation> WorkerCompensations { get; set; }
 		public List<PayrollPayType> Compensations { get; set; }
 		public List<PayrollDeduction> Deductions { get; set; }
 		public List<PayrollTax> Taxes { get; set; }
@@ -38,6 +39,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			Taxes=new List<PayrollTax>();
 			PayChecks = new List<PayCheck>();
 			CreditChecks = new List<PayCheck>();
+			WorkerCompensations = new List<PayrollWorkerCompensation>();
 			
 		}
 
@@ -77,6 +79,8 @@ namespace HrMaxx.OnlinePayroll.Models
 				AddDeductions(add.Deductions);
 				AddTaxes(add.Taxes);
 				PayChecks.Add(add);
+				if(add.WorkerCompensation!=null)
+					AddWorkerCompensation(add.WorkerCompensation);
 			}
 		}
 		public void CreditPayChecks(IEnumerable<PayCheck> checks)
@@ -99,6 +103,24 @@ namespace HrMaxx.OnlinePayroll.Models
 				CreditDeductions(add.Deductions);
 				CreditTaxes(add.Taxes);
 				CreditChecks.Add(add);
+				CreditWorkerCompensation(add.WorkerCompensation);
+			}
+		}
+		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp)
+		{
+			if (wcomp != null)
+			{
+				var wc = WorkerCompensations.FirstOrDefault(w => w.WorkerCompensation.Id == wcomp.WorkerCompensation.Id);
+				if (wc != null)
+				{
+					wc.Wage += Math.Round(wcomp.Wage, 2, MidpointRounding.AwayFromZero);
+					wc.Amount += Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					var temp = JsonConvert.SerializeObject(wcomp);
+					WorkerCompensations.Add(JsonConvert.DeserializeObject<PayrollWorkerCompensation>(temp));
+				}
 			}
 		}
 		private void AddCompensations(IEnumerable<PayrollPayType> comps)
@@ -193,6 +215,18 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 			});
 
+		}
+		private void CreditWorkerCompensation(PayrollWorkerCompensation wcomp)
+		{
+			if (wcomp != null)
+			{
+				var wc = WorkerCompensations.FirstOrDefault(w => w.WorkerCompensation.Id == wcomp.WorkerCompensation.Id);
+				if (wc != null)
+				{
+					wc.Wage -= Math.Round(wcomp.Wage, 2, MidpointRounding.AwayFromZero);
+					wc.Amount -= Math.Round(wcomp.Amount, 2, MidpointRounding.AwayFromZero);
+				}
+			}
 		}
 
 		public void SetCounts(int year, int quarter)

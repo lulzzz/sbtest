@@ -23,7 +23,8 @@ namespace HrMaxx.Common.Contracts.Services
 		List<News> GetNewsforUser(int? audienceScope, Guid? audienceId);
 		void SaveNewsItem(News news);
 
-
+		List<InsuranceGroupDto> GetInsuranceGroups();
+		InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto insuranceGroup);
 		List<News> GetUserNewsfeed(Guid host, Guid company, string id, string userId);
 	}
 }

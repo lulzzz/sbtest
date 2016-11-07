@@ -70,6 +70,7 @@
           <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="IsHostCompany" Type="bit" Nullable="false" />
           <Property Name="Memo" Type="varchar(max)" Nullable="false" />
+          <Property Name="ClientNo" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -263,6 +264,14 @@
           <Property Name="DesigneeName940941" Type="varchar(max)" />
           <Property Name="PIN940941" Type="varchar(max)" />
           <Property Name="IsPeoHost" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="InsuranceGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GroupNo" Type="varchar(max)" Nullable="false" />
+          <Property Name="GroupName" Type="varchar(max)" Nullable="false" />
         </EntityType>
         <EntityType Name="Invoice">
           <Key>
@@ -534,6 +543,18 @@
             </Principal>
             <Dependent Role="Company">
               <PropertyRef Name="HostId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Company_InsuranceGroup">
+          <End Role="InsuranceGroup" Type="Self.InsuranceGroup" Multiplicity="1" />
+          <End Role="Company" Type="Self.Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company">
+              <PropertyRef Name="InsuranceGroupNo" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -964,6 +985,7 @@
           <EntitySet Name="EmployeeDeduction" EntityType="Self.EmployeeDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InsuranceGroup" EntityType="Self.InsuranceGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Journal" EntityType="Self.Journal" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterExtracts" EntityType="Self.MasterExtracts" Schema="dbo" store:Type="Tables" />
@@ -983,6 +1005,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_Company_Host" Association="Self.FK_Company_Host">
             <End Role="Host" EntitySet="Host" />
+            <End Role="Company" EntitySet="Company" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Company_InsuranceGroup" Association="Self.FK_Company_InsuranceGroup">
+            <End Role="InsuranceGroup" EntitySet="InsuranceGroup" />
             <End Role="Company" EntitySet="Company" />
           </AssociationSet>
           <AssociationSet Name="FK_Company_Status" Association="Self.FK_Company_Status">
@@ -1321,6 +1347,11 @@
             <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
             <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
           </AssociationSet>
+          <EntitySet Name="InsuranceGroups" EntityType="HrMaxxModel.InsuranceGroup" />
+          <AssociationSet Name="FK_Company_InsuranceGroup" Association="HrMaxxModel.FK_Company_InsuranceGroup">
+            <End Role="InsuranceGroup" EntitySet="InsuranceGroups" />
+            <End Role="Company" EntitySet="Companies" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1403,6 +1434,8 @@
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
           <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="Company" ToRole="VendorCustomer" />
+          <NavigationProperty Name="InsuranceGroup" Relationship="HrMaxxModel.FK_Company_InsuranceGroup" FromRole="Company" ToRole="InsuranceGroup" />
+          <Property Name="ClientNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2351,6 +2384,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="InsuranceGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GroupNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Companies" Relationship="HrMaxxModel.FK_Company_InsuranceGroup" FromRole="InsuranceGroup" ToRole="Company" />
+        </EntityType>
+        <Association Name="FK_Company_InsuranceGroup">
+          <End Type="HrMaxxModel.InsuranceGroup" Role="InsuranceGroup" Multiplicity="1" />
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceGroup">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company">
+              <PropertyRef Name="InsuranceGroupNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2388,6 +2442,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="ClientNo" ColumnName="ClientNo" />
                 <ScalarProperty Name="Memo" ColumnName="Memo" />
                 <ScalarProperty Name="IsHostCompany" ColumnName="IsHostCompany" />
                 <ScalarProperty Name="MinWage" ColumnName="MinWage" />
@@ -2891,6 +2946,15 @@
                 <ScalarProperty Name="Extract" ColumnName="Extract" />
                 <ScalarProperty Name="MasterExtractId" ColumnName="MasterExtractId" />
                 <ScalarProperty Name="PayrollPayCheckId" ColumnName="PayrollPayCheckId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InsuranceGroups">
+            <EntityTypeMapping TypeName="HrMaxxModel.InsuranceGroup">
+              <MappingFragment StoreEntitySet="InsuranceGroup">
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="GroupNo" ColumnName="GroupNo" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

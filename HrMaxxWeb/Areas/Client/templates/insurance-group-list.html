@@ -1,0 +1,69 @@
+﻿<div class="panel panel-inverse">
+	<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+		<h3 class="panel-title">
+			Insurance Groups
+			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
+		</h3>
+	</div>
+	<div class="panel-body">
+		<div class="table-responsive col-sm-8 col-sm-offset-2">
+			
+			<table class="table table-header table-bordered table-condensed form-controls input-sm">
+				<thead>
+					<tr>
+						<td class="col-sm-3">Id</td>
+						<td class="col-sm-3">Insurance Group No</td>
+						<td class="col-sm-3">Insurance Group</td>
+						<td class="col-sm-3"></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="item in list track by $index">
+						<td>
+							{{item.id}}
+						</td>
+						<td>
+							<span e-ng-change="item.groupNo = $data" editable-text="item.groupNo" e-name="no" e-form="rowform">
+								{{ item.groupNo }}
+							</span>
+						</td>
+						<td>
+							<span e-ng-change="item.groupName = $data" editable-text="item.groupName" e-name="name" e-form="rowform">
+								{{ item.groupName }}
+							</span>
+						</td>
+						<td style="white-space: nowrap">
+							<!-- form -->
+							<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
+								<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
+									<i class="fa fa-edit m-r-5"></i> edit
+								</button>
+								<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
+									<i class="fa fa-save m-r-5"></i> save
+								</button>
+								<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+									<i class="fa fa-remove m-r-5"></i> cancel
+								</button>
+							</form>
+						</td>
+
+					</tr>
+					<tr ng-show="!selected">
+						<td colspan="3">
+							<span ng-show="list.length===0">No items found</span>
+						</td>
+
+						<td>
+							<button type="button" ng-click="add()" class="btn btn-primary">
+								Add
+							</button>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+

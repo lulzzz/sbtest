@@ -14,8 +14,10 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 				var dataSvc = {
 					configs: null,
 					tags: [],
-					rootHost: null
-				}
+					rootHost: null,
+					isBodyOpen: true,
+					insuranceGroups:[]
+			}
 
 				$scope.data = dataSvc;
 				var addAlert = function (error, type) {
@@ -66,6 +68,8 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 					}, function (error) {
 						addAlert('error occurred in getting configuration data ' + error.statusText, 'danger');
 					});
+
+					
 
 				}
 				init();

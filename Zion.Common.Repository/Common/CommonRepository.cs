@@ -9,6 +9,7 @@ using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using Magnum;
 using Newtonsoft.Json;
+using InsuranceGroup = HrMaxx.Common.Models.InsuranceGroupDto;
 using News = HrMaxx.Common.Models.Dtos.News;
 
 namespace HrMaxx.Common.Repository.Common
@@ -174,6 +175,31 @@ namespace HrMaxx.Common.Repository.Common
 			return _mapper.Map<List<Models.DataModel.News>, List<News>>(news);
 		}
 
-		
+		public List<InsuranceGroupDto> GetInsuranceGroups()
+		{
+			var groups = _dbContext.InsuranceGroups.ToList();
+			return _mapper.Map<List<Models.DataModel.InsuranceGroup>, List<Models.InsuranceGroupDto>>(groups);
+		}
+
+		public InsuranceGroup SaveInsuranceGroup(InsuranceGroupDto insuranceGroup)
+		{
+			var mapped = _mapper.Map<Models.InsuranceGroupDto, Models.DataModel.InsuranceGroup>(insuranceGroup);
+			if (mapped.Id == 0)
+			{
+				_dbContext.InsuranceGroups.Add(mapped);
+				_dbContext.SaveChanges();
+			}
+			else
+			{
+				var db = _dbContext.InsuranceGroups.FirstOrDefault(i => i.Id == insuranceGroup.Id);
+				if (db != null)
+				{
+					db.GroupName = mapped.GroupName;
+					db.GroupNo = mapped.GroupNo;
+					_dbContext.SaveChanges();
+				}
+			}
+			return _mapper.Map<Models.DataModel.InsuranceGroup, Models.InsuranceGroupDto>(mapped);
+		}
 	}
 }

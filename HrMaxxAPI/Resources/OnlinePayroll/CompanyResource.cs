@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
@@ -51,6 +52,9 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DepositSchedule941 DepositSchedule { get; set; }
 
 		public DateTime? LastPayrollDate { get; set; }
+
+		public string InsuranceClientNo { get; set; }
+		public InsuranceGroupDto InsuranceGroup { get; set; }
 		
 		public List<CompanyTaxStateResource> States { get; set; }
 		public List<CompanyTaxRateResource> CompanyTaxRates { get; set; } 

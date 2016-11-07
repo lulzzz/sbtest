@@ -85,8 +85,9 @@ namespace HrMaxx.Common.Services.Mappers
 				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
 				.ForMember(dest => dest.Employee, opt => opt.Ignore())
 				.ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Roles.FirstOrDefault()));
-				
 
+			CreateMap<Models.DataModel.InsuranceGroup, Models.InsuranceGroupDto>();
+			CreateMap<Models.InsuranceGroupDto, Models.DataModel.InsuranceGroup>();
 		}
 	}
 }

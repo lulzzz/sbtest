@@ -11,8 +11,8 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'hostRepository', 'ngTableParams', 'EntityTypes',
-				function ($scope, $rootScope, $element, $location, $filter, hostRepository, ngTableParams, EntityTypes) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'hostRepository', 'ngTableParams', 'EntityTypes', 'reportRepository',
+				function ($scope, $rootScope, $element, $location, $filter, hostRepository, ngTableParams, EntityTypes, reportRepository) {
 				$scope.sourceTypeId = EntityTypes.Host;
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
@@ -89,6 +89,40 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					
 					
 				}
+
+				$scope.getHostWCReport = function (host, event) {
+					event.stopPropagation();
+					var request = {
+						reportName: 'HostWCReport',
+						hostId: host.id,
+						year: moment().year(),
+						quarter: 0,
+						month: moment().subtract(1, 'months').format('MM'),
+						startDate: null,
+						endDate: null,
+						depositSchedule: null,
+						depositDate: null
+					}
+					reportRepository.getExtract(request).then(function (extract) {
+						
+							reportRepository.downloadExtract(extract.file).then(function (data) {
+
+								var a = document.createElement('a');
+								a.href = data.file;
+								a.target = '_blank';
+								a.download = data.name;
+								document.body.appendChild(a);
+								a.click();
+							}, function (erorr) {
+								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
+							});
+						
+					}, function (erorr) {
+						addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+					});
+					
+				}
+
 				$scope.getRowClass = function(item) {
 					if ($scope.selectedHost && $scope.selectedHost.id === item.id)
 						return 'success';

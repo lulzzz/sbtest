@@ -34,7 +34,8 @@ namespace HrMaxx.OnlinePayroll.Services
 				var taxes = _metaDataRepository.GetCompanyOverridableTaxes();
 				var deductiontypes = _metaDataRepository.GetDeductionTypes();
 				var paytypes = _metaDataRepository.GetAccumulablePayTypes();
-				return new {Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes};
+				var insurancegroups = _commonService.GetInsuranceGroups();
+				return new {Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups};
 			}
 			catch (Exception e)
 			{

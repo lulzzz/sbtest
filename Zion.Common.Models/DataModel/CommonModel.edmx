@@ -53,6 +53,14 @@
           <Property Name="EntityTypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EntityTypeName" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="InsuranceGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GroupNo" Type="varchar(max)" Nullable="false" />
+          <Property Name="GroupName" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="News">
           <Key>
             <PropertyRef Name="Id" />
@@ -122,6 +130,7 @@
           <EntitySet Name="Country" EntityType="Self.Country" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityRelation" EntityType="Self.EntityRelation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InsuranceGroup" EntityType="Self.InsuranceGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="News" EntityType="Self.News" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notifications" EntityType="Self.Notifications" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserEventLog" EntityType="Self.UserEventLog" Schema="dbo" store:Type="Tables" />
@@ -158,6 +167,7 @@
           </AssociationSet>
           <EntitySet Name="Countries" EntityType="CommonModel.Country" />
           <EntitySet Name="News" EntityType="CommonModel.News" />
+          <EntitySet Name="InsuranceGroups" EntityType="CommonModel.InsuranceGroup" />
           </EntityContainer>
         <EntityType Name="Memento">
           <Key>
@@ -273,6 +283,14 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="InsuranceGroup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GroupNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="GroupName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
 		</edmx:ConceptualModels>
 		<!-- C-S mapping content -->
@@ -369,6 +387,15 @@
                 <ScalarProperty Name="Audience" ColumnName="Audience" />
                 <ScalarProperty Name="AudienceScope" ColumnName="AudienceScope" />
                 <ScalarProperty Name="NewsContent" ColumnName="NewsContent" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InsuranceGroups">
+            <EntityTypeMapping TypeName="CommonModel.InsuranceGroup">
+              <MappingFragment StoreEntitySet="InsuranceGroup">
+                <ScalarProperty Name="GroupName" ColumnName="GroupName" />
+                <ScalarProperty Name="GroupNo" ColumnName="GroupNo" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

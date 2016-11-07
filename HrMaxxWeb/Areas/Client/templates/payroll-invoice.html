@@ -223,7 +223,7 @@
 						<tr ng-if="invoice.adminFee > 0">
 							<td>ADMINISTRATION FEE</td>
 							<td></td>
-							<td>{{ invoice.invoiceSetup.adminFeeMethod===1 ? '$' : ''}}{{invoice.companyInvoiceSetup.adminFee | currency:''}}{{ invoice.invoiceSetup.adminFeeMethod===1 ? '' : '%'}}</td>
+							<td>{{ invoice.companyInvoiceSetup.adminFeeMethod===1 ? '$' : ''}}{{invoice.companyInvoiceSetup.adminFee | currency:''}}{{ invoice.companyInvoiceSetup.adminFeeMethod===1 ? '' : '%'}}</td>
 							<td>{{invoice.adminFee | currency:'$'}}</td>
 
 						</tr>

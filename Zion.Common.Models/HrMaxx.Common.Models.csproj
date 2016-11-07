@@ -52,8 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\InsuranceGroup.cs">
+      <DependentUpon>CommonModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Enum\CommonEnums.cs" />
     <Compile Include="ExcelRead.cs" />
+    <Compile Include="InsuranceGroup.cs" />
     <Compile Include="PDFModel.cs" />
     <Compile Include="DataModel\Country.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>
