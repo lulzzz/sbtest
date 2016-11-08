@@ -362,6 +362,8 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class PayrollPayCode
 	{
 		public CompanyPayCode PayCode { get; set; }
+		public string ScreenHours { get; set; }
+		public string ScreenOvertime { get; set; }
 		public decimal Hours { get; set; }
 		public decimal OvertimeHours { get; set; }
 		public decimal PWAmount { get; set; }

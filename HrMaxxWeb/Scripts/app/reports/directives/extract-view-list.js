@@ -87,7 +87,12 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 
 					$scope.set = function (item) {
 						$scope.selected = null;
-						$scope.selected = angular.copy(item);
+						$timeout(function () {
+							$scope.selected = angular.copy(item);
+
+						}, 1);
+						
+						
 						
 					}
 				

@@ -15,6 +15,7 @@ using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using Magnum;
 using Persits.PDF;
 
@@ -41,7 +42,7 @@ namespace HrMaxx.Common.Services.Excel
 				columnList.AddRange(new List<string>{"Payroll Schedule", "Pay Type", "Base Salary"});
 				company.PayCodes.ForEach(pc=>columnList.Add(pc.Description));
 				columnList.AddRange(new List<string>{"Tax Status", "Federal Filing Status", "Federal Exemptions", "Federal Additional Amount", "State", "State Filing Status", "State Exemptions", "State Additional Amount"});
-				return _excelRepository.GetImportTemplate(company.Name + "_EmployeeImport.xlsx", columnList);
+				return _excelRepository.GetImportTemplate(company.Name + "_EmployeeImport.xlsx", columnList, new List<List<string>>());
 			}
 			catch (Exception e)
 			{
@@ -82,14 +83,25 @@ namespace HrMaxx.Common.Services.Excel
 		public FileDto GetTimesheetImportTemplate(Guid companyId, List<string> payTypes)
 		{
 			var company = _companyService.GetCompanyById(companyId);
+			var employees = _companyService.GetEmployeeList(companyId);
 			var columnList = new List<string> { "SSN", "Employee No", "Salary", "Base Rate", "Base Rate Hours", "Base Rate Overtime" };
+			var rowList = new List<List<string>>();
 			company.PayCodes.ForEach(pc =>
 			{
 				columnList.Add(pc.Code + " Hours");
 				columnList.Add(pc.Code + " Overtime");
 			});
 			columnList.AddRange(payTypes);
-			return _excelRepository.GetImportTemplate(company.Name + "_TimesheetImport.xlsx", columnList);
+			employees.Where(e=>e.StatusId==StatusOption.Active).ToList().ForEach(e =>
+			{
+				var row = new List<string>();
+				row.Add(string.Format("{0}-{1}-{2}",e.SSN.Substring(0,3), e.SSN.Substring(3,2), e.SSN.Substring(5,4)));
+				row.Add(e.EmployeeNo);
+				if(e.PayType==EmployeeType.Salary)
+					row.Add(e.Rate.ToString());
+				rowList.Add(row);
+			});
+			return _excelRepository.GetImportTemplate(company.Name + "_TimesheetImport.xlsx", columnList, rowList);
 		}
 	}
 }

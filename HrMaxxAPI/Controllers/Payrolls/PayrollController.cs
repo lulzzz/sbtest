@@ -63,10 +63,19 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.FixPayrollDataForCompany)]
+		public HttpStatusCode FixPayrollData(Guid companyId)
+		{
+			var done = MakeServiceCall(() => _payrollService.FixPayrollData(companyId), "Fix payroll data for company id =" + companyId, true);
+			if (done != null)
+				return HttpStatusCode.OK;
+			return HttpStatusCode.ExpectationFailed;
+		}
+		[HttpGet]
 		[Route(PayrollRoutes.FixPayrollData)]
 		public HttpStatusCode FixPayrollData()
 		{
-			var done = MakeServiceCall(() => _payrollService.FixPayrollData(), "Fix payroll data", true);
+			var done = MakeServiceCall(() => _payrollService.FixPayrollData(null), "Fix payroll data for all companies", true);
 			if (done != null)
 				return HttpStatusCode.OK;
 			return HttpStatusCode.ExpectationFailed;

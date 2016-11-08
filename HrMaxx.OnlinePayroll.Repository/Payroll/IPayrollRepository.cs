@@ -30,7 +30,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void DeletePayrollInvoice(Guid invoiceId);
 		void SavePayCheck(PayCheck pc);
 		List<PayCheck> GetUnclaimedVoidedchecks(Guid companyId);
-		List<Models.Payroll> GetAllPayrolls();
+		List<Models.Payroll> GetAllPayrolls(Guid? companyId);
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 		void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date);
 	}

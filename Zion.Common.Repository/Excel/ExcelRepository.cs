@@ -18,7 +18,7 @@ namespace HrMaxx.Common.Repository.Excel
 		{
 			_filePath = filePath;
 		}
-		public FileDto GetImportTemplate(string fileName, List<string> columms)
+		public FileDto GetImportTemplate(string fileName, List<string> columms, List<List<string>> rowList)
 		{
 			var e = new Infrastructure.Excel.Excel(_filePath);
 			e.AddWorksheet("Sheet1");
@@ -29,6 +29,15 @@ namespace HrMaxx.Common.Repository.Excel
 			{
 				e.SetCellValue(rowCounter, colummCounter++, columm);
 				e.SetCellBold(rowCounter, colummCounter-1);
+			}
+			foreach (var row in rowList)
+			{
+				rowCounter++;
+				colummCounter = 1;
+				foreach (var str in row)
+				{
+					e.SetCellValue(rowCounter, colummCounter++, str);
+				}
 			}
 			var file = e.Save();
 			return new FileDto

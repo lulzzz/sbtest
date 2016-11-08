@@ -67,6 +67,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$.each(employee.payCodes, function(index1, paycode) {
 								var pc = {
 									payCode: paycode,
+									screenHours: 0,
+									screenOvertime:0,
 									hours: 0,
 									overtimeHours: 0,
 									pwAmount: 0

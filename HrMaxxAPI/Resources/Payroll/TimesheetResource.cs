@@ -61,18 +61,52 @@ namespace HrMaxxAPI.Resources.Payroll
 					var o = er.Value(pc.Code + " overtime");
 					var h1 = er.Value(pc.Description + " hours");
 					var o1 = er.Value(pc.Description + " overtime");
+
 					if (!string.IsNullOrWhiteSpace(h) || !string.IsNullOrWhiteSpace(o))
 					{
+
 						var hval = (decimal) 0;
 						var oval = (decimal) 0;
-						decimal.TryParse(h, out hval);
-						decimal.TryParse(o, out oval);
+						if (h.Contains(":") && h.Split(':').Length > 0)
+						{
+							decimal hhval = 0;
+							decimal mmval = 0;
+							var splits = h.Split(':');
+
+							var hh = decimal.TryParse(splits[0], out hhval);
+							var mm = decimal.TryParse(splits[1], out mmval);
+
+							hval = hhval + Math.Round(mmval/60, 2, MidpointRounding.AwayFromZero);
+						}
+						else
+						{
+							decimal.TryParse(h, out hval);
+						}
+
+						if (o.Contains(":") && o.Split(':').Length > 0)
+						{
+							decimal hhval = 0;
+							decimal mmval = 0;
+							var splits = o.Split(':');
+
+							var hh = decimal.TryParse(splits[0], out hhval);
+							var mm = decimal.TryParse(splits[1], out mmval);
+
+							oval = hhval + Math.Round(mmval / 60, 2, MidpointRounding.AwayFromZero);
+						}
+						else
+						{
+							decimal.TryParse(o, out oval);
+						}
+						
 						if (hval > 0 || oval > 0)
 						{
 							decimal rate = 0;
 							decimal.TryParse(ratestr, out rate);
 							var pcode = new PayrollPayCodeResource
 							{
+								ScreenHours = !string.IsNullOrWhiteSpace(h) ? h : "0",
+								ScreenOvertime = !string.IsNullOrWhiteSpace(o) ? o : "0",
 								PayCode = pc,
 								Hours = hval,
 								OvertimeHours = oval
@@ -82,24 +116,56 @@ namespace HrMaxxAPI.Resources.Payroll
 								pcode.PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(pc));
 								pcode.PayCode.HourlyRate = rate;
 							}
-							
+
 							PayCodes.Add(pcode);
-							
+
 
 						}
+						
 					}
 					else if (!string.IsNullOrWhiteSpace(h1) || !string.IsNullOrWhiteSpace(o1))
 					{
 						var hval = (decimal) 0;
 						var oval = (decimal) 0;
-						decimal.TryParse(h1, out hval);
-						decimal.TryParse(o1, out oval);
+						if (h1.Contains(":") && h1.Split(':').Length > 0)
+						{
+							decimal hhval = 0;
+							decimal mmval = 0;
+							var splits = h1.Split(':');
+
+							var hh = decimal.TryParse(splits[0], out hhval);
+							var mm = decimal.TryParse(splits[1], out mmval);
+
+							hval = hhval + Math.Round(mmval / 60, 2, MidpointRounding.AwayFromZero);
+						}
+						else
+						{
+							decimal.TryParse(h1, out hval);
+						}
+
+						if (o1.Contains(":") && o1.Split(':').Length > 0)
+						{
+							decimal hhval = 0;
+							decimal mmval = 0;
+							var splits = o1.Split(':');
+
+							var hh = decimal.TryParse(splits[0], out hhval);
+							var mm = decimal.TryParse(splits[1], out mmval);
+
+							oval = hhval + Math.Round(mmval / 60, 2, MidpointRounding.AwayFromZero);
+						}
+						else
+						{
+							decimal.TryParse(o1, out oval);
+						}
 						if (hval > 0 || oval > 0)
 						{
 							decimal rate = 0;
 							decimal.TryParse(ratestr, out rate);
 							var pcode = new PayrollPayCodeResource
 							{
+								ScreenHours = !string.IsNullOrWhiteSpace(h1) ? h1 : "0",
+								ScreenOvertime = !string.IsNullOrWhiteSpace(o1) ? o1 : "0",
 								PayCode = pc,
 								Hours = hval,
 								OvertimeHours = oval

@@ -196,7 +196,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				(decimal) 0;
 				var accumulationValue = (decimal)0;
 				if ((ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
-					accumulationValue = payType.AnnualLimit - thisCheckValue;
+					accumulationValue = payType.AnnualLimit - ytdAccumulation;
 				else
 				{
 					accumulationValue = thisCheckValue;
@@ -975,18 +975,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public List<Models.Payroll> FixPayrollData()
+		public List<Models.Payroll> FixPayrollData(Guid? companyId)
 		{
 			try
 			{
-				var payrolls = _payrollRepository.GetAllPayrolls();
-				payrolls.ForEach(payroll => payroll.PayChecks.ForEach(pc =>
+				var payrolls = _payrollRepository.GetAllPayrolls(companyId);
+				payrolls.OrderBy(p=>p.PayDay).ToList().ForEach(payroll => payroll.PayChecks.ForEach(pc =>
 				{
+					pc.Accumulations = ProcessAccumulations(pc, payroll.Company.AccumulatedPayTypes);
 					if (pc.WorkerCompensation != null)
 					{
 						pc.WorkerCompensation.Wage = pc.GrossWage;
-						_payrollRepository.SavePayCheck(pc);
+						
 					}
+					_payrollRepository.SavePayCheck(pc);
 				}));
 				
 				return payrolls;

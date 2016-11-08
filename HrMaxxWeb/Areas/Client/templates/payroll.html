@@ -61,8 +61,8 @@
 							</div>
 							<div class="row" ng-repeat="pc1 in listitem.payCodes">
 								<div class="col-sm-6"><input class="form-control" ng-model="pc1.pwAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc1.hours" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc1.overtimeHours" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
 							</div>
 						</div>
 					</div>
@@ -76,8 +76,8 @@
 							<div class="row" ng-repeat="pc in listitem.payCodes | orderBy:'payCode.id'">
 								<div class="col-sm-6" ng-show="pc.payCode.id>0">{{pc.payCode.description }} ({{pc.payCode.hourlyRate | currency:'$'}} per hour)</div>
 								<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc.hours" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc.overtimeHours" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
 							</div>
 						</div>
 
@@ -105,7 +105,7 @@
 		<button class="btn btn-sm btn-success attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 			<i class="fa fa-upload"></i>Import Timesheets
 		</button>
-		<button class="btn btn-sm btn-info pull-right" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Import Template</button>
+		<button class="btn btn-sm btn-info pull-right" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Export Template</button>
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">
 		<select id="paytypelist" class="form-control" ng-model="params.filter()[name]" name="filter-paytype" convert-to-number>

@@ -110,9 +110,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			voidedPayChecks.ForEach(vpc =>
 			{
-				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)))
+				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)) && prevInvoices.Any(pi => pi.Id==vpc.InvoiceId))
 				{
-					var prevInv = prevInvoices.First(pi => pi.PayChecks.Contains(vpc.Id));
+					var prevInv = prevInvoices.First(pi => pi.Id==vpc.InvoiceId);
+					
 					var pcCredit = new MiscFee
 					{
 						PayCheckId = vpc.Id,
@@ -136,6 +137,25 @@ namespace HrMaxx.OnlinePayroll.Models
 					pcCredit.Amount *= -1;
 					VoidedCreditedChecks.Add(vpc.Id);
 					MiscCharges.Add(pcCredit);
+					vpc.Deductions.ForEach(vpcd =>
+					{
+						if (prevInv.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id*-1))
+						{
+							var chargedDeduction = prevInv.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id*-1);
+							var dedCredit = new MiscFee
+							{
+								PayCheckId = 0,
+								RecurringChargeId = vpcd.Deduction.Id*-1,
+								Amount = chargedDeduction.Amount*-1,
+								Description = string.Format("Reverse Credit for Deduction:{1} on voided PayCheck #{0} ", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", chargedDeduction.Description),
+								isEditable = false
+							};
+
+							MiscCharges.Add(dedCredit);
+						}
+					});
+
+					
 				}
 			});
 		}

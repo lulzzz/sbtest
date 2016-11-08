@@ -272,6 +272,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				var creditInvoices = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == invoiceId).ToList();
 				creditInvoices.ForEach(ci=>ci.CreditInvoiceId=null);
 				db.Payroll.InvoiceId = null;
+				db.PayrollPayChecks.ToList().ForEach(pc=>pc.InvoiceId=null);
 				_dbContext.PayrollInvoices.Remove(db);
 				_dbContext.SaveChanges();
 			}
@@ -284,6 +285,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			if (dbPaycheck != null)
 			{
 				dbPaycheck.WorkerCompensation = mapped.WorkerCompensation;
+				dbPaycheck.Accumulations = mapped.Accumulations;
 				_dbContext.SaveChanges();
 			}
 		}
@@ -295,10 +297,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			return _mapper.Map<List<PayrollPayCheck>, List<PayCheck>>(dbChecks.ToList());
 		}
 
-		public List<Models.Payroll> GetAllPayrolls()
+		public List<Models.Payroll> GetAllPayrolls(Guid? companyId)
 		{
-			var payrolls = _dbContext.Payrolls.ToList();
-			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls);
+			var payrolls = _dbContext.Payrolls.AsQueryable();
+			if (companyId.HasValue)
+				payrolls = payrolls.Where(p => p.CompanyId == companyId.Value);
+			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls.ToList());
 		}
 
 		public List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits()

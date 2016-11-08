@@ -106,7 +106,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
 						payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
 						payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
-						
+
 						payrollRepository.processPayroll(payroll).then(function (data) {
 							$timeout(function () {
 								$scope.cancel();
@@ -145,6 +145,26 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						
 						return returnVal;
 					}
+					var calculateHours = function (val) {
+						if (!val)
+							return 0;
+						else if ($.isNumeric(val))
+							return parseFloat(val);
+						else {
+							if (val && val.includes(":")) {
+								var splits = val.split(':');
+								if (!$.isNumeric(splits[0]) || !$.isNumeric(splits[1])) {
+									return 0;
+								} else {
+									var h = parseInt(splits[0]);
+									var m = parseInt(splits[1]);
+									if (m > 59)
+										return 0;
+									return h + +(m / 60).toFixed(2);
+								}
+							}
+						}
+					}
 					$scope.isPayCheckInvalid = function(pc) {
 						var returnVal = false;
 						var salary = pc.salary;
@@ -153,6 +173,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						if (!pc.included)
 							return false;
 						$.each(pc.payCodes, function (index1, paycode) {
+							paycode.hours = calculateHours(paycode.screenHours);
+							paycode.overtimeHours = calculateHours(paycode.screenOvertime);
 							payCodeSum += (paycode.hours + paycode.overtimeHours);
 							if (paycode.payCode.id === -1 && paycode.pwAmount <= 0) {
 								payCodeSum = 0;
@@ -316,6 +338,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 											if (ec) {
 												var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
 												if (exists.length > 0) {
+													exists[0].screenHours = paycode.screenHours;
+													exists[0].screenOvertime = paycode.screenOvertime;
 													exists[0].hours = paycode.hours;
 													exists[0].overtimeHours = paycode.overtimeHours;
 													if (paycode.payCode.id === 0 && paycode.payCode.hourlyRate) {

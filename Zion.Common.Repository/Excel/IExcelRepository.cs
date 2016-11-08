@@ -14,7 +14,7 @@ namespace HrMaxx.Common.Repository.Excel
 {
 	public interface IExcelRepository
 	{
-		FileDto GetImportTemplate(string fileName, List<string> columms);
+		FileDto GetImportTemplate(string fileName, List<string> columms, List<List<string>> rowList);
 
 		List<ExcelRead> GetExcelData(FileInfo file);
 		
