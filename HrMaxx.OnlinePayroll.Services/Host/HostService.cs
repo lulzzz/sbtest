@@ -26,15 +26,17 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 		private readonly IDocumentService _documentService;
 		private readonly ICommonService _commonService;
 		private readonly ICompanyService _companyService;
+		private readonly IMementoDataService _mementoDataService;
 		public IBus Bus { get; set; }
 
-		public HostService(IHostRepository hostRepository, IStagingDataService stagingDataService, IDocumentService documentService, ICommonService commonService, ICompanyService companyService)
+		public HostService(IHostRepository hostRepository, IStagingDataService stagingDataService, IDocumentService documentService, ICommonService commonService, ICompanyService companyService, IMementoDataService mementoDataService)
 		{
 			_hostRepository = hostRepository;
 			_stagingDataService = stagingDataService;
 			_documentService = documentService;
 			_commonService = commonService;
 			_companyService = companyService;
+			_mementoDataService = mementoDataService;
 		}
 		public IList<Models.Host> GetHostList(Guid host)
 		{
@@ -84,6 +86,9 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 					var savedCompany = _companyService.SaveHostCompany(host.Company);
 					host.CompanyId = savedCompany.Id;
 					_hostRepository.Save(host);
+					
+					var memento = Memento<Models.Host>.Create(host, EntityTypeEnum.Host, host.UserName);
+					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 					Bus.Publish<Notification>(new Notification
 					{
@@ -169,7 +174,7 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			}
 		}
 
-		public void AddHomePageImageToStaging(HostHomePageDocument homePageDocument)
+		public void AddHomePageImageToStaging(HostHomePageDocument homePageDocument, string user)
 		{
 			DocumentDto document = Mapper.Map<HostHomePageDocument, DocumentDto>(homePageDocument);
 
@@ -182,7 +187,7 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 					HostId = homePageDocument.HostId,
 					ImageType = homePageDocument.ImageType
 				};
-				var memento = Memento<HostHomePageStagingDocument>.Create(hosthomepagestagingdocument);
+				var memento = Memento<HostHomePageStagingDocument>.Create(hosthomepagestagingdocument, EntityTypeEnum.HostHomePage, user);
 				_stagingDataService.AddStagingData(memento);
 				_documentService.MoveDocument(new MoveDocumentDto
 				{

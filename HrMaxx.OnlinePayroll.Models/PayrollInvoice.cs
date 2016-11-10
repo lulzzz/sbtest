@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
-	public class PayrollInvoice : BaseEntityDto
+	public class PayrollInvoice : BaseEntityDto, IOriginator<PayrollInvoice>
 	{
 		public Guid CompanyId { get; set; }
 		public Guid PayrollId { get; set; }
@@ -322,6 +323,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		private void CalculateAdminFee(Payroll payroll)
 		{
 			AdminFee = CompanyInvoiceSetup.AdminFeeMethod == 1 ? CompanyInvoiceSetup.AdminFee : Math.Round(CompanyInvoiceSetup.AdminFee*payroll.TotalGrossWage/100, 2, MidpointRounding.AwayFromZero);
+		}
+
+		public Guid MementoId
+		{
+			get { return Id; }
+		}
+
+		public void ApplyMemento(Memento<PayrollInvoice> memento)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

@@ -99,14 +99,37 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							return false;
 						}
 					}
-					
+					var getQuarter = function(month) {
+						if (month < 4)
+							return 1;
+						if (month < 7)
+							return 2;
+						if (month < 10)
+							return 3;
+						return 4;
+					}
 					$scope.voidcheck = function (listitem) {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to mark this check Void?', 'info', function() {
-							payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function(data) {
-								$scope.$parent.$parent.updateListAndItem($scope.item.id);
-							}, function(error) {
-								addAlert('error voiding pay check', 'danger');
-							});
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to mark this check Void?', 'info', function () {
+							var checkQuarter = getQuarter(moment(listitem.payDay).format("MM"));
+							var thisQuarter = getQuarter(moment().format("MM"));
+							var checkYear = moment(listitem.payDay).format("YYYY");
+							var thisYear = moment().format("YYYY");
+							if (checkYear <= thisYear && checkQuarter < thisQuarter) {
+								$scope.$parent.$parent.$parent.$parent.confirmDialog('This check was issued in a previous quarter. are you sure you want to mark this check Void?', 'danger', function() {
+									payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function(data) {
+										$scope.$parent.$parent.updateListAndItem($scope.item.id);
+									}, function(error) {
+										addAlert('error voiding pay check', 'danger');
+									});
+								});
+							} else {
+								payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function (data) {
+									$scope.$parent.$parent.updateListAndItem($scope.item.id);
+								}, function (error) {
+									addAlert('error voiding pay check', 'danger');
+								});
+							}
+							
 						});
 					}
 					$scope.viewcheck = function(listitem) {

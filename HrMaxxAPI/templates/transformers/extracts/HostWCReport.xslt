@@ -327,7 +327,7 @@
 	</xsl:template>
 	<xsl:template match="ExtractCompany" mode="NotWC">
 		<xsl:variable name ="comp" select="Company"/>
-		<xsl:for-each select="EmployeeAccumulations/EmployeeAccumulation[Accumulation/WorkerCompensations/PayrollWorkerCompensation/Amount=0]">
+		<xsl:for-each select="EmployeeAccumulations/EmployeeAccumulation[PayChecks/PayCheck/WCAmount=0]">
 			<xsl:variable name="emp" select="Employee"/>
 			<xsl:variable name="acc" select="Accumulation"/>
 			<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation[Amount=0]">

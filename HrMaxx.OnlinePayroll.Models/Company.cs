@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
-	public class Company : BaseEntityDto
+	public class Company : BaseEntityDto, IOriginator<Company>
 	{
 		public Guid HostId { get; set; }
 		public string Name { get; set; }
@@ -50,7 +51,17 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyWorkerCompensation> WorkerCompensations { get; set; }
 		public ContractDetails Contract { get; set; }
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
-		public List<CompanyPayCode> PayCodes { get; set; } 
+		public List<CompanyPayCode> PayCodes { get; set; }
+
+		public Guid MementoId
+		{
+			get { return Id; }
+		}
+
+		public void ApplyMemento(Memento<Company> memento)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class ContractDetails
@@ -86,7 +97,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal? MinGrossWage { get; set; }
 	}
 
-	public class CompanyDeduction
+	public class CompanyDeduction : IOriginator<CompanyDeduction>
 	{
 		public int Id { get; set; }
 		public Guid CompanyId { get; set; }
@@ -97,7 +108,19 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
-		
+
+		public Guid MementoId {
+			get
+			{
+				var str = string.Format("{0}-0000-0000-0000-{1}", ((int)EntityTypeEnum.CompanyDeductions).ToString().PadLeft(8, '0'),
+					Id.ToString().PadLeft(12, '0'));
+				return new Guid(str);
+			} 
+		}
+		public void ApplyMemento(Memento<CompanyDeduction> memento)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class AccumulatedPayType

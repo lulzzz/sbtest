@@ -2,6 +2,7 @@
 using System.Reflection;
 using Autofac;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.TestSupport;
@@ -45,7 +46,7 @@ namespace HrMaxx.Common.IntegrationTests.Stories.StagingData
 
 		private void SaveInStagingData()
 		{
-			_memento = Memento<SomeTestObjectForSavingValidMemento>.Create(_testObject);
+			_memento = Memento<SomeTestObjectForSavingValidMemento>.Create(_testObject, EntityTypeEnum.General, string.Empty);
 			_service.AddStagingData(_memento);
 		}
 

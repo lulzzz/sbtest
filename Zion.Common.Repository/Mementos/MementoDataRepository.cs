@@ -20,9 +20,9 @@ namespace HrMaxx.Common.Repository.Mementos
 		public void SaveMemento(MementoPersistenceDto memento)
 		{
 			const string sql =
-				@"INSERT INTO Common.Mementos(memento, originatortype, version, mementoid) VALUES (@Memento, @OriginatorType, @Version, @MementoId)";
+				@"INSERT INTO Common.Memento(memento, originatortype, version, mementoid, sourcetypeid, createdby) VALUES (@Memento, @OriginatorType, @Version, @MementoId, @SourceTypeId, @CreatedBy)";
 			const string versionSql =
-				@"SELECT MAX(version) as version FROM Common.Mementos WHERE originatortype = @OriginatorType AND mementoid = @MementoId";
+				@"SELECT MAX(version) as version FROM Common.Memento WHERE originatortype = @OriginatorType AND mementoid = @MementoId";
 
 			using (TransactionScope txn = TransactionScopeHelper.Transaction())
 			{
@@ -35,7 +35,9 @@ namespace HrMaxx.Common.Repository.Mementos
 					memento.Memento,
 					memento.OriginatorType,
 					Version = nextVersion,
-					memento.MementoId
+					memento.MementoId,
+					memento.SourceTypeId,
+					memento.CreatedBy
 				});
 
 				txn.Complete();
@@ -45,7 +47,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public IEnumerable<MementoPersistenceDto> GetMementoData<T>(Guid mementoId)
 		{
 			const string sql =
-				@"SELECT Id, Memento, OriginatorType, Version, DateCreated FROM Common.Mementos WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version ASC";
+				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version ASC";
 
 			string originatorType = typeof (T).FullName;
 
@@ -56,7 +58,7 @@ namespace HrMaxx.Common.Repository.Mementos
 
 		public void DeleteMementoData<T>(Guid mementoId)
 		{
-			const string sql = @"DELETE FROM Common.Mementos WHERE MementoId = @MementoId";
+			const string sql = @"DELETE FROM Common.Memento WHERE MementoId = @MementoId";
 
 			using (TransactionScope txn = TransactionScopeHelper.Transaction())
 			{
@@ -68,7 +70,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public MementoPersistenceDto GetMostRecentMemento<T>(Guid mementoId)
 		{
 			const string sql =
-				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId FROM Common.Mementos WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
+				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
 
 			string originatorType = typeof (T).FullName;
 
@@ -82,7 +84,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public IEnumerable<MementoPersistenceDto> GetMementoData<T>()
 		{
 			const string sql =
-				@"SELECT Id, Memento, OriginatorType, Version, DateCreated FROM Common.Mementos WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
+				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
 
 			string originatorType = typeof (T).FullName;
 

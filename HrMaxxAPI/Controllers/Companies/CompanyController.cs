@@ -92,7 +92,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyDeductionResource SaveDeduction(CompanyDeductionResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyDeductionResource, CompanyDeduction>(resource);
-			var ded = MakeServiceCall(() => _companyService.SaveDeduction(mappedResource), "save company deduction", true);
+			var ded = MakeServiceCall(() => _companyService.SaveDeduction(mappedResource, CurrentUser.FullName), "save company deduction", true);
 			return Mapper.Map<CompanyDeduction, CompanyDeductionResource>(ded);
 		}
 

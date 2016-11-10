@@ -1,4 +1,5 @@
 ﻿using System;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Services.Mementos;
@@ -33,7 +34,7 @@ namespace HrMaxx.Common.Tests.Stories.StagingData
 					Name = "TestName",
 					Description = "TestDescription",
 					Id = 233
-				});
+				}, EntityTypeEnum.General, string.Empty);
 
 				state.GetMockFor<IStagingDataRepository>()
 					.Setup(a => a.GetMostRecentMemento<TestObject>(It.IsAny<Guid>()))

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Infrastructure.Exceptions;
@@ -28,7 +29,9 @@ namespace HrMaxx.Common.Services.Mementos
 			{
 				OriginatorType = memento.OriginatorTypeName,
 				Memento = memento.State,
-				MementoId = memento.Id
+				MementoId = memento.MementoId,
+				SourceTypeId = (int)memento.SourceTypeId,
+				CreatedBy = memento.CreatedBy
 			};
 
 			try
@@ -83,7 +86,7 @@ namespace HrMaxx.Common.Services.Mementos
 					return null;
 
 				var mementos = new List<Memento<T>>();
-				memento.ForEach(m => mementos.Add(Memento<T>.Create(mementoId, m.Version, m.DateCreated, m.Memento)));
+				memento.ForEach(m => mementos.Add(Memento<T>.Create(mementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
 				return mementos;
 			}
 			catch (Exception e)
@@ -106,7 +109,7 @@ namespace HrMaxx.Common.Services.Mementos
 					return null;
 
 				var mementos = new List<Memento<T>>();
-				memento.ForEach(m => mementos.Add(Memento<T>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento)));
+				memento.ForEach(m => mementos.Add(Memento<T>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
 				return mementos;
 			}
 			catch (Exception e)

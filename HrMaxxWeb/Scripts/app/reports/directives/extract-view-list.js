@@ -16,7 +16,7 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 					var dataSvc = {
 						reports:[
 						{
-							name: 'FederalQuarterly940',
+							name: 'Federal940',
 							desc: 'Federal 940'
 						},
 						{

@@ -1,4 +1,5 @@
-﻿using HrMaxx.Common.Models.Mementos;
+﻿using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Services.Mementos;
 using HrMaxx.Common.Tests.Stories.StagingData.Helpers;
@@ -31,7 +32,7 @@ namespace HrMaxx.Common.Tests.Stories.StagingData
 			public void Initialize(ISpecs<StagingDataService> state)
 			{
 				_originator = new TestObject();
-				_memento = Memento<TestObject>.Create(_originator);
+				_memento = Memento<TestObject>.Create(_originator, EntityTypeEnum.General, string.Empty);
 
 				state.GetMockFor<IStagingDataRepository>()
 					.Setup(a => a.SaveMemento(It.IsAny<StagingDataDto>()))
@@ -53,7 +54,7 @@ namespace HrMaxx.Common.Tests.Stories.StagingData
 			{
 				OriginatorType = _memento.OriginatorTypeName,
 				Memento = _memento.State,
-				MementoId = _memento.Id
+				MementoId = _memento.MementoId
 			};
 
 			_persistedMemento.ShouldLookLike(expectedDto);

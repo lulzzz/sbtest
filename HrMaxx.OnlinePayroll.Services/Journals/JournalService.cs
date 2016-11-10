@@ -496,7 +496,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		}
 		private decimal CalculateTaxAmount(string report, ExtractHost host)
 		{
-			if (report.Equals("FederalQuarterly940"))
+			if (report.Equals("Federal940"))
 			{
 				
 				return host.Accumulation.Taxes940;
@@ -509,12 +509,12 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			if (report.Equals("StateCAPIT"))
 			{
 				
-				return host.Accumulation.Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.Amount);
+				return host.Accumulation.TaxesPitSdi;
 			}
 			if (report.Equals("StateCAUI"))
 			{
 				
-				return host.Accumulation.Taxes.Where(t => t.Tax.Id == 9 || t.Tax.Id == 10).Sum(t => t.Amount);
+				return host.Accumulation.TaxesEttSui;
 			}
 
 			throw new Exception("no Taxes to be files on this report");

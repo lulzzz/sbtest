@@ -250,11 +250,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(dbPayrollInvoice);
 		}
 
-		public List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId)
+		public List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId, InvoiceStatus status = (InvoiceStatus) 0)
 		{
 			var invoices = _dbContext.PayrollInvoices.Where(pi => (hostId!=Guid.Empty && pi.Company.HostId == hostId) || hostId==Guid.Empty).AsQueryable();
 			if (companyId.HasValue)
 				invoices = invoices.Where(pi => pi.CompanyId == companyId);
+			if (status > 0)
+				invoices = invoices.Where(pi => pi.Status == (int)status);
+
 			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
 		}
 

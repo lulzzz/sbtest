@@ -6,6 +6,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
@@ -36,9 +37,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IHostService _hostService;
 		private readonly IReportService _reportService;
 		private readonly ICommonService _commonService;
+		private readonly IMementoDataService _mementoDataService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -50,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_reportService = reportService;
 			_commonService = commonService;
 			_companyRepository = companyRepository;
+			_mementoDataService = mementoDataService;
 		}
 
 
@@ -757,6 +760,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					_commonService.AddToList<Comment>(EntityTypeEnum.Company, EntityTypeEnum.Comment, company.Id, new Comment { Content = string.Format("Invoice #{0}: {1}", payrollInvoice.InvoiceNumber, payroll.Notes), TimeStamp = savedInvoice.LastModified });
 				}
+				var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName);
+				_mementoDataService.AddMementoData(memento);
 				Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
 				{
 					SavedObject = savedInvoice,
@@ -801,11 +806,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 		
-		public List<PayrollInvoice> GetHostInvoices(Guid hostId)
+		public List<PayrollInvoice> GetHostInvoices(Guid hostId, InvoiceStatus submitted = (InvoiceStatus) 0)
 		{
 			try
 			{
-				return _payrollRepository.GetPayrollInvoices(hostId, null);
+				return _payrollRepository.GetPayrollInvoices(hostId, null, submitted);
 			}
 			catch (Exception e)
 			{
@@ -874,7 +879,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					}
 					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice);
-					
+					var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName);
+					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 
 					return savedInvoice;

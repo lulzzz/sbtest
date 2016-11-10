@@ -40,20 +40,26 @@
 						@if (CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()))
 						{
 							<li><a href="#!/Admin/Config">Configuration</a></li>
+							<li><a href="#!/Admin/HostList">Manage Host</a></li>
+							
+							<li><a href="#!/Admin/UserList">Users</a></li>
+							<li><a href="#!/Admin/Invoices#invoice">Invoices</a></li>
+							<li><a href="#!/Admin/Extracts">Data Extracts</a></li>
 						}
-						<li><a href="#!/Admin/HostList">Manage Host</a></li>
 						<li><a href="#!/Admin/NewsList">News & Announcements</a></li>
-						<li><a href="#!/Admin/UserList">Users</a></li>
-						<li><a href="#!/Admin/Invoices#invoice">Invoices</a></li>
-						<li><a href="#!/Admin/Extracts">Data Extracts</a></li>
+						
 						
 					</ul>
 				</li>
 			}
+			@if (CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
+			{
+				<li><a href="#!/Admin/InvoiceDelivery" data-toggle="tooltip" data-placement="right" title="Invoice Delivery"><i class="fa fa-truck"></i><span>Invoice Delivery</span></a></li>
+			}
 			@if (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.HostStaff.GetDbName()))
 			{
 				<li><a href="#!/Admin/Host" data-toggle="tooltip" data-placement="right" title="Host Profile"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
-				<li><a href="#!/Admin/Invoices" data-toggle="tooltip" data-placement="right" title="Invoices"><i class="fa fa-home"></i><span>Invoices</span></a></li>
+				<li><a href="#!/Admin/Invoices" data-toggle="tooltip" data-placement="right" title="Invoices"><i class="fa fa-envelope"></i><span>Invoices</span></a></li>
 			}
 			@if (!CurrentUser.IsInRole(RoleTypeEnum.Company.GetDbName()) && !CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))
 			{
@@ -66,7 +72,7 @@
 				<li><a href="#" onclick=" this.href = '#!/Client/Employees/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Employee"><i class="fa fa-users"></i><span>Employee</span></a></li>
 				<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime()) + '#invoice'; "><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
 				<!--<li><a href="#!/Client/Invoices"><i class="fa fa-newspaper-o"></i><span>Invoices</span></a></li>-->
-				<li><a href="#!/Client/Checkbook" data-toggle="tooltip" data-placement="right" title="Checkbook"><i class="fa fa-calculator"></i><span>Checkbook</span></a></li>
+				<li><a href="#!/Client/Checkbook" data-toggle="tooltip" data-placement="right" title="Checkbook"><i class="fa fa-bank"></i><span>Checkbook</span></a></li>
 				<li><a href="#!/Client/Vendors" data-toggle="tooltip" data-placement="right" title="Vendors"><i class="fa fa-building-o"></i><span>Vendors</span></a></li>
 				<li><a href="#!/Client/Customers" data-toggle="tooltip" data-placement="right" title="Customers"><i class="fa fa-user"></i><span>Customers</span></a></li>
 				<li><a href="#!/Client/Accounts" data-toggle="tooltip" data-placement="right" title="COA"><i class="fa fa-money"></i><span>COA</span></a></li>

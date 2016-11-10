@@ -27,7 +27,7 @@ namespace HrMaxx.Common.Services.Mementos
 			{
 				OriginatorType = memento.OriginatorTypeName,
 				Memento = memento.State,
-				MementoId = memento.Id
+				MementoId = memento.MementoId
 			};
 
 			try

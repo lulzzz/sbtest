@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Autofac;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.TestSupport;
@@ -14,8 +15,8 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 		[Test]
 		public void DeleteMementoData_ForAExistingMementos_DeletesTheMementosSuccessfully()
 		{
-			var testObject = new SomeTestObjectForSavingValidMemento {Id = Guid.NewGuid(), Name = "Test Name"};
-			Memento<SomeTestObjectForSavingValidMemento> memento = Memento<SomeTestObjectForSavingValidMemento>.Create(testObject);
+			var testObject = new SomeTestObjectForSavingValidMemento { Id = 0, ObjectId = Guid.NewGuid(), Name = "Test Name", SourceTypeId = EntityTypeEnum.General, CreatedBy = "Some User" };
+			Memento<SomeTestObjectForSavingValidMemento> memento = Memento<SomeTestObjectForSavingValidMemento>.Create(testObject, testObject.SourceTypeId, testObject.CreatedBy);
 
 			using (TransactionScopeHelper.Transaction())
 			{
@@ -24,14 +25,14 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 				stagingDataSvc.AddMementoData(memento);
 
 				Memento<SomeTestObjectForSavingValidMemento> savedMemento =
-					stagingDataSvc.GetMostRecentMementoData<SomeTestObjectForSavingValidMemento>(memento.Id);
+					stagingDataSvc.GetMostRecentMementoData<SomeTestObjectForSavingValidMemento>(memento.MementoId);
 				Assert.That(savedMemento.Id, Is.EqualTo(testObject.Id));
 				Assert.That(savedMemento.OriginatorTypeName, Is.EqualTo(typeof (SomeTestObjectForSavingValidMemento).FullName));
 
-				stagingDataSvc.DeleteMementoData<SomeTestObjectForSavingValidMemento>(memento.Id);
+				stagingDataSvc.DeleteMementoData<SomeTestObjectForSavingValidMemento>(memento.MementoId);
 
 				List<Memento<SomeTestObjectForSavingValidMemento>> mementoAfterDelete =
-					stagingDataSvc.GetMementoData<SomeTestObjectForSavingValidMemento>(memento.Id);
+					stagingDataSvc.GetMementoData<SomeTestObjectForSavingValidMemento>(memento.MementoId);
 
 				Assert.IsNull(mementoAfterDelete);
 			}
@@ -39,8 +40,11 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 
 		internal class SomeTestObjectForSavingValidMemento : IOriginator<SomeTestObjectForSavingValidMemento>
 		{
-			public Guid Id { get; set; }
+			public int Id { get; set; }
+			public Guid ObjectId { get; set; }
 			public string Name { get; set; }
+			public EntityTypeEnum SourceTypeId { get; set; }
+			public string CreatedBy { get; set; }
 
 			public void ApplyMemento(Memento<SomeTestObjectForSavingValidMemento> memento)
 			{
@@ -51,7 +55,7 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 
 			public Guid MementoId
 			{
-				get { return Id; }
+				get { return ObjectId; }
 			}
 		}
 	}

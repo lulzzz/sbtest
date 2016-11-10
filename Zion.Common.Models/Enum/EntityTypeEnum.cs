@@ -8,6 +8,7 @@ namespace HrMaxx.Common.Models.Enum
 {
 	public enum EntityTypeEnum
 	{
+		General=0,
 		Host=1,
 		Company=2,
 		Employee=3,
@@ -23,6 +24,12 @@ namespace HrMaxx.Common.Models.Enum
 		Document = 13,
 		Comment = 14,
 		Vendor=15,
-		Customer=16
+		Customer=16,
+		HostHomePage=17,
+		CompanyDeductions=18,
+		CompanyWorkerCompensations=19,
+		CompanyPayCodes=20,
+		CompanyTaxes=21,
+
 	}
 }

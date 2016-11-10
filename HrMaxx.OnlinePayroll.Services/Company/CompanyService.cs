@@ -6,6 +6,7 @@ using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Messages.Events;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
@@ -22,12 +23,14 @@ namespace HrMaxx.OnlinePayroll.Services
 	public class CompanyService : BaseService, ICompanyService
 	{
 		private readonly ICompanyRepository _companyRepository;
+		private readonly IMementoDataService _mementoDataService;
 		
 		public IBus Bus { get; set; }
 		
-		public CompanyService(ICompanyRepository companyRepository)
+		public CompanyService(ICompanyRepository companyRepository, IMementoDataService mementoDataService)
 		{
 			_companyRepository = companyRepository;
+			_mementoDataService = mementoDataService;
 		}
 
 		
@@ -81,6 +84,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
+
 					
 					txn.Complete();
 					
@@ -94,8 +98,11 @@ namespace HrMaxx.OnlinePayroll.Services
 					//});
 					
 				}
-				return _companyRepository.GetCompanyById(company.Id);
-				
+				var returnCompany = _companyRepository.GetCompanyById(company.Id);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName);
+				_mementoDataService.AddMementoData(memento);
+				return returnCompany;
+
 			}
 			catch (Exception e)
 			{
@@ -124,8 +131,9 @@ namespace HrMaxx.OnlinePayroll.Services
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
-					
-					
+
+					var memento = Memento<Company>.Create(savedcompany, EntityTypeEnum.Company, savedcompany.UserName);
+					_mementoDataService.AddMementoData(memento);
 					return savedcompany;
 				
 			}
@@ -137,11 +145,14 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyDeduction SaveDeduction(CompanyDeduction deduction)
+		public CompanyDeduction SaveDeduction(CompanyDeduction deduction, string user)
 		{
 			try
 			{
-				return _companyRepository.SaveDeduction(deduction);
+				var returnDed = _companyRepository.SaveDeduction(deduction);
+				var memento = Memento<CompanyDeduction>.Create(returnDed, EntityTypeEnum.CompanyDeductions, user);
+				_mementoDataService.AddMementoData(memento);
+				return returnDed;
 			}
 			catch (Exception e)
 			{
@@ -211,7 +222,10 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				return _companyRepository.SaveVendorCustomer(mappedResource);
+				var returnVal = _companyRepository.SaveVendorCustomer(mappedResource);
+				var memento = Memento<Models.VendorCustomer>.Create(returnVal, returnVal.IsVendor? EntityTypeEnum.Vendor : EntityTypeEnum.Customer, returnVal.UserName);
+				_mementoDataService.AddMementoData(memento);
+				return returnVal;
 			}
 			catch (Exception e)
 			{
@@ -295,6 +309,8 @@ namespace HrMaxx.OnlinePayroll.Services
 				var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
 				var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 				var savedEmployee = _companyRepository.SaveEmployee(employee);
+				var memento = Memento<Employee>.Create(savedEmployee, EntityTypeEnum.Employee, savedEmployee.UserName);
+				_mementoDataService.AddMementoData(memento);
 				if (sendNotification)
 				{
 					Bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent

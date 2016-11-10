@@ -16,7 +16,9 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						isBodyOpen: true,
 						response: null,
 						approachingPayrolls: [],
-						payrollsWithoutInvoice: []
+						filteredApproachingPayrolls: [],
+						payrollsWithoutInvoice: [],
+						filterApproachingPayroll: ''
 					}
 
 
@@ -26,7 +28,9 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 					$scope.chartData = [];
 					$scope.selectedChart = null;
-
+					$scope.print = function () {
+						$window.print();
+					}
 					$scope.drawCharts = function () {
 
 						$scope.data.criteria = '';
@@ -70,7 +74,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							clearIfExists('InvoiceChartData', data.data, 'Companies with outstanding invoices by age');
 
 							var options = {
-								title: 'Companies with outstanding invoices by age',
+								title: 'OS Invoice by age',
 								vAxis: {
 									title: "No. of Invoices"
 								},
@@ -100,7 +104,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							clearIfExists('PayrollChartData', data.data, 'Companies with outstanding invoices with approaching payroll date');
 
 							var options = {
-								title: 'Companies with outstanding invoices with approaching payroll date',
+								title: 'OS Invoice / Days to Next Payroll',
 								vAxis: {
 									title: "No. of Companies"
 								},
@@ -136,11 +140,26 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.drawCompaniesWithApproachingPayrolls = function () {
 						reportRepository.getDashboardData('GetCompaniesNextPayrollChartData', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
 							dataSvc.approachingPayrolls = data.data;
+							dataSvc.filteredApproachingPayrolls = angular.copy(data.data);
 						}, function (error) {
 							console.log(error);
 						});
 
 					};
+
+					$scope.filterCompaniesApproachingPayroll = function() {
+						if (dataSvc.filterApproachingPayroll) {
+							var filtered = [];
+							$.each(dataSvc.approachingPayrolls, function(ind, ap) {
+								if (ap[4] === dataSvc.filterApproachingPayroll) {
+									filtered.push(ap);
+								}
+							});
+							dataSvc.filteredApproachingPayrolls = filtered;
+						} else {
+							dataSvc.filteredApproachingPayrolls = angular.copy(dataSvc.approachingPayrolls);
+						}
+					}
 
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);

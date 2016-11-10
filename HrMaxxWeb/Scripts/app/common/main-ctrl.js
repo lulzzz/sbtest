@@ -72,6 +72,7 @@
 			userHost: null,
 			userCompany: null,
 			userRole: null,
+			myName: '',
 			isReady: false,
 			reportFilter: {
 				filterStartDate: null,
@@ -92,6 +93,7 @@
 			if (auth) {
 				var dataInput = $element.data();
 				dataSvc.userRole = dataInput.role;
+				dataSvc.myName = dataInput.name;
 				if (dataInput.host !== '00000000-0000-0000-0000-000000000000') {
 					dataSvc.userHost = dataInput.host;
 				}

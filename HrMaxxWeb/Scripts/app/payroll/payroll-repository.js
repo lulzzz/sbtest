@@ -117,6 +117,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			getApprovedInvoicesForHost: function () {
+				var deferred = $q.defer();
+				payrollServer.one('ApprovedInvoices').getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			savePayrollInvoice: function (invoice) {
 				var deferred = $q.defer();
 				payrollServer.all('PayrollInvoice').post(invoice).then(function (data) {

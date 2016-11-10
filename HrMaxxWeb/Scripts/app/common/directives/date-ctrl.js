@@ -26,8 +26,8 @@ common.directive('dateCtrl', ['zionAPI','version',
 				$scope.dateOptions = {
 					minDate: $scope.min ? $scope.min : moment("01/01/1920", "MM/DD/YYYY").toDate(),
 					maxDate: $scope.max ? $scope.max : moment("12/31/2050", "MM/DD/YYYY").toDate(),
-					startingDay: 1,
-					showWeeks: false
+					startingDay: 0,
+					showWeeks: false,
 				};
 				$scope.formats = ['MM/dd/yyyy'];
 				$scope.format = $scope.formats[0];

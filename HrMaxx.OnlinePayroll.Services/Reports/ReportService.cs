@@ -185,8 +185,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetSSAMagnetic(request);
 				else if (request.ReportName.Equals("Report1099"))
 					return Get1099Extract(request);
-				else if (request.ReportName.Equals("FederalQuarterly940"))
-					return FederalQuarterly940(request);
+				else if (request.ReportName.Equals("Federal940"))
+					return Federal940(request);
 				else if (request.ReportName.Equals("Federal941"))
 					return Federal941(request);
 				else if (request.ReportName.Equals("StateCAPIT"))
@@ -307,13 +307,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			});
 			return data;
 		}
-		private Extract FederalQuarterly940(ReportRequest request)
+		private Extract Federal940(ReportRequest request)
 		{
-			request.Description = string.Format("Federal 940 EFTPS for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = string.Format("Federal 940 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
 			var data = GetExtractResponse(request);
 
-			var reportConst = _taxationService.PullReportConstant("Form940", (int)DepositSchedule941.Quarterly);
+			var reportConst = _taxationService.PullReportConstant("Form940", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new XsltArgumentList();
 			argList.AddParam("batchFilerId", "", config.BatchFilerId);
@@ -323,7 +323,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
 			argList.AddParam("selectedYear", "", request.Year);
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal Quarterly 940 Extract-{0}-{1}.txt", request.Year, request.Quarter));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal {2} 940 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
 		}
 		private Extract Federal941(ReportRequest request)
 		{
@@ -363,7 +363,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract StateCAUI(ReportRequest request)
 		{
-			request.Description = string.Format("California State UI & ETT for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = string.Format("California State UI & ETT for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
 			var data = GetExtractResponse(request);
 			
@@ -375,7 +375,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("selectedYear", "", request.Year);
 
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPS.xslt", "txt", string.Format("California State Quarterly UI & ETT GovOneFile-{0}-{1}.txt", request.Year, request.Quarter));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPS.xslt", "txt", string.Format("California State {2} UI & ETT GovOneFile-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
 		}
 		private Extract StateCADE6(ReportRequest request)
 		{

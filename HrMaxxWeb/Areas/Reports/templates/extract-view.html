@@ -90,18 +90,25 @@
 							</div>
 						</td>
 						<td class="col-sm-3" ng-show="selectedCompany">
-							<div class="row" ng-show="selectedCompany.payChecks.length>0">
+							<div class="row m-b-2 m-t-2" ng-show="selectedCompanyFilings.length>0">
+								<button class="btn btn-info btn-sm" ng-click="showHistory=!showHistory"><i class="fa" ng-class="{'fa-plus-circle': !showHistory, 'fa-minus-circle': showHistory}"></i> Previous Filings <span class="badge">{{selectedCompanyFilings.length}}</span></button>
+
+							</div>
+							<div class="row  m-b-1 m-t-1" ng-repeat="f in selectedCompanyFilings" ng-show="showHistory">
+								<i><u>{{f.depositDate | date:'MM/dd/yyyy'}} (Wages: {{f.wages | currency:'$'}} - Taxes: {{f.taxes | currency:'$'}} )</u></i>
+							</div>
+							<div class="row  m-b-2 m-t-2" ng-show="selectedCompany.payChecks.length>0">
 								<button class="btn btn-info btn-sm" ng-click="showPayChecks=!showPayChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Pay Checks <span class="badge">{{selectedCompany.payChecks.length}}</span></button>
 
 							</div>
-							<div class="row" ng-repeat="pc in selectedCompany.payChecks" ng-show="showPayChecks">
+							<div class="row m-b-1 m-t-1" ng-repeat="pc in selectedCompany.payChecks" ng-show="showPayChecks">
 								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
 							</div>
-							<div class="row" ng-show="selectedCompany.voidedPayChecks.length>0">
+							<div class="row  m-b-2 m-t-2" ng-show="selectedCompany.voidedPayChecks.length>0">
 								<button class="btn btn-info btn-sm" ng-click="showVoidedChecks=!showVoidedChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Voided Checks <span class="badge">{{selectedCompany.showVoidedChecks.length}}</span></button>
 
 							</div>
-							<div class="row" ng-repeat="pc in selectedCompany.voidedPayChecks" ng-show="showVoidedChecks">
+							<div class="row m-b-1 m-t-1" ng-repeat="pc in selectedCompany.voidedPayChecks" ng-show="showVoidedChecks">
 								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
 							</div>
 						</td>

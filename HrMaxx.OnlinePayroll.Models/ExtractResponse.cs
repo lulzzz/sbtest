@@ -18,7 +18,8 @@ namespace HrMaxx.OnlinePayroll.Models
 	}
 	public class ExtractResponse
 	{
-		public List<ExtractHost> Hosts { get; set; } 
+		public List<ExtractHost> Hosts { get; set; }
+		public List<MasterExtract> History { get; set; } 
 	}
 
 	public class ExtractHost
@@ -35,7 +36,17 @@ namespace HrMaxx.OnlinePayroll.Models
 	}
 	public class ExtractResponseDB
 	{
-		public List<ExtractHostDB> Hosts { get; set; } 
+		public List<ExtractHostDB> Hosts { get; set; }
+		public List<MasterExtractDB> History { get; set; } 
+	}
+
+	public class MasterExtractDB
+	{
+		public string Extract { get; set; }
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
+		public DateTime DepositDate { get; set; }
+		
 	}
 	public class ExtractHostDB
 	{

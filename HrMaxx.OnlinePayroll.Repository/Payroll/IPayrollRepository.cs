@@ -25,7 +25,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed);
 		void MarkPayrollPrinted(Guid payrollId);
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice);
-		List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId);
+		List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId, InvoiceStatus status=(InvoiceStatus)0);
 		PayrollInvoice GetPayrollInvoiceById(Guid id);
 		void DeletePayrollInvoice(Guid invoiceId);
 		void SavePayCheck(PayCheck pc);

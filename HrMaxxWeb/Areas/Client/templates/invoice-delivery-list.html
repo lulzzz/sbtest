@@ -1,0 +1,100 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Invoice List for Delivery<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div ng-show="list.length===0 && !selectedInvoice" class="table table-bordered hidden-print">
+				No invoices found
+			</div>
+			<div class="row m-10 hidden-print" ng-show="showPrint()">
+				<button class="btn btn-sm btn-info pull-right" ng-click="print()"><i class="fa fa-print">Print</i></button>
+			</div>
+			<div class="row text-center" >
+				<div class="col-sm-12 m-20 visible-print">
+					<h2 class="text-center">Delivery Log</h2>
+					<br/>
+					<h4>{{mainData.myName}} ( {{today | date:'MM/dd/yyyy'}}) </h4>
+				</div>
+				<table ng-table="tableParams" class="table hidden-print" template-pagination="custom/nopager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="item.selected=!item.selected; " ng-class="{'success':item.selected}">
+						<td data-title="'#'" class="col-sm-1 text-center">
+							{{$index + 1}}
+						</td>
+						<td data-title=" 'Company' "  sortable=" 'companyName' " class="col-sm-2 text-center">
+							{{item.companyName}}
+						</td>
+						
+						<td data-title=" 'Total' " sortable=" 'total' " class="col-sm-1 text-center show-red">
+							{{item.total | currency:'$'}}
+						</td>
+						
+						<td data-title=" 'Notes' "  class="col-sm-8 text-center">
+							{{item.notes}}
+						</td>
+						
+
+					</tr>
+
+				</table>
+				<table class="table visible-print" >
+					<thead>
+						<tr>
+							<th class="col-sm-1 text-center">#</th>
+							<th class="col-sm-2 text-center">Client</th>
+							<th class="col-sm-1 text-center">Total</th>
+							<th class="col-sm-8 text-center">Notes</th>
+						</tr>
+					</thead>
+					<tr ng-repeat="item in tableData | filter:{selected:true} track by $index"  >
+						<td class="col-sm-1 text-center">
+							{{$index + 1}}
+						</td>
+						<td class="col-sm-1 text-center">
+							{{item.companyName}}
+						</td>
+						
+						<td class="col-sm-1 text-center">
+							{{item.total | currency:'$'}}
+						</td>
+						
+						<td class="col-sm-8 text-center">
+							{{item.notes}}
+						</td>
+
+
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+				
+			</div>
+
+			<!-- end panel -->
+		</div>
+	</div>
+	
+	
+	
+</div>
+
+

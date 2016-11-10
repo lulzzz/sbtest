@@ -18,6 +18,7 @@
 		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{year:int}";
 		public const string CreatePayrollInvoice = "Payroll/CreatePayrollInvoice";
 		public const string HostInvoices = "Payroll/HostInvoices";
+		public const string ApprovedInvoices = "Payroll/ApprovedInvoices";
 		public const string PayrollInvoice = "Payroll/PayrollInvoice";
 		public const string DeletePayrollInvoice = "Payroll/DeletePayrollInvoice/{invoiceId:guid}";
 		public const string FixPayrollData = "Payroll/FixPayrollData";

@@ -14,6 +14,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					var dataSvc = {
 
 						isBodyOpen: true,
+						isBodyOpenExtract: true,
 						response: null,
 						minYear: 2016,
 						filter: {
@@ -32,12 +33,20 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						},
 						filter940Q: {
 							year: 0,
-							quarter: 0,
+							payPeriods: [],
+							payPeriod: null,
+							depositSchedule: null,
+							month: null,
+							quarter: null,
 							depositDate: moment().startOf('day').toDate()
 						},
 						filterCAUIQ: {
 							year: 0,
-							quarter: 0,
+							payPeriods: [],
+							payPeriod: null,
+							depositSchedule: null,
+							month: null,
+							quarter: null,
 							depositDate: moment().startOf('day').toDate()
 						},
 						filter941: {
@@ -98,6 +107,37 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 						}
 					}
+					$scope.is940Valid = function () {
+						if (!dataSvc.filter940Q.year || !dataSvc.filter940Q.depositSchedule || !dataSvc.filter940Q.depositDate)
+							return false;
+						else {
+							if (dataSvc.filter940Q.depositSchedule === 1) {
+								dataSvc.filter940Q.month = null;
+								dataSvc.filter940Q.quarter = null;
+								if (!dataSvc.filter940Q.payPeriod)
+									return false;
+								else
+									return true;
+							}
+							else if (dataSvc.filter940Q.depositSchedule === 2) {
+								dataSvc.filter940Q.payPeriod = null;
+								dataSvc.filter940Q.quarter = null;
+								if (!dataSvc.filter940Q.month)
+									return false;
+								else {
+									return true;
+								}
+							} else {
+								dataSvc.filter940Q.month = null;
+								dataSvc.filter940Q.payPeriod = null;
+								if (!dataSvc.filter940Q.quarter)
+									return false;
+								else
+									return true;
+							}
+
+						}
+					}
 
 					$scope.isCAPITValid = function () {
 						if (!dataSvc.filterCAPIT.year || !dataSvc.filterCAPIT.depositSchedule || !dataSvc.filterCAPIT.depositDate)
@@ -130,6 +170,38 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 						}
 					}
+					$scope.isCAUIValid = function () {
+						if (!dataSvc.filterCAUIQ.year || !dataSvc.filterCAUIQ.depositSchedule || !dataSvc.filterCAUIQ.depositDate)
+							return false;
+						else {
+							if (dataSvc.filterCAUIQ.depositSchedule === 1) {
+								dataSvc.filterCAUIQ.month = null;
+								dataSvc.filterCAUIQ.quarter = null;
+								if (!dataSvc.filterCAUIQ.payPeriod)
+									return false;
+								else
+									return true;
+							}
+							else if (dataSvc.filterCAUIQ.depositSchedule === 2) {
+								dataSvc.filterCAUIQ.payPeriod = null;
+								dataSvc.filterCAUIQ.quarter = null;
+								if (!dataSvc.filterCAUIQ.month)
+									return false;
+								else {
+									return true;
+								}
+							} else {
+								dataSvc.filterCAUIQ.month = null;
+								dataSvc.filterCAUIQ.payPeriod = null;
+								if (!dataSvc.filterCAUIQ.quarter)
+									return false;
+								else
+									return true;
+							}
+
+						}
+					}
+
 					$scope.minDepositDate = moment().startOf('day').toDate();
 					var currentYear = new Date().getFullYear();
 					for (var i = currentYear - 4; i <= currentYear; i++) {
@@ -147,8 +219,16 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.filter941.payPeriods = fillPayPeriods(dataSvc.filter941.year);
 						}
 					}
+					$scope.fill940PayPeriods = function () {
+						if (dataSvc.filter940Q.depositSchedule === 1) {
+							dataSvc.filter940Q.payPeriods = fillPayPeriods(dataSvc.filter940Q.year);
+						}
+					}
 					$scope.fillCAPITPayPeriods = function () {
 						dataSvc.filterCAPIT.payPeriods = fillPayPeriods(dataSvc.filterCAPIT.year);
+					}
+					$scope.fillCAUIPayPeriods = function () {
+						dataSvc.filterCAUIQ.payPeriods = fillPayPeriods(dataSvc.filterCAUIQ.year);
 					}
 
 					var fillPayPeriods = function (year) {
@@ -272,7 +352,13 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					$scope.getReport940Q = function () {
-						getReport('FederalQuarterly940', 'Federal Quarterly 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, null, dataSvc.filter940Q.depositDate, null, null, null, true);
+						if (dataSvc.filter940Q.depositSchedule === 1)
+							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, null, 1, dataSvc.filter940Q.depositDate, null, dataSvc.filter940Q.payPeriod.startDate, dataSvc.filter940Q.payPeriod.endDate, true);
+						else if (dataSvc.filter940Q.depositSchedule === 2)
+							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, null, 2, dataSvc.filter940Q.depositDate, dataSvc.filter940Q.month, null, null, true);
+						else {
+							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, 3, dataSvc.filter940Q.depositDate, null, null, null, true);
+						}
 					}
 					$scope.getReportFederal941 = function () {
 						if(dataSvc.filter941.depositSchedule===1)
@@ -293,7 +379,13 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}
 					$scope.getReportCAUIQ = function () {
-						getReport('StateCAUI', 'California Quarterly UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, null, dataSvc.filterCAUIQ.depositDate, null, null, null, true);
+						if (dataSvc.filterCAPIT.depositSchedule === 1)
+							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, true);
+						else if (dataSvc.filterCAPIT.depositSchedule === 2)
+							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, true);
+						else {
+							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, true);
+						}
 					}
 
 					$scope.getReport1099 = function () {

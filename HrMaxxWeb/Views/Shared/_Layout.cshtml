@@ -41,7 +41,7 @@
 		
 		<!-- end #sidebar -->
 		<!-- begin #content -->
-		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-role="@CurrentUser.Role">
+		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName">
 			<div id="page-loader1" class="fade in" ng-if="loading"><span class="spinner"></span></div>
 			<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
 			<script type="text/ng-template" id="popover/messages.html">
@@ -80,13 +80,17 @@
 					</div>					
 				</div>
 				<div class="modal-footer text-center">
-				
-					<button type="button" class="btn btn-sm btn-primary pull-center" data-ng-click="ok()">
-						<span class="glyphicon glyphicon-check"></span> Yes
-					</button>
-					<button type="button" class="btn btn-sm btn-default pull-center" data-ng-click="cancel()">
-						<span class="glyphicon glyphicon-remove-circle"></span> No
-					</button>
+					<div class="row">
+						<button type="button" class="btn btn-sm btn-primary pull-center" data-ng-click="ok()">
+							<span class="glyphicon glyphicon-check"></span> Yes
+						</button>
+						<button type="button" class="btn btn-sm btn-default pull-center" data-ng-click="cancel()">
+							<span class="glyphicon glyphicon-remove-circle"></span> No
+						</button>
+					</div>
+					<div class="row alert alert-warning" ng-if="type==='danger'">
+						All activities are logged in the system.
+					</div>
 				</div>
 
 			</script>

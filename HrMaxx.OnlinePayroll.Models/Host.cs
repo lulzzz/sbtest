@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Mementos;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
-	public class Host : BaseEntityDto
+	public class Host : BaseEntityDto, IOriginator<Host>
 	{
 		public string FirmName { get; set; }
 		public string Url { get; set; }
@@ -21,5 +22,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string PIN940941 { get; set; }
 		public HostHomePage HomePage { get; set; }
 		public bool IsPeoHost { get; set; }
+		public Guid MementoId { get { return Id; } }
+		public void ApplyMemento(Memento<Host> memento)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

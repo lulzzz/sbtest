@@ -7,10 +7,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.ModelBinding;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
 using HrMaxx.Infrastructure.Helpers;
@@ -27,13 +29,14 @@ namespace HrMaxxAPI.Controllers.User
 	{
 		private readonly IUserService _userService;
 		private readonly IMetaDataService _metaDataService;
+		private readonly IMementoDataService _mementoDataService;
 
 
-		public UserController(IUserService userService, IMetaDataService metaDataService)
+		public UserController(IUserService userService, IMetaDataService metaDataService, IMementoDataService mementoDataService)
 		{
 			_userService = userService;
 			_metaDataService = metaDataService;
-
+			_mementoDataService = mementoDataService;
 		}
 		[HttpGet]
 		[Route(UserRoutes.UserMetaData)]
@@ -71,6 +74,13 @@ namespace HrMaxxAPI.Controllers.User
 				else
 				{
 					users = users.Where(u => u.Host.HasValue && u.Host.Value == CurrentUser.Host).ToList();
+				}
+			}
+			else
+			{
+				if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName())
+				{
+					users = users.Where(u => u.Role.RoleId != (int) RoleTypeEnum.Master).ToList();
 				}
 			}
 			return Mapper.Map<List<UserModel>, List<UserResource>>(users);
@@ -186,6 +196,9 @@ namespace HrMaxxAPI.Controllers.User
 						}
 						if (!userExists.EmailConfirmed)
 							await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
+
+						var memento = Memento<ApplicationUser>.Create(userExists, EntityTypeEnum.User, CurrentUser.FullName);
+						_mementoDataService.AddMementoData(memento);
 						return model;
 					}
 					else
@@ -206,6 +219,8 @@ namespace HrMaxxAPI.Controllers.User
 					await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
 					model.UserId = new Guid(user.Id);
 					string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+					var memento = Memento<ApplicationUser>.Create(user, EntityTypeEnum.User, CurrentUser.FullName);
+					_mementoDataService.AddMementoData(memento);
 					return model;
 				}
 				else

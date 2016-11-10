@@ -103,7 +103,7 @@ namespace HrMaxxAPI.Controllers.Hosts
 				HostHomePageDocumentResource fileUploadObj = await ProcessMultipartContent();
 
 				var homepageimage = Mapper.Map<HostHomePageDocumentResource, HostHomePageDocument>(fileUploadObj);
-				MakeServiceCall(() => _hostService.AddHomePageImageToStaging(homepageimage),
+				MakeServiceCall(() => _hostService.AddHomePageImageToStaging(homepageimage, CurrentUser.FullName),
 					"Save Host Home Page Image");
 
 				return this.Request.CreateResponse(HttpStatusCode.OK);

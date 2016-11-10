@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
-	public class VendorCustomer : BaseEntityDto
+	public class VendorCustomer : BaseEntityDto, IOriginator<VendorCustomer>
 	{
 		public Guid? CompanyId { get; set; }
 		public string Name { get; set; }
@@ -44,6 +45,16 @@ namespace HrMaxx.OnlinePayroll.Models
 			IndividualSSN = string.Empty;
 			LastModified = DateTime.Now;
 			UserName = lastModifiedBy;
+		}
+
+		public Guid MementoId
+		{
+			get { return Id; }
+		}
+
+		public void ApplyMemento(Memento<VendorCustomer> memento)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

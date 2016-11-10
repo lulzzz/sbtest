@@ -1,5 +1,6 @@
 ﻿using System;
 using HrMaxx.Common.Contracts.Resources;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Services.Mementos;
@@ -42,7 +43,7 @@ namespace HrMaxx.Common.Tests.Stories.StagingData
 			public void Initialize(ISpecs<StagingDataService> state)
 			{
 				_originator = new TestObject();
-				_memento = Memento<TestObject>.Create(_originator);
+				_memento = Memento<TestObject>.Create(_originator, EntityTypeEnum.General, string.Empty);
 
 				state.SUT.Log = state.GetMockFor<ILog>().Object;
 

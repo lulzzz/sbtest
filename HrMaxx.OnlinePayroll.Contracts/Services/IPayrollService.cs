@@ -7,6 +7,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -27,7 +28,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void MarkPayCheckPrinted(int payCheckId);
 		FileDto PrintPayroll(Payroll payroll);
 		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, bool fetchCompany);
-		List<PayrollInvoice> GetHostInvoices(Guid hostId);
+		List<PayrollInvoice> GetHostInvoices(Guid hostId, InvoiceStatus submitted = (InvoiceStatus)0);
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
 		void DeletePayrollInvoice(Guid invoiceId);
 		List<Payroll> FixPayrollData(Guid? companyId);

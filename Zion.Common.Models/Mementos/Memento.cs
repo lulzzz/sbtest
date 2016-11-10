@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using HrMaxx.Common.Models.Enum;
 using Newtonsoft.Json;
 
 namespace HrMaxx.Common.Models.Mementos
@@ -11,11 +13,14 @@ namespace HrMaxx.Common.Models.Mementos
 
 		public string State { get; private set; }
 		public string OriginatorTypeName { get; private set; }
-		public Guid Id { get; private set; }
+		public int Id { get; private set; }
+		public Guid MementoId { get; private set; }
 		public int Version { get; set; }
 		public DateTime DateCreated { get; set; }
+		public string CreatedBy { get; set; }
+		public EntityTypeEnum SourceTypeId { get; set; }
 
-		public static Memento<T> Create(IOriginator<T> originator)
+		public static Memento<T> Create(IOriginator<T> originator, EntityTypeEnum sourceType, string createdBy)
 		{
 			if (originator == null)
 				return null;
@@ -23,25 +28,29 @@ namespace HrMaxx.Common.Models.Mementos
 			var memento = new Memento<T>();
 			memento.Serialize(originator);
 			memento.OriginatorTypeName = typeof (T).FullName;
-			memento.Id = originator.MementoId;
+			memento.MementoId = originator.MementoId;
+			memento.CreatedBy = createdBy;
+			memento.SourceTypeId = sourceType;
 			return memento;
 		}
-
+		
 		public static Memento<T> Create(Guid mementoId, string mementoState)
 		{
-			var memento = new Memento<T> {Id = mementoId, State = mementoState, OriginatorTypeName = typeof (T).FullName};
+			var memento = new Memento<T> {MementoId = mementoId, State = mementoState, OriginatorTypeName = typeof (T).FullName};
 			return memento;
 		}
 
-		public static Memento<T> Create(Guid mementoId, int version, DateTime dateCreated, string mementoState)
+		public static Memento<T> Create(Guid mementoId, int version, DateTime dateCreated, string mementoState, string createdBy, EntityTypeEnum sourceType)
 		{
 			var memento = new Memento<T>
 			{
-				Id = mementoId,
+				MementoId = mementoId,
 				Version = version,
 				DateCreated = dateCreated,
 				State = mementoState,
-				OriginatorTypeName = typeof (T).FullName
+				OriginatorTypeName = typeof (T).FullName,
+				CreatedBy = createdBy,
+				SourceTypeId = sourceType
 			};
 			return memento;
 		}

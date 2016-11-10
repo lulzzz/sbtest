@@ -17,7 +17,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		HostHomePage GetHostHomePage(Guid hostId);
 		HostHomePage SaveHomePage(Guid stagingId, Guid hostId, HostHomePage homePage);
-		void AddHomePageImageToStaging(HostHomePageDocument homePageDocument);
+		void AddHomePageImageToStaging(HostHomePageDocument homePageDocument, string fullName);
 		object GetHostHomePageByUrl(string url, Guid host);
 		object GetNewsfeedMetaData(RoleTypeEnum role, Guid? entityId);
 		object GetHostHomePageByFirmName(string firmName, Guid host);

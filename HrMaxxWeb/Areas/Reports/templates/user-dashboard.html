@@ -2,9 +2,9 @@
 	<!--Load the AJAX API-->
 	
 	<div class="panel panel-primary">
-		<div class="panel-heading">Dashboard</div>
+		<div class="panel-heading hidden-print">Dashboard</div>
 		<div class="panel-body">
-			<div class="row col-md-12" >
+			<div class="row col-md-12 hidden-print" >
 				<div class="col-md-6">
 					<div id="payrollChart"></div>
 					<button type="submit" class="btn btn-primary" ng-if="chartExists('PayrollChartData')" ng-click="viewChartData('PayrollChartData')">
@@ -23,8 +23,8 @@
 			</div>
 			<br />
 			<br />
-			<div class="row col-sm-12">
-				<div class="col-md-6">
+			<div class="row col-sm-12 m-t-10">
+				<div class="col-md-6 hidden-print">
 					<table class="table table-bordered table-condensed" ng-show="data.payrollsWithoutInvoice.length>1">
 						<thead>
 							<tr>
@@ -56,25 +56,40 @@
 				<div class="col-sm-6">
 					<table class="table table-bordered table-condensed" ng-show="data.approachingPayrolls.length>1">
 						<thead>
-							<tr>
-								<th colspan="4">Companies with Approaching Payrolls</th>
+							<tr class="hidden-print">
+								<th colspan="4">
+									Companies with Approaching Payrolls
+									<button class="btn btn-xs btn-info pull-right" ng-click="print()" ng-show="data.filteredApproachingPayrolls.length>1"><i class="fa fa-print m-r-5"></i> print</button>
+									<select class="form-control small hidden-print pull-right" style="width:7em;" ng-change="filterCompaniesApproachingPayroll()" ng-model="data.filterApproachingPayroll">
+											<option value="">All</option>
+											<option value="Today">Today</option>
+											<option value="1 day">1 day</option>
+											<option value="2 days">2 days</option>
+											<option value="3 days">3 days</option>
+											<option value="Overdue">Overdue</option>
+										</select>
+										
+									
+								</th>
+								
+
 							</tr>
 							<tr>
 								<th>Host</th>
 								<th>Company</th>
 								<th>Next Payroll Due</th>
-								<th></th>
+								<th class="hidden-print"></th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat="ctx in data.approachingPayrolls track by $index" ng-if="$index>0">
+							<tr ng-repeat="ctx in data.filteredApproachingPayrolls track by $index" ng-if="$index>0">
 								<td ng-repeat="d in ctx track by $index" ng-if="$index>1">
 									{{d}}
 								</td>
-								<td>
+								<td class="hidden-print">
 									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
 								</td>
-								
+
 							</tr>
 						</tbody>
 					</table>
@@ -84,7 +99,7 @@
 			
 			<br />
 		</div>
-		<div id="chartTable" class="panel-body">
+		<div id="chartTable" class="panel-body hidden-print">
 			<div ng-if="selectedChart" class="row text-center p-5">
 				<strong><em>{{selectedChart.title}}</em></strong>
 			</div>

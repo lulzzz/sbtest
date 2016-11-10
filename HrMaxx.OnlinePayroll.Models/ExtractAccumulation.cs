@@ -43,6 +43,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			
 		}
 
+
 		public decimal Wages940
 		{
 			get { return Taxes.Where(t => t.Tax.Id == 6).Sum(t => t.TaxableWage); }
@@ -51,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Taxes.Where(t => t.Tax.Id ==1 || t.Tax.Id==2 || t.Tax.Id==4).Sum(t => t.TaxableWage); }
 		}
+		
 		public decimal Taxes940
 		{
 			get { return Taxes.Where(t => t.Tax.Id == 6).Sum(t => t.Amount); }
@@ -58,6 +60,22 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Taxes941
 		{
 			get { return Taxes.Where(t => t.Tax.Id == 1 || t.Tax.Id == 2 || t.Tax.Id == 4).Sum(t => t.Amount); }
+		}
+		public decimal WagesPitSdi
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.TaxableWage); }
+		}
+		public decimal TaxesPitSdi
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.Amount); }
+		}
+		public decimal WagesEttSui
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.TaxableWage); }
+		}
+		public decimal TaxesEttSui
+		{
+			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.Amount); }
 		}
 		public void AddPayChecks(IEnumerable<PayCheck> checks)
 		{

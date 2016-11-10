@@ -11,6 +11,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Controllers.Companies;
 using HrMaxxAPI.Resources.OnlinePayroll;
@@ -271,6 +272,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
 			var ic =_taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i=>i.TaxPaneltyConfig = ic);
+			return result;
+		}
+		[HttpGet]
+		[Route(PayrollRoutes.ApprovedInvoices)]
+		public List<PayrollInvoiceResource> GetApprovedInvoices()
+		{
+			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(CurrentUser.Host, InvoiceStatus.Submitted), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
+			result.ForEach(i => i.TaxPaneltyConfig = ic);
 			return result;
 		}
 		[HttpGet]
