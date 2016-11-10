@@ -16,7 +16,7 @@ namespace HrMaxx.Infrastructure.Security
 
 		public string FullName
 		{
-			get { return FindFirst(claim => claim.Type == HrMaxxClaimTypes.Name).Value; }
+			get { return HasClaim(claim => claim.Type == HrMaxxClaimTypes.Name) ? FindFirst(claim => claim.Type == HrMaxxClaimTypes.Name).Value : string.Empty; }
 		}
 
 		public string UserId
