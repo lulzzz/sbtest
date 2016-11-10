@@ -12,10 +12,10 @@
 			<div class="row m-10 hidden-print" ng-show="showPrint()">
 				<button class="btn btn-sm btn-info pull-right" ng-click="print()"><i class="fa fa-print">Print</i></button>
 			</div>
-			<div class="row text-center" >
-				<div class="col-sm-12 m-20 visible-print">
+			<div class="row text-center" ng-show="list.length>0">
+				<div class=" col-sm-12 m-20 visible-print">
 					<h2 class="text-center">Delivery Log</h2>
-					<br/>
+					<br />
 					<h4>{{mainData.myName}} ( {{today | date:'MM/dd/yyyy'}}) </h4>
 				</div>
 				<table ng-table="tableParams" class="table hidden-print" template-pagination="custom/nopager">
@@ -23,23 +23,23 @@
 						<td data-title="'#'" class="col-sm-1 text-center">
 							{{$index + 1}}
 						</td>
-						<td data-title=" 'Company' "  sortable=" 'companyName' " class="col-sm-2 text-center">
+						<td data-title=" 'Company' " sortable=" 'companyName' " class="col-sm-2 text-center">
 							{{item.companyName}}
 						</td>
-						
+
 						<td data-title=" 'Total' " sortable=" 'total' " class="col-sm-1 text-center show-red">
 							{{item.total | currency:'$'}}
 						</td>
-						
-						<td data-title=" 'Notes' "  class="col-sm-8 text-center">
+
+						<td data-title=" 'Notes' " class="col-sm-8 text-center">
 							{{item.notes}}
 						</td>
-						
+
 
 					</tr>
 
 				</table>
-				<table class="table visible-print" >
+				<table class="table visible-print">
 					<thead>
 						<tr>
 							<th class="col-sm-1 text-center">#</th>
@@ -48,18 +48,18 @@
 							<th class="col-sm-8 text-center">Notes</th>
 						</tr>
 					</thead>
-					<tr ng-repeat="item in tableData | filter:{selected:true} track by $index"  >
+					<tr ng-repeat="item in tableData | filter:{selected:true} track by $index">
 						<td class="col-sm-1 text-center">
 							{{$index + 1}}
 						</td>
 						<td class="col-sm-1 text-center">
 							{{item.companyName}}
 						</td>
-						
+
 						<td class="col-sm-1 text-center">
 							{{item.total | currency:'$'}}
 						</td>
-						
+
 						<td class="col-sm-8 text-center">
 							{{item.notes}}
 						</td>
@@ -86,15 +86,15 @@
 						</li>
 					</ul>
 				</script>
-				
+
 			</div>
 
 			<!-- end panel -->
 		</div>
 	</div>
-	
-	
-	
+
+
+
 </div>
 
 

@@ -197,7 +197,8 @@ namespace HrMaxxAPI.Controllers.User
 						if (!userExists.EmailConfirmed)
 							await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
 
-						
+						var memento = Memento<ApplicationUser>.Create(userExists, EntityTypeEnum.Company, CurrentUser.FullName);
+						_mementoDataService.AddMementoData(memento);
 						return model;
 					}
 					else
@@ -218,7 +219,8 @@ namespace HrMaxxAPI.Controllers.User
 					await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
 					model.UserId = new Guid(user.Id);
 					string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
-					
+					var memento = Memento<ApplicationUser>.Create(user, EntityTypeEnum.Company, CurrentUser.FullName);
+					_mementoDataService.AddMementoData(memento);
 					return model;
 				}
 				else
