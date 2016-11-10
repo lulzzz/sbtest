@@ -2,11 +2,11 @@
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetInvoiceChartData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetInvoiceChartData]
 GO
-/****** Object:  StoredProcedure [dbo].[GetExtractData]    Script Date: 10/11/2016 7:36:03 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetExtractData]    Script Date: 10/11/2016 8:00:13 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetExtractData]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetExtractData]
 GO
-/****** Object:  StoredProcedure [dbo].[GetExtractData]    Script Date: 10/11/2016 7:36:03 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetExtractData]    Script Date: 10/11/2016 8:00:13 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -67,6 +67,7 @@ BEGIN
 			(
 				select * from PayrollPayCheck where CompanyId=ExtractCompany.Id and IsVoid=0 and payday between @startdate and @enddate
 				and not exists(select ''x'' from PayCheckExtract where PayrollPayCheckId=PayrollPayCheck.Id and [Extract]=@report and [Type]=1)
+				and (InvoiceId is null or not exists(select ''x'' from PayrollInvoice where id=PayrollPayCheck.InvoiceId and StatusId=5))
 				for xml path (''ExtractPayCheck''), ELEMENTS, type
 			) PayChecks,
 			(
