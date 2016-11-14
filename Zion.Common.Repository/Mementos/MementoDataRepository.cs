@@ -17,7 +17,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		{
 		}
 
-		public void SaveMemento(MementoPersistenceDto memento)
+		public void SaveMemento(MementoPersistenceDto memento, bool isSubVersion)
 		{
 			const string sql =
 				@"INSERT INTO Common.Memento(memento, originatortype, version, mementoid, sourcetypeid, createdby) VALUES (@Memento, @OriginatorType, @Version, @MementoId, @SourceTypeId, @CreatedBy)";
@@ -28,7 +28,27 @@ namespace HrMaxx.Common.Repository.Mementos
 			{
 				dynamic currentVersion =
 					Connection.Query(versionSql, new {memento.OriginatorType, memento.MementoId}).FirstOrDefault();
-				int nextVersion = currentVersion.version != null ? currentVersion.version + 1 : 1;
+				var nextVersion = (decimal)1;
+				if (currentVersion.version != null)
+				{
+					if (isSubVersion)
+					{
+						var nextBigVersion = currentVersion.version + 1;
+						if ((currentVersion.version + (decimal)0.1) == nextBigVersion)
+						{
+							nextVersion = nextBigVersion + (decimal)0.1;
+						}
+						else
+						{
+							nextVersion = currentVersion.version + (decimal)0.1;
+						}
+					}
+					else
+					{
+						nextVersion = currentVersion.version + (decimal)1;
+					}
+				}
+				
 
 				Connection.Execute(sql, new
 				{
@@ -90,6 +110,18 @@ namespace HrMaxx.Common.Repository.Mementos
 
 			IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
 				new {OriginatorType = originatorType});
+			return results;
+		}
+
+		public IEnumerable<MementoPersistenceDto> GetMementos<T>(int sourceTypeId, Guid sourceId)
+		{
+			const string sql =
+				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
+
+			string originatorType = typeof(T).FullName;
+
+			IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
+				new { SourceTypeId = sourceTypeId, SourceId=sourceId });
 			return results;
 		}
 	}

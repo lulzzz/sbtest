@@ -71,42 +71,10 @@
 		</div>
 	</div>
 
-
-	<div class="panel-group" id="accordion" ng-if="selected">
-		<div class="panel panel-inverse overflow-hidden">
-			<div class="panel-heading">
-				<i class="fa fa-plus-circle pull-right"></i>
-				<h3 class="panel-title">
-					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
-
-						Employee Details
-					</a>
-				</h3>
-			</div>
-			<div id="collapseOne" class="panel-collapse collapse in">
-				<employee employee="selected" main-data="mainData" is-popup="false"/>
-			</div>
-		</div>
-		
-
+	<div class="row" ng-if="selected">
+		<employee employee="selected" main-data="mainData" is-popup="false" show-controls="true" />
 	</div>
-
-	<div class="panel panel-inverse overflow-hidden" ng-if="selected.id">
-		<div class="panel-heading">
-			<h3 class="panel-title">
-				<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
-					<i class="fa fa-plus-circle pull-right"></i>Employee Deductions
-				</a>
-			</h3>
-		</div>
-		<div id="collapseTwo" class="panel-collapse collapse">
-			<div class="panel-body">
-				<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" />
-			</div>
-		</div>
-	</div>
-
-
+	
 </div>
 
 

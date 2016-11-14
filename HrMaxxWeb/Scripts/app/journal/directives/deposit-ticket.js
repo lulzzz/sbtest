@@ -8,7 +8,8 @@ common.directive('depositTicket', ['zionAPI','version',
 			scope: {
 				item: "=item",
 				datasvc: "=datasvc",
-				company: "=company"
+				company: "=company",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/deposit-ticket.html?v=' + version,
 
@@ -106,11 +107,14 @@ common.directive('depositTicket', ['zionAPI','version',
 									checkAmount += jd1.amount;
 								if (jd1.depositMethod && jd1.depositMethod.key === 2)
 									cashAmount += jd1.amount;
-								if (jd1.account.type === AccountType.Assets || jd1.account.type === AccountType.Expense)
-									jd1.isDebit = true;
-								else {
-									jd1.isDebit = false;
-								}
+								if (jd1.account && jd1.account.type) {
+									if (jd1.account.type === AccountType.Assets || jd1.account.type === AccountType.Expense)
+										jd1.isDebit = true;
+									else {
+										jd1.isDebit = false;
+									}
+								} 
+								
 							}
 								
 						});

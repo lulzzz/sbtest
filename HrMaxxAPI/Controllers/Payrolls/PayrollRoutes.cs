@@ -28,5 +28,6 @@
 		public const string RedateInvoice = "Payroll/RedateInvoice";
 		public const string ImportTimesheets = "Payroll/ImportTimesheets";
 		public const string ImportTimesheetsTemplate = "Payroll/TimesheetImportTemplate";
+		public const string ClaimDelivery = "Payroll/ClaimDelivery/{invoiceIds}";
 	}
 }

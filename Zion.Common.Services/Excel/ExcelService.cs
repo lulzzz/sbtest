@@ -42,7 +42,12 @@ namespace HrMaxx.Common.Services.Excel
 				columnList.AddRange(new List<string>{"Payroll Schedule", "Pay Type", "Base Salary"});
 				company.PayCodes.ForEach(pc=>columnList.Add(pc.Description));
 				columnList.AddRange(new List<string>{"Tax Status", "Federal Filing Status", "Federal Exemptions", "Federal Additional Amount", "State", "State Filing Status", "State Exemptions", "State Additional Amount"});
-				return _excelRepository.GetImportTemplate(company.Name + "_EmployeeImport.xlsx", columnList, new List<List<string>>());
+				var sampleRow = new List<string>() { "123-45-6789", string.Empty, string.Empty, string.Empty, "x@y.com", "949-555-1212 or 9495551212", "949-555-1212 or 9495551212", "949-555-1212 or 9495551212", string.Empty, string.Empty, "CA or California", "12345", "1234", string.Empty, "MM/DD/YYYY", "MM/DD/YYYY", string.Empty, string.Empty, string.Empty };
+				sampleRow.AddRange(new List<string>() { "1/2/3/4 OR Weekly/Bi-Weekly/Semi-Monthly/Monthly", "Salary/Hourly/Piece-Work", "0.00" });
+				company.PayCodes.ForEach(pc => sampleRow.Add(string.Empty));
+				sampleRow.AddRange(new List<string>(){"1 OR 2", "1/2/3 OR S/M/H", "1 - 10", "0.00", "CA or California", "1/2/3 OR S/M/H", "1 - 10", "0.00"});
+
+				return _excelRepository.GetImportTemplate(company.Name + "_EmployeeImport.xlsx", columnList, new List<List<string>>(){sampleRow}, true);
 			}
 			catch (Exception e)
 			{
@@ -52,13 +57,13 @@ namespace HrMaxx.Common.Services.Excel
 			}
 		}
 
-		public List<ExcelRead> ImportEmployees(FileInfo file)
+		public List<ExcelRead> ImportEmployees(FileInfo file, int startingRow)
 		{
 			try
 			{
 				
 				var error = string.Empty;
-				var data = _excelRepository.GetExcelData(file);
+				var data = _excelRepository.GetExcelData(file, startingRow);
 
 				if (!data.Any())
 				{
@@ -101,7 +106,7 @@ namespace HrMaxx.Common.Services.Excel
 					row.Add(e.Rate.ToString());
 				rowList.Add(row);
 			});
-			return _excelRepository.GetImportTemplate(company.Name + "_TimesheetImport.xlsx", columnList, rowList);
+			return _excelRepository.GetImportTemplate(company.Name + "_TimesheetImport.xlsx", columnList, rowList, false);
 		}
 	}
 }

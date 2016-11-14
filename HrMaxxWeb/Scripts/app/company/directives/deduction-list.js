@@ -8,7 +8,8 @@ common.directive('deductionList', ['zionAPI', 'version',
 			scope: {
 				companyId: "=companyId",
 				list: "=list",
-				types: "=types"
+				types: "=types",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/deduction-list.html?nd=' + version,
 

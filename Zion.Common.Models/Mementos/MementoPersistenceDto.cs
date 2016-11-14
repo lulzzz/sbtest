@@ -9,7 +9,7 @@ namespace HrMaxx.Common.Models.Mementos
 		public string OriginatorType { get; set; }
 		public int SourceTypeId { get; set; }
 		public string Memento { get; set; }
-		public int Version { get; set; }
+		public decimal Version { get; set; }
 		public DateTime DateCreated { get; set; }
 		public string CreatedBy { get; set; }
 	}

@@ -8,7 +8,7 @@
 				<td class="col-sm-3">Pay Type</td>
 				<td class="col-sm-3">Rate Per Hour (upto 4 decimal)</td>
 				<td class="col-sm-3">Annual Limit (Hrs per Employee)</td>
-				<td class="col-sm-3"></td>
+				<td class="col-sm-3" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -29,7 +29,7 @@
 						{{ item.annualLimit }}
 					</span>
 				</td>
-				<td style="white-space: nowrap">
+				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
@@ -45,7 +45,7 @@
 				</td>
 				
 			</tr>
-			<tr ng-show="!selected">
+			<tr ng-show="!selected" ng-show="showControls">
 				<td colspan="3">
 					<span ng-show="list.length===0">No items found</span>
 				</td>

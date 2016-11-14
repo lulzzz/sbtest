@@ -67,9 +67,9 @@ namespace HrMaxxAPI.Controllers.Companies
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{
 			var companies =  MakeServiceCall(() => _companyService.GetCompanies(hostId, CurrentUser.Company), "Get companies for hosts", true);
-			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName())
+			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
 			{
-				companies = companies.Where(c => !c.IsHostCompany).ToList();
+				companies = companies.Where(c => !c.IsHostCompany && c.IsVisibleToHost).ToList();
 			}
 			var appConfig = _taxationService.GetApplicationConfig();
 			if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName() && appConfig.RootHostId.HasValue)
@@ -101,7 +101,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyTaxRateResource SaveCompanyTaxYearRate(CompanyTaxRateResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyTaxRateResource, CompanyTaxRate>(resource);
-			var taxrate = MakeServiceCall(() => _companyService.SaveCompanyTaxYearRate(mappedResource), "save company tax year rate", true);
+			var taxrate = MakeServiceCall(() => _companyService.SaveCompanyTaxYearRate(mappedResource, CurrentUser.FullName), "save company tax year rate", true);
 			return Mapper.Map<CompanyTaxRate, CompanyTaxRateResource>(taxrate);
 		}
 
@@ -110,7 +110,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyWorkerCompensationResource SaveWorkerCompensation(CompanyWorkerCompensationResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyWorkerCompensationResource, CompanyWorkerCompensation>(resource);
-			var wc = MakeServiceCall(() => _companyService.SaveWorkerCompensation(mappedResource), "save company deduction", true);
+			var wc = MakeServiceCall(() => _companyService.SaveWorkerCompensation(mappedResource, CurrentUser.FullName), "save company deduction", true);
 			return Mapper.Map<CompanyWorkerCompensation, CompanyWorkerCompensationResource>(wc);
 		}
 
@@ -119,7 +119,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public AccumulatedPayTypeResource SaveAccumulatedPayType(AccumulatedPayTypeResource resource)
 		{
 			var mappedResource = Mapper.Map<AccumulatedPayTypeResource, AccumulatedPayType>(resource);
-			var wc = MakeServiceCall(() => _companyService.SaveAccumulatedPayType(mappedResource), "save company accumulated pay type", true);
+			var wc = MakeServiceCall(() => _companyService.SaveAccumulatedPayType(mappedResource, CurrentUser.FullName), "save company accumulated pay type", true);
 			return Mapper.Map<AccumulatedPayType, AccumulatedPayTypeResource>(wc);
 		}
 
@@ -128,7 +128,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyPayCodeResource SavePayCode(CompanyPayCodeResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyPayCodeResource, CompanyPayCode>(resource);
-			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource), "save company pay code", true);
+			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource, CurrentUser.FullName), "save company pay code", true);
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
 		}
 
@@ -197,7 +197,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public EmployeeDeductionResource SaveEmployee(EmployeeDeductionResource resource)
 		{
 			var mappedResource = Mapper.Map<EmployeeDeductionResource, EmployeeDeduction>(resource);
-			var deductions = MakeServiceCall(() => _companyService.SaveEmployeeDeduction(mappedResource), string.Format("saving deduction for employee {0}", resource.EmployeeId), true);
+			var deductions = MakeServiceCall(() => _companyService.SaveEmployeeDeduction(mappedResource, CurrentUser.FullName), string.Format("saving deduction for employee {0}", resource.EmployeeId), true);
 			return Mapper.Map<EmployeeDeduction, EmployeeDeductionResource>(deductions);
 		}
 
@@ -239,7 +239,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
 				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
-				var importedRows = _excelServce.ImportEmployees(fileUploadObj.file);
+				var importedRows = _excelServce.ImportEmployees(fileUploadObj.file, 3);
 				var employees = new List<EmployeeResource>();
 				var error = string.Empty;
 				importedRows.ForEach(er =>

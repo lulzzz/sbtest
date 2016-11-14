@@ -316,6 +316,23 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
 		}
 
+		[HttpGet]
+		[Route(PayrollRoutes.ClaimDelivery)]
+		public HttpStatusCode ClaimDelivery(string invoiceIds)
+		{
+			try
+			{
+				MakeServiceCall(() => _payrollService.ClaimDelivery(invoiceIds, CurrentUser.FullName), string.Format("claim delivery of invoices with ids={0}", invoiceIds));
+				return HttpStatusCode.OK;
+			}
+			catch (Exception)
+			{
+
+				return HttpStatusCode.InternalServerError;
+			}
+			
+		}
+
 		[HttpPost]
 		[Route(PayrollRoutes.ImportTimesheetsTemplate)]
 		public HttpResponseMessage GetTimesheetImportTemplate(TimesheetImportResource resource)
@@ -345,7 +362,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
 				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
-				var importedRows = _excelService.ImportEmployees(fileUploadObj.file);
+				var importedRows = _excelService.ImportEmployees(fileUploadObj.file, 2);
 				var timesheets = new List<TimesheetResource>();
 				var error = string.Empty;
 				company.PayCodes.Add(new CompanyPayCodeResource

@@ -265,6 +265,7 @@
     <Content Include="Areas\Client\templates\invoice-delivery-list.html" />
     <Content Include="Areas\Client\templates\invoicedelivery.html" />
     <Content Include="Areas\Client\templates\tax-payment.html" />
+    <Content Include="Areas\Client\templates\vendor-customer.html" />
     <Content Include="Areas\Reports\templates\Dashboard.html" />
     <Content Include="Areas\Reports\templates\data-extracts.html" />
     <Content Include="Areas\Reports\templates\extract-view-list.html" />
@@ -331,6 +332,7 @@
     <Content Include="Areas\Reports\templates\payroll-register.html" />
     <Content Include="Areas\Reports\templates\reports.html" />
     <Content Include="Content\templates\datectrl.html" />
+    <Content Include="Content\templates\memento-list.html" />
     <Content Include="Content\templates\myprofile.html" />
     <Content Include="Areas\Administration\templates\news-list.html" />
     <Content Include="Areas\Administration\templates\user-list.html" />
@@ -1271,6 +1273,7 @@
     <Content Include="Scripts\app\common\common.js" />
     <Content Include="Scripts\app\common\directives\date-ctrl.js" />
     <Content Include="Scripts\app\common\directives\insurance-group-list.js" />
+    <Content Include="Scripts\app\common\directives\memento-list.js" />
     <Content Include="Scripts\app\common\directives\report-filter.js" />
     <Content Include="Scripts\app\common\directives\config.js" />
     <Content Include="Scripts\app\common\directives\userprofile.js" />
@@ -1303,6 +1306,7 @@
     <Content Include="Scripts\app\company\directives\account-list.js" />
     <Content Include="Scripts\app\company\directives\employee-list.js" />
     <Content Include="Scripts\app\company\directives\vendor-customer-list.js" />
+    <Content Include="Scripts\app\company\directives\vendor-customer.js" />
     <Content Include="Scripts\app\company\directives\worker-compensation-list.js" />
     <Content Include="Scripts\app\company\directives\deduction-list.js" />
     <Content Include="Scripts\app\company\directives\company-list.js" />

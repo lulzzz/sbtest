@@ -5,10 +5,12 @@ using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using MassTransit;
@@ -24,13 +26,15 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		private readonly ICompanyRepository _companyRepository;
 		private readonly IPayrollService _payrollService;
 		private readonly IUserService _userService;
+		private readonly IMementoDataService _mementoDataService;
 
-		public PayrollEventHandler(IPayrollRepository payrollRepository, ICompanyRepository companyRepository, IPayrollService payrollService, IUserService userService)
+		public PayrollEventHandler(IPayrollRepository payrollRepository, ICompanyRepository companyRepository, IPayrollService payrollService, IUserService userService, IMementoDataService mementoDataService)
 		{
 			_payrollRepository = payrollRepository;
 			_companyRepository = companyRepository;
 			_payrollService = payrollService;
 			_userService = userService;
+			_mementoDataService = mementoDataService;
 		}
 		public void Consume(PayrollSavedEvent event1)
 		{
@@ -46,8 +50,17 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				{
 					_companyRepository.UpdateLastPayrollDateCompany(event1.SavedObject.Company.Id, event1.SavedObject.PayDay);
 				}
+				foreach (var pc in event1.SavedObject.PayChecks)
+				{
+					var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName);
+					_mementoDataService.AddMementoData(memento);
+					
+				}
+
 				foreach (var pc in event1.AffectedChecks)
 				{
+					var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName);
+					_mementoDataService.AddMementoData(memento, true);
 					_payrollService.PrintPayCheck(pc);
 				}
 
@@ -65,10 +78,14 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		{
 			try
 			{
+				var memento = Memento<PayCheck>.Create(event1.SavedObject, EntityTypeEnum.PayCheck, event1.UserName);
+				_mementoDataService.AddMementoData(memento);
 				if (!event1.SavedObject.Employee.LastPayrollDate.HasValue || event1.SavedObject.Employee.LastPayrollDate == event1.SavedObject.PayDay)
 					_companyRepository.UpdateLastPayrollDateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.PayDay);
 				foreach (var pc in event1.AffectedChecks)
 				{
+					var mem = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName);
+					_mementoDataService.AddMementoData(mem, true);
 					_payrollService.PrintPayCheck(pc);
 				}
 			}

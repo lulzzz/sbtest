@@ -1,0 +1,36 @@
+﻿<div class="col-sm-12">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading">
+			<h4 class="panel-title">{{heading}}</h4>
+		</div>
+		<div class="panel-body">
+
+			<div ng-show="list.length===0">
+				No versions found
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<div class="detailBox">
+					<div class="actionBox">
+						<ul class="commentList">
+							<li ng-repeat="memento in list | orderBy:'version':true">
+								<div class="commentText">
+									<p class=""><a ng-click="showmemento(memento)">Version {{memento.version}}</a> </p><span class="date sub-text">by {{memento.createdBy}} on {{memento.dateCreated | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+
+			</div>
+
+
+
+		</div>
+	</div>
+	<!-- end panel -->
+
+</div>
+
+

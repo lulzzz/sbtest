@@ -34,6 +34,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							startDate: null,
 							endDate: null
 						}
+
 					}
 					var currentYear = new Date().getFullYear();
 					dataSvc.filter.year = currentYear;
@@ -95,25 +96,28 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					
 					$scope.set = function(item) {
 						$scope.selected = null;
-						$scope.selected = angular.copy(item);
-						if ($scope.selected.transactionType > 1) {
-							$scope.selected.paymentMethod = $scope.selected.paymentMethod === 2;
-							$.each($scope.selected.journalDetails, function(index, jd) {
-								if ($scope.selected.transactionType===4 || !jd.account && jd.accountId) {
-									var account = $filter('filter')(dataSvc.companyAccounts, { id: jd.accountId })[0];
-									if (account) {
-										jd.account = account;
+						$timeout(function() {
+							$scope.selected = angular.copy(item);
+							if ($scope.selected.transactionType > 1) {
+								$scope.selected.paymentMethod = $scope.selected.paymentMethod === 2;
+								$.each($scope.selected.journalDetails, function (index, jd) {
+									if ($scope.selected.transactionType === 4 || !jd.account && jd.accountId) {
+										var account = $filter('filter')(dataSvc.companyAccounts, { id: jd.accountId })[0];
+										if (account) {
+											jd.account = account;
+										}
 									}
+								});
+
+								var jd = $filter('filter')($scope.selected.journalDetails, { accountId: dataSvc.selectedAccount.id })[0];
+								if (jd) {
+									dataSvc.selectedCheckBalance = jd.isDebit ? jd.amount : jd.amount * -1;
 								}
-							});
-
-							var jd = $filter('filter')($scope.selected.journalDetails, { accountId: dataSvc.selectedAccount.id })[0];
-							if (jd) {
-								dataSvc.selectedCheckBalance = jd.isDebit ? jd.amount : jd.amount * -1;
 							}
-						}
 
-						dataSvc.isBodyOpen = false;
+							dataSvc.isBodyOpen = false;
+						}, 1);
+						
 
 					}
 					$scope.markPrinted = function (listitem) {

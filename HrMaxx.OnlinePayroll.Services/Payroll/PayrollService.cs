@@ -79,7 +79,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 
-					var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(payroll.PayDay);
+					var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(payroll.Company.Id, payroll.PayDay);
 					var payCheckCount = 0;
 					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included))
 					{
@@ -340,7 +340,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserId = savedPayroll.UserId,
 						TimeStamp = DateTime.Now,
 						EventType = NotificationTypeEnum.Created,
-						AffectedChecks = affectedChecks
+						AffectedChecks = affectedChecks,
+						UserName = savedPayroll.UserName
 					});
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
@@ -459,6 +460,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					
 					txn.Complete();
+					
 					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
 					{
 						SavedObject = savedPaycheck,
@@ -466,7 +468,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserId = new Guid(user),
 						TimeStamp = DateTime.Now,
 						EventType = NotificationTypeEnum.Updated,
-						AffectedChecks = employeeFutureChecks
+						AffectedChecks = employeeFutureChecks,
+						UserName = name
 					});
 				}
 				return _payrollRepository.GetPayrollById(payrollId);
@@ -1488,8 +1491,32 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = invoice.UserName,
 						TimeStamp = DateTime.Now
 					});
+					var payroll = _payrollRepository.GetPayrollById(invoice.PayrollId);
+					var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(invoice.CompanyId, invoice.InvoiceDate);
+					var affectedChecks = new List<PayCheck>();
+					foreach (var payCheck in payroll.PayChecks)
+					{
+						var employeeInBetweenChecks = companyPayChecks.Where(p => p.Employee.Id == payCheck.Employee.Id && p.PayDay>payCheck.PayDay && p.PayDay<=invoice.InvoiceDate).ToList();
+						foreach (var pc1 in employeeInBetweenChecks)
+						{
+							pc1.SubtractFromYTD(payCheck);
+							payCheck.AddToYTD(pc1);
+							_payrollRepository.UpdatePayCheckYTD(payCheck);
+							_payrollRepository.UpdatePayCheckYTD(pc1);
+							affectedChecks.Add(pc1);
+							affectedChecks.Add(payCheck);
+						}
+					}
 					_payrollRepository.UpdatePayrollPayDay(invoice.PayrollId, invoice.PayChecks, invoice.InvoiceDate);
 					txn.Complete();
+					Bus.Publish<PayrollRedateEvent>(new PayrollRedateEvent()
+					{
+						CompanyId = invoice.CompanyId,
+						Year = invoice.InvoiceDate.Year,
+						TimeStamp = DateTime.Now,
+						AffectedPayChecks = affectedChecks,
+						UserName = invoice.UserName
+					});
 					return saved;
 				}
 				
@@ -1561,6 +1588,32 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			
 		}
+
+		public void ClaimDelivery(string invoiceIds, string fullName)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var ids = invoiceIds.Split(',').Select(i => new Guid(i)).ToList();
+					var invoices = _payrollRepository.ClaimDelivery(ids, fullName);
+					if(invoices.Any())
+						txn.Complete();
+					else
+					{
+
+						throw new Exception();
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " claim delivery for invoices " + invoiceIds);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private void MigratePayrolls(Guid oldCompanyId, Company company, List<Employee> employees, DateTime? startDate, DateTime? endDate)
 		{
 			try

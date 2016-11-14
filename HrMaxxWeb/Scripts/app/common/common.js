@@ -60,8 +60,9 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.1.6.6');
+common.constant('version', '1.0.1.7.5');
 common.constant('EntityTypes', {
+	General:0,
 	Host:1,
 	Company:2,
 	Employee:3,
@@ -77,7 +78,10 @@ common.constant('EntityTypes', {
 	Document: 13,
 	Comment: 14,
 	Vendor: 15,
-	Customer: 16
+	Customer: 16,
+	HostHomePage: 17,
+	Adjustment: 18,
+	TaxPayment: 19
 });
 common.constant('AccountType', {
 	Assets: 1,

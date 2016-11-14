@@ -8,7 +8,8 @@ common.directive('taxPayment', ['zionAPI', 'version',
 			scope: {
 				item: "=item",
 				datasvc: "=datasvc",
-				company: "=company"
+				company: "=company",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-payment.html?v=' + version,
 

@@ -26,10 +26,7 @@ namespace HrMaxx.Common.Models.Enum
 		Vendor=15,
 		Customer=16,
 		HostHomePage=17,
-		CompanyDeductions=18,
-		CompanyWorkerCompensations=19,
-		CompanyPayCodes=20,
-		CompanyTaxes=21,
-
+		Adjustment=18,
+		TaxPayment=19
 	}
 }

@@ -473,10 +473,15 @@ namespace HrMaxx.Infrastructure.Excel
 		///   Set a row background color
 		/// </summary>
 		/// <param name="col"></param>
-		public void SetRowColor(int row, Color color, Color foreColor)
+		public void SetRowColor(int row, Color? color, Color foreColor)
 		{
-			_worksheet.Row(row).Style.Fill.PatternType = ExcelFillStyle.Solid;
-			_worksheet.Row(row).Style.Fill.BackgroundColor.SetColor(color);
+			
+			if (color.HasValue)
+			{
+				_worksheet.Row(row).Style.Fill.PatternType = ExcelFillStyle.Solid;
+				_worksheet.Row(row).Style.Fill.BackgroundColor.SetColor(color.Value);
+			}
+				
 			_worksheet.Row(row).Style.Font.Color.SetColor(foreColor);
 		}
 

@@ -150,8 +150,10 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var returnDed = _companyRepository.SaveDeduction(deduction);
-				var memento = Memento<CompanyDeduction>.Create(returnDed, EntityTypeEnum.CompanyDeductions, user);
-				_mementoDataService.AddMementoData(memento);
+				var returnCompany = _companyRepository.GetCompanyById(deduction.CompanyId);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName);
+				_mementoDataService.AddMementoData(memento, true);
+				
 				return returnDed;
 			}
 			catch (Exception e)
@@ -162,11 +164,15 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation)
+		public CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation, string user)
 		{
 			try
 			{
-				return _companyRepository.SaveWorkerCompensation(workerCompensation);
+				var wc = _companyRepository.SaveWorkerCompensation(workerCompensation);
+				var returnCompany = _companyRepository.GetCompanyById(wc.CompanyId);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				_mementoDataService.AddMementoData(memento, true);
+				return wc;
 			}
 			catch (Exception e)
 			{
@@ -176,11 +182,15 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource)
+		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource, string user)
 		{
 			try
 			{
-				return _companyRepository.SaveAccumulatedPayType(mappedResource);
+				var apt =  _companyRepository.SaveAccumulatedPayType(mappedResource);
+				var returnCompany = _companyRepository.GetCompanyById(apt.CompanyId);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				_mementoDataService.AddMementoData(memento, true);
+				return apt;
 			}
 			catch (Exception e)
 			{
@@ -190,11 +200,15 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyPayCode SavePayCode(CompanyPayCode mappedResource)
+		public CompanyPayCode SavePayCode(CompanyPayCode mappedResource, string user)
 		{
 			try
 			{
-				return _companyRepository.SavePayCode(mappedResource);
+				var pc = _companyRepository.SavePayCode(mappedResource);
+				var returnCompany = _companyRepository.GetCompanyById(pc.CompanyId);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				_mementoDataService.AddMementoData(memento, true);
+				return pc;
 			}
 			catch (Exception e)
 			{
@@ -334,11 +348,15 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction)
+		public EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction, string user)
 		{
 			try
 			{
-				return _companyRepository.SaveEmployeeDeduction(deduction);
+				var ed = _companyRepository.SaveEmployeeDeduction(deduction);
+				var returnCompany = _companyRepository.GetEmployeeById(ed.EmployeeId);
+				var memento = Memento<Employee>.Create(returnCompany, EntityTypeEnum.Employee, user);
+				_mementoDataService.AddMementoData(memento, true);
+				return ed;
 			}
 			catch (Exception e)
 			{
@@ -379,11 +397,17 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource)
+		public CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource, string user)
 		{
 			try
 			{
-				return _companyRepository.SaveCompanyTaxRate(mappedResource);
+				var tr = _companyRepository.SaveCompanyTaxRate(mappedResource);
+
+				var returnCompany = _companyRepository.GetCompanyById(tr.CompanyId);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				_mementoDataService.AddMementoData(memento, true);
+
+				return tr;
 			}
 			catch (Exception e)
 			{

@@ -8,19 +8,21 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 			scope: {
 				mainData: "=mainData",
 				selected: "=employee",
-				isPopup: "=isPopup"
-				
+				isPopup: "=isPopup",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository',
-				function ($scope, $element, $location, $filter, companyRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes',
+				function ($scope, $element, $location, $filter, companyRepository, EntityTypes) {
 					var dataSvc = {
 						payCodes: [],
 						companyStates: [],
 						compensations: [],
-						employeeMetaData: null
+						employeeMetaData: null,
+						sourceTypeId: EntityTypes.Employee
 					}
+					$scope.tab = 1;
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
@@ -239,30 +241,36 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 								if (pc.id > 0)
 									$scope.selectedPayCodes.push({ id: pc.id });
 							});
-							
-							$timeout(function () {
-								$("#wizard").bwizard({
-									validating: function (e, ui) {
-										if (ui.index == 0) {
-											// step-1 validation
-											if (false === $('form[name="employee"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
-												return false;
+							if ($scope.showControls) {
+								$timeout(function() {
+									$("#wizard").bwizard({
+										validating: function(e, ui) {
+											if (ui.index == 0) {
+												// step-1 validation
+												if (false === $('form[name="employee"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
+													return false;
+												}
+											} else if (ui.index == 1) {
+												// step-2 validation
+												if (false === $('form[name="employee"]').parsley().validate('wizard-step-2') || false === validateStep2()) {
+													return false;
+												}
+											} else if (ui.index == 2) {
+												// step-3 validation
+												if (false === $('form[name="employee"]').parsley().validate('wizard-step-3') || false === validateStep3()) {
+													return false;
+												}
 											}
-										} else if (ui.index == 1) {
-											// step-2 validation
-											if (false === $('form[name="employee"]').parsley().validate('wizard-step-2') || false === validateStep2()) {
-												return false;
-											}
-										} else if (ui.index == 2) {
-											// step-3 validation
-											if (false === $('form[name="employee"]').parsley().validate('wizard-step-3') || false === validateStep3()) {
-												return false;
-											}
+											return true;
 										}
-										return true;
-									}
+									});
 								});
-							});
+							} else {
+								$timeout(function () {
+									$("#wizard").bwizard();
+								});
+							}
+							
 						}, 1);
 						
 

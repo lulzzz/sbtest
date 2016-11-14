@@ -88,8 +88,15 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 					$scope.set = function (item) {
 						$scope.selected = null;
 						$timeout(function () {
+							var history = [];
+							$.each($scope.list, function(i, it) {
+								if (it.extract.report.depositDate < item.extract.report.depositDate) {
+									history.push(it);
+								}
+							});
+							item.extract.data.history = history;
 							$scope.selected = angular.copy(item);
-
+							
 						}, 1);
 						
 						

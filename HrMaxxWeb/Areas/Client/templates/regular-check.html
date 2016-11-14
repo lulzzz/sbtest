@@ -76,7 +76,7 @@
 
 
 	</div>
-	<div class="col-sm-10 col-sm-offset-1">
+	<div class="col-sm-10 col-sm-offset-1" ng-show="showControls">
 		<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 		<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-disabled="isCheckInValid()" ng-show="!item.isVoid"><i class="fa fa-save m-r-5"></i> Save</button>
 		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid && !hasChanged()"><i class="fa fa-print m-r-5"></i>print</button>
@@ -89,7 +89,7 @@
 					<th class="col-sm-5">Account</th>
 					<th class="col-sm-2">Amount</th>
 					<th class="col-sm-4">Memo</th>
-					<th class="col-sm-1"></th>
+					<th class="col-sm-1" ng-show="showControls"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -110,7 +110,7 @@
 							{{ jd.memo }}
 						</span>
 					</td>
-					<td style="white-space: nowrap">
+					<td style="white-space: nowrap" ng-show="showControls">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd" ng-show="!item.isVoid">
 							<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
@@ -131,7 +131,7 @@
 						<span ng-show="item.journalDetails.length===0">No items found</span>
 					</td>
 
-					<td>
+					<td ng-show="showControls">
 						<button type="button" ng-click="addJournalDetail()" class="btn btn-primary">
 							Add
 						</button>

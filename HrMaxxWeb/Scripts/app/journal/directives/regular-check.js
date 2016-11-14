@@ -8,7 +8,8 @@ common.directive('regularCheck', ['zionAPI','version',
 			scope: {
 				item: "=item",
 				datasvc: "=datasvc",
-				company: "=company"
+				company: "=company",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/regular-check.html?v=' + version,
 

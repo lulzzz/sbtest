@@ -51,6 +51,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<int> PayChecks { get; set; }
 		public List<int> VoidedCreditedChecks { get; set; }
 		public bool ApplyWCMinWageLimit { get; set; }
+
+		public string DeliveryClaimedBy { get; set; }
+		public DateTime DeliveryClaimedOn { get; set; }
+
 		public decimal PaidAmount
 		{
 			get { return Math.Round(Payments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount), 2, MidpointRounding.AwayFromZero); }

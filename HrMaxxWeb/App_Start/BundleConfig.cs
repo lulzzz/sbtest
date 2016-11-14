@@ -136,6 +136,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/Common/directives/news-list.js",
 				"~/Scripts/app/common/directives/userprofile.js",
 				"~/Scripts/app/common/directives/report-filter.js",
+				"~/Scripts/app/common/directives/memento-list.js",
 				
 				"~/Scripts/app/host/directives/host-list.js",
 				"~/Scripts/app/host/directives/host.js",
@@ -155,6 +156,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/company/directives/company.js",
 				"~/Scripts/app/common/main-ctrl.js",
 				"~/Scripts/app/company/directives/vendor-customer-list.js",
+				"~/Scripts/app/company/directives/vendor-customer.js",
 				"~/Scripts/app/company/directives/account-list.js",
 				"~/Scripts/app/company/directives/employee-list.js",
 				"~/Scripts/app/company/directives/employee.js",

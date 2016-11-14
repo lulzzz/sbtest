@@ -188,6 +188,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			claimInvoiceDelivery: function (invoiceIds) {
+				var deferred = $q.defer();
+				payrollServer.one('ClaimDelivery').one(invoiceIds).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			markPayCheckPrinted: function (payCheckId) {
 				var deferred = $q.defer();
 				payrollServer.one('MarkPrinted/' + payCheckId).get().then(function (data) {

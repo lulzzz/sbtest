@@ -42,5 +42,6 @@
 
 		public const string InsuranceGroups = "InsuranceGroups";
 		public const string InsuranceGroup = "InsuranceGroup";
+		public const string Mementos = "Mementos/{sourceId:guid}/{sourceTypeId:int}";
 	}
 }

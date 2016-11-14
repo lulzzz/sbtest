@@ -97,7 +97,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal? MinGrossWage { get; set; }
 	}
 
-	public class CompanyDeduction : IOriginator<CompanyDeduction>
+	public class CompanyDeduction
 	{
 		public int Id { get; set; }
 		public Guid CompanyId { get; set; }
@@ -109,18 +109,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
 
-		public Guid MementoId {
-			get
-			{
-				var str = string.Format("{0}-0000-0000-0000-{1}", ((int)EntityTypeEnum.CompanyDeductions).ToString().PadLeft(8, '0'),
-					Id.ToString().PadLeft(12, '0'));
-				return new Guid(str);
-			} 
-		}
-		public void ApplyMemento(Memento<CompanyDeduction> memento)
-		{
-			throw new NotImplementedException();
-		}
+		
 	}
 
 	public class AccumulatedPayType

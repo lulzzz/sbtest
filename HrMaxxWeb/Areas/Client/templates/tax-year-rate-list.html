@@ -8,7 +8,7 @@
 				<td class="col-sm-3">Year</td>
 				<td class="col-sm-3">Code</td>
 				<td class="col-sm-3">Rate %</td>
-				<td class="col-sm-3"></td>
+				<td class="col-sm-3" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -29,7 +29,7 @@
 						{{ item.rate }} %
 					</span>
 				</td>
-				<td style="white-space: nowrap">
+				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">

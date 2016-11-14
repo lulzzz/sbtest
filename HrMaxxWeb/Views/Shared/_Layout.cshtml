@@ -59,6 +59,40 @@
 				</div>
 				
 			</script>
+			<script type="text/ng-template" id="popover/memento.html">
+
+				<div class="modal-header">
+					<h2 class="modal-title">Version #{{memento.version}} Details</h2>
+				</div>
+				<div class="modal-body">
+					
+						<div class="row" ng-if="sourceTypeId===2">
+							<company company="memento.object" main-data="mainData" is-popup="true" show-controls="false" />
+						</div>
+						<div class="row" ng-if="sourceTypeId===3">
+							<employee employee="memento.object" main-data="mainData" is-popup="false" show-controls="false" />
+						</div>
+						<div class="row" ng-if="sourceTypeId===1">
+
+						</div>
+						<div class="row" ng-if="sourceTypeId===8">
+							<regular-check item="memento.object" datasvc="dataSvc" company="mainData.selectedCompany" show-controls="false" />							
+						</div>
+						<div class="row" ng-if="sourceTypeId===10">
+							<deposit-ticket item="memento.object" datasvc="dataSvc" company="mainData.selectedCompany" show-controls="false" />							
+						</div>
+						<div class="row" ng-if="sourceTypeId===18">
+							<account-adjustment item="memento.object" datasvc="dataSvc" company="mainData.selectedCompany" show-controls="false" />							
+						</div>
+						<div class="row" ng-if="sourceTypeId===19">
+							<tax-payment item="memento.object" datasvc="dataSvc" company="mainData.selectedCompany" show-controls="false" />							
+						</div>
+						<div class="row" ng-if="sourceTypeId===7">
+							<paycheck check="memento.object" />
+						</div>
+					
+				</div>
+			</script>
 			<script type="text/ng-template" id="popover/company.html">
 
 				<div class="modal-header">
@@ -66,7 +100,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="row">
-						<company company="company" main-data="mainData" is-popup="true" />
+						<company company="company" main-data="mainData" is-popup="true" show-controls="true" />
 					</div>
 				</div>
 			</script>

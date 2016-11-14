@@ -7,7 +7,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
 	public interface IPayrollRepository
 	{
-		List<PayCheck> GetPayChecksTillPayDay(DateTime payDay);
+		List<PayCheck> GetPayChecksTillPayDay(Guid day, DateTime payDay);
 		Models.Payroll SavePayroll(Models.Payroll payroll);
 		List<PayCheck> GetPayChecksPostPayDay(Guid day, DateTime payDay);
 		void UpdatePayCheckYTD(PayCheck employeeFutureCheck);
@@ -33,5 +33,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		List<Models.Payroll> GetAllPayrolls(Guid? companyId);
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 		void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date);
+		List<PayrollInvoice> ClaimDelivery(List<Guid> invoices, string user);
 	}
 }

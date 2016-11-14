@@ -2,12 +2,13 @@
 	<div class="panel panel-inverse overflow-hidden">
 		<div class="panel-heading">
 			<i class="fa fa-plus-circle pull-right"></i>
-			<ul class="nav nav-tabs pull-right" id="companytabs">
+			<ul class="nav nav-tabs pull-right" id="companytabs" ng-show="showControls">
 				<li ng-class="{'active':tab===1}" ng-click="tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
 				<li ng-class="{'active':tab===2}" ng-show=" selectedCompany.id" ng-click="tab=2"><a data-toggle="tab"><i class="fa fa-users"></i> <span class="hidden-xs">Contacts</span></a></li>
 				<li ng-class="{'active':tab===3}" ng-show=" selectedCompany.id" ng-click="tab=3"><a data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
 				<li ng-class="{'active':tab===4}" ng-show=" selectedCompany.id" ng-click="tab=4"><a data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
 				<li ng-class="{'active':tab===5}" ng-show=" selectedCompany.id" ng-click="tab=5"><a data-toggle="tab"><i class="fa fa-file-archive-o"></i> <span class="hidden-xs">Documents</span></a></li>
+				<li ng-class="{'active':tab===6}" ng-show=" selectedCompany.id && mainData.userRole==='Master'" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 			</ul>
 			<h2 class="panel-title">
 				<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
@@ -155,7 +156,7 @@
 											<div class="col-sm-4">
 												<div class="form-group">
 													<label>Insurance Client No</label>
-													<input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
+													<input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
 												</div>
 												<div class="form-group">
 													<label></label>
@@ -558,7 +559,7 @@
 									</fieldset>
 								</div>
 							</div>
-							<div class="col-sm-2 col-sm-offset-4">
+							<div class="col-sm-2 col-sm-offset-4" ng-show="showControls">
 								<button class="btn btn-primary" ng-click="save()" ng-disabled="!validateCompany()"><i class="fa fa-save m-r-5"></i> Save</button>
 								<button class="btn btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 							</div>
@@ -576,7 +577,9 @@
 					<div class="tab-pane fade in" id="contacts" ng-if="selectedCompany.id" ng-class="{'active':tab===2}">
 						<contact-list source-type-id="data.sourceTypeId" source-id="selectedCompany.id" heading="'Contacts'" />
 					</div>
-
+					<div class="tab-pane fade in" id="versions" ng-if="selectedCompany.id" ng-class="{'active':tab===6}" >
+						<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="selectedCompany.id" heading="'Company Versions'" />
+					</div>
 				</div>
 
 			</div>
@@ -592,7 +595,7 @@
 		</div>
 		<div id="collapseTwo" class="panel-collapse collapse">
 			<div class="panel-body">
-				<deduction-list list="selectedCompany.deductions" types="data.companyMetaData.deductionTypes" company-id="selectedCompany.id" />
+				<deduction-list list="selectedCompany.deductions" types="data.companyMetaData.deductionTypes" company-id="selectedCompany.id" show-controls="showControls" />
 			</div>
 		</div>
 	</div>
@@ -608,7 +611,7 @@
 		</div>
 		<div id="collapseThree" class="panel-collapse collapse">
 			<div class="panel-body">
-				<worker-compensation-list list="selectedCompany.workerCompensations" company-id="selectedCompany.id" />
+				<worker-compensation-list list="selectedCompany.workerCompensations" company-id="selectedCompany.id" show-controls="showControls" />
 			</div>
 		</div>
 	</div>
@@ -623,7 +626,7 @@
 		</div>
 		<div id="collapseFour" class="panel-collapse collapse">
 			<div class="panel-body">
-				<tax-year-rate-list list="selectedCompany.companyTaxRates" company-id="selectedCompany.id" meta-data="data.companyMetaData.taxes" />
+				<tax-year-rate-list list="selectedCompany.companyTaxRates" company-id="selectedCompany.id" meta-data="data.companyMetaData.taxes" show-controls="showControls" />
 			</div>
 		</div>
 	</div>
@@ -638,7 +641,7 @@
 		</div>
 		<div id="collapseFive" class="panel-collapse collapse">
 			<div class="panel-body">
-				<accumulated-pay-type-list list="selectedCompany.accumulatedPayTypes" company-id="selectedCompany.id" meta-data="data.companyMetaData.payTypes" />
+				<accumulated-pay-type-list list="selectedCompany.accumulatedPayTypes" company-id="selectedCompany.id" meta-data="data.companyMetaData.payTypes" show-controls="showControls" />
 			</div>
 		</div>
 	</div>
@@ -653,7 +656,7 @@
 		</div>
 		<div id="collapseSix" class="panel-collapse collapse">
 			<div class="panel-body">
-				<pay-code-list list="selectedCompany.payCodes" company-id="selectedCompany.id" />
+				<pay-code-list list="selectedCompany.payCodes" company-id="selectedCompany.id" show-controls="showControls" />
 			</div>
 		</div>
 	</div>

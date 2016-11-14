@@ -7,7 +7,8 @@ common.directive('payCodeList', ['zionAPI','version',
 			replace: true,
 			scope: {
 				companyId: "=companyId",
-				list: "=list"
+				list: "=list",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/pay-code-list.html?v=' + version,
 

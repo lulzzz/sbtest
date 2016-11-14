@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace HrMaxx.Common.Repository.Excel
 		{
 			_filePath = filePath;
 		}
-		public FileDto GetImportTemplate(string fileName, List<string> columms, List<List<string>> rowList)
+		public FileDto GetImportTemplate(string fileName, List<string> columms, List<List<string>> rowList, bool hasSampleRow)
 		{
 			var e = new Infrastructure.Excel.Excel(_filePath);
 			e.AddWorksheet("Sheet1");
@@ -39,6 +40,10 @@ namespace HrMaxx.Common.Repository.Excel
 					e.SetCellValue(rowCounter, colummCounter++, str);
 				}
 			}
+			if (hasSampleRow)
+			{
+				e.SetRowColor(2, null, Color.Red);
+			}
 			var file = e.Save();
 			return new FileDto
 			{
@@ -49,7 +54,7 @@ namespace HrMaxx.Common.Repository.Excel
 			};
 		}
 
-		public List<ExcelRead> GetExcelData(FileInfo file)
+		public List<ExcelRead> GetExcelData(FileInfo file, int startingRow)
 		{
 			var result = new List<ExcelRead>();
 			using (var xl = new Infrastructure.Excel.Excel(file))
@@ -57,7 +62,7 @@ namespace HrMaxx.Common.Repository.Excel
 				var workSheet = xl.Worksheet;
 				
 				var end = workSheet.Dimension.End;
-				for (int row = 2; row <= end.Row; row++)
+				for (int row = startingRow; row <= end.Row; row++)
 				{ // Row by row...
 					var erow = new ExcelRead {Row = row, Values=new List<KeyValuePair<string, string>>()};
 					for (int col = 1; col <= end.Column; col++)

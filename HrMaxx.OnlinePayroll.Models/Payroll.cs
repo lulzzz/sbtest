@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
@@ -37,7 +39,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		
 	}
 
-	public class PayCheck
+	public class PayCheck : IOriginator<PayCheck>
 	{
 		public Guid PayrollId { get; set; }
 		public int Id { get; set; }
@@ -356,6 +358,20 @@ namespace HrMaxx.OnlinePayroll.Models
 					t.YTDTax = Math.Round(t.YTDTax - t1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
 			});
+		}
+
+		public Guid MementoId
+		{
+			get
+			{
+				var str = string.Format("{0}-0000-0000-0000-{1}", ((int)EntityTypeEnum.PayCheck).ToString().PadLeft(8, '0'),
+					Id.ToString().PadLeft(12, '0'));
+				return new Guid(str);
+			}
+		}
+		public void ApplyMemento(Memento<PayCheck> memento)
+		{
+			throw new NotImplementedException();
 		}
 	}
 

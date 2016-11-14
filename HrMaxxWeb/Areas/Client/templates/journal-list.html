@@ -182,55 +182,63 @@
 			<!-- end panel -->
 		</div>
 	</div>
-	
-	<div class="panel panel-info" ng-if="selected && selected.transactionType===1">
-		<div class="panel-body tab-content">
-			<div class="col-sm-12  m-10">
-				<div class="col-sm-10">
-					<div class="alert alert-info" ng-show="selected.peoasoCoCheck">
-						This is a PEO ASO Co Check recorded in both the Company and it's Host
+	<div class="row" ng-if="selected">
+		<div class="col-sm-10">
+			<div class="panel panel-info" ng-if="selected && selected.transactionType===1">
+				<div class="panel-body tab-content">
+					<div class="col-sm-12  m-10">
+						<div class="col-sm-10">
+							<div class="alert alert-info" ng-show="selected.peoasoCoCheck">
+								This is a PEO ASO Co Check recorded in both the Company and it's Host
+							</div>
+						</div>
+						<div class="col-sm-2 pull-right">
+							<button class="btn btn-sm btn-success" ng-show="!selected.isVoid" ng-click="markPrinted(selected)"><i class="fa fa-print m-r-5"></i> print</button>
+							<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+						</div>
+
+
+					</div>
+					<paycheck check-id="selected.payrollPayCheckId" />
+					<div class="col-sm-12 pull-right">
+						<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 					</div>
 				</div>
-				<div class="col-sm-2 pull-right">
-					<button class="btn btn-sm btn-success" ng-show="!selected.isVoid" ng-click="markPrinted(selected)"><i class="fa fa-print m-r-5"></i> print</button>
-					<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+
+			</div>
+			<div class="panel panel-info" ng-if="selected && selected.transactionType===2">
+				<div class="panel-body tab-content">
+					<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+
 				</div>
-				
-				
+
 			</div>
-			<paycheck check-id="selected.payrollPayCheckId" />
-			<div class="col-sm-12 pull-right">
-				<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+			<div class="panel panel-info" ng-if="selected && selected.transactionType===5">
+				<div class="panel-body tab-content">
+					<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+
+				</div>
+
+			</div>
+			<div class="panel panel-info" ng-if="selected && selected.transactionType===3">
+				<div class="panel-body tab-content">
+					<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+				</div>
+
+			</div>
+			<div class="panel panel-info" ng-if="selected && selected.transactionType===4">
+				<div class="panel-body tab-content">
+					<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
+				</div>
+
 			</div>
 		</div>
-
-	</div>
-	<div class="panel panel-info" ng-if="selected && selected.transactionType===2">
-		<div class="panel-body tab-content">
-			<regular-check item="selected" datasvc="data" company="mainData.selectedCompany" />	
-			
+		<div class="col-sm-2" ng-show="mainData.userRole==='Master'">
+			<memento-list main-data="mainData" source-type-id="selected.entityType1" memento-id="selected.mementoId" heading="'Check Versions'" data="data" />
 		</div>
-
+		
 	</div>
-	<div class="panel panel-info" ng-if="selected && selected.transactionType===5">
-		<div class="panel-body tab-content">
-			<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" />
-
-		</div>
-
-	</div>
-	<div class="panel panel-info" ng-if="selected && selected.transactionType===3">
-		<div class="panel-body tab-content">
-			<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany"/>
-		</div>
-
-	</div>
-	<div class="panel panel-info" ng-if="selected && selected.transactionType===4">
-		<div class="panel-body tab-content">
-			<account-adjustment item="selected" datasvc="data" company="mainData.selectedCompany" />
-		</div>
-
-	</div>
+	
 	
 
 

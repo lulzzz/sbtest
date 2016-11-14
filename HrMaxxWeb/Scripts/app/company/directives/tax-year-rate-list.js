@@ -8,7 +8,8 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 			scope: {
 				companyId: "=companyId",
 				list: "=list",
-				metaData: "=metaData"
+				metaData: "=metaData",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/tax-year-rate-list.html?v=' + version,
 

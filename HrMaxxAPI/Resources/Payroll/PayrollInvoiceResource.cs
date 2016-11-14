@@ -55,6 +55,10 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<int> PayChecks { get; set; }
 		public List<int> VoidedCreditedChecks { get; set; }
 		public bool ApplyWCMinWageLimit { get; set; }
+
+		public string DeliveryClaimedBy { get; set; }
+		public DateTime DeliveryClaimedOn { get; set; }
+
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }

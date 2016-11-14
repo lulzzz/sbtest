@@ -57,6 +57,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string PayChecks { get; set; }
         public string VoidedCreditChecks { get; set; }
         public bool ApplyWCMinWageLimit { get; set; }
+        public string DeliveryClaimedBy { get; set; }
+        public Nullable<System.DateTime> DeliveryClaimedOn { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual Payroll Payroll { get; set; }

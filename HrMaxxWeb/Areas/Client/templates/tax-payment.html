@@ -77,7 +77,7 @@
 
 
 	</div>
-	<div class="col-sm-10 col-sm-offset-1">
+	<div class="col-sm-10 col-sm-offset-1" ng-show="showControls">
 		<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid && !hasChanged()"><i class="fa fa-print m-r-5"></i>print</button>
 		
 	</div>
@@ -88,7 +88,7 @@
 					<th class="col-sm-5">Account</th>
 					<th class="col-sm-2">Amount</th>
 					<th class="col-sm-4">Memo</th>
-					<th class="col-sm-1"></th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -105,9 +105,7 @@
 						{{jd.memo}}
 						
 					</td>
-					<td style="white-space: nowrap">
-						
-					</td>
+				
 
 				</tr>
 				

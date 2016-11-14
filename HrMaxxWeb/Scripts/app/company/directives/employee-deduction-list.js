@@ -9,7 +9,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				employeeId: "=employeeId",
 				companyDeductions: "=companyDeductions",
 				list: "=list",
-				saveToServer: "=saveToServer"
+				saveToServer: "=saveToServer",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html?v=' + version,
 

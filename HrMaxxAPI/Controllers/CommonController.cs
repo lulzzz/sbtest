@@ -6,6 +6,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Resources.Common;
 
@@ -16,11 +17,13 @@ namespace HrMaxxAPI.Controllers
 	{
 		public readonly ICommonService _commonService;
 		public readonly IMetaDataService _metaDataService;
+		private readonly IMementoDataService _mementoDataService;
 		
-		public CommonController(ICommonService commonService, IMetaDataService metaDataService)
+		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService)
 		{
 			_commonService = commonService;
 			_metaDataService = metaDataService;
+			_mementoDataService = mementoDataService;
 		}
 
 		[HttpGet]
@@ -132,6 +135,12 @@ namespace HrMaxxAPI.Controllers
 		public InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto resource)
 		{
 			return MakeServiceCall(() => _commonService.SaveInsuranceGroup(resource), "save insurance group ", true);
-		} 
+		}
+		[HttpGet]
+		[Route(HrMaxxRoutes.Mementos)]
+		public List<object> GetMementos(Guid sourceId, int sourceTypeId)
+		{
+			return MakeServiceCall(() => _mementoDataService.GetMementos((EntityTypeEnum)sourceTypeId, sourceId), "get mementos for source type " + sourceTypeId, true);
+		}
 	}
 }

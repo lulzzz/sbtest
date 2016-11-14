@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models;
 
 namespace HrMaxx.OnlinePayroll.Repository.Companies
@@ -32,5 +33,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		VendorCustomer GetVendorCustomersById(Guid vcId);
 		Company CopyCompany(Guid oldCompanyId, Guid companyId, Guid oldHostId, Guid newHostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string user);
 		List<Company> GetAllCompanies();
+		Employee GetEmployeeById(Guid employeeId);
 	}
 }

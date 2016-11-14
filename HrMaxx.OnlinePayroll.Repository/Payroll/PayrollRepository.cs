@@ -24,9 +24,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			_mapper = mapper;
 		}
 
-		public List<PayCheck> GetPayChecksTillPayDay(DateTime payDay)
+		public List<PayCheck> GetPayChecksTillPayDay(Guid companyId, DateTime payDay)
 		{
-			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.PayDay.Year == payDay.Year && pc.PayDay <= payDay && !pc.IsVoid);
+			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.CompanyId==companyId && pc.PayDay.Year == payDay.Year && pc.PayDay <= payDay && !pc.IsVoid);
 			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
 
 		}
@@ -324,9 +324,26 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayroll.PayDay = date.Date;
 				var dbPayChecks = dbPayroll.PayrollPayChecks.Where(pc => payChecks.Contains(pc.Id)).ToList();
 				dbPayChecks.ForEach(pc=>pc.PayDay=date.Date);
+				var dbJournals = _dbContext.Journals.Where(j => payChecks.Contains(j.PayrollPayCheckId.Value)).ToList();
+				dbJournals.ForEach(j=>j.TransactionDate = date.Date);
 				_dbContext.SaveChanges();
 			}
 
+		}
+
+		public List<PayrollInvoice> ClaimDelivery(List<Guid> invoices, string user)
+		{
+			var dbInvoices = _dbContext.PayrollInvoices.Where(pi => invoices.Contains(pi.Id)).ToList();
+			if (dbInvoices.Any())
+			{
+				dbInvoices.ForEach(i =>
+				{
+					i.DeliveryClaimedBy = user;
+					i.DeliveryClaimedOn = DateTime.Now;
+				});
+				_dbContext.SaveChanges();
+			}
+			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<PayrollInvoice>>(dbInvoices);
 		}
 	}
 }

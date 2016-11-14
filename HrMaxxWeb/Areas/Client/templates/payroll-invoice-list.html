@@ -18,7 +18,7 @@
 						<td data-title=" 'Invoice #' " filter="{'invoiceNumber':'text'}" sortable=" 'invoiceNumber' " class="col-sm-1 text-center">
 							{{item.invoiceNumber}}
 						</td>
-						<td data-title=" 'Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+						<td data-title=" 'Pay Day/Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
 							{{item.invoiceDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Days Overdue' " sortable=" 'daysOverdue' " class="col-sm-1 text-center">
@@ -101,7 +101,7 @@
 		</div>
 		<div class="panel-body tab-content" ng-if="selectedInvoice">
 			<form data-parsley-validate="true" name="invoice">
-				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" />
+				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" show-controls="true" />
 			</form>
 		</div>
 	</div>

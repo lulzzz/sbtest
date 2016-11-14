@@ -287,6 +287,16 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
+			getMementos: function (type, id) {
+				var deferred = $q.defer();
+				commonServer.one('Mementos').one(id, type).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveInsuranceGroup: function (group) {
 				var deferred = $q.defer();
 				commonServer.all('InsuranceGroup').post(group).then(function (data) {

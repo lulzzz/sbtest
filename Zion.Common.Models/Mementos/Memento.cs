@@ -15,10 +15,11 @@ namespace HrMaxx.Common.Models.Mementos
 		public string OriginatorTypeName { get; private set; }
 		public int Id { get; private set; }
 		public Guid MementoId { get; private set; }
-		public int Version { get; set; }
+		public decimal Version { get; set; }
 		public DateTime DateCreated { get; set; }
 		public string CreatedBy { get; set; }
 		public EntityTypeEnum SourceTypeId { get; set; }
+		public T Object { get; set; }
 
 		public static Memento<T> Create(IOriginator<T> originator, EntityTypeEnum sourceType, string createdBy)
 		{
@@ -40,7 +41,7 @@ namespace HrMaxx.Common.Models.Mementos
 			return memento;
 		}
 
-		public static Memento<T> Create(Guid mementoId, int version, DateTime dateCreated, string mementoState, string createdBy, EntityTypeEnum sourceType)
+		public static Memento<T> Create(Guid mementoId, decimal version, DateTime dateCreated, string mementoState, string createdBy, EntityTypeEnum sourceType)
 		{
 			var memento = new Memento<T>
 			{
@@ -51,7 +52,9 @@ namespace HrMaxx.Common.Models.Mementos
 				OriginatorTypeName = typeof (T).FullName,
 				CreatedBy = createdBy,
 				SourceTypeId = sourceType
+				
 			};
+			memento.Object = memento.Deserialize();
 			return memento;
 		}
 

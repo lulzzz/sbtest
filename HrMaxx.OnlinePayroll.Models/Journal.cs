@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
-	public class Journal
+	public class Journal : IOriginator<Journal>
 	{
 		public int Id { get; set; }
 		public Guid CompanyId { get; set; }
@@ -31,6 +32,33 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid DocumentId { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
+
+		public int EntityType1
+		{
+			get
+			{
+				return TransactionType == TransactionType.RegularCheck
+					? (int)EntityTypeEnum.RegularCheck
+					: TransactionType == TransactionType.PayCheck
+						? (int)EntityTypeEnum.PayCheck
+						: TransactionType == TransactionType.Deposit
+							? (int)EntityTypeEnum.Deposit
+							: TransactionType == TransactionType.Adjustment ? (int)EntityTypeEnum.Adjustment : (int)EntityTypeEnum.TaxPayment;
+			}
+		}
+		public Guid MementoId
+		{
+			get
+			{
+				var str = string.Format("{0}-0000-0000-0000-{1}", EntityType1.ToString().PadLeft(8, '0'),
+					TransactionType==TransactionType.PayCheck? PayrollPayCheckId.Value.ToString().PadLeft(12,'0') : Id.ToString().PadLeft(12, '0'));
+				return new Guid(str);
+			}
+		}
+		public void ApplyMemento(Memento<Journal> memento)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class JournalDetail

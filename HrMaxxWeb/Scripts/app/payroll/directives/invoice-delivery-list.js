@@ -18,7 +18,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 						
 					}
 					$scope.list = [];
-					$scope.today = moment().date();
+					$scope.today = new Date();
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;
@@ -85,7 +85,30 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					}
 					
 					
-					$scope.print = function() {
+					$scope.print = function () {
+						var invoices = "";
+						$.each($scope.tableData, function(i, inv) {
+							if (inv.selected) {
+								if (invoices) {
+									invoices += "," + inv.id;
+								} else {
+									invoices = inv.id;
+								}
+							}
+						});
+						payrollRepository.claimInvoiceDelivery(invoices).then(function (data) {
+							$.each($scope.tableData, function (i, inv) {
+								if (inv.selected) {
+									inv.deliveryClaimedBy = $scope.mainData.myName;
+									inv.deliveryClaimedOn = new Date();
+								}
+							});
+							
+
+						}, function (error) {
+							$scope.addAlert('error printing invoice delivery list', 'danger');
+
+						});
 						$window.print();
 					}
 					var init = function () {

@@ -9,7 +9,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 				invoice: "=invoice",
 				datasvc: "=datasvc",
 				host: "=host",
-				mainData: "=mainData"
+				mainData: "=mainData",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
 
@@ -20,8 +21,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						companyContact: null,
 						hostHomePage: null,
 						config: null,
-						companyUpdated : false
-
+						companyUpdated : false,
+						sourceTypeId: EntityTypes.Invoice
 				}
 					
 					$scope.list = [];

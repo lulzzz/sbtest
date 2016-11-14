@@ -11,6 +11,7 @@ using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Tracing;
 using HrMaxx.Infrastructure.Transactions;
+using HrMaxx.OnlinePayroll.Models;
 
 namespace HrMaxx.Common.Services.Mementos
 {
@@ -23,7 +24,7 @@ namespace HrMaxx.Common.Services.Mementos
 			_repository = repository;
 		}
 
-		public void AddMementoData<T>(Memento<T> memento)
+		public void AddMementoData<T>(Memento<T> memento, bool isSubVersion = false)
 		{
 			var dto = new MementoPersistenceDto
 			{
@@ -41,7 +42,7 @@ namespace HrMaxx.Common.Services.Mementos
 
 				using (TransactionScope txn = TransactionScopeHelper.Transaction())
 				{
-					_repository.SaveMemento(dto);
+					_repository.SaveMemento(dto, isSubVersion);
 
 					txn.Complete();
 				}
@@ -86,7 +87,13 @@ namespace HrMaxx.Common.Services.Mementos
 					return null;
 
 				var mementos = new List<Memento<T>>();
-				memento.ForEach(m => mementos.Add(Memento<T>.Create(mementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
+				memento.ForEach(m =>
+				{
+					var mem = Memento<T>.Create(mementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy,
+						(EntityTypeEnum) m.SourceTypeId);
+					mem.Object = mem.Deserialize();
+					mementos.Add(mem);
+				});
 				return mementos;
 			}
 			catch (Exception e)
@@ -116,6 +123,57 @@ namespace HrMaxx.Common.Services.Mementos
 			{
 				Log.Error("MementoDataService.GetMementoData failed", e);
 				throw new HrMaxxApplicationException(CommonStringResources.ERROR_CouldNotRetrieveStagingData);
+			}
+		}
+
+		public List<object> GetMementos(EntityTypeEnum sourceTypeId, Guid sourceId)
+		{
+			try
+			{
+				var mems = new List<MementoPersistenceDto>();
+				var result = new List<object>();
+				if(sourceTypeId==EntityTypeEnum.Company)
+				{
+					mems = _repository.GetMementos<Company>((int)sourceTypeId, sourceId).ToList();
+					var ms = new List<Memento<Company>>();
+					mems.ForEach(m => ms.Add(Memento<Company>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
+					ms.ForEach(m=> result.Add(new { Version= m.Version, DateCreated=m.DateCreated, Object=m.Object, CreatedBy = m.CreatedBy}));
+				}
+				else if (sourceTypeId == EntityTypeEnum.Employee)
+				{
+					mems = _repository.GetMementos<Employee>((int)sourceTypeId, sourceId).ToList();
+					var ms = new List<Memento<Employee>>();
+					mems.ForEach(m => ms.Add(Memento<Employee>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
+					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy }));
+				}
+				else if (sourceTypeId == EntityTypeEnum.Invoice)
+				{
+					mems = _repository.GetMementos<PayrollInvoice>((int)sourceTypeId, sourceId).ToList();
+					var ms = new List<Memento<PayrollInvoice>>();
+					mems.ForEach(m => ms.Add(Memento<PayrollInvoice>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
+					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy }));
+				}
+				else if (sourceTypeId == EntityTypeEnum.RegularCheck || sourceTypeId == EntityTypeEnum.Deposit || sourceTypeId == EntityTypeEnum.Adjustment || sourceTypeId == EntityTypeEnum.TaxPayment)
+				{
+					mems = _repository.GetMementos<Journal>((int)sourceTypeId, sourceId).ToList();
+					var ms = new List<Memento<Journal>>();
+					mems.ForEach(m => ms.Add(Memento<Journal>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
+					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy }));
+				}
+				else if (sourceTypeId == EntityTypeEnum.PayCheck)
+				{
+					mems = _repository.GetMementos<PayCheck>((int)sourceTypeId, sourceId).ToList();
+					var ms = new List<Memento<PayCheck>>();
+					mems.ForEach(m => ms.Add(Memento<PayCheck>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId)));
+					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy }));
+				}
+
+				return result;
+			}
+			catch (Exception e)
+			{
+				
+				throw;
 			}
 		}
 

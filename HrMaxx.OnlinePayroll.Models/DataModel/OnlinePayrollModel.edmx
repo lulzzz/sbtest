@@ -408,6 +408,8 @@
           <Property Name="PayChecks" Type="varchar(max)" Nullable="false" />
           <Property Name="VoidedCreditChecks" Type="varchar(max)" Nullable="false" />
           <Property Name="ApplyWCMinWageLimit" Type="bit" Nullable="false" />
+          <Property Name="DeliveryClaimedBy" Type="varchar(max)" />
+          <Property Name="DeliveryClaimedOn" Type="datetime" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -2218,6 +2220,8 @@
           <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollInvoice" ToRole="PayrollPayCheck" />
           <Property Name="VoidedCreditChecks" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ApplyWCMinWageLimit" Type="Boolean" Nullable="false" />
+          <Property Name="DeliveryClaimedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DeliveryClaimedOn" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2843,6 +2847,8 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="DeliveryClaimedOn" ColumnName="DeliveryClaimedOn" />
+                <ScalarProperty Name="DeliveryClaimedBy" ColumnName="DeliveryClaimedBy" />
                 <ScalarProperty Name="ApplyWCMinWageLimit" ColumnName="ApplyWCMinWageLimit" />
                 <ScalarProperty Name="VoidedCreditChecks" ColumnName="VoidedCreditChecks" />
                 <ScalarProperty Name="PayChecks" ColumnName="PayChecks" />

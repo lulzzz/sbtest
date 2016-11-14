@@ -1,5 +1,5 @@
-﻿<div class="row">
-	<div class="col-sm-12 m-t-10 m-b-10 hidden-print" ng-if="invoice.id">
+﻿<div class="col-sm-12">
+	<div class="col-sm-12 m-t-10 m-b-10 hidden-print" ng-if="invoice.id && showControls">
 		<uib-progressbar class="progress-striped" value="getProgressBarValue()" ng-type="getProgressType()"><b>{{item.statusText}}</b></uib-progressbar>
 
 	</div>
@@ -68,7 +68,7 @@
 	</div>
 	<div class="col-sm-12">
 		<div class="col-sm-8 invoice" id="print">
-			<div class="col-sm-12 hidden-print">
+			<div class="col-sm-12 hidden-print" ng-show="showControls">
 				<div class="col-sm-2 form-group" ng-show="!mainData.userCompany && invoice.status===2">
 					<select name="courier" ng-model="invoice.courier" class="form-control pull-right" ng-options="ctx for ctx in data.config.couriers">
 						<option value="">Select Courier</option>
@@ -294,7 +294,7 @@
 						<span class="m-r-10"><i class="fa fa-envelope"></i> {{data.hostContact.email}}</span>
 					</p>
 				</div>
-				<div class="col-sm-12 hidden-print">
+				<div class="col-sm-12 hidden-print" ng-show="showControls">
 					<div class="col-sm-2 form-group">
 						<select name="courier" ng-model="invoice.courier" class="form-control pull-right" ng-show="!mainData.userCompany && invoice.status===2" ng-options="ctx for ctx in data.config.couriers">
 							<option value="">Select Courier</option>
@@ -318,9 +318,12 @@
 			</div>
 
 		</div>
-		<div class="col-sm-4  hidden-print" ng-show="!mainData.userCompany">
+		<div class="col-sm-4  hidden-print" ng-show="!mainData.userCompany && showControls">
 			<div class="col-sm-12 m-l-20" ng-if="invoice.id">
 				<comment-list source-type-id="2" source-id="invoice.companyId" list="invoice.comments" heading="'Internal Notes'" />
+			</div>
+			<div class="col-sm-12 m-l-20" id="versions" ng-if="invoice.id" ng-show="mainData.userRole==='Master'">
+				<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="invoice.id" heading="'Invoice Versions'" />
 			</div>
 		</div>
 

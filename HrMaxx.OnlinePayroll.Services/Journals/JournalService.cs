@@ -7,6 +7,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
@@ -25,19 +26,22 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private readonly IJournalRepository _journalRepository;
 		private readonly ICompanyService _companyService;
 		private readonly IPDFService _pdfService;
+		private readonly IMementoDataService _mementoDataService;
 
-		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService)
+		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService)
 		{
 			_journalRepository = journalRepository;
 			_companyService = companyService;
 			_pdfService = pdfService;
+			_mementoDataService = mementoDataService;
 		}
 
 		public Models.Journal SaveJournalForPayroll(Models.Journal journal)
 		{
 			try
 			{
-				return _journalRepository.SaveJournal(journal);
+				var j = _journalRepository.SaveJournal(journal);
+				return j;
 			}
 			catch (Exception e)
 			{
@@ -65,7 +69,14 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				return _journalRepository.VoidJournal(id, transactionType, name);
+				var j = _journalRepository.VoidJournal(id, transactionType, name);
+				if (transactionType != TransactionType.PayCheck)
+				{
+					var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, name);
+					_mementoDataService.AddMementoData(memento);	
+				}
+				
+				return j;
 			}
 			catch (Exception e)
 			{
@@ -163,6 +174,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						}
 					}
 					var saved =  _journalRepository.SaveJournal(journal);
+					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy);
+					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 					return saved;
 				}
@@ -179,7 +192,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				return _journalRepository.VoidJournal(mapped.Id, mapped.TransactionType, mapped.LastModifiedBy);
+				var j = _journalRepository.VoidJournal(mapped.Id, mapped.TransactionType, mapped.LastModifiedBy);
+				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy);
+				_mementoDataService.AddMementoData(memento);
+				return j;
 			}
 			catch (Exception e)
 			{

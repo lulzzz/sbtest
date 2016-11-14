@@ -9,7 +9,7 @@ namespace HrMaxx.Common.Contracts.Services
 	public interface IExcelService
 	{
 		FileDto GetEmployeeImportTemplate(Guid companyId);
-		List<ExcelRead> ImportEmployees(FileInfo readAllBytes);
+		List<ExcelRead> ImportEmployees(FileInfo readAllBytes, int i);
 		FileDto GetTimesheetImportTemplate(Guid companyId, List<string> payTypes);
 	}
 }

@@ -9,7 +9,8 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 				mainData: "=mainData",
 				isVendor: "=isVendor",
 				isGlobal: "=isGlobal",
-				heading: "=heading"
+				heading: "=heading",
+				showControls: "=showControls"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/vendor-customer-list.html?v=' + version,
 
@@ -124,11 +125,8 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 
 					}
 
-					$scope.save = function () {
-						if (false === $('form[name="vendorcustomer"]').parsley().validate())
-							return false;
-						companyRepository.saveVendorCustomer($scope.selected).then(function (result) {
-
+					$scope.save = function (result) {
+						
 							var exists = $filter('filter')($scope.list, { id: result.id });
 							if (exists.length === 0) {
 								$scope.list.push(result);
@@ -141,9 +139,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
 							addAlert('successfully saved ' + ($scope.isVendor ? 'vendor' : 'customer'), 'success');
-						}, function (error) {
-							addAlert('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
-						});
+						
 					}
 					$scope.getVendorCustomers = function (companyId) {
 						companyRepository.getVendorCustomers(companyId, $scope.isVendor).then(function (data) {
