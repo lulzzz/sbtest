@@ -76,30 +76,32 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 			try
 			{
 				var original = _hostRepository.GetHost(host.Id);
-				var notificationText = original == null ? "A new Host {0} has been created" : "{0} has been updated";
-				var eventType = original == null ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
+				var notificationText = original.Id==Guid.Empty ? "A new Host {0} has been created" : "{0} has been updated";
+				var eventType = original.Id == Guid.Empty ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+
 					host.Company.LastModified = host.LastModified;
 					host.Company.UserName = host.UserName;
 					host.Company.UserId = host.UserId;
-					var savedCompany = _companyService.SaveHostCompany(host.Company);
-					host.CompanyId = savedCompany.Id;
-					_hostRepository.Save(host);
+					var savedHost = _hostRepository.Save(host);
+					host.Company.HostId = savedHost.Id;
+					var savedCompany = _companyService.SaveHostCompany(host.Company);	
 					
-					var memento = Memento<Models.Host>.Create(host, EntityTypeEnum.Host, host.UserName, string.Format("Host Update {0}", host.FirmName), host.UserId);
+
+					var memento = Memento<Models.Host>.Create(savedHost, EntityTypeEnum.Host, savedHost.UserName, string.Format("Host Update {0}", savedHost.FirmName), savedHost.UserId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 					Bus.Publish<Notification>(new Notification
 					{
-						SavedObject = host,
-						SourceId = host.Id,
-						UserId = host.UserId,
-						Source = host.UserName,
+						SavedObject = savedHost,
+						SourceId = savedHost.Id,
+						UserId = savedHost.UserId,
+						Source = savedHost.UserName,
 						TimeStamp = DateTime.Now,
 						Roles = new List<RoleTypeEnum> { RoleTypeEnum.Master, RoleTypeEnum.CorpStaff },
-						Text = string.Format("{0} by {1}", string.Format(notificationText, host.FirmName), host.UserName),
-						ReturnUrl = "#!/?host=" + host.FirmName,
+						Text = string.Format("{0} by {1}", string.Format(notificationText, savedHost.FirmName), savedHost.UserName),
+						ReturnUrl = "#!/?host=" + savedHost.FirmName,
 						EventType = eventType
 					});
 				}

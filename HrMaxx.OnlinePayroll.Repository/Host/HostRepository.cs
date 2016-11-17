@@ -37,7 +37,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);
 		}
 
-		public void Save(Models.Host cpa)
+		public Models.Host Save(Models.Host cpa)
 		{
 			var mappedCPA = _mapper.Map<Models.Host, Models.DataModel.Host>(cpa);
 			var dbCPA = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(mappedCPA.Id));
@@ -60,6 +60,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 				dbCPA.IsPeoHost = mappedCPA.IsPeoHost;
 			}
 			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.Host, Models.Host>(mappedCPA);
 		}
 
 		public string GetHostHomePage(Guid cpaiId)

@@ -8,7 +8,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 	{
 		IList<Models.Host> GetHostList(Guid host);
 		Models.Host GetHost(Guid cpaId);
-		void Save(Models.Host cpa);
+		Models.Host Save(Models.Host cpa);
 		string GetHostHomePage(Guid cpaiId);
 		void SaveHomePage(Guid cpaId, string homePage);
 		Models.Host GetHostByUrl(string url, Guid hostId);
