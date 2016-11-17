@@ -101,11 +101,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
 
 							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
-								selected.endDate = moment(selected.startDate).add(1, 'week').toDate();
+								selected.endDate = moment(selected.startDate).add(1, 'week').add(-1, 'day').toDate();
 								selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
 							}
 							else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
-								selected.endDate = moment(selected.startDate).add(2, 'week').toDate();
+								selected.endDate = moment(selected.startDate).add(2, 'week').add(-1, 'day').toDate();
 								selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
 							}
 							else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
