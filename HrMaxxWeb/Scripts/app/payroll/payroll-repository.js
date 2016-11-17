@@ -33,6 +33,26 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			savePayrollToStaging: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('SaveProcessedPayroll').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			deletePayroll: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('DeletePayroll').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			voidPayCheck: function (payrollId, payCheckId) {
 				var deferred = $q.defer();
 				payrollServer.one('VoidPayCheck').one(payrollId, payCheckId).get().then(function (data) {

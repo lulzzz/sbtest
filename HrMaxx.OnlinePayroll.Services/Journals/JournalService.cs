@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Markup;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
@@ -65,14 +66,14 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public Journal VoidJournal(int id, TransactionType transactionType, string name)
+		public Journal VoidJournal(int id, TransactionType transactionType, string name, Guid userId)
 		{
 			try
 			{
 				var j = _journalRepository.VoidJournal(id, transactionType, name);
 				if (transactionType != TransactionType.PayCheck)
 				{
-					var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, name);
+					var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, name, string.Format("Check voided"), userId);
 					_mementoDataService.AddMementoData(memento);	
 				}
 				
@@ -153,7 +154,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public Journal SaveCheckbookEntry(Journal journal)
+		public Journal SaveCheckbookEntry(Journal journal, Guid userId)
 		{
 			try
 			{
@@ -174,7 +175,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						}
 					}
 					var saved =  _journalRepository.SaveJournal(journal);
-					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy);
+					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 					return saved;
@@ -188,12 +189,12 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public Journal VoidCheckbookEntry(Journal mapped)
+		public Journal VoidCheckbookEntry(Journal mapped, Guid userId)
 		{
 			try
 			{
 				var j = _journalRepository.VoidJournal(mapped.Id, mapped.TransactionType, mapped.LastModifiedBy);
-				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy);
+				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy, string.Format("{0} voided {1}", mapped.EntityType.ToString(), mapped.CheckNumber), userId);
 				_mementoDataService.AddMementoData(memento);
 				return j;
 			}

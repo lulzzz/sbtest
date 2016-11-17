@@ -18,4 +18,15 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[JsonIgnore]
 		public FileInfo file { get; set; }
 	}
+	public class TaxRateImportResource
+	{
+		[JsonProperty("year")]
+		public int Year { get; set; }
+
+		[JsonIgnore]
+		public string FileName { get; set; }
+		[JsonIgnore]
+		public FileInfo file { get; set; }
+	}
+
 }

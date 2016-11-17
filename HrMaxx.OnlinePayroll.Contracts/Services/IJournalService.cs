@@ -11,11 +11,11 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	{
 		Journal SaveJournalForPayroll(Journal journal);
 		Journal GetPayCheckJournal(int payCheckId, bool PEOASOCoCheck = false);
-		Journal VoidJournal(int id, TransactionType payCheck, string name);
+		Journal VoidJournal(int id, TransactionType payCheck, string name, Guid guid);
 		JournalList GetJournalListByCompanyAccount(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);
 		List<AccountWithJournal> GetCompanyAccountsWithJournals(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);
-		Journal SaveCheckbookEntry(Journal mapped);
-		Journal VoidCheckbookEntry(Journal mapped);
+		Journal SaveCheckbookEntry(Journal mapped, Guid guid);
+		Journal VoidCheckbookEntry(Journal mapped, Guid guid);
 		FileDto Print(Journal mapped);
 		List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes);
 		List<Journal> GetJournalList(Guid companyId, DateTime startDate, DateTime endDate);

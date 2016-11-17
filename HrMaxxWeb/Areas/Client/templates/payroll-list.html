@@ -11,7 +11,7 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':committed.id===item.id}">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':committed.id===item.id, 'danger':item.status===6}">
 						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
 							{{item.payDay | date:'MM/dd/yyyy'}}
 						</td>
@@ -41,8 +41,9 @@
 							{{item.invoice.total | currency:'$'}}
 						</td>
 						<td class="col-sm-1 text-center" ng-if="showInvoices()">
+							<button class="btn btn-sm btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status===6">delete</button>
 							<button class="btn btn-sm btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice">view invoice</button>
-							<button class="btn btn-sm btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0">create invoice</button>
+							<button class="btn btn-sm btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0 && item.status>2 && item.status!==6">create invoice</button>
 						</td>
 					</tr>
 
@@ -111,7 +112,7 @@
 		</div>
 		<div class="panel-body tab-content" ng-if="selectedInvoice">
 			<form data-parsley-validate="true" name="invoice">
-				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" />
+				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" show-controls="true" />
 			</form>
 		</div>
 	</div>

@@ -29,5 +29,7 @@
 		public const string ImportTimesheets = "Payroll/ImportTimesheets";
 		public const string ImportTimesheetsTemplate = "Payroll/TimesheetImportTemplate";
 		public const string ClaimDelivery = "Payroll/ClaimDelivery/{invoiceIds}";
+		public const string SaveProcessedPayroll = "Payroll/SaveProcessedPayroll";
+		public const string DeletePayroll = "Payroll/DeletePayroll";
 	}
 }

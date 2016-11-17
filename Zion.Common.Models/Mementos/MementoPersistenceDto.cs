@@ -12,5 +12,7 @@ namespace HrMaxx.Common.Models.Mementos
 		public decimal Version { get; set; }
 		public DateTime DateCreated { get; set; }
 		public string CreatedBy { get; set; }
+		public Guid? UserId { get; set; }
+		public string Comments { get; set; }
 	}
 }

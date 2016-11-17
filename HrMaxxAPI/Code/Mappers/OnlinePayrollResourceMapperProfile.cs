@@ -236,6 +236,11 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<DashboardRequestResource, DashboardRequest>()
 				.ForMember(dest => dest.Host, opt => opt.Ignore())
 				.ForMember(dest => dest.Role, opt => opt.Ignore());
+
+			CreateMap<CaliforniaCompanyTaxResource, CaliforniaCompanyTax>()
+				.ForMember(dest => dest.UiRate, opt => opt.MapFrom(src => src.UiRate == 0 ? src.DefaultUiRate : src.UiRate))
+				.ForMember(dest => dest.EttRate, opt => opt.MapFrom(src => src.EttRate == 0 ? src.DefaultEttRate : src.EttRate))
+				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId.Value));
 		}
 	}
 }

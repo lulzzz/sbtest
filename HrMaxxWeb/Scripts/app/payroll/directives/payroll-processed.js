@@ -19,7 +19,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					$scope.cancel = function () {
-						if ($scope.item.status > 2) {
+						if ($scope.item.status > 2 && $scope.item.status!==6) {
 							$scope.$parent.$parent.committed = null;
 						} else {
 							$.each($scope.item.payChecks, function (index1, paycheck) {
@@ -52,6 +52,17 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						}, function (error) {
 							addAlert('error committing payroll', 'danger');
 						});
+					}
+					$scope.saveStaging = function () {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to save this Payroll as Draft? Draft Payrolls are not included in reporting figures', 'danger', function() {
+								$scope.item.payChecks = $filter('filter')($scope.item.payChecks, { included: true });
+								payrollRepository.savePayrollToStaging($scope.item).then(function(data) {
+									$scope.$parent.$parent.updateListAndItem($scope.item.id);
+								}, function(error) {
+									addAlert('error saving payroll as draft', 'danger');
+								});
+							}
+						);
 					}
 
 					$scope.markPrinted = function(listitem) {
@@ -86,7 +97,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							a.download = data.name;
 							document.body.appendChild(a);
 							a.click();
-							$scope.$parent.$parent.updatePrintStatus();
+							if(payroll.status>2)
+								$scope.$parent.$parent.updatePrintStatus();
 						}, function (error) {
 							addAlert('error printing pay check', 'danger');
 						});

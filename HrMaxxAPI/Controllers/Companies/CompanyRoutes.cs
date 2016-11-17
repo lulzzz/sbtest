@@ -26,5 +26,8 @@
 		public const string GetEmployeeImportTemplate = "Company/EmployeeImport/{companyId:guid}";
 		public const string ImportEmployees = "Company/ImportEmployees";
 		public const string CopyCompany = "Company/Copy";
+		public const string AllCompanies = "Company/AllCompanies/{year:int}";
+		public const string ImportTaxRates = "Company/ImportTaxRates";
+		public const string SaveTaxRates = "Company/SaveTaxRates";
 	}
 }

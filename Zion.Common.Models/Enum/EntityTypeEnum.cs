@@ -27,6 +27,7 @@ namespace HrMaxx.Common.Models.Enum
 		Customer=16,
 		HostHomePage=17,
 		Adjustment=18,
-		TaxPayment=19
+		TaxPayment=19,
+		Payroll=20
 	}
 }

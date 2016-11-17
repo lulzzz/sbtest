@@ -13,7 +13,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
 	public interface IPayrollService
 	{
-		List<Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate);
+		List<Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate, bool includeDrafts = false);
 
 		Payroll ProcessPayroll(Payroll payroll);
 		Payroll ConfirmPayroll(Payroll mappedResource);
@@ -36,7 +36,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
 		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
-		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName);
+		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid guid);
 		void ClaimDelivery(string invoiceIds, string fullName);
+		Payroll SaveProcessedPayroll(Payroll mappedResource);
+		Payroll DeletePayroll(Payroll mappedResource);
 	}
 }

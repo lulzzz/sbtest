@@ -139,7 +139,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.Payrolls)]
 		public List<PayrollResource> GetPayrolls(PayrollFilterResource filter)
 		{
-			var payrolls = MakeServiceCall(() => _payrollService.GetCompanyPayrolls(filter.CompanyId, filter.StartDate, filter.EndDate), string.Format("get list of payrolls for company={0}", filter.CompanyId));
+			var payrolls = MakeServiceCall(() => _payrollService.GetCompanyPayrolls(filter.CompanyId, filter.StartDate, filter.EndDate, true), string.Format("get list of payrolls for company={0}", filter.CompanyId));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 
@@ -171,6 +171,31 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				p.LastModifiedBy = CurrentUser.FullName;
 			});
 			var processed = MakeServiceCall(() => _payrollService.ConfirmPayroll(mappedResource), string.Format("commit payrolls for company={0}", resource.Company.Id));
+			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.SaveProcessedPayroll)]
+		public PayrollResource SaveProcessedPayroll(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+			mappedResource.PayChecks.ForEach(p =>
+			{
+				p.PayrollId = mappedResource.Id;
+				p.LastModified = DateTime.Now;
+				p.LastModifiedBy = CurrentUser.FullName;
+			});
+			var processed = MakeServiceCall(() => _payrollService.SaveProcessedPayroll(mappedResource), string.Format("save payroll to staging for company={0}", resource.Company.Id));
+			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.DeletePayroll)]
+		public PayrollResource DeletePayroll(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+			if(mappedResource.Status!=PayrollStatus.Draft)
+				throw new Exception("Only draft payrolls can be deleted from the system");
+			var processed = MakeServiceCall(() => _payrollService.DeletePayroll(mappedResource), string.Format("delete draft payroll from staging for company={0}", resource.Company.Id));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 
@@ -362,7 +387,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
 				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
-				var importedRows = _excelService.ImportEmployees(fileUploadObj.file, 2);
+				var importedRows = _excelService.ImportFromExcel(fileUploadObj.file, 2);
 				var timesheets = new List<TimesheetResource>();
 				var error = string.Empty;
 				company.PayCodes.Add(new CompanyPayCodeResource

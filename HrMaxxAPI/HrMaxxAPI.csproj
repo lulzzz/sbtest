@@ -273,6 +273,7 @@
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Resources\BaseResource.cs" />
     <Compile Include="Resources\Common\AddressResource.cs" />
+    <Compile Include="Resources\Common\CompanyTaxResource.cs" />
     <Compile Include="Resources\Common\UserResource.cs" />
     <Compile Include="Resources\Common\ContactResource.cs" />
     <Compile Include="Resources\Common\CommentResource.cs" />

@@ -296,7 +296,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Invoiced")]
 		Invoiced = 4,
 		[HrMaxxSecurity(DbName = "Printed")]
-		Printed = 5
+		Printed = 5,
+		[HrMaxxSecurity(DbName = "Draft")]
+		Draft = 6,
 
 	}
 

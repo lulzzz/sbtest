@@ -61,6 +61,7 @@
     <Compile Include="BankAccount.cs" />
     <Compile Include="Company.cs" />
     <Compile Include="CompanyPayrollCube.cs" />
+    <Compile Include="CompanyTax.cs" />
     <Compile Include="DashboardData.cs" />
     <Compile Include="DataModel\AccountTemplate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
@@ -229,6 +230,7 @@
     <Compile Include="Payroll.cs" />
     <Compile Include="PayrollAccumulation.cs" />
     <Compile Include="PayrollInvoice.cs" />
+    <Compile Include="PayrollStaging.cs" />
     <Compile Include="PayType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportRequest.cs" />

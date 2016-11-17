@@ -150,10 +150,15 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.filterCompaniesApproachingPayroll = function() {
 						if (dataSvc.filterApproachingPayroll) {
 							var filtered = [];
-							$.each(dataSvc.approachingPayrolls, function(ind, ap) {
-								if (ap[4] === dataSvc.filterApproachingPayroll) {
+							$.each(dataSvc.approachingPayrolls, function (ind, ap) {
+								if (ind === 0) {
 									filtered.push(ap);
+								} else {
+									if (ap[4] === dataSvc.filterApproachingPayroll) {
+										filtered.push(ap);
+									}
 								}
+								
 							});
 							dataSvc.filteredApproachingPayrolls = filtered;
 						} else {

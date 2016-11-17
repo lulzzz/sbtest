@@ -57,7 +57,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				_dashboardService.FixCompanyCubes(companyPayrolls, message.CompanyId, message.Year);
 				foreach (var pc in message.AffectedPayChecks)
 				{
-					var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, message.UserName);
+					var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, message.UserName, string.Format("YTD updated because of Invoice {0} Redate", message.InvoiceNumber), message.UserId);
 					_mementoDataService.AddMementoData(memento, true);
 					_payrollService.PrintPayCheck(pc);
 				}

@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Messages.Events
 		public string UserName { get; set; }
 		public DateTime TimeStamp { get; set; }
 		public int Year { get; set; }
-		public List<PayCheck> AffectedPayChecks { get; set; } 
+		public List<PayCheck> AffectedPayChecks { get; set; }
+		public int InvoiceNumber { get; set; }
 	}
 }

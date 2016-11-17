@@ -92,7 +92,7 @@ namespace HrMaxxAPI.Controllers.Journals
 				jd.LastModfied = mapped.LastModified;
 				jd.LastModifiedBy = mapped.LastModifiedBy;
 			});
-			var journal = MakeServiceCall(() => _journalService.SaveCheckbookEntry(mapped), string.Format("save journal entry for company={0}", mapped.CompanyId));
+			var journal = MakeServiceCall(() => _journalService.SaveCheckbookEntry(mapped, new Guid(CurrentUser.UserId)), string.Format("save journal entry for company={0}", mapped.CompanyId));
 			return Mapper.Map<Journal, JournalResource>(journal);
 		}
 
@@ -108,7 +108,7 @@ namespace HrMaxxAPI.Controllers.Journals
 				jd.LastModfied = mapped.LastModified;
 				jd.LastModifiedBy = mapped.LastModifiedBy;
 			});
-			var journal = MakeServiceCall(() => _journalService.VoidCheckbookEntry(mapped), string.Format("void journal entry for company={0}", mapped.CompanyId));
+			var journal = MakeServiceCall(() => _journalService.VoidCheckbookEntry(mapped, new Guid(CurrentUser.UserId)), string.Format("void journal entry for company={0}", mapped.CompanyId));
 			return Mapper.Map<Journal, JournalResource>(journal);
 		}
 	}

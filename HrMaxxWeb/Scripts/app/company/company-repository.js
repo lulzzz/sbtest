@@ -2,6 +2,16 @@ common.factory('companyRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'companyServer', '$filter', 'Entities',
 	function ($http, zionAPI, zionPaths, $q, upload, companyServer, $filter, Entities) {
 		return {
+			getAllCompanies: function (year) {
+				var deferred = $q.defer();
+				companyServer.one('AllCompanies/' + year).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getCompanyMetaData: function () {
 				var deferred = $q.defer();
 				companyServer.one('MetaData').get().then(function (data) {
@@ -212,6 +222,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveTaxRates: function (rates) {
+				var deferred = $q.defer();
+				companyServer.all('SaveTaxRates').post(rates).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getEmployeeImportTemplate: function (companyId) {
 				var deferred = $q.defer();
 				$http.get(zionAPI.URL + "Company/EmployeeImport/" + companyId, { responseType: "arraybuffer" }).success(
@@ -258,7 +278,30 @@ common.factory('companyRepository', [
 					deferred.reject(statusText);
 				});
 				return deferred.promise;
+			},
+			importTaxRates: function (attachment) {
+				var url = zionAPI.URL + 'Company/ImportTaxRates';
+				var deferred = $q.defer();
+				upload.upload({
+					url: url,
+					method: 'POST',
+					data: {
+						inspection: attachment.data
+					},
+					file: attachment.doc.file,
+				}).success(function (data, status, headers, config) {
+					attachment.doc.uploaded = true;
+					attachment.completed = true;
+					deferred.resolve(data);
+
+				})
+				.error(function (data, status, statusText, headers, config) {
+					deferred.reject(statusText);
+				});
+				return deferred.promise;
 			}
+
+
 
 		};
 	}

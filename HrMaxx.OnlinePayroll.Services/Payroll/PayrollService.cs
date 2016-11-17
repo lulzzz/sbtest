@@ -38,9 +38,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IReportService _reportService;
 		private readonly ICommonService _commonService;
 		private readonly IMementoDataService _mementoDataService;
+		private readonly IStagingDataService _stagingDataService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService, IStagingDataService stagingDataService)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -53,16 +54,28 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_commonService = commonService;
 			_companyRepository = companyRepository;
 			_mementoDataService = mementoDataService;
+			_stagingDataService = stagingDataService;
 		}
 
 
 
-		public List<Models.Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate)
+		public List<Models.Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate, bool includeDrafts = false)
 		{
 			try
 			{
-
-				return _payrollRepository.GetCompanyPayrolls(companyId, startDate, endDate);
+				var payrollList = _payrollRepository.GetCompanyPayrolls(companyId, startDate, endDate);
+				if (includeDrafts)
+				{
+					var draftPayrolls =
+							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(companyId);
+					if (draftPayrolls!=null)
+					{
+						var p = draftPayrolls.Deserialize();
+						payrollList.Add(p.Payroll);
+						
+					}
+				}
+				return payrollList;
 			}
 			catch (Exception e)
 			{
@@ -292,6 +305,17 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					var draftPayrolls =
+							_stagingDataService.GetStagingData<PayrollStaging>(payroll.Company.Id);
+					if (draftPayrolls.Any())
+					{
+						var p = draftPayrolls.First().Deserialize();
+						if (p.Payroll.Id == payroll.Id)
+						{
+							_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayrolls.First().MementoId);
+						}
+					}
+
 					payroll.Status = PayrollStatus.Committed;
 					payroll.PayChecks.ForEach(pc=>pc.Status = PaycheckStatus.Saved);
 					var companyIdForPayrollAccount = payroll.Company.Id;
@@ -337,11 +361,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
 					{
 						SavedObject = savedPayroll,
-						UserId = savedPayroll.UserId,
 						TimeStamp = DateTime.Now,
 						EventType = NotificationTypeEnum.Created,
 						AffectedChecks = affectedChecks,
-						UserName = savedPayroll.UserName
+						UserName = savedPayroll.UserName,
+						UserId = payroll.UserId
 					});
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
@@ -437,14 +461,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, name);
 
 					journal.IsVoid = true;
-					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name);
+					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name, new Guid(user));
 					if (paycheck.PEOASOCoCheck)
 					{
 						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
 						if (journal1 != null)
 						{
 							journal1.IsVoid = true;
-							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name);
+							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name, new Guid(user));
 						}
 
 					}
@@ -484,7 +508,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private Models.Payroll VoidPayCheckForMigration(Guid payrollId, int payCheckId, string name)
+		private Models.Payroll VoidPayCheckForMigration(Guid payrollId, int payCheckId, string name, Guid userId)
 		{
 			try
 			{
@@ -497,14 +521,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, name);
 
 					journal.IsVoid = true;
-					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name);
+					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name, userId);
 					if (paycheck.PEOASOCoCheck)
 					{
 						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
 						if (journal1 != null)
 						{
 							journal1.IsVoid = true;
-							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name);
+							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name, userId);
 						}
 
 					}
@@ -714,16 +738,21 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var documents = new List<Guid>();
 					var updateStatus = false;
-					
-					foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid))
+					if ((int)payroll.Status> 2 && (int)payroll.Status<6)
 					{
-						if (!_fileRepository.FileExists(paychecks.DocumentId))
+						
+
+						foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid))
 						{
-							PrintPayCheck(payroll, paychecks);
-							updateStatus = true;
+							if (!_fileRepository.FileExists(paychecks.DocumentId))
+							{
+								PrintPayCheck(payroll, paychecks);
+								updateStatus = true;
+							}
+							documents.Add(paychecks.DocumentId);
 						}
-						documents.Add(paychecks.DocumentId);
 					}
+					
 
 
 					var returnFile = _reportService.PrintPayrollWithSummary(payroll, documents);
@@ -763,14 +792,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					_commonService.AddToList<Comment>(EntityTypeEnum.Company, EntityTypeEnum.Comment, company.Id, new Comment { Content = string.Format("Invoice #{0}: {1}", payrollInvoice.InvoiceNumber, payroll.Notes), TimeStamp = savedInvoice.LastModified });
 				}
-				var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName);
+				var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice created"), payrollInvoice.UserId);
 				_mementoDataService.AddMementoData(memento);
 				Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
 				{
 					SavedObject = savedInvoice,
 					EventType = NotificationTypeEnum.Created,
 					TimeStamp = DateTime.Now,
-					UserId = savedInvoice.UserId,
+					UserId = payrollInvoice.UserId,
 					UserName = savedInvoice.UserName
 				});
 				return savedInvoice;
@@ -882,7 +911,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					}
 					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice);
-					var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName);
+					var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice updated"), invoice.UserId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 
@@ -1515,7 +1544,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						Year = invoice.InvoiceDate.Year,
 						TimeStamp = DateTime.Now,
 						AffectedPayChecks = affectedChecks,
-						UserName = invoice.UserName
+						UserName = invoice.UserName,
+						UserId = invoice.UserId,
+						InvoiceNumber = invoice.InvoiceNumber
 					});
 					return saved;
 				}
@@ -1530,8 +1561,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 
-		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate,
-			DateTime? endDate, string fullName)
+		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid userId)
 		{
 			try
 			{
@@ -1556,7 +1586,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							}
 						});
 						if (copyPayrolls)
-							MigratePayrolls(companyId, saved, employees, startDate, endDate);
+							MigratePayrolls(companyId, saved, employees, startDate, endDate, userId);
 					}
 					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
 					{
@@ -1614,7 +1644,53 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private void MigratePayrolls(Guid oldCompanyId, Company company, List<Employee> employees, DateTime? startDate, DateTime? endDate)
+		public Models.Payroll SaveProcessedPayroll(Models.Payroll payroll)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_stagingDataService.DeleteStagingData<PayrollStaging>(payroll.Company.Id);
+					payroll.Status = PayrollStatus.Draft;
+					var payrollStaging = new PayrollStaging
+					{
+						Payroll = payroll,
+						CompanyId = payroll.Company.Id
+					};
+					var memento = Memento<PayrollStaging>.Create(payrollStaging, EntityTypeEnum.Payroll, payroll.UserName, "Payroll saved to staging", payroll.UserId);
+					_stagingDataService.AddStagingData(memento);
+					
+					txn.Complete();
+				}
+				return payroll;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save payroll to staging " + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Models.Payroll DeletePayroll(Models.Payroll payroll)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_stagingDataService.DeleteStagingData<PayrollStaging>(payroll.Company.Id);
+				}
+				return payroll;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " delete draft payroll from staging " + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private void MigratePayrolls(Guid oldCompanyId, Company company, List<Employee> employees, DateTime? startDate, DateTime? endDate, Guid userId)
 		{
 			try
 			{
@@ -1651,7 +1727,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					original.PayChecks.Where(pc=>pc.IsVoid).ToList().ForEach(pc =>
 					{
 						var newone = confirmed.PayChecks.First(pc1 => pc1.Employee.SSN.Equals(pc.Employee.SSN));
-						VoidPayCheckForMigration(confirmed.Id, newone.Id, pc.LastModifiedBy);
+						VoidPayCheckForMigration(confirmed.Id, newone.Id, pc.LastModifiedBy,userId);
 					});
 					//if (confirmed.Invoice != null)
 					//{

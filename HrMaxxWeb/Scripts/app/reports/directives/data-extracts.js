@@ -264,13 +264,13 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 									if (quarter === 1) {
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-4th Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-4th Q",
 											startDate: startDate1.format("MM/DD/YYYY"),
 											endDate: moment(startDate1.format("MM") + "-" + startDate1.daysInMonth() + "-" + startDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY")
 										});
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-1st Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-1st Q",
 											startDate: moment(endDate1.format("MM") + "-01-" + endDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY"),
 											endDate: endDate1.format("MM/DD/YYYY")
 										});
@@ -279,39 +279,39 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 									} else if (quarter === 2) {
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-1st Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-1st Q",
 											startDate: startDate1.format("MM/DD/YYYY"),
 											endDate: moment(startDate1.format("MM") + "-" + startDate1.daysInMonth() + "-" + startDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY")
 										});
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-2nd Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-2nd Q",
 											startDate: moment(endDate1.format("MM") + "-01-" + endDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY"),
 											endDate: endDate1.format("MM/DD/YYYY")
 										});
 									} else if (quarter === 3) {
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-2nd Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-2nd Q",
 											startDate: startDate1.format("MM/DD/YYYY"),
 											endDate: moment(startDate1.format("MM") + "-" + startDate1.daysInMonth() + "-" + startDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY")
 										});
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-3rd Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-3rd Q",
 											startDate: moment(endDate1.format("MM") + "-01-" + endDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY"),
 											endDate: endDate1.format("MM/DD/YYYY")
 										});
 									} else if (quarter === 4) {
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-3rd Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-3rd Q",
 											startDate: startDate1.format("MM/DD/YYYY"),
 											endDate: moment(startDate1.format("MM") + "-" + startDate1.daysInMonth() + "-" + startDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY")
 										});
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YY") + "-4th Q",
+											val: currDate.format("ddd, MMMM DD, YYYY") + "-4th Q",
 											startDate: moment(endDate1.format("MM") + "-01-" + endDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY"),
 											endDate: endDate1.format("MM/DD/YYYY")
 										});
@@ -321,7 +321,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 								} else {
 									payPeriods.push({
 										key: currDate.format("MM/DD/YYYY"),
-										val: currDate.format("ddd, MMMM DD, YY"),
+										val: currDate.format("ddd, MMMM DD, YYYY"),
 										startDate: startDate1.format("MM/DD/YYYY"),
 										endDate: endDate1.format("MM/DD/YYYY")
 									});

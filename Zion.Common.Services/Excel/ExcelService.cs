@@ -57,7 +57,7 @@ namespace HrMaxx.Common.Services.Excel
 			}
 		}
 
-		public List<ExcelRead> ImportEmployees(FileInfo file, int startingRow)
+		public List<ExcelRead> ImportFromExcel(FileInfo file, int startingRow)
 		{
 			try
 			{

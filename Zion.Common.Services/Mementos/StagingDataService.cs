@@ -60,7 +60,8 @@ namespace HrMaxx.Common.Services.Mementos
 					"GetMostRecentStagingData", typeof (T).FullName, "GetMostRecentStagingData", mementoId.ToString());
 				StagingDataDto memento = _repository.GetMostRecentMemento<T>(mementoId);
 				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
-
+				if (memento == null)
+					return null;
 				return Memento<T>.Create(mementoId, memento.Memento);
 			}
 			catch (Exception e)

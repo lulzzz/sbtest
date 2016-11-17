@@ -163,5 +163,36 @@ namespace HrMaxx.OnlinePayroll.Repository
 			return returnVal;
 
 		}
+
+		public List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates)
+		{
+			var mapped = new List<Models.DataModel.CompanyTaxRate>();
+			rates.ForEach(r=>
+			{
+				mapped.Add(new Models.DataModel.CompanyTaxRate()
+				{
+					Id = 0,
+					CompanyId = r.CompanyId,
+					Rate = r.UiRate,
+					TaxId = 10,
+					TaxYear = r.TaxYear
+				});
+				mapped.Add(new Models.DataModel.CompanyTaxRate()
+				{
+					Id = 0,
+					CompanyId = r.CompanyId,
+					Rate = r.EttRate,
+					TaxId = 9,
+					TaxYear = r.TaxYear
+				});
+
+			});
+			var year = rates.First().TaxYear;
+			var dbRates = _dbContext.CompanyTaxRates.Where(t => t.TaxYear == year).ToList();
+			_dbContext.CompanyTaxRates.RemoveRange(dbRates);
+			_dbContext.CompanyTaxRates.AddRange(mapped);
+			_dbContext.SaveChanges();
+			return rates;
+		}
 	}
 }

@@ -22,5 +22,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		ApplicationConfig GetConfigurations();
 		void SaveApplicationConfig(ApplicationConfig config);
 		int PullReportConstat(string form940, int quarterly);
+
+		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
 	}
 }

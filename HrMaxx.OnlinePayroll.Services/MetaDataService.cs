@@ -5,9 +5,12 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using HrMaxx.OnlinePayroll.Repository;
 
 namespace HrMaxx.OnlinePayroll.Services
@@ -136,6 +139,31 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Usrs ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<TaxByYear> GetCompanyTaxesForYear(int year)
+		{
+			var taxes = _metaDataRepository.GetCompanyOverridableTaxes();
+			return taxes.Where(t => t.TaxYear == year).ToList();
+		}
+
+		public List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var saved = _metaDataRepository.SaveTaxRates(rates);
+					txn.Complete();
+				}
+				return rates;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "saving import of tax rates " + rates.First().TaxYear);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

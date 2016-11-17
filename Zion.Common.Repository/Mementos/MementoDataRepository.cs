@@ -20,7 +20,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public void SaveMemento(MementoPersistenceDto memento, bool isSubVersion)
 		{
 			const string sql =
-				@"INSERT INTO Common.Memento(memento, originatortype, version, mementoid, sourcetypeid, createdby) VALUES (@Memento, @OriginatorType, @Version, @MementoId, @SourceTypeId, @CreatedBy)";
+				@"INSERT INTO Common.Memento(memento, originatortype, version, mementoid, sourcetypeid, createdby, comments, userid) VALUES (@Memento, @OriginatorType, @Version, @MementoId, @SourceTypeId, @CreatedBy, @Comments, @UserId)";
 			const string versionSql =
 				@"SELECT MAX(version) as version FROM Common.Memento WHERE originatortype = @OriginatorType AND mementoid = @MementoId";
 
@@ -57,7 +57,9 @@ namespace HrMaxx.Common.Repository.Mementos
 					Version = nextVersion,
 					memento.MementoId,
 					memento.SourceTypeId,
-					memento.CreatedBy
+					memento.CreatedBy,
+					memento.Comments,
+					memento.UserId
 				});
 
 				txn.Complete();
@@ -90,7 +92,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public MementoPersistenceDto GetMostRecentMemento<T>(Guid mementoId)
 		{
 			const string sql =
-				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
+				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
 
 			string originatorType = typeof (T).FullName;
 
@@ -104,7 +106,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public IEnumerable<MementoPersistenceDto> GetMementoData<T>()
 		{
 			const string sql =
-				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
+				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
 
 			string originatorType = typeof (T).FullName;
 
@@ -116,7 +118,7 @@ namespace HrMaxx.Common.Repository.Mementos
 		public IEnumerable<MementoPersistenceDto> GetMementos<T>(int sourceTypeId, Guid sourceId)
 		{
 			const string sql =
-				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
+				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
 
 			string originatorType = typeof(T).FullName;
 

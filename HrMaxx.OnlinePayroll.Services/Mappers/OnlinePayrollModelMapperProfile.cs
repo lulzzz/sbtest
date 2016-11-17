@@ -655,6 +655,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore())
 				.ForMember(dest => dest.IsFederal, opt => opt.Ignore());
+
 		}
 	}
 }

@@ -65,6 +65,34 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
+		public List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year)
+		{
+			try
+			{
+				var companies = GetAllCompanies().Where(c=>c.States.Any(s=>s.CountryId==1 && s.State.StateId==1) && c.CompanyTaxRates.Any(ct=>ct.TaxYear==year)).ToList();
+				return companies.Select(c =>
+						new CaliforniaCompanyTax()
+						{
+							CompanyId = c.Id,
+							CompanyName = c.Name,
+							EttRate = c.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxId == 9).Rate,
+							ETTTaxId = 9,
+							UiRate = c.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxId == 10).Rate, 
+							StateEin = c.States.First(s=>s.CountryId==1 && s.State.StateId==1).StateEIN, 
+							TaxYear=year, UITaxId = 10
+						}
+					).ToList();
+
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "california state company taxes");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Company Save(Company company)
 		{
 			try
@@ -99,7 +127,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					
 				}
 				var returnCompany = _companyRepository.GetCompanyById(company.Id);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName, "Company Updated", company.UserId);
 				_mementoDataService.AddMementoData(memento);
 				return returnCompany;
 
@@ -132,7 +160,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
 
-					var memento = Memento<Company>.Create(savedcompany, EntityTypeEnum.Company, savedcompany.UserName);
+					var memento = Memento<Company>.Create(savedcompany, EntityTypeEnum.Company, savedcompany.UserName, "Host Company Updated", company.UserId);
 					_mementoDataService.AddMementoData(memento);
 					return savedcompany;
 				
@@ -145,13 +173,13 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyDeduction SaveDeduction(CompanyDeduction deduction, string user)
+		public CompanyDeduction SaveDeduction(CompanyDeduction deduction, string user, Guid userId)
 		{
 			try
 			{
 				var returnDed = _companyRepository.SaveDeduction(deduction);
 				var returnCompany = _companyRepository.GetCompanyById(deduction.CompanyId);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName, string.Format("Deduction Updated {0}", deduction.DeductionName), userId);
 				_mementoDataService.AddMementoData(memento, true);
 				
 				return returnDed;
@@ -164,13 +192,13 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation, string user)
+		public CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation, string user, Guid userId)
 		{
 			try
 			{
 				var wc = _companyRepository.SaveWorkerCompensation(workerCompensation);
 				var returnCompany = _companyRepository.GetCompanyById(wc.CompanyId);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("WC definition updated {0}", workerCompensation.Code), userId);
 				_mementoDataService.AddMementoData(memento, true);
 				return wc;
 			}
@@ -182,13 +210,13 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource, string user)
+		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource, string user, Guid userId)
 		{
 			try
 			{
 				var apt =  _companyRepository.SaveAccumulatedPayType(mappedResource);
 				var returnCompany = _companyRepository.GetCompanyById(apt.CompanyId);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("Accumulated PayType Updated {0}", mappedResource.PayType.Name), userId);
 				_mementoDataService.AddMementoData(memento, true);
 				return apt;
 			}
@@ -200,13 +228,13 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyPayCode SavePayCode(CompanyPayCode mappedResource, string user)
+		public CompanyPayCode SavePayCode(CompanyPayCode mappedResource, string user, Guid userId)
 		{
 			try
 			{
 				var pc = _companyRepository.SavePayCode(mappedResource);
 				var returnCompany = _companyRepository.GetCompanyById(pc.CompanyId);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, "Pay Code updated: " + mappedResource.Code, userId);
 				_mementoDataService.AddMementoData(memento, true);
 				return pc;
 			}
@@ -397,14 +425,14 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource, string user)
+		public CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource, string user, Guid userId)
 		{
 			try
 			{
 				var tr = _companyRepository.SaveCompanyTaxRate(mappedResource);
 
 				var returnCompany = _companyRepository.GetCompanyById(tr.CompanyId);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user);
+				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("Tax rate updated {0}", mappedResource.TaxCode), userId);
 				_mementoDataService.AddMementoData(memento, true);
 
 				return tr;

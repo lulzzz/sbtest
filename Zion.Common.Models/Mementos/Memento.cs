@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Enum;
 using Newtonsoft.Json;
 
@@ -20,8 +21,10 @@ namespace HrMaxx.Common.Models.Mementos
 		public string CreatedBy { get; set; }
 		public EntityTypeEnum SourceTypeId { get; set; }
 		public T Object { get; set; }
+		public Guid? UserId { get; set; }
+		public string Comments { get; set; }
 
-		public static Memento<T> Create(IOriginator<T> originator, EntityTypeEnum sourceType, string createdBy)
+		public static Memento<T> Create(IOriginator<T> originator, EntityTypeEnum sourceType, string createdBy, string comments = "", Guid? userId = null)
 		{
 			if (originator == null)
 				return null;
@@ -32,6 +35,8 @@ namespace HrMaxx.Common.Models.Mementos
 			memento.MementoId = originator.MementoId;
 			memento.CreatedBy = createdBy;
 			memento.SourceTypeId = sourceType;
+			memento.Comments = comments;
+			memento.UserId = userId;
 			return memento;
 		}
 		

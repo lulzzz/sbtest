@@ -11,7 +11,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
-	public class Payroll : BaseEntityDto
+	public class Payroll : BaseEntityDto, IOriginator<Payroll>
 	{
 		public Company Company { get; set; }
 		public DateTime StartDate { get; set; }
@@ -36,7 +36,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Cost), 2, MidpointRounding.AwayFromZero); }
 		}
-		
+
+		public Guid MementoId
+		{
+			get { return Id; }
+		}
+
+		public void ApplyMemento(Memento<Payroll> memento)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class PayCheck : IOriginator<PayCheck>

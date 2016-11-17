@@ -221,10 +221,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.canRunPayroll = function() {
 						var c = $scope.mainData.selectedCompany;
 						var hostcomp = $scope.mainData.selectedHost.company;
+						
 						if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0 || (c.contract.billingOption===3 && !c.contract.invoiceSetup) || (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount))
 							return false;
 						else {
-							return true;
+							var draftPayroll = $filter('filter')($scope.list, { statusText: 'Draft' });
+							return draftPayroll.length>0 ? false : true;
 						}
 					}
 					$scope.requiresHostPayrollAccount = function() {
@@ -271,6 +273,23 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						}, function (error) {
 							$scope.addAlert('error getting payrolls', 'danger');
 						});
+					}
+					$scope.deletePayroll = function (event, payroll) {
+						event.stopPropagation();
+						$scope.$parent.$parent.confirmDialog('Are you sure you want to delete this Draft Payroll?', 'danger', function() {
+								payrollRepository.deletePayroll(payroll).then(function(data) {
+									if (data) {
+										$scope.list.splice($scope.list.indexOf(payroll), 1);
+										$scope.tableParams.reload();
+										$scope.fillTableData($scope.tableParams);
+										$scope.selected = null;
+									}
+								}, function(erorr) {
+									$scope.addAlert('error: ' + erorr.statusText, 'danger');
+								});
+							}
+						);
+
 					}
 					var getEmployees = function (companyId) {
 						companyRepository.getEmployees(companyId).then(function (data) {

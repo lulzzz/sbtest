@@ -51,9 +51,9 @@
 					{{listitem.statusText}}
 				</td>
 				<td>
-					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2? 'review' : 'view'}}</button>
-					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void</button>
-					<button class="btn btn-sm btn-success" ng-show="item.status>2 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-print m-r-5"></i> print</button>
+					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2 || item.status===6? 'review' : 'view'}}</button>
+					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void</button>
+					<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-print m-r-5"></i> print</button>
 				</td>
 				
 			</tr>
@@ -63,9 +63,10 @@
 		
 	</div>
 	<div class="col-sm-12">
-		<button class="btn btn-sm btn-primary" ng-if="item.status===2" ng-click="save()">confirm</button>
-		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2? 'back' : 'cancel'}}</button>
+		<button class="btn btn-sm btn-primary" ng-if="item.status===2 || item.status===6" ng-click="save()">confirm</button>
+		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayroll(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print all</button>
+		<button class="btn btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 	</div>
 	
 	<script type="text/ng-template" id="popover/reviewpaycheck.html">

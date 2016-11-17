@@ -14,7 +14,12 @@ namespace HrMaxx.Common.Models
 		public string Value(string key)
 		{
 			return Values.Any(v => v.Key.Equals(key.ToLower())) ? Values.First(v=>v.Key.Equals(key.ToLower())).Value : string.Empty;
-		} 
+		}
+
+		public string ValueFromContains(string key)
+		{
+			return Values.Any(v => v.Key.Contains(key.ToLower())) ? Values.First(v => v.Key.Contains(key.ToLower())).Value : string.Empty;
+		}
 	}
 
 

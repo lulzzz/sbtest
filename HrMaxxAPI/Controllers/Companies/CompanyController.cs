@@ -14,6 +14,7 @@ using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Code.Helpers;
+using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.OnlinePayroll;
 
 namespace HrMaxxAPI.Controllers.Companies
@@ -92,7 +93,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyDeductionResource SaveDeduction(CompanyDeductionResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyDeductionResource, CompanyDeduction>(resource);
-			var ded = MakeServiceCall(() => _companyService.SaveDeduction(mappedResource, CurrentUser.FullName), "save company deduction", true);
+			var ded = MakeServiceCall(() => _companyService.SaveDeduction(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company deduction", true);
 			return Mapper.Map<CompanyDeduction, CompanyDeductionResource>(ded);
 		}
 
@@ -101,7 +102,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyTaxRateResource SaveCompanyTaxYearRate(CompanyTaxRateResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyTaxRateResource, CompanyTaxRate>(resource);
-			var taxrate = MakeServiceCall(() => _companyService.SaveCompanyTaxYearRate(mappedResource, CurrentUser.FullName), "save company tax year rate", true);
+			var taxrate = MakeServiceCall(() => _companyService.SaveCompanyTaxYearRate(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company tax year rate", true);
 			return Mapper.Map<CompanyTaxRate, CompanyTaxRateResource>(taxrate);
 		}
 
@@ -110,7 +111,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyWorkerCompensationResource SaveWorkerCompensation(CompanyWorkerCompensationResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyWorkerCompensationResource, CompanyWorkerCompensation>(resource);
-			var wc = MakeServiceCall(() => _companyService.SaveWorkerCompensation(mappedResource, CurrentUser.FullName), "save company deduction", true);
+			var wc = MakeServiceCall(() => _companyService.SaveWorkerCompensation(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company deduction", true);
 			return Mapper.Map<CompanyWorkerCompensation, CompanyWorkerCompensationResource>(wc);
 		}
 
@@ -119,7 +120,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public AccumulatedPayTypeResource SaveAccumulatedPayType(AccumulatedPayTypeResource resource)
 		{
 			var mappedResource = Mapper.Map<AccumulatedPayTypeResource, AccumulatedPayType>(resource);
-			var wc = MakeServiceCall(() => _companyService.SaveAccumulatedPayType(mappedResource, CurrentUser.FullName), "save company accumulated pay type", true);
+			var wc = MakeServiceCall(() => _companyService.SaveAccumulatedPayType(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company accumulated pay type", true);
 			return Mapper.Map<AccumulatedPayType, AccumulatedPayTypeResource>(wc);
 		}
 
@@ -128,7 +129,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyPayCodeResource SavePayCode(CompanyPayCodeResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyPayCodeResource, CompanyPayCode>(resource);
-			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource, CurrentUser.FullName), "save company pay code", true);
+			var wc = MakeServiceCall(() => _companyService.SavePayCode(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
 		}
 
@@ -239,7 +240,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
 				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
-				var importedRows = _excelServce.ImportEmployees(fileUploadObj.file, 3);
+				var importedRows = _excelServce.ImportFromExcel(fileUploadObj.file, 3);
 				var employees = new List<EmployeeResource>();
 				var error = string.Empty;
 				importedRows.ForEach(er =>
@@ -309,12 +310,105 @@ namespace HrMaxxAPI.Controllers.Companies
 			return fileUploadObj;
 		}
 
+		/// <summary>
+		/// Upload Entity Document for a given entity
+		/// </summary>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.ImportTaxRates)]
+		public async Task<HttpResponseMessage> ImportTaxRates()
+		{
+			var filename = string.Empty;
+			try
+			{
+				var fileUploadObj = await ProcessMultipartContentTaxRateImport();
+				filename = fileUploadObj.file.FullName;
+				var companyOverrideableTaxes = _metaDataService.GetCompanyTaxesForYear(fileUploadObj.Year);
+				var companies = _companyService.GetAllCompanies();
+				if(!companyOverrideableTaxes.Any())
+					throw new Exception("No Company Specific Taxes Found for Year " + fileUploadObj.Year);
+
+				var importedRows = _excelServce.ImportFromExcel(fileUploadObj.file, 2);
+				var taxRates = new List<CaliforniaCompanyTaxResource>();
+				var error = string.Empty;
+				importedRows.ForEach(er =>
+				{
+					try
+					{
+						var companyTax = new CaliforniaCompanyTaxResource();
+						companyTax.FillFromImport(er, companyOverrideableTaxes, companies, fileUploadObj.Year);
+						taxRates.Add(companyTax);
+					}
+					catch (Exception ex)
+					{
+						error += ex.Message + "<br>";
+					}
+				});
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error);
+				
+				return this.Request.CreateResponse(HttpStatusCode.OK, taxRates);
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error importing employees", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message
+				});
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(filename))
+					File.Delete(filename);
+			}
+		}
+
+		private async Task<TaxRateImportResource> ProcessMultipartContentTaxRateImport()
+		{
+			if (!Request.Content.IsMimeMultipartContent())
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.UnsupportedMediaType
+				});
+			}
+
+			var provider = FileUploadHelpers.GetMultipartProvider();
+			var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+			var fileUploadObj = FileUploadHelpers.GetFormData<TaxRateImportResource>(result);
+
+			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
+			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);
+			fileUploadObj.FileName = originalFileName;
+			fileUploadObj.file = uploadedFileInfo;
+			return fileUploadObj;
+		}
+		[HttpPost]
+		[Route(CompanyRoutes.SaveTaxRates)]
+		public List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTaxResource> resource)
+		{
+			var rates = Mapper.Map<List<CaliforniaCompanyTaxResource>, List<CaliforniaCompanyTax>>(resource);
+			return MakeServiceCall(() => _metaDataService.SaveTaxRates(rates), "copy company", true);
+			
+		}
+
 		[HttpPost]
 		[Route(CompanyRoutes.CopyCompany)]
 		public CompanyResource CopyCompany(CopyCompanyResource resource)
 		{
-			var newcompany = MakeServiceCall(() => _payrollService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName), "copy company", true);
+			var newcompany = MakeServiceCall(() => _payrollService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "copy company", true);
 			return Mapper.Map<Company, CompanyResource>(newcompany);
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.AllCompanies)]
+		public List<CaliforniaCompanyTax> AllCompanies(int year)
+		{
+			return MakeServiceCall(() => _companyService.GetCaliforniaCompanyTaxes(year), "Get all companies for tax rates", true);
 		}
   }
 }

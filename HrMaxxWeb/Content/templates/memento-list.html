@@ -15,7 +15,7 @@
 						<ul class="commentList">
 							<li ng-repeat="memento in list | orderBy:'version':true">
 								<div class="commentText">
-									<p class=""><a ng-click="showmemento(memento)">Version {{memento.version}}</a> </p><span class="date sub-text">by {{memento.createdBy}} on {{memento.dateCreated | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
+									<p class=""><a ng-click="showmemento(memento)">Version {{memento.version}}</a><i>{{memento.comments ? ' - ' + memento.comments : ''}}</i> </p><span class="date sub-text">by {{memento.createdBy}} on {{memento.dateCreated | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
 								</div>
 							</li>
 						</ul>

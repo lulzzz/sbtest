@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -19,5 +20,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetJournalMetaData(Guid companyId);
 		object GetInvoiceMetaData(Guid companyId);
 		object GetUsersMetaData(Guid? host, Guid? company, Guid? employee);
+
+		List<TaxByYear> GetCompanyTaxesForYear(int year);
+		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
 	}
 }
