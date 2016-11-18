@@ -10,18 +10,19 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window', 'commonRepository',
+				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window, commonRepository) {
 					var dataSvc = {
 						isBodyOpen: true,
 						response: null,
 						approachingPayrolls: [],
 						filteredApproachingPayrolls: [],
 						payrollsWithoutInvoice: [],
-						filterApproachingPayroll: ''
+						filterApproachingPayroll: '',
+						myNews:[]
 					}
 
-
+					$scope.zionAPI = zionAPI; 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -167,7 +168,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
+						$sco$scope.audienceIpe.$parent.$parent.addAlert(error, type);
 					};
 
 					var clearIfExists = function (key, data, title) {
@@ -206,6 +207,12 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 							//google.load('visualization', '1.0', options);
 							$scope.drawCharts();
+							commonRepository.getUserNews().then(function (data) {
+								dataSvc.myNews = data;
+								
+							}, function (erorr) {
+
+							});
 						
 						
 

@@ -4,6 +4,28 @@
 	<div class="panel panel-primary">
 		<div class="panel-heading hidden-print">Dashboard</div>
 		<div class="panel-body">
+			<div class="col-sm-6 col-sm-offset-3 hidden-print">
+				<div uib-carousel active="active" interval="5000" no-wrap="true">
+					<div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
+						<img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:200px;width:100%" />
+						<div class="carousel-caption">
+							<h4>{{news.title}}</h4>
+							<p>
+								{{news.newsContent}}
+								<br />
+								<i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss'}}</i>
+							</p>
+						</div>
+						
+						<div class="carousel-control">
+							News 
+						</div>
+						
+					</div>
+				</div>
+
+			</div>
+			
 			<div class="row col-md-12 hidden-print" >
 				<div class="col-md-6">
 					<div id="payrollChart"></div>
@@ -61,15 +83,15 @@
 									Companies with Approaching Payrolls
 									<button class="btn btn-xs btn-info pull-right" ng-click="print()" ng-show="data.filteredApproachingPayrolls.length>1"><i class="fa fa-print m-r-5"></i> print</button>
 									<select class="form-control small hidden-print pull-right" style="width:7em;" ng-change="filterCompaniesApproachingPayroll()" ng-model="data.filterApproachingPayroll">
-											<option value="">All</option>
-											<option value="Today">Today</option>
-											<option value="1 day">1 day</option>
-											<option value="2 days">2 days</option>
+										<option value="">All</option>
+										<option value="Today">Today</option>
+										<option value="1 day">1 day</option>
+										<option value="2 days">2 days</option>
 										<option value="3 days">3 days</option>
 										<option value="4 days">4 days</option>
 										<option value="5 days">5 days</option>
-											<option value="Overdue">Overdue</option>
-										</select>
+										<option value="Overdue">Overdue</option>
+									</select>
 										
 									
 								</th>
