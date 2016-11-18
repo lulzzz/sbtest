@@ -16,17 +16,11 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
-				$scope.alerts = [];
+				
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				$scope.add = function () {
 					$scope.selected = {
 						id: 0,
@@ -43,6 +37,7 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 						item.id = data.id;
 						$scope.selected = null;
 						$rootScope.$broadcast('companyWCUpdated', { wc: data });
+						addAlert('successfully saved worker compensation', 'success');
 					}, function(error) {
 						addAlert('error in saving worker compensation', 'danger');
 					});

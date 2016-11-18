@@ -185,7 +185,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					_dbContext.Employees.Where(e => e.CompanyId == mappedwc.CompanyId && !e.WorkerCompensationId.HasValue);
 				if (employeesWithoutWC.Any())
 				{
-					employeesWithoutWC.ForEachAsync(e => e.WorkerCompensationId = mappedwc.Id);
+					employeesWithoutWC.ToList().ForEach(e => e.WorkerCompensationId = mappedwc.Id);
 					_dbContext.SaveChanges();
 				}
 			}

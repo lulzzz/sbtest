@@ -183,8 +183,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => src.Tax.Code));
 
 			CreateMap<Models.CompanyTaxRate, Models.DataModel.CompanyTaxRate>()
+				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src=>src.CompanyId))
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
-				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.Tax, opt => opt.Ignore());
 
 

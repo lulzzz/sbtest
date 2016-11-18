@@ -74,5 +74,24 @@ namespace HrMaxx.Common.Models.Mementos
 			return JsonConvert.DeserializeObject<T>(State,
 				new JsonSerializerSettings {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
 		}
+
+		public static Memento<T> Create(Guid mementoId, decimal version, DateTime dateCreated, string mementoState, string createdBy, EntityTypeEnum sourceType, string comments, Guid? userId)
+		{
+			var memento = new Memento<T>
+			{
+				MementoId = mementoId,
+				Version = version,
+				DateCreated = dateCreated,
+				State = mementoState,
+				OriginatorTypeName = typeof(T).FullName,
+				CreatedBy = createdBy,
+				SourceTypeId = sourceType,
+				Comments = comments,
+				UserId = userId
+
+			};
+			memento.Object = memento.Deserialize();
+			return memento;
+		}
 	}
 }

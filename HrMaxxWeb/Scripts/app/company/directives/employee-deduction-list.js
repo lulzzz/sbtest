@@ -30,17 +30,11 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					$scope.data = dataSvc;
 
 				$scope.selected = null;
-				$scope.alerts = [];
+				
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				$scope.add = function () {
 					$scope.selected = {
 						id: 0,
@@ -58,6 +52,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						companyRepository.saveEmployeeDeduction(item).then(function(deduction) {
 							item.id = deduction.id;
 							$scope.selected = null;
+							addAlert('successfully saved employee deduction', 'success');
 						}, function(error) {
 							addAlert('error in saving deduction', 'danger');
 						});

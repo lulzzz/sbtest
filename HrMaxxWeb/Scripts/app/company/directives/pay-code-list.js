@@ -16,16 +16,12 @@ common.directive('payCodeList', ['zionAPI','version',
 				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
-				$scope.alerts = [];
+				
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
+					$scope.$parent.$parent.addAlert(error, type);
 				};
 				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
+					
 				};
 				$scope.add = function () {
 					$scope.selected = {
@@ -43,6 +39,7 @@ common.directive('payCodeList', ['zionAPI','version',
 						item.id = data.id;
 						$scope.selected = null;
 						$rootScope.$broadcast('companyPayCodeUpdated', { pc: data });
+						addAlert('successfully saved pay code', 'success');
 					}, function(error) {
 						addAlert('error in saving pay code', 'danger');
 					});

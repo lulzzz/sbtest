@@ -17,16 +17,9 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
-				$scope.alerts = [];
+				
 				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
-				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
+					$scope.$parent.$parent.addAlert(error, type);
 				};
 				
 				$scope.save = function(item) {
@@ -34,6 +27,7 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 						item.id = data.id;
 						$scope.selected = null;
 						$rootScope.$broadcast('companyTaxUpdated', { tax: data });
+						addAlert('successfully saved tax rate', 'success');
 					}, function(error) {
 						addAlert('error in saving tax year rate ', 'danger');
 					});

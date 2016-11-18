@@ -45,7 +45,7 @@ namespace HrMaxx.Common.Repository.Mementos
 					}
 					else
 					{
-						nextVersion = currentVersion.version + (decimal)1;
+						nextVersion = Math.Floor(currentVersion.version) + (decimal)1;
 					}
 				}
 				
