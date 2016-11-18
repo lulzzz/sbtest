@@ -29,5 +29,6 @@
 		public const string AllCompanies = "Company/AllCompanies/{year:int}";
 		public const string ImportTaxRates = "Company/ImportTaxRates";
 		public const string SaveTaxRates = "Company/SaveTaxRates";
+		public const string GetCaliforniaEDDExport = "Company/CaliforniaEDD";
 	}
 }

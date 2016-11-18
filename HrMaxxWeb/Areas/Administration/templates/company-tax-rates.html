@@ -13,13 +13,14 @@
 					</select>
 				</div>
 			</div>
-			<div class="row" >
-				<span ng-show="list.length===0">No Records found <br /></span>
-				<button ng-show="data.selectedYear && data.selectedYear>data.currentYear && !data.importInProcess" class="btn btn-sm btn-success attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+			<div class="row m-5" >
+				<span ng-show="list.length===0 && data.selectedYear">No Records found <br /></span>
+				<button ng-show="data.selectedYear && data.selectedYear>data.currentYear && !data.importInProcess" class="btn btn-sm btn-success attach-button pull-left" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 					<i class="fa fa-upload"></i>Import Tax Rates
 				</button>
+				<button class="btn btn-sm btn-info pull-left" ng-click="getCaliforniaEDDExport()"><i class="fa fa-download"></i>EDD Export</button>
 			</div>
-			<div class="row" ng-show="list.length>0">
+			<div class="row m-5" ng-show="list.length>0">
 				<div class="col-sm-12" ng-show="list.length>0 && data.importInProcess">
 					<div class="col-sm-3 alert alert-info">
 						Total Imported Company Rates <span class="badge">{{list.length}}</span>

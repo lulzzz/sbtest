@@ -80,6 +80,19 @@ namespace HrMaxx.Common.Repository.Excel
 			return result;
 		}
 
-	
+		public FileDto GetImportTemplateCSV(string californiaeddexportCsv, List<string> list, List<List<string>> rowList, bool b)
+		{
+			var csv = new StringBuilder();
+			csv.Append(rowList.Aggregate(string.Empty, (current, m) => current + m.First() + Environment.NewLine));
+			var _filename = _filePath + californiaeddexportCsv.Replace(".csv", string.Format("{0}.csv", DateTime.Now.Ticks));
+			File.WriteAllText(_filename, csv.ToString());
+			var returnVal = new FileDto()
+			{
+				Data = File.ReadAllBytes(_filename),
+				DocumentExtension = "csv", Filename = californiaeddexportCsv, MimeType = "application/octet-stream"
+			};
+			File.Delete(_filename);
+			return returnVal;
+		}
 	}
 }

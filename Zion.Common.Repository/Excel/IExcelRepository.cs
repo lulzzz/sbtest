@@ -17,6 +17,7 @@ namespace HrMaxx.Common.Repository.Excel
 		FileDto GetImportTemplate(string fileName, List<string> columms, List<List<string>> rowList, bool b);
 
 		List<ExcelRead> GetExcelData(FileInfo file, int startingRow);
-		
+
+		FileDto GetImportTemplateCSV(string californiaeddexportCsv, List<string> list, List<List<string>> rowList, bool b);
 	}
 }

@@ -111,7 +111,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyWorkerCompensationResource SaveWorkerCompensation(CompanyWorkerCompensationResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyWorkerCompensationResource, CompanyWorkerCompensation>(resource);
-			var wc = MakeServiceCall(() => _companyService.SaveWorkerCompensation(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company deduction", true);
+			var wc = MakeServiceCall(() => _companyService.SaveWorkerCompensation(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save worker compensation", true);
 			return Mapper.Map<CompanyWorkerCompensation, CompanyWorkerCompensationResource>(wc);
 		}
 
@@ -409,6 +409,22 @@ namespace HrMaxxAPI.Controllers.Companies
 		public List<CaliforniaCompanyTax> AllCompanies(int year)
 		{
 			return MakeServiceCall(() => _companyService.GetCaliforniaCompanyTaxes(year), "Get all companies for tax rates", true);
+		}
+
+		[HttpGet]
+		[Route(CompanyRoutes.GetCaliforniaEDDExport)]
+		public HttpResponseMessage GetCaliforniaEDDExport()
+		{
+
+			var printed = MakeServiceCall(() => _excelServce.GetCaliforniaEDDExport(), "Get California EDD Export", true);
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(printed.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(printed.MimeType);
+
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = printed.Filename
+			};
+			return response;
 		}
   }
 }

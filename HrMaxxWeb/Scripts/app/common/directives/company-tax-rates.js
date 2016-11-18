@@ -44,6 +44,19 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						);
 						
 					}
+					$scope.getCaliforniaEDDExport = function () {
+						companyRepository.getCaliforniaEDDExport().then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+						}, function (error) {
+							addAlert('error getting california edd list', 'danger');
+						});
+					}
 
 					$scope.rowColor = function (company) {
 						if (company && dataSvc.importInProcess) {

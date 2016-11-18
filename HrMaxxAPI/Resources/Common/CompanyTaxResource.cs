@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 
@@ -29,7 +30,7 @@ namespace HrMaxxAPI.Resources.Common
 			var ett = er.ValueFromContains("ett");
 
 			var company =
-				companies.FirstOrDefault(c => c.States.Any(s => s.CountryId == 1 && s.State.StateId == 1 && s.StateEIN.Equals(Edd)));
+				companies.FirstOrDefault(c => c.StatusId==StatusOption.Active && c.States.Any(s => s.CountryId == 1 && s.State.StateId == 1 && s.StateEIN.Equals(Edd)));
 
 			var uiVal = (decimal)0;
 			var ettVal = (decimal)0;

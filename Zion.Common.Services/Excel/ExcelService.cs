@@ -108,5 +108,27 @@ namespace HrMaxx.Common.Services.Excel
 			});
 			return _excelRepository.GetImportTemplate(company.Name + "_TimesheetImport.xlsx", columnList, rowList, false);
 		}
+
+		public FileDto GetCaliforniaEDDExport()
+		{
+			try
+			{
+				var companies = _companyService.GetAllCompanies();
+				var rowList = new List<List<string>>();
+				companies.Where(c=>c.StatusId==StatusOption.Active && c.States.Any(s=>s.CountryId==1 && s.State.StateId==1)).ToList().ForEach(
+					c =>
+					{
+						var calState = c.States.First(s => s.CountryId == 1 && s.State.StateId == 1);
+						rowList.Add(new List<string>(){calState.StateEIN});
+					});
+				return _excelRepository.GetImportTemplateCSV("CaliforniaEDDExport.csv", new List<string>(), rowList, false);
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, " california edd export");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(e.Message, e);
+			}
+		}
 	}
 }

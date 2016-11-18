@@ -305,14 +305,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var draftPayrolls =
-							_stagingDataService.GetStagingData<PayrollStaging>(payroll.Company.Id);
-					if (draftPayrolls.Any())
+					var draftPayroll =
+							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
+					if (draftPayroll!=null)
 					{
-						var p = draftPayrolls.First().Deserialize();
+						var p = draftPayroll.Deserialize();
 						if (p.Payroll.Id == payroll.Id)
 						{
-							_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayrolls.First().MementoId);
+							_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
 						}
 					}
 
