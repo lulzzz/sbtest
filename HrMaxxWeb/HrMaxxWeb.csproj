@@ -275,6 +275,7 @@
     <Content Include="Areas\Reports\templates\Extracts.html" />
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
+    <Content Include="Content\images\blank.png" />
     <Content Include="Content\ng-tags-input.bootstrap.css" />
     <Content Include="Content\print.css" />
     <Compile Include="Controllers\AccountController.cs" />
