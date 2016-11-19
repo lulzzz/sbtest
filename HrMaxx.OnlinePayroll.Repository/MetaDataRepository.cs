@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HrMaxx.Common.Models;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
@@ -193,6 +194,36 @@ namespace HrMaxx.OnlinePayroll.Repository
 			_dbContext.CompanyTaxRates.AddRange(mapped);
 			_dbContext.SaveChanges();
 			return rates;
+		}
+
+		public List<SearchResult> FillSearchResults(List<SearchResult> searchResults)
+		{
+			var _dbSearchResults = _dbContext.SearchTables.ToList();
+			_dbContext.SearchTables.RemoveRange(_dbSearchResults);
+			var mapped = _mapper.Map<List<Models.SearchResult>, List<Models.DataModel.SearchTable>>(searchResults);
+			_dbContext.SearchTables.AddRange(mapped);
+			_dbContext.SaveChanges();
+			return searchResults;
+		}
+
+		public void UpdateSearchTable(SearchResult searchResult)
+		{
+			var _dbSearchEntry =
+				_dbContext.SearchTables.FirstOrDefault(
+					st => st.SourceTypeId == (int) searchResult.SourceTypeId && st.SourceId == searchResult.SourceId);
+			if (_dbSearchEntry == null)
+			{
+				_dbContext.SearchTables.Add(_mapper.Map<Models.SearchResult, Models.DataModel.SearchTable>(searchResult));
+				_dbContext.SaveChanges();
+			}
+			else
+			{
+				if (!_dbSearchEntry.SearchText.Equals(searchResult.SearchText))
+				{
+					_dbSearchEntry.SearchText = searchResult.SearchText;
+					_dbContext.SaveChanges();
+				}
+			}
 		}
 	}
 }

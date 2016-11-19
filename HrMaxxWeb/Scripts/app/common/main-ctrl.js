@@ -74,6 +74,7 @@
 			userRole: null,
 			myName: '',
 			isReady: false,
+			fromSearch: false,
 			reportFilter: {
 				filterStartDate: null,
 				filterEndDate: null,
@@ -135,13 +136,17 @@
 						var selected = $filter('filter')(dataSvc.companies, { id: companyId })[0];
 						dataSvc.selectedCompany1 = selected;
 						$scope.companySelected();
-						$window.location.href = url;
+						if(url)
+							$window.location.href = url;
 					}, function(erorr) {
 						$scope.addAlert('error getting company list', 'danger');
 					});
 					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 				} else {
-					$window.location.href = url;
+					if (url) {
+						$window.location.href = url;
+					}
+						
 				}
 				
 			}
@@ -182,8 +187,21 @@
 			}
 			if (dataSvc.selectedCompany && dataSvc.selectedCompany.id === company.id) {
 				dataSvc.selectedCompany = company;
-				dataSvc.sleectedCompany1 = angular.copy(company);
+				dataSvc.selectedCompany1 = angular.copy(company);
 			}
+		});
+		$scope.$on('searchResultSelected', function (event, args) {
+			var result = args.result;
+			if (result.sourceTypeId === 2) {
+				dataSvc.fromSearch = true;
+				$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Company/" + +(new Date().getTime()));
+			}
+			else if (result.sourceTypeId === 3) {
+				dataSvc.fromSearch = true;
+				dataSvc.showemployee = result.sourceId;
+				$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Employees/" + +(new Date().getTime()));
+			}
+			
 		});
 		$scope.$on('companyDeductionUpdated', function (event, args) {
 			var ded = args.ded;

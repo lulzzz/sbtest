@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using HrMaxx.Common.Models;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 
@@ -24,5 +25,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		int PullReportConstat(string form940, int quarterly);
 
 		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
+		List<SearchResult> FillSearchResults(List<SearchResult> searchResults);
+		void UpdateSearchTable(SearchResult searchResult);
 	}
 }

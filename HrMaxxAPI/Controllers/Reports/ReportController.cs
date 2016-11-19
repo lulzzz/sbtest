@@ -107,5 +107,13 @@ namespace HrMaxxAPI.Controllers.Reports
 			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for report " + report, true);
 
 		}
+
+		[HttpGet]
+		[Route(ReportRoutes.GetSearchResults)]
+		public List<SearchResult> GetSearchResults(string criteria)
+		{
+			return MakeServiceCall(() => _reportService.GetSearchResults(criteria, CurrentUser.Role, CurrentUser.Host, CurrentUser.Company), "Get search results", true);
+
+		}
 	}
 }

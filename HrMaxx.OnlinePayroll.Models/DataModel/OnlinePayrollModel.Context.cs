@@ -57,5 +57,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<MasterExtract> MasterExtracts { get; set; }
         public virtual DbSet<PayCheckExtract> PayCheckExtracts { get; set; }
         public virtual DbSet<InsuranceGroup> InsuranceGroups { get; set; }
+        public virtual DbSet<SearchTable> SearchTables { get; set; }
     }
 }

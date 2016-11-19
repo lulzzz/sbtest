@@ -12,6 +12,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getSearchResults: function (search) {
+				var deferred = $q.defer();
+				reportServer.one('SearchResults/' + search).getList().then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			fileTaxes: function (extract) {
 				var deferred = $q.defer();
 				reportServer.all('FileTaxes').post(extract).then(function (result) {

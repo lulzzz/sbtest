@@ -34,5 +34,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		Company CopyCompany(Guid oldCompanyId, Guid companyId, Guid oldHostId, Guid newHostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string user);
 		List<Company> GetAllCompanies();
 		Employee GetEmployeeById(Guid employeeId);
+		List<Employee> GetAllEmployees();
 	}
 }

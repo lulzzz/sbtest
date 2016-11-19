@@ -47,6 +47,16 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public DateTime? LastPayrollDate { get; set; }
 
+		public string GetSearchText
+		{
+			get
+			{
+				var searchText = string.Empty;
+				searchText += FullName + " (" + SSN + ")";
+				return searchText;
+			}
+		}
+
 		public string FullName
 		{
 			get { return string.Format("{0} {1}", FirstName, LastName); }

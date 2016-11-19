@@ -34,5 +34,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		List<Company> GetAllCompanies();
 		List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year);
+
+		List<Employee> GetAllEmployees();
 	}
 }

@@ -472,6 +472,17 @@
           <Property Name="DepositSchedule" Type="int" Nullable="false" />
           <Property Name="FileSequence" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="SearchTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SourceTypeId" Type="int" Nullable="false" />
+          <Property Name="SourceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="HostId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SearchText" Type="varchar(max)" />
+        </EntityType>
         <EntityType Name="Status">
           <Key>
             <PropertyRef Name="StatusId" />
@@ -997,6 +1008,7 @@
           <EntitySet Name="PayrollPayCheck" EntityType="Self.PayrollPayCheck" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayType" EntityType="Self.PayType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportConstants" EntityType="Self.ReportConstants" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SearchTable" EntityType="Self.SearchTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Status" EntityType="Self.Status" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tax" EntityType="Self.Tax" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TaxYearRate" EntityType="Self.TaxYearRate" Schema="dbo" store:Type="Tables" />
@@ -1354,6 +1366,7 @@
             <End Role="InsuranceGroup" EntitySet="InsuranceGroups" />
             <End Role="Company" EntitySet="Companies" />
           </AssociationSet>
+          <EntitySet Name="SearchTables" EntityType="HrMaxxModel.SearchTable" />
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -2409,6 +2422,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="SearchTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SourceTypeId" Type="Int32" Nullable="false" />
+          <Property Name="SourceId" Type="Guid" Nullable="false" />
+          <Property Name="HostId" Type="Guid" Nullable="false" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="SearchText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2960,6 +2984,18 @@
               <MappingFragment StoreEntitySet="InsuranceGroup">
                 <ScalarProperty Name="GroupName" ColumnName="GroupName" />
                 <ScalarProperty Name="GroupNo" ColumnName="GroupNo" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SearchTables">
+            <EntityTypeMapping TypeName="HrMaxxModel.SearchTable">
+              <MappingFragment StoreEntitySet="SearchTable">
+                <ScalarProperty Name="SearchText" ColumnName="SearchText" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="HostId" ColumnName="HostId" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="SourceTypeId" ColumnName="SourceTypeId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

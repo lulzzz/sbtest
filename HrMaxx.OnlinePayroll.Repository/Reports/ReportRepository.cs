@@ -165,6 +165,45 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.MasterExtract>>(extracts);
 		}
 
+		public SearchResults GetSearchResults(string criteria, string role, Guid host, Guid company)
+		{
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand("GetSearchResults"))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@criteria", criteria.Replace("-", string.Empty));
+					if(role.Equals("HostStaff"))
+						cmd.Parameters.AddWithValue("@role", role);
+					if(host!=Guid.Empty)
+						cmd.Parameters.AddWithValue("@host", host);
+					if (company != Guid.Empty)
+						cmd.Parameters.AddWithValue("@company", company);
+					
+					cmd.Connection = con;
+					con.Open();
+
+
+					var data = string.Empty;
+					using (var reader = cmd.ExecuteXmlReader())
+					{
+						var sb = new StringBuilder();
+
+						while (reader.Read())
+							sb.AppendLine(reader.ReadOuterXml());
+
+						data = sb.ToString();
+					}
+					con.Close();
+					var serializer = new XmlSerializer(typeof(SearchResults));
+					var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+					return (SearchResults)serializer.Deserialize(memStream);
+
+
+				}
+			}
+		}
+
 
 		private DashboardData getDashboardData(string query, Guid? host, string role, DateTime? startDate = null, DateTime? endDate = null, string criteria = null)
 		{

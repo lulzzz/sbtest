@@ -109,7 +109,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							$scope.selectedCompany = angular.copy(item);
 							
 							$scope.data.isBodyOpen = false;
-							if (item.id) {
+							if (item && item.id) {
 								$scope.mainData.selectedCompany = item;
 								$scope.mainData.selectedCompany1 = item;
 							}
@@ -187,7 +187,12 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 
 						$scope.list = $scope.mainData.companies;
 						var querystring = $location.search();
-						if ($scope.mainData.userCompany !== '00000000-0000-0000-0000-000000000000') {
+						if ($scope.mainData.fromSearch && $scope.mainData.selectedCompany) {
+							$scope.mainData.fromSearch = false;
+							var exists2 = $filter('filter')($scope.list, { id: $scope.mainData.selectedCompany.id }, true)[0];
+							$scope.setCompany(exists2, 1);
+						}
+						else if ($scope.mainData.userCompany !== '00000000-0000-0000-0000-000000000000') {
 							var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userCompany }, true)[0];
 							if (exists1) {
 								$scope.setCompany(exists1, 1);
@@ -199,6 +204,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								$scope.setCompany(exists, 1);
 							}
 						}
+						
 					}
 					init();
 

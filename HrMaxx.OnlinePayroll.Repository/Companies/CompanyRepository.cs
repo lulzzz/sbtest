@@ -534,5 +534,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var dbemp = _dbContext.Employees.First(e => e.Id == employeeId);
 			return _mapper.Map<Models.DataModel.Employee, Models.Employee>(dbemp);
 		}
+
+		
+		public List<Employee> GetAllEmployees()
+		{
+			var emps = _dbContext.Employees.ToList();
+			return _mapper.Map<List<Models.DataModel.Employee>, List<Models.Employee>>(emps);
+		}
 	}
 }

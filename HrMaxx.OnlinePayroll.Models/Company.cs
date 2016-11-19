@@ -62,6 +62,20 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			throw new NotImplementedException();
 		}
+
+		public string GetSearchText
+		{
+			get
+			{
+				var searchText = string.Empty;
+				searchText += Name + ", EIN:" + FederalEIN + ". ";
+				if (!string.IsNullOrWhiteSpace(CompanyNo))
+					searchText += "Company#:" + CompanyNo + ". ";
+				var sts = States.Aggregate(string.Empty, (current, m) => current + string.Format("{0}:{1}", m.State.Abbreviation, m.StateEIN) + ", ");
+				searchText += sts;
+				return searchText;
+			}
+		}
 	}
 
 	public class ContractDetails

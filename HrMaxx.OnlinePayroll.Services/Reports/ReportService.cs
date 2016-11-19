@@ -525,6 +525,21 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		public List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company)
+		{
+			try
+			{
+				return _reportRepository.GetSearchResults(criteria, role, host, company).Results;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+					"get search results for " + criteria);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
 		{
 

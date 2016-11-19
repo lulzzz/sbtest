@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Resources.Common;
 
 namespace HrMaxxAPI.Controllers
@@ -141,6 +142,13 @@ namespace HrMaxxAPI.Controllers
 		public List<object> GetMementos(Guid sourceId, int sourceTypeId)
 		{
 			return MakeServiceCall(() => _mementoDataService.GetMementos((EntityTypeEnum)sourceTypeId, sourceId), "get mementos for source type " + sourceTypeId, true);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.FillSearchTable)]
+		public List<SearchResult> FillSearchTable()
+		{
+			return MakeServiceCall(() => _metaDataService.FillSearchTable(), "fill search table", true);
 		}
 	}
 }

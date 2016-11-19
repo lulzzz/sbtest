@@ -17,15 +17,16 @@
 		<ul class="nav navbar-nav navbar-right">
 			@if (Request.IsAuthenticated)
 			{
-				<li>
+				<li ng-controller="searchResult">
 					<form class="navbar-form full-width">
 						<div class="form-group">
-							<input type="text" class="form-control" placeholder="Enter keyword" />
+							
+							<input type="text" class="form-control" placeholder="Enter keyword" ng-model="selectedResult" ng-mouseenter="selectedResult=null" typeahead-min-length="3" typeahead-show-hint="true" typeahead-on-select="resultSelected($item, $model, $label, $event)" uib-typeahead="result as (result.sourceType + ': ' + result.searchText) for result in getSearchResults($viewValue)" class="form-control">
 							<button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
 						</div>
 					</form>
 				</li>
-				
+
 				<li class="dropdown" id="dvNotifications" ng-controller="notificationCtrl">
 
 					<a href="javascript:;" data-toggle="dropdown" class="dropdown-toggle f-s-14">

@@ -202,6 +202,14 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
+							if ($scope.mainData.fromSearch && $scope.mainData.showemployee) {
+								var exists = $filter('filter')($scope.list, { id: $scope.mainData.showemployee })[0];
+								if (exists) {
+									$scope.set(exists);
+								}
+								$scope.mainData.fromSearch = false;
+								$scope.mainData.showemployee = null;
+							}
 						}, function (erorr) {
 							addAlert('error getting employee list', 'danger');
 						});
@@ -209,7 +217,7 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 
 					$scope.$watch('mainData.selectedCompany',
 						 function (newValue, oldValue) {
-						 	if (newValue !== oldValue) {
+						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
 						 		$scope.getEmployees($scope.mainData.selectedCompany.id);
 							 }
 

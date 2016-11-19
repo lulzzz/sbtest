@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
@@ -12,6 +14,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using HrMaxx.OnlinePayroll.Repository;
+using Magnum.Reflection;
 
 namespace HrMaxx.OnlinePayroll.Services
 {
@@ -167,6 +170,33 @@ namespace HrMaxx.OnlinePayroll.Services
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public List<SearchResult> FillSearchTable()
+		{
+			var companies = _companyService.GetAllCompanies();
+			var employees = _companyService.GetAllEmployees();
+			var searchResults = new List<SearchResult>();
+			foreach (var company in companies)
+			{
+				searchResults.Add(new SearchResult()
+				{
+					Id=0, SourceTypeId = EntityTypeEnum.Company, SourceId = company.Id, HostId = company.HostId, CompanyId=company.Id, SearchText = company.GetSearchText
+				});
+			}
+			foreach (var employee in employees)
+			{
+				searchResults.Add(new SearchResult()
+				{
+					Id = 0,
+					SourceTypeId = EntityTypeEnum.Employee,
+					SourceId = employee.Id,
+					HostId = companies.First(c=>c.Id==employee.CompanyId).HostId,
+					CompanyId = employee.CompanyId,
+					SearchText = employee.GetSearchText
+				});
+			}
+			return _metaDataRepository.FillSearchResults(searchResults);
 		}
 	}
 }

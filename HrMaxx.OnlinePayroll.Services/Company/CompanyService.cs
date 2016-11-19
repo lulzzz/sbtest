@@ -473,6 +473,19 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
+		public List<Employee> GetAllEmployees()
+		{
+			try
+			{
+				return _companyRepository.GetAllEmployees();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" all employees"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 		
 	}
 }

@@ -1297,6 +1297,7 @@
     <Content Include="Scripts\app\common\Notifications\notification-repository.js" />
     <Content Include="Scripts\app\common\Notifications\notification.js" />
     <Content Include="Scripts\app\common\main-ctrl.js" />
+    <Content Include="Scripts\app\common\search-ctrl.js" />
     <Content Include="Scripts\app\common\users\user-repository.js" />
     <Content Include="Scripts\app\common\users\user-app.js" />
     <Content Include="Scripts\app\company\company-app.js" />
