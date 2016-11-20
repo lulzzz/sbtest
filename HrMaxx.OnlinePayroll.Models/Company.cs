@@ -71,8 +71,11 @@ namespace HrMaxx.OnlinePayroll.Models
 				searchText += Name + ", EIN:" + FederalEIN + ". ";
 				if (!string.IsNullOrWhiteSpace(CompanyNo))
 					searchText += "Company#:" + CompanyNo + ". ";
-				var sts = States.Aggregate(string.Empty, (current, m) => current + string.Format("{0}:{1}", m.State.Abbreviation, m.StateEIN) + ", ");
-				searchText += sts;
+				if (States != null)
+				{
+					var sts = States.Aggregate(string.Empty, (current, m) => current + string.Format("{0}:{1}", m.State.Abbreviation, m.StateEIN) + ", ");
+					searchText += sts;
+				}
 				return searchText;
 			}
 		}

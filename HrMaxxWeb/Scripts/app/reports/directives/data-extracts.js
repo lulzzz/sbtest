@@ -9,14 +9,17 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/data-extracts.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository',
-				function ($scope, $element, $location, $filter, payrollRepository, reportRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository',
+				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository) {
 					var dataSvc = {
 
 						isBodyOpen: true,
 						isBodyOpenExtract: true,
+						isBodyOpenWC: true,
 						response: null,
 						minYear: 2016,
+						hosts: [],
+						selectedHost: null,
 						filter: {
 							years: []
 						},
@@ -201,14 +204,6 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 						}
 					}
-
-					$scope.minDepositDate = moment().startOf('day').toDate();
-					var currentYear = new Date().getFullYear();
-					for (var i = currentYear - 4; i <= currentYear; i++) {
-						if(i >= dataSvc.minYear)
-							dataSvc.filter.years.push(i);
-					}
-					
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;
@@ -459,9 +454,56 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							return false;
 						}
 					}
-					
 
-			}]
+					$scope.getHostWCReport = function () {
+						var request = {
+							reportName: 'HostWCReport',
+							hostId: dataSvc.selectedHost.id,
+							year: moment().year(),
+							quarter: 0,
+							month: moment().subtract(1, 'months').format('MM'),
+							startDate: null,
+							endDate: null,
+							depositSchedule: null,
+							depositDate: null
+						}
+						reportRepository.getExtract(request).then(function (extract) {
+
+							reportRepository.downloadExtract(extract.file).then(function (data) {
+
+								var a = document.createElement('a');
+								a.href = data.file;
+								a.target = '_blank';
+								a.download = data.name;
+								document.body.appendChild(a);
+								a.click();
+							}, function (erorr) {
+								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
+							});
+
+						}, function (erorr) {
+							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+						});
+
+					}
+
+					var _init = function () {
+						$scope.minDepositDate = moment().startOf('day').toDate();
+						var currentYear = new Date().getFullYear();
+						for (var i = currentYear - 4; i <= currentYear; i++) {
+							if (i >= dataSvc.minYear)
+								dataSvc.filter.years.push(i);
+						}
+						hostRepository.getHostList().then(function (data) {
+							dataSvc.hosts = data;
+						}, function (erorr) {
+							addAlert('Error getting Host List : ' + erorr.statusText, 'danger');
+						});
+					}
+					_init();
+
+
+				}]
 		}
 	}
 ]);
