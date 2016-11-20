@@ -86,9 +86,10 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 					host.Company.UserId = host.UserId;
 					var savedHost = _hostRepository.Save(host);
 					host.Company.HostId = savedHost.Id;
-					var savedCompany = _companyService.SaveHostCompany(host.Company);	
-					
+					var savedCompany = _companyService.SaveHostCompany(host.Company, savedHost);
 
+					savedHost.CompanyId = savedCompany.Id;
+					savedHost = _hostRepository.Save(savedHost);
 					var memento = Memento<Models.Host>.Create(savedHost, EntityTypeEnum.Host, savedHost.UserName, string.Format("Host Update {0}", savedHost.FirmName), savedHost.UserId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();

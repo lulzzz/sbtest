@@ -46,7 +46,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		}
 
 		
-		public List<PayrollTax> ProcessTaxes(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks)
+		public List<PayrollTax> ProcessTaxes(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, Company hostCompany)
 		{
 			try
 			{
@@ -58,7 +58,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 																							).OrderBy(t=>t.Id).ToList();
 				foreach (var tax in applicableTaxes)
 				{
-					returnList.Add(CalculateTax(company, payCheck, payDay, grossWage, employeePayChecks, tax));
+					returnList.Add(CalculateTax(company, payCheck, payDay, grossWage, employeePayChecks, tax, hostCompany));
 				}
 				return returnList;
 			}
@@ -116,7 +116,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
-		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, TaxByYear tax)
+		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, TaxByYear tax, Company hostCompany)
 		{
 			if (!tax.Tax.StateId.HasValue)
 			{
@@ -125,24 +125,24 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				else if (tax.Tax.Code.Equals("MD_Employee"))
 					return GetMDEE(company, payCheck, grossWage, employeePayChecks, payDay, tax);
 				else if (tax.Tax.Code.Equals("MD_Employer"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("SS_Employee"))
 					return GetMDEE(company, payCheck, grossWage, employeePayChecks, payDay, tax);
 				else if (tax.Tax.Code.Equals("SS_Employer"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("FUTA"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 			}
 			else
 			{
 				if (tax.Tax.Code.Equals("SIT"))
 					return GetCASIT(company, payCheck, grossWage, employeePayChecks, payDay, tax);
 				else if (tax.Tax.Code.Equals("SDI"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("ETT"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("SUI"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 			}
 			return new PayrollTax();
 
@@ -227,7 +227,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			};
 		}
 		
-		private PayrollTax SimpleTaxCalculator(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
+		private PayrollTax SimpleTaxCalculator(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax, Company hostCompany)
 		{
 			var ytdTax = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount);
 			var ytdWage = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage);
@@ -258,7 +258,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 			var taxRate = !tax.Tax.IsCompanySpecific
 				? (tax.Rate.HasValue ? tax.Rate.Value : tax.Tax.DefaultRate )
-				: (company.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? company.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate);
+				: !company.FileUnderHost ? (company.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? company.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate) : (hostCompany.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? hostCompany.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate);
 
 			taxAmount = taxableWage * taxRate / 100;
 			return new PayrollTax

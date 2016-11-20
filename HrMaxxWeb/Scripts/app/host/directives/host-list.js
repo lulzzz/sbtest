@@ -134,9 +134,27 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 				$scope.save = function () {
 					if (false === $('form[name="hostForm"]').parsley().validate())
 						return false;
+					if (!$scope.selectedHost.id) {
+						var confirmMessage = "";
+						if ($scope.selectedHost.isPeoHost) {
+							confirmMessage = "This host will be saved as a PEO Host which cannot be changed later. Are you sure you want to proceed?";
+						} else {
+							confirmMessage = "This host will be saved as a Non-PEO Host which cannot be changed later. Are you sure you want to proceed?";
+						}
+
+						$scope.$parent.$parent.confirmDialog(confirmMessage, 'info', function () {
+							saveHost();
+						});
+					} else {
+						saveHost();
+					}
+					
+					
+				}
+				var saveHost = function() {
 					hostRepository.saveHost($scope.selectedHost).then(function (result) {
-						
-						var exists = $filter('filter')($scope.list, { id:result.id });
+
+						var exists = $filter('filter')($scope.list, { id: result.id });
 						if (exists.length === 0) {
 							$scope.list.push(result);
 						} else {
@@ -146,6 +164,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.selectedHost = null;
+						$scope.mainData.selectedHost = null;
 						$scope.isBodyOpen = true;
 						addAlert('successfully saved Host', 'success');
 					}, function (error) {

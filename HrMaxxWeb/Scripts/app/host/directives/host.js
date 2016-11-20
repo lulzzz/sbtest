@@ -49,7 +49,7 @@ common.directive('host', ['zionAPI','localStorageService','version',
 					var c = $scope.selectedCompany;
 					if (!c)
 						return false;
-					if (!c.name || !c.companyNo)
+					if (!c.name)
 						return false;
 					else if (!c.companyAddress.addressLine1 || !c.companyAddress.countryId || !c.companyAddress.stateId || !c.companyAddress.zip)
 						return false;

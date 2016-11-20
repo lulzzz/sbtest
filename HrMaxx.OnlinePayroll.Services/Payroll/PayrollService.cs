@@ -129,8 +129,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						paycheck.Compensations = ProcessCompensations(paycheck.Compensations, employeePayChecks);
 						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll.Company.AccumulatedPayTypes);
 						grossWage = Math.Round(grossWage + paycheck.CompensationTaxableAmount, 2, MidpointRounding.AwayFromZero);
-						
-						paycheck.Taxes = _taxationService.ProcessTaxes(payroll.Company, paycheck, paycheck.PayDay, grossWage, employeePayChecks);
+
+						var host = _hostService.GetHost(payroll.Company.HostId);
+
+						paycheck.Taxes = _taxationService.ProcessTaxes(payroll.Company, paycheck, paycheck.PayDay, grossWage, employeePayChecks, host.Company);
 						paycheck.Deductions = ApplyDeductions(grossWage, paycheck, employeePayChecks);
 						paycheck.GrossWage = grossWage;
 						paycheck.NetWage = Math.Round( paycheck.GrossWage - paycheck.DeductionAmount -

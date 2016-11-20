@@ -39,7 +39,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							statusId: 1,
 							isAddressSame: true,
 							isVisibleToHost: true,
-							fileUnderHost: true,
+							fileUnderHost: $scope.mainData.selectedHost.isPeoHost,
 							allowTaxPayments: true,
 							allowEFileFormFiling: true,
 							isHostCompany: false,
@@ -54,9 +54,17 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								creditCardDetails: null,
 								bankDetails: null,
 								invoiceCharge: 0,
-								invoiceSetup: null
+								invoiceSetup: {
+									suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
+									applyEnvironmentalFee: true,
+									applyStatuaryLimits: true,
+									applyWCCharge: true
+								}
 							}
 						};
+						if ($scope.mainData.selectedHost.isPeoHost) {
+							selectedCompany.depositSchedule = $scope.mainData.selectedHost.company.depositSchedule;
+						}
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
 						
 						$scope.setCompany(selectedCompany, 1);

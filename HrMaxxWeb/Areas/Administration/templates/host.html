@@ -63,7 +63,7 @@
 								<div>
 									<label for="ispeohost" class="switch">
 										PEO Host?
-										<input id="ispeohost" type="checkbox" ng-model="host.isPeoHost" /><i></i>
+										<input id="ispeohost" type="checkbox" ng-model="host.isPeoHost" ng-disabled="host.id && mainData.userRole!=='Master'"/><i></i>
 									</label>
 								</div>
 							</div>
@@ -101,10 +101,7 @@
 							<label>Company Name</label>
 							<input type="text" name="name" placeholder="Company Name" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.name" ng-change="namechanged()" required />
 						</div>
-						<div class="form-group">
-							<label>Company No</label>
-							<input type="text" name="companyNo" placeholder="Company No" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.companyNo" required />
-						</div>
+						
 						<div class="form-group">
 							<label>Status</label>
 							<select ng-model="selectedCompany.statusId" name="status" class="form-control" convert-to-number>
@@ -181,7 +178,7 @@
 					<div class="col-sm-4">
 						<div class="form-group">
 							<label>Insurance Client No</label>
-							<input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
+							<input type="text" name="cno" class="form-control" data-parsley-group="wizard-step-3" ng-model="selectedCompany.insuranceClientNo" ng-required="selectedCompany.insuranceGroup" />
 						</div>
 						<div class="form-group">
 							<label></label>

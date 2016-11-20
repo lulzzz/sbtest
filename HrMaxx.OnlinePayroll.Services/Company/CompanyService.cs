@@ -145,7 +145,7 @@ namespace HrMaxx.OnlinePayroll.Services
 
 		}
 
-		public Company SaveHostCompany(Company company)
+		public Company SaveHostCompany(Company company, Models.Host savedHost)
 		{
 			try
 			{
@@ -159,6 +159,19 @@ namespace HrMaxx.OnlinePayroll.Services
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
+
+					if (savedHost.IsPeoHost)
+					{
+						var hostCompanies = _companyRepository.GetCompanies(savedHost.Id, Guid.Empty);
+						hostCompanies.Where(c => !c.IsHostCompany && c.DepositSchedule != company.DepositSchedule).ToList().ForEach(c =>
+						{
+							c.DepositSchedule = company.DepositSchedule;
+							var savedCompany = _companyRepository.SaveCompany(c);
+							var mementoC = Memento<Company>.Create(savedCompany, EntityTypeEnum.Company, savedcompany.UserName, "Deposit Schedule updated because Host Company had different Deposit Schedule", company.UserId);
+							_mementoDataService.AddMementoData(mementoC, true);
+						});
+					}
+				
 
 					var memento = Memento<Company>.Create(savedcompany, EntityTypeEnum.Company, savedcompany.UserName, "Host Company Updated", company.UserId);
 					_mementoDataService.AddMementoData(memento);

@@ -301,9 +301,24 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 								$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
 							}
 						}
-					
+
+						var confirmMessage = "";
+						if ($scope.mainData.selectedHost.isPeoHost && ($scope.original.contract.invoiceSetup && !angular.equals($scope.original.contract.invoiceSetup, $scope.selectedCompany.contract.invoiceSetup))) {
+							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";
+						}
+						if (confirmMessage) {
+							$scope.$parent.$parent.$parent.$parent.confirmDialog(confirmMessage, 'info', function() {
+								saveCompany();
+							});
+						} else {
+							saveCompany();
+						}
+
+
+					}
+					var saveCompany = function() {
 						companyRepository.saveCompany($scope.selectedCompany).then(function (result) {
-							
+
 							if (!$scope.isPopup) {
 								$scope.$parent.$parent.save(result);
 								$scope.tab = 2;
@@ -384,7 +399,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.tab = 1;
 					}
 					var init = function () {
-
+						$scope.original = angular.copy($scope.selectedCompany);
 						companyRepository.getCompanyMetaData().then(function (data) {
 							dataSvc.companyMetaData = data;
 							ready();
