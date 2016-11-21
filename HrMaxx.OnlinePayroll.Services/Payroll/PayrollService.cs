@@ -4,6 +4,7 @@ using System.Linq;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
@@ -1621,7 +1622,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			
 		}
 
-		public void ClaimDelivery(string invoiceIds, string fullName)
+		public InvoiceDeliveryClaim ClaimDelivery(string invoiceIds, string fullName, Guid userId)
 		{
 			try
 			{
@@ -1629,13 +1630,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var ids = invoiceIds.Split(',').Select(i => new Guid(i)).ToList();
 					var invoices = _payrollRepository.ClaimDelivery(ids, fullName);
+					var invoiceDeliveryClaim = new InvoiceDeliveryClaim
+					{
+						Id = 0,
+						UserName = fullName,
+						UserId = userId,
+						DeliveryClaimedOn = DateTime.Now,
+						Invoices = invoices
+					};
+					_payrollRepository.SaveInvoiceDeliveryClaim(invoiceDeliveryClaim);
 					if(invoices.Any())
 						txn.Complete();
 					else
 					{
-
 						throw new Exception();
 					}
+					return invoiceDeliveryClaim;
 				}
 			}
 			catch (Exception e)
@@ -1687,6 +1697,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " delete draft payroll from staging " + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
+		{
+			try
+			{
+				return _payrollRepository.GetInvoiceDeliveryClaims();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " get invoice delivery claims " );
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

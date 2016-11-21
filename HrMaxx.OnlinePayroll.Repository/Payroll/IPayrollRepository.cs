@@ -34,5 +34,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 		void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date);
 		List<PayrollInvoice> ClaimDelivery(List<Guid> invoices, string user);
+		void SaveInvoiceDeliveryClaim(InvoiceDeliveryClaim invoiceDeliveryClaim);
+		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
 	}
 }

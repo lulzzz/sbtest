@@ -299,6 +299,16 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="InvoiceDeliveryClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="varchar(max)" Nullable="false" />
+          <Property Name="Invoices" Type="varchar(max)" Nullable="false" />
+          <Property Name="DeliveryClaimedOn" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Journal">
           <Key>
             <PropertyRef Name="Id" />
@@ -1000,6 +1010,7 @@
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceGroup" EntityType="Self.InsuranceGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InvoiceDeliveryClaim" EntityType="Self.InvoiceDeliveryClaim" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Journal" EntityType="Self.Journal" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterExtracts" EntityType="Self.MasterExtracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayCheckExtract" EntityType="Self.PayCheckExtract" Schema="dbo" store:Type="Tables" />
@@ -1367,6 +1378,7 @@
             <End Role="Company" EntitySet="Companies" />
           </AssociationSet>
           <EntitySet Name="SearchTables" EntityType="HrMaxxModel.SearchTable" />
+          <EntitySet Name="InvoiceDeliveryClaims" EntityType="HrMaxxModel.InvoiceDeliveryClaim" />
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -2433,6 +2445,16 @@
           <Property Name="CompanyId" Type="Guid" Nullable="false" />
           <Property Name="SearchText" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="InvoiceDeliveryClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Invoices" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DeliveryClaimedOn" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2996,6 +3018,17 @@
                 <ScalarProperty Name="HostId" ColumnName="HostId" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="SourceTypeId" ColumnName="SourceTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InvoiceDeliveryClaims">
+            <EntityTypeMapping TypeName="HrMaxxModel.InvoiceDeliveryClaim">
+              <MappingFragment StoreEntitySet="InvoiceDeliveryClaim">
+                <ScalarProperty Name="DeliveryClaimedOn" ColumnName="DeliveryClaimedOn" />
+                <ScalarProperty Name="Invoices" ColumnName="Invoices" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

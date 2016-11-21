@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'version', '$uibModal',
+	function (zionAPI, $timeout, $window, version, $modal) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -13,11 +13,12 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'payrollRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, payrollRepository) {
 					var dataSvc = {
-						
 						isBodyOpen: true,
-						
-					}
+						isBodyOpenHistory: true
+
+				}
 					$scope.list = [];
+					$scope.history = [];
 					$scope.today = new Date();
 
 					$scope.data = dataSvc;
@@ -83,7 +84,15 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 							
 						});
 					}
-					
+					var getInvoiceDeliveryClaims = function() {
+						payrollRepository.getInvoiceDeliveryClaims().then(function (data) {
+							$scope.history = data;
+							
+						}, function (error) {
+							$scope.addAlert('error getting history of invoice deliveries', 'danger');
+
+						});
+					}
 					
 					$scope.print = function () {
 						var invoices = "";
@@ -103,7 +112,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 									inv.deliveryClaimedOn = new Date();
 								}
 							});
-							
+							$scope.history.push(data);
 
 						}, function (error) {
 							$scope.addAlert('error printing invoice delivery list', 'danger');
@@ -114,11 +123,34 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					var init = function () {
 						
 						getInvoices();
+						getInvoiceDeliveryClaims();
 					}
 					init();
+					$scope.viewHistoryItem = function (listitem) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/delivery.html',
+							controller: 'invoiceDeliveryListCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								item: function () {
+									return listitem;
+								}
+							}
+						});
+					}
 
 
 				}]
 		}
 	}
 ]);
+common.controller('invoiceDeliveryListCtrl', function ($scope, $uibModalInstance, $filter, item) {
+	$scope.item = item;
+	
+	
+	
+});

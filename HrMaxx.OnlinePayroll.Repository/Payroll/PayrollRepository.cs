@@ -9,6 +9,7 @@ using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
+using InvoiceDeliveryClaim = HrMaxx.OnlinePayroll.Models.InvoiceDeliveryClaim;
 using PayrollInvoice = HrMaxx.OnlinePayroll.Models.PayrollInvoice;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
@@ -344,6 +345,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				_dbContext.SaveChanges();
 			}
 			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<PayrollInvoice>>(dbInvoices);
+		}
+
+		public void SaveInvoiceDeliveryClaim(Models.InvoiceDeliveryClaim invoiceDeliveryClaim)
+		{
+			var dbClaim = _mapper.Map<Models.InvoiceDeliveryClaim, Models.DataModel.InvoiceDeliveryClaim>(invoiceDeliveryClaim);
+			_dbContext.InvoiceDeliveryClaims.Add(dbClaim);
+			_dbContext.SaveChanges();
+		}
+
+		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
+		{
+			var dbClaims = _dbContext.InvoiceDeliveryClaims.ToList();
+			return _mapper.Map<List<Models.DataModel.InvoiceDeliveryClaim>, List<Models.InvoiceDeliveryClaim>>(dbClaims);
 		}
 	}
 }

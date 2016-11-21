@@ -31,5 +31,6 @@
 		public const string ClaimDelivery = "Payroll/ClaimDelivery/{invoiceIds}";
 		public const string SaveProcessedPayroll = "Payroll/SaveProcessedPayroll";
 		public const string DeletePayroll = "Payroll/DeletePayroll";
+		public const string InvoiceDeliveryClaims = "Payroll/InvoiceDeliveryClaims";
 	}
 }

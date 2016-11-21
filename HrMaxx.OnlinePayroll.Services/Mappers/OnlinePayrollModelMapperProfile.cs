@@ -659,6 +659,11 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.SearchResult, Models.DataModel.SearchTable>();
 			CreateMap<Models.DataModel.SearchTable, Models.SearchResult>();
 
+			CreateMap<Models.InvoiceDeliveryClaim, Models.DataModel.InvoiceDeliveryClaim>()
+				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src=>JsonConvert.SerializeObject(src.Invoices)));
+			CreateMap<Models.DataModel.InvoiceDeliveryClaim, Models.InvoiceDeliveryClaim>()
+				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.PayrollInvoice>>(src.Invoices)));
+
 		}
 	}
 }

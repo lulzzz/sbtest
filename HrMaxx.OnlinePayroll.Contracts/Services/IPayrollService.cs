@@ -37,8 +37,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
 		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
 		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid guid);
-		void ClaimDelivery(string invoiceIds, string fullName);
+		InvoiceDeliveryClaim ClaimDelivery(string invoiceIds, string fullName, Guid guid);
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
 		Payroll DeletePayroll(Payroll mappedResource);
+		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
 	}
 }

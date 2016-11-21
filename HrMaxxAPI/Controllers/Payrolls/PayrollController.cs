@@ -343,21 +343,19 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.ClaimDelivery)]
-		public HttpStatusCode ClaimDelivery(string invoiceIds)
+		public InvoiceDeliveryClaim ClaimDelivery(string invoiceIds)
 		{
-			try
-			{
-				MakeServiceCall(() => _payrollService.ClaimDelivery(invoiceIds, CurrentUser.FullName), string.Format("claim delivery of invoices with ids={0}", invoiceIds));
-				return HttpStatusCode.OK;
-			}
-			catch (Exception)
-			{
-
-				return HttpStatusCode.InternalServerError;
-			}
+			return MakeServiceCall(() => _payrollService.ClaimDelivery(invoiceIds, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("claim delivery of invoices with ids={0}", invoiceIds));
 			
 		}
 
+		[HttpGet]
+		[Route(PayrollRoutes.InvoiceDeliveryClaims)]
+		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
+		{
+			return MakeServiceCall(() => _payrollService.GetInvoiceDeliveryClaims(), "Get Invoice Delivery Claims");
+		}
+		
 		[HttpPost]
 		[Route(PayrollRoutes.ImportTimesheetsTemplate)]
 		public HttpResponseMessage GetTimesheetImportTemplate(TimesheetImportResource resource)

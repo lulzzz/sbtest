@@ -16,14 +16,14 @@
 				<div class=" col-sm-12 m-20 visible-print">
 					<h2 class="text-center">Delivery Log</h2>
 					<br />
-					<h4>{{mainData.myName}} ( {{today | date:'MM/dd/yyyy'}}) </h4>
+					<h4 class="text-center">{{mainData.myName}} ( {{today | date:'MM/dd/yyyy'}}) </h4>
 				</div>
 				<table ng-table="tableParams" class="table hidden-print" template-pagination="custom/nopager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="item.selected=!item.selected; " ng-class="{'success':item.selected}">
 						<td data-title="'#'" class="col-sm-1 text-center">
 							{{$index + 1}}
 						</td>
-						<td data-title=" 'Company' " sortable=" 'companyName' " class="col-sm-2 text-center">
+						<td data-title=" 'Company' " filter="{'companyName':'text'}" sortable=" 'companyName' " class="col-sm-2 text-center">
 							{{item.companyName}}
 						</td>
 						<td data-title=" 'City' " sortable=" 'company.businessAddress.city' " class="col-sm-1 text-center">
@@ -58,7 +58,7 @@
 						<td colspan="1" class="text-center">
 							{{$index + 1}}
 						</td>
-						
+
 						<td colspan="2" class="text-center">
 							{{item.companyName}}
 						</td>
@@ -77,15 +77,88 @@
 					</tr>
 
 				</table>
-				
+
 
 			</div>
 
 			<!-- end panel -->
 		</div>
 	</div>
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpenHistory=!data.isBodyOpenHistory">
+			<h4 class="panel-title">Previous List of Deliveries<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpenHistory, 'glyphicon-chevron-right': !data.isBodyOpenHistory}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpenHistory">
+			<table class="table  table-invoice">
+				<thead>
+					<tr>
+						<th colspan="1" class="text-center">Date</th>
+						<th colspan="2" class="text-center">Courier</th>
+						<th colspan="1" class="text-center"># of Invoices</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tr ng-repeat="h in history | orderBy:'deliveryClaimedOn':true track by $index">
+					<td colspan="1" class="text-center">
+						{{h.deliveryClaimedOn | date:'MM/dd/yyyy hh:mm:ss:a'}}
+					</td>
+
+					<td colspan="2" class="text-center">
+						{{h.userName}}
+					</td>
+					<td colspan="1" class="text-center">
+						{{h.invoices.length}}
+					</td>
+					<td><button class="btn btn-primary btn-sm btn-pinterest" ng-click="viewHistoryItem(h)">view</button></td>
+				</tr>
+
+			</table>
+		</div>
+	</div>
+	<script type="text/ng-template" id="popover/delivery.html">
+
+		<div class="modal-body">
+			<div class=" col-sm-12 m-20">
+				<h2 class="text-center">Delivery Log</h2>
+				<br />
+				<h4 class="text-center">{{item.userName}} ( {{item.deliveryClaimedOn | date:'MM/dd/yyyy'}}) </h4>
+			</div>
+			<table class="table table-invoice">
+				<thead>
+					<tr>
+						<th colspan="1" class="text-center">#</th>
+						<th colspan="2" class="text-center">Client</th>
+						<th colspan="1" class="text-center">City</th>
+						<th colspan="1" class="text-center">Total</th>
+						<th colspan="7" class="text-center">Notes</th>
+					</tr>
+				</thead>
+				<tr ng-repeat="inv in item.invoices track by $index">
+					<td colspan="1" class="text-center">
+						{{$index + 1}}
+					</td>
+
+					<td colspan="2" class="text-center">
+						{{inv.company.name}}
+					</td>
+					<td colspan="1" class="text-center">
+						{{inv.company.businessAddress.city}}
+					</td>
+					<td colspan="1" class="text-center">
+						{{inv.total | currency:'$'}}
+					</td>
+
+					<td colspan="7" class="col-sm-8 text-center">
+						{{inv.notes}}
+					</td>
 
 
+				</tr>
+
+			</table>
+		</div>
+	</script>
 
 </div>
 

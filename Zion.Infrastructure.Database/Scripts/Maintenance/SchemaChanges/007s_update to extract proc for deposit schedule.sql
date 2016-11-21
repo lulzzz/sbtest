@@ -111,3 +111,33 @@ END
 ' 
 END
 GO
+
+/****** Object:  Table [dbo].[InvoiceDeliveryClaim]    Script Date: 21/11/2016 5:44:01 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InvoiceDeliveryClaim]') AND type in (N'U'))
+DROP TABLE [dbo].[InvoiceDeliveryClaim]
+GO
+/****** Object:  Table [dbo].[InvoiceDeliveryClaim]    Script Date: 21/11/2016 5:44:01 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[InvoiceDeliveryClaim]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[InvoiceDeliveryClaim](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [uniqueidentifier] NOT NULL,
+	[UserName] [varchar](max) NOT NULL,
+	[Invoices] [varchar](max) NOT NULL,
+	[DeliveryClaimedOn] [datetime] NOT NULL,
+ CONSTRAINT [PK_InvoiceDeliveryClaim] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
+SET ANSI_PADDING OFF
+GO
+

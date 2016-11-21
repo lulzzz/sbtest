@@ -77,6 +77,7 @@
         <EntityTypeShape EntityType="HrMaxxModel.InsuranceGroup" Width="1.5" PointX="18.375" PointY="0.875" />
         <AssociationConnector Association="HrMaxxModel.FK_Company_InsuranceGroup" />
         <EntityTypeShape EntityType="HrMaxxModel.SearchTable" Width="1.5" PointX="0.75" PointY="18.75" />
+        <EntityTypeShape EntityType="HrMaxxModel.InvoiceDeliveryClaim" Width="1.5" PointX="7.375" PointY="18.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

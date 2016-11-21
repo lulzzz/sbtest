@@ -135,6 +135,9 @@
     <Compile Include="DataModel\Invoice.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\InvoiceDeliveryClaim.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Journal.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -225,6 +228,7 @@
     </Compile>
     <Compile Include="HostHomePageDocument.cs" />
     <Compile Include="Invoice.cs" />
+    <Compile Include="InvoiceDeliveryClaim.cs" />
     <Compile Include="Journal.cs" />
     <Compile Include="JournalList.cs" />
     <Compile Include="MasterExtract.cs" />

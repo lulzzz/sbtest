@@ -210,8 +210,18 @@ common.factory('payrollRepository', [
 			},
 			claimInvoiceDelivery: function (invoiceIds) {
 				var deferred = $q.defer();
-				payrollServer.one('ClaimDelivery').one(invoiceIds).get().then(function () {
-					deferred.resolve();
+				payrollServer.one('ClaimDelivery').one(invoiceIds).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getInvoiceDeliveryClaims: function () {
+				var deferred = $q.defer();
+				payrollServer.one('InvoiceDeliveryClaims').getList().then(function (list) {
+					deferred.resolve(list);
 				}, function (error) {
 					deferred.reject(error);
 				});
