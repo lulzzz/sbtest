@@ -18,7 +18,7 @@
 					<br />
 					<h4 class="text-center">{{mainData.myName}} ( {{today | date:'MM/dd/yyyy'}}) </h4>
 				</div>
-				<table ng-table="tableParams" class="table hidden-print" template-pagination="custom/nopager">
+				<table ng-table="tableParams" show-filter="true" class="table hidden-print" template-pagination="custom/nopager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="item.selected=!item.selected; " ng-class="{'success':item.selected}">
 						<td data-title="'#'" class="col-sm-1 text-center">
 							{{$index + 1}}
@@ -26,8 +26,8 @@
 						<td data-title=" 'Company' " filter="{'companyName':'text'}" sortable=" 'companyName' " class="col-sm-2 text-center">
 							{{item.companyName}}
 						</td>
-						<td data-title=" 'City' " sortable=" 'company.businessAddress.city' " class="col-sm-1 text-center">
-							{{item.company.businessAddress.city}}
+						<td data-title=" 'City' " filter="{'city':'text'}" sortable=" 'company.businessAddress.city' " class="col-sm-1 text-center">
+							{{item.city}}
 						</td>
 						<td data-title=" 'Delivery?' " class="col-sm-1 text-center">
 							{{item.deliveryClaimedBy ? item.deliveryClaimedBy : ''}} ({{item.deliveryClaimedBy ? (item.deliveryClaimedOn | date:'MM/dd/yyyy') : ''}})
@@ -84,7 +84,7 @@
 			<!-- end panel -->
 		</div>
 	</div>
-	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4">
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4" ng-show="history.length>0">
 		<div class="panel-heading hidden-print" ng-click="data.isBodyOpenHistory=!data.isBodyOpenHistory">
 			<h4 class="panel-title">Previous List of Deliveries<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpenHistory, 'glyphicon-chevron-right': !data.isBodyOpenHistory}"></i></h4>
 

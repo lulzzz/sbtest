@@ -38,8 +38,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 
 					$scope.tableData = [];
 					$scope.tableParams = new ngTableParams({
-						page: 1,            // show first page
-						count: 10,
+						count: $scope.list ? $scope.list.length : 0,
 						filter: {
 							invoiceNumber: 0,       // initial filter
 						},
@@ -67,7 +66,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 														orderedData;
 							
 							$scope.tableParams = params;
-							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+							$scope.tableData = orderedData;
 
 							params.total(orderedData.length); // set total for recalc pagination
 						}

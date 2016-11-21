@@ -68,6 +68,11 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get { return Company.Name; }
 		}
+
+		public string City
+		{
+			get { return Company.BusinessAddress.City; }
+		}
 		public int DaysOverdue
 		{
 			get 
