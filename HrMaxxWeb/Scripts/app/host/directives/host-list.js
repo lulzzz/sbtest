@@ -80,8 +80,11 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						$scope.selectedHost = angular.copy(item);
 						$scope.selectedHost.sourceTypeId = $scope.sourceTypeId;
 						$scope.isBodyOpen = false;
+						$scope.mainData.selectedCompany = null;
+						$scope.mainData.selectedCompany1 = null;
 						if (!$scope.mainData.selectedHost || ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id)) {
 							$scope.mainData.selectedHost = item;
+							
 							$scope.$parent.$parent.hostSelected();
 						}
 						$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });

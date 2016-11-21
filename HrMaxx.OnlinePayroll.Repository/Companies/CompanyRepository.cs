@@ -53,15 +53,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public Models.Company SaveCompany(Models.Company company)
 		{
 			var dbMappedCompany = _mapper.Map<Models.Company, Models.DataModel.Company>(company);
-			var dbCompany = _dbContext.Companies.FirstOrDefault(c => c.Id == company.Id || c.FederalEIN==dbMappedCompany.FederalEIN);
-			if (dbCompany == null)
+			var dbCompanies = _dbContext.Companies.Where(c => c.HostId == company.HostId && (c.Id == company.Id || c.FederalEIN==dbMappedCompany.FederalEIN)).ToList();
+			if (!dbCompanies.Any())
 			{
 				_dbContext.Companies.Add(dbMappedCompany);
 			}
-			else if(dbCompany.Id!=dbMappedCompany.Id && dbCompany.HostId==dbMappedCompany.HostId)
+			else if (dbCompanies.Any(c => c.Id != company.Id && c.FederalEIN == dbMappedCompany.FederalEIN))
 				throw new Exception("FEIN already exists for another Company withing the same Host");
 			else
 			{
+				var dbCompany = dbCompanies.First();
 				dbCompany.BusinessAddress = dbMappedCompany.BusinessAddress;
 				dbCompany.CompanyAddress = dbMappedCompany.CompanyAddress;
 				dbCompany.CompanyName = dbMappedCompany.CompanyName;
@@ -71,7 +72,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.FederalEIN = dbMappedCompany.FederalEIN;
 				dbCompany.FederalPin = dbMappedCompany.FederalPin;
 				dbCompany.FileUnderHost = dbMappedCompany.FileUnderHost;
-				dbCompany.HostId = dbMappedCompany.HostId;
 				dbCompany.InsuranceGroupNo = dbMappedCompany.InsuranceGroupNo;
 				dbCompany.IsAddressSame = dbMappedCompany.IsAddressSame;
 				dbCompany.IsVisibleToHost = dbMappedCompany.IsVisibleToHost;
