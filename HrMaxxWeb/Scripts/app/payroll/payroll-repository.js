@@ -210,7 +210,7 @@ common.factory('payrollRepository', [
 			},
 			claimInvoiceDelivery: function (invoiceIds) {
 				var deferred = $q.defer();
-				payrollServer.one('ClaimDelivery').one(invoiceIds).get().then(function (data) {
+				payrollServer.all('ClaimDelivery').post(invoiceIds).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

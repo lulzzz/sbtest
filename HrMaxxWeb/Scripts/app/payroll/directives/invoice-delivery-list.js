@@ -94,14 +94,10 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					}
 					
 					$scope.print = function () {
-						var invoices = "";
+						var invoices = [];
 						$.each($scope.tableData, function(i, inv) {
 							if (inv.selected) {
-								if (invoices) {
-									invoices += "," + inv.id;
-								} else {
-									invoices = inv.id;
-								}
+								invoices.push(inv.id);
 							}
 						});
 						payrollRepository.claimInvoiceDelivery(invoices).then(function (data) {

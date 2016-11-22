@@ -1622,14 +1622,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			
 		}
 
-		public InvoiceDeliveryClaim ClaimDelivery(string invoiceIds, string fullName, Guid userId)
+		public InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds, string fullName, Guid userId)
 		{
 			try
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var ids = invoiceIds.Split(',').Select(i => new Guid(i)).ToList();
-					var invoices = _payrollRepository.ClaimDelivery(ids, fullName);
+					var invoices = _payrollRepository.ClaimDelivery(invoiceIds, fullName);
 					var invoiceDeliveryClaim = new InvoiceDeliveryClaim
 					{
 						Id = 0,

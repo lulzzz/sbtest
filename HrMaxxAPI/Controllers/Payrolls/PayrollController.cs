@@ -341,9 +341,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(PayrollRoutes.ClaimDelivery)]
-		public InvoiceDeliveryClaim ClaimDelivery(string invoiceIds)
+		public InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds)
 		{
 			return MakeServiceCall(() => _payrollService.ClaimDelivery(invoiceIds, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("claim delivery of invoices with ids={0}", invoiceIds));
 			
