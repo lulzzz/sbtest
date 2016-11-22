@@ -27,6 +27,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		private readonly IPayrollService _payrollService;
 		private readonly IUserService _userService;
 		private readonly IMementoDataService _mementoDataService;
+		
 
 		public PayrollEventHandler(IPayrollRepository payrollRepository, ICompanyRepository companyRepository, IPayrollService payrollService, IUserService userService, IMementoDataService mementoDataService)
 		{
@@ -35,6 +36,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			_payrollService = payrollService;
 			_userService = userService;
 			_mementoDataService = mementoDataService;
+			
 		}
 		public void Consume(PayrollSavedEvent event1)
 		{

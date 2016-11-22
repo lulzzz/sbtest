@@ -308,17 +308,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var draftPayroll =
-							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
-					if (draftPayroll!=null)
-					{
-						var p = draftPayroll.Deserialize();
-						if (p.Payroll.Id == payroll.Id)
-						{
-							_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
-						}
-					}
-
 					payroll.Status = PayrollStatus.Committed;
 					payroll.PayChecks.ForEach(pc=>pc.Status = PaycheckStatus.Saved);
 					var companyIdForPayrollAccount = payroll.Company.Id;
@@ -358,9 +347,19 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
-						savedPayroll.Invoice = CreatePayrollInvoice(savedPayroll, payroll.UserName, false);
+						savedPayroll.Invoice = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
 					}
 					txn.Complete();
+					var draftPayroll =
+							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
+					if (draftPayroll != null)
+					{
+						var p = draftPayroll.Deserialize();
+						if (p.Payroll.Id == payroll.Id)
+						{
+							_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
+						}
+					}
 					Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
 					{
 						SavedObject = savedPayroll,
@@ -370,17 +369,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = savedPayroll.UserName,
 						UserId = payroll.UserId
 					});
-					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
-					{
-						Bus.Publish<InvoiceCreatedEvent>(new InvoiceCreatedEvent
-						{
-							SavedObject = savedPayroll.Invoice,
-							EventType = NotificationTypeEnum.Created,
-							TimeStamp = DateTime.Now,
-							UserId = savedPayroll.UserId,
-							UserName = savedPayroll.UserName
-						});
-					}
+					
 					return savedPayroll;
 				}
 				
@@ -773,9 +762,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public PayrollInvoice CreatePayrollInvoice(Models.Payroll payroll, string fullName, bool fetchCompany)
+		public PayrollInvoice CreatePayrollInvoice(Models.Payroll payroll, string fullName, Guid userId, bool fetchCompany)
 		{
-			var payrollInvoice = new PayrollInvoice { Id = CombGuid.Generate(), UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName };
+			var payrollInvoice = new PayrollInvoice { Id = CombGuid.Generate(), UserId = userId, UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName };
 			return CreateInvoice(payroll, payrollInvoice, fetchCompany);
 		}
 
@@ -791,6 +780,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				payrollInvoice.Initialize(payroll, previousInvoices.Where(p=>p.CompanyId==payroll.Company.Id).ToList(), _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
+				if (savedInvoice.Company == null)
+					savedInvoice.Company = company;
 				if (!string.IsNullOrWhiteSpace(payroll.Notes))
 				{
 					_commonService.AddToList<Comment>(EntityTypeEnum.Company, EntityTypeEnum.Comment, company.Id, new Comment { Content = string.Format("Invoice #{0}: {1}", payrollInvoice.InvoiceNumber, payroll.Notes), TimeStamp = savedInvoice.LastModified });
@@ -814,7 +805,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		public PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName)
+		public PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName, Guid userId)
 		{
 			try
 			{
@@ -822,7 +813,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var invoice = _payrollRepository.GetPayrollInvoiceById(invoiceId);
 					var payroll = _payrollRepository.GetPayrollById(invoice.PayrollId);
-					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName, InvoiceNumber = invoice.InvoiceNumber};
+					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, UserId = userId, LastModified = DateTime.Now, ProcessedBy = fullName, InvoiceNumber = invoice.InvoiceNumber};
 					_payrollRepository.DeletePayrollInvoice(invoiceId);
 					var recreated = CreateInvoice(payroll, payrollInvoice, true);
 					txn.Complete();
@@ -843,6 +834,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		
 		public List<PayrollInvoice> GetHostInvoices(Guid hostId, InvoiceStatus submitted = (InvoiceStatus) 0)
 		{
+
 			try
 			{
 				return _payrollRepository.GetPayrollInvoices(hostId, null, submitted);

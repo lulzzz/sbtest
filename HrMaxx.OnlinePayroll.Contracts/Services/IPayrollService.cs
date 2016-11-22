@@ -27,12 +27,12 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayCheck(PayCheck payCheck);
 		void MarkPayCheckPrinted(int payCheckId);
 		FileDto PrintPayroll(Payroll payroll);
-		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, bool fetchCompany);
+		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, Guid userId, bool fetchCompany);
 		List<PayrollInvoice> GetHostInvoices(Guid hostId, InvoiceStatus submitted = (InvoiceStatus)0);
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
 		void DeletePayrollInvoice(Guid invoiceId);
 		List<Payroll> FixPayrollData(Guid? companyId);
-		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName);
+		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName, Guid guid);
 		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
 		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
 		PayrollInvoice RedateInvoice(PayrollInvoice invoice);

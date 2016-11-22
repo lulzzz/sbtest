@@ -269,7 +269,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public PayrollInvoiceResource CreatePayrollInvoice(PayrollResource payroll)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(payroll);
-			var processed = MakeServiceCall(() => _payrollService.CreatePayrollInvoice(mappedResource, CurrentUser.FullName, true), string.Format("create payroll invoice for payroll={0}", payroll.Id));
+			var processed = MakeServiceCall(() => _payrollService.CreatePayrollInvoice(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId), true), string.Format("create payroll invoice for payroll={0}", payroll.Id));
 			var returnInvocie = Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
 			returnInvocie.TaxPaneltyConfig = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			return returnInvocie;
@@ -320,7 +320,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.RecreateInvoice)]
 		public PayrollInvoiceResource RecreateInvoice(Guid invoiceId)
 		{
-			var invoice = MakeServiceCall(() => _payrollService.RecreateInvoice(invoiceId, CurrentUser.FullName), string.Format("recreate invoice with id={0}", invoiceId));
+			var invoice = MakeServiceCall(() => _payrollService.RecreateInvoice(invoiceId, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("recreate invoice with id={0}", invoiceId));
 			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
 		}
 
