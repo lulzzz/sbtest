@@ -58,7 +58,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 									suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
 									applyEnvironmentalFee: true,
 									applyStatuaryLimits: true,
-									applyWCCharge: true
+									applyWCCharge: true,
+									recurringCharges:[]
 								}
 							}
 						};
