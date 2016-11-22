@@ -477,6 +477,21 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public List<Journal> GetJournalListByDate(Guid companyId, DateTime startDate, DateTime endDate)
+		{
+			try
+			{
+				return _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " journal list by company and date");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private Journal CreateJournalEntry(List<Account> coaList, string userName,  Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);

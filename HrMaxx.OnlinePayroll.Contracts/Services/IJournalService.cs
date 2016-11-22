@@ -20,5 +20,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes);
 		List<Journal> GetJournalList(Guid companyId, DateTime startDate, DateTime endDate);
 		MasterExtract FileTaxes(Extract extract, string fullName);
+		List<Journal> GetJournalListByDate(Guid value, DateTime date, DateTime dateTime);
 	}
 }

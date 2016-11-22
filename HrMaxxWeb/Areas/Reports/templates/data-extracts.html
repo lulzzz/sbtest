@@ -425,6 +425,7 @@
 							<option value="">Select Host</option>
 						</select>
 					</div>
+					
 					<div class="col-sm-6 form-group">
 						<button class="btn btn-sm btn-primary" ng-click="getHostWCReport()" ng-disabled="!data.selectedHost">WC Extract</button>
 
@@ -432,6 +433,38 @@
 
 				</div>
 				
+			</div>
+
+
+
+		</div>
+	</div>
+	
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading" ng-click="data.isBodyOpenPP=!data.isBodyOpenPP">
+			<h4 class="panel-title">Positive Pay Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpenPP, 'glyphicon-chevron-right': !data.isBodyOpenPP}"></i></h4>
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpenPP">
+			<div class="row col-sm-10">
+				<div class="col-sm-12">
+					<div class="col-sm-6 form-group">
+						<label>Host</label>
+						<select id="host" class="form-control" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
+							<option value="">Select Host</option>
+						</select>
+					</div>
+					<div class="col-sm-2 form-group">
+						<label>Deposit Date</label>
+						<date-ctrl model="data.filterPP.payDay" disabled="false" />
+					</div>
+					<div class="col-sm-4 form-group">
+						<label></label><br/>
+						<button class="btn btn-sm btn-primary" ng-click="getPositivePayReport()" ng-disabled="!data.selectedHost  || !data.filterPP.payDay">Positive Pay Extract</button>
+						<button class="btn btn-sm btn-primary" ng-click="getInternalPositivePayReport()" ng-disabled="!data.selectedHost  || !data.filterPP.payDay">Internal Positive Pay Extract</button>
+					</div>
+
+				</div>
+
 			</div>
 
 

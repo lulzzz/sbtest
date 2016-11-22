@@ -319,6 +319,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum VendorDepositMethod
 	{
+		[HrMaxxSecurity(DbName = "NA")]
+		NA = 0,
 		[HrMaxxSecurity(DbName = "Check")]
 		Check = 1,
 		[HrMaxxSecurity(DbName = "Cash")]

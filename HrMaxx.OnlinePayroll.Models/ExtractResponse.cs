@@ -33,6 +33,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ExtractAccumulation Accumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
+		public List<Journal> Journals { get; set; }
+		public List<Account> Accounts { get; set; } 
 	}
 	public class ExtractResponseDB
 	{
@@ -221,5 +223,6 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal NetWage { get; set; }
 		public int CheckNumber { get; set; }
 		public int PaymentMethod { get; set; }
+		public bool PEOASOCoCheck { get; set; }
 	}
 }

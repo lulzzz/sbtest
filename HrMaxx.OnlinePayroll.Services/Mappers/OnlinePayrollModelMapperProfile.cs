@@ -530,6 +530,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.EmployeeAccumulations, opt => opt.Ignore())
 				.ForMember(dest => dest.VendorAccumulation, opt => opt.Ignore())
+				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.Accounts, opt => opt.Ignore())
 				.ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src.Companies));
 
 
@@ -625,7 +627,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.YTDNetWage, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
-				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.Ignore())
+				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.MapFrom(src=>src.PEOASOCoCheck))
 				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
 				.ForMember(dest => dest.VoidedOn, opt => opt.Ignore())
 				

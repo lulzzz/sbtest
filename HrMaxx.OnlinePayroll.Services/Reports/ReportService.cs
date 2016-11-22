@@ -197,6 +197,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return StateCADE6(request);
 				else if (request.ReportName.Equals("HostWCReport"))
 					return GetHostWCReport(request);
+				else if (request.ReportName.Equals("PositivePayReport"))
+					return GetPositivePayReport(request);
+				else if (request.ReportName.Equals("InternalPositivePayReport"))
+					return GetInternalPositivePayReport(request);
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -205,7 +209,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				if (e.Message == NoData || e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
 				{
 					message = e.Message;
 				}
@@ -225,7 +229,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetHostWCReport(ReportRequest request)
 		{
-			var data = GetExtractResponse(request, buildEmployeeAccumulations:true, buildCompanyEmployeeAccumulation:true);
+			var data = GetExtractResponse(request);
 
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.Year, request.StartDate.ToString("MMMM"));
 			request.AllowFiling = false;
@@ -233,6 +237,53 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new XsltArgumentList();
 			
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostWCReport.xslt", "xls", request.Description + ".xls");
+		}
+
+		private Extract GetInternalPositivePayReport(ReportRequest request)
+		{
+			var data = GetExtractResponse(request);
+
+			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
+			request.AllowFiling = false;
+
+			var argList = new XsltArgumentList();
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/InternalPositivePayReport.xslt", "xls", request.Description + ".xls");
+		}
+
+		public Extract GetPositivePayReport(ReportRequest request)
+		{
+			var host = _hostService.GetHost(request.HostId);
+			var accounts = _companyRepository.GetCompanyAccounts(host.Company.Id);
+			var journals = _journalService.GetJournalListByDate(host.CompanyId.Value, request.StartDate.Date,
+				request.EndDate.Date);
+			journals =
+				journals.Where(
+					j =>
+						(j.TransactionType == TransactionType.PayCheck || j.TransactionType == TransactionType.RegularCheck) &&
+						j.PaymentMethod == EmployeePaymentMethod.Check && !j.IsVoid).ToList();
+			if(!journals.Any())
+				throw  new Exception(NoData);
+			var data = new ExtractResponse()
+			{
+				Hosts = new List<ExtractHost>()
+				{
+					new ExtractHost()
+					{
+						Host = host,
+						HostCompany = host.Company,
+						Journals = journals, Accounts = accounts
+					}
+				},
+				History = new List<MasterExtract>()
+			};
+			
+			request.Description = string.Format("{0} Positive Pay Report {1}", data.Hosts.First().Host.FirmName,  request.StartDate.ToString("MMddyyyy"));
+			request.AllowFiling = false;
+
+			var argList = new XsltArgumentList();
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/PositivePayReport.xslt", "txt", request.Description + ".txt");
 		}
 
 		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false)

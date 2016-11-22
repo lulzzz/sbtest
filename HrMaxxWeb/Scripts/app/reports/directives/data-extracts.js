@@ -12,14 +12,17 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository) {
 					var dataSvc = {
-
 						isBodyOpen: true,
 						isBodyOpenExtract: true,
 						isBodyOpenWC: true,
+						isBodyOpenPP: true,
 						response: null,
 						minYear: 2016,
 						hosts: [],
 						selectedHost: null,
+						filterPP: {
+							payDay: moment().startOf('day').toDate()
+						},
 						filter: {
 							years: []
 						},
@@ -464,6 +467,69 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: moment().subtract(1, 'months').format('MM'),
 							startDate: null,
 							endDate: null,
+							depositSchedule: null,
+							depositDate: null
+						}
+						reportRepository.getExtract(request).then(function (extract) {
+
+							reportRepository.downloadExtract(extract.file).then(function (data) {
+
+								var a = document.createElement('a');
+								a.href = data.file;
+								a.target = '_blank';
+								a.download = data.name;
+								document.body.appendChild(a);
+								a.click();
+							}, function (erorr) {
+								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
+							});
+
+						}, function (erorr) {
+							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+						});
+
+					}
+
+					$scope.getPositivePayReport = function() {
+						var request = {
+							reportName: 'PositivePayReport',
+							hostId: dataSvc.selectedHost.id,
+							year: moment().year(),
+							quarter: 0,
+							month: 0,
+							startDate: moment(dataSvc.filterPP.payDay).format("MM/DD/YYYY"),
+							endDate: moment(dataSvc.filterPP.payDay).format("MM/DD/YYYY"),
+							depositSchedule: null,
+							depositDate: null
+						}
+						reportRepository.getExtract(request).then(function(extract) {
+
+							reportRepository.downloadExtract(extract.file).then(function(data) {
+
+								var a = document.createElement('a');
+								a.href = data.file;
+								a.target = '_blank';
+								a.download = data.name;
+								document.body.appendChild(a);
+								a.click();
+							}, function(erorr) {
+								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
+							});
+
+						}, function(erorr) {
+							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+						});
+
+					};
+					$scope.getInternalPositivePayReport = function () {
+						var request = {
+							reportName: 'InternalPositivePayReport',
+							hostId: dataSvc.selectedHost.id,
+							year: moment().year(),
+							quarter: 0,
+							month: 0,
+							startDate: moment(dataSvc.filterPP.payDay).format("MM/DD/YYYY"),
+							endDate: moment(dataSvc.filterPP.payDay).format("MM/DD/YYYY"),
 							depositSchedule: null,
 							depositDate: null
 						}
