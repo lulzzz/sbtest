@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version', '$uibModal',
+	function (zionAPI, $timeout, $window, version, $modal) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -95,7 +95,27 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 								}
 							});
 							item.extract.data.history = history;
-							$scope.selected = angular.copy(item);
+							//$scope.selected = angular.copy(item);
+							var modalInstance = $modal.open({
+								templateUrl: 'popover/extractView.html',
+								controller: 'extractViewCtrl',
+								size: 'lg',
+								windowClass: 'my-modal-popup',
+								backdrop: true,
+								keyboard: true,
+								backdropClick: true,
+								resolve: {
+									extract: function () {
+										return item.extract;
+									},
+									item: function () {
+										return item;
+									},
+									reportRepository: function () {
+										return reportRepository;
+									}
+								}
+							});
 							
 						}, 1);
 						

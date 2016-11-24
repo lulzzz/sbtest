@@ -44,6 +44,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							allowEFileFormFiling: true,
 							isHostCompany: false,
 							payrollDaysInPast: 0,
+							payCheckStock: 3,
 							companyAddress: {},
 							states: [],
 							companyTaxRates: [],
@@ -56,9 +57,10 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								invoiceCharge: 0,
 								invoiceSetup: {
 									suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
-									applyEnvironmentalFee: true,
-									applyStatuaryLimits: true,
+									applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
+									applyStatuaryLimits: $scope.mainData.selectedHost.isPeoHost,
 									applyWCCharge: true,
+									printClientName: false,
 									recurringCharges:[]
 								}
 							}

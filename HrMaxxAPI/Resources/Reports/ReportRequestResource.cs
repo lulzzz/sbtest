@@ -19,5 +19,6 @@ namespace HrMaxxAPI.Resources.Reports
 		public DateTime? EndDate { get; set; }
 		public DepositSchedule941? DepositSchedule { get; set; }
 		public DateTime? DepositDate { get; set; }
+		
 	}
 }

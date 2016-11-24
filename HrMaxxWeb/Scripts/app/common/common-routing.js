@@ -111,6 +111,9 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Admin/InvoiceDelivery', {
 		templateUrl: zionAPI.Web + '/Areas/Client/templates/invoicedelivery.html'
 	});
+	$routeProvider.when('/Admin/UnPrintedPayrolls', {
+		templateUrl: zionAPI.Web + '/Areas/Client/templates/awaitingprintpayrolls.html'
+	});
 	$routeProvider.when('/Admin/CompanyTaxes', {
 		templateUrl: zionAPI.Web + '/Areas/Administration/templates/CompanyTaxes.html'
 	});

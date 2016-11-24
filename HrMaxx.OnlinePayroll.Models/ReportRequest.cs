@@ -21,6 +21,23 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? DepositDate { get; set; }
 		public string Description { get; set; }
 		public bool AllowFiling { get; set; }
+		public bool IncludeVoids { get; set; }
+		public ExtractType ExtractType
+		{
+			get
+			{
+				if (ReportName.Equals("Federal940"))
+					return ExtractType.Federal940;
+				if (ReportName.Equals("Federal941"))
+					return ExtractType.Federal941;
+				if (ReportName.Equals("StateCAPIT"))
+					return ExtractType.CAPITSDI;
+				if (ReportName.Equals("StateCAUI"))
+					return ExtractType.CAETTUI;
+
+				return ExtractType.NA;
+			}
+		}
 	}
 
 }

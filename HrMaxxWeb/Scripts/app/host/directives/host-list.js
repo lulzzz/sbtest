@@ -87,6 +87,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 							
 							$scope.$parent.$parent.hostSelected();
 						}
+						$scope.tab = 1;
 						$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
 					}, 1);
 					

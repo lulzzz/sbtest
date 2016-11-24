@@ -54,6 +54,10 @@
 				<td colspan="3" class="text-right">{{ check.calculatedSalary + check.compensationTaxableAmount | currency:'$' }}</td>
 				<td class="text-right">{{ check.calculatedSalaryYTD + check.compensationTaxableYTD | currency:'$' }}</td>
 			</tr>
+			<tr ng-show="check.notes">
+				<td>Notes</td>
+				<td colspan="4">{{check.notes}}</td>
+			</tr>
 		</table>
 	</div>
 	<div class="col-sm-12" ng-if="showNonTaxable()">

@@ -251,14 +251,15 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
-								invoiceType:1,
-								invoiceStyle:1,
+								invoiceType: 1,
+								invoiceStyle: 1,
 								adminFeeMethod: 1,
 								adminFee: 0,
-								suiManagement:0,
+								suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
 								applyWCCharge: true,
-								applyStatuaryLimits: true,
-								applyEnvironmentalFee: true,
+								applyStatuaryLimits: $scope.mainData.selectedHost.isPeoHost,
+								applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
+								printClientName: false,
 								recurringCharges: []
 							}
 						}
@@ -349,10 +350,11 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 								invoiceStyle: 1,
 								adminFeeMethod: $scope.selectedCompany.contract.method ? $scope.selectedCompany.contract.method : 1,
 								adminFee: $scope.selectedCompany.contract.invoiceCharge ? $scope.selectedCompany.contract.invoiceCharge : 0,
-								suiManagement: 0,
+								suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
 								applyWCCharge: true,
-								applyStatuaryLimits: true,
-								applyEnvironmentalFee: true,
+								applyStatuaryLimits: $scope.mainData.selectedHost.isPeoHost,
+								applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
+								printClientName: false,
 								recurringCharges: [],
 								notSaved: true
 							}

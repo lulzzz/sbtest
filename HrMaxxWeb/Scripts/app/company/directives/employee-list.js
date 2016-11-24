@@ -219,6 +219,8 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
 						 		$scope.getEmployees($scope.mainData.selectedCompany.id);
+						 		dataSvc.isBodyOpen = true;
+								
 							 }
 
 						 }, true

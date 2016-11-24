@@ -48,25 +48,23 @@
 						</ul>
 					</script>
 				</div>
-				<div class="row">
-					<button class="btn btn-sm btn-primary" ng-show="!selectedNewsItem" ng-click="addNew()">Add</button>
-				</div>
+				
 			</div>
 
 			<div class="row col-sm-6" ng-if="selectedNewsItem">
-				<div class="row">
+				<div class="col-sm-12">
 					<table class="table table-profile">
 						<tbody>
 							<tr>
 								<td class="field">Title</td>
 								<td>
-									<pre>{{selectedNewsItem.title}}</pre>
+									<div class="alert alert-info">{{selectedNewsItem.title}}</div>
 								</td>
 							</tr>
 							<tr>
 								<td class="field">Content</td>
 								<td>
-									<pre>{{selectedNewsItem.newsContent}}</pre>
+									<div class="alert alert-success">{{selectedNewsItem.newsContent}}</div>
 								</td>
 							</tr>
 						</tbody>

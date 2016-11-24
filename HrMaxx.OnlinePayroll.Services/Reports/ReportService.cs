@@ -231,7 +231,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var data = GetExtractResponse(request);
 
-			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.Year, request.StartDate.ToString("MMMM"));
+			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = false;
 
 			var argList = new XsltArgumentList();
@@ -241,6 +241,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetInternalPositivePayReport(ReportRequest request)
 		{
+			request.IncludeVoids = true;
 			var data = GetExtractResponse(request);
 
 			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
@@ -261,7 +262,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				journals.Where(
 					j =>
 						(j.TransactionType == TransactionType.PayCheck || j.TransactionType == TransactionType.RegularCheck) &&
-						j.PaymentMethod == EmployeePaymentMethod.Check && !j.IsVoid).ToList();
+						j.PaymentMethod == EmployeePaymentMethod.Check).ToList();
 			if(!journals.Any())
 				throw  new Exception(NoData);
 			var data = new ExtractResponse()
@@ -319,7 +320,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				if (!request.ReportName.Contains("1099"))
 				{
 					h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
-					h.Accumulation = new ExtractAccumulation();
+					h.Accumulation = new ExtractAccumulation(){ExtractType = request.ExtractType};
 					var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
 					var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
 					h.Accumulation.AddPayChecks(payChecks);
@@ -335,7 +336,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 					h.Companies.ForEach(c =>
 					{
-						c.Accumulation = new ExtractAccumulation();
+						c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
 						c.Accumulation.AddPayChecks(c.PayChecks);
 						c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
 						if (buildCompanyEmployeeAccumulation)

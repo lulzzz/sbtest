@@ -454,7 +454,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							throw  new Exception("No Payroll Account");
 						
 						
-						var amount = CalculateTaxAmount(extract.Report.ReportName, host );
+						var amount = CalculateTaxAmount(extract.Report, host );
 
 						var journal = CreateJournalEntry(accounts, fullName, host.HostCompany.Id, amount,
 							globalVendors.First(
@@ -526,29 +526,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			
 			return _journalRepository.SaveJournal(journal);
 		}
-		private decimal CalculateTaxAmount(string report, ExtractHost host)
+		private decimal CalculateTaxAmount(ReportRequest report, ExtractHost host)
 		{
-			if (report.Equals("Federal940"))
-			{
-				
-				return host.Accumulation.Taxes940;
-			}
-			if (report.Equals("Federal941"))
-			{
-				
-				return host.Accumulation.Taxes941;
-			}
-			if (report.Equals("StateCAPIT"))
-			{
-				
-				return host.Accumulation.TaxesPitSdi;
-			}
-			if (report.Equals("StateCAUI"))
-			{
-				
-				return host.Accumulation.TaxesEttSui;
-			}
-
+			if (report.ExtractType != ExtractType.NA)
+				return host.Accumulation.ApplicableAmounts;
+			
 			throw new Exception("no Taxes to be files on this report");
 		}
 

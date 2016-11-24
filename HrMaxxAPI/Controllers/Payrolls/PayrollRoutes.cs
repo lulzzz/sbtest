@@ -2,6 +2,7 @@
 {
 	public class PayrollRoutes
 	{
+		public const string UnPrintedPayrolls = "Payroll/UnPrintedPayrolls";
 		public const string Payrolls = "Payroll/Payrolls";
 		public const string ProcessPayroll = "Payroll/Process";
 		public const string CommitPayroll = "Payroll/Commit";

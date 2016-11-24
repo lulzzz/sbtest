@@ -261,6 +261,8 @@
     <Content Include="Areas\Administration\templates\CompanyTaxes.html" />
     <Content Include="Areas\Administration\templates\config.html" />
     <Content Include="Areas\Administration\templates\Configurations.html" />
+    <Content Include="Areas\Client\templates\awaiting-print-payroll-list.html" />
+    <Content Include="Areas\Client\templates\awaitingprintpayrolls.html" />
     <Content Include="Areas\Client\templates\company.html" />
     <Content Include="Areas\Client\templates\employee.html" />
     <Content Include="Areas\Client\templates\insurance-group-list.html" />
@@ -1330,6 +1332,7 @@
     <Content Include="Scripts\app\journal\journal-app.js" />
     <Content Include="Scripts\app\journal\journal-repository.js" />
     <Content Include="Scripts\app\payroll\directives\invoice-delivery-list.js" />
+    <Content Include="Scripts\app\payroll\directives\awaiting-print-payrolls.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-invoice.js" />
     <Content Include="Scripts\app\payroll\directives\paycheck.js" />
     <Content Include="Scripts\app\payroll\directives\invoice-list.js" />

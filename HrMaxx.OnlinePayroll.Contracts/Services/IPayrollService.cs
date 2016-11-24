@@ -41,5 +41,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
 		Payroll DeletePayroll(Payroll mappedResource);
 		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
+		List<Payroll> GetUnPrintedPayrolls();
 	}
 }

@@ -27,6 +27,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string Notes { get; set; }
 		public PayrollInvoiceResource Invoice { get; set; }
 		public PayrollStatus Status { get; set; }
+		public DateTime LastModified { get; set; }
 
 		public decimal TotalGrossWage { get; set; }
 		public decimal TotalNetWage { get; set; }
@@ -37,6 +38,11 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }
+		}
+
+		public string CompanyName
+		{
+			get { return Company.Name; }
 		}
 		public Guid? InvoiceId { get; set; }
 	}

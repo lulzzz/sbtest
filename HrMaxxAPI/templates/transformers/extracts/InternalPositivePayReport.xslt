@@ -46,12 +46,12 @@
 		<Worksheet ss:Name="Positive Pay Report">
 			<Table x:FullColumns="1"
 			 x:FullRows="1" ss:DefaultRowHeight="15">
-				<Column ss:AutoFitWidth="0" ss:Width="84"/>
-				<Column ss:AutoFitWidth="0" ss:Width="97.5"/>
 				<Column ss:AutoFitWidth="0" ss:Width="345"/>
-				<Column ss:AutoFitWidth="0" ss:Width="87.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="97.5"/>
+				<Column ss:AutoFitWidth="0" ss:Width="84"/>
+				<Column ss:AutoFitWidth="0" ss:Width="200"/>
 				<Column ss:StyleID="s64" ss:AutoFitWidth="0" ss:Width="83.25"/>
-				
+				<Column ss:AutoFitWidth="0" ss:Width="84"/>
 				<Row ss:AutoFitHeight="0">
 					<Cell ss:StyleID="s62">
 						<Data ss:Type="String">Company</Data>
@@ -67,6 +67,9 @@
 					</Cell>
 					<Cell ss:StyleID="s63">
 						<Data ss:Type="String">Amount</Data>
+					</Cell>
+					<Cell ss:StyleID="s63">
+						<Data ss:Type="String">Void</Data>
 					</Cell>
 				</Row>
 				<xsl:apply-templates select="Hosts/ExtractHost/Companies/ExtractCompany[count(PayChecks/PayCheck[PaymentMethod='Check' and PEOASOCoCheck='true'])>0]"/>
@@ -124,7 +127,13 @@
 						<xsl:value-of select="format-number(NetWage,'######0.00')"/>
 					</Data>
 				</Cell>
-				
+				<Cell>
+					<Data ss:Type="String">
+						<xsl:choose>
+							<xsl:when test="IsVoid='true'">V</xsl:when>
+						</xsl:choose>
+					</Data>
+				</Cell>
 			</Row>
 		</xsl:for-each>
 	</xsl:template>

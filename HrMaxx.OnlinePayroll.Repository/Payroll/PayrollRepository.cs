@@ -290,6 +290,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			{
 				dbPaycheck.WorkerCompensation = mapped.WorkerCompensation;
 				dbPaycheck.Accumulations = mapped.Accumulations;
+				dbPaycheck.Notes = mapped.Notes;
 				_dbContext.SaveChanges();
 			}
 		}
@@ -358,6 +359,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		{
 			var dbClaims = _dbContext.InvoiceDeliveryClaims.ToList();
 			return _mapper.Map<List<Models.DataModel.InvoiceDeliveryClaim>, List<Models.InvoiceDeliveryClaim>>(dbClaims);
+		}
+
+		public List<Models.Payroll> GetAllPayrolls(PayrollStatus status)
+		{
+			var dbPayrolls = _dbContext.Payrolls.Where(p => p.Status == (int) status);
+			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(dbPayrolls.ToList());
 		}
 	}
 }

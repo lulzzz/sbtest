@@ -7,7 +7,8 @@ common.directive('userNews', ['zionAPI', '$timeout', '$window','version',
 			replace: true,
 			scope: {
 				heading: "=heading",
-				fetch: "=fetch"
+				fetch: "=fetch",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/usernews.html?v=' + version,
 
@@ -21,6 +22,7 @@ common.directive('userNews', ['zionAPI', '$timeout', '$window','version',
 						type: type
 					});
 				};
+				$scope.mainData.showFilterPanel = false;
 				$scope.closeAlert = function (index) {
 					$scope.alerts.splice(index, 1);
 				};

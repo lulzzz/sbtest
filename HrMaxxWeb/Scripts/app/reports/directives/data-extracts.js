@@ -12,16 +12,21 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository',
 				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository) {
 					var dataSvc = {
-						isBodyOpen: true,
-						isBodyOpenExtract: true,
-						isBodyOpenWC: true,
-						isBodyOpenPP: true,
+						isBodyOpen: false,
+						isBodyOpenExtract: false,
+						isBodyOpenWC: false,
+						isBodyOpenPP: false,
+						openedRack:0,
 						response: null,
 						minYear: 2016,
 						hosts: [],
 						selectedHost: null,
 						filterPP: {
 							payDay: moment().startOf('day').toDate()
+						},
+						filterWC: {
+							startDate: moment().add(-1, 'month').startOf('month').toDate(),
+							endDate: moment().add(-1, 'month').endOf('month').toDate()
 						},
 						filter: {
 							years: []
@@ -41,7 +46,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							year: 0,
 							payPeriods: [],
 							payPeriod: null,
-							depositSchedule: null,
+							depositSchedule: 0,
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate()
@@ -50,7 +55,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							year: 0,
 							payPeriods: [],
 							payPeriod: null,
-							depositSchedule: null,
+							depositSchedule: 0,
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate()
@@ -59,7 +64,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							year: 0,
 							payPeriods: [],
 							payPeriod: null,
-							depositSchedule: null,
+							depositSchedule: 0,
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate()
@@ -68,7 +73,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							year: 0,
 							payPeriods: [],
 							payPeriod: null,
-							depositSchedule: null,
+							depositSchedule: 0,
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate()
@@ -405,6 +410,15 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 								extract: function () {
 									return extract;
 								},
+								item: function () {
+									return {
+										id: 0,
+										lastModified: new Date(),
+										lastModifiedBy: '',
+										extract: extract,
+										journals: []
+									};
+								},
 								reportRepository: function () {
 									return reportRepository;
 								}
@@ -464,9 +478,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							hostId: dataSvc.selectedHost.id,
 							year: moment().year(),
 							quarter: 0,
-							month: moment().subtract(1, 'months').format('MM'),
-							startDate: null,
-							endDate: null,
+							month:0,
+							startDate: moment(dataSvc.filterWC.startDate).format("MM/DD/YYYY"),
+							endDate: moment(dataSvc.filterWC.endDate).format("MM/DD/YYYY"),
 							depositSchedule: null,
 							depositDate: null
 						}
@@ -573,7 +587,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
-common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, reportRepository) {
+common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, reportRepository, item) {
 	
 	$scope.alerts = [];
 	var addAlert = function(message, status) {
@@ -583,13 +597,7 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 			status: status
 		});
 	}
-	$scope.masterExtract = {
-		id: 0,
-		lastModified: new Date(),
-		lastModifiedBy: '',
-		extract: extract,
-		journals: []
-	};
+	$scope.masterExtract = item;
 	
 	$scope.cancel = function () {
 		$uibModalInstance.close(false);

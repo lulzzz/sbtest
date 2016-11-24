@@ -26,7 +26,9 @@ T<xsl:value-of select="$total"/><xsl:call-template name="padLeft"><xsl:with-para
 <xsl:variable name="amount" select="translate(format-number(Amount, '0000000000.00'),'.','')"/>
 <xsl:variable name="checkNumber" select="CheckNumber"/>
 <xsl:variable name="issueDate" select="msxsl:format-date(TransactionDate, 'yyyyMMdd')"/>
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="$accountNumber"/><xsl:with-param name="count" select="10"/></xsl:call-template>$$spaces1$$<xsl:value-of select="$amount"/>$$spaces5$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="$checkNumber"/><xsl:with-param name="count" select="13"/></xsl:call-template>$$spaces5$$$$spaces2$$<xsl:value-of select="$issueDate"/><xsl:text>$$n</xsl:text>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="$accountNumber"/><xsl:with-param name="count" select="10"/></xsl:call-template><xsl:value-of select="$amount"/>$$spaces5$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="$checkNumber"/><xsl:with-param name="count" select="13"/></xsl:call-template>$$spaces5$$$$spaces2$$<xsl:value-of select="$issueDate"/><xsl:choose>
+	<xsl:when test="IsVoid='true'">$$spaces5$$$$spaces2$$$$spaces1$$V</xsl:when>
+</xsl:choose><xsl:text>$$n</xsl:text>
 </xsl:template>
 	<xsl:template name="padRight">
 		<xsl:param name="data"/>

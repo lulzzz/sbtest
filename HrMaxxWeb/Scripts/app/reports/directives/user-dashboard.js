@@ -18,6 +18,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						approachingPayrolls: [],
 						filteredApproachingPayrolls: [],
 						payrollsWithoutInvoice: [],
+						companiesWithoutPayroll: [],
 						filterApproachingPayroll: '',
 						myNews:[]
 					}
@@ -44,7 +45,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.drawInvoiceChart();
 						$scope.drawPayrollWithoutInvoiceChart();
 						$scope.drawCompaniesWithApproachingPayrolls();
-
+						$scope.drawCompaniesWithoutPayrollChart();
 					};
 					var mapListToDataTable = function (input) {
 						return new google.visualization.arrayToDataTable(input.data);
@@ -131,6 +132,15 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.drawPayrollWithoutInvoiceChart = function () {
 						reportRepository.getDashboardData('GetPayrollsWithoutInvoice', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
 							dataSvc.payrollsWithoutInvoice = data.data;
+
+						}, function (error) {
+							console.log(error);
+						});
+
+					};
+					$scope.drawCompaniesWithoutPayrollChart = function () {
+						reportRepository.getDashboardData('GetCompaniesWithoutPayroll', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+							dataSvc.companiesWithoutPayroll = data.data;
 
 						}, function (error) {
 							console.log(error);

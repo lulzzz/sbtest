@@ -349,13 +349,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				employee.BankAccount = _utilRepository.SaveBankAccount(employee.BankAccount);
 			}
 			var me = _mapper.Map<Employee, Models.DataModel.Employee>(employee);
-			var dbEmployee = _dbContext.Employees.FirstOrDefault(e => e.Id == me.Id || e.SSN.Equals(me.SSN));
-			if (dbEmployee == null)
+			var dbEmployees = _dbContext.Employees.Where(e => e.CompanyId==employee.CompanyId && (e.Id == me.Id || e.SSN.Equals(me.SSN))).ToList();
+			if (!dbEmployees.Any())
 			{
-				var maxEmployeeNumber = _dbContext.Employees.Where(e => e.CompanyId == employee.CompanyId).Select(e=>e.EmployeeNo).ToList();
+				var maxEmployeeNumber =
+					_dbContext.Employees.Where(e => e.CompanyId == employee.CompanyId).Select(e => e.EmployeeNo).ToList();
 				if (maxEmployeeNumber.Any(e => !string.IsNullOrWhiteSpace(e)))
 				{
-					me.EmployeeNo = (maxEmployeeNumber.Select(e=>Convert.ToInt32(e)).Max() + 1).ToString();
+					me.EmployeeNo = (maxEmployeeNumber.Select(e => Convert.ToInt32(e)).Max() + 1).ToString();
 				}
 				else
 				{
@@ -363,8 +364,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				}
 				_dbContext.Employees.Add(me);
 			}
+			else if(dbEmployees.Count>0)
+			{
+				throw new Exception("Another employee with the same SSN exists in this company");
+			}
 			else
 			{
+				var dbEmployee = dbEmployees.First();
 				dbEmployee.FirstName = me.FirstName;
 				dbEmployee.LastName = me.LastName;
 				dbEmployee.LastModified = me.LastModified;

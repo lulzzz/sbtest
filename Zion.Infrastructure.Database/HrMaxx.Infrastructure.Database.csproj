@@ -181,6 +181,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007s_update to extract proc for deposit schedule.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007t_Gen2 11 22 2016.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>

@@ -36,24 +36,11 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 								if (c && c.accumulation) {
 									var filing = {
 										depositDate: h.extract.report.depositDate,
-										
-									};
-									if ($scope.report.reportName==="Federal940") {
-										filing.wages = c.accumulation.wages940;
-										filing.taxes = c.accumulation.taxes940;
-									}
-									else if ($scope.report.reportName==="Federal941") {
-										filing.wages = c.accumulation.wages941;
-										filing.taxes = c.accumulation.taxes941;
-									}
-									else if ($scope.report.reportName==="StateCAPIT") {
-										filing.wages = c.accumulation.wagesPitSdi;
-										filing.taxes = c.accumulation.taxesPitSdi;
-									}
-									else if ($scope.report.reportName==="StateCAUI") {
-										filing.wages = c.accumulation.wagesEttSui;
-										filing.taxes = c.accumulation.taxesEttSui;
-									}
+										grossWage: c.accumulation.grossWage,
+										wages: c.accumulation.applicableWages,
+										taxes: c.accumulation.applicableAmounts
+								};
+									
 									$scope.selectedCompanyFilings.push(filing);
 								}
 							}

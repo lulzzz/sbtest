@@ -1,10 +1,10 @@
 ﻿<div class="row">
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Form Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===1?0:1)">
+			<h4 class="panel-title">Form Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===1, 'glyphicon-chevron-right': data.openedRack!==1}"></i></h4>
 		</div>
-		<div class="panel-body" ng-show="data.isBodyOpen">
+		<div class="panel-body" ng-show="data.openedRack===1">
 			<div class="col-sm-8">
 				<div class="row">
 					<h4><u>Federal Forms</u></h4>
@@ -134,305 +134,320 @@
 		</div>
 	</div>
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-		<div class="panel-heading" ng-click="data.isBodyOpenExtract=!data.isBodyOpenExtract">
-			<h4 class="panel-title">Tax Payments Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpenExtract, 'glyphicon-chevron-right': !data.isBodyOpenExtract}"></i></h4>
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===2?0:2)">
+			<h4 class="panel-title">Tax Payments Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===2, 'glyphicon-chevron-right': data.openedRack!==2}"></i></h4>
 		</div>
-		<div class="panel-body" ng-show="data.isBodyOpenExtract">
-			<div class="row col-sm-10">
+		<div class="panel-body" ng-show="data.openedRack===2">
+			<div class="col-sm-7">
 				<div class="row">
-					<h4><u>Federal Tax Payment Extracts</u></h4>
+					<div class="row">
+						<h4><u>Federal Tax Payment Extracts</u></h4>
+					</div>
+
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 941 EFTPS File {{data.filter941.depositSchedule===1 ? '( Semi-Weekly )' : data.filter941.depositSchedule===2 ? '( Monthly )' : data.filter941.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3 form-group">
+								<label>Deposit Schedule</label>
+								<select name="depsc" ng-model="data.filter941.depositSchedule" ng-change="data.filter941.year=0" class="form-control" convert-to-number>
+									<option value="0"> select deposit schedule</option>
+									<option value="1"> Semi-Weekly</option>
+									<option value="2"> Monthly</option>
+									<option value="3"> Quarterly</option>
+
+								</select>
+							</div>
+							<div class="col-sm-2 form-group">
+								<label>Year</label>
+								<select name="year941" ng-model="data.filter941.year" ng-change="fill941PayPeriods()" ng-disabled="!data.filter941.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+
+							<div class="col-sm-3 form-group">
+								<label>{{data.filter941.depositSchedule===1 ? 'Deposit Date' : data.filter941.depositSchedule===2 ? 'Month' : data.filter941.depositSchedule===3 ?'Quarter' : ''}}</label>
+								<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.key">
+									<option value=""> Please select</option>
+
+								</select>
+								<select name="quarter941" ng-model="data.filter941.month" class="form-control" ng-disabled="!data.filter941.year" convert-to-number ng-if="data.filter941.depositSchedule===2">
+									<option value="1"> January</option>
+									<option value="2"> February</option>
+									<option value="3"> March</option>
+									<option value="4"> April</option>
+									<option value="5"> May</option>
+									<option value="6"> June</option>
+									<option value="7"> July</option>
+									<option value="8"> August</option>
+									<option value="9"> September</option>
+									<option value="10"> October</option>
+									<option value="11"> November</option>
+									<option value="12"> December</option>
+								</select>
+								<select name="quarter941" ng-if="data.filter941.depositSchedule===3" ng-disabled="!data.filter941.year" ng-model="data.filter941.quarter" class="form-control" convert-to-number>
+									<option value="0"> select quarter</option>
+									<option value="1"> First Quarter</option>
+									<option value="2"> Second Quarter</option>
+									<option value="3"> Third Quarter</option>
+									<option value="4"> Fourth Quarter</option>
+								</select>
+							</div>
+
+							<div class="col-sm-2 form-group">
+								<label>Deposit Date</label>
+								<date-ctrl name="dep940q" model="data.filter941.depositDate" min="minDepositDate" disabled="false" />
+							</div>
+							<div class="col-sm-2 form-group">
+								<br />
+								<button class="btn btn-sm btn-primary" ng-click="getReportFederal941()" ng-disabled="!is941Valid()">Review</button>
+								
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 940 EFTPS File {{data.filter940Q.depositSchedule===1 ? '( Semi-Weekly )' : data.filter940Q.depositSchedule===2 ? '( Monthly )' : data.filter940Q.depositSchedule===3 ?'( Quarterly)' : ''}}</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3 form-group">
+								<label>Deposit Schedule</label>
+								<select name="depsc" ng-model="data.filter940Q.depositSchedule" ng-change="data.filter940Q.year=0" class="form-control" convert-to-number>
+									<option value="0"> select deposit schedule</option>
+									<option value="1"> Semi-Weekly</option>
+									<option value="2"> Monthly</option>
+									<option value="3"> Quarterly</option>
+
+								</select>
+							</div>
+							<div class="col-sm-2">
+								<label>Year</label>
+								<select name="year941" ng-model="data.filter940Q.year" class="form-control" ng-change="fill940PayPeriods()" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3">
+								<label>{{data.filter940Q.depositSchedule===1 ? 'Deposit Date' : data.filter940Q.depositSchedule===2 ? 'Month' : data.filter940Q.depositSchedule===3 ?'Quarter' : ''}}</label>
+								<select name="quarter940" ng-if="data.filter940Q.depositSchedule===1" ng-model="data.filter940Q.payPeriod" ng-disabled="!data.filter940Q.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter940Q.payPeriods track by payperiod.key">
+									<option value=""> Please select</option>
+
+								</select>
+								<select name="quarter940" ng-model="data.filter940Q.month" ng-disabled="!data.filter940Q.year" class="form-control" convert-to-number ng-if="data.filter940Q.depositSchedule===2">
+									<option value="1"> January</option>
+									<option value="2"> February</option>
+									<option value="3"> March</option>
+									<option value="4"> April</option>
+									<option value="5"> May</option>
+									<option value="6"> June</option>
+									<option value="7"> July</option>
+									<option value="8"> August</option>
+									<option value="9"> September</option>
+									<option value="10"> October</option>
+									<option value="11"> November</option>
+									<option value="12"> December</option>
+								</select>
+								<select name="quarter940" ng-if="data.filter940Q.depositSchedule===3" ng-disabled="!data.filter940Q.year" ng-model="data.filter940Q.quarter" class="form-control" convert-to-number>
+									<option value="0"> select quarter</option>
+									<option value="1"> First Quarter</option>
+									<option value="2"> Second Quarter</option>
+									<option value="3"> Third Quarter</option>
+									<option value="4"> Fourth Quarter</option>
+								</select>
+							</div>
+							<div class="col-sm-2">
+								<label>Deposit Date</label>
+								<date-ctrl name="dep940q" model="data.filter940Q.depositDate" min="minDepositDate" disabled="false" />
+							</div>
+							<div class="col-sm-2">
+								<br />
+								<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!is940Valid()">Review</button>
+							</div>
+
+						</div>
+
+					</div>
+
+
+
 				</div>
-
-				<div class="col-sm-12">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 941 EFTPS File {{data.filter941.depositSchedule===1 ? '( Semi-Weekly )' : data.filter941.depositSchedule===2 ? '( Monthly )' : data.filter941.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
+				<div class="row">
+					<div class="row">
+						<h4><u>California State Tax Payment Extracts</u></h4>
 					</div>
 					<div class="col-sm-12">
-						<div class="col-sm-2 form-group">
-							<label>Deposit Schedule</label>
-							<select name="depsc" ng-model="data.filter941.depositSchedule" ng-change="data.filter941.year=0" class="form-control" convert-to-number>
-								<option value="1"> Semi-Weekly</option>
-								<option value="2"> Monthly</option>
-								<option value="3"> Quarterly</option>
-
-							</select>
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California PIT & DI GovOne File {{data.filterCAPIT.depositSchedule===1 ? '( Semi-Weekly )' : data.filterCAPIT.depositSchedule===2 ? '( Monthly )' : data.filterCAPIT.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
 						</div>
-						<div class="col-sm-2 form-group">
-							<label>Year</label>
-							<select name="year941" ng-model="data.filter941.year" ng-change="fill941PayPeriods()" ng-disabled="!data.filter941.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
+						<div class="col-sm-12">
+							<div class="col-sm-3 form-group">
+								<label>Deposit Schedule</label>
+								<select name="capitdp" ng-model="data.filterCAPIT.depositSchedule" ng-change="data.filterCAPIT.year=0" class="form-control" convert-to-number>
+									<option value="0"> select deposit schedule</option>
+									<option value="1"> Semi-Weekly</option>
+									<option value="2"> Monthly</option>
+									<option value="3"> Quarterly</option>
+
+								</select>
+							</div>
+							<div class="col-sm-2 form-group">
+								<label>Year</label>
+								<select ng-model="data.filterCAPIT.year" ng-change="fillCAPITPayPeriods()" ng-disabled="!data.filterCAPIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+
+							<div class="col-sm-3 form-group">
+								<label>Pay Period</label>
+								<select ng-if="data.filterCAPIT.depositSchedule===1" ng-model="data.filterCAPIT.payPeriod" ng-disabled="!data.filterCAPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAPIT.payPeriods track by payperiod.key">
+									<option value=""> Please select</option>
+
+								</select>
+								<select ng-model="data.filterCAPIT.month" class="form-control" convert-to-number ng-if="data.filterCAPIT.depositSchedule===2">
+									<option value=""> select month</option>
+									<option value="1"> January</option>
+									<option value="2"> February</option>
+									<option value="3"> March</option>
+									<option value="4"> April</option>
+									<option value="5"> May</option>
+									<option value="6"> June</option>
+									<option value="7"> July</option>
+									<option value="8"> August</option>
+									<option value="9"> September</option>
+									<option value="10"> October</option>
+									<option value="11"> November</option>
+									<option value="12"> December</option>
+								</select>
+								<select ng-if="data.filterCAPIT.depositSchedule===3" ng-model="data.filterCAPIT.quarter" class="form-control" convert-to-number>
+									<option value=""> select quarter</option>
+									<option value="1"> First Quarter</option>
+									<option value="2"> Second Quarter</option>
+									<option value="3"> Third Quarter</option>
+									<option value="4"> Fourth Quarter</option>
+								</select>
+							</div>
+
+							<div class="col-sm-2 form-group">
+								<label>Deposit Date</label>
+								<date-ctrl name="dep940q" model="data.filterCAPIT.depositDate" min="minDepositDate" disabled="false" />
+							</div>
+							<div class="col-sm-2 form-group">
+								<br />
+								<button class="btn btn-sm btn-primary" ng-click="getReportCAPIT()" ng-disabled="!isCAPITValid()">Review</button>
+								
+							</div>
+
 						</div>
 
-						<div class="col-sm-2 form-group">
-							<label>{{data.filter941.depositSchedule===1 ? 'Deposit Date' : data.filter941.depositSchedule===2 ? 'Month' : data.filter941.depositSchedule===3 ?'Quarter' : ''}}</label>
-							<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.key">
-								<option value=""> Please select</option>
+					</div>
 
-							</select>
-							<select name="quarter941" ng-model="data.filter941.month" class="form-control" ng-disabled="!data.filter941.year" convert-to-number ng-if="data.filter941.depositSchedule===2">
-								<option value="1"> January</option>
-								<option value="2"> February</option>
-								<option value="3"> March</option>
-								<option value="4"> April</option>
-								<option value="5"> May</option>
-								<option value="6"> June</option>
-								<option value="7"> July</option>
-								<option value="8"> August</option>
-								<option value="9"> September</option>
-								<option value="10"> October</option>
-								<option value="11"> November</option>
-								<option value="12"> December</option>
-							</select>
-							<select name="quarter941" ng-if="data.filter941.depositSchedule===3" ng-disabled="!data.filter941.year" ng-model="data.filter941.quarter" class="form-control" convert-to-number>
-								<option value="0"> select quarter</option>
-								<option value="1"> First Quarter</option>
-								<option value="2"> Second Quarter</option>
-								<option value="3"> Third Quarter</option>
-								<option value="4"> Fourth Quarter</option>
-							</select>
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California UI & ETT GovOne File {{data.filterCAUIQ.depositSchedule===1 ? '( Semi-Weekly )' : data.filterCAUIQ.depositSchedule===2 ? '( Monthly )' : data.filterCAUIQ.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
 						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3 form-group">
+								<label>Deposit Schedule</label>
+								<select ng-model="data.filterCAUIQ.depositSchedule" ng-change="data.filterCAUIQ.year=0" class="form-control" convert-to-number>
+									<option value="0"> select deposit schedule</option>
+									<option value="1"> Semi-Weekly</option>
+									<option value="2"> Monthly</option>
+									<option value="3"> Quarterly</option>
 
-						<div class="col-sm-2 form-group">
-							<label>Deposit Date</label>
-							<date-ctrl name="dep940q" model="data.filter941.depositDate" min="minDepositDate" disabled="false" />
-						</div>
-						<div class="col-sm-4 form-group">
-							<label>&nbsp;</label><br />
-							<button class="btn btn-sm btn-primary" ng-click="getReportFederal941()" ng-disabled="!is941Valid()">Review</button>
-							<button class="btn btn-sm btn-info" ng-click="selectedReport='Federal941';data.isBodyOpen=false; data.isBodyOpenExtract = false">History</button>
+								</select>
+							</div>
+							<div class="col-sm-2 form-group">
+								<label>Year</label>
+								<select ng-model="data.filterCAUIQ.year" ng-change="fillCAUIPayPeriods()" ng-disabled="!data.filterCAUIQ.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+
+							<div class="col-sm-3 form-group">
+								<label>Pay Period</label>
+								<select ng-if="data.filterCAUIQ.depositSchedule===1" ng-model="data.filterCAUIQ.payPeriod" ng-disabled="!data.filterCAUIQ.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAUIQ.payPeriods track by payperiod.key">
+									<option value=""> Please select</option>
+
+								</select>
+								<select ng-model="data.filterCAUIQ.month" class="form-control" convert-to-number ng-if="data.filterCAUIQ.depositSchedule===2">
+									<option value=""> select month</option>
+									<option value="1"> January</option>
+									<option value="2"> February</option>
+									<option value="3"> March</option>
+									<option value="4"> April</option>
+									<option value="5"> May</option>
+									<option value="6"> June</option>
+									<option value="7"> July</option>
+									<option value="8"> August</option>
+									<option value="9"> September</option>
+									<option value="10"> October</option>
+									<option value="11"> November</option>
+									<option value="12"> December</option>
+								</select>
+								<select ng-if="data.filterCAUIQ.depositSchedule===3" ng-model="data.filterCAUIQ.quarter" class="form-control" convert-to-number>
+									<option value=""> select quarter</option>
+									<option value="1"> First Quarter</option>
+									<option value="2"> Second Quarter</option>
+									<option value="3"> Third Quarter</option>
+									<option value="4"> Fourth Quarter</option>
+								</select>
+							</div>
+
+							<div class="col-sm-2 form-group">
+								<label>Deposit Date</label>
+								<date-ctrl model="data.filterCAUIQ.depositDate" min="minDepositDate" disabled="false" />
+							</div>
+							<div class="col-sm-2 form-group">
+								<br />
+								<button class="btn btn-sm btn-primary" ng-click="getReportCAUIQ()" ng-disabled="!isCAUIValid()">Review</button>
+								
+							</div>
+
 						</div>
 
 					</div>
 
 				</div>
-
-				<div class="col-sm-12">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 940 EFTPS File {{data.filter940Q.depositSchedule===1 ? '( Semi-Weekly )' : data.filter940Q.depositSchedule===2 ? '( Monthly )' : data.filter940Q.depositSchedule===3 ?'( Quarterly)' : ''}}</em></span></h5>
-					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-2 form-group">
-							<label>Deposit Schedule</label>
-							<select name="depsc" ng-model="data.filter940Q.depositSchedule" ng-change="data.filter940Q.year=0" class="form-control" convert-to-number>
-								<option value="1"> Semi-Weekly</option>
-								<option value="2"> Monthly</option>
-								<option value="3"> Quarterly</option>
-
-							</select>
-						</div>
-						<div class="col-sm-2">
-							<label>Year</label>
-							<select name="year941" ng-model="data.filter940Q.year" class="form-control" ng-change="fill940PayPeriods()" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-2">
-							<label>{{data.filter940Q.depositSchedule===1 ? 'Deposit Date' : data.filter940Q.depositSchedule===2 ? 'Month' : data.filter940Q.depositSchedule===3 ?'Quarter' : ''}}</label>
-							<select name="quarter940" ng-if="data.filter940Q.depositSchedule===1" ng-model="data.filter940Q.payPeriod" ng-disabled="!data.filter940Q.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter940Q.payPeriods track by payperiod.key">
-								<option value=""> Please select</option>
-
-							</select>
-							<select name="quarter940" ng-model="data.filter940Q.month" ng-disabled="!data.filter940Q.year" class="form-control" convert-to-number ng-if="data.filter940Q.depositSchedule===2">
-								<option value="1"> January</option>
-								<option value="2"> February</option>
-								<option value="3"> March</option>
-								<option value="4"> April</option>
-								<option value="5"> May</option>
-								<option value="6"> June</option>
-								<option value="7"> July</option>
-								<option value="8"> August</option>
-								<option value="9"> September</option>
-								<option value="10"> October</option>
-								<option value="11"> November</option>
-								<option value="12"> December</option>
-							</select>
-							<select name="quarter940" ng-if="data.filter940Q.depositSchedule===3" ng-disabled="!data.filter940Q.year" ng-model="data.filter940Q.quarter" class="form-control" convert-to-number>
-								<option value="0"> select quarter</option>
-								<option value="1"> First Quarter</option>
-								<option value="2"> Second Quarter</option>
-								<option value="3"> Third Quarter</option>
-								<option value="4"> Fourth Quarter</option>
-							</select>
-						</div>
-						<div class="col-sm-2">
-							<label>Deposit Date</label>
-							<date-ctrl name="dep940q" model="data.filter940Q.depositDate" min="minDepositDate" disabled="false" />
-						</div>
-						<div class="col-sm-4">
-							<br />
-							<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!is940Valid()">Review</button>
-							<button class="btn btn-sm btn-info" ng-click="selectedReport='Federal940'; data.isBodyOpen=false; data.isBodyOpenExtract = false">History</button>
-						</div>
-
-					</div>
-
-				</div>
-
-
-
 			</div>
-			<div class="row col-sm-10">
-				<div class="row">
-					<h4><u>California State Tax Payment Extracts</u></h4>
-				</div>
-				<div class="col-sm-12">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California Semi-Weekly PIT & DI GovOne File {{data.filterCAPIT.depositSchedule===1 ? '( Semi-Weekly )' : data.filterCAPIT.depositSchedule===2 ? '( Monthly )' : data.filterCAPIT.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
-					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-2 form-group">
-							<label>Deposit Schedule</label>
-							<select ng-model="data.filterCAPIT.depositSchedule" ng-change="data.filterCAPIT.year=0" class="form-control" convert-to-number>
-								<option value=""> deposit schedule</option>
-								<option value="1"> Semi-Weekly</option>
-								<option value="2"> Monthly</option>
-								<option value="3"> Quarterly</option>
-
-							</select>
-						</div>
-						<div class="col-sm-2 form-group">
-							<label>Year</label>
-							<select ng-model="data.filterCAPIT.year" ng-change="fillCAPITPayPeriods()" ng-disabled="!data.filterCAPIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-
-						<div class="col-sm-2 form-group">
-							<label>Pay Period</label>
-							<select ng-if="data.filterCAPIT.depositSchedule===1" ng-model="data.filterCAPIT.payPeriod" ng-disabled="!data.filterCAPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAPIT.payPeriods track by payperiod.key">
-								<option value=""> Please select</option>
-
-							</select>
-							<select ng-model="data.filterCAPIT.month" class="form-control" convert-to-number ng-if="data.filterCAPIT.depositSchedule===2">
-								<option value=""> select month</option>
-								<option value="1"> January</option>
-								<option value="2"> February</option>
-								<option value="3"> March</option>
-								<option value="4"> April</option>
-								<option value="5"> May</option>
-								<option value="6"> June</option>
-								<option value="7"> July</option>
-								<option value="8"> August</option>
-								<option value="9"> September</option>
-								<option value="10"> October</option>
-								<option value="11"> November</option>
-								<option value="12"> December</option>
-							</select>
-							<select ng-if="data.filterCAPIT.depositSchedule===3" ng-model="data.filterCAPIT.quarter" class="form-control" convert-to-number>
-								<option value=""> select quarter</option>
-								<option value="1"> First Quarter</option>
-								<option value="2"> Second Quarter</option>
-								<option value="3"> Third Quarter</option>
-								<option value="4"> Fourth Quarter</option>
-							</select>
-						</div>
-
-						<div class="col-sm-2 form-group">
-							<label>Deposit Date</label>
-							<date-ctrl name="dep940q" model="data.filterCAPIT.depositDate" min="minDepositDate" disabled="false" />
-						</div>
-						<div class="col-sm-4 form-group">
-							<label>&nbsp;</label><br />
-							<button class="btn btn-sm btn-primary" ng-click="getReportCAPIT()" ng-disabled="!isCAPITValid()">Review</button>
-							<button class="btn btn-sm btn-info" ng-click="selectedReport='StateCAPIT';data.isBodyOpen=false; data.isBodyOpenExtract = false">History</button>
-						</div>
-
-					</div>
-
-				</div>
-
-				<div class="col-sm-12">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California UI & ETT GovOne File {{data.filterCAUIQ.depositSchedule===1 ? '( Semi-Weekly )' : data.filterCAUIQ.depositSchedule===2 ? '( Monthly )' : data.filterCAUIQ.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
-					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-2 form-group">
-							<label>Deposit Schedule</label>
-							<select ng-model="data.filterCAUIQ.depositSchedule" ng-change="data.filterCAUIQ.year=0" class="form-control" convert-to-number>
-								<option value=""> deposit schedule</option>
-								<option value="1"> Semi-Weekly</option>
-								<option value="2"> Monthly</option>
-								<option value="3"> Quarterly</option>
-
-							</select>
-						</div>
-						<div class="col-sm-2 form-group">
-							<label>Year</label>
-							<select ng-model="data.filterCAUIQ.year" ng-change="fillCAUIPayPeriods()" ng-disabled="!data.filterCAUIQ.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-
-						<div class="col-sm-2 form-group">
-							<label>Pay Period</label>
-							<select ng-if="data.filterCAUIQ.depositSchedule===1" ng-model="data.filterCAUIQ.payPeriod" ng-disabled="!data.filterCAUIQ.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAUIQ.payPeriods track by payperiod.key">
-								<option value=""> Please select</option>
-
-							</select>
-							<select ng-model="data.filterCAUIQ.month" class="form-control" convert-to-number ng-if="data.filterCAUIQ.depositSchedule===2">
-								<option value=""> select month</option>
-								<option value="1"> January</option>
-								<option value="2"> February</option>
-								<option value="3"> March</option>
-								<option value="4"> April</option>
-								<option value="5"> May</option>
-								<option value="6"> June</option>
-								<option value="7"> July</option>
-								<option value="8"> August</option>
-								<option value="9"> September</option>
-								<option value="10"> October</option>
-								<option value="11"> November</option>
-								<option value="12"> December</option>
-							</select>
-							<select ng-if="data.filterCAUIQ.depositSchedule===3" ng-model="data.filterCAUIQ.quarter" class="form-control" convert-to-number>
-								<option value=""> select quarter</option>
-								<option value="1"> First Quarter</option>
-								<option value="2"> Second Quarter</option>
-								<option value="3"> Third Quarter</option>
-								<option value="4"> Fourth Quarter</option>
-							</select>
-						</div>
-
-						<div class="col-sm-2 form-group">
-							<label>Deposit Date</label>
-							<date-ctrl model="data.filterCAUIQ.depositDate" min="minDepositDate" disabled="false" />
-						</div>
-						<div class="col-sm-4 form-group">
-							<label>&nbsp;</label><br />
-							<button class="btn btn-sm btn-primary" ng-click="getReportCAUIQ()" ng-disabled="!isCAUIValid()">Review</button>
-							<button class="btn btn-sm btn-info" ng-click="selectedReport='StateCAUI';data.isBodyOpen=false; data.isBodyOpenExtract = false">History</button>
-						</div>
-
-					</div>
-
-				</div>
-
+			<div class="col-sm-5" >
+				<extract-view-list main-data="mainData" />
 			</div>
 
 
 		</div>
 	</div>
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-		<div class="panel-heading" ng-click="data.isBodyOpenWC=!data.isBodyOpenWC">
-			<h4 class="panel-title">WC Insurance Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpenWC, 'glyphicon-chevron-right': !data.isBodyOpenWC}"></i></h4>
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===3?0:3)">
+			<h4 class="panel-title">WC Insurance Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===3, 'glyphicon-chevron-right': data.openedRack!==3}"></i></h4>
 		</div>
-		<div class="panel-body" ng-show="data.isBodyOpenWC">
+		<div class="panel-body" ng-show="data.openedRack===3">
 			<div class="row col-sm-10">
 				<div class="col-sm-12">
-					<div class="col-sm-6 form-group">
+					<div class="col-sm-4 form-group">
+						<label>Host</label>
 						<select id="host" class="form-control" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
 							<option value="">Select Host</option>
 						</select>
 					</div>
-					
-					<div class="col-sm-6 form-group">
-						<button class="btn btn-sm btn-primary" ng-click="getHostWCReport()" ng-disabled="!data.selectedHost">WC Extract</button>
+					<div class="col-sm-2 form-group">
+						<label>Start Date</label>
+						<date-ctrl model="data.filterWC.startDate" disabled="false" />
+					</div>
+					<div class="col-sm-2 form-group">
+						<label>End Date</label>
+						<date-ctrl model="data.filterWC.endDate" disabled="false" />
+					</div>
+					<div class="col-sm-4 form-group">
+						<label></label><br />
+						<button class="btn btn-sm btn-primary" ng-click="getHostWCReport()" ng-disabled="!data.selectedHost || !data.filterWC.startDate || !data.filterWC.endDate">WC Extract</button>
 
 					</div>
 
 				</div>
-				
+
 			</div>
 
 
@@ -441,10 +456,10 @@
 	</div>
 	
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-		<div class="panel-heading" ng-click="data.isBodyOpenPP=!data.isBodyOpenPP">
-			<h4 class="panel-title">Positive Pay Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpenPP, 'glyphicon-chevron-right': !data.isBodyOpenPP}"></i></h4>
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===4?0:4)">
+			<h4 class="panel-title">Positive Pay Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===4, 'glyphicon-chevron-right': data.openedRack!==4}"></i></h4>
 		</div>
-		<div class="panel-body" ng-show="data.isBodyOpenPP">
+		<div class="panel-body" ng-show="data.openedRack===4">
 			<div class="row col-sm-10">
 				<div class="col-sm-12">
 					<div class="col-sm-6 form-group">
@@ -458,7 +473,7 @@
 						<date-ctrl model="data.filterPP.payDay" disabled="false" />
 					</div>
 					<div class="col-sm-4 form-group">
-						<label></label><br/>
+						<label></label><br />
 						<button class="btn btn-sm btn-primary" ng-click="getPositivePayReport()" ng-disabled="!data.selectedHost  || !data.filterPP.payDay">Positive Pay Extract</button>
 						<button class="btn btn-sm btn-primary" ng-click="getInternalPositivePayReport()" ng-disabled="!data.selectedHost  || !data.filterPP.payDay">Internal Positive Pay Extract</button>
 					</div>
@@ -472,11 +487,7 @@
 		</div>
 	</div>
 
-	<div class="col-sm-12" ng-if="selectedReport">
-		<extract-view-list report="selectedReport" main-data="mainData" />
-
-
-	</div>
+	
 
 	<script type="text/ng-template" id="popover/extractView.html">
 

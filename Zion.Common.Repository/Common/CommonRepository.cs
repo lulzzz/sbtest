@@ -134,11 +134,11 @@ namespace HrMaxx.Common.Repository.Common
 		public List<News> GetNewsListforUser(int? audienceScope, Guid? audienceId)
 		{
 			var news = _dbContext.News.Where(n => (audienceScope.HasValue && n.AudienceScope <= audienceScope) || !audienceScope.HasValue).ToList();
+			
 			if (audienceScope.HasValue && audienceId.HasValue)
 			{
 				news =
-					news.Where(n => n.AudienceScope<audienceScope.Value || JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(audienceId.Value)))
-						.ToList();
+					news.Where(n => n.AudienceScope<audienceScope.Value || JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(audienceId.Value))).ToList();
 			}
 			return _mapper.Map<List<Models.DataModel.News>, List<News>>(news);
 		}
@@ -157,6 +157,7 @@ namespace HrMaxx.Common.Repository.Common
 				dbNews.AudienceScope = mappedNewsItem.AudienceScope;
 				dbNews.LastModified = mappedNewsItem.LastModified;
 				dbNews.LastModifiedBy = mappedNewsItem.LastModifiedBy;
+				dbNews.IsActive = mappedNewsItem.IsActive;
 			}
 			_dbContext.SaveChanges();
 		}
@@ -164,7 +165,7 @@ namespace HrMaxx.Common.Repository.Common
 		public List<News> GetUserNewsfeed(Guid host, Guid company, string userId)
 		{
 			var returnList = new List<Models.DataModel.News>();
-			var news = _dbContext.News.Where(n=>n.AudienceScope.HasValue).ToList();
+			var news = _dbContext.News.Where(n=>n.IsActive && n.AudienceScope.HasValue).ToList();
 			news = news.Where(n =>
 				(n.AudienceScope.Value == (int) RoleTypeEnum.Host &&
 				 JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(host)))

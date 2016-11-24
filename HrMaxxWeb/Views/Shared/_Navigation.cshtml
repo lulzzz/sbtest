@@ -58,6 +58,10 @@
 			{
 				<li><a href="#!/Admin/InvoiceDelivery" data-toggle="tooltip" data-placement="right" title="Invoice Delivery"><i class="fa fa-truck"></i><span>Invoice Delivery</span></a></li>
 			}
+			@if (CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
+			{
+				<li><a href="#!/Admin/UnPrintedPayrolls" data-toggle="tooltip" data-placement="right" title="Awaiting Print"><i class="fa fa-print"></i><span>Un Printed Payrolls</span></a></li>
+			}
 			@if (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.HostStaff.GetDbName()))
 			{
 				<li><a href="#!/Admin/Host" data-toggle="tooltip" data-placement="right" title="Host Profile"><i class="fa fa-home"></i><span>Host Profile</span></a></li>

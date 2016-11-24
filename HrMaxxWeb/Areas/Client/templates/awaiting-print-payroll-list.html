@@ -1,0 +1,84 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Un Printed Payrolls<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div ng-show="list.length===0" class="table table-bordered hidden-print">
+				No invoices found
+			</div>
+			
+			<div class="row table-responsive text-center" ng-show="list.length>0">
+				<table ng-table="tableParams" show-filter="true" class="table hidden-print" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" >
+						<td data-title=" 'Company' " filter="{ 'companyName': 'text' }" sortable=" 'companyName' " class="col-sm-2 text-center">
+							{{item.companyName}}
+						</td>
+						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
+							{{item.payDay | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Start Date' " sortable=" 'startDate' " class="col-sm-1 text-center">
+							{{item.startDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'End Date' " sortable=" 'endDate' " class="col-sm-1 text-center">
+							{{item.endDate | date:'MM/dd/yyyy'}}
+						</td>
+
+						<td data-title=" 'Gross Wage' " sortable=" 'totalGrossWage' " class="col-sm-1 text-center show-red">
+							{{item.totalGrossWage | currency:'$'}}
+						</td>
+						<td data-title=" 'Net Wage' " sortable=" 'totalNetWage' " class="col-sm-1 text-center show-red">
+							{{item.totalNetWage | currency:'$'}}
+						</td>
+						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+							{{item.statusText}}
+						</td>
+						<td data-title=" 'Invoice Total' " sortable=" 'invoice.total' " class="col-sm-1 text-center" >
+							{{item.invoice.total | currency:'$'}}
+						</td>
+						<td data-title=" 'Processed By' " sortable=" 'userName' " class="col-sm-1 text-center" >
+							{{item.userName}}
+						</td>
+						<td data-title=" 'Processed On' " sortable=" 'lastModified' " class="col-sm-1 text-center" >
+							{{item.lastModified | date:'MM/dd/yyyy'}}
+						</td>
+						<td class="col-sm-1 text-center">
+							<button class="btn btn-sm btn-success" ng-click="printPayroll(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==5 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print</button>
+						</td>
+
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+
+
+			</div>
+
+			<!-- end panel -->
+		</div>
+	</div>
+	
+	
+
+</div>
+
+

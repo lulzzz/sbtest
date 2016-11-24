@@ -27,6 +27,7 @@ common.directive('paycheck', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						
 					}
+					
 					var _init = function() {
 						if (!$scope.check && $scope.checkId) {
 							payrollRepository.getPayCheckById($scope.checkId).then(function (data) {

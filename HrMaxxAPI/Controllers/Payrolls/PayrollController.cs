@@ -143,6 +143,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 
+		[HttpGet]
+		[Route(PayrollRoutes.UnPrintedPayrolls)]
+		public List<PayrollResource> GetUnPrintedPayrolls()
+		{
+			var payrolls = MakeServiceCall(() => _payrollService.GetUnPrintedPayrolls(), string.Format("get list of un printed payrolls "));
+			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
+		}
+
 		[HttpPost]
 		[Route(PayrollRoutes.ProcessPayroll)]
 		public PayrollResource ProcessPayroll(PayrollResource resource)

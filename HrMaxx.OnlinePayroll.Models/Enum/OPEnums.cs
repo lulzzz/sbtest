@@ -398,4 +398,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Summary=1,
 		Detailed=2
 	}
+
+	public enum ExtractType
+	{
+		Federal940=1,
+		Federal941=2,
+		CAPITSDI=3,
+		CAETTUI=4,
+		NA=0
+	}
 }

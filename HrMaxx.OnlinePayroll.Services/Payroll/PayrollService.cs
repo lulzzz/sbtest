@@ -23,6 +23,7 @@ using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using Magnum;
 using Magnum.Extensions;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services.Payroll
 {
@@ -1021,6 +1022,27 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						pc.WorkerCompensation.Wage = pc.GrossWage;
 						
 					}
+					if (!string.IsNullOrWhiteSpace(pc.Notes))
+					{
+						try
+						{
+							var comments = JsonConvert.DeserializeObject<List<Comment>>(pc.Notes);
+							if (comments != null && comments.Any())
+							{
+								var last = comments.OrderByDescending(c => c.TimeStamp).FirstOrDefault();
+								if (last != null)
+									pc.Notes = last.Content;
+
+							}
+							else
+								pc.Notes = string.Empty;
+						}
+						catch (Exception ex)
+						{
+							pc.Notes = pc.Notes;
+						}
+						
+					}
 					_payrollRepository.SavePayCheck(pc);
 				}));
 				
@@ -1039,7 +1061,17 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				var coas = _companyService.GetComanyAccounts(journal.CompanyId);
+				var host = _hostService.GetHost(payroll.Company.HostId);
+				var coas = new List<Account>();
+				if(payCheck.PEOASOCoCheck)
+					coas = _companyService.GetComanyAccounts(host.Company.Id);
+				else
+					coas = _companyService.GetComanyAccounts(journal.CompanyId);
+
+				var company = payroll.Company;
+				if (payCheck.PEOASOCoCheck && !payroll.Company.Contract.InvoiceSetup.PrintClientName)
+					company = host.Company;
+				
 				var bankcoa = coas.First(c => c.Id == journal.MainAccountId);
 				var pdf = new PDFModel
 				{
@@ -1053,16 +1085,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				};
 				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", payroll.Company.Name));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", company.Name));
 				if (payroll.Company.PayCheckStock == PayCheckStock.LaserMiddle)
 				{
-					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name-2", payroll.Company.Name));
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name-2", company.Name));
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date-3", payCheck.PayDay.ToString("MM/dd/yyyy")));
 				}
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", payroll.Company.CompanyAddress.AddressLine1));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", payroll.Company.CompanyAddress.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", company.CompanyAddress.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", company.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo", payroll.Company.Memo));
@@ -1104,14 +1136,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var caption8 = string.Format("****-**-{0}                                                {1} {2}",
 					payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4), "Employee No:", payCheck.Employee.EmployeeNo);
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", caption8));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", payroll.Company.Name));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", company.Name));
 
 				if (payroll.Company.PayCheckStock != PayCheckStock.MICRQb)
 				{
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2",
 						payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", payroll.Company.CompanyAddress.AddressLine1));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", payroll.Company.CompanyAddress.AddressLine2));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", company.CompanyAddress.AddressLine1));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", company.CompanyAddress.AddressLine2));
 
 					var sum2 = string.Format("Federal Status: {0}{1}Federal Exemptions: {2}{3}Additional Fed Withholding: {4}",
 						payCheck.Employee.FederalStatus.GetDbName(), "".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length),
@@ -1149,7 +1181,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2-1", payCheck.Employee.FullName));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", journal.Memo));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", payroll.Company.Memo));
-					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", payroll.Company.Name));
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", company.Name));
 					if (payCheck.Employee.PayType == EmployeeType.Salary)
 					{
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr1-s-1", "Salary"));
@@ -1702,6 +1734,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " get invoice delivery claims " );
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<Models.Payroll> GetUnPrintedPayrolls()
+		{
+			try
+			{
+				return _payrollRepository.GetAllPayrolls(PayrollStatus.Committed);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " get un printed payrolls ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

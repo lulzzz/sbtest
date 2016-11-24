@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
 	public class ExtractAccumulation
 	{
+		public ExtractType ExtractType { get; set; }
 		public decimal GrossWage { get; set; }
 		public decimal NetWage { get; set; }
 		public int Count1 { get; set; }
@@ -43,40 +45,34 @@ namespace HrMaxx.OnlinePayroll.Models
 			
 		}
 
+		public List<PayrollTax> ApplicableTaxes
+		{
+			get
+			{
+				if (ExtractType == ExtractType.Federal940)
+					return Taxes.Where(t => t.Tax.Id == 6).ToList();
+				if (ExtractType == ExtractType.Federal941)
+					return Taxes.Where(t => t.Tax.Id < 6).ToList();
+				if (ExtractType == ExtractType.CAPITSDI)
+					return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id==8).ToList();
+				if (ExtractType == ExtractType.CAETTUI)
+					return Taxes.Where(t => t.Tax.Id == 9 || t.Tax.Id==10).ToList();
+				
+				return Taxes;
 
-		public decimal Wages940
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 6).Sum(t => t.TaxableWage); }
+			}
 		}
-		public decimal Wages941
+
+		public decimal ApplicableWages
 		{
-			get { return Taxes.Where(t => t.Tax.Id ==1 || t.Tax.Id==2 || t.Tax.Id==4).Sum(t => t.TaxableWage); }
+			get { return ApplicableTaxes.Sum(t => t.TaxableWage); }
 		}
+		public decimal ApplicableAmounts
+		{
+			get { return ApplicableTaxes.Sum(t => t.Amount); }
+		}
+
 		
-		public decimal Taxes940
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 6).Sum(t => t.Amount); }
-		}
-		public decimal Taxes941
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 1 || t.Tax.Id == 2 || t.Tax.Id == 4).Sum(t => t.Amount); }
-		}
-		public decimal WagesPitSdi
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.TaxableWage); }
-		}
-		public decimal TaxesPitSdi
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.Amount); }
-		}
-		public decimal WagesEttSui
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.TaxableWage); }
-		}
-		public decimal TaxesEttSui
-		{
-			get { return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8).Sum(t => t.Amount); }
-		}
 		public void AddPayChecks(IEnumerable<PayCheck> checks)
 		{
 			foreach (var add in checks)

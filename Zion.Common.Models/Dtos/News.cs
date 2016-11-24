@@ -12,6 +12,6 @@ namespace HrMaxx.Common.Models.Dtos
 		public string NewsContent { get; set; }
 		public int? AudienceScope { get; set; }
 		public string Audience { get; set; }
-		 
+		public bool IsActive { get; set; }
 	}
 }

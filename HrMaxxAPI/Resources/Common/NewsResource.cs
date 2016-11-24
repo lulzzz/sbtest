@@ -16,7 +16,7 @@ namespace HrMaxxAPI.Resources.Common
 		public int? AudienceScope { get; set; }
 		public List<IdValuePair> Audience { get; set; }
 		public DateTime TimeStamp { get; set; }
-
+		public bool IsActive { get; set; }
 		public string AudienceScopeText
 		{
 			get

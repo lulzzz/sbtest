@@ -12,7 +12,7 @@
 					</div>
 					<div class="row" ng-show="list.length>0">
 						<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
-							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedNewsItem(item)">
+							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedNewsItem(item)" ng-class="{'success':item.isActive, 'danger':!item.isActive}">
 								<td data-title=" 'Title' " filter="{ 'title': 'text' }" sortable=" 'title' " class="col-sm-1">
 									{{item.title}}
 								</td>
@@ -68,7 +68,7 @@
 							</div>
 							<div class="form-group col-sm-12">
 								<label for="scope">Scope</label>
-								<select id="scope" name="scope" class="form-control" ng-change="setTargetAudience(true)" ng-disabled="audienceTypeId>2" ng-model="selectedNewsItem.audienceScope">
+								<select id="scope" name="scope" class="form-control" ng-change="setTargetAudience(true)" ng-disabled="audienceTypeId>2" convert-to-number ng-model="selectedNewsItem.audienceScope">
 									<option value="1">All</option>
 									<option value="3">Host</option>
 									<option value="4">Company</option>
@@ -80,6 +80,15 @@
 								<label for="audience">Audiences</label>
 								<div ng-dropdown-multiselect="" options="targetAudience" extra-settings="{displayProp: 'value', idProp: 'key', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedAudience" events="audienceEvents"></div>
 
+							</div>
+							<div class="form-group">
+								<label></label>
+								<div>
+									<label for="ispeohost" class="switch">
+										Active?
+										<input id="ispeohost" type="checkbox" ng-model="selectedNewsItem.isActive" /><i></i>
+									</label>
+								</div>
 							</div>
 							<div class="row pull-right">
 								<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="newsForm.$invalid">Save</button>

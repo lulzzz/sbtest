@@ -221,6 +221,7 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<ReportRequestResource, ReportRequest>()
 				.ForMember(dest => dest.Description, opt => opt.Ignore())
 				.ForMember(dest => dest.AllowFiling, opt => opt.Ignore())
+				.ForMember(dest => dest.IncludeVoids, opt => opt.Ignore())
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.HasValue ? src.StartDate.Value : DateTime.MinValue))
 				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : DateTime.MinValue));
 

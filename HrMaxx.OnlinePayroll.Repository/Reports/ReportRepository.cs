@@ -113,6 +113,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					cmd.Parameters.AddWithValue("@report", extractReport.ReportName);
 					cmd.Parameters.AddWithValue("@startDate", extractReport.StartDate);
 					cmd.Parameters.AddWithValue("@endDate", extractReport.EndDate);
+					;
 					if (extractReport.DepositSchedule != null)
 					{
 						cmd.Parameters.AddWithValue("@depositSchedule", (int)extractReport.DepositSchedule);	
@@ -120,6 +121,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					if (extractReport.HostId != Guid.Empty)
 					{
 						cmd.Parameters.AddWithValue("@host", extractReport.HostId);
+					}
+					if (extractReport.IncludeVoids)
+					{
+						cmd.Parameters.AddWithValue("@includeVoids", extractReport.IncludeVoids);
 					}
 
 					cmd.Connection = con;
@@ -162,7 +167,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		public List<MasterExtract> GetExtractList(string report)
 		{
 			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();
-			return _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.MasterExtract>>(extracts);
+			var returnList = _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.MasterExtract>>(extracts);
+			returnList.ForEach(me => me.Extract.Data.Hosts.ForEach(h =>
+			{
+				h.Accumulation.ExtractType = me.Extract.Report.ExtractType;
+				h.Companies.ForEach(c=>c.Accumulation.ExtractType=me.Extract.Report.ExtractType);
+			}));
+			return returnList;
 		}
 
 		public SearchResults GetSearchResults(string criteria, string role, Guid host, Guid company)
