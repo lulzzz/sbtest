@@ -101,11 +101,13 @@
 	<div class="col-sm-12">
 		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-		<button class="btn btn-sm btn-warning" ng-click="includeAll()"><i class="fa fa-check m-r-5"></i> Include all</button>
-		<button class="btn btn-sm btn-success attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+		<button class="btn btn-sm btn-warning" ng-click="includeAll()" ng-if="showList()"><i class="fa fa-check m-r-5"></i> Include all</button>
+		<button class="btn btn-sm btn-success attach-button pull-right" ng-if="false" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 			<i class="fa fa-upload"></i>Import Timesheets
 		</button>
-		<button class="btn btn-sm btn-info pull-right" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Export Template</button>
+		<button class="btn btn-sm btn-success pull-right" ng-click="importTimesheet()" ng-if="showList()"><i class="fa fa-upload"></i>Import</button>
+		<button class="btn btn-sm btn-info pull-right" ng-if="showList()" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Export Template</button>
+		
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">
 		<select id="paytypelist" class="form-control" ng-model="params.filter()[name]" name="filter-paytype" convert-to-number>
@@ -194,6 +196,101 @@
 				<employee employee="employee" main-data="mainData" is-popup="true" show-controls="true" />
 			</div>
 		</div>
+	</script>
+	<script type="text/ng-template" id="popover/importtimesheet.html">
+
+		<div class="modal-header">
+			<h2 class="modal-title">Import Timesheet setup </h2>
+		</div>
+		<div class="modal-body">
+			
+				<div class="row alert alert-danger" ng-show="alerts.length>0">
+					{{alerts[0].message}}
+				</div>
+				<div class="row" >
+					<div class="col-sm-6 form-group">
+						<label>Select File (csv or xlsx)</label><br />
+						<label ng-show="files.length===1">File Name  = {{files[0].doc.file.name}}</label>
+						<button class="btn btn-sm btn-success attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+							<i class="fa fa-upload"></i>Import Timesheets
+						</button>
+					</div>
+					<div class="col-sm-3 form-group">
+						<label>Starting Row</label>
+						<input class="form-control"
+									 type="number"
+									 ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]?$/" data-parsley-min="1" />
+					</div>
+					<div class="col-sm-3 form-group">
+						<label># of Columns</label>
+						<input class="form-control"
+									 type="number"
+									 ng-model="importMap.columnCount" required data-parsley-pattern="/^[0-9]?$/" data-parsley-min="1" />
+					</div>
+				</div>
+				<div class="row" ng-show="showTable()">
+					
+					<table class="table table-header table-bordered table-condensed form-controls input-sm">
+						<thead>
+							<tr>
+								<td class="col-sm-6">Field</td>
+								<td class="col-sm-3">Position/Column #</td>	
+								<td>
+									<button class="btn btn-sm btn-primary" ng-click="add()" ng-show="availableColumns(-1).length>0 && !selected">add</button>
+								</td>							
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="f in importMap.columnMap track by $index">
+								<td>
+									<!-- editable tesltra worktype (select-local) -->
+									<span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
+										{{ f.key }}
+									</span>
+								</td>
+								<td>
+									<span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]?$/" e-step="1">
+										{{ f.value }}
+									</span>
+								</td>
+								<td style="white-space: nowrap" >
+									<!-- form -->
+									<form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
+										<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
+											<i class="fa fa-edit m-r-5"></i> edit
+										</button>
+										<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success">
+											<i class="fa fa-save m-r-5"></i> save
+										</button>
+										<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default">
+											<i class="fa fa-remove m-r-5"></i> cancel
+										</button>
+									</form>
+								</td>
+
+							</tr>
+							<tr ng-show="!selected">
+								<td colspan="3">
+									<span ng-show="importMap.columnMap.length===0">No mappings found</span>
+								</td>
+
+							</tr>
+
+						</tbody>
+					</table>
+					
+				</div>
+
+			
+		</div>
+		<div class="modal-footer">
+			<div class="col-sm-12" >
+				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-disabled="!ready()" ng-click="uploadDocument()"><i class="fa fa-save m-r-5"></i> Go</button>
+			</div>
+
+		</div>
+
 	</script>
 </div>
 

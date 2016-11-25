@@ -21,7 +21,14 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					$scope.cancel = function () {
 						if ($scope.item.status > 2 && $scope.item.status!==6) {
 							$scope.$parent.$parent.committed = null;
-						} else {
+						}
+						else if ($scope.item.status === 6) {
+							$scope.$parent.$parent.$parent.$parent.confirmDialog('This action will ONLY retain the matching timesheets from the draft. Are you sure you want to proceed? You may cancel at Step 1 to retain the draft', 'info', function() {
+								$scope.$parent.$parent.refresh($scope.item);
+								$scope.datasvc.isBodyOpen = true;
+							});
+						}
+						else {
 							$.each($scope.item.payChecks, function (index1, paycheck) {
 								paycheck.employeeNo = paycheck.employee.employeeNo;
 								paycheck.name = paycheck.employee.name;

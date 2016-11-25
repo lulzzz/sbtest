@@ -123,6 +123,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							{
 								pc.PayCode.HourlyRate = Math.Round(pc.PWAmount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
 							}
+							paycheck.Employee.Rate = pc.PayCode.HourlyRate;
 						}
 						paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, employeePayChecks);
 						paycheck.YTDSalary = Math.Round(employeePayChecks.Sum(p => p.Salary) + paycheck.Salary, 2, MidpointRounding.AwayFromZero);

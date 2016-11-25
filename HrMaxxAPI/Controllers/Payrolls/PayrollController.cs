@@ -435,6 +435,66 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			}
 		}
 
+		/// <summary>
+		/// Upload Entity Document for a given entity
+		/// </summary>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(PayrollRoutes.ImportTimesheetsWithMap)]
+		public async Task<HttpResponseMessage> ImportTimesheetsWithMap()
+		{
+			var filename = string.Empty;
+			try
+			{
+				var fileUploadObj = await ProcessMultipartContentWithMap();
+				filename = fileUploadObj.file.FullName;
+				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
+				var importedRows = _excelService.ImportWithMap(fileUploadObj.file, fileUploadObj.ImportMap, fileUploadObj.FileName);
+				var timesheets = new List<TimesheetResource>();
+				var error = string.Empty;
+				company.PayCodes.Add(new CompanyPayCodeResource
+				{
+					Code = "Default",
+					Description = "Base Rate",
+					CompanyId = company.Id.Value,
+					Id = 0,
+					HourlyRate = 0
+				});
+				importedRows.ForEach(er =>
+				{
+					try
+					{
+						var timesheet = new TimesheetResource();
+						timesheet.FillFromImportWithMap(er, company, fileUploadObj.PayTypes, fileUploadObj.ImportMap);
+						timesheets.Add(timesheet);
+					}
+					catch (Exception ex)
+					{
+						error += ex.Message + "<br>";
+					}
+				});
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error);
+				_companyService.SaveTSImportMap(company.Id.Value, fileUploadObj.ImportMap);
+				return this.Request.CreateResponse(HttpStatusCode.OK, timesheets);
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error importing timesheets", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message
+				});
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(filename))
+					File.Delete(filename);
+			}
+		}
+
 		private async Task<TimesheetImportResource> ProcessMultipartContent()
 		{
 			if (!Request.Content.IsMimeMultipartContent())
@@ -449,6 +509,27 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var result = await Request.Content.ReadAsMultipartAsync(provider);
 
 			var fileUploadObj = FileUploadHelpers.GetFormData<TimesheetImportResource>(result);
+
+			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
+			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);
+			fileUploadObj.FileName = originalFileName;
+			fileUploadObj.file = uploadedFileInfo;
+			return fileUploadObj;
+		}
+		private async Task<TimesheetImportWithMapResource> ProcessMultipartContentWithMap()
+		{
+			if (!Request.Content.IsMimeMultipartContent())
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.UnsupportedMediaType
+				});
+			}
+
+			var provider = FileUploadHelpers.GetMultipartProvider();
+			var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+			var fileUploadObj = FileUploadHelpers.GetFormData<TimesheetImportWithMapResource>(result);
 
 			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
 			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);

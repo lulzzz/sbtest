@@ -86,8 +86,8 @@ namespace HrMaxx.OnlinePayroll.Services
 				var bankAccount = _metaDataRepository.GetPayrollAccount(companyId);
 				var hostAccount = _metaDataRepository.GetPayrollAccount(host.Company.Id);
 				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((company.Contract.BillingOption==BillingOptions.Invoice && company.Contract.InvoiceSetup!=null && company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck) ? host.Company.Id : companyId);
-				
-				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount };
+				var importMap = _metaDataRepository.GetCompanyTsImportMap(companyId);
+				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap };
 			}
 			catch (Exception e)
 			{

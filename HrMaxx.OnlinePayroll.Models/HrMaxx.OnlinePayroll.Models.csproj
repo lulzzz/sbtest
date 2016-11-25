@@ -99,6 +99,9 @@
     <Compile Include="DataModel\CompanyTaxState.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CompanyTSImportMap.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CompanyWorkerCompensation.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>

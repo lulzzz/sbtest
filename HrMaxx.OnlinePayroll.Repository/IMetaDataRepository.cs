@@ -27,5 +27,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
 		List<SearchResult> FillSearchResults(List<SearchResult> searchResults);
 		void UpdateSearchTable(SearchResult searchResult);
+		ImportMap GetCompanyTsImportMap(Guid companyId);
 	}
 }

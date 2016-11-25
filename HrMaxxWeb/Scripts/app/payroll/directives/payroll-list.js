@@ -20,7 +20,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						payrollAccount: null,
 						hostPayrollAccount: null,
 						employees: [],
-						startingCheckNumber: 0
+						startingCheckNumber: 0,
+						importMap: null
 					}
 					$scope.list = [];
 					
@@ -122,6 +123,108 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
 							}
 							
+
+						}
+						$scope.set(selected);
+					}
+
+					$scope.refresh = function (payroll) {
+						var selected = {
+							company: $scope.mainData.selectedCompany,
+							startDate: payroll.startDate,
+							endDate: payroll.endDate,
+							payDay: payroll.payDay,
+							payChecks: [],
+							startingCheckNumber: payroll.startingCheckNumber,
+							status: 1,
+							notes: payroll.notes
+						};
+						$.each(dataSvc.employees, function (index, employee) {
+							var matching = $filter('filter')(payroll.payChecks, { employee: { id: employee.id } })[0];
+							var paycheck = {
+								id: matching ? matching.id : 0,
+								employeeNo: employee.employeeNo,
+								name: employee.name,
+								department: employee.department,
+								employee: employee,
+								payCodes: [],
+								salary: employee.payType === 2 ? employee.rate : 0,
+								compensations: [],
+								deductions: [],
+								isVoid: false,
+								status: 1,
+								memo: '',
+								notes: matching ? matching.notes : '',
+								included: matching ? matching.included : false
+							};
+							$.each(employee.payCodes, function (index1, paycode) {
+								var pc = {
+									payCode: paycode,
+									screenHours: 0,
+									screenOvertime: 0,
+									hours: 0,
+									overtimeHours: 0,
+									pwAmount: 0
+								};
+								if (matching) {
+									var matchingpc = $filter('filter')(matching.payCodes, { payCode: { id: paycode.id } })[0];
+									if (matchingpc) {
+										pc.screenHours = matchingpc.screenHours;
+										pc.screenOvertime = matchingpc.screenOvertime;
+										pc.hours = matchingpc.hours;
+										pc.overtimeHours = matchingpc.overtimeHours;
+										pc.pwAmount = matchingpc.pwAmount;
+									}
+								}
+								paycheck.payCodes.push(pc);
+							});
+							$.each(employee.compensations, function (index2, comp) {
+								var pt = {
+									payType: comp.payType,
+									amount: comp.amount,
+									ytd: 0
+								}
+								paycheck.compensations.push(pt);
+							});
+							$.each(employee.deductions, function (index3, ded) {
+								paycheck.deductions.push({
+									deduction: ded.deduction,
+									rate: ded.rate,
+									annualMax: ded.annualMax,
+									method: ded.method,
+
+									amount: 0,
+									ytd: 0
+								});
+							});
+							selected.payChecks.push(paycheck);
+						});
+						if ($scope.list.length > 0) {
+							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
+							selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
+
+							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
+								selected.endDate = moment(selected.startDate).add(1, 'week').add(-1, 'day').toDate();
+								selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
+							}
+							else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
+								selected.endDate = moment(selected.startDate).add(2, 'week').add(-1, 'day').toDate();
+								selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
+							}
+							else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
+								if (moment(selected.startDate).date() === 1) {
+									selected.endDate = moment(selected.startDate).add(14, 'day').toDate();
+									selected.payDay = moment(sorted[0].payDay).add(15, 'day').toDate();
+								} else {
+									selected.endDate = moment(selected.startDate).endOf('month').toDate();
+									selected.payDay = moment(sorted[0].startDate).endOf('month').toDate();
+								}
+
+							} else {
+								selected.endDate = moment(selected.startDate).add(1, 'month').toDate();
+								selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
+							}
+
 
 						}
 						$scope.set(selected);
@@ -252,6 +355,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.payrollAccount = data.payrollAccount;
 							dataSvc.hostPayrollAccount = data.hostPayrollAccount;
 							dataSvc.startingCheckNumber = data.startingCheckNumber;
+							dataSvc.importMap = data.importMap;
 						}, function (error) {
 							$scope.addAlert('error getting payroll meta data', 'danger');
 						});

@@ -28,6 +28,7 @@
 		public const string DelayTaxes = "Payroll/DelayTaxes/{invoiceId:guid}";
 		public const string RedateInvoice = "Payroll/RedateInvoice";
 		public const string ImportTimesheets = "Payroll/ImportTimesheets";
+		public const string ImportTimesheetsWithMap = "Payroll/ImportTimesheetsWithMap";
 		public const string ImportTimesheetsTemplate = "Payroll/TimesheetImportTemplate";
 		public const string ClaimDelivery = "Payroll/ClaimDelivery";
 		public const string SaveProcessedPayroll = "Payroll/SaveProcessedPayroll";

@@ -94,5 +94,36 @@ namespace HrMaxx.Common.Repository.Excel
 			File.Delete(_filename);
 			return returnVal;
 		}
+
+		public List<ExcelRead> GetExcelDataWithMap(FileInfo file, int startingRow, ImportMap importMap)
+		{
+			var result = new List<ExcelRead>();
+			using (var xl = new Infrastructure.Excel.Excel(file))
+			{
+				var workSheet = xl.Worksheet;
+
+				var end = workSheet.Dimension.End;
+				for (int row = startingRow; row <= end.Row; row++)
+				{ // Row by row...
+					var erow = new ExcelRead { Row = row, Values = new List<KeyValuePair<string, string>>() };
+					for (int col = 1; col <= end.Column; col++)
+					{ // ... Cell by cell...
+						var match = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == col);
+						if (!string.IsNullOrWhiteSpace(match.Key))
+						{
+							var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
+							var header = match.Key;
+							erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
+						}
+						
+
+					}
+					result.Add(erow);
+				}
+
+
+			}
+			return result;
+		}
 	}
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Messages.Events;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Exceptions;
@@ -499,6 +500,19 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		
+
+		public void SaveTSImportMap(Guid id, ImportMap importMap)
+		{
+			try
+			{
+				_companyRepository.SaveTSImportMap(id, importMap);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" save TS Import Map"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

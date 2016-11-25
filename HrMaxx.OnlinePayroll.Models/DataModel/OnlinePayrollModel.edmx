@@ -170,6 +170,13 @@
           <Property Name="EIN" Type="varchar(max)" Nullable="false" />
           <Property Name="Pin" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="CompanyTSImportMap">
+          <Key>
+            <PropertyRef Name="CompanyId" />
+          </Key>
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TimeSheetImportMap" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="CompanyWorkerCompensation">
           <Key>
             <PropertyRef Name="Id" />
@@ -1002,6 +1009,7 @@
           <EntitySet Name="CompanyPayrollCube" EntityType="Self.CompanyPayrollCube" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxRate" EntityType="Self.CompanyTaxRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxState" EntityType="Self.CompanyTaxState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CompanyTSImportMap" EntityType="Self.CompanyTSImportMap" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyWorkerCompensation" EntityType="Self.CompanyWorkerCompensation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeductionType" EntityType="Self.DeductionType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
@@ -1379,6 +1387,7 @@
           </AssociationSet>
           <EntitySet Name="SearchTables" EntityType="HrMaxxModel.SearchTable" />
           <EntitySet Name="InvoiceDeliveryClaims" EntityType="HrMaxxModel.InvoiceDeliveryClaim" />
+          <EntitySet Name="CompanyTSImportMaps" EntityType="HrMaxxModel.CompanyTSImportMap" />
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -2455,6 +2464,13 @@
           <Property Name="Invoices" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="DeliveryClaimedOn" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
+        <EntityType Name="CompanyTSImportMap">
+          <Key>
+            <PropertyRef Name="CompanyId" />
+          </Key>
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="TimeSheetImportMap" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3030,6 +3046,14 @@
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CompanyTSImportMaps">
+            <EntityTypeMapping TypeName="HrMaxxModel.CompanyTSImportMap">
+              <MappingFragment StoreEntitySet="CompanyTSImportMap">
+                <ScalarProperty Name="TimeSheetImportMap" ColumnName="TimeSheetImportMap" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

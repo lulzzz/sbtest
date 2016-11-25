@@ -225,5 +225,13 @@ namespace HrMaxx.OnlinePayroll.Repository
 				}
 			}
 		}
+
+		public ImportMap GetCompanyTsImportMap(Guid companyId)
+		{
+			var dbVal = _dbContext.CompanyTSImportMaps.FirstOrDefault(c => c.CompanyId == companyId);
+			if (dbVal != null)
+				return JsonConvert.DeserializeObject<ImportMap>(dbVal.TimeSheetImportMap);
+			return null;
+		}
 	}
 }

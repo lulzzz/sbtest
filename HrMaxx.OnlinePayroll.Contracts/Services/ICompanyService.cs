@@ -36,5 +36,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year);
 
 		List<Employee> GetAllEmployees();
+		void SaveTSImportMap(Guid id, ImportMap importMap);
 	}
 }

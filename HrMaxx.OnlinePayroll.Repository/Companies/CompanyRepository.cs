@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
@@ -546,6 +547,22 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		{
 			var emps = _dbContext.Employees.ToList();
 			return _mapper.Map<List<Models.DataModel.Employee>, List<Models.Employee>>(emps);
+		}
+
+		public void SaveTSImportMap(Guid id, ImportMap importMap)
+		{
+			var dbVal = _dbContext.CompanyTSImportMaps.FirstOrDefault(m => m.CompanyId == id);
+			if (dbVal != null)
+				dbVal.TimeSheetImportMap = JsonConvert.SerializeObject(importMap);
+			else
+			{
+				_dbContext.CompanyTSImportMaps.Add(new CompanyTSImportMap
+				{
+					CompanyId = id,
+					TimeSheetImportMap = JsonConvert.SerializeObject(importMap)
+				});
+			}
+			_dbContext.SaveChanges();
 		}
 	}
 }

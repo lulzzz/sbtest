@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models;
 
@@ -35,5 +36,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		List<Company> GetAllCompanies();
 		Employee GetEmployeeById(Guid employeeId);
 		List<Employee> GetAllEmployees();
+		void SaveTSImportMap(Guid id, ImportMap importMap);
 	}
 }

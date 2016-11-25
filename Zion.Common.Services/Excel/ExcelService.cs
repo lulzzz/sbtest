@@ -130,5 +130,69 @@ namespace HrMaxx.Common.Services.Excel
 				throw new HrMaxxApplicationException(e.Message, e);
 			}
 		}
+
+		public List<ExcelRead> ImportWithMap(FileInfo file, ImportMap importMap, string fileName)
+		{
+			try
+			{
+				var error = string.Empty;
+
+				var data = new List<ExcelRead>();
+				if (fileName.EndsWith(".xlsx"))
+					data = _excelRepository.GetExcelDataWithMap(file, importMap.StartingRow, importMap);
+				else if (fileName.EndsWith(".csv"))
+				{
+					var lines = File.ReadAllLines(file.Directory.FullName + "/" + file.Name);
+					var rowCounter = 1;
+					foreach (var line in lines)
+					{
+						if (rowCounter >= importMap.StartingRow)
+						{
+							var values = line.Split(',').ToList();
+							var keyVals = new List<KeyValuePair<string, string>>();
+							var colCounter = 1;
+							foreach (var value in values)
+							{
+								var mapVal = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == colCounter);
+								if (!string.IsNullOrWhiteSpace(mapVal.Key))
+								{
+									keyVals.Add(new KeyValuePair<string, string>(mapVal.Key, value));
+								}
+								colCounter++;
+							}
+							data.Add(new ExcelRead()
+							{ 
+								Row = rowCounter, Values = keyVals
+							});
+						}
+
+
+						rowCounter++;
+					}
+				}
+				else
+				{
+					throw new Exception("Invalid file selected");
+				}
+
+				if (!data.Any())
+				{
+					error += "No Data available to import<br/>";
+				}
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error);
+
+				return data;
+
+
+
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " failed to read employee import data");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(e.Message, e);
+			}
+		}
 	}
 }

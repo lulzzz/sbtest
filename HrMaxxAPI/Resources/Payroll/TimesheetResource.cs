@@ -17,9 +17,11 @@ namespace HrMaxxAPI.Resources.Payroll
 {
 	public class TimesheetResource
 	{
+		public string Name { get; set; }
 		public string EmployeeNo { get; set; }
 		public string SSN { get; set; }
 		public decimal Salary { get; set; }
+		public string Notes { get; set; }
 		public List<PayrollPayCodeResource> PayCodes { get; set; }
 		public List<PayrollPayTypeResource> Compensations { get; set; }
 
@@ -45,18 +47,22 @@ namespace HrMaxxAPI.Resources.Payroll
 			{
 				EmployeeNo = er.Value("employee no");
 			}
-			if (!string.IsNullOrWhiteSpace(er.Value("salary")))
+			if (!string.IsNullOrWhiteSpace(er.ValueFromContains("salary")))
 			{
 				decimal sala = 0;
-				decimal.TryParse(er.Value("salary"), out sala);
+				decimal.TryParse(er.ValueFromContains("salary"), out sala);
 				if (sala > 0)
 					Salary = sala;
+			}
+			if (!string.IsNullOrWhiteSpace(er.Value("employee name")))
+			{
+				Name = er.Value("employee name");
 			}
 			if (string.IsNullOrWhiteSpace(error))
 			{
 				company.PayCodes.ForEach(pc =>
 				{
-					var ratestr = er.Value("Base Rate");
+					
 					var h = er.Value(pc.Code + " hours");
 					var o = er.Value(pc.Code + " overtime");
 					var h1 = er.Value(pc.Description + " hours");
@@ -101,8 +107,6 @@ namespace HrMaxxAPI.Resources.Payroll
 						
 						if (hval > 0 || oval > 0)
 						{
-							decimal rate = 0;
-							decimal.TryParse(ratestr, out rate);
 							var pcode = new PayrollPayCodeResource
 							{
 								ScreenHours = !string.IsNullOrWhiteSpace(h) ? h : "0",
@@ -111,10 +115,10 @@ namespace HrMaxxAPI.Resources.Payroll
 								Hours = hval,
 								OvertimeHours = oval
 							};
-							if (rate > 0 && pc.Id == 0)
+							if (Salary > 0 && pc.Id == 0)
 							{
 								pcode.PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(pc));
-								pcode.PayCode.HourlyRate = rate;
+								pcode.PayCode.HourlyRate = Salary;
 							}
 
 							PayCodes.Add(pcode);
@@ -160,8 +164,7 @@ namespace HrMaxxAPI.Resources.Payroll
 						}
 						if (hval > 0 || oval > 0)
 						{
-							decimal rate = 0;
-							decimal.TryParse(ratestr, out rate);
+							
 							var pcode = new PayrollPayCodeResource
 							{
 								ScreenHours = !string.IsNullOrWhiteSpace(h1) ? h1 : "0",
@@ -170,10 +173,10 @@ namespace HrMaxxAPI.Resources.Payroll
 								Hours = hval,
 								OvertimeHours = oval
 							};
-							if (rate > 0 && pc.Id == 0)
+							if (Salary > 0 && pc.Id == 0)
 							{
 								pcode.PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(pc));
-								pcode.PayCode.HourlyRate = rate;
+								pcode.PayCode.HourlyRate = Salary;
 							}
 
 							PayCodes.Add(pcode);
@@ -209,6 +212,120 @@ namespace HrMaxxAPI.Resources.Payroll
 				throw new Exception(error);
 			}
 			
+			
+		}
+
+		public void FillFromImportWithMap(ExcelRead er, CompanyResource company, List<PayType> payTypes, ImportMap importMap)
+		{
+			PayCodes = new List<PayrollPayCodeResource>();
+			Compensations = new ListStack<PayrollPayTypeResource>();
+			var error = string.Empty;
+			foreach (var col in importMap.ColumnMap)
+			{
+				var val = er.Value(col.Key);
+				if (col.Key.Equals("SSN"))
+				{
+					const string ssnRegex = @"^(\d{3}-\d{2}-\d{4})$";
+					if (!Regex.IsMatch(val, ssnRegex))
+					{
+						error += "SSN, ";
+					}
+					else
+					{
+						SSN = val.Replace("-", string.Empty);
+					}
+				}
+				else if (col.Key.Equals("Employee No"))
+				{
+					if (string.IsNullOrWhiteSpace(val))
+					{
+						error += "Employee No, ";
+					}
+					else
+					{
+						EmployeeNo = val;
+					}
+				}
+				else if (col.Key.Equals("Employee Name"))
+				{
+					if (string.IsNullOrWhiteSpace(val))
+					{
+						error += "Employee Name, ";
+					}
+					else
+					{
+						Name = val;
+					}
+				}
+				else if (col.Key.Equals("Pay Rate/Salary"))
+				{
+					decimal sala = 0;
+					decimal.TryParse(val, out sala);
+					if (sala > 0)
+						Salary = sala;
+				}
+				else if (col.Key.Equals("Notes"))
+				{
+					Notes = val;
+				}
+				else if (company.PayCodes.Any(pc=>col.Key.StartsWith(pc.Code) || (pc.Id==0 && col.Key.StartsWith("Base Rate"))))
+				{
+					var payCode = company.PayCodes.First(pc => col.Key.StartsWith(pc.Code) || (pc.Id==0 && col.Key.StartsWith("Base Rate")));
+
+					var dval = (decimal) 0;
+					decimal.TryParse(val, out dval);
+					PayrollPayCodeResource pcode;
+					var add = true;
+					if (PayCodes.Any(pc => pc.PayCode.Id == payCode.Id))
+					{
+						pcode = PayCodes.First(pc => pc.PayCode.Id == payCode.Id);
+						add = false;
+					}
+					else
+					{
+						pcode = new PayrollPayCodeResource()
+						{
+							PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(payCode))
+						};
+						if (Salary > 0 && payCode.Id == 0)
+						{
+							pcode.PayCode.HourlyRate = Salary;
+						}
+					}
+					if (col.Key.EndsWith("Hours"))
+					{
+						pcode.ScreenHours = string.IsNullOrWhiteSpace(val) ? "0" : val;
+						pcode.Hours = dval;
+					}
+					else if (col.Key.EndsWith("Overtime"))
+					{
+						pcode.ScreenOvertime = string.IsNullOrWhiteSpace(val)? "0" : val;
+						pcode.OvertimeHours = dval;
+					}
+					
+					
+					if(add)
+						PayCodes.Add(pcode);
+				}
+				else if (payTypes.Any(pt => pt.Name.Equals(col.Key)))
+				{
+					var comp = payTypes.First(pt => pt.Name.Equals(col.Key));
+					var dval = (decimal)0;
+					decimal.TryParse(val, out dval);
+					Compensations.Add(new PayrollPayTypeResource
+					{
+						PayType = comp,
+						Amount = dval
+					});
+				}
+				
+				 
+			}
+			if (!string.IsNullOrWhiteSpace(error))
+			{
+				error = "Employee at row# " + er.Row + " has invalid " + error;
+				throw new Exception(error);
+			}
 			
 		}
 	}

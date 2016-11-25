@@ -59,5 +59,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<InsuranceGroup> InsuranceGroups { get; set; }
         public virtual DbSet<SearchTable> SearchTables { get; set; }
         public virtual DbSet<InvoiceDeliveryClaim> InvoiceDeliveryClaims { get; set; }
+        public virtual DbSet<CompanyTSImportMap> CompanyTSImportMaps { get; set; }
     }
 }
