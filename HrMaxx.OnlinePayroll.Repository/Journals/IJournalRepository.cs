@@ -11,7 +11,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		Journal GetPayCheckJournal(int payCheckId, bool peoasoCoCheck);
 		Journal VoidJournal(int id, TransactionType transactionType, string name);
 		List<Journal> GetJournalList(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);
-		List<Journal> GetCompanyJournals(Guid companyId, DateTime? startDate, DateTime? endDate);
+		List<Journal> GetCompanyJournals(Guid? companyId, DateTime? startDate, DateTime? endDate);
 
 		MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
 	}

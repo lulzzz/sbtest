@@ -162,6 +162,7 @@ common.directive('depositTicket', ['zionAPI','version',
 							}
 						}
 						updateItemAmount();
+						$scope.item.transactionDate = moment($scope.item.transactionDate).format("MM/DD/YYYY");
 						$scope.$parent.$parent.save();
 					}
 					$scope.print = function () {

@@ -478,7 +478,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public List<Journal> GetJournalListByDate(Guid companyId, DateTime startDate, DateTime endDate)
+		public List<Journal> GetJournalListByDate(Guid? companyId, DateTime startDate, DateTime endDate)
 		{
 			try
 			{

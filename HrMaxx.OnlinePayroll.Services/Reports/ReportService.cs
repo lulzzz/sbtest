@@ -187,16 +187,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return Get1099Extract(request);
 				else if (request.ReportName.Equals("Federal940"))
 					return Federal940(request);
+				else if (request.ReportName.Equals("Federal940Excel"))
+					return Federal940Excel(request);
 				else if (request.ReportName.Equals("Federal941"))
 					return Federal941(request);
+				else if (request.ReportName.Equals("Federal941Excel"))
+					return Federal941Excel(request);
 				else if (request.ReportName.Equals("StateCAPIT"))
 					return StateCAPIT(request);
+				else if (request.ReportName.Equals("StateCAPITExcel"))
+					return StateCAPITExcel(request);
 				else if (request.ReportName.Equals("StateCAUI"))
 					return StateCAUI(request);
+				else if (request.ReportName.Equals("StateCAUIExcel"))
+					return StateCAUIExcel(request);
 				else if (request.ReportName.Equals("StateCADE6"))
 					return StateCADE6(request);
 				else if (request.ReportName.Equals("HostWCReport"))
 					return GetHostWCReport(request);
+				else if (request.ReportName.Equals("DailyDepositReport"))
+					return GetDailyDepositReport(request);
 				else if (request.ReportName.Equals("PositivePayReport"))
 					return GetPositivePayReport(request);
 				else if (request.ReportName.Equals("InternalPositivePayReport"))
@@ -239,6 +249,61 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostWCReport.xslt", "xls", request.Description + ".xls");
 		}
 
+		private Extract GetDailyDepositReport(ReportRequest request)
+		{
+			request.EndDate = request.StartDate.AddHours(24);
+			var journals = _journalService.GetJournalListByDate(null, request.StartDate.Date,
+				request.EndDate.Date);
+			journals =
+				journals.Where(
+					j =>
+						!j.IsVoid && j.TransactionType == TransactionType.Deposit).ToList();
+			if (!journals.Any())
+				throw new Exception(NoData);
+			var hosts = _hostService.GetHostList(Guid.Empty);
+			var companies = _companyRepository.GetAllCompanies();
+			var hostList = new List<ExtractHost>();
+			var companyList = new List<ExtractCompany>();
+			journals.ForEach(j =>
+			{
+				if (!companyList.Any(c => c.Company.Id == j.CompanyId))
+				{
+					var company = companies.First(c => c.Id == j.CompanyId);
+					companyList.Add(new ExtractCompany()
+					{
+						Company = company
+					});
+					
+				}
+			});
+			companyList.ForEach(c =>
+			{
+				c.Journals = journals.Where(j => j.CompanyId == c.Company.Id).ToList();
+				if (!hostList.Any(h => h.Host.Id == c.Company.HostId))
+				{
+					var host = hosts.First(h => h.Id == c.Company.HostId);
+					hostList.Add(new ExtractHost()
+					{
+						Host = host,
+						HostCompany = host.Company,
+						Companies = companyList.Where(c1=>c1.Company.HostId==host.Id).ToList()
+					});
+				}
+			});
+			var data = new ExtractResponse()
+			{
+				Hosts = hostList,
+				History = new List<MasterExtract>()
+			};
+
+			request.Description = string.Format("Daily Deposit Report {0}-{1}", request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
+			request.AllowFiling = false;
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("today", "", request.StartDate.ToString("MM/dd/yyyy"));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/DailyDepositReport.xslt", "xls", request.Description + ".xls");
+		}
+
 		private Extract GetInternalPositivePayReport(ReportRequest request)
 		{
 			request.IncludeVoids = true;
@@ -256,7 +321,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var host = _hostService.GetHost(request.HostId);
 			var accounts = _companyRepository.GetCompanyAccounts(host.Company.Id);
-			var journals = _journalService.GetJournalListByDate(host.CompanyId.Value, request.StartDate.Date,
+			var journals = _journalService.GetJournalListByDate(host.CompanyId, request.StartDate.Date,
 				request.EndDate.Date);
 			journals =
 				journals.Where(
@@ -273,7 +338,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					{
 						Host = host,
 						HostCompany = host.Company,
-						Journals = journals, Accounts = accounts
+						Journals = journals, 
+						Accounts = accounts
 					}
 				},
 				History = new List<MasterExtract>()
@@ -287,21 +353,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/PositivePayReport.xslt", "txt", request.Description + ".txt");
 		}
 
-		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false)
+		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false)
 		{
 			var data = _reportRepository.GetExtractReport(request);
-			if (!request.ReportName.Contains("1099"))
-			{
-				if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-				{
-					throw new Exception(NoPayrollData);
-				}
-				else
-				{
-					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
-				}
-			}
-			else
+
+			if (request.ReportName.Contains("1099"))
 			{
 				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
 				{
@@ -312,15 +368,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				{
 					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.Vendors.Any(v => v.Amount > 0))).ToList();
 				}
+				
+			}
+			else 
+			{
+				if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
+				{
+					throw new Exception(NoPayrollData);
+				}
+				else
+				{
+					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
+				}
 			}
 			
 			data.Hosts.ForEach(h =>
 			{
-
 				if (!request.ReportName.Contains("1099"))
 				{
 					h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
-					h.Accumulation = new ExtractAccumulation(){ExtractType = request.ExtractType};
+					h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
 					var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
 					var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
 					h.Accumulation.AddPayChecks(payChecks);
@@ -341,11 +408,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
 						if (buildCompanyEmployeeAccumulation)
 							c.EmployeeAccumulations = getEmployeeAccumulations(c.Accumulation.PayChecks);
+						if (getCompanyDeposits)
+						{
+							var j = _journalService.GetJournalListByDate(c.Company.Id, request.StartDate, request.EndDate);
+							if (j.Any(j1 => j1.TransactionType == TransactionType.Deposit))
+								c.Journals = j.Where(j1 => j1.TransactionType == TransactionType.Deposit).ToList();
+						}
 					});
 				}
 				else
 				{
-					h.Companies = h.Companies.Where(c => c.Vendors.Any(v=>v.Amount>0)).ToList();
+					h.Companies = h.Companies.Where(c => c.Vendors.Any(v => v.Amount > 0)).ToList();
 					h.Companies.ForEach(c =>
 					{
 						c.VendorAccumulation = new VendorAccumulation();
@@ -353,10 +426,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					});
 					h.VendorAccumulation = new VendorAccumulation();
 					h.VendorAccumulation.Add(h.Companies.SelectMany(c => c.Vendors).ToList());
-				}
-				
-
+				}	
+			
 			});
+			
 			return data;
 		}
 		private Extract Federal940(ReportRequest request)
@@ -377,6 +450,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal {2} 940 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
 		}
+
+		private Extract Federal940Excel(ReportRequest request)
+		{
+			request.ReportName = "Federal940";
+			request.Description = string.Format("Federal 940 EFTPS Excel for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request);
+
+			var reportConst = _taxationService.PullReportConstant("Form940", (int)request.DepositSchedule.Value);
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("batchFilerId", "", config.BatchFilerId);
+			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
+			argList.AddParam("fileSeq", "", reportConst);
+			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
+			argList.AddParam("selectedYear", "", request.Year);
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPSExcel.xslt", "xls", string.Format("Federal {2} 940 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));
+		}
 		private Extract Federal941(ReportRequest request)
 		{
 			request.Description = string.Format("Federal 941 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
@@ -396,6 +489,28 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
+
+		private Extract Federal941Excel(ReportRequest request)
+		{
+			request.ReportName = "Federal941";
+			request.Description = string.Format("Federal 941 EFTPS Excel for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.AllowFiling = false;
+			
+			var data = GetExtractResponse(request);
+
+			var reportConst = _taxationService.PullReportConstant("Form941", (int)request.DepositSchedule.Value);
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("batchFilerId", "", config.BatchFilerId);
+			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
+			argList.AddParam("fileSeq", "", reportConst);
+			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPSExcel.xslt", "xls", string.Format("Federal {2} 941 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
+		}
 		private Extract StateCAPIT(ReportRequest request)
 		{
 			request.Description = string.Format("California State PIT & SDI for {0} (Quarter={1})", request.Year, request.Quarter);
@@ -410,7 +525,24 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("selectedYear", "", request.Year);
 			
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPS.xslt", "txt", string.Format("California State {2} PIT & DI GovOneFile-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPS.xslt", "txt", string.Format("California State {2} PIT & DI GovOne File-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
+		}
+		private Extract StateCAPITExcel(ReportRequest request)
+		{
+			request.ReportName = "StateCAPIT";
+			request.Description = string.Format("California State PIT & SDI Excel for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request);
+
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("reportConst", "", request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104");
+			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
+			argList.AddParam("selectedYear", "", request.Year);
+
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPSExcel.xslt", "xls", string.Format("California State {2} PIT & DI Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
 
 		private Extract StateCAUI(ReportRequest request)
@@ -427,7 +559,24 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("selectedYear", "", request.Year);
 
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPS.xslt", "txt", string.Format("California State {2} UI & ETT GovOneFile-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPS.xslt", "txt", string.Format("California State {2} UI & ETT GovOne File-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
+		}
+		private Extract StateCAUIExcel(ReportRequest request)
+		{
+			request.ReportName = "StateCAUI";
+			request.Description = string.Format("California State UI & ETT Excel for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
+			request.AllowFiling = true;
+			var data = GetExtractResponse(request);
+
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("reportConst", "", "01300");
+			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
+			argList.AddParam("selectedYear", "", request.Year);
+
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPSExcel.xslt", "xls", string.Format("California State {2} UI & ETT Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));
 		}
 		private Extract StateCADE6(ReportRequest request)
 		{

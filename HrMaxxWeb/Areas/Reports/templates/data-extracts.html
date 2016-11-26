@@ -202,6 +202,7 @@
 							<div class="col-sm-2 form-group">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReportFederal941()" ng-disabled="!is941Valid()">Review</button>
+								<button class="btn btn-sm btn-primary" ng-click="getReportFederal941Excel()" ng-disabled="!is941Valid()">Excel</button>
 								
 							</div>
 
@@ -265,6 +266,7 @@
 							<div class="col-sm-2">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!is940Valid()">Review</button>
+								<button class="btn btn-sm btn-primary" ng-click="getReport940QExcel()" ng-disabled="!is940Valid()">Excel</button>
 							</div>
 
 						</div>
@@ -337,7 +339,7 @@
 							<div class="col-sm-2 form-group">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReportCAPIT()" ng-disabled="!isCAPITValid()">Review</button>
-								
+								<button class="btn btn-sm btn-primary" ng-click="getReportCAPITExcel()" ng-disabled="!isCAPITValid()">Excel</button>
 							</div>
 
 						</div>
@@ -403,7 +405,7 @@
 							<div class="col-sm-2 form-group">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReportCAUIQ()" ng-disabled="!isCAUIValid()">Review</button>
-								
+								<button class="btn btn-sm btn-primary" ng-click="getReportCAUIQExcel()" ng-disabled="!isCAUIValid()">Excel</button>
 							</div>
 
 						</div>
@@ -421,10 +423,13 @@
 	</div>
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
 		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===3?0:3)">
-			<h4 class="panel-title">WC Insurance Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===3, 'glyphicon-chevron-right': data.openedRack!==3}"></i></h4>
+			<h4 class="panel-title">Misc Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===3, 'glyphicon-chevron-right': data.openedRack!==3}"></i></h4>
 		</div>
 		<div class="panel-body" ng-show="data.openedRack===3">
 			<div class="row col-sm-10">
+				<div class="row">
+					<h4><u>WC InsuranceC Extract</u></h4>
+				</div>
 				<div class="col-sm-12">
 					<div class="col-sm-4 form-group">
 						<label>Host</label>
@@ -438,7 +443,7 @@
 					</div>
 					<div class="col-sm-2 form-group">
 						<label>End Date</label>
-						<date-ctrl model="data.filterWC.endDate" disabled="false" />
+						<date-ctrl model="data.filterWC.endDate" disabled="false" min="data.filterWC.startDate" />
 					</div>
 					<div class="col-sm-4 form-group">
 						<label></label><br />
@@ -447,20 +452,10 @@
 					</div>
 
 				</div>
-
-			</div>
-
-
-
-		</div>
-	</div>
-	
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===4?0:4)">
-			<h4 class="panel-title">Positive Pay Extract<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===4, 'glyphicon-chevron-right': data.openedRack!==4}"></i></h4>
-		</div>
-		<div class="panel-body" ng-show="data.openedRack===4">
-			<div class="row col-sm-10">
+				
+				<div class="row">
+					<h4><u>Positive Pay Extract</u></h4>
+				</div>
 				<div class="col-sm-12">
 					<div class="col-sm-6 form-group">
 						<label>Host</label>
@@ -479,16 +474,29 @@
 					</div>
 
 				</div>
+				
+				<div class="row">
+					<h4><u>Daily Deposit Extract</u></h4>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-2 form-group">
+						<label>Date</label>
+						<date-ctrl model="data.filterDD.startDate" disabled="false" />
+					</div>
+					<div class="col-sm-4 form-group">
+						<label></label><br />
+						<button class="btn btn-sm btn-primary" ng-click="getDailyDepositReport()" ng-disabled="!data.filterDD.startDate  || !data.filterDD.endDate">Extract</button>
+						
+					</div>
 
+				</div>
 			</div>
 
 
 
 		</div>
 	</div>
-
 	
-
 	<script type="text/ng-template" id="popover/extractView.html">
 
 		<div class="modal-header">

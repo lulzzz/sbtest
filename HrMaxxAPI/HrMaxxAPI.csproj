@@ -321,6 +321,11 @@
     <Content Include="templates\transformers\employer\CADE34.xslt" />
     <Content Include="templates\transformers\employer\FedI9.xslt" />
     <Content Include="templates\transformers\employer\FedW4.xslt" />
+    <Content Include="templates\transformers\extracts\CAUIETTEFTPSExcel.xslt" />
+    <Content Include="templates\transformers\extracts\CAPITEFTPSExcel.xslt" />
+    <Content Include="templates\transformers\extracts\DailyDepositReport.xslt" />
+    <Content Include="templates\transformers\extracts\Federal940EFTPSExcel.xslt" />
+    <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\InternalPositivePayReport.xslt" />
     <Content Include="templates\transformers\extracts\PositivePayReport.xslt" />
     <Content Include="templates\transformers\extracts\CAPITEFTPS.xslt" />

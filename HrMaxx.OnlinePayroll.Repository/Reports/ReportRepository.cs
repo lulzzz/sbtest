@@ -126,7 +126,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 					{
 						cmd.Parameters.AddWithValue("@includeVoids", extractReport.IncludeVoids);
 					}
-
+					
 					cmd.Connection = con;
 					con.Open();
 

@@ -88,6 +88,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ExtractAccumulation Accumulation { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
+		public List<Journal> Journals { get; set; }
+		public List<Account> Accounts { get; set; } 
 	}
 
 	public class VendorAccumulation

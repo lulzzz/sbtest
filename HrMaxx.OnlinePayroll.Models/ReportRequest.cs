@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Description { get; set; }
 		public bool AllowFiling { get; set; }
 		public bool IncludeVoids { get; set; }
+		
 		public ExtractType ExtractType
 		{
 			get

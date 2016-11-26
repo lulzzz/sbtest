@@ -84,9 +84,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals.ToList());
 		}
 
-		public List<Models.Journal> GetCompanyJournals(Guid companyId, DateTime? startDate, DateTime? endDate)
+		public List<Models.Journal> GetCompanyJournals(Guid? companyId, DateTime? startDate, DateTime? endDate)
 		{
-			var journals = _dbContext.Journals.Where(j => j.CompanyId == companyId).AsQueryable();
+			var journals = _dbContext.Journals.AsQueryable();
+			if (companyId.HasValue)
+				journals = journals.Where(j => j.CompanyId == companyId.Value);
 			if (startDate.HasValue)
 				journals = journals.Where(j => j.TransactionDate >= startDate);
 			if (endDate.HasValue)
