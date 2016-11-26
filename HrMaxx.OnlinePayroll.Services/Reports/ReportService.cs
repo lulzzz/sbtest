@@ -229,7 +229,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetHostWCReport(ReportRequest request)
 		{
-			var data = GetExtractResponse(request);
+			var data = GetExtractResponse(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
 
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = false;

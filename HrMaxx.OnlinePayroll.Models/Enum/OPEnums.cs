@@ -351,7 +351,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Partial Payment")]
 		PartialPayment = 7,
 		[HrMaxxSecurity(DbName = "Deposited")]
-		Deposited = 8
+		Deposited = 8,
+		[HrMaxxSecurity(DbName = "Partial Deposited")]
+		PartialDeposited = 9
 		
 	}
 

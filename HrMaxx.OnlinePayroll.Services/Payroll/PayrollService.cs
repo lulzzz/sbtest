@@ -881,7 +881,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							invoice.DeliveredBy = invoice.UserName;
 						}
 						
-						if (invoice.Status!=InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status==InvoiceStatus.Paid || invoice.Status==InvoiceStatus.Deposited))
+						if (invoice.Status!=InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status==InvoiceStatus.Paid || invoice.Status==InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.PartialDeposited))
 						{
 							if (invoice.Balance == 0)
 								invoice.Status = InvoiceStatus.Paid;
@@ -892,8 +892,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 									invoice.Status = InvoiceStatus.PaymentBounced;
 									_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment{ Content = string.Format("Invoice #{0} - Payment Bounced",invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName});
 								}
-								else if(invoice.Payments.Any(p=>p.Status==PaymentStatus.Submitted))
-									invoice.Status = InvoiceStatus.Deposited;
+								else if (invoice.Payments.Any(p => p.Status == PaymentStatus.Submitted))
+								{
+									var totalPayments = invoice.Payments.Where(p => p.Status != PaymentStatus.PaymentBounced).Sum(p => p.Amount);
+									if (totalPayments < invoice.Total)
+									{
+										invoice.Status = InvoiceStatus.PartialDeposited;
+									}
+									else
+									{
+										invoice.Status = InvoiceStatus.Deposited;	
+									}
+								}
 								else if(invoice.Payments.Any())
 								{
 									invoice.Status = InvoiceStatus.PartialPayment;
@@ -914,78 +924,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					return savedInvoice;
 				}
-
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Invoice for company id=" + invoice.CompanyId);
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		public PayrollInvoice SavePayrollInvoiceForMigration(PayrollInvoice invoice)
-		{
-			try
-			{
-			
-					invoice.Payments.ForEach(p =>
-					{
-						if (p.Status == PaymentStatus.Draft)
-						{
-							p.Status = p.Method == VendorDepositMethod.Cash ? PaymentStatus.Paid : PaymentStatus.Submitted;
-						}
-
-					});
-					var dbIncvoice = _payrollRepository.GetPayrollInvoiceById(invoice.Id);
-
-					if (dbIncvoice != null)
-					{
-						invoice.CalculateTotal();
-						if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
-						{
-							invoice.SubmittedOn = DateTime.Now;
-							invoice.InvoiceDate = invoice.SubmittedOn.Value;
-							invoice.SubmittedBy = invoice.UserName;
-						}
-						if (dbIncvoice.Status == InvoiceStatus.Submitted && invoice.Status == InvoiceStatus.Delivered)
-						{
-							invoice.DeliveredOn = DateTime.Now;
-							invoice.DeliveredBy = invoice.UserName;
-						}
-
-						if (invoice.Status != InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited))
-						{
-							if (invoice.Balance == 0)
-								invoice.Status = InvoiceStatus.Paid;
-							else if (invoice.Balance <= invoice.Total)
-							{
-								if (invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced))
-								{
-									invoice.Status = InvoiceStatus.PaymentBounced;
-									_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment { Content = string.Format("Invoice #{0} - Payment Bounced", invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName });
-								}
-								else if (invoice.Payments.Any(p => p.Status == PaymentStatus.Submitted))
-									invoice.Status = InvoiceStatus.Deposited;
-								else if (invoice.Payments.Any())
-								{
-									invoice.Status = InvoiceStatus.PartialPayment;
-								}
-								else
-								{
-									invoice.Status = InvoiceStatus.Delivered;
-
-								}
-							}
-						}
-
-					}
-					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice);
-
-					
-
-					return savedInvoice;
-				
 
 			}
 			catch (Exception e)
@@ -1526,7 +1464,17 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						if (invoice.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced))
 							invoice.Status = InvoiceStatus.PaymentBounced;
 						else if (invoice.Payments.Any(p => p.Status == PaymentStatus.Submitted))
-							invoice.Status = InvoiceStatus.Deposited;
+						{
+							var totalPayments = invoice.Payments.Where(p => p.Status != PaymentStatus.PaymentBounced).Sum(p => p.Amount);
+									if (totalPayments < invoice.Total)
+									{
+										invoice.Status = InvoiceStatus.PartialDeposited;
+									}
+									else
+									{
+										invoice.Status = InvoiceStatus.Deposited;	
+									}
+						}
 						else if (invoice.Payments.Any())
 						{
 							invoice.Status = InvoiceStatus.PartialPayment;
