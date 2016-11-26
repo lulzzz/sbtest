@@ -321,8 +321,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						 		dataSvc.selectedAccountBalance = 0;
 								 $scope.selected = null;
 						 		getMetaData($scope.mainData.selectedCompany.id);
-						 		
-						 	}
+								 dataSvc.isBodyOpen = true;
+							 }
 
 						 }, true
 				 );

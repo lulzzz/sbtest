@@ -18,8 +18,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					var dataSvc = {
 						payTypes: $scope.datasvc.payTypes,
 						employees: $scope.datasvc.employees,
-						payTypeFilter: 0
-						
+						payTypeFilter: 0,
+						toggleState: true
 					}
 					
 					$scope.list = [];
@@ -84,9 +84,16 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						}
 						$scope.tableData.splice($scope.tableData.indexOf(listitem), 1);
 					}
-					$scope.includeAll = function() {
-						$.each($scope.list, function(index, p) {
-							p.included = true;
+					$scope.includeAll = function () {
+						dataSvc.toggleState = !dataSvc.toggleState;
+						$.each($scope.tableData, function (index, p) {
+							var li = $filter('filter')($scope.list, { employee: { id: p.employee.id } })[0];
+							if (li) {
+
+								li.included = dataSvc.toggleState;
+								p.included = dataSvc.toggleState;
+							}
+							
 						});
 					}
 					$scope.itemIncluded = function(pc) {

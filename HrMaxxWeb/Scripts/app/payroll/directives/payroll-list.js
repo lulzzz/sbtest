@@ -53,7 +53,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								id: 0,
 								employeeNo: employee.employeeNo,
 								name: employee.name,
-								department: employee.department,
+								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
 								salary: employee.payType===2 ? employee.rate : 0,
@@ -145,7 +145,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								id: matching ? matching.id : 0,
 								employeeNo: employee.employeeNo,
 								name: employee.name,
-								department: employee.department,
+								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
 								salary: employee.payType === 2 ? employee.rate : 0,
@@ -310,7 +310,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$timeout(function () {
 								if(item.status===1)
 									$scope.selected = item;
-								else if (item.status === 2)
+								else if (item.status === 2 || item.status===6)
 									$scope.processed = angular.copy(item);
 								else if (item.status > 2)
 									$scope.committed = angular.copy(item);
@@ -386,7 +386,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 										$scope.list.splice($scope.list.indexOf(payroll), 1);
 										$scope.tableParams.reload();
 										$scope.fillTableData($scope.tableParams);
-										$scope.selected = null;
+										$scope.processed = null;
 									}
 								}, function(erorr) {
 									$scope.addAlert('error: ' + erorr.statusText, 'danger');

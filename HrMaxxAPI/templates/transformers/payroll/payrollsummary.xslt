@@ -277,6 +277,15 @@
 							</tr>
 						</thead>
 						<xsl:apply-templates select="PayCodes/PayrollPayCode"/>
+						<xsl:choose>
+							<xsl:when test="Notes">
+								<tr>
+									<td colspan="4">
+										<xsl:value-of select="Notes"/>
+									</td>
+								</tr>
+							</xsl:when>
+						</xsl:choose>
 					</table>
 				</xsl:if>
 				

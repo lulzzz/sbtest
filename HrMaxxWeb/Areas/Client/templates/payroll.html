@@ -99,14 +99,14 @@
 
 	</div>
 	<div class="col-sm-12">
-		<button class="btn btn-sm btn-primary" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
+		<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-		<button class="btn btn-sm btn-warning" ng-click="includeAll()" ng-if="showList()"><i class="fa fa-check m-r-5"></i> Include all</button>
+		<button class="btn btn-sm btn-warning" ng-click="includeAll()" ng-if="showList()"><i class="fa fa-check m-r-5"></i> {{data.toggleState? 'Exclude' : 'Include'}} all</button>
 		<button class="btn btn-sm btn-success attach-button pull-right" ng-if="false" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 			<i class="fa fa-upload"></i>Import Timesheets
 		</button>
-		<button class="btn btn-sm btn-success pull-right" ng-click="importTimesheet()" ng-if="showList()"><i class="fa fa-upload"></i>Import</button>
-		<button class="btn btn-sm btn-info pull-right" ng-if="showList()" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Export Template</button>
+		<button class="btn btn-sm btn-success" ng-click="importTimesheet()" ng-if="showList()"><i class="fa fa-upload"></i>Import</button>
+		<button class="btn btn-sm btn-info" ng-if="showList()" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Export Template</button>
 		
 	</div>
 	<script type="text/ng-template" id="ng-table/filters/paytype.html">

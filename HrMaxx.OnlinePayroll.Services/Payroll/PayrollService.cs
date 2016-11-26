@@ -112,7 +112,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else
 						{
 							var pc = paycheck.PayCodes[0];
-							paycheck.Notes = string.Format("{0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
+							paycheck.Notes += string.Format("  {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
 								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
 							
 							if ((pc.PWAmount/(pc.Hours + pc.OvertimeHours)) < 10)
@@ -1692,7 +1692,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				return _payrollRepository.GetAllPayrolls(PayrollStatus.Committed);
+				return _payrollRepository.GetAllPayrolls(PayrollStatus.Committed).Where(p=>p.TotalGrossWage>0).ToList();
 			}
 			catch (Exception e)
 			{

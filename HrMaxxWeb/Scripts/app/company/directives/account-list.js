@@ -206,6 +206,7 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
+							dataSvc.isBodyOpen = true;
 						}, function (erorr) {
 							addAlert('error getting account list', 'danger');
 						});
