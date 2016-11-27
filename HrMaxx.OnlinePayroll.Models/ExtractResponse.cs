@@ -88,8 +88,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ExtractAccumulation Accumulation { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
-		public List<Journal> Journals { get; set; }
-		public List<Account> Accounts { get; set; } 
+		public List<ExtractInvoicePayment> Payments { get; set; } 
 	}
 
 	public class VendorAccumulation
@@ -226,5 +225,15 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int CheckNumber { get; set; }
 		public int PaymentMethod { get; set; }
 		public bool PEOASOCoCheck { get; set; }
+	}
+
+	public class ExtractInvoicePayment
+	{
+		public Guid CompanyId { get; set; }
+		public DateTime PaymentDate { get; set; }
+		public VendorDepositMethod Method { get; set; }
+		public PaymentStatus Status { get; set; }
+		public int CheckNumber { get; set; }
+		public decimal Amount { get; set; }
 	}
 }

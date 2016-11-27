@@ -92,9 +92,9 @@
 		</Worksheet>
 	</xsl:template>
 	<xsl:template match="ExtractCompany" >
-		<xsl:variable name="compPosition" select="count(preceding-sibling::ExtractCompany) + count(preceding-sibling::ExtractCompany/Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Check' and Payee])"/>
-		<xsl:if test="Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Cash' and Payee]">
-			<xsl:variable name="cashRow" select="sum(Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Cash' and Payee]/Amount)"/>
+		<xsl:variable name="compPosition" select="count(preceding-sibling::ExtractCompany/Payments/ExtractInvoicePayment[Method='Check']) + count(preceding-sibling::ExtractCompany[Payments/ExtractInvoicePayment[Method='Cash']])"/>
+		<xsl:if test="Payments/ExtractInvoicePayment[Method='Cash']">
+			<xsl:variable name="cashRow" select="sum(Payments/ExtractInvoicePayment[Method='Cash']/Amount)"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="Number">
@@ -115,15 +115,15 @@
 			</Row>
 		</xsl:if>
 		
-		<xsl:apply-templates select="Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Check' and Payee]"/>
+		<xsl:apply-templates select="Payments/ExtractInvoicePayment[Method='Check']"/>
 	</xsl:template>
-	<xsl:template match="JournalDetail">
-		<xsl:variable name="starter" select="count(../../../../preceding-sibling::ExtractCompany[Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Cash' and Payee]]) + count(../../../../preceding-sibling::ExtractCompany/Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Check' and Payee])"/>
+	<xsl:template match="ExtractInvoicePayment">
+		<xsl:variable name="starter" select="count(../../preceding-sibling::ExtractCompany[Payments/ExtractInvoicePayment[Method='Cash']]) + count(../../preceding-sibling::ExtractCompany/Payments/ExtractInvoicePayment[Method='Check'])"/>
 		<Row>
 			<Cell>
 				<Data ss:Type="Number">
 					<xsl:choose>
-						<xsl:when test="../../../../Journals/Journal/JournalDetails/JournalDetail[DepositMethod='Cash' and Payee]">
+						<xsl:when test="../../Payments/ExtractInvoicePayment[Method='Cash']">
 							<xsl:value-of select="$starter + position() + 1"/>		
 						</xsl:when>
 						<xsl:otherwise>
@@ -135,7 +135,7 @@
 			</Cell>
 			<Cell>
 				<Data ss:Type="String">
-					<xsl:value-of select="../../../../Company/TaxFilingName"/>
+					<xsl:value-of select="../../Company/TaxFilingName"/>
 				</Data>
 			</Cell>
 			<Cell>
@@ -180,7 +180,7 @@
 				<Data ss:Type="String">Amount</Data>
 			</Cell>
 		</Row>
-		<xsl:apply-templates select="Companies/ExtractCompany[count(Journals/Journal)>0]"/>
+		<xsl:apply-templates select="Companies/ExtractCompany[count(Payments/ExtractInvoicePayment)>0]"/>
 	</xsl:template>
 	
 </xsl:stylesheet>

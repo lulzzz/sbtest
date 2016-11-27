@@ -918,8 +918,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					}
 					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice);
-					var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice updated"), invoice.UserId);
-					_mementoDataService.AddMementoData(memento);
+					//var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice updated"), invoice.UserId);
+					//_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 
 					return savedInvoice;

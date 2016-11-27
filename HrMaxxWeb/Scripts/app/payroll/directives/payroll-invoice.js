@@ -211,8 +211,12 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 
 					};
-					var saveInvoice = function() {
+					var saveInvoice = function () {
+						$.each($scope.invoice.payments, function(i, p) {
+							p.paymentDate = moment(p.paymentDate).format('MM/DD/YYYY');
+						});
 						payrollRepository.savePayrollInvoice($scope.invoice).then(function (data) {
+							$scope.invoice = null;
 							$timeout(function () {
 								$scope.invoice = data;
 								fixDates();

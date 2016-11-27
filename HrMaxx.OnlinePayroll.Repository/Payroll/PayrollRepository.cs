@@ -228,8 +228,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbCreditedChecks.ForEach(pc=>pc.CreditInvoiceId=dbPayrollInvoice.Id);
 				dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
 				dbPayrollInvoice.Total = mapped.Total;
-				dbPayrollInvoice.LastModified = mapped.LastModified;
-				dbPayrollInvoice.LastModifiedBy = mapped.LastModifiedBy;
+				//dbPayrollInvoice.LastModified = mapped.LastModified;
+				//dbPayrollInvoice.LastModifiedBy = mapped.LastModifiedBy;
 				dbPayrollInvoice.Status = mapped.Status;
 				dbPayrollInvoice.SubmittedBy = mapped.SubmittedBy;
 				dbPayrollInvoice.SubmittedOn = mapped.SubmittedOn;

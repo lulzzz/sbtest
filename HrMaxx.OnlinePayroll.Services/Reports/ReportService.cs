@@ -20,6 +20,7 @@ using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Companies;
+using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxx.OnlinePayroll.Repository.Reports;
 
 namespace HrMaxx.OnlinePayroll.Services.Reports
@@ -33,6 +34,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly ICommonService _commonService;
 		private readonly IHostService _hostService;
 		private readonly ITaxationService _taxationService;
+		private readonly IPayrollRepository _payrollRepository;
 
 		private readonly string _filePath;
 		private readonly string _templatePath;
@@ -45,7 +47,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IPayrollRepository payrollRepository, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -54,6 +56,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_filePath = filePath;
 			_templatePath = templatePath;
 			_commonService = commonService;
+			_payrollRepository = payrollRepository;
 			_hostService = hostService;
 			_taxationService = taxationService;
 		}
@@ -252,21 +255,22 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract GetDailyDepositReport(ReportRequest request)
 		{
 			request.EndDate = request.StartDate.AddHours(24);
-			var journals = _journalService.GetJournalListByDate(null, request.StartDate.Date,
-				request.EndDate.Date);
-			journals =
-				journals.Where(
-					j =>
-						!j.IsVoid && j.TransactionType == TransactionType.Deposit).ToList();
-			if (!journals.Any())
+			var invoices = _payrollRepository.GetPayrollInvoices(Guid.Empty, null);
+			var invoicePayments = invoices.SelectMany(i => i.Payments.Select(p=>new ExtractInvoicePayment
+			{
+				CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
+			})).ToList();
+			var filtered =
+				invoicePayments.Where(p => p.PaymentDate >= request.StartDate && p.PaymentDate <= request.EndDate).ToList();
+			if (!filtered.Any())
 				throw new Exception(NoData);
 			var hosts = _hostService.GetHostList(Guid.Empty);
 			var companies = _companyRepository.GetAllCompanies();
 			var hostList = new List<ExtractHost>();
 			var companyList = new List<ExtractCompany>();
-			journals.ForEach(j =>
+			filtered.ForEach(j =>
 			{
-				if (!companyList.Any(c => c.Company.Id == j.CompanyId))
+				if (companyList.All(c => c.Company.Id != j.CompanyId))
 				{
 					var company = companies.First(c => c.Id == j.CompanyId);
 					companyList.Add(new ExtractCompany()
@@ -278,8 +282,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			});
 			companyList.ForEach(c =>
 			{
-				c.Journals = journals.Where(j => j.CompanyId == c.Company.Id).ToList();
-				if (!hostList.Any(h => h.Host.Id == c.Company.HostId))
+				c.Payments =
+					filtered.Where(i => i.CompanyId == c.Company.Id)
+						.ToList();
+				if (hostList.All(h => h.Host.Id != c.Company.HostId))
 				{
 					var host = hosts.First(h => h.Id == c.Company.HostId);
 					hostList.Add(new ExtractHost()
@@ -408,12 +414,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
 						if (buildCompanyEmployeeAccumulation)
 							c.EmployeeAccumulations = getEmployeeAccumulations(c.Accumulation.PayChecks);
-						if (getCompanyDeposits)
-						{
-							var j = _journalService.GetJournalListByDate(c.Company.Id, request.StartDate, request.EndDate);
-							if (j.Any(j1 => j1.TransactionType == TransactionType.Deposit))
-								c.Journals = j.Where(j1 => j1.TransactionType == TransactionType.Deposit).ToList();
-						}
+						
 					});
 				}
 				else
