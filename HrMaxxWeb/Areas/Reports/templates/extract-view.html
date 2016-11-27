@@ -45,6 +45,12 @@
 								<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
 								<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
 							</div>
+							<div class="row">
+								<div class="col-sm-4"><strong>Total</strong></div>
+								<div class="col-sm-4 text-right"></div>
+								<div class="col-sm-4 text-right">{{selectedHost.accumulation.applicableAmounts | currency:'$'}}</div>
+							</div>
+
 							<div class="row" ng-show="selectedHost.accumulation.deductions && selectedHost.accumulation.deductions.length>0">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Deductions</div>
 							</div>
@@ -79,6 +85,11 @@
 								<div class="col-sm-4"><strong>{{tax.tax.code}}</strong></div>
 								<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
 								<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-4"><strong>Total</strong></div>
+								<div class="col-sm-4 text-right"></div>
+								<div class="col-sm-4 text-right">{{selectedCompany.accumulation.applicableAmounts | currency:'$'}}</div>
 							</div>
 							<div class="row" ng-show="selectedCompany.accumulation.deductions  && selectedCompany.accumulation.deductions.length>0">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Deductions</div>
