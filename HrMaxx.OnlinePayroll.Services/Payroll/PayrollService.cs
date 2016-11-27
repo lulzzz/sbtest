@@ -112,8 +112,17 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else
 						{
 							var pc = paycheck.PayCodes[0];
-							paycheck.Notes += string.Format("  {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
+							if (paycheck.Notes.Contains("Piece-work:"))
+							{
+								paycheck.Notes = paycheck.Notes.Substring(0, paycheck.Notes.IndexOf("Piece-work:")) + string.Format("Piece-work: {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
 								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
+							}
+							else
+							{
+								paycheck.Notes += string.Format(" Piece-work: {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
+								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
+							}
+							
 							
 							if ((pc.PWAmount/(pc.Hours + pc.OvertimeHours)) < 10)
 							{
