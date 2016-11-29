@@ -253,26 +253,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							}
 						});
 						modalInstance.result.then(function (paycheck, result) {
-							if (result) {
-								var filtered = $filter('filter')($scope.list, { employee: { id: paycheck.employee.id } })[0];
-								
-								filtered.employee = paycheck.employee;
-								filtered.employeeNo = paycheck.employee.employeeNo;
-								filtered.name = paycheck.employee.name;
-								filtered.department = paycheck.employee.department ? paycheck.employee.department : '';
-								$.each(filter.payCodes, function(ind, pc) {
-									var matching = $filter('filter')(paycheck.employee.payCodes, { payCode: { id: pc.payCode.id } })[0];
-									if (!matching) {
-										filter.payCodes.splice(ind, 1);
-									} else {
-										pc.payCode = angular.copy(matching.payCode);
-									}
-								});
-								$scope.tableParams.reload();
-								$scope.fillTableData($scope.tableParams);
-								$scope.$parent.$parent.updateEmployeeList();
-								$scope.$parent.$parent.updateEmployeeList(filtered.employee);
-							}
+							$scope.$parent.$parent.updateEmployeeList(paycheck.employee);
+							
 						}, function () {
 							return false;
 						});
@@ -633,7 +615,7 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 			$scope.paycheck.compensations.push(pt);
 		});
 		
-		$uibModalInstance.close($scope);
+		$uibModalInstance.close($scope.paycheck, result);
 	};
 
 
