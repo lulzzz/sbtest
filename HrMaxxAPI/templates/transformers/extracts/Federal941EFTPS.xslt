@@ -39,7 +39,7 @@
 <xsl:when test="$line11>0">
 <xsl:value-of select="format-number($batchFilerId,'000000000')"/><xsl:value-of select="format-number($masterPinNumber,'0000')"/>
 <xsl:value-of select="$today"/><xsl:value-of select="format-number($fileSeq,'000')"/><xsl:value-of select="format-number(position(),'0000')"/>
-P<xsl:value-of select="translate(Company/FederalEIN,'-','')"/><xsl:value-of select="Company/FederalPin"/>B94105<xsl:value-of select="$selectedYear"/><xsl:value-of select="$endQuarterMonth"/><xsl:value-of select="$settleDate"/> 
+P<xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/><xsl:value-of select="HostCompany/FederalPin"/>B94105<xsl:value-of select="$selectedYear"/><xsl:value-of select="$endQuarterMonth"/><xsl:value-of select="$settleDate"/> 
 <xsl:value-of select="format-number(translate($line11,'.',''),'000000000000000')"/>001
 <xsl:choose>
 <xsl:when test="$totalSSTax>0"><xsl:value-of select="format-number(translate($SSSum,'.',''),'000000000000000')"/></xsl:when>

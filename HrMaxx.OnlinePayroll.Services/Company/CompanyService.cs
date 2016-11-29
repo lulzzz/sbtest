@@ -246,11 +246,24 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var pc = _companyRepository.SavePayCode(mappedResource);
-				var returnCompany = _companyRepository.GetCompanyById(pc.CompanyId);
-				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, "Pay Code updated: " + mappedResource.Code, userId);
-				_mementoDataService.AddMementoData(memento, true);
-				return pc;
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var pc = _companyRepository.SavePayCode(mappedResource);
+					var employees = _companyRepository.GetEmployeeList(mappedResource.CompanyId);
+					employees.Where(e => e.PayCodes.Any(ec => ec.Id == pc.Id)).ToList().ForEach(e =>
+					{
+						e.PayCodes.RemoveAll(ec => ec.Id == pc.Id);
+						e.PayCodes.Add(pc);
+						_companyRepository.SaveEmployee(e);
+						
+					});
+					var returnCompany = _companyRepository.GetCompanyById(pc.CompanyId);
+					var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, "Pay Code updated: " + mappedResource.Code, userId);
+					_mementoDataService.AddMementoData(memento, true);
+					txn.Complete();
+					return pc;	
+				}
+				
 			}
 			catch (Exception e)
 			{

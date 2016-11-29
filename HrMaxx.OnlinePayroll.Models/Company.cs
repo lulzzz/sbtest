@@ -52,7 +52,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ContractDetails Contract { get; set; }
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 		public List<CompanyPayCode> PayCodes { get; set; }
-
+		public DateTime Created { get; set; }
 		public Guid MementoId
 		{
 			get { return Id; }

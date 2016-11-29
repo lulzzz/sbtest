@@ -268,6 +268,7 @@
     <Content Include="Areas\Client\templates\insurance-group-list.html" />
     <Content Include="Areas\Client\templates\invoice-delivery-list.html" />
     <Content Include="Areas\Client\templates\invoicedelivery.html" />
+    <Content Include="Areas\Client\templates\paycheck-list.html" />
     <Content Include="Areas\Client\templates\tax-payment.html" />
     <Content Include="Areas\Client\templates\vendor-customer.html" />
     <Content Include="Areas\Reports\templates\Dashboard.html" />
@@ -1333,6 +1334,7 @@
     <Content Include="Scripts\app\journal\journal-repository.js" />
     <Content Include="Scripts\app\payroll\directives\invoice-delivery-list.js" />
     <Content Include="Scripts\app\payroll\directives\awaiting-print-payrolls.js" />
+    <Content Include="Scripts\app\payroll\directives\paycheck-list.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-invoice.js" />
     <Content Include="Scripts\app\payroll\directives\paycheck.js" />
     <Content Include="Scripts\app\payroll\directives\invoice-list.js" />

@@ -413,17 +413,3 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 		}
 	}
 ]);
-common.controller('companyCtrl', function ($scope, $uibModalInstance, $filter, invoice, mainData) {
-	$scope.original = invoice.company;
-	$scope.company = angular.copy(invoice.company);
-	$scope.mainData = mainData;
-	$scope.cancel = function () {
-		$uibModalInstance.dismiss();
-	};
-
-	$scope.save = function (result) {
-		$uibModalInstance.close(result);
-	};
-
-
-});

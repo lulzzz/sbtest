@@ -42,6 +42,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Payroll DeletePayroll(Payroll mappedResource);
 		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
 		List<Payroll> GetUnPrintedPayrolls();
-		
+
+		List<PayCheck> GetEmployeePayChecks(Guid companyId, Guid employeeId);
 	}
 }

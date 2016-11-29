@@ -31,6 +31,18 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage), 2, MidpointRounding.AwayFromZero); }
 		}
+		public decimal EmployeeTaxes
+		{
+			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.EmployeeTaxes), 2, MidpointRounding.AwayFromZero); }
+		}
+		public decimal EmployerTaxes
+		{
+			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.EmployerTaxes), 2, MidpointRounding.AwayFromZero); }
+		}
+		public decimal DeductionAmount
+		{
+			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.DeductionAmount), 2, MidpointRounding.AwayFromZero); }
+		}
 
 		public decimal TotalCost
 		{

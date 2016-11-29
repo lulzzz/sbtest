@@ -71,6 +71,7 @@
           <Property Name="IsHostCompany" Type="bit" Nullable="false" />
           <Property Name="Memo" Type="varchar(max)" Nullable="false" />
           <Property Name="ClientNo" Type="varchar(max)" Nullable="false" />
+          <Property Name="Created" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1472,6 +1473,7 @@
           <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="Company" ToRole="VendorCustomer" />
           <NavigationProperty Name="InsuranceGroup" Relationship="HrMaxxModel.FK_Company_InsuranceGroup" FromRole="Company" ToRole="InsuranceGroup" />
           <Property Name="ClientNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Created" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2508,6 +2510,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="Created" ColumnName="Created" />
                 <ScalarProperty Name="ClientNo" ColumnName="ClientNo" />
                 <ScalarProperty Name="Memo" ColumnName="Memo" />
                 <ScalarProperty Name="IsHostCompany" ColumnName="IsHostCompany" />

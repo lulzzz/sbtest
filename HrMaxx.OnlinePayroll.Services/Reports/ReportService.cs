@@ -437,8 +437,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Federal 940 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
+			var tempDepositSchedule = request.DepositSchedule;
+			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
-
+			request.DepositSchedule = tempDepositSchedule;
 			var reportConst = _taxationService.PullReportConstant("Form940", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new XsltArgumentList();
@@ -550,8 +552,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("California State UI & ETT for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
+			var tempDepositSchedule = request.DepositSchedule;
+			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
-			
+			request.DepositSchedule = tempDepositSchedule;
 			var argList = new XsltArgumentList();
 
 			argList.AddParam("reportConst", "", "01300");

@@ -365,7 +365,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				}
 				_dbContext.Employees.Add(me);
 			}
-			else if(dbEmployees.Count>0)
+			else if(dbEmployees.Count>1)
 			{
 				throw new Exception("Another employee with the same SSN exists in this company");
 			}

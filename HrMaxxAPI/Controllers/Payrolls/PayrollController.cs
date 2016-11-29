@@ -363,6 +363,13 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			return MakeServiceCall(() => _payrollService.GetInvoiceDeliveryClaims(), "Get Invoice Delivery Claims");
 		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.EmployeeChecks)]
+		public List<PayCheck> GetEmployeeChecks(Guid companyId, Guid employeeId)
+		{
+			return MakeServiceCall(() => _payrollService.GetEmployeePayChecks(companyId, employeeId), "Get Pay Check for employee");
+		}
 		
 		[HttpPost]
 		[Route(PayrollRoutes.ImportTimesheetsTemplate)]

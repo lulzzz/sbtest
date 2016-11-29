@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 'version',
+	function ($modal, zionAPI, $timeout, $window, version) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -25,6 +25,10 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 
 
 					var addAlert = function (error, type) {
+						$scope.$parent.$parent.addAlert(error, type);
+					};
+
+					$scope.addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					$scope.files = [];
@@ -195,6 +199,27 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.set(result);
 						addAlert('successfully saved employee', 'success');
 					}
+
+					$scope.viewPayCheckList = function (employee, event) {
+						event.stopPropagation();
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/payCheckListView.html',
+							controller: 'payCheckListViewCtrl',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								employee: function () {
+									return employee;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								}
+							}
+						});
+					}
 					
 					$scope.getEmployees = function(companyId) {
 						companyRepository.getEmployees(companyId).then(function (data) {
@@ -241,3 +266,14 @@ common.directive('employeeList', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
+common.controller('payCheckListViewCtrl', function ($scope, $uibModalInstance, employee, mainData) {
+	$scope.employee = employee;
+	$scope.mainData = mainData;
+
+
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	
+
+});

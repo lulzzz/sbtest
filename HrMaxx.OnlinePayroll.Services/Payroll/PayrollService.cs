@@ -1711,6 +1711,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		public List<PayCheck> GetEmployeePayChecks(Guid companyId, Guid employeeId)
+		{
+			try
+			{
+				return _payrollRepository.GetEmployeePayChecks(employeeId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " list of payroll checks ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private void MigratePayrolls(Guid oldCompanyId, Company company, List<Employee> employees, DateTime? startDate, DateTime? endDate, Guid userId)
 		{
 			try

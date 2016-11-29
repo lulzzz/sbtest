@@ -52,6 +52,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DepositSchedule941 DepositSchedule { get; set; }
 
 		public DateTime? LastPayrollDate { get; set; }
+		public DateTime? Created { get; set; }
 
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }

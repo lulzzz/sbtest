@@ -34,5 +34,6 @@
 		public const string SaveProcessedPayroll = "Payroll/SaveProcessedPayroll";
 		public const string DeletePayroll = "Payroll/DeletePayroll";
 		public const string InvoiceDeliveryClaims = "Payroll/InvoiceDeliveryClaims";
+		public const string EmployeeChecks = "Payroll/EmployeeChecks/{companyId:guid}/{employeeId:guid}";
 	}
 }

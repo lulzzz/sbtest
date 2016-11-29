@@ -366,5 +366,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var dbPayrolls = _dbContext.Payrolls.Where(p => p.Status == (int) status);
 			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(dbPayrolls.ToList());
 		}
+
+		public List<PayCheck> GetEmployeePayChecks(Guid employeeId)
+		{
+			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == employeeId);
+			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
+		}
 	}
 }

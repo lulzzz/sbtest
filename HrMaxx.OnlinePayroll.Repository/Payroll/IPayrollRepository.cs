@@ -37,5 +37,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SaveInvoiceDeliveryClaim(InvoiceDeliveryClaim invoiceDeliveryClaim);
 		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
 		List<Models.Payroll> GetAllPayrolls(PayrollStatus companyId);
+		List<PayCheck> GetEmployeePayChecks(Guid employeeId);
 	}
 }

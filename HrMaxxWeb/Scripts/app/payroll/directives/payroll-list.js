@@ -36,9 +36,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					};
 					
 					$scope.selected = null;
-
-
-					$scope.add = function () {
+					var addNew = function() {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
 							startDate: null,
@@ -125,9 +123,35 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							
 
 						}
-						$scope.set(selected);
+						return selected;
 					}
 
+					$scope.add = function () {
+						var selected = addNew();
+						$scope.set(selected);
+					}
+					$scope.copyPayroll = function (event, payroll) {
+						event.stopPropagation();
+						$scope.$parent.$parent.confirmDialog('This action will ONLY copy time sheet data and NOT salaries or rates. Do you want to continue?', 'warning', function() {
+							var selected = addNew();
+							$.each(selected.payChecks, function(index, pc) {
+								var matching = $filter('filter')(payroll.payChecks, { employee: { id: pc.employee.id } })[0];
+								if (matching) {
+									$.each(pc.payCodes, function(i, pcode) {
+										var matchingPayCode = $filter('filter')(matching.payCodes, { payCode: { id: pcode.payCode.id } })[0];
+										if (matchingPayCode) {
+											pcode.hours = matchingPayCode.hours;
+											pcode.screenHours = matchingPayCode.hours;
+											pcode.overtimeHours = matchingPayCode.overtimeHours;
+											pcode.screenOvertime = matchingPayCode.overtimeHours;
+											pcode.pwAmount = matchingPayCode.pwAmount;
+										}
+									});
+								}
+							});
+							$scope.set(selected);
+						});
+					}
 					$scope.refresh = function (payroll) {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
@@ -199,34 +223,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							});
 							selected.payChecks.push(paycheck);
 						});
-						if ($scope.list.length > 0) {
-							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
-							selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
-
-							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
-								selected.endDate = moment(selected.startDate).add(1, 'week').add(-1, 'day').toDate();
-								selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
-							}
-							else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
-								selected.endDate = moment(selected.startDate).add(2, 'week').add(-1, 'day').toDate();
-								selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
-							}
-							else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
-								if (moment(selected.startDate).date() === 1) {
-									selected.endDate = moment(selected.startDate).add(14, 'day').toDate();
-									selected.payDay = moment(sorted[0].payDay).add(15, 'day').toDate();
-								} else {
-									selected.endDate = moment(selected.startDate).endOf('month').toDate();
-									selected.payDay = moment(sorted[0].startDate).endOf('month').toDate();
-								}
-
-							} else {
-								selected.endDate = moment(selected.startDate).add(1, 'month').toDate();
-								selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
-							}
-
-
-						}
+						
 						$scope.set(selected);
 					}
 				
@@ -459,7 +456,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error generating invoice', 'danger');
 						});
 					}
-
+					$scope.updateEmployeeList = function() {
+						getEmployees($scope.mainData.selectedCompany.id);
+					}
 					
 					var init = function () {
 						

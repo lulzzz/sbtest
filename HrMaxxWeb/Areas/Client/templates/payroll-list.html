@@ -40,10 +40,11 @@
 						<td data-title=" 'Invoice Total' " sortable=" 'invoice.total' " class="col-sm-1 text-center" ng-show="showInvoices()">
 							{{item.invoice.total | currency:'$'}}
 						</td>
-						<td class="col-sm-1 text-center" ng-if="showInvoices()">
-							<button class="btn btn-sm btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status===6">delete</button>
-							<button class="btn btn-sm btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice">view invoice</button>
-							<button class="btn btn-sm btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0 && item.status>2 && item.status!==6">create invoice</button>
+						<td class="col-sm-2 text-center" ng-if="showInvoices()">
+							<button class="btn btn-xs btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status===6">delete</button>
+							<button class="btn btn-xs btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice">view invoice</button>
+							<button class="btn btn-xs btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0 && item.status>2 && item.status!==6">create invoice</button>
+							<button class="btn btn-xs btn-success" ng-click="copyPayroll($event, item)" ng-show="canRunPayroll()">Copy to New</button>
 						</td>
 					</tr>
 

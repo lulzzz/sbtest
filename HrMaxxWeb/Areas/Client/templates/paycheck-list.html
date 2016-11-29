@@ -1,0 +1,96 @@
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany && employee">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">{{employee.name}} Paychecks<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div class="row alert alert-danger" ng-show="alerts.length>0">
+				{{alerts[0].message}}
+			</div>
+			<div ng-show="list.length===0" class="table table-bordered">
+				No pay checks found
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id, 'danger':selected.isVoid===1}">
+						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
+							{{item.payDay | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Start Date' " sortable=" 'startDate' " class="col-sm-1 text-center">
+							{{item.startDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'End Date' " sortable=" 'endDate' " class="col-sm-1 text-center">
+							{{item.endDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Gross Wage' " sortable=" 'grossWage' " class="col-sm-1 text-center">
+							{{item.grossWage | currency:'$'}}
+						</td>
+						<td data-title=" 'Deductions' " sortable=" 'deductionAmount' " class="col-sm-1 text-center">
+							{{item.deductionAmount | currency:'$'}}
+						</td>
+						<td data-title=" 'Employee Taxes' " sortable=" 'employeeTaxes' " class="col-sm-1 text-center">
+							{{item.employeeTaxes | currency:'$'}}
+						</td>
+						<td data-title=" 'Net Wage' " sortable=" 'netWage' " class="col-sm-1 text-center">
+							{{item.netWage | currency:'$'}}
+						</td>
+						<td data-title=" 'Employer Taxes' " sortable=" 'employerTaxes' " class="col-sm-1 text-center">
+							{{item.employerTaxes | currency:'$'}}
+						</td>
+						<td data-title=" 'Payment Method' " class="col-sm-1 text-center">
+							{{item.paymentMethodText}}<span ng-show="item.paymentMethod===1">&nbsp;#{{item.checkNumber}}</span>
+						</td>
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+			
+			<!-- end panel -->
+		</div>
+	</div>
+	
+	<div class="panel panel-info hidden-print" ng-if="selected">
+		<div class="panel-heading">
+			<h4 class="panel-title">{{employee.name}} Pay Check Details {{selected.payDay | date:'MM/dd/yyyy'}}</h4>
+		</div>
+		<div class="panel-body tab-content">
+			<div class="col-sm-12  m-10">
+				<div class="col-sm-2 pull-right">
+					<button class="btn btn-sm btn-success" ng-show="!selected.isVoid" ng-click="markPrinted(selected)"><i class="fa fa-print m-r-5"></i> print</button>
+					<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				</div>
+
+
+			</div>
+			<paycheck check-id="selected.id" />
+			<div class="col-sm-12 pull-right">
+				<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+			</div>
+		</div>
+		
+
+	</div>
+	
+</div>
+
+

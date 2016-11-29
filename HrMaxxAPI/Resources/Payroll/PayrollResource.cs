@@ -32,6 +32,9 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal TotalGrossWage { get; set; }
 		public decimal TotalNetWage { get; set; }
 		public decimal TotalCost { get; set; }
+		public decimal DeductionAmount { get; set; }
+		public decimal EmployeeTaxes { get; set; }
+		public decimal EmployerTaxes { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
 

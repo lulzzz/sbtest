@@ -23,9 +23,16 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						sourceTypeId: EntityTypes.Employee
 					}
 					$scope.tab = 1;
+					$scope.alert = null;
 					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
+						$scope.alert = null;
+						if (!$scope.isPopup)
+							$scope.$parent.$parent.addAlert(error, type);
+						else {
+							$scope.alert = { message: error, type: type };
+						}
 					};
+				
 					$scope.data = dataSvc;
 					
 					$scope.cancel = function () {

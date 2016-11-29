@@ -61,6 +61,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool IsHostCompany { get; set; }
         public string Memo { get; set; }
         public string ClientNo { get; set; }
+        public System.DateTime Created { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

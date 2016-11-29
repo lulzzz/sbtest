@@ -40,13 +40,13 @@
 				<td colspan="2">
 					{{listitem.employee.name}}
 				</td>
-				<td>{{listitem.grossWage | currency:"$"}}</td>
-				<td>{{listitem.deductionAmount | currency:"$"}}</td>
-				<td>{{listitem.employeeTaxes | currency:"$"}}</td>
-				<td>{{listitem.netWage | currency:"$"}}</td>
-				<td>{{listitem.employerTaxes | currency:"$"}}</td>
-				<td>{{listitem.grossWage + listitem.employerTaxes | currency:"$"}}</td>
-				<td>{{listitem.paymentMethodText}}<span ng-show="listitem.paymentMethod===1">&nbsp;#{{listitem.checkNumber}}</span></td>
+				<td class="text-right">{{listitem.grossWage | currency:"$"}}</td>
+				<td class="text-right">{{listitem.deductionAmount | currency:"$"}}</td>
+				<td class="text-right">{{listitem.employeeTaxes | currency:"$"}}</td>
+				<td class="text-right">{{listitem.netWage | currency:"$"}}</td>
+				<td class="text-right">{{listitem.employerTaxes | currency:"$"}}</td>
+				<td class="text-right">{{listitem.grossWage + listitem.employerTaxes | currency:"$"}}</td>
+				<td class="text-right">{{listitem.paymentMethodText}}<span ng-show="listitem.paymentMethod===1">&nbsp;#{{listitem.checkNumber}}</span></td>
 				<td>
 					{{listitem.statusText}}
 				</td>
@@ -57,7 +57,18 @@
 				</td>
 				
 			</tr>
-
+			<tr>
+				<td colspan="2"></td>
+				<td class="text-right">{{item.totalGrossWage | currency:'$'}}</td>
+				<td class="text-right">{{item.deductionAmount | currency:'$'}}</td>
+				<td class="text-right">{{item.employeeTaxes | currency:'$'}}</td>
+				<td class="text-right">{{item.totalNetWage | currency:'$'}}</td>
+				<td class="text-right">{{item.employerTaxes | currency:'$'}}</td>
+				<td class="text-right">{{item.totalGrossWage + item.employerTaxes | currency:'$'}}</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
 		</table>
 		
 		
