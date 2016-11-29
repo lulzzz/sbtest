@@ -270,6 +270,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								});
 								$scope.tableParams.reload();
 								$scope.fillTableData($scope.tableParams);
+								$scope.$parent.$parent.updateEmployeeList();
+								$scope.$parent.$parent.updateEmployeeList(filtered.employee);
 							}
 						}, function () {
 							return false;
@@ -311,7 +313,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							$scope.list = $scope.item.payChecks;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							$scope.$parent.$parent.updateEmployeeList();
+							$scope.$parent.$parent.updateEmployeeList(null);
 						}, function () {
 							return false;
 						});

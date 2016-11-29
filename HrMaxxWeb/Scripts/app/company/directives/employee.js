@@ -129,7 +129,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.selected;
 						if (!c.payrollSchedule || !c.payType)
 							return false;
-						if (c.payType!==3 && !c.rate)
+						if (c.payType!==3 && c.rate>=0)
 							return false;
 						if (c.paymentMethod === 2) {
 							var b = c.bankAccount;

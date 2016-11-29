@@ -3,6 +3,7 @@
           WHERE  TABLE_NAME = 'Company'
                  AND COLUMN_NAME = 'Created')
 Alter table Company Add Created datetime not null Default(getdate());
+Go;
 
 update Company set Created='1/1/2016';
 

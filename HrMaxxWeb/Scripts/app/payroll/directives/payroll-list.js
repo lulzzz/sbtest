@@ -456,7 +456,15 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error generating invoice', 'danger');
 						});
 					}
-					$scope.updateEmployeeList = function() {
+					$scope.updateEmployeeList = function (emp) {
+						if (emp) {
+							var match = $filter('filter')(dataSvc.employees, { id: emp.id })[0];
+							if (match) {
+								match = angular.copy(emp);
+							}
+						} else {
+							getEmployees($scope.mainData.selectedCompany.id);
+						}
 						getEmployees($scope.mainData.selectedCompany.id);
 					}
 					
