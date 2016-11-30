@@ -278,6 +278,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbVC.Type1099 = vc.Type1099;
 				dbVC.SubType1099 = vc.SubType1099;
 				dbVC.IsVendor1099 = vc.IsVendor1099;
+				dbVC.IsAgency = vc.IsAgency;
+				dbVC.IsTaxDepartment = vc.IsTaxDepartment;
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.VendorCustomer, VendorCustomer>(vc);
@@ -422,6 +424,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.Rate = mappeddeduction.Rate;
 					dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
 					dbdeduction.CompanyDeductionId = mappeddeduction.CompanyDeductionId;
+					dbdeduction.AccountNo = mappeddeduction.AccountNo;
+					dbdeduction.AgencyId = mappeddeduction.AgencyId;
+					dbdeduction.CeilingPerCheck = mappeddeduction.CeilingPerCheck;
 				}
 			}
 			_dbContext.SaveChanges();

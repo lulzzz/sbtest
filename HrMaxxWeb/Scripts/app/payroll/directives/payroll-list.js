@@ -20,6 +20,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						payrollAccount: null,
 						hostPayrollAccount: null,
 						employees: [],
+						agencies:[],
 						startingCheckNumber: 0,
 						importMap: null
 					}
@@ -85,12 +86,15 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$.each(employee.deductions, function (index3, ded) {
 								paycheck.deductions.push({
 									deduction: ded.deduction,
+									employeeDeduction: ded,
 									rate: ded.rate,
 									annualMax: ded.annualMax,
 									method: ded.method,
-
 									amount: 0,
-									ytd: 0
+									ytd: 0,
+									ceilingPerCheck: ded.ceilingPerCheck,
+									accountNo: ded.accountNo,
+									agencyId: ded.agencyId
 								});
 							});
 							selected.payChecks.push(paycheck);
@@ -353,6 +357,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.hostPayrollAccount = data.hostPayrollAccount;
 							dataSvc.startingCheckNumber = data.startingCheckNumber;
 							dataSvc.importMap = data.importMap;
+							dataSvc.agencies = data.agencies;
 						}, function (error) {
 							$scope.addAlert('error getting payroll meta data', 'danger');
 						});

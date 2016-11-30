@@ -26,6 +26,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string IndividualSSN { get; set; }
 		public string BusinessFIN { get; set; }
 		public bool IsVendor1099 { get; set; }
+		public bool IsAgency { get; set; }
+		public bool IsTaxDepartment { get; set; }
 
 		public void SetVendorCustomer(Guid id, Guid companyId, string name, bool isVendor, string lastModifiedBy)
 		{

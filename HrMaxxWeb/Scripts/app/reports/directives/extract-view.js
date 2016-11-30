@@ -17,6 +17,7 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.report = $scope.masterExtract.extract.report;
 					$scope.selectedHost = null;
 					$scope.selectedCompany = null;
+					$scope.selectedAgency = null;
 					$scope.showPayChecks = false;
 					$scope.showVoidedChecks = false;
 					$scope.selectedCompanyFilings = [];
@@ -46,6 +47,16 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 							}
 						});
 
+					}
+					$scope.setAgency = function(agency) {
+						$scope.selectedAgency = agency;
+						var checks = [];
+						$.each(agency.payCheckIds, function(ind, pc) {
+							var check = $filter('filter')($scope.selectedHost.accumulation.payChecks, { id: pc })[0];
+							if (check)
+								checks.push(check);
+						});
+						$scope.selectedAgency.payChecks = checks;
 					}
 					if ($scope.data && $scope.data.hosts.length > 0)
 						$scope.set($scope.data.hosts[0]);

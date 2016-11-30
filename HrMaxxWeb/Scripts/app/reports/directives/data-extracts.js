@@ -32,6 +32,10 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							startDate: moment().add(-1, 'month').startOf('month').toDate(),
 							endDate: moment().add(-1, 'month').endOf('month').toDate()
 						},
+						filterG: {
+							startDate: moment().add(-1, 'month').startOf('month').toDate(),
+							endDate: moment().add(-1, 'month').endOf('month').toDate()
+						},
 						filter: {
 							years: []
 						},
@@ -542,6 +546,11 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
 						});
 
+					}
+
+					$scope.getGarnishmentReport = function () {
+						getReport('GarnishmentReport', 'Garnishment Report', moment(dataSvc.filterG.startDate).year, null, null, moment().format("MM/DD/YYYY"), null, moment(dataSvc.filterG.startDate).format("MM/DD/YYYY"), moment(dataSvc.filterG.endDate).format("MM/DD/YYYY"), true);
+						
 					}
 
 					$scope.getDailyDepositReport = function () {

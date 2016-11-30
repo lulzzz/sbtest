@@ -19,6 +19,7 @@ using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxx.OnlinePayroll.Repository.Reports;
@@ -35,6 +36,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly IHostService _hostService;
 		private readonly ITaxationService _taxationService;
 		private readonly IPayrollRepository _payrollRepository;
+		private readonly IMetaDataRepository _metaDataRepository;
 
 		private readonly string _filePath;
 		private readonly string _templatePath;
@@ -47,7 +49,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IPayrollRepository payrollRepository, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IPayrollRepository payrollRepository, IMetaDataRepository metaDataRepository, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -57,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_templatePath = templatePath;
 			_commonService = commonService;
 			_payrollRepository = payrollRepository;
+			_metaDataRepository = metaDataRepository;
 			_hostService = hostService;
 			_taxationService = taxationService;
 		}
@@ -214,6 +217,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetPositivePayReport(request);
 				else if (request.ReportName.Equals("InternalPositivePayReport"))
 					return GetInternalPositivePayReport(request);
+				else if (request.ReportName.Equals("GarnishmentReport"))
+					return GetGarnishmentReport(request);
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -322,6 +327,20 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/InternalPositivePayReport.xslt", "xls", request.Description + ".xls");
 		}
+		private Extract GetGarnishmentReport(ReportRequest request)
+		{
+			var data = GetExtractResponse(request, buildGarnishments:true);
+			if (!data.Hosts.Any(h => h.Accumulation.GarnishmentAgencies.Any()))
+			{
+				throw new Exception(NoData);
+			}
+			request.Description = string.Format("Garnishment Report {0} - {1}", request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"));
+			request.AllowFiling = true;
+
+			var argList = new XsltArgumentList();
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/GarnishmentReport.xslt", "xls", request.Description + ".xls");
+		}
 
 		public Extract GetPositivePayReport(ReportRequest request)
 		{
@@ -359,7 +378,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/PositivePayReport.xslt", "txt", request.Description + ".txt");
 		}
 
-		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false)
+		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
 		{
 			var data = _reportRepository.GetExtractReport(request);
 
@@ -387,7 +406,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
 				}
 			}
-			
+			var garnishmentAgencies = new List<VendorCustomer>();
+			if (buildGarnishments)
+				garnishmentAgencies = _metaDataRepository.GetGarnishmentAgencies();
 			data.Hosts.ForEach(h =>
 			{
 				if (!request.ReportName.Contains("1099"))
@@ -406,6 +427,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						h.Accumulation.SetCounts(request.Year, request.Quarter);
 					if (buildDaily)
 						h.Accumulation.BuildDailyAccumulations(request.Quarter);
+					if(buildGarnishments)
+						h.Accumulation.BuildGarnishmentAccumulations(garnishmentAgencies);
 
 					h.Companies.ForEach(c =>
 					{

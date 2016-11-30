@@ -313,7 +313,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Adjustment")]
 		Adjustment=4,
 		[HrMaxxSecurity(DbName = "Tax Payment")]
-		TaxPayment = 5
+		TaxPayment = 5,
+		[HrMaxxSecurity(DbName = "Deduction Payment")]
+		DeductionPayment = 6
 
 	}
 
@@ -407,6 +409,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Federal941=2,
 		CAPITSDI=3,
 		CAETTUI=4,
+		Garnishment=5,
 		NA=0
 	}
 }

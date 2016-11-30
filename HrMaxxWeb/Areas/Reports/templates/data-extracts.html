@@ -411,6 +411,28 @@
 						</div>
 
 					</div>
+					
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h4><u>Garnishment Extract</u></h4>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3 form-group">
+								<label>Start Date</label>
+								<date-ctrl model="data.filterG.startDate" disabled="false" />
+							</div>
+							<div class="col-sm-3 form-group">
+								<label>End Date</label>
+								<date-ctrl model="data.filterG.endDate" disabled="false" min="data.filterG.startDate" />
+							</div>
+							<div class="col-sm-4 form-group">
+								<label></label><br />
+								<button class="btn btn-sm btn-primary" ng-click="getGarnishmentReport()" ng-disabled="!data.filterG.startDate || !data.filterG.endDate">Review</button>
+
+							</div>
+
+						</div>
+					</div>
 
 				</div>
 			</div>
@@ -490,6 +512,8 @@
 					</div>
 
 				</div>
+				
+				
 			</div>
 
 

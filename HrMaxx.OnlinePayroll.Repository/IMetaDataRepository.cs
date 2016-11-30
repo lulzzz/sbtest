@@ -28,5 +28,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		List<SearchResult> FillSearchResults(List<SearchResult> searchResults);
 		void UpdateSearchTable(SearchResult searchResult);
 		ImportMap GetCompanyTsImportMap(Guid companyId);
+		List<VendorCustomer> GetGarnishmentAgencies();
 	}
 }

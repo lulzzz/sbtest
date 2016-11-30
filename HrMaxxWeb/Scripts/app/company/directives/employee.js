@@ -24,7 +24,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.tab = 1;
 					$scope.alert = null;
-					var addAlert = function (error, type) {
+					$scope.addAlert = function (error, type) {
 						$scope.alert = null;
 						if (!$scope.isPopup)
 							$scope.$parent.$parent.addAlert(error, type);
@@ -213,7 +213,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							else
 								$scope.$parent.save(result);
 						}, function (error) {
-							addAlert('error saving employee', 'danger');
+							$scope.addAlert('error saving employee', 'danger');
 						});
 					}
 					
@@ -225,7 +225,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							});
 							dataSvc.employeeMetaData = data;
 						}, function (error) {
-							addAlert('error getting employee meta data', 'danger');
+							$scope.addAlert('error getting employee meta data', 'danger');
 						});
 						if ($scope.mainData.selectedCompany) {
 							dataSvc.payCodes = $scope.mainData.selectedCompany.payCodes;

@@ -170,6 +170,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		[Required]
 		public CompanyDeduction Deduction { get; set; }
 		[Required]
+		public EmployeeDeductionResource EmployeeDeduction { get; set; }
+		[Required]
 		public KeyValuePair<int, string> Method { get; set; }
 		[Required]
 		public decimal Rate { get; set; }

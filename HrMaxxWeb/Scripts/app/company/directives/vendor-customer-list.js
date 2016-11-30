@@ -47,7 +47,9 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							subType1099: null,
 							individualSSN: null,
 							businessFIN: null,
-							isVendor1099: $scope.isVendor
+							isVendor1099: $scope.isGlobal ? false : $scope.isVendor,
+							isAgency: false,
+							isTaxDepartment: false
 
 						};
 

@@ -20,6 +20,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal Rate { get; set; }
         public Nullable<decimal> AnnualMax { get; set; }
         public int CompanyDeductionId { get; set; }
+        public Nullable<decimal> CeilingPerCheck { get; set; }
+        public string AccountNo { get; set; }
+        public Nullable<System.Guid> AgencyId { get; set; }
     
         public virtual CompanyDeduction CompanyDeduction { get; set; }
         public virtual Employee Employee { get; set; }

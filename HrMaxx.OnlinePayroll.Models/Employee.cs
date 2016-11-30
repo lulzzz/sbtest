@@ -95,5 +95,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DeductionMethod Method { get; set; }
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }
+		public decimal? CeilingPerCheck { get; set; }
+		public string AccountNo { get; set; }
+		public Guid? AgencyId { get; set; }
 	}
 }

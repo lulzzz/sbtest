@@ -29,6 +29,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string IndividualSSN { get; set; }
 		public string BusinessFIN { get; set; }
 		public bool IsVendor1099 { get; set; }
+		public bool IsTaxDepartment { get; set; }
+		public bool IsAgency { get; set; }
 
 		public string StatusText
 		{

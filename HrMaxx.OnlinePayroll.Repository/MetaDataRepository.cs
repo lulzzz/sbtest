@@ -10,6 +10,7 @@ using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using Newtonsoft.Json;
 using DeductionType = HrMaxx.OnlinePayroll.Models.DeductionType;
 using PayType = HrMaxx.OnlinePayroll.Models.PayType;
+using VendorCustomer = HrMaxx.OnlinePayroll.Models.VendorCustomer;
 
 namespace HrMaxx.OnlinePayroll.Repository
 {
@@ -232,6 +233,12 @@ namespace HrMaxx.OnlinePayroll.Repository
 			if (dbVal != null)
 				return JsonConvert.DeserializeObject<ImportMap>(dbVal.TimeSheetImportMap);
 			return null;
+		}
+
+		public List<VendorCustomer> GetGarnishmentAgencies()
+		{
+			var agencies = _dbContext.VendorCustomers.Where(vc => !vc.CompanyId.HasValue && vc.IsAgency).ToList();
+			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<Models.VendorCustomer>>(agencies);
 		}
 	}
 }

@@ -42,6 +42,22 @@
 									<input type="text" name="noe" placeholder="Note" class="form-control" ng-model="selected.note" />
 								</div>
 							</div>
+							<div class="col-sm-4" ng-show="isGlobal">
+								<div class="form-group">
+									<label for="istaxdepartment" class="switch">
+										Tax Department ?
+										<input id="istaxdepartment" type="checkbox" ng-model="selected.isTaxDepartment" /><i></i>
+									</label>
+								</div>
+							</div>
+							<div class="col-sm-4" ng-show="isGlobal">
+								<div class="form-group">
+									<label for="isagency" class="switch">
+										Garnishment Agency ?
+										<input id="isagency" type="checkbox" ng-model="selected.isAgency" /><i></i>
+									</label>
+								</div>
+							</div>
 						</div>
 
 					</fieldset>
@@ -51,7 +67,7 @@
 							<contact data="selected.contact" sourcetypeid="data.sourceTypeId" sourceid="selected.id" type="0" data-parsley-group="vendorcustomer" show-primary="false" />
 						</div>
 					</fieldset>
-					<fieldset ng-if="isVendor">
+					<fieldset ng-if="isVendor && !isGlobal">
 						<legend class="pull-left width-full">Vendor Setup</legend>
 						<div class="row">
 							<div class="col-sm-2">

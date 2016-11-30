@@ -156,7 +156,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					$scope.void = function () {
 						if ($window.confirm('Are you sure you want to mark this check Void?')) {
 							var check = $scope.selected;
-
+							
 							if (check.transactionType > 1) {
 								journalRepository.voidCheck(check).then(function(data) {
 									var exists = $filter('filter')($scope.list, { id: data.id })[0];

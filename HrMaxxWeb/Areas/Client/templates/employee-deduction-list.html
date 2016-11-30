@@ -1,15 +1,19 @@
-﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
+﻿<div class="table-responsive col-sm-12">
 	<div class="row">
 		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 	</div>
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-3">Description</td>
-				<td class="col-sm-2">Method</td>
-				<td class="col-sm-2">Rate</td>
-				<td class="col-sm-3">Annual Max</td>
-				<td class="col-sm-3" ng-show="showControls"></td>
+				<td class="col-sm-2">Description</td>
+				<td class="col-sm-2">Type</td>
+				<td class="col-sm-1">Method</td>
+				<td class="col-sm-1">Rate</td>
+				<td class="col-sm-1">Annual Max</td>
+				<td class="col-sm-1">Ceiling Per Check</td>
+				<td class="col-sm-1">ExpNo</td>
+				<td class="col-sm-1">Agency</td>
+				<td class="col-sm-2" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -19,6 +23,10 @@
 					<span e-ng-change="item.deduction = $data;" editable-select="item.deduction" e-name="deduction" e-form="rowform" e-ng-options="ded.description for ded in companyDeductions track by ded.id">
 						{{ item.deduction? item.deduction.description : '' }}
 					</span>
+				</td>
+				<td>
+					{{ item.deduction? item.deduction.type.name : '' }}
+					
 				</td>
 				<td>
 					<span e-ng-change="item.method = $data;" editable-select="item.method" e-name="method" e-form="rowform" e-ng-options="m.value for m in data.types track by m.key">
@@ -36,7 +44,26 @@
 				<td>
 					<!-- editable comment (text with validation) -->
 					<span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.annualMax }}
+						{{ item.annualMax | currency:'$' }}
+					</span>
+				</td>
+				<td >
+					<!-- editable comment (text with validation) -->
+					<span ng-show="item.deduction.type.id===3" editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						{{ item.ceilingPerCheck | currency:'$' }}
+					</span>
+				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<span ng-show="item.deduction.type.id===3" editable-text="item.accountNo" e-name="account" e-form="rowform" e-ng-change="item.accountNo = $data" >
+						{{ item.accountNo }}
+					</span>
+					
+				</td>
+				<td>
+					<!-- editable tesltra worktype (select-local) -->
+					<span ng-show="item.deduction.type.id===3" e-ng-change="item.agencyId = $data;" editable-select="item.agencyId" e-name="agnecy" e-form="rowform" e-ng-options="a.id as a.name for a in data.agencies">
+						{{ item.agencyId? getAgencyName() : '' }}
 					</span>
 				</td>
 				<td style="white-space: nowrap" ng-show="showControls">
@@ -59,7 +86,7 @@
 				
 			</tr>
 			<tr ng-show="!selected && showControls">
-				<td colspan="4">
+				<td colspan="8">
 					<span ng-show="list.length===0">No items found</span>
 				</td>
 

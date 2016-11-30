@@ -220,12 +220,16 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							templateUrl: 'popover/updatededs.html',
 							controller: 'updateDedsCtrl',
 							size: 'lg',
+							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function () {
 									return listitem;
 								},
 								companydeductions: function () {
 									return $scope.company.deductions;
+								},
+								agencies: function() {
+									return $scope.datasvc.agencies;
 								},
 								companyRepository: function() {
 									return companyRepository;
@@ -542,12 +546,12 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 	_init();
 });
 
-common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, companyRepository) {
+common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, agencies, companyRepository) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.dedList = angular.copy(paycheck.deductions);
 	$scope.deductionList = companydeductions;
-	
+	$scope.agencies = agencies;
 
 
 	$scope.cancel = function () {

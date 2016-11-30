@@ -383,7 +383,7 @@
 
 
 
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup && data.employeeMetaData">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
@@ -393,7 +393,7 @@
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
-					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" show-controls="showControls" />
+					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" show-controls="showControls" agencies="data.employeeMetaData.agencies" />
 				</div>
 			</div>
 		</div>

@@ -327,5 +327,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }
+		public decimal? CeilingPerCheck { get; set; }
+		public string AccountNo { get; set; }
+		public Guid? AgencyId { get; set; }
 	}
 }

@@ -46,6 +46,24 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Value { get; set; }
 	}
 
+	public class GarnishmentAgency
+	{
+		public VendorCustomer Agency { get; set; }
+		public List<GarnishmentAgencyAccount>  Accounts{ get; set; }
+		public List<int> PayCheckIds { get; set; } 
+		public decimal Total
+		{
+			get { return Accounts.Sum(a => a.Amount); }
+		}
+	}
+
+	public class GarnishmentAgencyAccount
+	{
+		public string Deduction { get; set; }
+		public string AccountNo { get; set; }
+		public decimal Amount { get; set; }
+	}
+
 	public class CoaTypeBalanceDetail
 	{
 		public AccountType Type { get; set; }

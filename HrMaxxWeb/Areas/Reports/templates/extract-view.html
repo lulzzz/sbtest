@@ -14,7 +14,7 @@
 		</div>
 		<div class="tab-content">
 			<div class="tab-pane fade in" ng-if="selectedHost" ng-class="{'active':selectedHost}">
-				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName!=='Report1099'">
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName!=='Report1099'  && masterExtract.extract.report.reportName!=='GarnishmentReport'">
 					<thead>
 						<tr>
 							<th class="col-sm-4">Amounts</th>
@@ -125,14 +125,14 @@
 						</td>
 					</tr>
 				</table>
-				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='Report1099'">
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='Report1099' && masterExtract.extract.report.reportName!=='GarnishmentReport'">
 					<thead>
 						<tr>
 							<th class="col-sm-4">Host Amounts</th>
 							<th class="col-sm-2">Companies</th>
 							<th class="col-sm-4">Company Amounts</th>
 							<th class="col-sm-2">Vendors</th>
-							
+
 						</tr>
 					</thead>
 					<tr>
@@ -151,12 +151,12 @@
 								</div>
 								<div class="col-sm-10 col-sm-offset-2" ng-repeat="sgroup in group.subTypeGroups">
 									<strong>{{sgroup.subTypeText}}</strong> {{sgroup.total | currency:'$'}}
-									
+
 								</div>
-								
+
 
 							</div>
-							
+
 						</td>
 						<td class="col-sm-2">
 							<div class="row" ng-repeat="comp in selectedHost.companies">
@@ -190,7 +190,53 @@
 								{{vendor.vendor.name}} <span class="badge">{{vendor.amount | currency:'$'}}</span>
 							</div>
 						</td>
-						
+
+					</tr>
+				</table>
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='GarnishmentReport'">
+					<thead>
+						<tr>
+							<th class="col-sm-4">Host Amounts</th>
+							<th class="col-sm-4">Agency Amounts</th>
+							<th class="col-sm-4">Pay Checks</th>
+
+						</tr>
+					</thead>
+					<tr>
+						<td class="col-sm-4">
+							<div class="row" ng-repeat="agency in selectedHost.accumulation.garnishmentAgencies ">
+								<div class="col-sm-12">
+									<button class="btn btn-xs col-sm-8" ng-class="{'btn-info' : selectedAgency.agency.id===agency.agency.id}" ng-click="setAgency(agency)">{{agency.agency.name}} </button>
+									<span class="pull-right col-sm-4">{{agency.total | currency:'$'}}</span>
+								</div>
+								
+							</div>
+
+						</td>
+
+						<td class="col-sm-4" ng-show="selectedAgency">
+							<div class="row">
+								<div class="col-sm-6"><strong>Total:</strong></div>
+								<div class="col-sm-6 text-right">{{selectedAgency.total | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-show="selectedAgency.accounts.length>0">
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Exp No Details</div>
+							</div>
+							<div class="row" ng-repeat="account in selectedAgency.accounts ">
+								<div class="col-sm-12">
+									<div class="col-sm-8"><strong>{{account.accountNo}}</strong></div>
+									<div class="col-sm-4 text-right">{{account.amount | currency:'$'}}</div>
+								</div>
+
+							</div>
+
+						</td>
+						<td class="col-sm-4" ng-show="selectedAgency">
+							<div class="row" ng-repeat="pc in selectedAgency.payChecks">
+								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
+							</div>
+						</td>
+
 					</tr>
 				</table>
 			</div>

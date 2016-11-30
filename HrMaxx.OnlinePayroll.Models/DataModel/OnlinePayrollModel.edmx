@@ -246,6 +246,9 @@
           <Property Name="Rate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="AnnualMax" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CompanyDeductionId" Type="int" Nullable="false" />
+          <Property Name="CeilingPerCheck" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AccountNo" Type="varchar(max)" />
+          <Property Name="AgencyId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -552,6 +555,8 @@
           <Property Name="BusinessFIN" Type="varchar(max)" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="IsAgency" Type="bit" Nullable="false" />
+          <Property Name="IsTaxDepartment" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK_BankAccount_EntityType">
           <End Role="EntityType" Type="Self.EntityType" Multiplicity="1" />
@@ -1970,6 +1975,9 @@
           <Property Name="CompanyDeductionId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="CompanyDeduction" Relationship="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" FromRole="EmployeeDeduction" ToRole="CompanyDeduction" />
           <NavigationProperty Name="Employee" Relationship="HrMaxxModel.FK_EmployeeDeduction_Employee" FromRole="EmployeeDeduction" ToRole="Employee" />
+          <Property Name="CeilingPerCheck" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AccountNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="AgencyId" Type="Guid" />
         </EntityType>
         <Association Name="FK_EmployeeDeduction_CompanyDeduction">
           <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="1" />
@@ -2346,6 +2354,8 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="VendorCustomer" ToRole="Company" />
           <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_VendorCustomer_Status" FromRole="VendorCustomer" ToRole="Status" />
+          <Property Name="IsAgency" Type="Boolean" Nullable="false" />
+          <Property Name="IsTaxDepartment" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_VendorCustomer_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
@@ -2773,6 +2783,9 @@
           <EntitySetMapping Name="EmployeeDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.EmployeeDeduction">
               <MappingFragment StoreEntitySet="EmployeeDeduction">
+                <ScalarProperty Name="AgencyId" ColumnName="AgencyId" />
+                <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
+                <ScalarProperty Name="CeilingPerCheck" ColumnName="CeilingPerCheck" />
                 <ScalarProperty Name="CompanyDeductionId" ColumnName="CompanyDeductionId" />
                 <ScalarProperty Name="AnnualMax" ColumnName="AnnualMax" />
                 <ScalarProperty Name="Rate" ColumnName="Rate" />
@@ -2975,6 +2988,8 @@
           <EntitySetMapping Name="VendorCustomers">
             <EntityTypeMapping TypeName="HrMaxxModel.VendorCustomer">
               <MappingFragment StoreEntitySet="VendorCustomer">
+                <ScalarProperty Name="IsTaxDepartment" ColumnName="IsTaxDepartment" />
+                <ScalarProperty Name="IsAgency" ColumnName="IsAgency" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
                 <ScalarProperty Name="LastModified" ColumnName="LastModified" />
                 <ScalarProperty Name="BusinessFIN" ColumnName="BusinessFIN" />

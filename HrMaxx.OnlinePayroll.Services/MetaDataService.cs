@@ -66,7 +66,8 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var paytypes = _metaDataRepository.GetAllPayTypes();
-				return new { PayTypes = paytypes };
+				var agencies = _metaDataRepository.GetGarnishmentAgencies();
+				return new { PayTypes = paytypes, Agencies = agencies };
 			}
 			catch (Exception e)
 			{
@@ -87,7 +88,8 @@ namespace HrMaxx.OnlinePayroll.Services
 				var hostAccount = _metaDataRepository.GetPayrollAccount(host.Company.Id);
 				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((company.Contract.BillingOption==BillingOptions.Invoice && company.Contract.InvoiceSetup!=null && company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck) ? host.Company.Id : companyId);
 				var importMap = _metaDataRepository.GetCompanyTsImportMap(companyId);
-				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap };
+				var agencies = _metaDataRepository.GetGarnishmentAgencies();
+				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies };
 			}
 			catch (Exception e)
 			{

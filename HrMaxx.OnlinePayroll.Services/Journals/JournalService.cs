@@ -429,7 +429,14 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 		public MasterExtract FileTaxes(Extract extract, string fullName)
 		{
-			
+			if (extract.Report.ReportName.Equals("GarnishmentReport"))
+				return CreateGarnishmentPayments(extract, fullName);
+
+			return CreateTaxPayments(extract, fullName);
+		}
+
+		private MasterExtract CreateTaxPayments(Extract extract, string fullName)
+		{
 			try
 			{
 				var masterExtract = new MasterExtract
@@ -443,26 +450,75 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					var globalVendors = _companyService.GetVendorCustomers(null, true);
-					
+					globalVendors = globalVendors.Where(v => v.IsTaxDepartment).ToList();
+
 					var journals = new List<int>();
 					var payCheckIds = new List<int>();
 					var voidedCheckIds = new List<int>();
 					foreach (var host in extract.Data.Hosts)
 					{
 						var accounts = _companyService.GetComanyAccounts(host.HostCompany.Id);
-						if(!accounts.Any() || !accounts.Any(a=>a.UseInPayroll))
-							throw  new Exception("No Payroll Account");
-						
-						
-						var amount = CalculateTaxAmount(extract.Report, host );
+						if (!accounts.Any() || !accounts.Any(a => a.UseInPayroll))
+							throw new Exception("No Payroll Account");
 
-						var journal = CreateJournalEntry(accounts, fullName, host.HostCompany.Id, amount,
+
+						var amount = CalculateTaxAmount(extract.Report, host);
+
+						var journal = CreateJournalEntryTP(accounts, fullName, host.HostCompany.Id, amount,
 							globalVendors.First(
 								v => (masterExtract.IsFederal && v.Name.Contains("IRS") || (!masterExtract.IsFederal && v.Name.Contains("CA")))),
 							extract.Report.Description, extract.Report.DepositDate.Value);
 						journals.Add(journal.Id);
 						payCheckIds.AddRange(host.Companies.SelectMany(c => c.PayChecks.Select(pc => pc.Id).ToList()).ToList());
 						voidedCheckIds.AddRange(host.Companies.SelectMany(c => c.VoidedPayChecks.Select(pc => pc.Id).ToList()).ToList());
+					}
+					masterExtract.Journals = journals;
+					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
+					txn.Complete();
+					return masterExtract;
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " File Taxes for " + extract.Report.Description);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		private MasterExtract CreateGarnishmentPayments(Extract extract, string fullName)
+		{
+			try
+			{
+				var masterExtract = new MasterExtract
+				{
+					Id = 0,
+					Extract = extract,
+					LastModified = DateTime.Now,
+					LastModifiedBy = fullName,
+					IsFederal = !extract.Report.ReportName.Contains("State")
+				};
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var journals = new List<int>();
+					var payCheckIds = new List<int>();
+					var voidedCheckIds = new List<int>();
+					foreach (var host in extract.Data.Hosts)
+					{
+						var accounts = _companyService.GetComanyAccounts(host.HostCompany.Id);
+						if (!accounts.Any() || !accounts.Any(a => a.UseInPayroll))
+							throw new Exception("No Payroll Account");
+
+						foreach (var garnishmentAgency in host.Accumulation.GarnishmentAgencies)
+						{
+							var amount = garnishmentAgency.Total;
+
+							var journal = CreateJournalEntryPD(accounts, fullName, host.HostCompany.Id, amount,
+								garnishmentAgency.Agency,
+								extract.Report.Description, extract.Report.DepositDate.Value);
+							journals.Add(journal.Id);
+							payCheckIds.AddRange(garnishmentAgency.PayCheckIds);
+						}
+						
 					}
 					masterExtract.Journals = journals;
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
@@ -492,7 +548,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		private Journal CreateJournalEntry(List<Account> coaList, string userName,  Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
+		private Journal CreateJournalEntryTP(List<Account> coaList, string userName,  Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -524,6 +580,40 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			journal.JournalDetails.Add(new JournalDetail { AccountId = bankCOA.Id, AccountName = bankCOA.AccountName, IsDebit = true, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			
+			return _journalRepository.SaveJournal(journal);
+		}
+		private Journal CreateJournalEntryPD(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
+		{
+			var bankCOA = coaList.First(c => c.UseInPayroll);
+			var journal = new Journal
+			{
+				Id = 0,
+				CompanyId = companyId,
+				Amount = Math.Round(amount, 2, MidpointRounding.AwayFromZero),
+				CheckNumber = -1,
+				EntityType = EntityTypeEnum.Vendor,
+				PayeeId = vendor.Id,
+				IsDebit = true,
+				IsVoid = false,
+				LastModified = DateTime.Now,
+				LastModifiedBy = userName,
+				Memo = string.Format("Deduction Payment for {0}", report),
+				PaymentMethod = EmployeePaymentMethod.DirectDebit,
+				PayrollPayCheckId = null,
+				TransactionDate = date,
+				TransactionType = TransactionType.DeductionPayment,
+				PayeeName = vendor.Name,
+				MainAccountId = bankCOA.Id,
+				JournalDetails = new List<JournalDetail>(),
+				DocumentId = CombGuid.Generate(),
+				PEOASOCoCheck = false
+			};
+			//bank account debit
+
+
+			journal.JournalDetails.Add(new JournalDetail { AccountId = bankCOA.Id, AccountName = bankCOA.AccountName, IsDebit = true, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
+			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
+
 			return _journalRepository.SaveJournal(journal);
 		}
 		private decimal CalculateTaxAmount(ReportRequest report, ExtractHost host)

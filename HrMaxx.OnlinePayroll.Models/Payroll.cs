@@ -443,6 +443,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class PayrollDeduction
 	{
 		public CompanyDeduction Deduction { get; set; }
+		public EmployeeDeduction EmployeeDeduction { get; set; }
 		public DeductionMethod Method { get; set; }
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }

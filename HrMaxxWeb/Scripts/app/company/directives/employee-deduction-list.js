@@ -10,7 +10,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				companyDeductions: "=companyDeductions",
 				list: "=list",
 				saveToServer: "=saveToServer",
-				showControls: "=showControls"
+				showControls: "=showControls",
+				agencies:"=agencies"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html?v=' + version,
 
@@ -24,13 +25,20 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 								key: 2,
 								value: 'Amount'
 							}
-						]
+						],
+						agencies: $scope.agencies? angular.copy($scope.agencies) : []
 					};
 
 					$scope.data = dataSvc;
 
 				$scope.selected = null;
-				
+				$scope.getAgencyName = function(id) {
+					if (!id) {
+						var fil = $filter('filter')(dataSvc.agencies, { id: id })[0];
+						if (fil)
+							return fil.name;
+					}
+				}
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};

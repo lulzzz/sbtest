@@ -961,9 +961,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
+				var employees = _companyRepository.GetAllEmployees();
 				var payrolls = _payrollRepository.GetAllPayrolls(companyId);
 				payrolls.OrderBy(p=>p.PayDay).ToList().ForEach(payroll => payroll.PayChecks.ForEach(pc =>
 				{
+					var employee = employees.First(e => e.Id == pc.Employee.Id);
 					pc.Accumulations = ProcessAccumulations(pc, payroll.Company.AccumulatedPayTypes);
 					if (pc.WorkerCompensation != null)
 					{
@@ -991,6 +993,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						}
 						
 					}
+					pc.Deductions.ForEach(d =>
+					{
+						if (employee.Deductions.Any(ed => ed.Deduction.Id == d.Deduction.Id))
+							d.EmployeeDeduction = employee.Deductions.First(ed => ed.Deduction.Id == d.Deduction.Id);
+					});
 					_payrollRepository.SavePayCheck(pc);
 				}));
 				
@@ -1408,6 +1415,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				else
 					d.Amount = localGrossWage * d.Rate / 100;
 				d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
+				if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount>d.EmployeeDeduction.CeilingPerCheck.Value)
+				{
+					d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
+				}
 				var ytdVal = previousChecks.SelectMany(p => p.Deductions).Where(p => p.Deduction.Id == d.Deduction.Id).Sum(ded => ded.Amount);
 				if (d.AnnualMax.HasValue)
 				{

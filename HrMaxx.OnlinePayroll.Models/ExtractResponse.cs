@@ -200,6 +200,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string BusinessFIN { get; set; }
 		public bool IsVendor1099 { get; set; }
 		public decimal Amount { get; set; }
+		public bool IsTaxDepartment { get; set; }
+		public bool IsAgency { get; set; }
 	}
 
 

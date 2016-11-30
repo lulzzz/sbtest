@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheck> PayChecks { get; set; }
 		public List<PayCheck> CreditChecks { get; set; }
 		public List<DailyAccumulation> DailyAccumulations { get; set; }
+		public List<GarnishmentAgency> GarnishmentAgencies { get; set; }
 		public ExtractAccumulation()
 		{
 			GrossWage = 0;
@@ -60,6 +61,25 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 				return Taxes;
 
+			}
+		}
+
+		public List<PayrollDeduction> Garnishments
+		{
+			get
+			{
+				if (ExtractType == ExtractType.Garnishment)
+					return Deductions.Where(d => d.Deduction.Type.Id == 3).ToList();
+				return new List<PayrollDeduction>();
+			}
+		}
+
+		public decimal GarnishmentAmount
+		{
+			get
+			{
+				return Garnishments.Sum(d => d.Amount); 
+				
 			}
 		}
 
@@ -305,6 +325,29 @@ namespace HrMaxx.OnlinePayroll.Models
 				DailyAccumulations.Add(ea);
 			}
 		}
+
+		public void BuildGarnishmentAccumulations(List<VendorCustomer> agencies )
+		{
+			GarnishmentAgencies = new List<GarnishmentAgency>();
+			var garnishments = PayChecks.SelectMany(pc => pc.Deductions.Where(d => d.Deduction.Type.Id == 3)).ToList();
+
+			foreach (var @agency in agencies)
+			{
+				if (garnishments.Any(g => g.EmployeeDeduction.AgencyId == @agency.Id))
+				{
+					var ea = new GarnishmentAgency
+					{
+						Agency = @agency,
+						Accounts = garnishments.Where(g => g.EmployeeDeduction.AgencyId == @agency.Id).Select(g => new GarnishmentAgencyAccount { Deduction = g.Deduction.DeductionName, AccountNo = g.EmployeeDeduction.AccountNo, Amount = g.Amount }).ToList(),
+						PayCheckIds = PayChecks.Where(pc => pc.Deductions.Any(d => d.Deduction.Type.Id == 3 && d.EmployeeDeduction.AgencyId == @agency.Id)).Select(pc => pc.Id).ToList()
+					};
+					GarnishmentAgencies.Add(ea);
+				}
+				
+			}
+		}
+
+
 
 		
 	}

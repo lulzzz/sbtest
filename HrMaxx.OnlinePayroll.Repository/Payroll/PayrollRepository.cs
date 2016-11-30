@@ -289,6 +289,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			if (dbPaycheck != null)
 			{
 				dbPaycheck.WorkerCompensation = mapped.WorkerCompensation;
+				dbPaycheck.Deductions = mapped.Deductions;
 				dbPaycheck.Accumulations = mapped.Accumulations;
 				dbPaycheck.Notes = mapped.Notes;
 				_dbContext.SaveChanges();

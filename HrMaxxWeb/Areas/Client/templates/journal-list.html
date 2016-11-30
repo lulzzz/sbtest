@@ -213,7 +213,7 @@
 				</div>
 
 			</div>
-			<div class="panel panel-info" ng-if="selected && selected.transactionType===5">
+			<div class="panel panel-info" ng-if="selected && (selected.transactionType===5 || selected.transactionType===6)">
 				<div class="panel-body tab-content">
 					<tax-payment item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
 

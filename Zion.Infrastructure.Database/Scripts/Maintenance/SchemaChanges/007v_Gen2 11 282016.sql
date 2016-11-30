@@ -14,3 +14,17 @@ Company
 )b
 where a.Id=b.Id
 and b.created1 is not null;
+
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'VendorCustomer'
+                 AND COLUMN_NAME = 'IsTaxDepartment')
+Alter table VendorCustomer Add IsAgency bit not null Default(0), IsTaxDepartment bit not null Default(0);
+Go;
+
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'EmployeeDeduction'
+                 AND COLUMN_NAME = 'AgencyId')
+Alter table EmployeeDeduction Add CeilingPerCheck decimal(18,2), AccountNo varchar(max), AgencyId uniqueidentifier;
+Go;
