@@ -163,7 +163,16 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							}
 						});
 					}
-					
+					$scope.canConfirm = function() {
+						$scope.minPayDate = moment().startOf('day');
+						if ($scope.mainData.selectedCompany.payrollDaysInPast > 0) {
+							$scope.minPayDate = moment().add($scope.mainData.selectedCompany.payrollDaysInPast * -1, 'day').startOf('day').toDate();
+						}
+						if (($scope.item.status === 2 || $scope.item.status === 6) && (moment($scope.item.payDay)>=$scope.minPayDate))
+							return true;
+						else
+							return false;
+					}
 					var init = function () {
 						if($scope.item.status===2)
 							$scope.datasvc.isBodyOpen = false;

@@ -26,5 +26,5 @@ IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'EmployeeDeduction'
                  AND COLUMN_NAME = 'AgencyId')
-Alter table EmployeeDeduction Add CeilingPerCheck decimal(18,2), AccountNo varchar(max), AgencyId uniqueidentifier;
+Alter table EmployeeDeduction Add CeilingPerCheck decimal(18,2), AccountNo varchar(max), AgencyId uniqueidentifier, Limit decimal(18,2), [Priority] int;
 Go;

@@ -249,6 +249,8 @@
           <Property Name="CeilingPerCheck" Type="decimal" Precision="18" Scale="2" />
           <Property Name="AccountNo" Type="varchar(max)" />
           <Property Name="AgencyId" Type="uniqueidentifier" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="Limit" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -1978,6 +1980,8 @@
           <Property Name="CeilingPerCheck" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="AccountNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="AgencyId" Type="Guid" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="Limit" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_EmployeeDeduction_CompanyDeduction">
           <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="1" />
@@ -2783,6 +2787,8 @@
           <EntitySetMapping Name="EmployeeDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.EmployeeDeduction">
               <MappingFragment StoreEntitySet="EmployeeDeduction">
+                <ScalarProperty Name="Limit" ColumnName="Limit" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="AgencyId" ColumnName="AgencyId" />
                 <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
                 <ScalarProperty Name="CeilingPerCheck" ColumnName="CeilingPerCheck" />

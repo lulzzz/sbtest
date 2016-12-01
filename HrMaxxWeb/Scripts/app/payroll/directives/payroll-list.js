@@ -94,7 +94,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 									ytd: 0,
 									ceilingPerCheck: ded.ceilingPerCheck,
 									accountNo: ded.accountNo,
-									agencyId: ded.agencyId
+									agencyId: ded.agencyId,
+									limit: ded.limit,
+									priority: ded.priority
 								});
 							});
 							selected.payChecks.push(paycheck);
@@ -472,7 +474,20 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						getEmployees($scope.mainData.selectedCompany.id);
 					}
-					
+					$scope.minPayDate = null;
+					$scope.getClass = function(item) {
+						if ($scope.committed && $scope.committed.id === item.id)
+							return 'success';
+						else if (item.status === 6) {
+							if (moment(item.payDay).toDate() < $scope.minPayDate)
+								return 'danger';
+							else {
+								return 'warning';
+							}
+						} else {
+							return 'default';
+						}
+					}
 					var init = function () {
 						
 						if ($scope.mainData.selectedCompany) {
@@ -480,7 +495,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							
 							getEmployees($scope.mainData.selectedCompany.id);
 							getPayrolls($scope.mainData.selectedCompany.id, null, null);
-
+							$scope.minPayDate = moment().startOf('day');
+							if ($scope.mainData.selectedCompany.payrollDaysInPast > 0) {
+								$scope.minPayDate = moment().add($scope.mainData.selectedCompany.payrollDaysInPast * -1, 'day').startOf('day').toDate();
+							}
 						}
 						
 

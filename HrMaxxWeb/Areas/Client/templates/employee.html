@@ -128,7 +128,7 @@
 								<fieldset>
 									<legend class="pull-left width-full">Payroll</legend>
 									<!-- begin row -->
-									<div class="row">
+									<div class="row" style="min-height:300px">
 										<!-- begin col-6 -->
 										<div class="col-sm-4">
 											<div class="form-group">
@@ -201,14 +201,10 @@
 												<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 
 											</div>
-											<!--<div class="form-group" ng-if="selected.payType===1">
-														<label>Base Hourly Rate $</label>
-														<input id="rate" type="number" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
-
-													</div>-->
+											
 											<div class="form-group" ng-if="selected.payType===1">
 												<label for="paycodes">Pay Code(s)</label>
-												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-2"></div>
+												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-2"></div>
 
 											</div>
 											<div class="row" ng-if="selected.paymentMethod===2">

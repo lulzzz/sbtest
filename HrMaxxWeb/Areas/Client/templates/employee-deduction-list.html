@@ -5,15 +5,12 @@
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-2">Description</td>
-				<td class="col-sm-2">Type</td>
+				<td class="col-sm-4">Description</td>
+				<td class="col-sm-3">Type</td>
 				<td class="col-sm-1">Method</td>
 				<td class="col-sm-1">Rate</td>
 				<td class="col-sm-1">Annual Max</td>
-				<td class="col-sm-1">Ceiling Per Check</td>
-				<td class="col-sm-1">ExpNo</td>
-				<td class="col-sm-1">Agency</td>
-				<td class="col-sm-2" ng-show="showControls"></td>
+				<td class="col-sm-3" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -23,6 +20,63 @@
 					<span e-ng-change="item.deduction = $data;" editable-select="item.deduction" e-name="deduction" e-form="rowform" e-ng-options="ded.description for ded in companyDeductions track by ded.id">
 						{{ item.deduction? item.deduction.description : '' }}
 					</span>
+					<div class="row" ng-show="item.deduction.type.id===3">
+						<div class="form-group col-sm-12">
+							<div class="col-sm-6 text-right">
+								<label>Ceiling Per Check</label>	
+							</div>
+							<div class="col-sm-6 pull-left">
+								<span ng-show="item.deduction.type.id===3" editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.ceilingPerCheck ? (item.ceilingPerCheck | currency:'$') : 'none' }}
+								</span>
+							</div>
+							
+						
+						</div>
+						<div class="form-group col-sm-12">
+							<div class="col-sm-6 text-right">
+								<label>Limit</label>	
+							</div>
+							<div class="col-sm-6 pull-left">
+								<span ng-show="item.deduction.type.id===3" editable-number="item.limit" e-name="limit" e-form="rowform" e-ng-change="item.limit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.limit ? (item.limit | currency:'$') : 'none' }}
+								</span>
+							</div>
+							
+							
+						</div>
+						<div class="form-group col-sm-12">
+							<div class="col-sm-6 text-right"><label>Priority</label></div>
+							<div class="col-sm-6 pull-left">
+								<span ng-show="item.deduction.type.id===3" editable-number="item.priority" e-name="ceiling" e-form="rowform" e-ng-change="item.priority = $data" e-ng-pattern="/^[0-9]?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.priority ? item.priority : 'none'  }}
+								</span>
+							</div>
+							
+							
+						</div>
+						<div class="form-group col-sm-12">
+							<div class="col-sm-6 text-right"><label>Exp No</label></div>
+							<div class="col-sm-6 pull-left">
+								<span ng-show="item.deduction.type.id===3" editable-text="item.accountNo" e-name="account" e-form="rowform" e-ng-change="item.accountNo = $data">
+									{{ item.accountNo }}
+								</span>
+							</div>
+							
+							
+						</div>
+						<div class="form-group col-sm-12">
+							<div class="col-sm-6 text-right"><label>Agency</label></div>
+							<div class="col-sm-6 pull-left">
+								<span ng-show="item.deduction.type.id===3" e-ng-change="item.agencyId = $data;" editable-select="item.agencyId" e-name="agnecy" e-form="rowform" e-ng-options="a.id as a.name for a in data.agencies">
+									{{ item.agencyId? getAgencyName() : '' }}
+								</span>
+							</div>
+							
+							
+						</div>
+						
+					</div>
 				</td>
 				<td>
 					{{ item.deduction? item.deduction.type.name : '' }}
@@ -47,25 +101,7 @@
 						{{ item.annualMax | currency:'$' }}
 					</span>
 				</td>
-				<td >
-					<!-- editable comment (text with validation) -->
-					<span ng-show="item.deduction.type.id===3" editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.ceilingPerCheck | currency:'$' }}
-					</span>
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span ng-show="item.deduction.type.id===3" editable-text="item.accountNo" e-name="account" e-form="rowform" e-ng-change="item.accountNo = $data" >
-						{{ item.accountNo }}
-					</span>
-					
-				</td>
-				<td>
-					<!-- editable tesltra worktype (select-local) -->
-					<span ng-show="item.deduction.type.id===3" e-ng-change="item.agencyId = $data;" editable-select="item.agencyId" e-name="agnecy" e-form="rowform" e-ng-options="a.id as a.name for a in data.agencies">
-						{{ item.agencyId? getAgencyName() : '' }}
-					</span>
-				</td>
+				
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
@@ -86,7 +122,7 @@
 				
 			</tr>
 			<tr ng-show="!selected && showControls">
-				<td colspan="8">
+				<td colspan="5">
 					<span ng-show="list.length===0">No items found</span>
 				</td>
 

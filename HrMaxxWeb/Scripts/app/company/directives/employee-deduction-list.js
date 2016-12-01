@@ -85,15 +85,27 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					if ($scope.selected.id === 0) {
 						$scope.list.splice(index, 1);
 					}
+					else if ($scope.original && $scope.original.id === $scope.selected.id) {
+						$scope.list[index] = angular.copy($scope.original);
+					}
 					$scope.selected = null;
 				}
 				$scope.setSelected = function(index) {
 					$scope.selected = $scope.list[index];
+					$scope.original = angular.copy($scope.selected);
 				}
 
 				$scope.isItemValid = function(item) {
 					if (!item.deduction || !item.method || !item.rate)
 						return false;
+					else if (item.deduction.type.id === 3) {
+						if (!item.accountNo || !item.agencyId)
+							return false;
+						else {
+							return true;
+						}
+
+					}
 					else
 						return true;
 				}

@@ -427,6 +427,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.AccountNo = mappeddeduction.AccountNo;
 					dbdeduction.AgencyId = mappeddeduction.AgencyId;
 					dbdeduction.CeilingPerCheck = mappeddeduction.CeilingPerCheck;
+					dbdeduction.Limit = mappeddeduction.Limit;
+					dbdeduction.Priority = mappeddeduction.Priority;
 				}
 			}
 			_dbContext.SaveChanges();
