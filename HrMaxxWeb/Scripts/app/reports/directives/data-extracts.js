@@ -417,18 +417,18 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}
 					$scope.getReportCAUIQ = function () {
-						if (dataSvc.filterCAPIT.depositSchedule === 1)
+						if (dataSvc.filterCAUIQ.depositSchedule === 1)
 							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, true);
-						else if (dataSvc.filterCAPIT.depositSchedule === 2)
+						else if (dataSvc.filterCAUIQ.depositSchedule === 2)
 							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, true);
 						else {
 							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, true);
 						}
 					}
 					$scope.getReportCAUIQExcel = function () {
-						if (dataSvc.filterCAPIT.depositSchedule === 1)
+						if (dataSvc.filterCAUIQ.depositSchedule === 1)
 							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, false);
-						else if (dataSvc.filterCAPIT.depositSchedule === 2)
+						else if (dataSvc.filterCAUIQ.depositSchedule === 2)
 							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, false);
 						else {
 							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, false);

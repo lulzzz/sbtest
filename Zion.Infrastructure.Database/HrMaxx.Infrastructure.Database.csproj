@@ -190,6 +190,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007v_Gen2 11 282016.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007w_Gen 2 11302016 bugs and mods.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>

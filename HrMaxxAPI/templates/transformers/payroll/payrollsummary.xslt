@@ -78,9 +78,10 @@
 						<thead>
 							<tr >
 								<th style="width:15%">Employee</th>
-								<th style="width:15%">Wage(s)</th>
+								<th style="width:10%">Wage(s)</th>
 								<th style="width:10%">Amount</th>
-								<th style="width:20%">PayCode(s)</th>
+								<th style="width:10%">YTD</th>
+								<th style="width:25%">PayCode(s)</th>
 								
 								<th style="width:20%">Tax/Deductions</th>
 								<th style="width:10%">Amount</th>
@@ -154,11 +155,14 @@
 	</xsl:template>
 	<xsl:template match="PayrollPayType">
 		<tr>
-			<td style="width:60%; text-align:left;">
+			<td style="width:33%; text-align:left;">
 				<xsl:value-of select="PayType/Name"/>
 			</td>
-			<td style="width:40%; text-align:right;">
+			<td style="width:33%; text-align:right;">
 				$<xsl:value-of select="format-number(Amount,'#,##0.00')"/>
+			</td>
+			<td style="width:33%; text-align:right;">
+				$<xsl:value-of select="format-number(YTD,'#,##0.00')"/>
 			</td>
 		</tr>
 	</xsl:template>
@@ -223,14 +227,7 @@
 							</xsl:choose>
 						</td>
 					</tr>
-					<tr>
-						<td style="width:50%; text-align:left; align:left">
-							<strong>Net Pay:</strong>
-						</td>
-						<td style="width:50%; text-align:right; align:right">
-							$<xsl:value-of select="format-number(NetWage,'#,##0.00')"/>
-						</td>
-					</tr>
+				
 					<tr>
 						<td colspan="2">
 							<xsl:if test="Notes.length>0">
@@ -242,22 +239,39 @@
 					</tr>
 				</table>
 			</td>
-			<td colspan="2" valign="top">
+			<td colspan="3" valign="top">
 				<table style="font-size:8px;width:100%" class="noborder">
 					<tr>
-						<td style="width:60%; text-align:left;">
+						<td style="width:33%; text-align:left;">
 							Gross Wage
 						</td>
-						<td style="width:40%; text-align:right;">
+						<td style="width:33%; text-align:right;">
 							$<xsl:value-of select="format-number(GrossWage,'#,##0.00')"/>
+						</td>
+						<td style="width:33%; text-align:right;">
+							$<xsl:value-of select="format-number(YTDGrossWage,'#,##0.00')"/>
 						</td>
 					</tr>
 					<tr>
-						<td style="width:60%; text-align:left;">
+						<td style="width:33%; text-align:left;">
 							Salary
 						</td>
-						<td style="width:40%; text-align:right;">
+						<td style="width:33%; text-align:right;">
 							$<xsl:value-of select="format-number(Salary,'#,##0.00')"/>
+						</td>
+						<td style="width:33%; text-align:right;">
+							$<xsl:value-of select="format-number(YTDSalary,'#,##0.00')"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:33%; text-align:left;">
+							Net Wage
+						</td>
+						<td style="width:40%; text-align:right;">
+							$<xsl:value-of select="format-number(NetWage,'#,##0.00')"/>
+						</td>
+						<td style="width:40%; text-align:right;">
+							$<xsl:value-of select="format-number(YTDNetWage,'#,##0.00')"/>
 						</td>
 					</tr>
 					<xsl:apply-templates select="Compensations/PayrollPayType"/>
