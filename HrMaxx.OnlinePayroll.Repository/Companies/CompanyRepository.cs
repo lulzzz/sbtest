@@ -166,6 +166,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.Description = mappeddeduction.Description;
 					dbdeduction.Name = mappeddeduction.Name;
 					dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
+					dbdeduction.FloorPerCheck = mappeddeduction.FloorPerCheck;
 				}
 			}
 			_dbContext.SaveChanges();

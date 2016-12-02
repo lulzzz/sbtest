@@ -356,8 +356,13 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					d =>
 						TaxTables.TaxDeductionPrecendences.Any(
 							tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(tax.Tax.Code))).ToList();
-			if(exempt.Any())
-				return Math.Round(exempt.Sum(ded => ded.Amount), 2, MidpointRounding.AwayFromZero);
+			if (exempt.Any())
+			{
+				var exempted = exempt.Sum(ded => ded.Amount);
+				if (exempted > grossWage)
+					return grossWage;
+				return Math.Round(exempted, 2, MidpointRounding.AwayFromZero);
+			}
 			else
 			{
 				return 0;

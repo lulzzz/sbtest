@@ -9,13 +9,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 {
 	public enum DeductionCategory
 	{
-		[HrMaxxSecurity(DbId = 1, DbName = "Post Tax Deduction")]
+		[HrMaxxSecurity(DbId = 4, DbName = "Post Tax Deduction")]
 		PostTaxDeduction=1,
 		[HrMaxxSecurity(DbId = 2, DbName = "Partial Pre Tax Deduction")]
 		PartialPreTaxDeduction=2,
-		[HrMaxxSecurity(DbId = 3, DbName = "Total Pre Tax Deduction")]
+		[HrMaxxSecurity(DbId = 1, DbName = "Total Pre Tax Deduction")]
 		TotalPreTaxDeduction=3,
-		[HrMaxxSecurity(DbId = 4, DbName = "Other")]
+		[HrMaxxSecurity(DbId = 3, DbName = "Other")]
 		Other=4
 	}
 	public enum PayCheckStock
@@ -399,6 +399,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum CompanyInvoiceStyle
 	{
+		NA=0,
 		Summary=1,
 		Detailed=2
 	}

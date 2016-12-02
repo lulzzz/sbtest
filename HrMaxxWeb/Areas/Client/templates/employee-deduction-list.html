@@ -26,7 +26,7 @@
 								<label>Ceiling Per Check</label>	
 							</div>
 							<div class="col-sm-6 pull-left">
-								<span ng-show="item.deduction.type.id===3" editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+								<span ng-show="item.employeeDeduction.deduction.type.id===3" editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
 									{{ item.ceilingPerCheck ? (item.ceilingPerCheck | currency:'$') : 'none' }}
 								</span>
 							</div>
@@ -38,7 +38,7 @@
 								<label>Limit</label>	
 							</div>
 							<div class="col-sm-6 pull-left">
-								<span ng-show="item.deduction.type.id===3" editable-number="item.limit" e-name="limit" e-form="rowform" e-ng-change="item.limit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+								<span ng-show="item.employeeDeduction.deduction.type.id===3" editable-number="item.limit" e-name="limit" e-form="rowform" e-ng-change="item.limit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
 									{{ item.limit ? (item.limit | currency:'$') : 'none' }}
 								</span>
 							</div>

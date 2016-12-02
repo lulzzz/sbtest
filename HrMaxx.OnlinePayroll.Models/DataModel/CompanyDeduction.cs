@@ -26,6 +26,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Name { get; set; }
         public string Description { get; set; }
         public Nullable<decimal> AnnualMax { get; set; }
+        public Nullable<decimal> FloorPerCheck { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual DeductionType DeductionType { get; set; }

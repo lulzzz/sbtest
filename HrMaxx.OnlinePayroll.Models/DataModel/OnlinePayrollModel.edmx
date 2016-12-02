@@ -126,6 +126,7 @@
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
           <Property Name="Description" Type="varchar(max)" />
           <Property Name="AnnualMax" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FloorPerCheck" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="CompanyPayCode">
           <Key>
@@ -1648,6 +1649,7 @@
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyDeduction_Company" FromRole="CompanyDeduction" ToRole="Company" />
           <NavigationProperty Name="DeductionType" Relationship="HrMaxxModel.FK_CompanyDeduction_DeductionType" FromRole="CompanyDeduction" ToRole="DeductionType" />
           <NavigationProperty Name="EmployeeDeductions" Relationship="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" FromRole="CompanyDeduction" ToRole="EmployeeDeduction" />
+          <Property Name="FloorPerCheck" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_CompanyDeduction_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2627,6 +2629,7 @@
           <EntitySetMapping Name="CompanyDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyDeduction">
               <MappingFragment StoreEntitySet="CompanyDeduction">
+                <ScalarProperty Name="FloorPerCheck" ColumnName="FloorPerCheck" />
                 <ScalarProperty Name="AnnualMax" ColumnName="AnnualMax" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />

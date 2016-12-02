@@ -7,6 +7,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
@@ -447,12 +448,24 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DeductionMethod Method { get; set; }
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }
-
+		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
 		public string Name
 		{
 			get { return string.Format("{0} - {1}",Deduction.Type.Name, Deduction.DeductionName); }
+		}
+
+		public int Sort
+		{
+			get
+			{
+				var dbId = Deduction.Type.Category.GetDbId().Value;
+				var priority = EmployeeDeduction != null && EmployeeDeduction.Priority.HasValue
+					? EmployeeDeduction.Priority.Value
+					: 0;
+				return dbId + priority;
+			}
 		}
 	}
 

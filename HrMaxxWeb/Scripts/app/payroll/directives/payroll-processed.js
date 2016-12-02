@@ -34,6 +34,15 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								paycheck.name = paycheck.employee.name;
 								paycheck.department = paycheck.employee.department;
 								paycheck.status = 1;
+								$.each(paycheck.deductions, function (ind2, d) {
+									if (d.employeeDeduction) {
+										d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
+										d.limit = d.employeeDeduction.limit;
+										d.accountNo = d.employeeDeduction.accountNo;
+										d.agencyId = d.employeeDeduction.agencyId;
+										d.priority = d.employeeDeduction.priority;
+									}
+								});
 							});
 							$scope.item.startDate = moment($scope.item.startDate).toDate();
 							$scope.item.endDate = moment($scope.item.endDate).toDate();
@@ -53,9 +62,10 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					$scope.save = function () {
 						$scope.item.payChecks = $filter('filter')($scope.item.payChecks, {included:true});
 						payrollRepository.commitPayroll($scope.item).then(function (data) {
+							if (!$scope.mainData.selectedCompany.lastPayrollDate || moment($scope.mainData.selectedCompany.lastPayrollDate) < moment($scope.item.payDay))
+								$scope.mainData.selectedCompany.lastPayrollDate = moment($scope.item.payDay).toDate();
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
-							if ($scope.mainData.selectedCompany.lastPayrollDate < $scope.item.payDay)
-								$scope.mainData.selectedCompany.lastPayrollDate = $scope.item.payDay;
+							
 						}, function (error) {
 							addAlert('error committing payroll', 'danger');
 						});
@@ -168,10 +178,19 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						if ($scope.mainData.selectedCompany.payrollDaysInPast > 0) {
 							$scope.minPayDate = moment().add($scope.mainData.selectedCompany.payrollDaysInPast * -1, 'day').startOf('day').toDate();
 						}
-						if (($scope.item.status === 2 || $scope.item.status === 6) && (moment($scope.item.payDay)>=$scope.minPayDate))
-							return true;
-						else
+						if (($scope.item.status === 2 || $scope.item.status === 6) && (moment($scope.item.payDay)<$scope.minPayDate))
 							return false;
+						else if ($scope.item.status === 2) {
+							var inValidChecks = 0;
+							$.each($scope.item.payChecks, function(ind, pc) {
+								if (pc.included && pc.netWage <= 0) {
+									inValidChecks++;
+								}
+							});
+							return inValidChecks === 0;
+						}
+						else
+							return true;
 					}
 					var init = function () {
 						if($scope.item.status===2)

@@ -111,25 +111,29 @@
 	<div class="col-sm-12">
 		<table class="table table-bordered table-condensed">
 			<tr>
-				<th colspan="3" class="text-center">Employee Withheld</th>
+				<th colspan="4" class="text-center">Employee Withheld</th>
 			</tr>
 			<tr>
 				<th class="text-center">Description</th>
+				<th class="text-center">Applicable Wage</th>
 				<th class="text-center">Amount</th>
 				<th class="text-center">YTD</th>
 			</tr>
 			<tr ng-repeat="tax in check.taxes | filter:{ isEmployeeTax: true}">
 				<td>{{tax.tax.name}}</td>
+				<td class="text-right">{{tax.taxableWage | currency:'$'}}</td>
 				<td class="text-right">{{tax.amount | currency:'$'}}</td>
 				<td class="text-right">{{tax.ytdTax | currency: '$'}}</td>
 			</tr>
-			<tr ng-repeat="ded in check.deductions">
+			<tr ng-repeat="ded in check.deductions | orderBy:'sort'">
 				<td>{{ded.deduction.description}}</td>
+				<td class="text-right">{{ded.wage | currency:'$'}}</td>
 				<td class="text-right">{{ded.amount | currency:'$'}}</td>
 				<td class="text-right">{{ded.ytd | currency: '$'}}</td>
 			</tr>
 			<tr>
 				<td>Total</td>
+				<td></td>
 				<td class="text-right">{{ check.employeeTaxes + check.deductionAmount | currency:'$' }}</td>
 				<td class="text-right">{{ check.employeeTaxesYTD + check.deductionYTD | currency:'$' }}</td>
 			</tr>
@@ -139,20 +143,23 @@
 	<div class="col-sm-12">
 		<table class="table table-bordered table-condensed">
 			<tr>
-				<th colspan="3" class="text-center">Employer Withheld</th>
+				<th colspan="4" class="text-center">Employer Withheld</th>
 			</tr>
 			<tr>
 				<th class="text-center">Description</th>
+				<th class="text-center">Applicable Wage</th>
 				<th class="text-center">Amount</th>
 				<th class="text-center">YTD</th>
 			</tr>
 			<tr ng-repeat="tax in check.taxes | filter:{ isEmployeeTax: false}">
 				<td>{{tax.tax.name}}</td>
+				<td class="text-right">{{tax.taxableWage | currency:'$'}}</td>
 				<td class="text-right">{{tax.amount | currency:'$'}}</td>
 				<td class="text-right">{{tax.ytdTax | currency: '$'}}</td>
 			</tr>
 			<tr>
 				<td>Total</td>
+				<td></td>
 				<td class="text-right">{{ check.employerTaxes | currency:'$' }}</td>
 				<td class="text-right">{{ check.employerTaxesYTD | currency:'$' }}</td>
 			</tr>

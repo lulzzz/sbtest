@@ -5,9 +5,10 @@
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-3">Type</td>
+				<td class="col-sm-2">Type</td>
 				<td class="col-sm-2">Name</td>
-				<td class="col-sm-3">Description</td>
+				<td class="col-sm-2">Description</td>
+				<td class="col-sm-2">Floor Per Check</td>
 				<td class="col-sm-2">Annual Max</td>
 				<td class="col-sm-2" ng-show="showControls"></td>
 			</tr>
@@ -28,6 +29,12 @@
 				<td>
 					<span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
 						{{ item.description }}
+					</span>
+				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<span editable-number="item.floorPerCheck" e-name="floor" e-form="rowform" e-ng-change="item.floorValue = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						{{ item.floorPerCheck }}
 					</span>
 				</td>
 				<td>

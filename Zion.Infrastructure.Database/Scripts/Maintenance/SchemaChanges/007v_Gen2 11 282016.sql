@@ -28,3 +28,4 @@ IF NOT EXISTS(SELECT *
                  AND COLUMN_NAME = 'AgencyId')
 Alter table EmployeeDeduction Add CeilingPerCheck decimal(18,2), AccountNo varchar(max), AgencyId uniqueidentifier, Limit decimal(18,2), [Priority] int;
 Go;
+

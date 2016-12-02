@@ -176,7 +176,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		[Required]
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }
-
+		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
 
@@ -184,6 +184,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get { return string.Format("{0} - {1}", Deduction.Type.Name, Deduction.DeductionName); }
 		}
+		public int Sort { get; set; }
 	}
 
 	public class PayTypeAccumulationResource

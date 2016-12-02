@@ -143,7 +143,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						grossWage = Math.Round(grossWage + paycheck.CompensationTaxableAmount, 2, MidpointRounding.AwayFromZero);
 
 						var host = _hostService.GetHost(payroll.Company.HostId);
-
+						paycheck.Deductions.ForEach(d=>d.Amount = d.Method==DeductionMethod.Amount ? d.Rate : d.Rate*grossWage/100);
 						paycheck.Taxes = _taxationService.ProcessTaxes(payroll.Company, paycheck, paycheck.PayDay, grossWage, employeePayChecks, host.Company);
 						paycheck.Deductions = ApplyDeductions(grossWage, paycheck, employeePayChecks);
 						paycheck.GrossWage = grossWage;
@@ -1058,7 +1058,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName3", payCheck.Employee.FullName));
 				}
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text1", payCheck.Employee.Contact.Address.AddressLine1));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text2", payCheck.Employee.Contact.Address.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text3", payCheck.Employee.Contact.Address.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date", payCheck.PayDay.ToString("MM/dd/yyyy")));
 
 				var words = Utilities.NumberToWords(Math.Floor(payCheck.NetWage));
@@ -1408,32 +1408,54 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private List<PayrollDeduction> ApplyDeductions(decimal grossWage, PayCheck payCheck, IEnumerable<PayCheck> previousChecks )
 		{
 			var localGrossWage = grossWage - payCheck.EmployeeTaxes;
-			payCheck.Deductions.ForEach(d =>
+			payCheck.Deductions.OrderBy(d=>d.Deduction.Type.Category.GetDbId()).ThenBy(d=>d.EmployeeDeduction.Priority).ToList().ForEach(d =>
 			{
-				if (d.Method == DeductionMethod.Amount)
-					d.Amount = d.Rate;
-				else
-					d.Amount = localGrossWage * d.Rate / 100;
-				d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
-				if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount>d.EmployeeDeduction.CeilingPerCheck.Value)
+				d.Amount = 0;
+				
+				if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
+				    !d.Deduction.FloorPerCheck.HasValue)
 				{
-					d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
+					if (d.Method == DeductionMethod.Amount)
+						d.Amount = d.Rate;
+					else
+						d.Amount = localGrossWage*d.Rate/100;
+					d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
+
+					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > d.EmployeeDeduction.CeilingPerCheck.Value)
+					{
+						d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
+					}
+					if (d.EmployeeDeduction.Limit.HasValue)
+					{
+						var allPayChecks = _payrollRepository.GetEmployeePayChecks(payCheck.Employee.Id);
+						var total =
+							allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
+								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
+						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
+							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - d.Amount);
+					}
 				}
+				
+				
+				
 				var ytdVal = previousChecks.SelectMany(p => p.Deductions).Where(p => p.Deduction.Id == d.Deduction.Id).Sum(ded => ded.Amount);
 				if (d.AnnualMax.HasValue)
 				{
-					if(ytdVal + d.Amount > d.AnnualMax.Value)
+					if (ytdVal + d.Amount > d.AnnualMax.Value)
 						d.Amount = Math.Max(0, d.AnnualMax.Value - d.Amount);
 				}
+				
 				if (d.Amount < 0)
 					d.Amount = 0;
-
+				d.Wage = Math.Round(localGrossWage, 2, MidpointRounding.AwayFromZero);
 				d.Amount = Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
 				d.YTD = Math.Round(ytdVal + d.Amount, 2, MidpointRounding.AwayFromZero);
+				
+				localGrossWage -= d.Amount;
 			});
 			return payCheck.Deductions;
 		}
-
+		
 		public List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits()
 		{
 			try
