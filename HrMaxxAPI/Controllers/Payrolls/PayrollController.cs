@@ -62,6 +62,21 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				return HttpStatusCode.ExpectationFailed;
 			}
 		}
+		[HttpGet]
+		[Route(PayrollRoutes.FixInvoices)]
+		public HttpStatusCode FixCompanyCubes()
+		{
+			try
+			{
+				_payrollService.FixInvoiceData();
+				return HttpStatusCode.OK;
+			}
+			catch (Exception)
+			{
+
+				return HttpStatusCode.ExpectationFailed;
+			}
+		}
 
 		[HttpGet]
 		[Route(PayrollRoutes.FixPayrollDataForCompany)]

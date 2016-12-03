@@ -47,7 +47,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public List<EmployeePayTypeResource> Compensations { get; set; }
 		[Required]
 		public EmployeePaymentMethod PaymentMethod { get; set; }
-		public BankAccountResource BankAccount { get; set; }
+		
+		public List<EmployeeBankAccountResource> BankAccounts { get; set; } 
 		public bool DirectDebitAuthorized { get; set; }
 		//Taxation
 		[Required]
@@ -327,10 +328,22 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }
+		public int? CeilingMethod { get; set; }
 		public decimal? CeilingPerCheck { get; set; }
 		public decimal? Limit { get; set; }
 		public int? Priority { get; set; }
 		public string AccountNo { get; set; }
 		public Guid? AgencyId { get; set; }
+	}
+
+	public class EmployeeBankAccountResource
+	{
+		public int? Id { get; set; }
+		[Required]
+		public Guid EmployeeId { get; set; }
+		[Required]
+		public decimal Percentage { get; set; }
+		[Required]
+		public BankAccountResource BankAccount { get; set; }
 	}
 }

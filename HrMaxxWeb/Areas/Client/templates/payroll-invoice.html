@@ -4,6 +4,20 @@
 
 	</div>
 	<div class="col-sm-12 hidden-print" ng-if="invoice.status>2">
+		<div class="col-sm-12">
+			<div class="col-sm-4 form-group">
+				<label>Total</label>
+				<span>{{invoice.total | currency:'$'}}</span>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Balance</label>
+				<span>{{invoice.balance | currency:'$'}}</span>
+			</div>
+			<div class="col-sm-4 form-group">
+				<label>Status</label>
+				<span>{{invoice.statusText}}</span>
+			</div>
+		</div>
 		<div class="col-sm-12 panel-default">
 			<div class="panel-heading"><strong>Payments Received</strong></div>
 		</div>
@@ -33,12 +47,15 @@
 							<select class="form-control" ng-model="payment.method" convert-to-number ng-show="isPaymentEditable(payment)" ng-change="payment.hasChanged=true" required>
 								<option value="1">Check</option>
 								<option value="2">Cash</option>
+								<option value="3">Cert Fund</option>
+								<option value="4">Corp Check</option>
+								<option value="5">ACH</option>
 							</select>
 							<span ng-show="!isPaymentEditable(payment)">{{payment.statusText}}</span>
 						</td>
 						<td>
-							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="payment.method===1 && isPaymentEditable(payment)" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
-							<span ng-show="payment.method===1 && !isPaymentEditable(payment)">{{payment.checkNumber}}</span>
+							<input type="number" class="form-control" ng-model="payment.checkNumber" ng-show="(payment.method===1 || payment.method===4) && isPaymentEditable(payment)" ng-change="payment.hasChanged=true" ng-required="payment.method===1" />
+							<span ng-show="(payment.method===1 || payment.method===4) && !isPaymentEditable(payment)">{{payment.checkNumber}}</span>
 						</td>
 						<td>
 							<input class="form-control" name="amount{{$index}}" ng-model="payment.amount" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-show="isPaymentEditable(payment)" ng-change="payment.hasChanged=true" ng-max="paymentRemaining()" />
@@ -124,6 +141,16 @@
 							<div class="invoice-detail">
 								Payroll Pay Period: {{invoice.periodStart | date:'MM/dd/yyyy'}} - {{invoice.periodEnd | date:'MM/dd/yyyy'}}
 							</div>
+							<div class="invoice-detail">
+								Check Pay: {{invoice.checkPay | currency:'$'}}
+							</div>
+							<div class="invoice-detail">
+								DD Pay: {{invoice.ddPay | currency:'$'}}
+							</div>
+							<div class="invoice-detail">
+								Net Pay: {{invoice.netPay | currency:'$'}}
+							</div>
+							
 							
 						</td>
 						<td class="text-right hidden-print" ng-if="invoice.status===1">
@@ -146,6 +173,18 @@
 							<div class="col-sm-12 form-group">
 								<div class="col-sm-6 "><label class="control-label text-right">Payroll Pay Period</label></div>
 								<div class="col-sm-6 text-left">{{invoice.periodStart | date:'MM/dd/yyyy'}} - {{invoice.periodEnd | date:'MM/dd/yyyy'}}</div>
+							</div>
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label text-right">Check Pay</label></div>
+								<div class="col-sm-6 text-left">{{invoice.checkPay | currency:'$'}}</div>
+							</div>
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label text-right">DD Pay</label></div>
+								<div class="col-sm-6 text-left">{{invoice.ddPay | currency:'$'}}</div>
+							</div>
+							<div class="col-sm-12 form-group">
+								<div class="col-sm-6 "><label class="control-label text-right">Total Net Pay</label></div>
+								<div class="col-sm-6 text-left">{{invoice.netPay | currency:'$'}}</div>
 							</div>
 						</td>
 					</tr>

@@ -15,7 +15,7 @@ common.directive('deductionList', ['zionAPI', 'version',
 
 			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
 				function ($scope,$rootScope, $filter, companyRepository) {
-					
+				
 				$scope.selected = null;
 				
 				var addAlert = function (error, type) {
@@ -26,7 +26,7 @@ common.directive('deductionList', ['zionAPI', 'version',
 					$scope.selected = {
 						id: 0,
 						companyId: $scope.companyId,
-						isNew:true
+						isNew: true
 					};
 					$scope.list.push($scope.selected);
 				},

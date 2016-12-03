@@ -44,7 +44,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 					dbBankAccount.EntityTypeId = mappedAccount.EntityTypeId;
 					dbBankAccount.EntityId = mappedAccount.EntityId;
 				}
-				
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.BankAccount, BankAccount>(mappedAccount);

@@ -64,7 +64,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	{
 		public bool HasChanged { get; set; }
 		public DateTime PaymentDate { get; set; }
-		public VendorDepositMethod Method { get; set; }
+		public InvoicePaymentMethod Method { get; set; }
 		public PaymentStatus Status { get; set; }
 		public int CheckNumber { get; set; }
 		public decimal Amount { get; set; }

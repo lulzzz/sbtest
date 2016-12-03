@@ -225,7 +225,6 @@
           <Property Name="PayCodes" Type="varchar(max)" />
           <Property Name="Compensations" Type="varchar(max)" />
           <Property Name="PaymentMethod" Type="int" Nullable="false" />
-          <Property Name="BankAccountId" Type="int" />
           <Property Name="DirectDebitAuthorized" Type="bit" Nullable="false" />
           <Property Name="TaxCategory" Type="int" Nullable="false" />
           <Property Name="FederalStatus" Type="int" Nullable="false" />
@@ -236,6 +235,15 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastPayrollDate" Type="datetime" />
           <Property Name="WorkerCompensationId" Type="int" />
+        </EntityType>
+        <EntityType Name="EmployeeBankAccount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="BankAccountId" Type="int" Nullable="false" />
+          <Property Name="Percentage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="EmployeeDeduction">
           <Key>
@@ -252,6 +260,7 @@
           <Property Name="AgencyId" Type="uniqueidentifier" />
           <Property Name="Priority" Type="int" />
           <Property Name="Limit" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CeilingMethod" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -434,6 +443,9 @@
           <Property Name="ApplyWCMinWageLimit" Type="bit" Nullable="false" />
           <Property Name="DeliveryClaimedBy" Type="varchar(max)" />
           <Property Name="DeliveryClaimedOn" Type="datetime" />
+          <Property Name="NetPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CheckPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DDPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -777,18 +789,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Employee_BankAccount">
-          <End Role="BankAccount" Type="Self.BankAccount" Multiplicity="0..1" />
-          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BankAccount">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="BankAccountId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Employee_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="1" />
           <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
@@ -822,6 +822,32 @@
             </Principal>
             <Dependent Role="Employee">
               <PropertyRef Name="StatusId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmployeeBankAccount_BankAccount">
+          <End Role="BankAccount" Type="Self.BankAccount" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="EmployeeBankAccount" Type="Self.EmployeeBankAccount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BankAccount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeBankAccount">
+              <PropertyRef Name="BankAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmployeeBankAccount_Employee">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="EmployeeBankAccount" Type="Self.EmployeeBankAccount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeBankAccount">
+              <PropertyRef Name="EmployeeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1022,6 +1048,7 @@
           <EntitySet Name="CompanyWorkerCompensation" EntityType="Self.CompanyWorkerCompensation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeductionType" EntityType="Self.DeductionType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EmployeeBankAccount" EntityType="Self.EmployeeBankAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmployeeDeduction" EntityType="Self.EmployeeDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
@@ -1113,10 +1140,6 @@
             <End Role="Status" EntitySet="Status" />
             <End Role="Host" EntitySet="Host" />
           </AssociationSet>
-          <AssociationSet Name="FK_Employee_BankAccount" Association="Self.FK_Employee_BankAccount">
-            <End Role="BankAccount" EntitySet="BankAccount" />
-            <End Role="Employee" EntitySet="Employee" />
-          </AssociationSet>
           <AssociationSet Name="FK_Employee_Company" Association="Self.FK_Employee_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="Employee" EntitySet="Employee" />
@@ -1128,6 +1151,14 @@
           <AssociationSet Name="FK_Employee_Status" Association="Self.FK_Employee_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Employee" EntitySet="Employee" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeBankAccount_BankAccount" Association="Self.FK_EmployeeBankAccount_BankAccount">
+            <End Role="BankAccount" EntitySet="BankAccount" />
+            <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeBankAccount_Employee" Association="Self.FK_EmployeeBankAccount_Employee">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccount" />
           </AssociationSet>
           <AssociationSet Name="FK_EmployeeDeduction_CompanyDeduction" Association="Self.FK_EmployeeDeduction_CompanyDeduction">
             <End Role="CompanyDeduction" EntitySet="CompanyDeduction" />
@@ -1297,10 +1328,6 @@
             <End Role="CompanyAccount" EntitySet="CompanyAccounts" />
           </AssociationSet>
           <EntitySet Name="Employees" EntityType="HrMaxxModel.Employee" />
-          <AssociationSet Name="FK_Employee_Company" Association="HrMaxxModel.FK_Employee_Company">
-            <End Role="BankAccount" EntitySet="BankAccounts" />
-            <End Role="Employee" EntitySet="Employees" />
-          </AssociationSet>
           <AssociationSet Name="FK_Employee_Status" Association="HrMaxxModel.FK_Employee_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Employee" EntitySet="Employees" />
@@ -1397,6 +1424,15 @@
           <EntitySet Name="SearchTables" EntityType="HrMaxxModel.SearchTable" />
           <EntitySet Name="InvoiceDeliveryClaims" EntityType="HrMaxxModel.InvoiceDeliveryClaim" />
           <EntitySet Name="CompanyTSImportMaps" EntityType="HrMaxxModel.CompanyTSImportMap" />
+          <EntitySet Name="EmployeeBankAccounts" EntityType="HrMaxxModel.EmployeeBankAccount" />
+          <AssociationSet Name="FK_EmployeeBankAccount_BankAccount" Association="HrMaxxModel.FK_EmployeeBankAccount_BankAccount">
+            <End Role="BankAccount" EntitySet="BankAccounts" />
+            <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeBankAccount_Employee" Association="HrMaxxModel.FK_EmployeeBankAccount_Employee">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccounts" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1809,7 +1845,7 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="EntityType" Relationship="HrMaxxModel.FK_BankAccount_EntityType" FromRole="BankAccount" ToRole="EntityType" />
           <NavigationProperty Name="CompanyAccounts" Relationship="HrMaxxModel.FK_CompanyAccount_BankAccount" FromRole="BankAccount" ToRole="CompanyAccount" />
-          <NavigationProperty Name="Employees" Relationship="HrMaxxModel.FK_Employee_Company" FromRole="BankAccount" ToRole="Employee" />
+          <NavigationProperty Name="EmployeeBankAccounts" Relationship="HrMaxxModel.FK_EmployeeBankAccount_BankAccount" FromRole="BankAccount" ToRole="EmployeeBankAccount" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1914,14 +1950,12 @@
           <Property Name="PayCodes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Compensations" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="PaymentMethod" Type="Int32" Nullable="false" />
-          <Property Name="BankAccountId" Type="Int32" />
           <Property Name="DirectDebitAuthorized" Type="Boolean" Nullable="false" />
           <Property Name="TaxCategory" Type="Int32" Nullable="false" />
           <Property Name="FederalStatus" Type="Int32" Nullable="false" />
           <Property Name="FederalExemptions" Type="Int32" Nullable="false" />
           <Property Name="FederalAdditionalAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="State" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="BankAccount" Relationship="HrMaxxModel.FK_Employee_Company" FromRole="Employee" ToRole="BankAccount" />
           <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_Employee_Status" FromRole="Employee" ToRole="Status" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_Employee_Company1" FromRole="Employee" ToRole="Company" />
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
@@ -1930,19 +1964,8 @@
           <Property Name="WorkerCompensationId" Type="Int32" />
           <NavigationProperty Name="CompanyWorkerCompensation" Relationship="HrMaxxModel.FK_Employee_CompanyWorkerCompensation" FromRole="Employee" ToRole="CompanyWorkerCompensation" />
           <Property Name="LastPayrollDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="EmployeeBankAccounts" Relationship="HrMaxxModel.FK_EmployeeBankAccount_Employee" FromRole="Employee" ToRole="EmployeeBankAccount" />
         </EntityType>
-        <Association Name="FK_Employee_Company">
-          <End Type="HrMaxxModel.BankAccount" Role="BankAccount" Multiplicity="0..1" />
-          <End Type="HrMaxxModel.Employee" Role="Employee" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BankAccount">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Employee">
-              <PropertyRef Name="BankAccountId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
           <End Type="HrMaxxModel.Employee" Role="Employee" Multiplicity="*" />
@@ -1984,6 +2007,7 @@
           <Property Name="AgencyId" Type="Guid" />
           <Property Name="Priority" Type="Int32" />
           <Property Name="Limit" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CeilingMethod" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_EmployeeDeduction_CompanyDeduction">
           <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="1" />
@@ -2272,6 +2296,9 @@
           <Property Name="ApplyWCMinWageLimit" Type="Boolean" Nullable="false" />
           <Property Name="DeliveryClaimedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="DeliveryClaimedOn" Type="DateTime" Precision="3" />
+          <Property Name="NetPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="CheckPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="DDPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2489,6 +2516,41 @@
           <Property Name="CompanyId" Type="Guid" Nullable="false" />
           <Property Name="TimeSheetImportMap" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="EmployeeBankAccount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeId" Type="Guid" Nullable="false" />
+          <Property Name="BankAccountId" Type="Int32" Nullable="false" />
+          <Property Name="Percentage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="BankAccount" Relationship="HrMaxxModel.FK_EmployeeBankAccount_BankAccount" FromRole="EmployeeBankAccount" ToRole="BankAccount" />
+          <NavigationProperty Name="Employee" Relationship="HrMaxxModel.FK_EmployeeBankAccount_Employee" FromRole="EmployeeBankAccount" ToRole="Employee" />
+        </EntityType>
+        <Association Name="FK_EmployeeBankAccount_BankAccount">
+          <End Type="HrMaxxModel.BankAccount" Role="BankAccount" Multiplicity="1" />
+          <End Type="HrMaxxModel.EmployeeBankAccount" Role="EmployeeBankAccount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BankAccount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeBankAccount">
+              <PropertyRef Name="BankAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmployeeBankAccount_Employee">
+          <End Type="HrMaxxModel.Employee" Role="Employee" Multiplicity="1" />
+          <End Type="HrMaxxModel.EmployeeBankAccount" Role="EmployeeBankAccount" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeBankAccount">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2763,7 +2825,6 @@
                 <ScalarProperty Name="FederalStatus" ColumnName="FederalStatus" />
                 <ScalarProperty Name="TaxCategory" ColumnName="TaxCategory" />
                 <ScalarProperty Name="DirectDebitAuthorized" ColumnName="DirectDebitAuthorized" />
-                <ScalarProperty Name="BankAccountId" ColumnName="BankAccountId" />
                 <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
                 <ScalarProperty Name="Compensations" ColumnName="Compensations" />
                 <ScalarProperty Name="PayCodes" ColumnName="PayCodes" />
@@ -2790,6 +2851,7 @@
           <EntitySetMapping Name="EmployeeDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.EmployeeDeduction">
               <MappingFragment StoreEntitySet="EmployeeDeduction">
+                <ScalarProperty Name="CeilingMethod" ColumnName="CeilingMethod" />
                 <ScalarProperty Name="Limit" ColumnName="Limit" />
                 <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="AgencyId" ColumnName="AgencyId" />
@@ -2934,6 +2996,9 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="DDPay" ColumnName="DDPay" />
+                <ScalarProperty Name="CheckPay" ColumnName="CheckPay" />
+                <ScalarProperty Name="NetPay" ColumnName="NetPay" />
                 <ScalarProperty Name="DeliveryClaimedOn" ColumnName="DeliveryClaimedOn" />
                 <ScalarProperty Name="DeliveryClaimedBy" ColumnName="DeliveryClaimedBy" />
                 <ScalarProperty Name="ApplyWCMinWageLimit" ColumnName="ApplyWCMinWageLimit" />
@@ -3081,6 +3146,16 @@
               <MappingFragment StoreEntitySet="CompanyTSImportMap">
                 <ScalarProperty Name="TimeSheetImportMap" ColumnName="TimeSheetImportMap" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmployeeBankAccounts">
+            <EntityTypeMapping TypeName="HrMaxxModel.EmployeeBankAccount">
+              <MappingFragment StoreEntitySet="EmployeeBankAccount">
+                <ScalarProperty Name="Percentage" ColumnName="Percentage" />
+                <ScalarProperty Name="BankAccountId" ColumnName="BankAccountId" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

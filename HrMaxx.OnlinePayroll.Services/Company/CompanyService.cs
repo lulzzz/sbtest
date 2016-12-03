@@ -374,26 +374,30 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var exists = _companyRepository.EmployeeExists(employee.Id);
-				var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
-				var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
-				var savedEmployee = _companyRepository.SaveEmployee(employee);
-				var memento = Memento<Employee>.Create(savedEmployee, EntityTypeEnum.Employee, savedEmployee.UserName);
-				_mementoDataService.AddMementoData(memento);
-				if (sendNotification)
+				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					Bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
+					var exists = _companyRepository.EmployeeExists(employee.Id);
+					var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
+					var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
+					var savedEmployee = _companyRepository.SaveEmployee(employee);
+					var memento = Memento<Employee>.Create(savedEmployee, EntityTypeEnum.Employee, savedEmployee.UserName);
+					_mementoDataService.AddMementoData(memento);
+					if (sendNotification)
 					{
-						SavedObject = savedEmployee,
-						UserId = savedEmployee.UserId,
-						TimeStamp = DateTime.Now,
-						NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedEmployee.FullName), savedEmployee.UserName),
-						EventType = eventType
-					});
-					
+						Bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
+						{
+							SavedObject = savedEmployee,
+							UserId = savedEmployee.UserId,
+							TimeStamp = DateTime.Now,
+							NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedEmployee.FullName), savedEmployee.UserName),
+							EventType = eventType
+						});
+
+					}
+					txn.Complete();
+					return savedEmployee;	
 				}
 				
-				return savedEmployee;
 			}
 			catch (Exception e)
 			{

@@ -190,22 +190,9 @@
 												<label>Payment Method</label>
 												<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number data-parsley-type="number">
 													<option value="1">Check</option>
-													<option value="2">Direct Debit</option>
+													<option value="2">Direct Deposit</option>
 
 												</select>
-											</div>
-										</div>
-										<div class="col-sm-4" ng-if="selected.payType">
-											<div class="form-group" ng-if="selected.payType!==3">
-												<label>{{selected.payType===1 ? 'Base Hourly Rate' : 'Salary $'}}</label>
-												<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
-
-											</div>
-											
-											<div class="form-group" ng-if="selected.payType===1">
-												<label for="paycodes">Pay Code(s)</label>
-												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-2"></div>
-
 											</div>
 											<div class="row" ng-if="selected.paymentMethod===2">
 												<div class="form-group">
@@ -217,38 +204,115 @@
 														</label>
 													</div>
 												</div>
-												<div class="form-group">
-													<label>Bank Name</label>
-													<input type="text" required ng-model="selected.bankAccount.bankName" data-parsley-group="wizard-step-2" class="form-control" />
+												<div class="col-sm-12">
+													<table class="table table-header table-bordered table-condensed form-controls input-sm">
+														<thead>
+															<tr>
+																<td class="col-sm-7">Bank Details</td>
+																<td class="col-sm-3">%age</td>
+																<td class="col-sm-2"></td>
+															</tr>
+														</thead>
+														<tbody>
+															<tr ng-repeat="bank in selected.bankAccounts track by $index">
+																<td>
+																	<span ng-show="!selectedBank || selectedBank.id!==bank.id">
+																		{{ bank.bankAccount? bank.bankAccount.bankName : '' }}
+																	</span>
+																	<div class="row" ng-if="selectedBank && selectedBank.id===bank.id">
+																		<div class="form-group">
+																			<label>Bank Name</label>
+																			<input type="text" required ng-model="selectedBank.bankAccount.bankName" class="form-control" />
+																		</div>
+
+																		<div class="form-group">
+																			<label>Account type</label>
+																			<div>
+																				<select ng-model="selectedBank.bankAccount.accountType" name="accountType" class="form-control" convert-to-number>
+																					<option value="1">Checking</option>
+																					<option value="2">Savings</option>
+
+																				</select>
+
+																			</div>
+
+																		</div>
+																		<div class="form-group">
+																			<label>Routing Number</label>
+																			<div>
+																				<input type="text" class="form-control" ng-pattern="/^[0-9]{9}$/" name="routingnumber" ui-mask="999999999" ng-model="selectedBank.bankAccount.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selectedBank.bankAccount.routingNumber)}" />
+
+																			</div>
+																		</div>
+																		<div class="form-group">
+																			<label>Account Number</label>
+																			<div>
+																				<input type="text" class="form-control" placeholder="Account Number between 8-15 numbers" name="accountnumber" ng-model="selectedBank.bankAccount.accountNumber" ng-pattern="/^\d{8,15}$/" />
+
+																			</div>
+																		</div>
+																	</div>
+																</td>
+																<td>
+																	<!-- editable comment (text with validation) -->
+																	<span ng-show="!selectedBank || selectedBank.id!==bank.id">
+																		{{ bank.percentage | currency }}%
+																	</span>
+																	<input type="number" class="form-control" ng-model="selectedBank.percentage" ng-show="selectedBank && selectedBank.id===bank.id" step="0.01" ng-max="100" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+																</td>
+
+																<td style="white-space: nowrap">
+																	<!-- form -->
+
+																	<button type="button" ng-show="!selectedBank || selectedBank.id!==bank.id" class="btn btn-primary btn-xs" ng-click="setSelectedBank($index)">
+																		<i class="fa fa-edit m-r-5"></i> edit
+																	</button>
+																	<button type="button" ng-show="!selectedBank || selectedBank.id!==bank.id" class="btn btn-danger btn-xs" ng-click="delete($index)">
+																		<i class="fa fa-recycle m-r-5"></i> delete
+																	</button>
+																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBank.id===bank.id" ng-click="saveBank()" ng class="btn btn-success btn-xs">
+																		<i class="fa fa-save m-r-5"></i> save
+																	</button>
+																	<button type="button" ng-show="selectedBank && selectedBank.id===bank.id" ng-click="cancel($index)" class="btn btn-default btn-xs">
+																		<i class="fa fa-remove m-r-5"></i> cancel
+																	</button>
+
+																</td>
+
+															</tr>
+															<tr ng-show="!selectedBank">
+																<td colspan="2">
+																	<span ng-show="selected.bankAccounts.length===0">No Banks set up</span>
+																</td>
+
+																<td>
+																	<button type="button" ng-click="addBankAccount()" ng-show="ddPercentageAvailable()>0" class="btn btn-primary">
+																		Add
+																	</button>
+																</td>
+															</tr>
+
+														</tbody>
+													</table>
 												</div>
 
-												<div class="form-group">
-													<label>Account type</label>
-													<div>
-														<select ng-model="selected.bankAccount.accountType" required data-parsley-group="wizard-step-2" name="accountType" class="form-control" convert-to-number>
-															<option value="1">Checking</option>
-															<option value="2">Savings</option>
-
-														</select>
-
-													</div>
-
-												</div>
-												<div class="form-group">
-													<label>Routing Number</label>
-													<div>
-														<input type="text" class="form-control" required data-parsley-group="wizard-step-2" data-parsley-pattern="/^[0-9]{9}$/" data-parsley-trigger="blur" name="routingnumber" ui-mask="999999999" ng-model="selected.bankAccount.routingNumber" ng-class="{'has-error':!validateRoutingNumber(selected.bankAccount.routingNumber)}" />
-
-													</div>
-												</div>
-												<div class="form-group">
-													<label>Account Number</label>
-													<div>
-														<input type="text" class="form-control" placeholder="Account Number between 8-15 numbers" required data-parsley-group="wizard-step-2" name="accountnumber" ng-model="selected.bankAccount.accountNumber" data-parsley-pattern="/^\d{8,15}$/" />
-
-													</div>
-												</div>
 											</div>
+
+										</div>
+
+										<div class="col-sm-4" ng-if="selected.payType">
+											<div class="form-group" ng-if="selected.payType!==3">
+												<label>{{selected.payType===1 ? 'Base Hourly Rate' : 'Salary $'}}</label>
+												<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
+
+											</div>
+
+											<div class="form-group" ng-if="selected.payType===1">
+												<label for="paycodes">Pay Code(s)</label>
+												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-2"></div>
+
+											</div>
+
 										</div>
 
 									</div>

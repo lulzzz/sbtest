@@ -55,6 +55,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string DeliveryClaimedBy { get; set; }
 		public DateTime DeliveryClaimedOn { get; set; }
 
+		public decimal CheckPay { get; set; }
+		public decimal DDPay { get; set; }
+		public decimal NetPay { get; set; }
+
 		public decimal PaidAmount
 		{
 			get { return Math.Round(Payments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount), 2, MidpointRounding.AwayFromZero); }
@@ -84,6 +88,10 @@ namespace HrMaxx.OnlinePayroll.Models
 			GrossWages = payroll.TotalGrossWage;
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddTaxes(pc.Taxes));
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation));
+
+			NetPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage);
+			CheckPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.CheckPay);
+			DDPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.DDPay);
 			
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddDeductions(pc.Deductions));
 			PayChecks.AddRange(payroll.PayChecks.Where(pc=>!pc.IsVoid).Select(pc=>pc.Id));

@@ -345,12 +345,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 
 		public Employee SaveEmployee(Employee employee)
 		{
-			if (employee.BankAccount != null)
+			if (employee.BankAccounts != null && employee.BankAccounts.Any())
 			{
-				employee.BankAccount.SourceTypeId = EntityTypeEnum.Employee;
-				employee.BankAccount.SourceId = employee.Id;
-				employee.BankAccount.LastModifiedBy = employee.UserName;
-				employee.BankAccount = _utilRepository.SaveBankAccount(employee.BankAccount);
+				employee.BankAccounts.ForEach(b =>
+				{
+					b.BankAccount.SourceTypeId = EntityTypeEnum.Employee;
+					b.BankAccount.SourceId = employee.Id;
+					b.BankAccount.LastModifiedBy = employee.UserName;
+					//b.BankAccount = _utilRepository.SaveBankAccount(b.BankAccount);
+				});
+				
 			}
 			var me = _mapper.Map<Employee, Models.DataModel.Employee>(employee);
 			var dbEmployees = _dbContext.Employees.Where(e => e.CompanyId==employee.CompanyId && (e.Id == me.Id || e.SSN.Equals(me.SSN))).ToList();
@@ -400,8 +404,34 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.State = me.State;
 				dbEmployee.WorkerCompensationId = me.WorkerCompensationId;
 				dbEmployee.Rate = me.Rate;
-				if (employee.BankAccount != null)
-					dbEmployee.BankAccountId = employee.BankAccount.Id;
+				var removeCounter = 0;
+				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
+				{
+					var existingSor = dbEmployee.EmployeeBankAccounts.ToList()[removeCounter];
+					if (me.EmployeeBankAccounts.All(mer => mer.Id != existingSor.Id))
+					{
+						_dbContext.EmployeeBankAccounts.Remove(existingSor);
+						removeCounter--;
+					}
+				}
+				
+				foreach (var b in dbEmployee.EmployeeBankAccounts.Where(eb => me.EmployeeBankAccounts.Any(meb => meb.Id == eb.Id)))
+				{
+					var matching = me.EmployeeBankAccounts.First(meb => meb.Id == b.Id);
+					b.BankAccount.AccountName = matching.BankAccount.AccountName;
+					b.BankAccount.AccountNumber = matching.BankAccount.AccountNumber;
+					b.BankAccount.AccountType = matching.BankAccount.AccountType;
+					b.BankAccount.RoutingNumber = matching.BankAccount.RoutingNumber;
+					b.BankAccount.BankName = matching.BankAccount.BankName;
+					b.BankAccount.LastModified = matching.BankAccount.LastModified;
+					b.BankAccount.LastModifiedBy = matching.BankAccount.LastModifiedBy;
+					b.Percentage = matching.Percentage;
+				}
+				foreach (var newSor in me.EmployeeBankAccounts.Where(t => dbEmployee.EmployeeBankAccounts.All(dbe => dbe.Id != t.Id)))
+				{
+					dbEmployee.EmployeeBankAccounts.Add(newSor);
+				}
+				
 			}
 
 			_dbContext.SaveChanges();
@@ -430,6 +460,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.CeilingPerCheck = mappeddeduction.CeilingPerCheck;
 					dbdeduction.Limit = mappeddeduction.Limit;
 					dbdeduction.Priority = mappeddeduction.Priority;
+					dbdeduction.CeilingMethod = mappeddeduction.CeilingMethod;
 				}
 			}
 			_dbContext.SaveChanges();

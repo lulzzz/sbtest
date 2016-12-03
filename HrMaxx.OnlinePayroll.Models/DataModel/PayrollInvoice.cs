@@ -59,6 +59,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool ApplyWCMinWageLimit { get; set; }
         public string DeliveryClaimedBy { get; set; }
         public Nullable<System.DateTime> DeliveryClaimedOn { get; set; }
+        public decimal NetPay { get; set; }
+        public decimal CheckPay { get; set; }
+        public decimal DDPay { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual Payroll Payroll { get; set; }

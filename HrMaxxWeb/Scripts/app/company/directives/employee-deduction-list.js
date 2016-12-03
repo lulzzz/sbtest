@@ -26,12 +26,20 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 								value: 'Amount'
 							}
 						],
+						ceilingMethods: [{
+							key: 1,
+							value: '%'
+						}, {
+							key: 2,
+							value: '$'
+						}
+						],
 						agencies: $scope.agencies? angular.copy($scope.agencies) : []
 					};
 
 					$scope.data = dataSvc;
 
-				$scope.selected = null;
+				
 				$scope.getAgencyName = function(id) {
 					if (!id) {
 						var fil = $filter('filter')(dataSvc.agencies, { id: id })[0];
@@ -42,7 +50,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};
-				
+				$scope.selected = null;
 				$scope.add = function () {
 					$scope.selected = {
 						id: 0,
@@ -102,7 +110,10 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						if (!item.accountNo || !item.agencyId)
 							return false;
 						else {
-							return true;
+							if (item.limit===undefined || item.ceilingPerCheck===undefined || (item.ceilingMethod === 1 && ( item.ceilingPerCheck < 0 || item.ceilingPerCheck > 100)))
+								return false;
+							else 
+								return true;
 						}
 
 					}

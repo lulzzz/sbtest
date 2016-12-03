@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Employee()
         {
             this.EmployeeDeductions = new HashSet<EmployeeDeduction>();
+            this.EmployeeBankAccounts = new HashSet<EmployeeBankAccount>();
         }
     
         public System.Guid Id { get; set; }
@@ -40,7 +41,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string PayCodes { get; set; }
         public string Compensations { get; set; }
         public int PaymentMethod { get; set; }
-        public Nullable<int> BankAccountId { get; set; }
         public bool DirectDebitAuthorized { get; set; }
         public int TaxCategory { get; set; }
         public int FederalStatus { get; set; }
@@ -52,11 +52,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<int> WorkerCompensationId { get; set; }
         public Nullable<System.DateTime> LastPayrollDate { get; set; }
     
-        public virtual BankAccount BankAccount { get; set; }
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeDeduction> EmployeeDeductions { get; set; }
         public virtual CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
     }
 }

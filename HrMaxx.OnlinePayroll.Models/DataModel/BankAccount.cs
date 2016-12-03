@@ -18,7 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public BankAccount()
         {
             this.CompanyAccounts = new HashSet<CompanyAccount>();
-            this.Employees = new HashSet<Employee>();
+            this.EmployeeBankAccounts = new HashSet<EmployeeBankAccount>();
         }
     
         public int Id { get; set; }
@@ -36,6 +36,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CompanyAccount> CompanyAccounts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Employee> Employees { get; set; }
+        public virtual ICollection<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
     }
 }

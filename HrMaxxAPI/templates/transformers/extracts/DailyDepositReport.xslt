@@ -128,14 +128,55 @@
 				<ProtectScenarios>False</ProtectScenarios>
 			</WorksheetOptions>
 		</Worksheet>
+		<Worksheet ss:Name="ACH Deposits">
+			<Table >
+				<Column ss:AutoFitWidth="0" ss:Width="75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="207.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="117.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="124.5"/>
+				<Row ss:Height="18.75">
+					<Cell ss:MergeAcross="3" ss:StyleID="s68">
+						<Data ss:Type="String">Deposit Slip</Data>
+					</Cell>
+					<Cell ss:StyleID="s72"/>
+					<Cell ss:StyleID="s72"/>
+				</Row>
+
+				<xsl:apply-templates select="/ExtractResponse/Hosts/ExtractHost" mode="ach"/>
+			</Table>
+			<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+				<PageSetup>
+					<Header x:Margin="0.3"/>
+					<Footer x:Margin="0.3"/>
+					<PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+				</PageSetup>
+				<Print>
+					<ValidPrinterInfo/>
+					<HorizontalResolution>600</HorizontalResolution>
+					<VerticalResolution>600</VerticalResolution>
+				</Print>
+				<Selected/>
+				<Panes>
+					<Pane>
+						<Number>3</Number>
+						<ActiveRow>1</ActiveRow>
+					</Pane>
+				</Panes>
+				<ProtectObjects>False</ProtectObjects>
+				<ProtectScenarios>False</ProtectScenarios>
+			</WorksheetOptions>
+		</Worksheet>
 	</xsl:template>
 	<xsl:template match="ExtractCompany" mode="check">
-		<xsl:apply-templates select="Payments/ExtractInvoicePayment[Method='Check']"/>
+		<xsl:apply-templates select="Payments/ExtractInvoicePayment[Method='Check']" mode="check"/>
+	</xsl:template>
+	<xsl:template match="ExtractCompany" mode="ach">
+		<xsl:apply-templates select="Payments/ExtractInvoicePayment[Method='ACH']" mode="ach"/>
 	</xsl:template>
 	<xsl:template match="ExtractCompany" mode="cash">
-		<xsl:variable name="compPosition" select="count(preceding-sibling::ExtractCompany[Payments/ExtractInvoicePayment[Method='Cash']])"/>
+		<xsl:variable name="compPosition" select="count(preceding-sibling::ExtractCompany[Payments/ExtractInvoicePayment[Method='Cash' or Method='CorpFund' or Method='CertFund']])"/>
 		
-			<xsl:variable name="cashRow" select="sum(Payments/ExtractInvoicePayment[Method='Cash']/Amount)"/>
+			<xsl:variable name="cashRow" select="sum(Payments/ExtractInvoicePayment[Method='Cash'  or Method='CorpFund' or Method='CertFund']/Amount)"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="Number">
@@ -158,8 +199,33 @@
 			</Row>
 		
 	</xsl:template>
-	<xsl:template match="ExtractInvoicePayment">
+	<xsl:template match="ExtractInvoicePayment" mode="check">
 		<xsl:variable name="starter" select="count(../../preceding-sibling::ExtractCompany/Payments/ExtractInvoicePayment[Method='Check'])"/>
+		<Row>
+			<Cell>
+				<Data ss:Type="Number">
+					<xsl:value-of select="$starter + position()"/>
+				</Data>
+			</Cell>
+			<Cell>
+				<Data ss:Type="String">
+					<xsl:value-of select="../../Company/TaxFilingName"/>
+				</Data>
+			</Cell>
+			<Cell>
+				<Data ss:Type="Number">
+					<xsl:value-of select="CheckNumber"/>
+				</Data>
+			</Cell>
+			<Cell >
+				<Data ss:Type="Number">
+					<xsl:value-of select="Amount"/>
+				</Data>
+			</Cell>
+		</Row>
+	</xsl:template>
+	<xsl:template match="ExtractInvoicePayment" mode="ach">
+		<xsl:variable name="starter" select="count(../../preceding-sibling::ExtractCompany/Payments/ExtractInvoicePayment[Method='ACH'])"/>
 		<Row>
 			<Cell>
 				<Data ss:Type="Number">
@@ -245,7 +311,38 @@
 				<Data ss:Type="String">Amount</Data>
 			</Cell>
 		</Row>
-		<xsl:apply-templates select="Companies/ExtractCompany[count(Payments/ExtractInvoicePayment[Method='Cash'])>0]" mode="cash"/>
+		<xsl:apply-templates select="Companies/ExtractCompany[count(Payments/ExtractInvoicePayment[Method='Cash' or Method='CertFund' or Method='CorpCheck'])>0]" mode="cash"/>
 	</xsl:template>
-	
+	<xsl:template match="ExtractHost" mode="ach">
+		<Row>
+			<Cell ss:MergeAcross="3" ss:StyleID="s69">
+				<Data ss:Type="String">
+					<xsl:value-of select="concat(Host/FirmName, '                                                 Date:',$today)"/>
+				</Data>
+			</Cell>
+			<Cell ss:StyleID="s71"/>
+			<Cell ss:StyleID="s71"/>
+		</Row>
+		<Row>
+			<Cell ss:MergeAcross="3" ss:StyleID="s69">
+			</Cell>
+			<Cell ss:StyleID="s71"/>
+			<Cell ss:StyleID="s71"/>
+		</Row>
+		<Row>
+			<Cell ss:StyleID="s73">
+				<Data ss:Type="String">Index</Data>
+			</Cell>
+			<Cell ss:StyleID="s73">
+				<Data ss:Type="String">Company</Data>
+			</Cell>
+			<Cell ss:StyleID="s73">
+				<Data ss:Type="String">Check #</Data>
+			</Cell>
+			<Cell ss:StyleID="s73">
+				<Data ss:Type="String">Amount</Data>
+			</Cell>
+		</Row>
+		<xsl:apply-templates select="Companies/ExtractCompany[count(Payments/ExtractInvoicePayment[Method='ACH'])>0]" mode="cash"/>
+	</xsl:template>
 </xsl:stylesheet>

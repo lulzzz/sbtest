@@ -328,6 +328,21 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Cash")]
 		Cash = 2
 	}
+	public enum InvoicePaymentMethod
+	{
+		[HrMaxxSecurity(DbName = "NA")]
+		NA = 0,
+		[HrMaxxSecurity(DbName = "Check")]
+		Check = 1,
+		[HrMaxxSecurity(DbName = "Cash")]
+		Cash = 2,
+		[HrMaxxSecurity(DbName = "Cert Fund")]
+		CertFund = 3,
+		[HrMaxxSecurity(DbName = "Corp Check")]
+		CorpCheck = 4,
+		[HrMaxxSecurity(DbName = "ACH")]
+		ACH = 5
+	}
 
 	public enum CubeType
 	{

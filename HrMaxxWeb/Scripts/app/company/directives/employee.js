@@ -132,10 +132,12 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						if (c.payType!==3 && (c.rate<0 || c.rate===null))
 							return false;
 						if (c.paymentMethod === 2) {
-							var b = c.bankAccount;
-							if (!b || !b.bankName || !b.accountType || !$scope.validateRoutingNumber(b.routingNumber) || !b.routingNumber || !b.accountNumber)
+							//var b = c.bankAccount;
+							//if (!b || !b.bankName || !b.accountType || !$scope.validateRoutingNumber(b.routingNumber) || !b.routingNumber || !b.accountNumber)
+							//	return false;
+							if (!c.directDebitAuthorized || $scope.selectedBank || !c.bankAccounts || c.bankAccounts.length === 0 || $scope.ddPercentageAvailable() !== 0)
 								return false;
-							
+
 						}
 						return true;
 					}
@@ -282,6 +284,58 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						
 
 					}
+					///Bank Account handling
+					$scope.selectedBank = null;
+					$scope.addBankAccount = function () {
+						var acc = {
+							id: 0,
+							employeeId: $scope.employeeId,
+							percentage: $scope.ddPercentageAvailable(),
+							bankAccount:null
+						};
+							var ind = $scope.selected.bankAccounts.length;
+						$scope.selected.bankAccounts.push(acc);
+							$scope.setSelectedBank(ind);
+						},
+
+					$scope.saveBank = function () {
+						$scope.selectedBank = null;
+						
+					}
+					$scope.delete = function (index) {
+						$scope.selected.bankAccounts.splice(index, 1);
+					}
+					$scope.cancel = function (index) {
+						if (!$scope.selectedBank.id) {
+							$scope.selected.bankAccounts.splice(index, 1);
+						}
+						else if ($scope.originalBank && $scope.originalBank.id === $scope.selectedBank.id) {
+							$scope.selected.bankAccounts[index] = angular.copy($scope.originalBank);
+						}
+						$scope.selectedBank = null;
+					}
+					$scope.setSelectedBank = function (index) {
+						$scope.selectedBank = $scope.selected.bankAccounts[index];
+						$scope.originalBank = angular.copy($scope.selectedBank);
+					}
+					$scope.ddPercentageAvailable = function () {
+						var covered = 0;
+						$.each($scope.selected.bankAccounts, function(ind, b) {
+							covered += b.percentage;
+						});
+						return 100 - covered;
+					}
+
+					$scope.isbankValid = function () {
+						var b = $scope.selectedBank;
+
+						if (!b || !b.percentage || !b.bankAccount || !b.bankAccount.bankName || !b.bankAccount.accountType || !$scope.validateRoutingNumber(b.bankAccount.routingNumber) || !b.bankAccount.routingNumber || !b.bankAccount.accountNumber) {
+							return false;
+						}
+						else
+							return true;
+					}
+					//Bank Account Handling
 					init();
 
 

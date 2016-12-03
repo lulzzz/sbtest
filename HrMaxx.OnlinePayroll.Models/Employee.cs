@@ -34,7 +34,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyPayCode> PayCodes { get; set; }
 		public List<EmployeePayType> Compensations { get; set; }
 		public EmployeePaymentMethod PaymentMethod { get; set; }
-		public BankAccount BankAccount { get; set; }
+		
+		public List<EmployeeBankAccount> BankAccounts { get; set; }
 		public bool DirectDebitAuthorized { get; set; }
 		//Taxation
 		public EmployeeTaxCategory TaxCategory { get; set; }
@@ -95,10 +96,19 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DeductionMethod Method { get; set; }
 		public decimal Rate { get; set; }
 		public decimal? AnnualMax { get; set; }
+		public int CeilingMethod { get; set; }
 		public decimal? CeilingPerCheck { get; set; }
 		public decimal? Limit { get; set; }
 		public int? Priority { get; set; }
 		public string AccountNo { get; set; }
 		public Guid? AgencyId { get; set; }
+	}
+
+	public class EmployeeBankAccount
+	{
+		public int Id { get; set; }
+		public Guid EmployeeId { get; set; }
+		public decimal Percentage { get; set; }
+		public BankAccount BankAccount { get; set; }
 	}
 }

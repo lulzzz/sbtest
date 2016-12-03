@@ -27,11 +27,12 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 				Log.Info("Scheduled Job Service Invocie Payment initiated " + DateTime.Now);
 				var count = 0;
 				var minDate = DateTime.Today.AddDays(-7);
+				var minACHDate = DateTime.Today.AddDays(-3);
 				var invoices = _payrollService.GetAllPayrollInvoicesWithDeposits();
 				if (invoices.Any())
 				{
 					var applicable = invoices.Where(
-						i => i.Payments.Any() && i.Payments.Any(p => p.Method == VendorDepositMethod.Check && p.Status == PaymentStatus.Submitted))
+						i => i.Payments.Any() && i.Payments.Any(p => (p.Method == InvoicePaymentMethod.Check || p.Method==InvoicePaymentMethod.ACH)  && p.Status == PaymentStatus.Submitted))
 						.ToList();
 
 					applicable.ForEach(
@@ -40,8 +41,12 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 							var depositedPayments =
 								i.Payments.Where(
 									p =>
-										p.Method == VendorDepositMethod.Check && p.Status == PaymentStatus.Submitted &&
-										p.PaymentDate.Date >= minDate.Date).ToList();
+										p.Status == PaymentStatus.Submitted &&
+										(
+											(p.Method == InvoicePaymentMethod.Check && p.PaymentDate.Date >= minDate.Date) 
+											|| 
+											(p.Method == InvoicePaymentMethod.ACH && p.PaymentDate.Date >= minACHDate.Date)
+										)).ToList();
 							depositedPayments.ForEach(p =>
 							{
 								p.Status = PaymentStatus.Paid;

@@ -596,7 +596,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						if (p.Status == PaymentStatus.Draft)
 						{
-							p.Status = p.Method==VendorDepositMethod.Cash? PaymentStatus.Paid : PaymentStatus.Submitted;
+							p.Status = (p.Method == InvoicePaymentMethod.Cash || p.Method == InvoicePaymentMethod.CertFund || p.Method == InvoicePaymentMethod.CorpCheck) ? PaymentStatus.Paid : PaymentStatus.Submitted;
 						}
 						
 					});
@@ -869,7 +869,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						if (p.Status == PaymentStatus.Draft)
 						{
-							p.Status = p.Method == VendorDepositMethod.Cash ? PaymentStatus.Paid : PaymentStatus.Submitted;
+							p.Status = (p.Method == InvoicePaymentMethod.Cash || p.Method == InvoicePaymentMethod.CertFund || p.Method == InvoicePaymentMethod.CorpCheck) ? PaymentStatus.Paid : PaymentStatus.Submitted;
 						}
 
 					});
@@ -1081,7 +1081,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							micr.Substring(0,
 								(8 - payCheck.CheckNumber.ToString().Length) < 0 ? 0 : 8 - payCheck.CheckNumber.ToString().Length) +
 							payCheck.CheckNumber.ToString();
-						var micrVal = string.Format("C{0}CA{1}A{2}C", micr, bankcoa.BankAccount.RoutingNumber,
+						var micrVal = string.Format("C{0}C A{1}A {2}C", micr, bankcoa.BankAccount.RoutingNumber,
 							bankcoa.BankAccount.AccountNumber);
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("MICR", micrVal));
 					}
@@ -1421,7 +1421,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						d.Amount = localGrossWage*d.Rate/100;
 					d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
 
-					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > d.EmployeeDeduction.CeilingPerCheck.Value)
+					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > (d.EmployeeDeduction.CeilingMethod==2 ? d.EmployeeDeduction.CeilingPerCheck.Value : (d.EmployeeDeduction.CeilingPerCheck*localGrossWage/100) ) )
 					{
 						d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
 					}
@@ -1753,6 +1753,33 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " list of payroll checks ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void FixInvoiceData()
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var invoices = _payrollRepository.GetAllPayrollInvoices();
+					var paychecks = _payrollRepository.GetAllPayrolls(null).SelectMany(p => p.PayChecks);
+					invoices.ForEach(i =>
+					{
+						var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
+						i.NetPay = pcs.Sum(p => p.NetWage);
+						i.CheckPay = pcs.Sum(p => p.CheckPay);
+						i.DDPay = pcs.Sum(p => p.DDPay);
+						_payrollRepository.SavePayrollInvoice(i);
+					});
+					txn.Complete();
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " fix invoice data ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

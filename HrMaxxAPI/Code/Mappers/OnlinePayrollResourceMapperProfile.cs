@@ -140,9 +140,14 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<EmployeeStateResource, EmployeeState>();
 			CreateMap<EmployeeState, EmployeeStateResource>();
 
+			CreateMap<EmployeeBankAccount, EmployeeBankAccountResource>();
+			CreateMap<EmployeeBankAccountResource, EmployeeBankAccount>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0));
+
 
 			CreateMap<EmployeeDeductionResource, EmployeeDeduction>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method.Key))
+				.ForMember(dest => dest.CeilingMethod, opt => opt.MapFrom(src => src.CeilingMethod.HasValue ? src.CeilingMethod.Value : 1))
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue? src.Id : 0));
 			CreateMap<EmployeeDeduction, EmployeeDeductionResource>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount")));

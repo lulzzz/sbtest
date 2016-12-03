@@ -245,6 +245,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
 				dbPayrollInvoice.ApplyWCMinWageLimit = mapped.ApplyWCMinWageLimit;
 				dbPayrollInvoice.VoidedCreditChecks = mapped.VoidedCreditChecks;
+				dbPayrollInvoice.NetPay = mapped.NetPay;
+				dbPayrollInvoice.DDPay = mapped.DDPay;
+				dbPayrollInvoice.CheckPay = mapped.CheckPay;
 			}
 			_dbContext.SaveChanges();
 			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
@@ -372,6 +375,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		{
 			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == employeeId);
 			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
+		}
+
+		public List<PayrollInvoice> GetAllPayrollInvoices()
+		{
+			var invoices = _dbContext.PayrollInvoices.ToList();
+			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<PayrollInvoice>>(invoices);
 		}
 	}
 }

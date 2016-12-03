@@ -292,7 +292,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EntityTypeId, opt => opt.MapFrom(src => src.SourceTypeId))
 				.ForMember(dest => dest.EntityType, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore())
-				.ForMember(dest => dest.Employees, opt => opt.Ignore());
+				.ForMember(dest => dest.EmployeeBankAccounts, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.AccountTemplate, Models.DataModel.CompanyAccount>()
 				.ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -311,7 +311,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.DataModel.Employee, Models.Employee>()
 				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Decrypt(src.SSN)))
-				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src => src.BankAccount))
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<CompanyPayCode>>(src.PayCodes)))
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<EmployeePayType>>(src.Compensations)))
@@ -320,14 +319,14 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.CompanyWorkerCompensation))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.BankAccounts, opt => opt.MapFrom(src=>src.EmployeeBankAccounts))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.EmployeeDeductions));
 
 			CreateMap<Models.Employee, Models.DataModel.Employee>()
 				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Encrypt(src.SSN)))
-				.ForMember(dest => dest.BankAccount, opt => opt.Ignore())
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.Status, opt => opt.Ignore())
-				.ForMember(dest => dest.BankAccountId, opt => opt.MapFrom(src => src.BankAccount.Id))
+				
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Contact)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.PayCodes)))
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Compensations)))
@@ -336,10 +335,17 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EmployeeDeductions, opt => opt.Ignore())
 				.ForMember(dest => dest.WorkerCompensationId, opt => opt.MapFrom(src => src.WorkerCompensation != null ? src.WorkerCompensation.Id : default(int?)))
 				.ForMember(dest => dest.CompanyWorkerCompensation, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeBankAccounts, opt => opt.MapFrom(src=>src.BankAccounts))
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
 
 			CreateMap<Models.DataModel.EmployeeDeduction, Models.EmployeeDeduction>()
 				.ForMember(dest => dest.Deduction, opt => opt.MapFrom(src => src.CompanyDeduction));
+
+			CreateMap<Models.DataModel.EmployeeBankAccount, Models.EmployeeBankAccount>()
+				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src=>src.BankAccount));
+
+			CreateMap<Models.EmployeeBankAccount, Models.DataModel.EmployeeBankAccount>()
+				.ForMember(dest => dest.Employee, opt => opt.Ignore());
 
 			CreateMap<Models.EmployeeDeduction, Models.DataModel.EmployeeDeduction>()
 				.ForMember(dest => dest.Employee, opt => opt.Ignore())
@@ -376,7 +382,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EntityId, opt => opt.MapFrom(src => src.SourceId))
 				.ForMember(dest => dest.EntityTypeId, opt => opt.MapFrom(src => src.SourceTypeId))
 				.ForMember(dest => dest.EntityType, opt => opt.Ignore())
-				.ForMember(dest => dest.Employees, opt => opt.Ignore())
 				.ForMember(dest => dest.AccountName, opt => opt.MapFrom(src=>src.BankName))
 				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore());
 

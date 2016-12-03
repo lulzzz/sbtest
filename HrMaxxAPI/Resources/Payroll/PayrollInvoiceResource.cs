@@ -56,6 +56,10 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<int> VoidedCreditedChecks { get; set; }
 		public bool ApplyWCMinWageLimit { get; set; }
 
+		public decimal CheckPay { get; set; }
+		public decimal DDPay { get; set; }
+		public decimal NetPay { get; set; }
+
 		public string DeliveryClaimedBy { get; set; }
 		public DateTime DeliveryClaimedOn { get; set; }
 

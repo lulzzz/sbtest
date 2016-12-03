@@ -111,6 +111,9 @@
     <Compile Include="DataModel\Employee.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\EmployeeBankAccount.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\EmployeeDeduction.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>

@@ -164,7 +164,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var validateStep2 = function () {
 						var c = $scope.selectedCompany;
-						if (c.payrollDaysInPast === null)
+						if (c.payrollDaysInPast === null || !c.minWage || c.minWage<10)
 							return false;
 						else
 							return true;
