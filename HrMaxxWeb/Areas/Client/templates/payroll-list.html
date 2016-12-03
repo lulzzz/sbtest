@@ -21,6 +21,9 @@
 						<td data-title=" 'End Date' " sortable=" 'endDate' " class="col-sm-1 text-center">
 							{{item.endDate | date:'MM/dd/yyyy'}}
 						</td>
+						<td data-title=" '# of Checks' " sortable=" 'payChecks.length' " class="col-sm-1 text-center">
+							{{item.payChecks.length }}
+						</td>
 
 						<td data-title=" 'Gross Wage' " sortable=" 'totalGrossWage' " class="col-sm-1 text-center show-red">
 							{{item.totalGrossWage | currency:'$'}}
