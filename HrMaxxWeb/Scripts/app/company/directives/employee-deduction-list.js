@@ -58,7 +58,11 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						deduction: null,
 						method: null,
 						rate: 0,
-						annualMax: null
+						annualMax: null,
+						limit: null,
+						ceilingPerCheck: null,
+						ceilingMethod: 1
+
 					};
 					$scope.list.push($scope.selected);
 				},

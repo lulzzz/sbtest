@@ -183,7 +183,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						else if ($scope.item.status === 2) {
 							var inValidChecks = 0;
 							$.each($scope.item.payChecks, function(ind, pc) {
-								if (pc.included && pc.netWage <= 0) {
+								if (pc.included && (pc.netWage < 0 || pc.netWage===0)) {
 									inValidChecks++;
 								}
 							});

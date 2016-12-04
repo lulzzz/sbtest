@@ -115,7 +115,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 								exemptions: 0,
 								additionalAmount:0
 							},
-							workerCompensation: $scope.mainData.selectedCompany.workerCompensations.length===1? $scope.mainData.selectedCompany.workerCompensations[0] : null,
+							workerCompensation: $scope.mainData.selectedCompany.workerCompensations.length>1? $filter('orderBy')($scope.mainData.selectedCompany.workerCompensations,'rate',true)[0] : null,
 							taxCategory: 1,
 							payrollSchedule: $scope.mainData.selectedCompany.payrollSchedule,
 							paymentMethod: 1

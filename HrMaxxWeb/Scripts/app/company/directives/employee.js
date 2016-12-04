@@ -20,7 +20,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						companyStates: [],
 						compensations: [],
 						employeeMetaData: null,
-						sourceTypeId: EntityTypes.Employee
+						sourceTypeId: EntityTypes.Employee,
+						openedRack:1
 					}
 					$scope.tab = 1;
 					$scope.alert = null;
@@ -305,7 +306,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.delete = function (index) {
 						$scope.selected.bankAccounts.splice(index, 1);
 					}
-					$scope.cancel = function (index) {
+					$scope.cancelBank = function (index) {
 						if (!$scope.selectedBank.id) {
 							$scope.selected.bankAccounts.splice(index, 1);
 						}

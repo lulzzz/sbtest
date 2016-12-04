@@ -215,3 +215,11 @@ label {
   .my-modal-popup .modal-lg { width: 1300px!important; }
 }
 
+.viewer {
+	height: 800px;
+	width: 100%;
+	display: inline-block;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+

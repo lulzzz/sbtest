@@ -164,7 +164,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var validateStep2 = function () {
 						var c = $scope.selectedCompany;
-						if (c.payrollDaysInPast === null || !c.minWage || c.minWage<10)
+						if (c.payrollDaysInPast === null )
 							return false;
 						else
 							return true;
@@ -334,7 +334,12 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							$rootScope.$broadcast('companyUpdated', { company: result });
 						}, function (error) {
-							addAlert(error.statusText, 'danger');
+							if (error.status === 400) {
+								addAlert(error.statusText + '. ' + error.data.modelState, 'danger');
+							} else {
+								addAlert(error.statusText, 'danger');
+							}
+							
 						});
 					}
 					var ready = function () {

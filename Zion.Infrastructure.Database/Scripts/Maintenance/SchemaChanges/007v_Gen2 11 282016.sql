@@ -29,3 +29,10 @@ IF NOT EXISTS(SELECT *
 Alter table EmployeeDeduction Add CeilingPerCheck decimal(18,2), AccountNo varchar(max), AgencyId uniqueidentifier, Limit decimal(18,2), [Priority] int;
 Go;
 
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'PayrollInvoice'
+                 AND COLUMN_NAME = 'NetPay')
+alter table PayrollInvoice Add NetPay decimal(18,2) not null Default(0), CheckPay decimal(18,2) not null Default(0), DDPay decimal(18,2) not null Default(0);
+Go
+

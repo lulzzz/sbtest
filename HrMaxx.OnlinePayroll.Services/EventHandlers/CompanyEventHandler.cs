@@ -42,23 +42,23 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					HostId = event1.SavedObject.HostId,
 					SearchText = event1.SavedObject.GetSearchText
 				});
-				var users = _userService.GetUsers(event1.SavedObject.HostId, event1.SavedObject.Id).Select(u => u.UserId).ToList();
-				var adminUsers =
-					_userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() {RoleTypeEnum.CorpStaff, RoleTypeEnum.Master}, null);
-				users.AddRange(adminUsers);
-				Bus.Publish<Notification>(new Notification
-				{
-					SavedObject = event1.SavedObject,
-					SourceId = event1.SavedObject.Id,
-					UserId = event1.UserId,
-					Source = event1.UserName,
-					TimeStamp = event1.TimeStamp,
-					Text = event1.NotificationText,
-					ReturnUrl = "#!/Client/Company/?name=" + event1.SavedObject.Name,
-					EventType = event1.EventType,
-					AffectedUsers = users.Distinct().ToList(),
-					Roles = new List<RoleTypeEnum>() {RoleTypeEnum.CorpStaff, RoleTypeEnum.Master}
-				});
+				//var users = _userService.GetUsers(event1.SavedObject.HostId, event1.SavedObject.Id).Select(u => u.UserId).ToList();
+				//var adminUsers =
+				//	_userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() {RoleTypeEnum.CorpStaff, RoleTypeEnum.Master}, null);
+				//users.AddRange(adminUsers);
+				//Bus.Publish<Notification>(new Notification
+				//{
+				//	SavedObject = event1.SavedObject,
+				//	SourceId = event1.SavedObject.Id,
+				//	UserId = event1.UserId,
+				//	Source = event1.UserName,
+				//	TimeStamp = event1.TimeStamp,
+				//	Text = event1.NotificationText,
+				//	ReturnUrl = "#!/Client/Company/?name=" + event1.SavedObject.Name,
+				//	EventType = event1.EventType,
+				//	AffectedUsers = users.Distinct().ToList(),
+				//	Roles = new List<RoleTypeEnum>() {RoleTypeEnum.CorpStaff, RoleTypeEnum.Master}
+				//});
 
 			}
 			catch (Exception e)

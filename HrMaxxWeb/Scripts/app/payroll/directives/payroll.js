@@ -123,7 +123,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							
 							
 						}, function (error) {
-							addAlert('error processing payroll', 'danger');
+							addAlert('Error processing payroll: ' + error.statusText, 'danger');
 						});
 					}
 					$scope.showList = function() {

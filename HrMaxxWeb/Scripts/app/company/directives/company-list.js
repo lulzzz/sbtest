@@ -160,6 +160,22 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 
 						 }, true
 				 );
+					$scope.$watch('mainData.selectedCompany',
+						 function (newValue, oldValue) {
+						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
+						 		$scope.selectedCompany = null;
+						 		$timeout(function () {
+						 			$scope.selectedCompany = angular.copy($scope.mainData.selectedCompany);
+
+						 			$scope.data.isBodyOpen = false;
+						 			$scope.tab = 1;
+
+						 		}, 1);
+
+						 	}
+
+						 }, true
+				 );
 					$scope.$on('hostChanged', function() {
 						$scope.selectedCompany = null;
 						dataSvc.isBodyOpen = true;

@@ -64,10 +64,20 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 			catch (Exception e)
 			{
-				var info = string.Format("Company {0}, GrossWage={2}, PayCheck={1}", company.Id, JsonConvert.SerializeObject(payCheck), grossWage);
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " process taxes for payroll--" + info);
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
+				if (e.Message != "Taxes Not Available")
+				{
+					var info = string.Format("Company {0}, GrossWage={2}, PayCheck={1}", company.Id, JsonConvert.SerializeObject(payCheck), grossWage);
+					var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " process taxes for payroll--" + info);
+					Log.Error(message, e);
+					throw new HrMaxxApplicationException(message, e);
+				}
+				else
+				{
+					Log.Error(e.Message, e);
+					throw new HrMaxxApplicationException(e.Message, e);
+				}
+				
+				
 
 			}
 		}
@@ -150,6 +160,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 		private PayrollTax GetFIT(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
 		{
+			if(!TaxTables.FITTaxTable.Any(t=>t.Year==payDay.Year))
+				throw new Exception("Taxes Not Available");
 			var withholdingAllowance = grossWage -
 			                           TaxTables.FitWithholdingAllowanceTable.First(
 				                           i => i.Year == payDay.Year && i.PayrollSchedule == payCheck.Employee.PayrollSchedule)

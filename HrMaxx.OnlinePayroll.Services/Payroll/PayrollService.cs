@@ -189,7 +189,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Process Payroll");
+				var message = string.Empty;
+				if (e.Message.Contains("Taxes Not Available"))
+					message = e.Message;
+				else
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Process Payroll");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -998,6 +1002,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						if (employee.Deductions.Any(ed => ed.Deduction.Id == d.Deduction.Id))
 							d.EmployeeDeduction = employee.Deductions.First(ed => ed.Deduction.Id == d.Deduction.Id);
 					});
+					pc.Taxes.ForEach(t =>
+					{
+						if (t.Tax.Id == 7)
+						{
+							t.TaxableWage = pc.Taxes.First(t1 => t1.Tax.Id == 1).TaxableWage;
+						}
+					});
 					_payrollRepository.SavePayCheck(pc);
 				}));
 				
@@ -1407,9 +1418,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		private List<PayrollDeduction> ApplyDeductions(decimal grossWage, PayCheck payCheck, IEnumerable<PayCheck> previousChecks )
 		{
-			var localGrossWage = grossWage - payCheck.EmployeeTaxes;
+			var localGrossWage = grossWage;
+			var eeApplied = false;
 			payCheck.Deductions.OrderBy(d=>d.Deduction.Type.Category.GetDbId()).ThenBy(d=>d.EmployeeDeduction.Priority).ToList().ForEach(d =>
 			{
+				if ((d.Deduction.Type.Category == DeductionCategory.Other ||
+				    d.Deduction.Type.Category == DeductionCategory.PostTaxDeduction) && !eeApplied)
+				{
+					localGrossWage -= payCheck.EmployeeTaxes;
+					eeApplied = true;
+				}
 				d.Amount = 0;
 				
 				if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||

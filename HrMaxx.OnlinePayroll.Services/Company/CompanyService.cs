@@ -116,15 +116,15 @@ namespace HrMaxx.OnlinePayroll.Services
 
 					
 					txn.Complete();
-					
-					//Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
-					//{
-					//	SavedObject = savedcompany,
-					//	UserId = savedcompany.UserId,
-					//	TimeStamp = DateTime.Now,
-					//	NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedcompany.Name), savedcompany.UserName),
-					//	EventType = eventType
-					//});
+
+					Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
+					{
+						SavedObject = savedcompany,
+						UserId = savedcompany.UserId,
+						TimeStamp = DateTime.Now,
+						NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedcompany.Name), savedcompany.UserName),
+						EventType = eventType
+					});
 					
 				}
 				var returnCompany = _companyRepository.GetCompanyById(company.Id);
