@@ -19,7 +19,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						sourceTypeId: EntityTypes.Company,
 						companyMetaData: null
 					}
-					
+
 					$scope.data = dataSvc;
 					$scope.alert = null;
 					var addAlert = function (error, type) {
@@ -31,25 +31,25 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						if (!$scope.isPopup)
 							$scope.$parent.$parent.addAlert(error, type);
 						else {
-							$scope.alert = {message: error, type:type};
+							$scope.alert = { message: error, type: type };
 						}
 					};
 					$scope.isFileUnderHostDisabled = function () {
-						if($scope.mainData.selectedHost.isPeoHost || ($scope.selectedCompany.lastPayrollDate && moment($scope.selectedCompany.lastPayrollDate).year()===moment().year()))
+						if ($scope.mainData.selectedHost.isPeoHost || ($scope.selectedCompany.lastPayrollDate && moment($scope.selectedCompany.lastPayrollDate).year() === moment().year()))
 							return true;
-							else {
+						else {
 							return false;
 						}
 					}
 
-					
+
 					$scope.cancel = function () {
 						if (!$scope.isPopup)
 							$scope.$parent.$parent.cancel();
 						else
 							$scope.$parent.cancel();
 					}
-					
+
 					$scope.LinkCompanyAndBusinessAddress = function () {
 						if ($scope.selectedCompany.isAddressSame) {
 							$scope.selectedCompany.taxFilingName = $scope.selectedCompany.name;
@@ -74,7 +74,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 								}
 							});
 						}
-						
+
 						return states;
 					}
 					$scope.addState = function () {
@@ -164,7 +164,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var validateStep2 = function () {
 						var c = $scope.selectedCompany;
-						if (c.payrollDaysInPast === null )
+						if (c.payrollDaysInPast === null || !c.minWage || c.minWage < 10)
 							return false;
 						else
 							return true;
@@ -214,7 +214,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						if (c.contractOption === 2 && c.billingOption === 3) {
 							var i = c.invoiceSetup;
-							if (!i )
+							if (!i)
 								return false;
 							if (i.recurringCharges.length > 0) {
 								var invalidrc = false;
@@ -280,7 +280,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						});
 					}
 					$scope.removeRecurringCharge = function (rc, index) {
-						$scope.selectedCompany.contract.invoiceSetup.recurringCharges.splice(index,1);
+						$scope.selectedCompany.contract.invoiceSetup.recurringCharges.splice(index, 1);
 					}
 					$scope.getRowClass = function (item) {
 						if ($scope.selectedCompany && $scope.selectedCompany.id === item.id)
@@ -314,7 +314,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";
 						}
 						if (confirmMessage) {
-							$scope.$parent.$parent.$parent.$parent.confirmDialog(confirmMessage, 'info', function() {
+							$scope.$parent.$parent.$parent.$parent.confirmDialog(confirmMessage, 'info', function () {
 								saveCompany();
 							});
 						} else {
@@ -323,7 +323,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 
 
 					}
-					var saveCompany = function() {
+					var saveCompany = function () {
 						companyRepository.saveCompany($scope.selectedCompany).then(function (result) {
 
 							if (!$scope.isPopup) {
@@ -334,12 +334,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							$rootScope.$broadcast('companyUpdated', { company: result });
 						}, function (error) {
-							if (error.status === 400) {
-								addAlert(error.statusText + '. ' + error.data.modelState, 'danger');
-							} else {
-								addAlert(error.statusText, 'danger');
-							}
-							
+							addAlert(error.statusText, 'danger');
 						});
 					}
 					var ready = function () {
@@ -373,9 +368,9 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 
 						$scope.selectedCompany.sourceTypeId = dataSvc.sourceTypeId;
 						if ($scope.showControls) {
-							$timeout(function() {
+							$timeout(function () {
 								$("#wizard").bwizard({
-									validating: function(e, ui) {
+									validating: function (e, ui) {
 										if (ui.index == 0) {
 											// step-1 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
@@ -406,9 +401,9 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 								$("#wizard").bwizard();
 							});
 						}
-						
-						
-						
+
+
+
 						$scope.tab = 1;
 					}
 					var init = function () {
@@ -419,9 +414,9 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}, function (error) {
 							addAlert('error getting company meta data', 'danger');
 						});
-						
-						
-						
+
+
+
 					}
 					init();
 
