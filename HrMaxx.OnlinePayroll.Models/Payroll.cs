@@ -192,7 +192,11 @@ namespace HrMaxx.OnlinePayroll.Models
 			YTDNetWage = NetWage;
 			Compensations.ForEach(c=>c.YTD=c.Amount);
 			Deductions.ForEach(c => c.YTD = c.Amount);
-			PayCodes.ForEach(c => c.YTD = c.Amount);
+			PayCodes.ForEach(c =>
+			{
+				c.YTD = c.Amount;
+				c.YTDOvertime = c.OvertimeAmount;
+			});
 			Taxes.ForEach(c =>
 			{
 				c.YTDTax = c.Amount;

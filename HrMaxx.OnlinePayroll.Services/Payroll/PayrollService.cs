@@ -1174,9 +1174,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 						var hrcounter = 1;
 						var otcounter = 1;
-						foreach (var payCode in payCheck.PayCodes.Where(p => p.Hours > 0 || p.OvertimeHours > 0).ToList())
+						foreach (var payCode in payCheck.PayCodes.Where(p => p.Hours > 0 || p.OvertimeHours > 0 || p.YTD>0 || p.YTDOvertime>0).OrderByDescending(p=>p.Hours).ThenByDescending(p=>p.OvertimeHours).ThenByDescending(p=>p.YTD).ThenByDescending(p=>p.YTDOvertime).ToList())
 						{
-							if (hrcounter < 4 && (payCode.Amount > 0))
+							if (hrcounter < 4 && (payCode.Amount > 0 || payCode.YTD>0))
 							{
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s-1", payCode.PayCode.Description));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter + "-1", payCode.Hours.ToString()));
@@ -1187,7 +1187,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 								hrcounter++;
 							}
-							if (otcounter < 4 && (payCode.OvertimeAmount > 0))
+							if (otcounter < 4 && (payCode.OvertimeAmount > 0 || payCode.YTDOvertime>0))
 							{
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot-1",
 									payCode.PayCode.Description + " Overtime"));
@@ -1237,12 +1237,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var hrcounter = 1;
 					var otcounter = 1;
-					
-					foreach (var payCode in payCheck.PayCodes.Where(p => p.Hours > 0 || p.OvertimeHours > 0).ToList())
+
+					foreach (var payCode in payCheck.PayCodes.Where(p => p.Hours > 0 || p.OvertimeHours > 0 || p.YTD > 0 || p.YTDOvertime > 0).OrderByDescending(p => p.Hours).ThenByDescending(p => p.OvertimeHours).ThenByDescending(p => p.YTD).ThenByDescending(p => p.YTDOvertime).ToList())
 					{
 						prwytd += Math.Round(payCode.YTD + payCode.YTDOvertime - payCode.Amount - payCode.OvertimeAmount, 2,
 							MidpointRounding.AwayFromZero);
-						if (hrcounter < 4 && (payCode.Amount > 0))
+						if (hrcounter < 4 && (payCode.Amount > 0 || payCode.YTD>0))
 						{
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", payCode.PayCode.Description));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
@@ -1252,7 +1252,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 							hrcounter++;
 						}
-						if (otcounter < 4 && (payCode.OvertimeAmount > 0))
+						if (otcounter < 4 && (payCode.OvertimeAmount > 0||payCode.YTDOvertime>0))
 						{
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot", payCode.PayCode.Description + " Overtime"));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter, payCode.OvertimeHours.ToString()));

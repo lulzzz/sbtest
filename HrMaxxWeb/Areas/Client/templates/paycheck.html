@@ -37,7 +37,7 @@
 				<td class="text-right">{{pc.amount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytd | currency:'$'}}</td>
 			</tr>
-			<tr ng-repeat-end ng-if="pc.overtimeHours>0">
+			<tr ng-repeat-end ng-if="pc.overtimeHours>0 || pc.ytdOvertime>0">
 				<td>{{pc.payCode.description}} - Overtime</td>
 				<td class="text-right">{{pc.overtimeHours}}</td>
 				<td class="text-right">{{pc.payCode.hourlyRate * 1.5 | currency:'$'}}</td>
