@@ -295,6 +295,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPaycheck.Deductions = mapped.Deductions;
 				dbPaycheck.Accumulations = mapped.Accumulations;
 				dbPaycheck.Notes = mapped.Notes;
+
+				dbPaycheck.PayCodes = mapped.PayCodes;
+				dbPaycheck.Compensations = mapped.Compensations;
+				dbPaycheck.Taxes = mapped.Taxes;
+				dbPaycheck.Deductions = mapped.Deductions;
+				dbPaycheck.Accumulations = mapped.Accumulations;
+				dbPaycheck.YTDSalary = mapped.YTDSalary;
+				dbPaycheck.YTDGrossWage = mapped.YTDGrossWage;
+				dbPaycheck.YTDNetWage = mapped.YTDNetWage;
 				_dbContext.SaveChanges();
 			}
 		}
@@ -311,6 +320,21 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var payrolls = _dbContext.Payrolls.AsQueryable();
 			if (companyId.HasValue)
 				payrolls = payrolls.Where(p => p.CompanyId == companyId.Value);
+			//var returnList = new List<Models.Payroll>();
+			//payrolls.ToList().ForEach(p =>
+			//{
+			//	try
+			//	{
+			//		returnList.Add(_mapper.Map<Models.DataModel.Payroll, Models.Payroll>(p));
+			//	}
+			//	catch (Exception)
+			//	{
+
+			//		throw;
+			//	}
+
+			//});
+			//return returnList;
 			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls.ToList());
 		}
 

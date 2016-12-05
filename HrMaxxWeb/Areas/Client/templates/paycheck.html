@@ -44,6 +44,13 @@
 				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
 			</tr>
+			<tr ng-if="check.employee.payType===2">
+				<td>Salary</td>
+				<td class="text-right"></td>
+				<td class="text-right"></td>
+				<td class="text-right">{{check.salary | currency:'$'}}</td>
+				<td class="text-right">{{check.ytdSalary | currency:'$'}}</td>
+			</tr>
 			<tr ng-repeat="comp in check.compensations | filter:{payType: {isTaxable:true}}">
 				<td>{{comp.payType.description}}</td>
 				<td colspan="3" class="text-right">{{comp.amount | currency:'$'}}</td>

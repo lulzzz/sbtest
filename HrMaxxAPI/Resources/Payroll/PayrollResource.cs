@@ -72,6 +72,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal WCAmount { get; set; }
 		public PayrollWorkerCompensationResource WorkerCompensation { get; set; }
 
+		public decimal YTDSalary { get; set; }
 		public decimal YTDGrossWage { get; set; }
 		public decimal YTDNetWage { get; set; }
 

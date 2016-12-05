@@ -967,6 +967,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var employees = _companyRepository.GetAllEmployees();
 				var payrolls = _payrollRepository.GetAllPayrolls(companyId);
+				var companyPayChecks = payrolls.SelectMany(p => p.PayChecks).ToList();
 				payrolls.OrderBy(p=>p.PayDay).ToList().ForEach(payroll => payroll.PayChecks.ForEach(pc =>
 				{
 					var employee = employees.First(e => e.Id == pc.Employee.Id);
@@ -1009,6 +1010,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							t.TaxableWage = pc.Taxes.First(t1 => t1.Tax.Id == 1).TaxableWage;
 						}
 					});
+					
+					var affectedChecks = new List<PayCheck>();
+					pc.ResetYTD();
+					var employeePreviousChecks = companyPayChecks.Where(p => p.Employee.Id == pc.Employee.Id && p.PayDay<pc.PayDay).ToList();
+					if (employeePreviousChecks.Any())
+					{
+						foreach (var a in employeePreviousChecks)
+						{
+							pc.AddToYTD(a);
+						}
+					}
+					
+					
+					
 					_payrollRepository.SavePayCheck(pc);
 				}));
 				
@@ -1450,7 +1465,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
 								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
 						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
-							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - d.Amount);
+						{
+							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - total);
+						}
+							
 					}
 				}
 				

@@ -261,13 +261,19 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			
 			var taxAmount = (decimal)0;
 			var taxableWage = grossWage - taxExemptedDeductions;
-			if (tax.AnnualMaxPerEmployee.HasValue && ytdWage < tax.AnnualMaxPerEmployee)
+			if (tax.AnnualMaxPerEmployee.HasValue)
 			{
-				if ((ytdWage + grossWage - taxExemptedDeductions) > tax.AnnualMaxPerEmployee.Value)
+				if (ytdWage >= tax.AnnualMaxPerEmployee)
+					taxableWage = 0;
+				else
 				{
-					taxableWage = tax.AnnualMaxPerEmployee.Value - ytdWage;
+					if ((ytdWage + grossWage - taxExemptedDeductions) > tax.AnnualMaxPerEmployee.Value)
+					{
+						taxableWage = tax.AnnualMaxPerEmployee.Value - ytdWage;
+					}
 				}
 			}
+			
 			var taxRate = !tax.Tax.IsCompanySpecific
 				? (tax.Rate.HasValue ? tax.Rate.Value : tax.Tax.DefaultRate )
 				: !company.FileUnderHost ? (company.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? company.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate) : (hostCompany.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? hostCompany.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate);

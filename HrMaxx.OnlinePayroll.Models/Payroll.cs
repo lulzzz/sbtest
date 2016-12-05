@@ -184,6 +184,30 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return PayCodes.Sum(p => p.OvertimeHours); }
 		}
 		public Guid DocumentId { get; set; }
+
+		public void ResetYTD()
+		{
+			YTDSalary = Salary;
+			YTDGrossWage = GrossWage;
+			YTDNetWage = NetWage;
+			Compensations.ForEach(c=>c.YTD=c.Amount);
+			Deductions.ForEach(c => c.YTD = c.Amount);
+			PayCodes.ForEach(c => c.YTD = c.Amount);
+			Taxes.ForEach(c =>
+			{
+				c.YTDTax = c.Amount;
+				c.YTDWage = c.TaxableWage;
+			});
+			Accumulations.ForEach(c =>
+			{
+				c.YTDFiscal = c.AccumulatedValue;
+				c.YTDUsed = c.Used;
+			});
+			if (WorkerCompensation != null)
+			{
+				WorkerCompensation.YTD = WCAmount;
+			}
+		}
 		public void AddToYTD(PayCheck paycheck)
 		{
 			
@@ -191,20 +215,24 @@ namespace HrMaxx.OnlinePayroll.Models
 			AddToYTDDeductions(paycheck.Deductions);
 			AddToYTDTaxes(paycheck.Taxes);
 			AddToLeavedAccumulation(paycheck.Accumulations);
-			if (paycheck.Employee.PayType == EmployeeType.Hourly)
+			if (paycheck.Employee.PayType == EmployeeType.Salary)
 			{
-				AddToYTDPayCodes(paycheck.PayCodes);
+				YTDSalary = Math.Round(YTDSalary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+				
 			}
 			else
 			{
-				YTDSalary = Math.Round(YTDSalary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+				AddToYTDPayCodes(paycheck.PayCodes);
 			}
 			YTDGrossWage = Math.Round(YTDGrossWage + paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
 			YTDNetWage = Math.Round(YTDNetWage + paycheck.NetWage, 2, MidpointRounding.AwayFromZero);
-			if (paycheck.WorkerCompensation != null &&
-			    WorkerCompensation.WorkerCompensation.Id == paycheck.WorkerCompensation.WorkerCompensation.Id &&
+			if (paycheck.WorkerCompensation != null && WorkerCompensation != null)
+			{
+				if(WorkerCompensation.WorkerCompensation.Id == paycheck.WorkerCompensation.WorkerCompensation.Id &&
 			    paycheck.WCAmount > 0)
 				WorkerCompensation.YTD += Math.Round(paycheck.WCAmount, 2, MidpointRounding.AwayFromZero);
+			}
+			   
 		}
 
 		private void AddToLeavedAccumulation(IEnumerable<PayTypeAccumulation> accumulations)

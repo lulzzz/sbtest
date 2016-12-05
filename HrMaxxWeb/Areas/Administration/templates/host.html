@@ -26,7 +26,7 @@
 		</ol>
 		<div class="wizard-step-1">
 			<fieldset>
-				<legend class="pull-left width-full">Information</legend>
+				<legend class="width-full">Information</legend>
 				<div class="row">
 					<div class="row">
 						<div class="col-sm-4">
@@ -92,7 +92,7 @@
 		<!-- begin wizard step-2 -->
 		<div class="wizard-step-2">
 			<fieldset>
-				<legend class="pull-left width-full">Company Details</legend>
+				<legend class="width-full">Company Details</legend>
 				<!-- begin row -->
 				<div class="row">
 					<!-- begin col-4 -->
@@ -132,7 +132,7 @@
 		<!-- begin wizard step-3 -->
 		<div class="wizard-step-3">
 			<fieldset>
-				<legend class="pull-left width-full">Payroll</legend>
+				<legend class="width-full">Payroll</legend>
 				<!-- begin row -->
 				<div class="row">
 					<!-- begin col-6 -->
@@ -200,7 +200,7 @@
 		<!-- begin wizard step-4 -->
 		<div class="wizard-step-4" >
 			<fieldset>
-				<legend class="pull-left width-full">Address</legend>
+				<legend class="width-full">Address</legend>
 				<!-- begin row -->
 				<div class="row">
 					<div class="col-sm-6">
@@ -230,7 +230,7 @@
 			</fieldset>
 
 			<fieldset>
-				<legend class="pull-left width-full">Tax Setup</legend>
+				<legend class="width-full">Tax Setup</legend>
 				<!-- begin row -->
 				<div class="row">
 					<div class="col-sm-3">
@@ -278,7 +278,7 @@
 
 			</fieldset>
 			<fieldset>
-				<legend class="pull-left width-full">States <i class="fa fa-plus-circle" ng-show="availableStates().length>0" ng-click="addState()"></i></legend>
+				<legend class="width-full">States <i class="fa fa-plus-circle" ng-show="availableStates().length>0" ng-click="addState()"></i></legend>
 				<!-- begin row -->
 				<div ng-show="availableStates().length>0 && selectedCompany.states.length===0" class="row show-red">Please select atleast one state</div>
 				<div class="row" ng-repeat="state in selectedCompany.states">
@@ -325,7 +325,7 @@
 		<!-- end wizard step-4 -->
 		<div class="wizard-step-5" ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff'">
 			<fieldset>
-				<legend class="pull-left width-full">Contract</legend>
+				<legend class="width-full">Contract</legend>
 				<!-- begin row -->
 				<div class="row">
 					<!-- begin col-4 -->

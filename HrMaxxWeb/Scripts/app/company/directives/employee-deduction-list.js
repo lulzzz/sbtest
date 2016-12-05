@@ -124,7 +124,16 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					else
 						return true;
 				}
-				
+				$scope.availableCompanyDeductions = function(index) {
+					var returnList = [];
+					$.each($scope.companyDeductions, function(ind, d) {
+						var matching = $filter('filter')($scope.list, { deduction: { id: d.id } })[0];
+						if (!matching || (index!==-1 && $scope.list.indexOf(matching) === index)) {
+							returnList.push(d);
+						}
+					});
+					return returnList;
+				}
 				
 				
 
