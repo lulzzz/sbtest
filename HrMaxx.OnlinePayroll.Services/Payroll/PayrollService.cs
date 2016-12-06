@@ -878,6 +878,51 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					});
 					var dbIncvoice = _payrollRepository.GetPayrollInvoiceById(invoice.Id);
+					if (dbIncvoice.MiscCharges.Any(dbmc => dbmc.RecurringChargeId>0 && (!invoice.MiscCharges.Any(mc=>mc.RecurringChargeId==dbmc.RecurringChargeId) || invoice.MiscCharges.Any(mc=>mc.RecurringChargeId==dbmc.RecurringChargeId && mc.Amount!=dbmc.Amount))))
+					{
+						var deleted =
+							dbIncvoice.MiscCharges.Where(
+								dbmc =>
+									dbmc.RecurringChargeId > 0 &&
+									!invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId))
+								.ToList();
+						var updated =
+							dbIncvoice.MiscCharges.Where(
+								dbmc =>
+									dbmc.RecurringChargeId > 0 &&
+									invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId &&  mc.Amount!=dbmc.Amount))
+								.ToList();
+						var futureInvoices =
+							_payrollRepository.GetAllPayrollInvoices()
+								.Where(ci => ci.CompanyId == invoice.CompanyId && ci.InvoiceNumber > invoice.InvoiceNumber)
+								.ToList();
+						futureInvoices.ForEach(fi=>
+						{
+							var update = false;
+							fi.MiscCharges.ForEach(mc =>
+							{
+								if (mc.RecurringChargeId > 0)
+								{
+									var del = deleted.FirstOrDefault(mc1 => mc1.RecurringChargeId == mc.RecurringChargeId);
+									var upd = updated.FirstOrDefault(mc1 => mc1.RecurringChargeId == mc.RecurringChargeId);
+									if (del != null)
+									{
+										update = true;
+										mc.PreviouslyClaimed -= del.Amount;
+									}
+									else if (upd != null)
+									{
+										update = true;
+										mc.PreviouslyClaimed = mc.PreviouslyClaimed - upd.Amount +
+										                       invoice.MiscCharges.First(mc2 => mc2.RecurringChargeId == mc.RecurringChargeId).Amount;
+									}
+
+								}
+							});
+							if (update)
+								_payrollRepository.SavePayrollInvoice(fi);
+						});
+					}
 					
 					if (dbIncvoice != null)
 					{
@@ -1800,14 +1845,29 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					var payrolls = _payrollRepository.GetAllPayrolls(null);
 					var invoices = _payrollRepository.GetAllPayrollInvoices();
-					var paychecks = _payrollRepository.GetAllPayrolls(null).SelectMany(p => p.PayChecks);
-					invoices.ForEach(i =>
+					var paychecks = payrolls.SelectMany(p => p.PayChecks);
+					invoices.OrderBy(i=>i.PayrollPayDay).ToList().ForEach(i =>
 					{
+						var prevInvoices =
+							invoices.Where(i1 => i1.CompanyId == i.CompanyId && i1.InvoiceNumber < i.InvoiceNumber).ToList();
 						var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
 						i.NetPay = pcs.Sum(p => p.NetWage);
 						i.CheckPay = pcs.Sum(p => p.CheckPay);
 						i.DDPay = pcs.Sum(p => p.DDPay);
+						i.MiscCharges.Where(mc=>mc.RecurringChargeId>0).ToList().ForEach(mc =>
+						{
+							var rc = i.CompanyInvoiceSetup.RecurringCharges.First(r => r.Id == mc.RecurringChargeId);
+							if (!rc.Year.HasValue)
+							{
+								mc.PreviouslyClaimed = prevInvoices.SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc.Amount);
+							}
+							else
+							{
+								mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
+							}
+						});
 						_payrollRepository.SavePayrollInvoice(i);
 					});
 					txn.Complete();

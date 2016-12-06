@@ -20,7 +20,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime PeriodEnd { get; set; }
 		public DateTime InvoiceDate { get; set; }
 		public DateTime PayrollPayDay { get; set; }
-		
+
 		public int NoOfChecks { get; set; }
 		public decimal GrossWages { get; set; }
 		public decimal EmployeeContribution { get; set; }
@@ -30,12 +30,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollTax> EmployerTaxes { get; set; }
 		public List<PayrollTax> EmployeeTaxes { get; set; }
 
-		public List<PayrollDeduction> Deductions { get; set; } 
+		public List<PayrollDeduction> Deductions { get; set; }
 		public List<InvoiceWorkerCompensation> WorkerCompensations { get; set; }
 		public decimal Total { get; set; }
 		public decimal WorkerCompensationCharges { get { return WorkerCompensations.Sum(w => w.Amount); } }
 		public List<MiscFee> MiscCharges { get; set; }
-		
+
 		public decimal MiscFees { get { return MiscCharges.Sum(w => w.Amount); } }
 		public InvoiceStatus Status { get; set; }
 		public DateTime? SubmittedOn { get; set; }
@@ -78,7 +78,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			Deductions = new List<PayrollDeduction>();
 			PayChecks = new List<int>();
 			VoidedCreditedChecks = new List<int>();
-			
+
 			PeriodEnd = payroll.EndDate;
 			PeriodStart = payroll.StartDate;
 			CompanyId = payroll.Company.Id;
@@ -92,21 +92,21 @@ namespace HrMaxx.OnlinePayroll.Models
 			NetPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage);
 			CheckPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.CheckPay);
 			DDPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.DDPay);
-			
+
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddDeductions(pc.Deductions));
-			PayChecks.AddRange(payroll.PayChecks.Where(pc=>!pc.IsVoid).Select(pc=>pc.Id));
-			
+			PayChecks.AddRange(payroll.PayChecks.Where(pc => !pc.IsVoid).Select(pc => pc.Id));
+
 			NoOfChecks = payroll.PayChecks.Count(pc => !pc.IsVoid);
-			
+
 			CalculateAdminFee(payroll);
-			
+
 			CalculateRecurringCharges(prevInvoices, payroll);
 			HandleVoidedChecks(prevInvoices, company, voidedPayChecks);
 			CalculateCASUTA(company, payroll.PayDay.Year);
 
 			EmployeeContribution = payroll.TotalGrossWage - payroll.TotalNetWage;
 			EmployerContribution = EmployerTaxes.Sum(pc => pc.Amount);
-			EnvironmentalFee = CompanyInvoiceSetup.ApplyEnvironmentalFee ? envFeePerCheck*NoOfChecks : 0;
+			EnvironmentalFee = CompanyInvoiceSetup.ApplyEnvironmentalFee ? envFeePerCheck * NoOfChecks : 0;
 			CalculateTotal();
 
 			Status = InvoiceStatus.Draft;
@@ -123,16 +123,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			voidedPayChecks.ForEach(vpc =>
 			{
-				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)) && prevInvoices.Any(pi => pi.Id==vpc.InvoiceId))
+				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)) && prevInvoices.Any(pi => pi.Id == vpc.InvoiceId))
 				{
-					var prevInv = prevInvoices.First(pi => pi.Id==vpc.InvoiceId);
-					
+					var prevInv = prevInvoices.First(pi => pi.Id == vpc.InvoiceId);
+
 					var pcCredit = new MiscFee
 					{
 						PayCheckId = vpc.Id,
 						RecurringChargeId = -1,
 						Amount = 0,
-						Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod==EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
+						Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
 						isEditable = false
 					};
 					if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
@@ -144,7 +144,7 @@ namespace HrMaxx.OnlinePayroll.Models
 					{
 						pcCredit.Amount += Math.Round(vpc.EmployeeTaxes, 2, MidpointRounding.AwayFromZero);
 						pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
-					
+
 
 					}
 					pcCredit.Amount *= -1;
@@ -152,14 +152,14 @@ namespace HrMaxx.OnlinePayroll.Models
 					MiscCharges.Add(pcCredit);
 					vpc.Deductions.ForEach(vpcd =>
 					{
-						if (prevInv.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id*-1))
+						if (prevInv.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id * -1))
 						{
-							var chargedDeduction = prevInv.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id*-1);
+							var chargedDeduction = prevInv.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id * -1);
 							var dedCredit = new MiscFee
 							{
 								PayCheckId = 0,
-								RecurringChargeId = vpcd.Deduction.Id*-1,
-								Amount = chargedDeduction.Amount*-1,
+								RecurringChargeId = vpcd.Deduction.Id * -1,
+								Amount = chargedDeduction.Amount * -1,
 								Description = string.Format("Reverse Credit for Deduction:{1} on voided PayCheck #{0} ", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", chargedDeduction.Description),
 								isEditable = false
 							};
@@ -168,14 +168,14 @@ namespace HrMaxx.OnlinePayroll.Models
 						}
 					});
 
-					
+
 				}
 			});
 		}
 
 		private void AddDeductions(IEnumerable<PayrollDeduction> deds)
 		{
-			deds.Where(d=>d.Deduction.Type.Id==4).ToList().ForEach(d =>
+			deds.Where(d => d.Deduction.Type.Id == 4).ToList().ForEach(d =>
 			{
 				var d1 = Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
@@ -194,7 +194,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			Total = (decimal)0;
 			Total += Math.Round(AdminFee, 2, MidpointRounding.AwayFromZero);
-			
+
 			Total += Math.Round(MiscFees, 2, MidpointRounding.AwayFromZero);
 
 			if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
@@ -203,7 +203,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				Total += Math.Round(EmployerContribution, 2, MidpointRounding.AwayFromZero);
 				Total += Math.Round(WorkerCompensationCharges, 2, MidpointRounding.AwayFromZero);
 				Total += Math.Round(EnvironmentalFee, 2, MidpointRounding.AwayFromZero);
-				
+
 			}
 			else if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
 			{
@@ -228,15 +228,15 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				EmployerTaxes.Where(t => t.Tax.StateId == 1).ToList().ForEach(t =>
 				{
-					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits? GrossWages : t.TaxableWage;
+					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? GrossWages : t.TaxableWage;
 					var rate = t.Tax.Rate;
-					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct=>ct.TaxYear==year && ct.TaxId==t.Tax.Id))
+					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxId == t.Tax.Id))
 					{
 						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxId == t.Tax.Id).Rate;
 					}
-					t.Amount = Math.Round((decimal) (taxableWage*(rate + CompanyInvoiceSetup.SUIManagement)/100),2,MidpointRounding.AwayFromZero);
+					t.Amount = Math.Round((decimal)(taxableWage * (rate + CompanyInvoiceSetup.SUIManagement) / 100), 2, MidpointRounding.AwayFromZero);
 					t.TaxableWage = taxableWage;
-				});	
+				});
 			}
 		}
 
@@ -245,7 +245,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			taxes.ToList().ForEach(t =>
 			{
 
-				var t1 = t.IsEmployeeTax? EmployeeTaxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id) : EmployerTaxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
+				var t1 = t.IsEmployeeTax ? EmployeeTaxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id) : EmployerTaxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
 				if (t1 != null)
 				{
 					t1.TaxableWage = Math.Round(t1.TaxableWage + t.TaxableWage, 2, MidpointRounding.AwayFromZero);
@@ -254,7 +254,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				else
 				{
 					var temp = JsonConvert.SerializeObject(t);
-					if(t.IsEmployeeTax)
+					if (t.IsEmployeeTax)
 						EmployeeTaxes.Add(JsonConvert.DeserializeObject<PayrollTax>(temp));
 					else
 						EmployerTaxes.Add(JsonConvert.DeserializeObject<PayrollTax>(temp));
@@ -271,38 +271,60 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			CompanyInvoiceSetup.RecurringCharges.ForEach(rc =>
 			{
-				if (!rc.Year.HasValue || rc.Year.Value == payroll.PayDay.Year)
+				var calcAmount = rc.Amount;
+				var previouslyClaimed = (decimal)0;
+				if (!rc.Year.HasValue)
 				{
-					var ytd =
+					previouslyClaimed =
 						prevInvoices.SelectMany(i => i.MiscCharges).Where(mc => mc.RecurringChargeId == rc.Id).Sum(mc => mc.Amount);
-					var calcAmount = (decimal) 0;
-					if (!rc.AnnualLimit.HasValue)
-					{
-						calcAmount = rc.Amount;
-					}
-					else if (ytd < rc.AnnualLimit)
-					{
-						calcAmount = (ytd + rc.Amount) > rc.AnnualLimit ? (rc.AnnualLimit.Value - ytd) : rc.Amount;
-					}
 					MiscCharges.Add(new MiscFee
 					{
 						RecurringChargeId = rc.Id,
 						Amount = calcAmount,
 						Description = rc.Description,
 						PayCheckId = 0,
-						isEditable = true
+						isEditable = true,
+						PreviouslyClaimed = previouslyClaimed
 					});
 				}
+				else
+				{
+					if (rc.Year.Value == payroll.PayDay.Year)
+					{
+						previouslyClaimed =
+							prevInvoices.Where(i => i.PayrollPayDay.Year == payroll.PayDay.Year).SelectMany(i => i.MiscCharges).Where(mc => mc.RecurringChargeId == rc.Id).Sum(mc => mc.Amount);
+
+						if (rc.AnnualLimit.HasValue)
+						{
+							if (previouslyClaimed < rc.AnnualLimit)
+							{
+								calcAmount = (previouslyClaimed + rc.Amount) > rc.AnnualLimit ? (rc.AnnualLimit.Value - previouslyClaimed) : rc.Amount;
+							}
+
+						}
+						MiscCharges.Add(new MiscFee
+						{
+							RecurringChargeId = rc.Id,
+							Amount = calcAmount,
+							Description = rc.Description,
+							PayCheckId = 0,
+							isEditable = true,
+							PreviouslyClaimed = previouslyClaimed
+						});
+					}
+				}
+				
+
 			});
 			Deductions.ForEach(d => MiscCharges.Add(new MiscFee
 			{
-				RecurringChargeId = d.Deduction.Id*-1,
-				Amount = d.Amount*-1,
+				RecurringChargeId = d.Deduction.Id * -1,
+				Amount = d.Amount * -1,
 				Description = d.Name,
 				PayCheckId = 0,
 				isEditable = true
 			}));
-		
+
 		}
 
 		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp)
@@ -334,7 +356,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		private void CalculateAdminFee(Payroll payroll)
 		{
-			AdminFee = CompanyInvoiceSetup.AdminFeeMethod == 1 ? CompanyInvoiceSetup.AdminFee : Math.Round(CompanyInvoiceSetup.AdminFee*payroll.TotalGrossWage/100, 2, MidpointRounding.AwayFromZero);
+			AdminFee = CompanyInvoiceSetup.AdminFeeMethod == 1 ? CompanyInvoiceSetup.AdminFee : Math.Round(CompanyInvoiceSetup.AdminFee * payroll.TotalGrossWage / 100, 2, MidpointRounding.AwayFromZero);
 		}
 
 		public Guid MementoId
@@ -356,6 +378,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Amount { get; set; }
 		public decimal Rate { get; set; }
 		public bool isEditable { get; set; }
+		public decimal PreviouslyClaimed { get; set; }
 	}
 
 	public class InvoiceWorkerCompensation
@@ -365,6 +388,6 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Amount { get; set; }
 		public decimal OriginalWage { get; set; }
 		public decimal OriginalAmount { get; set; }
-		
+
 	}
 }

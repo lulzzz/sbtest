@@ -36,8 +36,8 @@
 						<div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
 							<img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
 							<div class="carousel-caption">
-								<h4>{{news.title}}</h4>
-								<p>
+								<h3>{{news.title}}</h3>
+								<p style="font-size: 14pt">
 									{{news.newsContent}}
 									<br />
 									<i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss'}}</i>

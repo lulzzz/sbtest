@@ -72,13 +72,14 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						}
 					};
 					$scope.updateSelectedInvoice = function (invoice) {
-						var match = $filter('filter')($scope.list, { id: invoice.id })[0];
-						if (match) {
-							$scope.list.splice($scope.list.indexOf(match), 1);
-						}
-						$scope.list.push(invoice);
-						$scope.tableParams.reload();
-						$scope.fillTableData($scope.tableParams);
+						getInvoices(invoice.id);
+						//var match = $filter('filter')($scope.list, { id: invoice.id })[0];
+						//if (match) {
+						//	$scope.list.splice($scope.list.indexOf(match), 1);
+						//}
+						//$scope.list.push(invoice);
+						//$scope.tableParams.reload();
+						//$scope.fillTableData($scope.tableParams);
 						
 					}
 					$scope.deleteInvoice = function(invoice) {

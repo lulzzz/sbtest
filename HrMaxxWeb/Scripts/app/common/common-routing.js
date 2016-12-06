@@ -121,3 +121,11 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.hashPrefix('!');
 }]);
+
+common.config([
+	'uiMask.ConfigProvider', function(uiMaskConfigProvider) {
+		uiMaskConfigProvider.maskDefinitions({ 'A': /[a-z]/, '*': /[a-zA-Z0-9]/, '9': /[0-9]/, '8': /[0-8]/, '7': /[0-7]/, '6': /[0-6]/, '5': /[0-5]/, '4': /[0-4]/, '3': /[0-3]/, '2': /[0-2]/, '1': /[0-1]/, '0': /[0]/ });
+		uiMaskConfigProvider.clearOnBlur(false);
+		uiMaskConfigProvider.eventsToHandle(['input', 'keyup', 'click']);
+	}
+]);

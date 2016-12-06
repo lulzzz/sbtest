@@ -258,8 +258,9 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					};
 					$scope.delayTaxes = function () {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delay the taxes on this invoice?', 'danger', function () {
-							$scope.invoice = null;
+							
 							payrollRepository.delayTaxes($scope.invoice).then(function (data) {
+								$scope.invoice = null;
 								$timeout(function () {
 									$scope.invoice = data;
 									fixDates();
@@ -269,15 +270,16 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 
 							}, function (error) {
-								addAlert('error re-created invoice', 'danger');
+								addAlert('error delaying taxes on the invoice', 'danger');
 							});
 						});
 						
 					};
 					$scope.reDateInvoicePayroll = function () {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you re-date the invoice? this will re-date the payroll and paychecks as well', 'danger', function () {
-							$scope.invoice = null;
+							
 							payrollRepository.redateInvoiceAndPayroll($scope.invoice, moment(dataSvc.reDate).format("MM/DD/YYYY")).then(function (data) {
+								$scope.invoice = null;
 								$timeout(function () {
 									$scope.invoice = data;
 									fixDates();
