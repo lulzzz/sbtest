@@ -13,6 +13,7 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class Employee : BaseEntityDto, IOriginator<Employee>
 	{
+		public Guid HostId { get; set; }
 		public Guid CompanyId { get; set; }
 		public string FirstName { get; set; }
 		public string MiddleInitial { get; set; }

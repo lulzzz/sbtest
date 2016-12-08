@@ -14,6 +14,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
@@ -767,6 +768,85 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public ACHResponse GetACHReport(ReportRequest request)
+		{
+			try
+			{
+				var data = _reportRepository.GetACHReport(request);
+				if(data.Hosts.All(h=>!h.ACHTransactions.Any()))
+					throw new Exception(NoData);
+				data.Hosts.ForEach(h =>
+				{
+					if (h.HostBank != null)
+					{
+						h.HostBank.AccountNumber = Crypto.Decrypt(h.HostBank.AccountNumber);
+						h.HostBank.RoutingNumber = Crypto.Decrypt(h.HostBank.RoutingNumber);
+						h.HostBank.RoutingNumber1 = Convert.ToInt32(h.HostBank.RoutingNumber.Substring(0, 8));
+					}
+					if (h.ACHTransactions != null)
+						h.ACHTransactions.ForEach(t =>
+						{
+							if (t.CompanyBankAccount != null)
+							{
+								t.CompanyBankAccount.AccountNumber = Crypto.Decrypt(t.CompanyBankAccount.AccountNumber);
+								t.CompanyBankAccount.RoutingNumber = Crypto.Decrypt(t.CompanyBankAccount.RoutingNumber);
+								t.CompanyBankAccount.RoutingNumber1 = Convert.ToInt32(t.CompanyBankAccount.RoutingNumber.Substring(0, 8));
+							}
+							if (t.EmployeeBankAccounts != null && t.EmployeeBankAccounts.Any())
+							{
+								t.EmployeeBankAccounts.ForEach(eb =>
+								{
+									eb.BankAccount.AccountNumber = Crypto.Decrypt(eb.BankAccount.AccountNumber);
+									eb.BankAccount.RoutingNumber = Crypto.Decrypt(eb.BankAccount.RoutingNumber);
+									eb.BankAccount.RoutingNumber1 = Convert.ToInt32(eb.BankAccount.RoutingNumber.Substring(0, 8));
+								});
+							}
+						});
+				});
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == NoData || e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+				}
+				else if (e.Message.ToLower().StartsWith("could not find file"))
+				{
+					message = ReportNotAvailable;
+				}
+				else
+				{
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", request.StartDate.ToString(), request.EndDate.ToString()));
+				}
+
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
+		}
+
+		public FileDto GetACHExtract(ACHResponse data)
+		{
+			var xml = GetXml<ACHResponse>(data);
+			var args = new XsltArgumentList();
+			args.AddParam("time", "", DateTime.Now.ToString("HHmm"));
+			args.AddParam("today", "", DateTime.Today.ToString("yyMMdd"));
+			var transformed = XmlTransform(xml,
+				string.Format("{0}{1}", _templatePath, "transformers/extracts/CBT-ACHTransformer.xslt"), args);
+
+			transformed = Transform(transformed);
+
+			return  new FileDto
+				{
+					Data = Encoding.UTF8.GetBytes(transformed),
+					DocumentExtension = ".txt",
+					Filename = string.Format("CBT-ACH-Extract-{0}.txt", DateTime.Now.ToString("MM/dd/yyyy")),
+					MimeType = "application/octet-stream"
+				};
 		}
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)

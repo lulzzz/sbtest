@@ -19,7 +19,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						payTypes: $scope.datasvc.payTypes,
 						employees: $scope.datasvc.employees,
 						payTypeFilter: 0,
-						toggleState: true
+						toggleState: true,
+						tabindex:1
 					}
 					
 					$scope.list = [];

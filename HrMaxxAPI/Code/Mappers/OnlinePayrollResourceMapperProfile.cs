@@ -86,7 +86,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<BankAccountResource, BankAccount>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
-				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore());
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore())
+				.ForMember(dest => dest.RoutingNumber1, opt => opt.Ignore());
  
 			CreateMap<BankAccount, BankAccountResource>();
 
@@ -216,7 +217,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now)); 
 			CreateMap<InvoiceLineItemResource, InvoiceLineItem>();
-			CreateMap<InvoicePaymentResource, InvoicePayment>();
+			CreateMap<InvoicePaymentResource, InvoicePayment>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0));
 
 			CreateMap<InvoiceLineItem, InvoiceLineItemResource>();
 			CreateMap<InvoicePayment, InvoicePaymentResource>()

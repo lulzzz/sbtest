@@ -39,5 +39,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		List<Models.Payroll> GetAllPayrolls(PayrollStatus companyId);
 		List<PayCheck> GetEmployeePayChecks(Guid employeeId);
 		List<PayrollInvoice> GetAllPayrollInvoices();
+		List<PayCheck> GetACHPayChecks();
+		int SaveACHTransactions(List<ACHTransaction> achPayChecks);
+		List<PayrollInvoice> GetACHPayrollInvoices();
 	}
 }

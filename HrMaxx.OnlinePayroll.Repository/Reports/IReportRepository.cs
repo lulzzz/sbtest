@@ -14,5 +14,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		ExtractResponse GetExtractReport(ReportRequest extractReport);
 		List<MasterExtract> GetExtractList(string report);
 		SearchResults GetSearchResults(string criteria, string role, Guid host, Guid company);
+		ACHResponse GetACHReport(ReportRequest extractReport);
 	}
 }

@@ -64,7 +64,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpGet]
 		[Route(PayrollRoutes.FixInvoices)]
-		public HttpStatusCode FixCompanyCubes()
+		public HttpStatusCode FixInvoiceData()
 		{
 			try
 			{

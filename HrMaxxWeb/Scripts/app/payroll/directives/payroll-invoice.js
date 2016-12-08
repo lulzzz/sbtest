@@ -170,25 +170,28 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							return true;
 					}
 
-					$scope.isInvoiceInvalid = function() {
-						var invoice = $scope.invoice;
-						if (!invoice.invoiceNumber)
-							return 'Please enter a valid Invoice Number';
-						else if (!invoice.total)
-							return 'The invoice total cannot be blank';
-						else if (invoice.miscCharges.length > 0) {
-							var returnVal = true;
-							$.each(invoice.miscCharges, function (index, p) {
-								if (!$scope.isLineItemValid(p)) {
-									returnVal = false;
-									return false;
-								}
-							});
-							if(!returnVal)
-								return 'Please add correct fee(s) and charge(s)';
+					$scope.isInvoiceInvalid = function () {
+						if ($scope.invoice) {
+							var invoice = $scope.invoice;
+							if (!invoice.invoiceNumber)
+								return 'Please enter a valid Invoice Number';
+							else if (!invoice.total)
+								return 'The invoice total cannot be blank';
+							else if (invoice.miscCharges.length > 0) {
+								var returnVal = true;
+								$.each(invoice.miscCharges, function (index, p) {
+									if (!$scope.isLineItemValid(p)) {
+										returnVal = false;
+										return false;
+									}
+								});
+								if (!returnVal)
+									return 'Please add correct fee(s) and charge(s)';
+							}
+							else
+								return '';
 						}
-						else
-							return '';
+						
 					}
 					$scope.print = function () {
 						$window.print();

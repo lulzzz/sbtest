@@ -283,7 +283,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccountNumber)))
 				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNumber)))
 				.ForMember(dest => dest.SourceTypeId, opt => opt.MapFrom(src => src.EntityTypeId))
-				.ForMember(dest => dest.SourceId, opt => opt.MapFrom(src => src.EntityId));
+				.ForMember(dest => dest.SourceId, opt => opt.MapFrom(src => src.EntityId))
+				.ForMember(dest => dest.RoutingNumber1, opt => opt.Ignore());
 
 			CreateMap<BankAccount, Models.DataModel.BankAccount>()
 				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Encrypt(src.AccountNumber)))
@@ -310,6 +311,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.Employee, Models.Employee>()
+				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.Company.HostId))
 				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Decrypt(src.SSN)))
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<CompanyPayCode>>(src.PayCodes)))
@@ -672,6 +674,13 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src=>JsonConvert.SerializeObject(src.Invoices)));
 			CreateMap<Models.DataModel.InvoiceDeliveryClaim, Models.InvoiceDeliveryClaim>()
 				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.PayrollInvoice>>(src.Invoices)));
+
+			CreateMap<Models.ACHTransaction, Models.DataModel.ACHTransaction>();
+			CreateMap<Models.DataModel.ACHTransaction, Models.ACHTransaction>()
+				.ForMember(dest => dest.CompanyBankAccount, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeBankAccounts, opt => opt.Ignore());
+
+			CreateMap<Models.ACHResponseDB, Models.ACHResponse>();
 
 		}
 	}

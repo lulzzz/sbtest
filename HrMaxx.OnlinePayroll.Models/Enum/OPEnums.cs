@@ -74,8 +74,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum BankAccountType
 	{
-		Checking=1,
-		Savings=2
+		Checking = 1,
+		Savings = 2
 	}
 
 	public enum F1099Type
@@ -427,5 +427,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		CAETTUI=4,
 		Garnishment=5,
 		NA=0
+	}
+
+	public enum ACHTransactionType
+	{
+		[HrMaxxSecurity(DbName = "PPD")]
+		PPD=1,
+		[HrMaxxSecurity(DbName = "CCD")]
+		CCD=2
 	}
 }

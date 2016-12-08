@@ -6,7 +6,7 @@
 				<ul class="nav nav-tabs nav-tabs-inverse">
 					<li class="prev-button"><a href="javascript:;" data-click="prev-tab" class="text-success"><i class="fa fa-arrow-left"></i></a></li>
 					
-					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}"  ng-click="set(host)" ng-repeat="host in data.hosts track by $index" ><a data-toggle="tab">{{host.hostCompany.name}}</a></li>
+					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}"  ng-click="set(host)" ng-repeat="host in data.hosts | orderBy:'hostCompany.name' track by $index" ><a data-toggle="tab">{{host.hostCompany.name}}</a></li>
 					
 					<li class="next-button"><a href="javascript:;" data-click="next-tab" class="text-success"><i class="fa fa-arrow-right"></i></a></li>
 				</ul>
@@ -220,7 +220,7 @@
 								<div class="col-sm-6 text-right">{{selectedAgency.total | currency:'$'}}</div>
 							</div>
 							<div class="row" ng-show="selectedAgency.accounts.length>0">
-								<div class="col-sm-10 col-sm-offset-1 alert-info">Exp No Details</div>
+								<div class="col-sm-10 col-sm-offset-1 alert-info">Account ID Details</div>
 							</div>
 							<div class="row" ng-repeat="account in selectedAgency.accounts ">
 								<div class="col-sm-12">
@@ -233,7 +233,7 @@
 						</td>
 						<td class="col-sm-4" ng-show="selectedAgency">
 							<div class="row" ng-repeat="pc in selectedAgency.payChecks">
-								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
+								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}} - {{pc.companyName}}</u></i>
 							</div>
 						</td>
 

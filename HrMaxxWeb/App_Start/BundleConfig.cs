@@ -198,7 +198,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/directives/company-tax-rates.js",
 				"~/Scripts/app/common/search-ctrl.js",
 				"~/Scripts/app/payroll/directives/awaiting-print-payrolls.js",
-				"~/Scripts/app/payroll/directives/paycheck-list.js"
+				"~/Scripts/app/payroll/directives/paycheck-list.js",
+				"~/Scripts/app/reports/directives/ach-report.js"
 
 				
 

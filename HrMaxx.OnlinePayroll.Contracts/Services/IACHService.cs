@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
-	public interface IScheduledJobService
+	public interface IACHService
 	{
-		void UpdateInvoicePayments();
-		void FillACHData();
+		void FillACH();
 	}
 }

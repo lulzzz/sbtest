@@ -19,5 +19,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		DashboardData GetDashboardData(DashboardRequest dashboardRequest);
 		List<MasterExtract> GetExtractList(string report);
 		List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company);
+		ACHResponse GetACHReport(ReportRequest request);
+		FileDto GetACHExtract(ACHResponse data);
 	}
 }

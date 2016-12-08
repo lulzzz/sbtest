@@ -167,8 +167,8 @@
 														<label></label>
 														<div>
 															<label for="directdebitpayer" class="switch">
-																Pay by Direct Debit
-																<input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" /><i></i>
+																Pay by Direct Deposit
+																<input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" ng-disabled="!mainData.selectedHost.company.directDebitPayer" /><i></i>
 															</label>
 														</div>
 													</div>
@@ -342,7 +342,7 @@
 														<label>Type</label>
 														<select ng-model="selectedCompany.contract.contractOption" ng-change="selectedCompany.contract.contractOption===1?selectedCompany.contract.prePaidSubscriptionOption=1:selectedCompany.contract.prePaidSubscriptionOption=null" name="contracttype" class="form-control" convert-to-number>
 															<option value="2">PostPaid</option>
-															<option value="1">PrePaid</option>
+															<option value="1" ng-hide="true">PrePaid</option>
 														</select>
 													</div>
 													<div class="form-group" ng-if="selectedCompany.contract.contractOption===1">
@@ -357,9 +357,9 @@
 													<div class="form-group">
 														<label>Billing Type</label>
 														<select ng-model="selectedCompany.contract.billingOption" ng-change="billingOptionChanged()" name="billingoption" class="form-control" convert-to-number ng-disabled="selectedCompany.contract.prePaidSubscriptionOption===1">
-															<option value="0">NA</option>
-															<option value="1">Credit Card</option>
-															<option value="2">Direct Debit</option>
+															<option value="0" ng-hide="true">NA</option>
+															<option value="1" ng-hide="true">Credit Card</option>
+															<option value="2" ng-hide="true">Direct Debit</option>
 															<option value="3" ng-show="selectedCompany.contract.contractOption===2">Invoice</option>
 														</select>
 													</div>

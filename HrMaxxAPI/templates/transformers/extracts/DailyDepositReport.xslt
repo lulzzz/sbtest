@@ -47,6 +47,9 @@
 					<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#000000"
 					 ss:Bold="1"/>
 				</Style>
+				<Style ss:ID="s62">
+					<NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>
+				</Style>
 			</Styles>
 			<xsl:apply-templates />
 		</Workbook>
@@ -191,7 +194,7 @@
 				<Cell >
 					<Data ss:Type="String">Cash</Data>
 				</Cell>
-				<Cell >
+				<Cell ss:StyleID="s62">
 					<Data ss:Type="Number">
 						<xsl:value-of select="$cashRow"/>
 					</Data>
@@ -217,7 +220,7 @@
 					<xsl:value-of select="CheckNumber"/>
 				</Data>
 			</Cell>
-			<Cell >
+			<Cell ss:StyleID="s62">
 				<Data ss:Type="Number">
 					<xsl:value-of select="Amount"/>
 				</Data>
@@ -242,7 +245,7 @@
 					<xsl:value-of select="CheckNumber"/>
 				</Data>
 			</Cell>
-			<Cell >
+			<Cell ss:StyleID="s62">
 				<Data ss:Type="Number">
 					<xsl:value-of select="Amount"/>
 				</Data>

@@ -406,5 +406,40 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			var invoices = _dbContext.PayrollInvoices.ToList();
 			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<PayrollInvoice>>(invoices);
 		}
+
+		public List<PayCheck> GetACHPayChecks()
+		{
+			var pcs =
+				_dbContext.PayrollPayChecks.Where(p => !p.IsVoid 
+					&& p.PaymentMethod == (int) EmployeePaymentMethod.DirectDebit 
+					&& !_dbContext.ACHTransactions.Any(ach=>ach.TransactionType == (int)ACHTransactionType.PPD && ach.SourceId==p.Id && ach.SourceParentId==p.PayrollId)
+					);
+
+			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(pcs.ToList());
+		}
+
+		public int SaveACHTransactions(List<Models.ACHTransaction> payChecks)
+		{
+			var mapped = _mapper.Map<List<Models.ACHTransaction>, List<Models.DataModel.ACHTransaction>>(payChecks);
+			var add =
+				mapped.Where(
+					m =>
+						!_dbContext.ACHTransactions.Any(
+							a => a.TransactionType == m.TransactionType && a.SourceId == m.SourceId && a.SourceParentId == m.SourceParentId))
+					.ToList();
+			_dbContext.ACHTransactions.AddRange(add);
+			_dbContext.SaveChanges();
+			return add.Count();
+		}
+
+		public List<PayrollInvoice> GetACHPayrollInvoices()
+		{
+			var invoices = _dbContext.PayrollInvoices.Where(i => i.Status > 3 && i.Status != 5).ToList();
+			var mapped = _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice> > (invoices);
+			return mapped.Where(i => i.Payments.Any(p => p.Method == InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted
+														&& !_dbContext.ACHTransactions.Any(a=>a.TransactionType==(int)ACHTransactionType.CCD && a.SourceId==p.Id && a.SourceParentId==i.Id)
+														)
+													).ToList();
+		}
 	}
 }

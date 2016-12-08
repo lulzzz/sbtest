@@ -4,6 +4,7 @@ using System.Web;
 using Autofac;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Services;
+using HrMaxx.OnlinePayroll.Services.ACH;
 using HrMaxx.OnlinePayroll.Services.Dashboard;
 using HrMaxx.OnlinePayroll.Services.Host;
 using HrMaxx.OnlinePayroll.Services.Journals;
@@ -61,6 +62,11 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.WithParameter(new NamedParameter("templatePath", _templatePath))
 				.As<IReportService>()
 				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ACHService>()
+				.As<IACHService>()
+				.SingleInstance()
 				.PropertiesAutowired();
 
 			builder.RegisterType<ScheduledJobService>()

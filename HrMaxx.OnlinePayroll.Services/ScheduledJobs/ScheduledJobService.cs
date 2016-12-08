@@ -15,9 +15,11 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 	public class ScheduledJobService : BaseService, IScheduledJobService
 	{
 		public readonly IPayrollService _payrollService;
-		public ScheduledJobService(IPayrollService payrollService)
+		public readonly IACHService _achService;
+		public ScheduledJobService(IPayrollService payrollService, IACHService achService)
 		{
 			_payrollService = payrollService;
+			_achService = achService;
 		}
 
 		public void UpdateInvoicePayments()
@@ -65,6 +67,22 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			catch (Exception e)
 			{
 				var message = "Failed to update invoice deposited payments";
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void FillACHData()
+		{
+			try
+			{
+				Log.Info("ACH Fill Data service initiated " + DateTime.Now);
+				_achService.FillACH();
+				Log.Info("ACH Fill Data service completed " + DateTime.Now);
+			}
+			catch (Exception e)
+			{
+				var message = "Failed to update ACH Data";
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

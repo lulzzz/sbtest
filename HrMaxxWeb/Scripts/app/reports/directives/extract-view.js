@@ -53,8 +53,12 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						var checks = [];
 						$.each(agency.payCheckIds, function(ind, pc) {
 							var check = $filter('filter')($scope.selectedHost.accumulation.payChecks, { id: pc })[0];
-							if (check)
+							var company = $filter('filter')($scope.selectedHost.companies, {id: check.employee.companyId})[0];
+							if (check) {
+								check.companyName = company ? company.name : '';
 								checks.push(check);
+							}
+								
 						});
 						$scope.selectedAgency.payChecks = checks;
 					}

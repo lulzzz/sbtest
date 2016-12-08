@@ -12,6 +12,17 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getACHReport: function (request) {
+				var deferred = $q.defer();
+				reportServer.all('ACHReport').post(request).then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			
 			getSearchResults: function (search) {
 				var deferred = $q.defer();
 				reportServer.one('SearchResults/' + search).getList().then(function (response) {
@@ -63,6 +74,32 @@ common.factory('reportRepository', [
 
 					}, function (data) {
 					var e = data.statusText;
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
+			getACHDocumentAndFile: function (data) {
+				var deferred = $q.defer();
+				$http.post(zionAPI.URL + "Reports/ACHFileAndExtract", data, { responseType: "arraybuffer" }).then(
+					function (response) {
+						var type = response.headers('Content-Type');
+						var disposition = response.headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([response.data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}, function (data) {
+						var e = data.statusText;
 						deferred.reject(e);
 					});
 

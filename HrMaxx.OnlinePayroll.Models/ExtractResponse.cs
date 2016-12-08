@@ -21,11 +21,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<ExtractHost> Hosts { get; set; }
 		public List<MasterExtract> History { get; set; } 
 	}
+	public class ACHResponse
+	{
+		public List<ExtractHost> Hosts { get; set; }
+	}
 
 	public class ExtractHost
 	{
 		public Host Host { get; set; }
 		public Company HostCompany { get; set; }
+		public BankAccount HostBank { get; set; }
 		public List<CompanyTaxState> States { get; set; }
 		public Contact Contact { get; set; }
 		public List<ExtractCompany> Companies { get; set; }
@@ -34,12 +39,17 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
 		public List<Journal> Journals { get; set; }
-		public List<Account> Accounts { get; set; } 
+		public List<Account> Accounts { get; set; }
+		public List<ACHTransaction> ACHTransactions { get; set; } 
 	}
 	public class ExtractResponseDB
 	{
 		public List<ExtractHostDB> Hosts { get; set; }
 		public List<MasterExtractDB> History { get; set; } 
+	}
+	public class ACHResponseDB
+	{
+		public List<ExtractHostDB> Hosts { get; set; }
 	}
 
 	public class MasterExtractDB
@@ -58,13 +68,15 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string DesigneeName940941 { get; set; }
 		public string PIN940941 { get; set; }
 
+		public BankAccount HostBank { get; set; }
 		public ExtractDBCompany HostCompany { get; set; }
 		public List<ExtractTaxState> States { get; set; }
 		public List<ExtractContact> Contacts { get; set; }
 		public List<ExtractDBCompany> Companies { get; set; }
-
+		public List<ACHTransaction> ACHTransactions { get; set; } 
 	}
 
+	
 	public class ExtractContact
 	{
 		public string ContactObject { get; set; }

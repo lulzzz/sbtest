@@ -91,7 +91,9 @@
 							
 						</thead>
 						<tbody>
-							<xsl:apply-templates select="PayChecks/PayCheck"/>
+							<xsl:apply-templates select="PayChecks/PayCheck">
+								<xsl:sort select="Employee/EmployeeNo"/>
+							</xsl:apply-templates>
 						</tbody>
 					</table>
 

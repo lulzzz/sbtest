@@ -164,6 +164,43 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			}
 		}
 
+		public ACHResponse GetACHReport(ReportRequest extractReport)
+		{
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand("GetACHData"))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@startDate", extractReport.StartDate);
+					cmd.Parameters.AddWithValue("@endDate", extractReport.EndDate);
+					
+					cmd.Connection = con;
+					con.Open();
+
+
+					var data = string.Empty;
+					using (var reader = cmd.ExecuteXmlReader())
+					{
+						var sb = new StringBuilder();
+
+						while (reader.Read())
+							sb.AppendLine(reader.ReadOuterXml());
+
+						data = sb.ToString();
+					}
+					con.Close();
+					var serializer = new XmlSerializer(typeof(ACHResponseDB));
+					var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+					var dbReport = (ACHResponseDB)serializer.Deserialize(memStream);
+
+					var returnVal = _mapper.Map<ACHResponseDB, ACHResponse>(dbReport);
+
+					return returnVal;
+
+				}
+			}
+		}
+
 		public List<MasterExtract> GetExtractList(string report)
 		{
 			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();

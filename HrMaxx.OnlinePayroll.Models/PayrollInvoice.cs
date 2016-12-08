@@ -324,6 +324,21 @@ namespace HrMaxx.OnlinePayroll.Models
 				PayCheckId = 0,
 				isEditable = true
 			}));
+			if (CompanyInvoiceSetup.InvoiceType!=CompanyInvoiceType.PEOASOCoCheck && payroll.PayChecks.Any(pc => !pc.IsVoid && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit))
+			{
+				var ddSum =
+					payroll.PayChecks.Where(pc => !pc.IsVoid && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+						.Sum(pc => pc.NetWage);
+				MiscCharges.Add(new MiscFee
+				{
+					RecurringChargeId = 0,
+					Amount = ddSum,
+					Description = "ACH Pay Check(s)",
+					PayCheckId = 0,
+					isEditable = false,
+					PreviouslyClaimed = 0
+				});
+			}
 
 		}
 

@@ -36,7 +36,7 @@
 	</div>
 	<div class="col-sm-12" ng-if="showList()">
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/pager">
-			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'danger': isPayCheckInvalid(listitem)}">
+			<tr ng-repeat="listitem in tableData | orderBy:'employeeNo'  track by $index" class="mouse-over-pointer" ng-class="{'danger': isPayCheckInvalid(listitem)}">
 				<td data-title="'No'" filter="{ 'employeeNo': 'text' }" sortable=" 'employeeNo' " class="col-sm-1">
 					<label class="checkbox-inline"><input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)">{{listitem.employeeNo}}</label>
 					
@@ -60,9 +60,9 @@
 								<div class="col-sm-3">Overtime</div>
 							</div>
 							<div class="row" ng-repeat="pc1 in listitem.payCodes">
-								<div class="col-sm-6"><input class="form-control" ng-model="pc1.pwAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc1.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
+								<div class="col-sm-6"><input class="form-control"  ng-model="pc1.pwAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control"  ng-model="pc1.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control"  ng-model="pc1.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
 							</div>
 						</div>
 					</div>
@@ -75,9 +75,9 @@
 							</div>
 							<div class="row" ng-repeat="pc in listitem.payCodes | orderBy:'payCode.id'">
 								<div class="col-sm-6" ng-show="pc.payCode.id>0">{{pc.payCode.description }} ({{pc.payCode.hourlyRate | currency:'$'}} per hour)</div>
-								<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
-								<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
+								<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control"  ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control"  ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
+								<div class="col-sm-3"><input class="form-control"  ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
 							</div>
 						</div>
 

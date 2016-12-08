@@ -747,9 +747,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var updateStatus = false;
 					if ((int)payroll.Status> 2 && (int)payroll.Status<6)
 					{
-						
-
-						foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid))
+						foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.EmployeeNo))
 						{
 							if (!_fileRepository.FileExists(paychecks.DocumentId))
 							{
@@ -868,9 +866,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					
+					var counter = invoice.Payments.Any() ? invoice.Payments.Max(p=>p.Id) + 1 : 1;
 					invoice.Payments.ForEach(p =>
 					{
+						if(p.Id==0)
+							p.Id=counter++;
 						if (p.Status == PaymentStatus.Draft)
 						{
 							p.Status = (p.Method == InvoicePaymentMethod.Cash || p.Method == InvoicePaymentMethod.CertFund || p.Method == InvoicePaymentMethod.CorpCheck) ? PaymentStatus.Paid : PaymentStatus.Submitted;
@@ -1017,6 +1017,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var employee = employees.First(e => e.Id == pc.Employee.Id);
 					pc.Accumulations = ProcessAccumulations(pc, payroll.Company.AccumulatedPayTypes);
+					pc.Employee.HostId = employee.HostId;
 					if (pc.WorkerCompensation != null)
 					{
 						pc.WorkerCompensation.Wage = pc.GrossWage;
@@ -1868,6 +1869,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
 							}
 						});
+						var counter = i.Payments.Any() ? i.Payments.Max(p => p.Id) + 1 : 1;
+						i.Payments.ForEach(p=>p.Id= p.Id==0 ? counter++ : p.Id);
 						_payrollRepository.SavePayrollInvoice(i);
 					});
 					txn.Complete();

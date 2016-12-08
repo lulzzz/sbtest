@@ -323,6 +323,7 @@
     <Content Include="templates\transformers\employer\FedW4.xslt" />
     <Content Include="templates\transformers\extracts\CAUIETTEFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\CAPITEFTPSExcel.xslt" />
+    <Content Include="templates\transformers\extracts\CBT-ACHTransformer.xslt" />
     <Content Include="templates\transformers\extracts\DailyDepositReport.xslt" />
     <Content Include="templates\transformers\extracts\Federal940EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />

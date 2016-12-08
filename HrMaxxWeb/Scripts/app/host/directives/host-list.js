@@ -137,6 +137,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						$scope.selectedHost = null;
 						$scope.mainData.selectedHost = null;
 						$scope.isBodyOpen = true;
+						$rootScope.$broadcast('hostUpdated', { host: result });
 						addAlert('successfully saved Host', 'success');
 					}, function (error) {
 						addAlert('error saving Host', 'danger');

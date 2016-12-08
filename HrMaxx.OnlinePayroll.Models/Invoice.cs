@@ -59,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 	public class InvoicePayment
 	{
+		public int Id { get; set; }
 		public DateTime PaymentDate { get; set; }
 		public InvoicePaymentMethod Method { get; set; }
 		public PaymentStatus Status { get; set; }

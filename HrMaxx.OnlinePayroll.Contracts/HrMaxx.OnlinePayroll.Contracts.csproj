@@ -51,6 +51,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Services\IACHService.cs" />
     <Compile Include="Services\ICompanyService.cs" />
     <Compile Include="Services\IJournalService.cs" />
     <Compile Include="Services\IDashboardService.cs" />

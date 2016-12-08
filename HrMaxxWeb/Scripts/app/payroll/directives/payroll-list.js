@@ -428,11 +428,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					
 					$scope.viewInvoice = function($event, payroll) {
 						$event.stopPropagation();
-						$scope.selectedInvoice = payroll.invoice;
+						$scope.selectedInvoice = null;
 						$timeout(function () {
+							$scope.selectedInvoice = payroll.invoice;
 							$location.hash("invoice");
 							anchorSmoothScroll.scrollTo('invoice');
-						});
+						}, 1);
 					}
 					$scope.updateSelectedInvoice = function (invoice) {
 						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];

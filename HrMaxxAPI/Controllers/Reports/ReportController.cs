@@ -27,11 +27,13 @@ namespace HrMaxxAPI.Controllers.Reports
 	{
 		public readonly IReportService _reportService;
 		public readonly IJournalService _journalService;
+		public readonly IACHService _achService;
 
-		public ReportController(IReportService reportService, IJournalService journalService)
+		public ReportController(IReportService reportService, IJournalService journalService, IACHService achService)
 		{
 			_reportService = reportService;
 			_journalService = journalService;
+			_achService = achService;
 		}
 		
 		[HttpPost]
@@ -60,6 +62,24 @@ namespace HrMaxxAPI.Controllers.Reports
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
 			return MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract for request", request.ReportName));
 			
+		}
+
+		[HttpPost]
+		[Route(ReportRoutes.ACHReport)]
+		public ACHResponse GetACHReport(ReportRequestResource resource)
+		{
+			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
+			_achService.FillACH();
+			return MakeServiceCall(() => _reportService.GetACHReport(request), string.Format("getting ACH Report"));
+
+		}
+		[HttpPost]
+		[Route(ReportRoutes.ACHFileAndExtract)]
+		public HttpResponseMessage ACHFileAndExtract(ACHResponse data)
+		{
+			var file = MakeServiceCall(() => _reportService.GetACHExtract(data), string.Format("getting ACH Extract"));
+			return Printed(file);
+
 		}
 		private HttpResponseMessage Printed(FileDto document)
 		{

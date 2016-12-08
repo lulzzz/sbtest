@@ -19,6 +19,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class EmployeeResource : BaseRestResource
 	{
+		public Guid HostId { get; set; }
 		[Required]
 		public Guid CompanyId { get; set; }
 		[Required]

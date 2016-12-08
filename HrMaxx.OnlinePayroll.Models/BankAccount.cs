@@ -15,6 +15,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string AccountName { get; set; }
 		public BankAccountType AccountType { get; set; }
 		public string AccountNumber { get; set; }
+		public int RoutingNumber1 { get; set; }
 		public string RoutingNumber { get; set; }
 		public EntityTypeEnum SourceTypeId { get; set; }
 		public Guid? SourceId { get; set; }

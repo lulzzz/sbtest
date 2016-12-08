@@ -309,49 +309,60 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			var taxAmount = (decimal)0;
 			if (payCheck.Employee.State.Exemptions == 10)
 				taxAmount = payCheck.Employee.State.AdditionalAmount;
-			else if (payCheck.Employee.State.Exemptions < 2)
-				if (grossWage <= caSITLowIncomeTaxTableRow.Amount)
-					taxAmount = payCheck.Employee.State.AdditionalAmount;
-			else if (grossWage <= caSITLowIncomeTaxTableRow.AmountIfExemptGreaterThan2)
-				taxAmount = payCheck.Employee.State.AdditionalAmount;
 			else
 			{
-				var stdDeductionRow =
-				TaxTables.CAStandardDeductionTable.First(r => r.PayrollSchedule == payCheck.Employee.PayrollSchedule
-																										&& r.FilingStatus == caSITLowIncomeTaxStatus
-																										&& r.Year == payCheck.PayDay.Year
-					);
-
-				var stdDeductionAmt = payCheck.Employee.State.Exemptions <= 1
-					? stdDeductionRow.Amount
-					: stdDeductionRow.AmountIfExemptGreaterThan1;
-				var withholding = taxableWage;
-				withholding -= stdDeductionAmt;
-
-				var sitTaxTableRow =
-				TaxTables.CASITTaxTable.First(
-					r =>
-						r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
-						(int)r.FilingStatus == (int)payCheck.Employee.FederalStatus
-						&& r.RangeStart <= withholding
-						&& (r.RangeEnd >= withholding || r.RangeEnd == 0));
-
-				taxAmount = sitTaxTableRow.FlatRate +
-										(withholding - sitTaxTableRow.ExcessOverAmoutt) * sitTaxTableRow.AdditionalPercentage / 100;
-
-
-				var exemptionAllowanceRow = 
-					TaxTables.ExemptionAllowanceTable.First(r => r.PayrollSchedule == payCheck.Employee.PayrollSchedule
-					                                             && r.Allowances == payCheck.Employee.State.Exemptions
-					                                             && r.Year == payCheck.PayDay.Year
+				if (payCheck.Employee.State.Exemptions < 2 && grossWage <= caSITLowIncomeTaxTableRow.Amount)
+				{
+					taxAmount = payCheck.Employee.State.AdditionalAmount;
+					
+				}
+				else if (grossWage <= caSITLowIncomeTaxTableRow.AmountIfExemptGreaterThan2)
+				{
+					taxAmount = payCheck.Employee.State.AdditionalAmount;
+				}
+				else
+				{
+					var stdDeductionRow =
+					TaxTables.CAStandardDeductionTable.First(r => r.PayrollSchedule == payCheck.Employee.PayrollSchedule
+																											&& r.FilingStatus == caSITLowIncomeTaxStatus
+																											&& r.Year == payCheck.PayDay.Year
 						);
 
-				taxAmount -= exemptionAllowanceRow.Amount;
+					var stdDeductionAmt = payCheck.Employee.State.Exemptions <= 1
+						? stdDeductionRow.Amount
+						: stdDeductionRow.AmountIfExemptGreaterThan1;
+					var withholding = taxableWage;
+					withholding -= stdDeductionAmt;
 
-				taxAmount = Math.Max(0, taxAmount) + payCheck.Employee.State.AdditionalAmount;
-				
+					var sitTaxTableRow =
+					TaxTables.CASITTaxTable.First(
+						r =>
+							r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
+							(int)r.FilingStatus == (int)payCheck.Employee.FederalStatus
+							&& r.RangeStart <= withholding
+							&& (r.RangeEnd >= withholding || r.RangeEnd == 0));
+
+					taxAmount = sitTaxTableRow.FlatRate +
+											(withholding - sitTaxTableRow.ExcessOverAmoutt) * sitTaxTableRow.AdditionalPercentage / 100;
+
+
+					var exemptionAllowanceRow =
+						TaxTables.ExemptionAllowanceTable.First(r => r.PayrollSchedule == payCheck.Employee.PayrollSchedule
+																												 && r.Allowances == payCheck.Employee.State.Exemptions
+																												 && r.Year == payCheck.PayDay.Year
+							);
+
+					taxAmount -= exemptionAllowanceRow.Amount;
+
+					taxAmount = Math.Max(0, taxAmount) + payCheck.Employee.State.AdditionalAmount;
+
+
+				}
 
 			}
+			
+				
+				
 
 			
 			return new PayrollTax

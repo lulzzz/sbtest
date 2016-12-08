@@ -15,6 +15,23 @@
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
           <Property Name="TaxCode" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="ACHTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SourceParentId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SourceId" Type="int" Nullable="false" />
+          <Property Name="TransactionType" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TransactionDate" Type="datetime" Nullable="false" />
+          <Property Name="TransactionDescription" Type="varchar(max)" Nullable="false" />
+          <Property Name="OrignatorType" Type="int" Nullable="false" />
+          <Property Name="OriginatorId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ReceiverType" Type="int" Nullable="false" />
+          <Property Name="ReceiverId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="ApplicationConfiguration">
           <Key>
             <PropertyRef Name="Id" />
@@ -1033,6 +1050,7 @@
         </Association>
         <EntityContainer Name="HrMaxxModelStoreContainer">
           <EntitySet Name="AccountTemplate" EntityType="Self.AccountTemplate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ACHTransaction" EntityType="Self.ACHTransaction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApplicationConfiguration" EntityType="Self.ApplicationConfiguration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BankAccount" EntityType="Self.BankAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
@@ -1433,6 +1451,7 @@
             <End Role="Employee" EntitySet="Employees" />
             <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccounts" />
           </AssociationSet>
+          <EntitySet Name="ACHTransactions" EntityType="HrMaxxModel.ACHTransaction" />
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -2551,6 +2570,23 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ACHTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SourceParentId" Type="Guid" Nullable="false" />
+          <Property Name="SourceId" Type="Int32" Nullable="false" />
+          <Property Name="TransactionType" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TransactionDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="OriginatorType" Type="Int32" Nullable="false" />
+          <Property Name="OriginatorId" Type="Guid" Nullable="false" />
+          <Property Name="ReceiverType" Type="Int32" Nullable="false" />
+          <Property Name="ReceiverId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3155,6 +3191,24 @@
                 <ScalarProperty Name="Percentage" ColumnName="Percentage" />
                 <ScalarProperty Name="BankAccountId" ColumnName="BankAccountId" />
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ACHTransactions">
+            <EntityTypeMapping TypeName="HrMaxxModel.ACHTransaction">
+              <MappingFragment StoreEntitySet="ACHTransaction">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
+                <ScalarProperty Name="ReceiverType" ColumnName="ReceiverType" />
+                <ScalarProperty Name="OriginatorId" ColumnName="OriginatorId" />
+                <ScalarProperty Name="OriginatorType" ColumnName="OrignatorType" />
+                <ScalarProperty Name="TransactionDescription" ColumnName="TransactionDescription" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="SourceParentId" ColumnName="SourceParentId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

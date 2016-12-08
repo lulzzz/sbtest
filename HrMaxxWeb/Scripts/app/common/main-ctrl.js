@@ -173,6 +173,8 @@
 			dataSvc.selectedCompany = null;
 			dataSvc.selectedCompany1 = null;
 			if (dataSvc.selectedHost) {
+				var match = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
+				dataSvc.selectedHost = angular.copy(match);
 				$scope.getCompanies();
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 			}
@@ -195,6 +197,11 @@
 				dataSvc.selectedCompany = company;
 				dataSvc.selectedCompany1 = angular.copy(company);
 			}
+		});
+		$scope.$on('hostUpdated', function (event, args) {
+			var host = args.host;
+			dataSvc.selectedHost = null;
+			updateInList(dataSvc.hosts, host);
 		});
 		$scope.$on('searchResultSelected', function (event, args) {
 			var result = args.result;

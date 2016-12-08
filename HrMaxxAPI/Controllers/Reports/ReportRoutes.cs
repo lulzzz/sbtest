@@ -2,6 +2,9 @@
 {
 	public class ReportRoutes
 	{
+		public const string ACHReport = "Reports/ACHReport";
+		public const string ACHFileAndExtract = "Reports/ACHFileAndExtract";
+
 		public const string Report = "Reports/Report";
 
 		public const string ReportDocument = "Reports/ReportDocument";

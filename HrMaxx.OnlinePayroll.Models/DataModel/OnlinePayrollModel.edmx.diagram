@@ -81,6 +81,7 @@
         <EntityTypeShape EntityType="HrMaxxModel.EmployeeBankAccount" Width="1.5" PointX="21.125" PointY="11.875" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeBankAccount_BankAccount" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeBankAccount_Employee" />
+        <EntityTypeShape EntityType="HrMaxxModel.ACHTransaction" Width="1.5" PointX="9.375" PointY="18.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
