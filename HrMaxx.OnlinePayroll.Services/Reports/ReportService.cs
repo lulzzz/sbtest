@@ -335,6 +335,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				throw new Exception(NoData);
 			}
+			data.Hosts = data.Hosts.Where(h => h.Accumulation.GarnishmentAgencies.Any()).ToList();
 			request.Description = string.Format("Garnishment Report {0} - {1}", request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"));
 			request.AllowFiling = true;
 
@@ -770,7 +771,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
-		public ACHResponse GetACHReport(ReportRequest request)
+		public ACHExtract GetACHReport(ReportRequest request)
 		{
 			try
 			{
@@ -805,7 +806,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 							}
 						});
 				});
-				return data;
+				return new ACHExtract
+				{
+					Report = request, Data = data
+				};
 			}
 			catch (Exception e)
 			{
@@ -829,24 +833,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 		}
 
-		public FileDto GetACHExtract(ACHResponse data)
+		public ACHExtract GetACHExtract(ACHExtract extract)
 		{
-			var xml = GetXml<ACHResponse>(data);
+			var xml = GetXml<ACHResponse>(extract.Data);
 			var args = new XsltArgumentList();
 			args.AddParam("time", "", DateTime.Now.ToString("HHmm"));
 			args.AddParam("today", "", DateTime.Today.ToString("yyMMdd"));
+			args.AddParam("postingDate", "", extract.Report.DepositDate.Value.ToString("yyMMdd"));
 			var transformed = XmlTransform(xml,
 				string.Format("{0}{1}", _templatePath, "transformers/extracts/CBT-ACHTransformer.xslt"), args);
 
 			transformed = Transform(transformed);
 
-			return  new FileDto
+			extract.File =  new FileDto
 				{
 					Data = Encoding.UTF8.GetBytes(transformed),
 					DocumentExtension = ".txt",
 					Filename = string.Format("CBT-ACH-Extract-{0}.txt", DateTime.Now.ToString("MM/dd/yyyy")),
 					MimeType = "application/octet-stream"
 				};
+			return extract;
 		}
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)

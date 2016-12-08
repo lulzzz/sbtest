@@ -14,7 +14,8 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 					var dataSvc = {
 						startDate: null,
 						endDate: null,
-						report: null
+						postingDate: moment().toDate(),
+						extract: null
 					}
 					$scope.selectedHost = null;
 					$scope.set = function (host) {
@@ -31,12 +32,12 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 
 					
 					var showReview = function (report, extract) {
-						dataSvc.report = extract;
-						if (dataSvc.report && dataSvc.report.hosts.length > 0) {
+						dataSvc.extract = extract;
+						if (dataSvc.extract && dataSvc.extract.data.hosts.length > 0) {
 							$timeout(function () {
 								handleUnlimitedTabsRender();
 							}, 1);
-							$scope.set(dataSvc.report.hosts[0]);
+							$scope.set(dataSvc.extract.data.hosts[0]);
 						}
 					}
 					$scope.getReport = function () {
@@ -44,7 +45,8 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 						var request = {
 							reportName: 'ACHReport',
 							startDate: moment(dataSvc.startDate).format("MM/DD/YYYY"),
-							endDate: moment(dataSvc.endDate).format("MM/DD/YYYY")
+							endDate: moment(dataSvc.endDate).format("MM/DD/YYYY"),
+							depositDate: moment(dataSvc.postingDate).format("MM/DD/YYYY")
 						}
 						reportRepository.getACHReport(request).then(function (extract) {
 							showReview(request, extract);
@@ -55,7 +57,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 						});
 					}
 					$scope.getACHDocumentAndFile = function () {
-						reportRepository.getACHDocumentAndFile(dataSvc.report).then(function (data) {
+						reportRepository.getACHDocumentAndFile(dataSvc.extract).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';

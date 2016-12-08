@@ -16,6 +16,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ExtractResponse Data { get; set; }
 		public FileDto File { get; set; }
 	}
+
+	public class ACHExtract
+	{
+		public ReportRequest Report { get; set; }
+		public ACHResponse Data { get; set; }
+		public FileDto File { get; set; }
+	}
 	public class ExtractResponse
 	{
 		public List<ExtractHost> Hosts { get; set; }

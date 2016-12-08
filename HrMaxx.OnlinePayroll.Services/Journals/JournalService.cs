@@ -367,7 +367,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				var coas = _companyService.GetComanyAccounts(journal.CompanyId);
 				var company = _companyService.GetCompanyById(journal.CompanyId);
-				if(journal.TransactionType==TransactionType.RegularCheck || journal.TransactionType==TransactionType.TaxPayment)
+				if(journal.TransactionType==TransactionType.RegularCheck || journal.TransactionType==TransactionType.TaxPayment || journal.TransactionType==TransactionType.DeductionPayment)
 					return PrintRegularCheck(coas, company, journal);
 				return PrintDepositTicket(coas, company, journal);
 			}
@@ -510,13 +510,27 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 						foreach (var garnishmentAgency in host.Accumulation.GarnishmentAgencies)
 						{
-							var amount = garnishmentAgency.Total;
-
-							var journal = CreateJournalEntryPD(accounts, fullName, host.HostCompany.Id, amount,
-								garnishmentAgency.Agency,
-								extract.Report.Description, extract.Report.DepositDate.Value);
-							journals.Add(journal.Id);
-							payCheckIds.AddRange(garnishmentAgency.PayCheckIds);
+							var gaPayChescks =
+								host.Accumulation.PayChecks.Where(pc => garnishmentAgency.PayCheckIds.Any(gapc => gapc == pc.Id)).ToList();
+							var empGroup = gaPayChescks.GroupBy(pc => pc.Employee.Id).ToList();
+							foreach (var emp in empGroup)
+							{
+								var check =
+									gaPayChescks.Last(p => p.Employee.Id == emp.Key &&
+									                       p.Deductions.Any(d => d.EmployeeDeduction.AgencyId == garnishmentAgency.Agency.Id));
+								var amount =
+									emp.ToList()
+										.SelectMany(
+											pc => pc.Deductions.Where(d => d.Deduction.Type.Id==3 && d.EmployeeDeduction!=null && d.EmployeeDeduction.AgencyId == garnishmentAgency.Agency.Id).ToList())
+										.Sum(d => d.Amount);
+								var journal = CreateJournalEntryPD(accounts, fullName, host.HostCompany.Id, amount,
+										garnishmentAgency.Agency,
+										extract.Report.Description, extract.Report.DepositDate.Value, check.Employee.FullName, check.Deductions.First(d=>d.EmployeeDeduction.AgencyId==garnishmentAgency.Agency.Id).EmployeeDeduction.AccountNo );
+								journals.Add(journal.Id);
+								payCheckIds.AddRange(garnishmentAgency.PayCheckIds);
+							}
+							
+							
 						}
 						
 					}
@@ -582,7 +596,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			
 			return _journalRepository.SaveJournal(journal);
 		}
-		private Journal CreateJournalEntryPD(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
+		private Journal CreateJournalEntryPD(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date, string employee, string account)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -597,7 +611,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				IsVoid = false,
 				LastModified = DateTime.Now,
 				LastModifiedBy = userName,
-				Memo = string.Format("Deduction Payment for {0}", report),
+				Memo = string.Format("{1}, Account No:{2}. Deduction Payment for {0}", report, employee, account),
 				PaymentMethod = EmployeePaymentMethod.DirectDebit,
 				PayrollPayCheckId = null,
 				TransactionDate = date,
@@ -626,7 +640,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 		private string PDFTemplate(PayCheckStock payCheckStock, TransactionType transactionType)
 		{
-			if (transactionType == TransactionType.RegularCheck || transactionType == TransactionType.TaxPayment)
+			if (transactionType == TransactionType.RegularCheck || transactionType == TransactionType.TaxPayment || transactionType == TransactionType.DeductionPayment)
 			{
 				if (payCheckStock == PayCheckStock.MICRQb)
 					return "RegCheckQB.pdf";

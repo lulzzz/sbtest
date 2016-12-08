@@ -66,7 +66,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.ACHReport)]
-		public ACHResponse GetACHReport(ReportRequestResource resource)
+		public ACHExtract GetACHReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
 			_achService.FillACH();
@@ -75,10 +75,10 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 		[HttpPost]
 		[Route(ReportRoutes.ACHFileAndExtract)]
-		public HttpResponseMessage ACHFileAndExtract(ACHResponse data)
+		public HttpResponseMessage ACHFileAndExtract(ACHExtract data)
 		{
-			var file = MakeServiceCall(() => _reportService.GetACHExtract(data), string.Format("getting ACH Extract"));
-			return Printed(file);
+			var extract = MakeServiceCall(() => _reportService.GetACHExtract(data), string.Format("getting ACH Extract"));
+			return Printed(extract.File);
 
 		}
 		private HttpResponseMessage Printed(FileDto document)
