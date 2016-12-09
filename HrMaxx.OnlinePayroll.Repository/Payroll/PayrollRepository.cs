@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
@@ -226,6 +227,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				var linkedVoidedChecks = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == dbPayrollInvoice.Id).ToList();
 				linkedVoidedChecks.ForEach(lvc=>lvc.CreditInvoiceId=null);
 				dbCreditedChecks.ForEach(pc=>pc.CreditInvoiceId=dbPayrollInvoice.Id);
+
+
 				dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
 				dbPayrollInvoice.Total = mapped.Total;
 				dbPayrollInvoice.LastModified = mapped.LastModified;
@@ -248,6 +251,32 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.NetPay = mapped.NetPay;
 				dbPayrollInvoice.DDPay = mapped.DDPay;
 				dbPayrollInvoice.CheckPay = mapped.CheckPay;
+
+				var removeCounter = 0;
+				for (removeCounter = 0; removeCounter < dbPayrollInvoice.InvoicePayments.Count; removeCounter++)
+				{
+					var existingPayment = dbPayrollInvoice.InvoicePayments.ToList()[removeCounter];
+					if (mapped.InvoicePayments.All(ip=>ip.Id!=existingPayment.Id))
+					{
+						_dbContext.InvoicePayments.Remove(existingPayment);
+						removeCounter--;
+					}
+				}
+
+				foreach (var p in dbPayrollInvoice.InvoicePayments.Where(dip=>mapped.InvoicePayments.Any(mip=>dip.Id==mip.Id) && payrollInvoice.InvoicePayments.Any(pip=>pip.Id==dip.Id && pip.HasChanged)))
+				{
+					var matching = mapped.InvoicePayments.First(mip=>mip.Id==p.Id);
+					p.Amount = matching.Amount;
+					p.CheckNumber = matching.CheckNumber;
+					p.Method = matching.Method;
+					p.Notes = matching.Notes;
+					p.PaymentDate = matching.PaymentDate;
+					p.Status = (int) matching.Status;
+					p.LastModified = mapped.LastModified;
+					p.LastModifiedBy = mapped.LastModifiedBy;
+				}
+				_dbContext.InvoicePayments.AddRange(mapped.InvoicePayments.Where(mip=>mip.Id==0));
+				
 			}
 			_dbContext.SaveChanges();
 			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);

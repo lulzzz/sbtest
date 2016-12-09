@@ -1849,30 +1849,41 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var payrolls = _payrollRepository.GetAllPayrolls(null);
 					var invoices = _payrollRepository.GetAllPayrollInvoices();
 					var paychecks = payrolls.SelectMany(p => p.PayChecks);
-					invoices.OrderBy(i=>i.PayrollPayDay).ToList().ForEach(i =>
-					{
-						var prevInvoices =
-							invoices.Where(i1 => i1.CompanyId == i.CompanyId && i1.InvoiceNumber < i.InvoiceNumber).ToList();
-						var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
-						i.NetPay = pcs.Sum(p => p.NetWage);
-						i.CheckPay = pcs.Sum(p => p.CheckPay);
-						i.DDPay = pcs.Sum(p => p.DDPay);
-						i.MiscCharges.Where(mc=>mc.RecurringChargeId>0).ToList().ForEach(mc =>
-						{
-							var rc = i.CompanyInvoiceSetup.RecurringCharges.First(r => r.Id == mc.RecurringChargeId);
-							if (!rc.Year.HasValue)
-							{
-								mc.PreviouslyClaimed = prevInvoices.SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc.Amount);
-							}
-							else
-							{
-								mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
-							}
-						});
-						var counter = i.Payments.Any() ? i.Payments.Max(p => p.Id) + 1 : 1;
-						i.Payments.ForEach(p=>p.Id= p.Id==0 ? counter++ : p.Id);
-						_payrollRepository.SavePayrollInvoice(i);
-					});
+					var payments = invoices.SelectMany(i => i.Payments).ToList();
+					var newpayments = invoices.SelectMany(i => i.InvoicePayments).ToList();
+					//invoices.OrderBy(i=>i.PayrollPayDay).ToList().ForEach(i =>
+					//{
+					//	var prevInvoices =
+					//		invoices.Where(i1 => i1.CompanyId == i.CompanyId && i1.InvoiceNumber < i.InvoiceNumber).ToList();
+					//	var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
+					//	i.NetPay = pcs.Sum(p => p.NetWage);
+					//	i.CheckPay = pcs.Sum(p => p.CheckPay);
+					//	i.DDPay = pcs.Sum(p => p.DDPay);
+					//	i.MiscCharges.Where(mc=>mc.RecurringChargeId>0).ToList().ForEach(mc =>
+					//	{
+					//		var rc = i.CompanyInvoiceSetup.RecurringCharges.First(r => r.Id == mc.RecurringChargeId);
+					//		if (!rc.Year.HasValue)
+					//		{
+					//			mc.PreviouslyClaimed = prevInvoices.SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc.Amount);
+					//		}
+					//		else
+					//		{
+					//			mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
+					//		}
+					//	});
+					//	var counter = i.Payments.Any() ? i.Payments.Max(p => p.Id) + 1 : 1;
+					//	i.Payments.ForEach(p=>p.Id= p.Id==0 ? counter++ : p.Id);
+					//	i.InvoicePayments = JsonConvert.DeserializeObject<List<Models.InvoicePayment>>(JsonConvert.SerializeObject(i.Payments));
+					//	i.InvoicePayments.ForEach(ip =>
+					//	{
+					//		ip.Id = 0;
+					//		ip.InvoiceId = i.Id;
+					//		ip.LastModified = i.LastModified;
+					//		ip.LastModifiedBy = i.UserName;
+
+					//	});
+					//	_payrollRepository.SavePayrollInvoice(i);
+					//});
 					txn.Complete();
 				}
 			}

@@ -45,6 +45,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public CompanyResource Company { get; set; }
 		public string Courier { get; set; }
 		public List<InvoicePaymentResource> Payments { get; set; }
+		public List<InvoicePaymentResource> InvoicePayments { get; set; }
 		public List<InvoiceLateFeeConfig> TaxPaneltyConfig { get; set; }
 		public string Notes { get; set; }
 		public string ProcessedBy { get; set; }

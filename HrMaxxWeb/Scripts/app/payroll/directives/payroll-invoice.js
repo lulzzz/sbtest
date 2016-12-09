@@ -109,6 +109,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.addPayment = function() {
 						var payment = {
+							invoiceId: $scope.invoice.id,
 							hasChanged: true,
 							paymentDate: moment().toDate(),
 							method:1,

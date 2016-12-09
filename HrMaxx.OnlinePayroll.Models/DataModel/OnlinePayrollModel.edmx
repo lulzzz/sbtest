@@ -349,6 +349,21 @@
           <Property Name="Invoices" Type="varchar(max)" Nullable="false" />
           <Property Name="DeliveryClaimedOn" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="InvoicePayment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PaymentDate" Type="datetime" Nullable="false" />
+          <Property Name="Method" Type="int" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="CheckNumber" Type="int" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Notes" Type="varchar(max)" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="Journal">
           <Key>
             <PropertyRef Name="Id" />
@@ -904,6 +919,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_InvoicePayment_PayrollInvoice">
+          <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="1" />
+          <End Role="InvoicePayment" Type="Self.InvoicePayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoicePayment">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Journal_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="1" />
           <End Role="Journal" Type="Self.Journal" Multiplicity="*" />
@@ -1073,6 +1100,7 @@
           <EntitySet Name="InsuranceGroup" EntityType="Self.InsuranceGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InvoiceDeliveryClaim" EntityType="Self.InvoiceDeliveryClaim" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InvoicePayment" EntityType="Self.InvoicePayment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Journal" EntityType="Self.Journal" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterExtracts" EntityType="Self.MasterExtracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PayCheckExtract" EntityType="Self.PayCheckExtract" Schema="dbo" store:Type="Tables" />
@@ -1189,6 +1217,10 @@
           <AssociationSet Name="FK_Host_Company" Association="Self.FK_Host_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="Host" EntitySet="Host" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InvoicePayment_PayrollInvoice" Association="Self.FK_InvoicePayment_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
+            <End Role="InvoicePayment" EntitySet="InvoicePayment" />
           </AssociationSet>
           <AssociationSet Name="FK_Journal_Company" Association="Self.FK_Journal_Company">
             <End Role="Company" EntitySet="Company" />
@@ -1452,6 +1484,11 @@
             <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccounts" />
           </AssociationSet>
           <EntitySet Name="ACHTransactions" EntityType="HrMaxxModel.ACHTransaction" />
+          <EntitySet Name="InvoicePayments" EntityType="HrMaxxModel.InvoicePayment" />
+          <AssociationSet Name="FK_InvoicePayment_PayrollInvoice" Association="HrMaxxModel.FK_InvoicePayment_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
+            <End Role="InvoicePayment" EntitySet="InvoicePayments" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -2318,6 +2355,7 @@
           <Property Name="NetPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="CheckPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="DDPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="InvoicePayments" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="PayrollInvoice" ToRole="InvoicePayment" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2587,6 +2625,34 @@
           <Property Name="ReceiverId" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="InvoicePayment">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceId" Type="Guid" Nullable="false" />
+          <Property Name="PaymentDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Method" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="CheckNumber" Type="Int32" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="InvoicePayment" ToRole="PayrollInvoice" />
+        </EntityType>
+        <Association Name="FK_InvoicePayment_PayrollInvoice">
+          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="1" />
+          <End Type="HrMaxxModel.InvoicePayment" Role="InvoicePayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="InvoicePayment">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3209,6 +3275,22 @@
                 <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
                 <ScalarProperty Name="SourceId" ColumnName="SourceId" />
                 <ScalarProperty Name="SourceParentId" ColumnName="SourceParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InvoicePayments">
+            <EntityTypeMapping TypeName="HrMaxxModel.InvoicePayment">
+              <MappingFragment StoreEntitySet="InvoicePayment">
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Method" ColumnName="Method" />
+                <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

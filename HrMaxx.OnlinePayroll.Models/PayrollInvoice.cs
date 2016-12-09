@@ -48,6 +48,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ProcessedBy { get; set; }
 		public DateTime ProcessedOn { get; set; }
 		public List<InvoicePayment> Payments { get; set; }
+		public List<InvoicePayment> InvoicePayments { get; set; }
 		public List<int> PayChecks { get; set; }
 		public List<int> VoidedCreditedChecks { get; set; }
 		public bool ApplyWCMinWageLimit { get; set; }

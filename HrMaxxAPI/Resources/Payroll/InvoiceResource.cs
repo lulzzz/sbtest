@@ -63,6 +63,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	public class InvoicePaymentResource
 	{
 		public int? Id { get; set; }
+		public Guid InvoiceId { get; set; }
 		public bool HasChanged { get; set; }
 		public DateTime PaymentDate { get; set; }
 		public InvoicePaymentMethod Method { get; set; }

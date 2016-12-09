@@ -427,10 +427,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					b.BankAccount.LastModifiedBy = matching.BankAccount.LastModifiedBy;
 					b.Percentage = matching.Percentage;
 				}
-				foreach (var newSor in me.EmployeeBankAccounts.Where(t => dbEmployee.EmployeeBankAccounts.All(dbe => dbe.Id != t.Id)))
-				{
-					dbEmployee.EmployeeBankAccounts.Add(newSor);
-				}
+				_dbContext.EmployeeBankAccounts.AddRange(me.EmployeeBankAccounts.Where(meb => meb.Id == 0));
 				
 			}
 

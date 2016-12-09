@@ -148,6 +148,9 @@
     <Compile Include="DataModel\InvoiceDeliveryClaim.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\InvoicePayment.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Journal.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>

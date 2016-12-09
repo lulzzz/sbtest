@@ -60,6 +60,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class InvoicePayment
 	{
 		public int Id { get; set; }
+		public Guid InvoiceId { get; set; }
 		public DateTime PaymentDate { get; set; }
 		public InvoicePaymentMethod Method { get; set; }
 		public PaymentStatus Status { get; set; }
@@ -68,6 +69,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
 		public string Notes { get; set; }
+		public bool HasChanged { get; set; }
 	}
 	
 }
