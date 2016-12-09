@@ -16,6 +16,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
@@ -262,7 +263,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.EndDate = request.StartDate.AddHours(24);
 			var invoices = _payrollRepository.GetPayrollInvoices(Guid.Empty, null);
-			var invoicePayments = invoices.SelectMany(i => i.Payments.Select(p=>new ExtractInvoicePayment
+			var invoicePayments = invoices.SelectMany(i => i.InvoicePayments.Select(p => new ExtractInvoicePayment
 			{
 				CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
 			})).ToList();
@@ -833,27 +834,78 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 		}
 
-		public ACHExtract GetACHExtract(ACHExtract extract)
+		public ACHExtract GetACHExtract(ACHExtract extract, string fullName)
 		{
-			var xml = GetXml<ACHResponse>(extract.Data);
-			var args = new XsltArgumentList();
-			args.AddParam("time", "", DateTime.Now.ToString("HHmm"));
-			args.AddParam("today", "", DateTime.Today.ToString("yyMMdd"));
-			args.AddParam("postingDate", "", extract.Report.DepositDate.Value.ToString("yyMMdd"));
-			var transformed = XmlTransform(xml,
-				string.Format("{0}{1}", _templatePath, "transformers/extracts/CBT-ACHTransformer.xslt"), args);
-
-			transformed = Transform(transformed);
-
-			extract.File =  new FileDto
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					Data = Encoding.UTF8.GetBytes(transformed),
-					DocumentExtension = ".txt",
-					Filename = string.Format("CBT-ACH-Extract-{0}.txt", DateTime.Now.ToString("MM/dd/yyyy")),
-					MimeType = "application/octet-stream"
-				};
-			return extract;
+					extract.Data.Hosts.ForEach(h =>
+					{
+						h.ACHTransactions = h.ACHTransactions.Where(t => t.Included).ToList();
+					});
+					if (extract.Data.Hosts.All(h => !h.ACHTransactions.Any()))
+					{
+						throw new Exception(NoData);
+					}
+					var xml = GetXml<ACHResponse>(extract.Data);
+					var args = new XsltArgumentList();
+					args.AddParam("time", "", DateTime.Now.ToString("HHmm"));
+					args.AddParam("today", "", DateTime.Today.ToString("yyMMdd"));
+					args.AddParam("postingDate", "", extract.Report.DepositDate.Value.ToString("yyMMdd"));
+					var transformed = XmlTransform(xml,
+						string.Format("{0}{1}", _templatePath, "transformers/extracts/CBT-ACHTransformer.xslt"), args);
+
+					transformed = Transform(transformed);
+
+					extract.File = new FileDto
+					{
+						Data = Encoding.UTF8.GetBytes(transformed),
+						DocumentExtension = ".txt",
+						Filename = string.Format("CBT-ACH-Extract-{0}.txt", DateTime.Now.ToString("MM/dd/yyyy")),
+						MimeType = "application/octet-stream"
+					};
+					_reportRepository.SaveACHExtract(extract, fullName);
+					txn.Complete();
+					return extract;
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == NoData || e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+				}
+				else if (e.Message.ToLower().StartsWith("could not find file"))
+				{
+					message = ReportNotAvailable;
+				}
+				else
+				{
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+				}
+
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
 		}
+
+		public List<ACHMasterExtract> GetACHExtractList()
+		{
+			try
+			{
+				return _reportRepository.GetACHExtractList();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH extract list for "));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
 		{

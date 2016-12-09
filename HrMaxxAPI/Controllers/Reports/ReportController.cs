@@ -69,7 +69,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public ACHExtract GetACHReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			_achService.FillACH();
+			//_achService.FillACH();
 			return MakeServiceCall(() => _reportService.GetACHReport(request), string.Format("getting ACH Report"));
 
 		}
@@ -77,7 +77,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		[Route(ReportRoutes.ACHFileAndExtract)]
 		public HttpResponseMessage ACHFileAndExtract(ACHExtract data)
 		{
-			var extract = MakeServiceCall(() => _reportService.GetACHExtract(data), string.Format("getting ACH Extract"));
+			var extract = MakeServiceCall(() => _reportService.GetACHExtract(data, CurrentUser.FullName), string.Format("getting ACH Extract"));
 			return Printed(extract.File);
 
 		}
@@ -125,6 +125,13 @@ namespace HrMaxxAPI.Controllers.Reports
 		public List<MasterExtract> ExtractList(string report)
 		{
 			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for report " + report, true);
+
+		}
+		[HttpGet]
+		[Route(ReportRoutes.ACHExtractList)]
+		public List<ACHMasterExtract> ACHExtractList()
+		{
+			return MakeServiceCall(() => _reportService.GetACHExtractList(), "ACH Extract list for report ", true);
 
 		}
 

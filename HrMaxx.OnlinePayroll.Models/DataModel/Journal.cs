@@ -36,8 +36,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool PEOASOCoCheck { get; set; }
     
         public virtual EntityType EntityType1 { get; set; }
-        public virtual PayrollPayCheck PayrollPayCheck { get; set; }
         public virtual Company Company { get; set; }
         public virtual CompanyAccount CompanyAccount { get; set; }
+        public virtual PayrollPayCheck PayrollPayCheck { get; set; }
     }
 }

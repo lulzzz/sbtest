@@ -16,4 +16,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<int> Journals { get; set; }
  
 	}
+	public class ACHMasterExtract
+	{
+		public int Id { get; set; }
+		public string LastModifiedBy { get; set; }
+		public DateTime LastModified { get; set; }
+		public ACHExtract Extract { get; set; }
+		
+
+	}
 }

@@ -25,7 +25,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Name { get; set; }
 		public List<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
 		public BankAccount CompanyBankAccount { get; set; }
-
+		public bool Included { get; set; }
 		public string TransactionTypeText
 		{
 			get { return TransactionType.GetDbName(); }

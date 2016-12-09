@@ -48,23 +48,14 @@
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_Employee" />
         <EntityTypeShape EntityType="HrMaxxModel.Payroll" Width="1.5" PointX="14.375" PointY="13.125" />
-        <EntityTypeShape EntityType="HrMaxxModel.PayrollPayCheck" Width="1.5" PointX="16.625" PointY="12.125" />
-        <AssociationConnector Association="HrMaxxModel.FK_PayrollDetail_Payroll" />
         <AssociationConnector Association="HrMaxxModel.FK_Employee_CompanyWorkerCompensation" />
         <EntityTypeShape EntityType="HrMaxxModel.Journal" Width="1.5" PointX="18.875" PointY="13.5" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_EntityType" />
-        <AssociationConnector Association="HrMaxxModel.FK_Journal_PayrollPayCheck" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_Company" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_CompanyAccount" />
         <EntityTypeShape EntityType="HrMaxxModel.CompanyPayrollCube" Width="1.5" PointX="10.375" PointY="4" />
-        <EntityTypeShape EntityType="HrMaxxModel.Invoice" Width="1.5" PointX="12.125" PointY="16.875" />
         <AssociationConnector Association="HrMaxxModel.FK_Host_Company" />
-        <EntityTypeShape EntityType="HrMaxxModel.PayrollInvoice" Width="1.5" PointX="18.625" PointY="6.375" />
-        <AssociationConnector Association="HrMaxxModel.FK_PayrollInvoice_Company" />
-        <AssociationConnector Association="HrMaxxModel.FK_PayrollInvoice_Payroll" />
         <EntityTypeShape EntityType="HrMaxxModel.ApplicationConfiguration" Width="1.5" PointX="0.75" PointY="12.75" />
-        <AssociationConnector Association="HrMaxxModel.FK_Payroll_PayrollInvoice" />
-        <AssociationConnector Association="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" />
         <EntityTypeShape EntityType="HrMaxxModel.ReportConstant" Width="1.5" PointX="0.75" PointY="15.75" />
         <EntityTypeShape EntityType="HrMaxxModel.VendorCustomer" Width="1.5" PointX="7.125" PointY="1" />
         <AssociationConnector Association="HrMaxxModel.FK_VendorCustomer_Company" />
@@ -72,7 +63,6 @@
         <EntityTypeShape EntityType="HrMaxxModel.MasterExtract" Width="1.5" PointX="16.375" PointY="0.75" />
         <EntityTypeShape EntityType="HrMaxxModel.PayCheckExtract" Width="1.5" PointX="20.875" PointY="8.75" />
         <AssociationConnector Association="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" />
-        <AssociationConnector Association="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" />
         <EntityTypeShape EntityType="HrMaxxModel.InsuranceGroup" Width="1.5" PointX="18.375" PointY="0.875" />
         <AssociationConnector Association="HrMaxxModel.FK_Company_InsuranceGroup" />
         <EntityTypeShape EntityType="HrMaxxModel.SearchTable" Width="1.5" PointX="0.75" PointY="18.75" />
@@ -81,9 +71,20 @@
         <EntityTypeShape EntityType="HrMaxxModel.EmployeeBankAccount" Width="1.5" PointX="21.125" PointY="11.875" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeBankAccount_BankAccount" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeBankAccount_Employee" />
-        <EntityTypeShape EntityType="HrMaxxModel.ACHTransaction" Width="1.5" PointX="9.375" PointY="18.75" />
         <EntityTypeShape EntityType="HrMaxxModel.InvoicePayment" Width="1.5" PointX="20.875" PointY="4.75" />
+        <EntityTypeShape EntityType="HrMaxxModel.PayrollInvoice" Width="1.5" PointX="23.625" PointY="4.25" />
+        <AssociationConnector Association="HrMaxxModel.FK_PayrollInvoice_Company" />
         <AssociationConnector Association="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" />
+        <AssociationConnector Association="HrMaxxModel.FK_PayrollInvoice_Payroll" />
+        <EntityTypeShape EntityType="HrMaxxModel.PayrollPayCheck" Width="1.5" PointX="25.875" PointY="6.5" />
+        <AssociationConnector Association="HrMaxxModel.FK_Journal_PayrollPayCheck" />
+        <AssociationConnector Association="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" />
+        <AssociationConnector Association="HrMaxxModel.FK_PayrollDetail_Payroll" />
+        <AssociationConnector Association="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" />
+        <EntityTypeShape EntityType="HrMaxxModel.ACHTransaction" Width="1.5" PointX="16.375" PointY="18.625" />
+        <EntityTypeShape EntityType="HrMaxxModel.ACHTransactionExtract" Width="1.5" PointX="18.625" PointY="3.375" />
+        <AssociationConnector Association="HrMaxxModel.FK_ACHTransactionExtract_ACHTransaction" />
+        <AssociationConnector Association="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

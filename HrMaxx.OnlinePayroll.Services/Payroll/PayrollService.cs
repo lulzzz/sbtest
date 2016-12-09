@@ -700,8 +700,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var company = fetchCompany ? _companyService.GetCompanyById(payroll.Company.Id) : payroll.Company;
 				var previousInvoices = _payrollRepository.GetPayrollInvoices(payroll.Company.HostId, null);
 				var voidedPayChecks = _payrollRepository.GetUnclaimedVoidedchecks(payroll.Company.Id);
-				if(payrollInvoice.InvoiceNumber==0)
-				payrollInvoice.InvoiceNumber = previousInvoices.Any() ? previousInvoices.Max(i => i.InvoiceNumber) + 1 : 1001;
+				
 				payrollInvoice.Initialize(payroll, previousInvoices.Where(p=>p.CompanyId==payroll.Company.Id).ToList(), _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
@@ -847,8 +846,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							invoice.DeliveredOn = DateTime.Now;
 							invoice.DeliveredBy = invoice.UserName;
 						}
-						
-						if (invoice.Status!=InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status==InvoiceStatus.Paid || invoice.Status==InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.PartialDeposited))
+
+						if (invoice.Status != InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.PartialDeposited || invoice.Status == InvoiceStatus.ACHPending || invoice.Status == InvoiceStatus.ACHPosted))
 						{
 							if (invoice.Balance == 0)
 								invoice.Status = InvoiceStatus.Paid;
@@ -1779,17 +1778,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
 							}
 						});
-						var counter = i.Payments.Any() ? i.Payments.Max(p => p.Id) + 1 : 1;
-						i.Payments.ForEach(p => p.Id = p.Id == 0 ? counter++ : p.Id);
-						i.InvoicePayments = JsonConvert.DeserializeObject<List<Models.InvoicePayment>>(JsonConvert.SerializeObject(i.Payments));
-						i.InvoicePayments.ForEach(ip =>
-						{
-							ip.Id = 0;
-							ip.InvoiceId = i.Id;
-							ip.LastModified = i.LastModified;
-							ip.LastModifiedBy = i.UserName;
-
-						});
+						
 						_payrollRepository.SavePayrollInvoice(i);
 					});
 					txn.Complete();
@@ -1798,6 +1787,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " fix invoice data ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public PayrollInvoice GetInvoiceById(Guid invoiceId)
+		{
+			try
+			{
+				return _payrollRepository.GetAllPayrollInvoices().First(i => i.Id == invoiceId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " invoice by id " + invoiceId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

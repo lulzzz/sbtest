@@ -56,7 +56,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		{
 			var invoices = _payrollRepository.GetACHPayrollInvoices();
 			var achInvoices = new List<ACHTransaction>();
-			invoices.ForEach(i => i.Payments.Where(p=>p.Status==PaymentStatus.Submitted && p.Method==InvoicePaymentMethod.ACH).ToList().ForEach(p =>
+			invoices.ForEach(i => i.InvoicePayments.Where(p => p.Status == PaymentStatus.Submitted && p.Method == InvoicePaymentMethod.ACH).ToList().ForEach(p =>
 			{
 				var ach = new ACHTransaction
 				{

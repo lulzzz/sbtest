@@ -39,12 +39,15 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					};
 					
 					$scope.getLineItemTotal = function () {
-						var linesAmount = +($scope.invoice.adminFee + $scope.invoice.environmentalFee).toFixed(2);
-						$.each($scope.invoice.miscCharges, function (index, lineitem) {
-							var am = parseFloat(lineitem.amount);
-							linesAmount += +am.toFixed(2);
-						});
-						return linesAmount;
+						if ($scope.invoice) {
+							var linesAmount = +($scope.invoice.adminFee + $scope.invoice.environmentalFee).toFixed(2);
+							$.each($scope.invoice.miscCharges, function (index, lineitem) {
+								var am = parseFloat(lineitem.amount);
+								linesAmount += +am.toFixed(2);
+							});
+							return linesAmount;
+						}
+						
 					}
 					$scope.getHostLogo = function() {
 						if (dataSvc.hostHomePage && dataSvc.hostHomePage.logo) {
@@ -56,28 +59,26 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.getTotal = function() {
 						var total = 0;
-						
-						total += +($scope.getLineItemTotal()).toFixed(2);
-						
-						if ($scope.invoice.companyInvoiceSetup.invoiceType === 1)
-						{
-							total += +($scope.invoice.grossWages).toFixed(2);
-							total += +($scope.invoice.employerContribution).toFixed(2);
-							total += +($scope.invoice.workerCompensationCharges).toFixed(2);
-						}
-						else if ($scope.invoice.companyInvoiceSetup.invoiceType === 2)
-						{
-							total += +($scope.invoice.employeeContribution).toFixed(2);
-							total += +($scope.invoice.employerContribution).toFixed(2);
-							total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+						if ($scope.invoice) {
+							total += +($scope.getLineItemTotal()).toFixed(2);
 
-						}
-						else if ($scope.invoice.companyInvoiceSetup.invoiceType === 4)
-						{
-							total += +($scope.invoice.workerCompensationCharges).toFixed(2);
-						}
-						else if ($scope.invoice.companyInvoiceSetup.invoiceType === 5) {
-							total = +($scope.invoice.workerCompensationCharges).toFixed(2);
+							if ($scope.invoice.companyInvoiceSetup.invoiceType === 1) {
+								total += +($scope.invoice.grossWages).toFixed(2);
+								total += +($scope.invoice.employerContribution).toFixed(2);
+								total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+							}
+							else if ($scope.invoice.companyInvoiceSetup.invoiceType === 2) {
+								total += +($scope.invoice.employeeContribution).toFixed(2);
+								total += +($scope.invoice.employerContribution).toFixed(2);
+								total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+
+							}
+							else if ($scope.invoice.companyInvoiceSetup.invoiceType === 4) {
+								total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+							}
+							else if ($scope.invoice.companyInvoiceSetup.invoiceType === 5) {
+								total = +($scope.invoice.workerCompensationCharges).toFixed(2);
+							}
 						}
 						return total;
 					}
@@ -118,23 +119,26 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							notes:'',
 							amount: $scope.paymentRemaining()
 						};
-						$scope.invoice.payments.push(payment);
+						$scope.invoice.invoicePayments.push(payment);
 					}
-					$scope.isInvoiceEditable = function() {
-						if ($scope.invoice.status !== 4 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
-							return true;
-						else
-							return false;
+					$scope.isInvoiceEditable = function () {
+						if ($scope.invoice) {
+							if ($scope.invoice.status !== 4 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
+								return true;
+							else
+								return false;
+						}
+						
 					}
 					$scope.isPaymentEditable = function (p) {
-						if (p.status === 1 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
+						if (p.status === 1 || p.status===5 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
 							return true;
 						else
 							return false;
 					}
 					$scope.paymentRemaining = function() {
 						var paidamount = 0;
-						$.each($scope.invoice.payments, function (index, lineitem) {
+						$.each($scope.invoice.invoicePayments, function (index, lineitem) {
 							if(lineitem.status!==4){
 								var am = parseFloat(lineitem.amount);
 								paidamount += +am.toFixed(2);
@@ -158,7 +162,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.deletepayment = function (index) {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete this payment?', 'warning', function () {
-							$scope.invoice.payments.splice(index, 1);
+							$scope.invoice.invoicePayments.splice(index, 1);
 							$scope.invoice.deleted = true;
 						});
 						
@@ -189,6 +193,27 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								if (!returnVal)
 									return 'Please add correct fee(s) and charge(s)';
 							}
+							else if (invoice.invoicePayments.length > 0) {
+								var returnVal1 = true;
+								$.each(invoice.invoicePayments, function (index1, p) {
+									p.hasChanged = false;
+									var existInOriginal = $filter('filter')($scope.original.invoicePayments, { id: p.id })[0];
+									if (existInOriginal) {
+										if (!angular.equals(p, existInOriginal))
+											p.hasChanged = true;
+										else
+											p.hasChanged = false;
+									}
+
+
+									if (p.hasChanged && p.method === 5 && moment(p.paymentDate).format("MM/DD/YYYY") < moment().add(1, 'days').format("MM/DD/YYYY")) {
+										returnVal1 = false;
+										return false;
+									}
+								});
+								if (!returnVal1)
+									return 'Please correct payments. ACH payment must be after today';
+							}
 							else
 								return '';
 						}
@@ -216,7 +241,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 					};
 					var saveInvoice = function () {
-						$.each($scope.invoice.payments, function(i, p) {
+						$.each($scope.invoice.invoicePayments, function (i, p) {
 							p.paymentDate = moment(p.paymentDate).format('MM/DD/YYYY');
 						});
 						payrollRepository.savePayrollInvoice($scope.invoice).then(function (data) {
@@ -359,7 +384,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						}
 					}
 					var fixDates = function() {
-						$.each($scope.invoice.payments, function (index, p) {
+						$.each($scope.invoice.invoicePayments, function (index, p) {
 							p.paymentDate = moment(p.paymentDate).toDate();
 
 						});
@@ -400,6 +425,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					var init = function () {
 						
 						if ($scope.invoice) {
+							
 							fixDates();
 							getHostContact();
 							getCompanyContact();
@@ -409,6 +435,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							}, function (error) {
 								
 							});
+							$scope.original = angular.copy($scope.invoice);
 						}
 					}
 					

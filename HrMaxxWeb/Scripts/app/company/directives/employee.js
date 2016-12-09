@@ -316,8 +316,12 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedBank = null;
 					}
 					$scope.setSelectedBank = function (index) {
-						$scope.selectedBank = $scope.selected.bankAccounts[index];
-						$scope.originalBank = angular.copy($scope.selectedBank);
+						$scope.selectedBank = null;
+						$timeout(function() {
+							$scope.selectedBank = $scope.selected.bankAccounts[index];
+							$scope.originalBank = angular.copy($scope.selectedBank);
+						}, 1);
+						
 					}
 					$scope.ddPercentageAvailable = function () {
 						var covered = 0;

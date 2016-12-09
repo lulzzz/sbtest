@@ -17,38 +17,36 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PayrollInvoice()
         {
-            this.Payrolls = new HashSet<Payroll>();
-            this.PayrollPayChecks = new HashSet<PayrollPayCheck>();
             this.InvoicePayments = new HashSet<InvoicePayment>();
+            this.PayrollPayChecks = new HashSet<PayrollPayCheck>();
         }
     
         public System.Guid Id { get; set; }
         public System.Guid CompanyId { get; set; }
         public System.Guid PayrollId { get; set; }
+        public int InvoiceNumber { get; set; }
+        public System.DateTime PeriodStart { get; set; }
+        public System.DateTime PeriodEnd { get; set; }
         public string InvoiceSetup { get; set; }
+        public decimal GrossWages { get; set; }
         public string EmployerTaxes { get; set; }
         public System.DateTime InvoiceDate { get; set; }
         public int NoOfChecks { get; set; }
+        public string Deductions { get; set; }
         public string WorkerCompensations { get; set; }
         public decimal EmployeeContribution { get; set; }
         public decimal EmployerContribution { get; set; }
         public decimal AdminFee { get; set; }
         public decimal EnvironmentalFee { get; set; }
         public string MiscCharges { get; set; }
-        public System.DateTime LastModified { get; set; }
-        public string LastModifiedBy { get; set; }
+        public decimal Total { get; set; }
         public int Status { get; set; }
         public Nullable<System.DateTime> SubmittedOn { get; set; }
         public string SubmittedBy { get; set; }
         public Nullable<System.DateTime> DeliveredOn { get; set; }
         public string DeliveredBy { get; set; }
-        public decimal GrossWages { get; set; }
-        public decimal Total { get; set; }
-        public int InvoiceNumber { get; set; }
-        public System.DateTime PeriodStart { get; set; }
-        public System.DateTime PeriodEnd { get; set; }
-        public string Payrments { get; set; }
-        public string Deductions { get; set; }
+        public System.DateTime LastModified { get; set; }
+        public string LastModifiedBy { get; set; }
         public string Courier { get; set; }
         public string EmployeeTaxes { get; set; }
         public string Notes { get; set; }
@@ -65,12 +63,10 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal DDPay { get; set; }
     
         public virtual Company Company { get; set; }
-        public virtual Payroll Payroll { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Payroll> Payrolls { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<InvoicePayment> InvoicePayments { get; set; }
+        public virtual Payroll Payroll { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PayrollPayCheck> PayrollPayChecks { get; set; }
     }
 }

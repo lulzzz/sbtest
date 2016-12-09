@@ -21,13 +21,6 @@ namespace HrMaxxAPI.Controllers
 			MakeServiceCall(() => _scheduledJobService.UpdateInvoicePayments(), "Update Invoice Payments for deposited checks");
 			
 		}
-		[HttpGet]
-		[AllowAnonymous]
-		[Route("ACH/FillACHData")]
-		public void FillACHData()
-		{
-			MakeServiceCall(() => _scheduledJobService.FillACHData(), "Update ACH Data");
-
-		}
+		
 	}
 }

@@ -128,48 +128,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			return _mapper.Map<PayrollPayCheck, PayCheck>(paycheck);
 		}
 
-		public List<Invoice> GetCompanyInvoices(Guid companyId)
-		{
-			var invoices = _dbContext.Invoices.Where(i => i.CompanyId == companyId);
-			return _mapper.Map<List<Models.DataModel.Invoice>, List<Invoice>>(invoices.ToList());
-		}
-
-		public Invoice SaveInvoice(Invoice invoice)
-		{
-			var dbinvoice = _dbContext.Invoices.FirstOrDefault(i => i.Id == invoice.Id);
-			var mapped = _mapper.Map<Invoice, Models.DataModel.Invoice>(invoice);
-			if (dbinvoice == null)
-			{
-				_dbContext.Invoices.Add(mapped);
-				
-			}
-			else
-			{
-				dbinvoice.DueDate = mapped.DueDate;
-				dbinvoice.LastModifiedBy = mapped.LastModifiedBy;
-				dbinvoice.LastModified = mapped.LastModified;
-				dbinvoice.LineItemTotal = mapped.LineItemTotal;
-				dbinvoice.Total = mapped.Total;
-				dbinvoice.Balance = mapped.Balance;
-				dbinvoice.LineItems = mapped.LineItems;
-				dbinvoice.Payments = mapped.Payments;
-				dbinvoice.InvoiceNumber = mapped.InvoiceNumber;
-				dbinvoice.Status = mapped.Status;
-				dbinvoice.SubmittedBy = mapped.SubmittedBy;
-				dbinvoice.SubmittedOn = mapped.SubmittedOn;
-				dbinvoice.DeliveredBy = mapped.DeliveredBy;
-				dbinvoice.DeliveredOn = mapped.DeliveredOn;
-			}
-			_dbContext.SaveChanges();
-			return _mapper.Map<Models.DataModel.Invoice, Invoice>(mapped);
-		}
-
-		public Invoice GetInvoiceById(Guid invoiceId)
-		{
-			var invoice = _dbContext.Invoices.FirstOrDefault(i => i.Id == invoiceId);
-			return _mapper.Map<Models.DataModel.Invoice, Invoice>(invoice);
-		}
-
 		public List<Models.Payroll> GetInvoicePayrolls(Guid invoiceId)
 		{
 			var payrolls = _dbContext.Payrolls.Where(p => p.InvoiceId == invoiceId);
@@ -240,7 +198,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
 				dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
 				dbPayrollInvoice.Deductions = mapped.Deductions;
-				dbPayrollInvoice.Payrments = mapped.Payrments;
 				dbPayrollInvoice.InvoiceNumber = mapped.InvoiceNumber;
 				dbPayrollInvoice.Courier = mapped.Courier;
 				dbPayrollInvoice.Notes = mapped.Notes;
@@ -465,7 +422,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		{
 			var invoices = _dbContext.PayrollInvoices.Where(i => i.Status > 3 && i.Status != 5).ToList();
 			var mapped = _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice> > (invoices);
-			return mapped.Where(i => i.Payments.Any(p => p.Method == InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted
+			return mapped.Where(i => i.InvoicePayments.Any(p => p.Method == InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted
 														&& !_dbContext.ACHTransactions.Any(a=>a.TransactionType==(int)ACHTransactionType.CCD && a.SourceId==p.Id && a.SourceParentId==i.Id)
 														)
 													).ToList();

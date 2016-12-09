@@ -107,9 +107,9 @@ namespace HrMaxx.OnlinePayroll.Repository
 		{
 			var maxInvoiceNumber = string.Empty;
 			var invoices =
-				_dbContext.Invoices.Where(i => i.CompanyId == companyId).OrderByDescending(i => i.InvoiceDate).ToList();
+				_dbContext.PayrollInvoices.Where(i => i.CompanyId == companyId).OrderByDescending(i => i.InvoiceDate).ToList();
 			if (invoices.Any())
-				return invoices.First().InvoiceNumber;
+				return invoices.First().InvoiceNumber.ToString();
 			else
 			{
 				return "1111".PadLeft(8, '0');

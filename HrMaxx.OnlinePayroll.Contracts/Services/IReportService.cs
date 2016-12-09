@@ -20,6 +20,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<MasterExtract> GetExtractList(string report);
 		List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company);
 		ACHExtract GetACHReport(ReportRequest request);
-		ACHExtract GetACHExtract(ACHExtract data);
+		ACHExtract GetACHExtract(ACHExtract data, string fullName);
+		List<ACHMasterExtract> GetACHExtractList();
 	}
 }

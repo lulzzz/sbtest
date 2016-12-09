@@ -44,7 +44,6 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string DeliveredBy { get; set; }
 		public CompanyResource Company { get; set; }
 		public string Courier { get; set; }
-		public List<InvoicePaymentResource> Payments { get; set; }
 		public List<InvoicePaymentResource> InvoicePayments { get; set; }
 		public List<InvoiceLateFeeConfig> TaxPaneltyConfig { get; set; }
 		public string Notes { get; set; }
@@ -85,7 +84,7 @@ namespace HrMaxxAPI.Resources.Payroll
 				if (Balance == 0)
 				{
 					var lastPayment =
-						Payments.Where(p => p.Status == PaymentStatus.Paid).OrderByDescending(p => p.PaymentDate.Date).First();
+						InvoicePayments.Where(p => p.Status == PaymentStatus.Paid).OrderByDescending(p => p.PaymentDate.Date).First();
 					return lastPayment.PaymentDate.Date.Subtract(InvoiceDate.Date).Days;
 
 				}
@@ -114,7 +113,7 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public DateTime? LastDepositDate
 		{
-			get { return Payments.Any() ? Payments.OrderByDescending(p => p.PaymentDate).First().PaymentDate : default(DateTime?); }
+			get { return InvoicePayments.Any() ? InvoicePayments.OrderByDescending(p => p.PaymentDate).First().PaymentDate : default(DateTime?); }
 		}
 	}
 	

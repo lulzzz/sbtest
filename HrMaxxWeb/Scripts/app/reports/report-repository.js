@@ -53,6 +53,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getACHExtractList: function () {
+				var deferred = $q.defer();
+				reportServer.one('ACHExtractList').getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getReportDocument: function (request) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Reports/ReportDocument", request, { responseType: "arraybuffer" }).then(

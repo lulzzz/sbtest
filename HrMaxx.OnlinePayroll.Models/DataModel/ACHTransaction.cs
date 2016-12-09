@@ -14,6 +14,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     
     public partial class ACHTransaction
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ACHTransaction()
+        {
+            this.ACHTransactionExtracts = new HashSet<ACHTransactionExtract>();
+        }
+    
         public int Id { get; set; }
         public System.Guid SourceParentId { get; set; }
         public int SourceId { get; set; }
@@ -21,10 +27,13 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal Amount { get; set; }
         public System.DateTime TransactionDate { get; set; }
         public string TransactionDescription { get; set; }
-        public int OriginatorType { get; set; }
+        public int OrignatorType { get; set; }
         public System.Guid OriginatorId { get; set; }
         public int ReceiverType { get; set; }
         public System.Guid ReceiverId { get; set; }
         public string Name { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ACHTransactionExtract> ACHTransactionExtracts { get; set; }
     }
 }

@@ -46,11 +46,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<EmployeeDeduction> EmployeeDeductions { get; set; }
         public virtual DbSet<Payroll> Payrolls { get; set; }
-        public virtual DbSet<PayrollPayCheck> PayrollPayChecks { get; set; }
         public virtual DbSet<Journal> Journals { get; set; }
         public virtual DbSet<CompanyPayrollCube> CompanyPayrollCubes { get; set; }
-        public virtual DbSet<Invoice> Invoices { get; set; }
-        public virtual DbSet<PayrollInvoice> PayrollInvoices { get; set; }
         public virtual DbSet<ApplicationConfiguration> ApplicationConfigurations { get; set; }
         public virtual DbSet<ReportConstant> ReportConstants { get; set; }
         public virtual DbSet<VendorCustomer> VendorCustomers { get; set; }
@@ -61,7 +58,10 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<InvoiceDeliveryClaim> InvoiceDeliveryClaims { get; set; }
         public virtual DbSet<CompanyTSImportMap> CompanyTSImportMaps { get; set; }
         public virtual DbSet<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
-        public virtual DbSet<ACHTransaction> ACHTransactions { get; set; }
         public virtual DbSet<InvoicePayment> InvoicePayments { get; set; }
+        public virtual DbSet<PayrollInvoice> PayrollInvoices { get; set; }
+        public virtual DbSet<PayrollPayCheck> PayrollPayChecks { get; set; }
+        public virtual DbSet<ACHTransaction> ACHTransactions { get; set; }
+        public virtual DbSet<ACHTransactionExtract> ACHTransactionExtracts { get; set; }
     }
 }

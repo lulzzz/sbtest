@@ -32,6 +32,14 @@
           <Property Name="ReceiverId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
         </EntityType>
+        <EntityType Name="ACHTransactionExtract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ACHTransactionId" Type="int" Nullable="false" />
+          <Property Name="MasterExtractId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="ApplicationConfiguration">
           <Key>
             <PropertyRef Name="Id" />
@@ -313,32 +321,6 @@
           <Property Name="GroupNo" Type="varchar(max)" Nullable="false" />
           <Property Name="GroupName" Type="varchar(max)" Nullable="false" />
         </EntityType>
-        <EntityType Name="Invoice">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="InvoiceMethod" Type="int" Nullable="false" />
-          <Property Name="InvoiceRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="InvoiceNumber" Type="varchar(max)" Nullable="false" />
-          <Property Name="InvoiceDate" Type="datetime" Nullable="false" />
-          <Property Name="DueDate" Type="datetime" Nullable="false" />
-          <Property Name="InvoiceValue" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="LineItemTotal" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="Status" Type="int" Nullable="false" />
-          <Property Name="RiskLevel" Type="int" Nullable="false" />
-          <Property Name="LineItems" Type="varchar(max)" Nullable="false" />
-          <Property Name="Payments" Type="varchar(max)" Nullable="false" />
-          <Property Name="Total" Type="decimal" Precision="18" Scale="2" />
-          <Property Name="Balance" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="SubmittedOn" Type="datetime" />
-          <Property Name="SubmittedBy" Type="varchar(max)" />
-          <Property Name="DeliveredOn" Type="datetime" />
-          <Property Name="DeliveredBy" Type="varchar(max)" />
-          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
-          <Property Name="LastModified" Type="datetime" Nullable="false" />
-        </EntityType>
         <EntityType Name="InvoiceDeliveryClaim">
           <Key>
             <PropertyRef Name="Id" />
@@ -440,7 +422,7 @@
           <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PayrollId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="InvoiceNumber" Type="int" Nullable="false" />
+          <Property Name="InvoiceNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PeriodStart" Type="datetime" Nullable="false" />
           <Property Name="PeriodEnd" Type="datetime" Nullable="false" />
           <Property Name="InvoiceSetup" Type="varchar(max)" Nullable="false" />
@@ -461,7 +443,6 @@
           <Property Name="SubmittedBy" Type="varchar(max)" />
           <Property Name="DeliveredOn" Type="datetime" />
           <Property Name="DeliveredBy" Type="varchar(max)" />
-          <Property Name="Payrments" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="Courier" Type="varchar(max)" />
@@ -605,6 +586,30 @@
           <Property Name="IsAgency" Type="bit" Nullable="false" />
           <Property Name="IsTaxDepartment" Type="bit" Nullable="false" />
         </EntityType>
+        <Association Name="FK_ACHTransactionExtract_ACHTransaction">
+          <End Role="ACHTransaction" Type="Self.ACHTransaction" Multiplicity="1" />
+          <End Role="ACHTransactionExtract" Type="Self.ACHTransactionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ACHTransaction">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ACHTransactionExtract">
+              <PropertyRef Name="ACHTransactionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ACHTransactionExtract_MasterExtracts">
+          <End Role="MasterExtracts" Type="Self.MasterExtracts" Multiplicity="1" />
+          <End Role="ACHTransactionExtract" Type="Self.ACHTransactionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterExtracts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ACHTransactionExtract">
+              <PropertyRef Name="MasterExtractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_BankAccount_EntityType">
           <End Role="EntityType" Type="Self.EntityType" Multiplicity="1" />
           <End Role="BankAccount" Type="Self.BankAccount" Multiplicity="*" />
@@ -1039,6 +1044,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PayrollPayCheck_PayrollInvoice">
+          <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="0..1" />
+          <End Role="PayrollPayCheck" Type="Self.PayrollPayCheck" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollPayCheck">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_TaxYearRate_Tax">
           <End Role="Tax" Type="Self.Tax" Multiplicity="1" />
           <End Role="TaxYearRate" Type="Self.TaxYearRate" Multiplicity="*" />
@@ -1078,6 +1095,7 @@
         <EntityContainer Name="HrMaxxModelStoreContainer">
           <EntitySet Name="AccountTemplate" EntityType="Self.AccountTemplate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ACHTransaction" EntityType="Self.ACHTransaction" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ACHTransactionExtract" EntityType="Self.ACHTransactionExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApplicationConfiguration" EntityType="Self.ApplicationConfiguration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BankAccount" EntityType="Self.BankAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
@@ -1098,7 +1116,6 @@
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Host" EntityType="Self.Host" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InsuranceGroup" EntityType="Self.InsuranceGroup" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Invoice" EntityType="Self.Invoice" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InvoiceDeliveryClaim" EntityType="Self.InvoiceDeliveryClaim" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="InvoicePayment" EntityType="Self.InvoicePayment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Journal" EntityType="Self.Journal" Schema="dbo" store:Type="Tables" />
@@ -1114,6 +1131,14 @@
           <EntitySet Name="Tax" EntityType="Self.Tax" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TaxYearRate" EntityType="Self.TaxYearRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VendorCustomer" EntityType="Self.VendorCustomer" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_ACHTransactionExtract_ACHTransaction" Association="Self.FK_ACHTransactionExtract_ACHTransaction">
+            <End Role="ACHTransaction" EntitySet="ACHTransaction" />
+            <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtract" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ACHTransactionExtract_MasterExtracts" Association="Self.FK_ACHTransactionExtract_MasterExtracts">
+            <End Role="MasterExtracts" EntitySet="MasterExtracts" />
+            <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtract" />
+          </AssociationSet>
           <AssociationSet Name="FK_BankAccount_EntityType" Association="Self.FK_BankAccount_EntityType">
             <End Role="EntityType" EntitySet="EntityType" />
             <End Role="BankAccount" EntitySet="BankAccount" />
@@ -1258,6 +1283,10 @@
             <End Role="Payroll" EntitySet="Payroll" />
             <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
           </AssociationSet>
+          <AssociationSet Name="FK_PayrollPayCheck_PayrollInvoice" Association="Self.FK_PayrollPayCheck_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayCheck" />
+          </AssociationSet>
           <AssociationSet Name="FK_TaxYearRate_Tax" Association="Self.FK_TaxYearRate_Tax">
             <End Role="Tax" EntitySet="Tax" />
             <End Role="TaxYearRate" EntitySet="TaxYearRate" />
@@ -1396,11 +1425,6 @@
             <End Role="EmployeeDeduction" EntitySet="EmployeeDeductions" />
           </AssociationSet>
           <EntitySet Name="Payrolls" EntityType="HrMaxxModel.Payroll" />
-          <EntitySet Name="PayrollPayChecks" EntityType="HrMaxxModel.PayrollPayCheck" />
-          <AssociationSet Name="FK_PayrollDetail_Payroll" Association="HrMaxxModel.FK_PayrollDetail_Payroll">
-            <End Role="Payroll" EntitySet="Payrolls" />
-            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
-          </AssociationSet>
           <AssociationSet Name="FK_Employee_CompanyWorkerCompensation" Association="HrMaxxModel.FK_Employee_CompanyWorkerCompensation">
             <End Role="CompanyWorkerCompensation" EntitySet="CompanyWorkerCompensations" />
             <End Role="Employee" EntitySet="Employees" />
@@ -1408,10 +1432,6 @@
           <EntitySet Name="Journals" EntityType="HrMaxxModel.Journal" />
           <AssociationSet Name="FK_Journal_EntityType" Association="HrMaxxModel.FK_Journal_EntityType">
             <End Role="EntityType" EntitySet="EntityTypes" />
-            <End Role="Journal" EntitySet="Journals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Journal_PayrollPayCheck" Association="HrMaxxModel.FK_Journal_PayrollPayCheck">
-            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
             <End Role="Journal" EntitySet="Journals" />
           </AssociationSet>
           <AssociationSet Name="FK_Journal_Company" Association="HrMaxxModel.FK_Journal_Company">
@@ -1423,29 +1443,11 @@
             <End Role="Journal" EntitySet="Journals" />
           </AssociationSet>
           <EntitySet Name="CompanyPayrollCubes" EntityType="HrMaxxModel.CompanyPayrollCube" />
-          <EntitySet Name="Invoices" EntityType="HrMaxxModel.Invoice" />
           <AssociationSet Name="FK_Host_Company" Association="HrMaxxModel.FK_Host_Company">
             <End Role="Company" EntitySet="Companies" />
             <End Role="Host" EntitySet="Hosts" />
           </AssociationSet>
-          <EntitySet Name="PayrollInvoices" EntityType="HrMaxxModel.PayrollInvoice" />
-          <AssociationSet Name="FK_PayrollInvoice_Company" Association="HrMaxxModel.FK_PayrollInvoice_Company">
-            <End Role="Company" EntitySet="Companies" />
-            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PayrollInvoice_Payroll" Association="HrMaxxModel.FK_PayrollInvoice_Payroll">
-            <End Role="Payroll" EntitySet="Payrolls" />
-            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
-          </AssociationSet>
           <EntitySet Name="ApplicationConfigurations" EntityType="HrMaxxModel.ApplicationConfiguration" />
-          <AssociationSet Name="FK_Payroll_PayrollInvoice" Association="HrMaxxModel.FK_Payroll_PayrollInvoice">
-            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
-            <End Role="Payroll" EntitySet="Payrolls" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PayrollPayCheck_PayrollInvoice" Association="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice">
-            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
-            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
-          </AssociationSet>
           <EntitySet Name="ReportConstants" EntityType="HrMaxxModel.ReportConstant" />
           <EntitySet Name="VendorCustomers" EntityType="HrMaxxModel.VendorCustomer" />
           <AssociationSet Name="FK_VendorCustomer_Company" Association="HrMaxxModel.FK_VendorCustomer_Company">
@@ -1460,10 +1462,6 @@
           <EntitySet Name="PayCheckExtracts" EntityType="HrMaxxModel.PayCheckExtract" />
           <AssociationSet Name="FK_PayCheckExtract_MasterExtracts" Association="HrMaxxModel.FK_PayCheckExtract_MasterExtracts">
             <End Role="MasterExtract" EntitySet="MasterExtracts" />
-            <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PayCheckExtract_PayrollPayCheck" Association="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck">
-            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
             <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
           </AssociationSet>
           <EntitySet Name="InsuranceGroups" EntityType="HrMaxxModel.InsuranceGroup" />
@@ -1483,11 +1481,46 @@
             <End Role="Employee" EntitySet="Employees" />
             <End Role="EmployeeBankAccount" EntitySet="EmployeeBankAccounts" />
           </AssociationSet>
-          <EntitySet Name="ACHTransactions" EntityType="HrMaxxModel.ACHTransaction" />
           <EntitySet Name="InvoicePayments" EntityType="HrMaxxModel.InvoicePayment" />
+          <EntitySet Name="PayrollInvoices" EntityType="HrMaxxModel.PayrollInvoice" />
+          <AssociationSet Name="FK_PayrollInvoice_Company" Association="HrMaxxModel.FK_PayrollInvoice_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
+          </AssociationSet>
           <AssociationSet Name="FK_InvoicePayment_PayrollInvoice" Association="HrMaxxModel.FK_InvoicePayment_PayrollInvoice">
             <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
             <End Role="InvoicePayment" EntitySet="InvoicePayments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PayrollInvoice_Payroll" Association="HrMaxxModel.FK_PayrollInvoice_Payroll">
+            <End Role="Payroll" EntitySet="Payrolls" />
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
+          </AssociationSet>
+          <EntitySet Name="PayrollPayChecks" EntityType="HrMaxxModel.PayrollPayCheck" />
+          <AssociationSet Name="FK_Journal_PayrollPayCheck" Association="HrMaxxModel.FK_Journal_PayrollPayCheck">
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
+            <End Role="Journal" EntitySet="Journals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PayCheckExtract_PayrollPayCheck" Association="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck">
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
+            <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PayrollDetail_Payroll" Association="HrMaxxModel.FK_PayrollDetail_Payroll">
+            <End Role="Payroll" EntitySet="Payrolls" />
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PayrollPayCheck_PayrollInvoice" Association="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
+            <End Role="PayrollPayCheck" EntitySet="PayrollPayChecks" />
+          </AssociationSet>
+          <EntitySet Name="ACHTransactions" EntityType="HrMaxxModel.ACHTransaction" />
+          <EntitySet Name="ACHTransactionExtracts" EntityType="HrMaxxModel.ACHTransactionExtract" />
+          <AssociationSet Name="FK_ACHTransactionExtract_ACHTransaction" Association="HrMaxxModel.FK_ACHTransactionExtract_ACHTransaction">
+            <End Role="ACHTransaction" EntitySet="ACHTransactions" />
+            <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ACHTransactionExtract_MasterExtracts" Association="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts">
+            <End Role="MasterExtract" EntitySet="MasterExtracts" />
+            <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtracts" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
@@ -1568,12 +1601,12 @@
           <Property Name="MinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="IsHostCompany" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_Host_Company" FromRole="Company" ToRole="Host" />
-          <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
           <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="VendorCustomers" Relationship="HrMaxxModel.FK_VendorCustomer_Company" FromRole="Company" ToRole="VendorCustomer" />
           <NavigationProperty Name="InsuranceGroup" Relationship="HrMaxxModel.FK_Company_InsuranceGroup" FromRole="Company" ToRole="InsuranceGroup" />
           <Property Name="ClientNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Created" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2102,72 +2135,13 @@
           <Property Name="Company" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="Payroll" ToRole="PayrollPayCheck" />
           <Property Name="Status" Type="Int32" Nullable="false" />
           <Property Name="InvoiceId" Type="Guid" />
-          <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="Payroll" ToRole="PayrollInvoice" />
           <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_Payroll_PayrollInvoice" FromRole="Payroll" ToRole="PayrollInvoice" />
+          <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="Payroll" ToRole="PayrollInvoice" />
+          <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="Payroll" ToRole="PayrollPayCheck" />
         </EntityType>
-        <EntityType Name="PayrollPayCheck">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PayrollId" Type="Guid" Nullable="false" />
-          <Property Name="CompanyId" Type="Guid" Nullable="false" />
-          <Property Name="EmployeeId" Type="Guid" Nullable="false" />
-          <Property Name="Employee" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="GrossWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="NetWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="Compensations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Deductions" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Taxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="PayCodes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="IsVoid" Type="Boolean" Nullable="false" />
-          <Property Name="PrintStatus" Type="Int32" Nullable="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="PayDay" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="CheckNumber" Type="Int32" Nullable="false" />
-          <Property Name="PaymentMethod" Type="Int32" Nullable="false" />
-          <Property Name="Notes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="PayrollPayCheck" ToRole="Payroll" />
-          <Property Name="WCAmount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <Property Name="DeductionAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="EmployeeTaxes" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="EmployerTaxes" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="PayrmentMethod" Type="Int32" Nullable="false" />
-          <Property Name="Salary" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="YTDSalary" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="YTDGrossWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="YTDNetWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="Accumulations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="Journal" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="WorkerCompensation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
-          <Property Name="InvoiceId" Type="Guid" />
-          <Property Name="VoidedOn" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollPayCheck" ToRole="PayrollInvoice" />
-          <Property Name="CreditInvoiceId" Type="Guid" />
-          <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="PayCheckExtract" />
-        </EntityType>
-        <Association Name="FK_PayrollDetail_Payroll">
-          <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="1" />
-          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Payroll">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayrollPayCheck">
-              <PropertyRef Name="PayrollId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Employee_CompanyWorkerCompensation">
           <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="0..1" />
           <End Type="HrMaxxModel.Employee" Role="Employee" Multiplicity="*" />
@@ -2200,7 +2174,6 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="JournalDetails" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="EntityType1" Relationship="HrMaxxModel.FK_Journal_EntityType" FromRole="Journal" ToRole="EntityType" />
-          <NavigationProperty Name="PayrollPayCheck" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="Journal" ToRole="PayrollPayCheck" />
           <Property Name="CompanyId" Type="Guid" Nullable="false" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_Journal_Company" FromRole="Journal" ToRole="Company" />
           <Property Name="PayeeName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -2208,6 +2181,7 @@
           <NavigationProperty Name="CompanyAccount" Relationship="HrMaxxModel.FK_Journal_CompanyAccount" FromRole="Journal" ToRole="CompanyAccount" />
           <Property Name="DocumentId" Type="Guid" Nullable="false" />
           <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="PayrollPayCheck" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="Journal" ToRole="PayrollPayCheck" />
         </EntityType>
         <Association Name="FK_Journal_EntityType">
           <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
@@ -2218,18 +2192,6 @@
             </Principal>
             <Dependent Role="Journal">
               <PropertyRef Name="EntityType" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Journal_PayrollPayCheck">
-          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="0..1" />
-          <End Type="HrMaxxModel.Journal" Role="Journal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PayrollPayCheck">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Journal">
-              <PropertyRef Name="PayrollPayCheckId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2268,32 +2230,6 @@
           <Property Name="Month" Type="Int32" />
           <Property Name="Accumulation" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="Invoice">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="CompanyId" Type="Guid" Nullable="false" />
-          <Property Name="InvoiceDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="DueDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="InvoiceValue" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="LineItemTotal" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="RiskLevel" Type="Int32" Nullable="false" />
-          <Property Name="LineItems" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Total" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="InvoiceNumber" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Payments" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Balance" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="SubmittedOn" Type="DateTime" Precision="3" />
-          <Property Name="SubmittedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="DeliveredOn" Type="DateTime" Precision="3" />
-          <Property Name="DeliveredBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="InvoiceMethod" Type="Int32" Nullable="false" />
-          <Property Name="InvoiceRate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-        </EntityType>
         <Association Name="FK_Host_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
           <End Type="HrMaxxModel.Host" Role="Host" Multiplicity="*" />
@@ -2306,81 +2242,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="PayrollInvoice">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Guid" Nullable="false" />
-          <Property Name="CompanyId" Type="Guid" Nullable="false" />
-          <Property Name="PayrollId" Type="Guid" Nullable="false" />
-          <Property Name="InvoiceSetup" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="EmployerTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="InvoiceDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="NoOfChecks" Type="Int32" Nullable="false" />
-          <Property Name="WorkerCompensations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="EmployeeContribution" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="EmployerContribution" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="AdminFee" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="EnvironmentalFee" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="MiscCharges" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="PayrollInvoice" ToRole="Company" />
-          <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="PayrollInvoice" ToRole="Payroll" />
-          <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="SubmittedOn" Type="DateTime" Precision="3" />
-          <Property Name="SubmittedBy" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
-          <Property Name="DeliveredOn" Type="DateTime" Precision="3" />
-          <Property Name="DeliveredBy" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
-          <Property Name="GrossWages" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="Total" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="InvoiceNumber" Type="Int32" Nullable="false" />
-          <Property Name="PeriodStart" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="PeriodEnd" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Payrments" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Deductions" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Courier" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="EmployeeTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ProcessedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Balance" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="ProcessedOn" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="PayChecks" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Payrolls" Relationship="HrMaxxModel.FK_Payroll_PayrollInvoice" FromRole="PayrollInvoice" ToRole="Payroll" />
-          <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollInvoice" ToRole="PayrollPayCheck" />
-          <Property Name="VoidedCreditChecks" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ApplyWCMinWageLimit" Type="Boolean" Nullable="false" />
-          <Property Name="DeliveryClaimedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="DeliveryClaimedOn" Type="DateTime" Precision="3" />
-          <Property Name="NetPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="CheckPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="DDPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <NavigationProperty Name="InvoicePayments" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="PayrollInvoice" ToRole="InvoicePayment" />
-        </EntityType>
-        <Association Name="FK_PayrollInvoice_Company">
-          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
-          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Company">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayrollInvoice">
-              <PropertyRef Name="CompanyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PayrollInvoice_Payroll">
-          <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="1" />
-          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Payroll">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayrollInvoice">
-              <PropertyRef Name="PayrollId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ApplicationConfiguration">
           <Key>
             <PropertyRef Name="Id" />
@@ -2389,30 +2250,6 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RootHostId" Type="Guid" />
         </EntityType>
-        <Association Name="FK_Payroll_PayrollInvoice">
-          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="0..1" />
-          <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PayrollInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Payroll">
-              <PropertyRef Name="InvoiceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PayrollPayCheck_PayrollInvoice">
-          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="0..1" />
-          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PayrollInvoice">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayrollPayCheck">
-              <PropertyRef Name="InvoiceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="ReportConstant">
           <Key>
             <PropertyRef Name="Id" />
@@ -2486,6 +2323,7 @@
           <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="MasterExtract" ToRole="PayCheckExtract" />
+          <NavigationProperty Name="ACHTransactionExtracts" Relationship="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts" FromRole="MasterExtract" ToRole="ACHTransactionExtract" />
         </EntityType>
         <EntityType Name="PayCheckExtract">
           <Key>
@@ -2509,18 +2347,6 @@
             </Principal>
             <Dependent Role="PayCheckExtract">
               <PropertyRef Name="MasterExtractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PayCheckExtract_PayrollPayCheck">
-          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="1" />
-          <End Type="HrMaxxModel.PayCheckExtract" Role="PayCheckExtract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PayrollPayCheck">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayCheckExtract">
-              <PropertyRef Name="PayrollPayCheckId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2608,23 +2434,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="ACHTransaction">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="SourceParentId" Type="Guid" Nullable="false" />
-          <Property Name="SourceId" Type="Int32" Nullable="false" />
-          <Property Name="TransactionType" Type="Int32" Nullable="false" />
-          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="TransactionDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="OriginatorType" Type="Int32" Nullable="false" />
-          <Property Name="OriginatorId" Type="Guid" Nullable="false" />
-          <Property Name="ReceiverType" Type="Int32" Nullable="false" />
-          <Property Name="ReceiverId" Type="Guid" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="InvoicePayment">
           <Key>
             <PropertyRef Name="Id" />
@@ -2641,6 +2450,67 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="InvoicePayment" ToRole="PayrollInvoice" />
         </EntityType>
+        <EntityType Name="PayrollInvoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="PayrollId" Type="Guid" Nullable="false" />
+          <Property Name="InvoiceNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PeriodStart" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="PeriodEnd" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="InvoiceSetup" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="GrossWages" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="EmployerTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="InvoiceDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="NoOfChecks" Type="Int32" Nullable="false" />
+          <Property Name="Deductions" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="WorkerCompensations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EmployeeContribution" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="EmployerContribution" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="AdminFee" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="EnvironmentalFee" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="MiscCharges" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Total" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="SubmittedOn" Type="DateTime" Precision="3" />
+          <Property Name="SubmittedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DeliveredOn" Type="DateTime" Precision="3" />
+          <Property Name="DeliveredBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Courier" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="EmployeeTaxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ProcessedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Balance" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="ProcessedOn" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="PayChecks" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="VoidedCreditChecks" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ApplyWCMinWageLimit" Type="Boolean" Nullable="false" />
+          <Property Name="DeliveryClaimedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DeliveryClaimedOn" Type="DateTime" Precision="3" />
+          <Property Name="NetPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="CheckPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="DDPay" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="PayrollInvoice" ToRole="Company" />
+          <NavigationProperty Name="InvoicePayments" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="PayrollInvoice" ToRole="InvoicePayment" />
+          <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="PayrollInvoice" ToRole="Payroll" />
+          <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollInvoice" ToRole="PayrollPayCheck" />
+        </EntityType>
+        <Association Name="FK_PayrollInvoice_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollInvoice">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_InvoicePayment_PayrollInvoice">
           <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="1" />
           <End Type="HrMaxxModel.InvoicePayment" Role="InvoicePayment" Multiplicity="*" />
@@ -2650,6 +2520,164 @@
             </Principal>
             <Dependent Role="InvoicePayment">
               <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PayrollInvoice_Payroll">
+          <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Payroll">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollInvoice">
+              <PropertyRef Name="PayrollId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="PayrollPayCheck">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollId" Type="Guid" Nullable="false" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="EmployeeId" Type="Guid" Nullable="false" />
+          <Property Name="Employee" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="GrossWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="NetWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="WCAmount" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Compensations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Deductions" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Taxes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Accumulations" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Salary" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="YTDSalary" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="PayCodes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DeductionAmount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="EmployeeTaxes" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="EmployerTaxes" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="IsVoid" Type="Boolean" Nullable="false" />
+          <Property Name="PayrmentMethod" Type="Int32" Nullable="false" />
+          <Property Name="PrintStatus" Type="Int32" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="PayDay" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CheckNumber" Type="Int32" Nullable="false" />
+          <Property Name="PaymentMethod" Type="Int32" Nullable="false" />
+          <Property Name="Notes" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="YTDGrossWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="YTDNetWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="WorkerCompensation" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
+          <Property Name="InvoiceId" Type="Guid" />
+          <Property Name="VoidedOn" Type="DateTime" Precision="3" />
+          <Property Name="CreditInvoiceId" Type="Guid" />
+          <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="Journal" />
+          <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="PayCheckExtract" />
+          <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="PayrollPayCheck" ToRole="Payroll" />
+          <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollPayCheck" ToRole="PayrollInvoice" />
+        </EntityType>
+        <Association Name="FK_Journal_PayrollPayCheck">
+          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="0..1" />
+          <End Type="HrMaxxModel.Journal" Role="Journal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollPayCheck">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Journal">
+              <PropertyRef Name="PayrollPayCheckId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PayCheckExtract_PayrollPayCheck">
+          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayCheckExtract" Role="PayCheckExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollPayCheck">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayCheckExtract">
+              <PropertyRef Name="PayrollPayCheckId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PayrollDetail_Payroll">
+          <End Type="HrMaxxModel.Payroll" Role="Payroll" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Payroll">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollPayCheck">
+              <PropertyRef Name="PayrollId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PayrollPayCheck_PayrollInvoice">
+          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="0..1" />
+          <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PayrollPayCheck">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ACHTransaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SourceParentId" Type="Guid" Nullable="false" />
+          <Property Name="SourceId" Type="Int32" Nullable="false" />
+          <Property Name="TransactionType" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="TransactionDescription" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="OrignatorType" Type="Int32" Nullable="false" />
+          <Property Name="OriginatorId" Type="Guid" Nullable="false" />
+          <Property Name="ReceiverType" Type="Int32" Nullable="false" />
+          <Property Name="ReceiverId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ACHTransactionExtracts" Relationship="HrMaxxModel.FK_ACHTransactionExtract_ACHTransaction" FromRole="ACHTransaction" ToRole="ACHTransactionExtract" />
+        </EntityType>
+        <EntityType Name="ACHTransactionExtract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ACHTransactionId" Type="Int32" Nullable="false" />
+          <Property Name="MasterExtractId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ACHTransaction" Relationship="HrMaxxModel.FK_ACHTransactionExtract_ACHTransaction" FromRole="ACHTransactionExtract" ToRole="ACHTransaction" />
+          <NavigationProperty Name="MasterExtract" Relationship="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts" FromRole="ACHTransactionExtract" ToRole="MasterExtract" />
+        </EntityType>
+        <Association Name="FK_ACHTransactionExtract_ACHTransaction">
+          <End Type="HrMaxxModel.ACHTransaction" Role="ACHTransaction" Multiplicity="1" />
+          <End Type="HrMaxxModel.ACHTransactionExtract" Role="ACHTransactionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ACHTransaction">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ACHTransactionExtract">
+              <PropertyRef Name="ACHTransactionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ACHTransactionExtract_MasterExtracts">
+          <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
+          <End Type="HrMaxxModel.ACHTransactionExtract" Role="ACHTransactionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterExtract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ACHTransactionExtract">
+              <PropertyRef Name="MasterExtractId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2987,49 +3015,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="PayrollPayChecks">
-            <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
-              <MappingFragment StoreEntitySet="PayrollPayCheck">
-                <ScalarProperty Name="CreditInvoiceId" ColumnName="CreditInvoiceId" />
-                <ScalarProperty Name="VoidedOn" ColumnName="VoidedOn" />
-                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
-                <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
-                <ScalarProperty Name="WorkerCompensation" ColumnName="WorkerCompensation" />
-                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
-                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
-                <ScalarProperty Name="Accumulations" ColumnName="Accumulations" />
-                <ScalarProperty Name="YTDNetWage" ColumnName="YTDNetWage" />
-                <ScalarProperty Name="YTDGrossWage" ColumnName="YTDGrossWage" />
-                <ScalarProperty Name="YTDSalary" ColumnName="YTDSalary" />
-                <ScalarProperty Name="Salary" ColumnName="Salary" />
-                <ScalarProperty Name="PayrmentMethod" ColumnName="PayrmentMethod" />
-                <ScalarProperty Name="EmployerTaxes" ColumnName="EmployerTaxes" />
-                <ScalarProperty Name="EmployeeTaxes" ColumnName="EmployeeTaxes" />
-                <ScalarProperty Name="DeductionAmount" ColumnName="DeductionAmount" />
-                <ScalarProperty Name="WCAmount" ColumnName="WCAmount" />
-                <ScalarProperty Name="Notes" ColumnName="Notes" />
-                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
-                <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
-                <ScalarProperty Name="PayDay" ColumnName="PayDay" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="PrintStatus" ColumnName="PrintStatus" />
-                <ScalarProperty Name="IsVoid" ColumnName="IsVoid" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="PayCodes" ColumnName="PayCodes" />
-                <ScalarProperty Name="Taxes" ColumnName="Taxes" />
-                <ScalarProperty Name="Deductions" ColumnName="Deductions" />
-                <ScalarProperty Name="Compensations" ColumnName="Compensations" />
-                <ScalarProperty Name="NetWage" ColumnName="NetWage" />
-                <ScalarProperty Name="GrossWage" ColumnName="GrossWage" />
-                <ScalarProperty Name="Employee" ColumnName="Employee" />
-                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
-                <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Journals">
             <EntityTypeMapping TypeName="HrMaxxModel.Journal">
               <MappingFragment StoreEntitySet="Journal">
@@ -3063,80 +3048,6 @@
                 <ScalarProperty Name="Month" ColumnName="Month" />
                 <ScalarProperty Name="Quarter" ColumnName="Quarter" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Invoices">
-            <EntityTypeMapping TypeName="HrMaxxModel.Invoice">
-              <MappingFragment StoreEntitySet="Invoice">
-                <ScalarProperty Name="InvoiceRate" ColumnName="InvoiceRate" />
-                <ScalarProperty Name="InvoiceMethod" ColumnName="InvoiceMethod" />
-                <ScalarProperty Name="DeliveredBy" ColumnName="DeliveredBy" />
-                <ScalarProperty Name="DeliveredOn" ColumnName="DeliveredOn" />
-                <ScalarProperty Name="SubmittedBy" ColumnName="SubmittedBy" />
-                <ScalarProperty Name="SubmittedOn" ColumnName="SubmittedOn" />
-                <ScalarProperty Name="Balance" ColumnName="Balance" />
-                <ScalarProperty Name="Payments" ColumnName="Payments" />
-                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
-                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
-                <ScalarProperty Name="InvoiceNumber" ColumnName="InvoiceNumber" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="LineItems" ColumnName="LineItems" />
-                <ScalarProperty Name="RiskLevel" ColumnName="RiskLevel" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="LineItemTotal" ColumnName="LineItemTotal" />
-                <ScalarProperty Name="InvoiceValue" ColumnName="InvoiceValue" />
-                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
-                <ScalarProperty Name="InvoiceDate" ColumnName="InvoiceDate" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="PayrollInvoices">
-            <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
-              <MappingFragment StoreEntitySet="PayrollInvoice">
-                <ScalarProperty Name="DDPay" ColumnName="DDPay" />
-                <ScalarProperty Name="CheckPay" ColumnName="CheckPay" />
-                <ScalarProperty Name="NetPay" ColumnName="NetPay" />
-                <ScalarProperty Name="DeliveryClaimedOn" ColumnName="DeliveryClaimedOn" />
-                <ScalarProperty Name="DeliveryClaimedBy" ColumnName="DeliveryClaimedBy" />
-                <ScalarProperty Name="ApplyWCMinWageLimit" ColumnName="ApplyWCMinWageLimit" />
-                <ScalarProperty Name="VoidedCreditChecks" ColumnName="VoidedCreditChecks" />
-                <ScalarProperty Name="PayChecks" ColumnName="PayChecks" />
-                <ScalarProperty Name="ProcessedOn" ColumnName="ProcessedOn" />
-                <ScalarProperty Name="Balance" ColumnName="Balance" />
-                <ScalarProperty Name="ProcessedBy" ColumnName="ProcessedBy" />
-                <ScalarProperty Name="Notes" ColumnName="Notes" />
-                <ScalarProperty Name="EmployeeTaxes" ColumnName="EmployeeTaxes" />
-                <ScalarProperty Name="Courier" ColumnName="Courier" />
-                <ScalarProperty Name="Deductions" ColumnName="Deductions" />
-                <ScalarProperty Name="Payrments" ColumnName="Payrments" />
-                <ScalarProperty Name="PeriodEnd" ColumnName="PeriodEnd" />
-                <ScalarProperty Name="PeriodStart" ColumnName="PeriodStart" />
-                <ScalarProperty Name="InvoiceNumber" ColumnName="InvoiceNumber" />
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="GrossWages" ColumnName="GrossWages" />
-                <ScalarProperty Name="DeliveredBy" ColumnName="DeliveredBy" />
-                <ScalarProperty Name="DeliveredOn" ColumnName="DeliveredOn" />
-                <ScalarProperty Name="SubmittedBy" ColumnName="SubmittedBy" />
-                <ScalarProperty Name="SubmittedOn" ColumnName="SubmittedOn" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
-                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
-                <ScalarProperty Name="MiscCharges" ColumnName="MiscCharges" />
-                <ScalarProperty Name="EnvironmentalFee" ColumnName="EnvironmentalFee" />
-                <ScalarProperty Name="AdminFee" ColumnName="AdminFee" />
-                <ScalarProperty Name="EmployerContribution" ColumnName="EmployerContribution" />
-                <ScalarProperty Name="EmployeeContribution" ColumnName="EmployeeContribution" />
-                <ScalarProperty Name="WorkerCompensations" ColumnName="WorkerCompensations" />
-                <ScalarProperty Name="NoOfChecks" ColumnName="NoOfChecks" />
-                <ScalarProperty Name="InvoiceDate" ColumnName="InvoiceDate" />
-                <ScalarProperty Name="EmployerTaxes" ColumnName="EmployerTaxes" />
-                <ScalarProperty Name="InvoiceSetup" ColumnName="InvoiceSetup" />
-                <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -3261,24 +3172,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ACHTransactions">
-            <EntityTypeMapping TypeName="HrMaxxModel.ACHTransaction">
-              <MappingFragment StoreEntitySet="ACHTransaction">
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
-                <ScalarProperty Name="ReceiverType" ColumnName="ReceiverType" />
-                <ScalarProperty Name="OriginatorId" ColumnName="OriginatorId" />
-                <ScalarProperty Name="OriginatorType" ColumnName="OrignatorType" />
-                <ScalarProperty Name="TransactionDescription" ColumnName="TransactionDescription" />
-                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
-                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
-                <ScalarProperty Name="SourceParentId" ColumnName="SourceParentId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="InvoicePayments">
             <EntityTypeMapping TypeName="HrMaxxModel.InvoicePayment">
               <MappingFragment StoreEntitySet="InvoicePayment">
@@ -3291,6 +3184,122 @@
                 <ScalarProperty Name="Method" ColumnName="Method" />
                 <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
                 <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PayrollInvoices">
+            <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
+              <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="DDPay" ColumnName="DDPay" />
+                <ScalarProperty Name="CheckPay" ColumnName="CheckPay" />
+                <ScalarProperty Name="NetPay" ColumnName="NetPay" />
+                <ScalarProperty Name="DeliveryClaimedOn" ColumnName="DeliveryClaimedOn" />
+                <ScalarProperty Name="DeliveryClaimedBy" ColumnName="DeliveryClaimedBy" />
+                <ScalarProperty Name="ApplyWCMinWageLimit" ColumnName="ApplyWCMinWageLimit" />
+                <ScalarProperty Name="VoidedCreditChecks" ColumnName="VoidedCreditChecks" />
+                <ScalarProperty Name="PayChecks" ColumnName="PayChecks" />
+                <ScalarProperty Name="ProcessedOn" ColumnName="ProcessedOn" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="ProcessedBy" ColumnName="ProcessedBy" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="EmployeeTaxes" ColumnName="EmployeeTaxes" />
+                <ScalarProperty Name="Courier" ColumnName="Courier" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="DeliveredBy" ColumnName="DeliveredBy" />
+                <ScalarProperty Name="DeliveredOn" ColumnName="DeliveredOn" />
+                <ScalarProperty Name="SubmittedBy" ColumnName="SubmittedBy" />
+                <ScalarProperty Name="SubmittedOn" ColumnName="SubmittedOn" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="MiscCharges" ColumnName="MiscCharges" />
+                <ScalarProperty Name="EnvironmentalFee" ColumnName="EnvironmentalFee" />
+                <ScalarProperty Name="AdminFee" ColumnName="AdminFee" />
+                <ScalarProperty Name="EmployerContribution" ColumnName="EmployerContribution" />
+                <ScalarProperty Name="EmployeeContribution" ColumnName="EmployeeContribution" />
+                <ScalarProperty Name="WorkerCompensations" ColumnName="WorkerCompensations" />
+                <ScalarProperty Name="Deductions" ColumnName="Deductions" />
+                <ScalarProperty Name="NoOfChecks" ColumnName="NoOfChecks" />
+                <ScalarProperty Name="InvoiceDate" ColumnName="InvoiceDate" />
+                <ScalarProperty Name="EmployerTaxes" ColumnName="EmployerTaxes" />
+                <ScalarProperty Name="GrossWages" ColumnName="GrossWages" />
+                <ScalarProperty Name="InvoiceSetup" ColumnName="InvoiceSetup" />
+                <ScalarProperty Name="PeriodEnd" ColumnName="PeriodEnd" />
+                <ScalarProperty Name="PeriodStart" ColumnName="PeriodStart" />
+                <ScalarProperty Name="InvoiceNumber" ColumnName="InvoiceNumber" />
+                <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PayrollPayChecks">
+            <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
+              <MappingFragment StoreEntitySet="PayrollPayCheck">
+                <ScalarProperty Name="CreditInvoiceId" ColumnName="CreditInvoiceId" />
+                <ScalarProperty Name="VoidedOn" ColumnName="VoidedOn" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
+                <ScalarProperty Name="WorkerCompensation" ColumnName="WorkerCompensation" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="YTDNetWage" ColumnName="YTDNetWage" />
+                <ScalarProperty Name="YTDGrossWage" ColumnName="YTDGrossWage" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
+                <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
+                <ScalarProperty Name="PayDay" ColumnName="PayDay" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="PrintStatus" ColumnName="PrintStatus" />
+                <ScalarProperty Name="PayrmentMethod" ColumnName="PayrmentMethod" />
+                <ScalarProperty Name="IsVoid" ColumnName="IsVoid" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="EmployerTaxes" ColumnName="EmployerTaxes" />
+                <ScalarProperty Name="EmployeeTaxes" ColumnName="EmployeeTaxes" />
+                <ScalarProperty Name="DeductionAmount" ColumnName="DeductionAmount" />
+                <ScalarProperty Name="PayCodes" ColumnName="PayCodes" />
+                <ScalarProperty Name="YTDSalary" ColumnName="YTDSalary" />
+                <ScalarProperty Name="Salary" ColumnName="Salary" />
+                <ScalarProperty Name="Accumulations" ColumnName="Accumulations" />
+                <ScalarProperty Name="Taxes" ColumnName="Taxes" />
+                <ScalarProperty Name="Deductions" ColumnName="Deductions" />
+                <ScalarProperty Name="Compensations" ColumnName="Compensations" />
+                <ScalarProperty Name="WCAmount" ColumnName="WCAmount" />
+                <ScalarProperty Name="NetWage" ColumnName="NetWage" />
+                <ScalarProperty Name="GrossWage" ColumnName="GrossWage" />
+                <ScalarProperty Name="Employee" ColumnName="Employee" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+                <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ACHTransactions">
+            <EntityTypeMapping TypeName="HrMaxxModel.ACHTransaction">
+              <MappingFragment StoreEntitySet="ACHTransaction">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
+                <ScalarProperty Name="ReceiverType" ColumnName="ReceiverType" />
+                <ScalarProperty Name="OriginatorId" ColumnName="OriginatorId" />
+                <ScalarProperty Name="OrignatorType" ColumnName="OrignatorType" />
+                <ScalarProperty Name="TransactionDescription" ColumnName="TransactionDescription" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="SourceId" ColumnName="SourceId" />
+                <ScalarProperty Name="SourceParentId" ColumnName="SourceParentId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ACHTransactionExtracts">
+            <EntityTypeMapping TypeName="HrMaxxModel.ACHTransactionExtract">
+              <MappingFragment StoreEntitySet="ACHTransactionExtract">
+                <ScalarProperty Name="MasterExtractId" ColumnName="MasterExtractId" />
+                <ScalarProperty Name="ACHTransactionId" ColumnName="ACHTransactionId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

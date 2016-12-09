@@ -42,5 +42,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		List<PayCheck> GetEmployeePayChecks(Guid companyId, Guid employeeId);
 		void FixInvoiceData();
+		PayrollInvoice GetInvoiceById(Guid invoiceId);
 	}
 }

@@ -307,6 +307,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			
 		}
 		[HttpGet]
+		[Route(PayrollRoutes.GetInvoiceById)]
+		public PayrollInvoiceResource GetInvoiceById(Guid invoiceId)
+		{
+			var invoice = MakeServiceCall(() => _payrollService.GetInvoiceById(invoiceId), string.Format("get invoice with id={0}", invoiceId));
+			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
+
+		}
+		[HttpGet]
 		[Route(PayrollRoutes.RecreateInvoice)]
 		public PayrollInvoiceResource RecreateInvoice(Guid invoiceId)
 		{

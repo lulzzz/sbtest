@@ -222,7 +222,7 @@
 						</td>
 						<td style="width:50%; text-align:right;">
 							<xsl:choose>
-								<xsl:when test="PaymentMethod=1">
+								<xsl:when test="PaymentMethod='Check'">
 									<xsl:value-of select="CheckNumber"/>
 								</xsl:when>
 								<xsl:otherwise>EFT</xsl:otherwise>

@@ -28,12 +28,20 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Employee { get; set; }
         public decimal GrossWage { get; set; }
         public decimal NetWage { get; set; }
+        public decimal WCAmount { get; set; }
         public string Compensations { get; set; }
         public string Deductions { get; set; }
         public string Taxes { get; set; }
+        public string Accumulations { get; set; }
+        public decimal Salary { get; set; }
+        public decimal YTDSalary { get; set; }
         public string PayCodes { get; set; }
+        public decimal DeductionAmount { get; set; }
+        public decimal EmployeeTaxes { get; set; }
+        public decimal EmployerTaxes { get; set; }
         public int Status { get; set; }
         public bool IsVoid { get; set; }
+        public int PayrmentMethod { get; set; }
         public int PrintStatus { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
@@ -41,16 +49,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int CheckNumber { get; set; }
         public int PaymentMethod { get; set; }
         public string Notes { get; set; }
-        public decimal WCAmount { get; set; }
-        public decimal DeductionAmount { get; set; }
-        public decimal EmployeeTaxes { get; set; }
-        public decimal EmployerTaxes { get; set; }
-        public int PayrmentMethod { get; set; }
-        public decimal Salary { get; set; }
-        public decimal YTDSalary { get; set; }
         public decimal YTDGrossWage { get; set; }
         public decimal YTDNetWage { get; set; }
-        public string Accumulations { get; set; }
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
         public string WorkerCompensation { get; set; }
@@ -59,11 +59,11 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.DateTime> VoidedOn { get; set; }
         public Nullable<System.Guid> CreditInvoiceId { get; set; }
     
-        public virtual Payroll Payroll { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }
-        public virtual PayrollInvoice PayrollInvoice { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayCheckExtract> PayCheckExtracts { get; set; }
+        public virtual Payroll Payroll { get; set; }
+        public virtual PayrollInvoice PayrollInvoice { get; set; }
     }
 }

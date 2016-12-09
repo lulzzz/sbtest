@@ -33,12 +33,11 @@
 <xsl:when test="$totalTax>0">
 <xsl:value-of select="$reportConst"/>,
 <xsl:value-of select="translate(States/CompanyTaxState[State/StateId=1]/StateEIN,'-','')"/>,
-<xsl:value-of select="States/CompanyTaxState[State/StateId=1]/StatePIn"/>,
+<xsl:value-of select="States/CompanyTaxState[State/StateId=1]/StatePIN"/>,
 <xsl:value-of select="$enddate"/>,
 <xsl:value-of select="$settleDate"/>,
 <xsl:value-of select="$UISumString"/>,
-<xsl:value-of select="$ETTSumString"/>,
-0.00
+<xsl:value-of select="$ETTSumString"/>
 <xsl:text>$$n</xsl:text>
 </xsl:when>
 </xsl:choose>

@@ -201,6 +201,44 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			}
 		}
 
+		public void SaveACHExtract(ACHExtract extract, string fullName)
+		{
+			var transactions = extract.Data.Hosts.SelectMany(h => h.ACHTransactions).ToList();
+			var dbExtract = new Models.DataModel.MasterExtract
+			{
+				DepositDate = extract.Report.DepositDate.Value,
+				EndDate = extract.Report.EndDate,
+				Extract = JsonConvert.SerializeObject(extract),
+				ExtractName = "ACH",
+				Id = 0,
+				IsFederal = false,
+				Journals = JsonConvert.SerializeObject(new List<int>()),
+				LastModified = DateTime.Now,
+				LastModifiedBy = fullName,
+				StartDate = extract.Report.StartDate,
+				
+			};
+			_dbContext.MasterExtracts.Add(dbExtract);
+			_dbContext.SaveChanges();
+			transactions.ForEach(t => _dbContext.ACHTransactionExtracts.Add(new ACHTransactionExtract
+			{
+				Id = 0,
+				MasterExtractId = dbExtract.Id,
+				ACHTransactionId = t.Id
+			}));
+			_dbContext.SaveChanges();
+
+		}
+
+		public List<ACHMasterExtract> GetACHExtractList()
+		{
+			var list = 
+				_dbContext.MasterExtracts.Where(r => r.ExtractName.Equals("ACH"))
+					.ToList();
+
+			return _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.ACHMasterExtract>>(list);
+		}
+
 		public List<MasterExtract> GetExtractList(string report)
 		{
 			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();

@@ -47,7 +47,6 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Notes { get; set; }
 		public string ProcessedBy { get; set; }
 		public DateTime ProcessedOn { get; set; }
-		public List<InvoicePayment> Payments { get; set; }
 		public List<InvoicePayment> InvoicePayments { get; set; }
 		public List<int> PayChecks { get; set; }
 		public List<int> VoidedCreditedChecks { get; set; }
@@ -62,7 +61,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal PaidAmount
 		{
-			get { return Math.Round(Payments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount), 2, MidpointRounding.AwayFromZero); }
+			get { return Math.Round(InvoicePayments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal Balance
 		{
@@ -75,7 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			EmployerTaxes = new List<PayrollTax>();
 			EmployeeTaxes = new List<PayrollTax>();
 			MiscCharges = new List<MiscFee>();
-			Payments = new List<InvoicePayment>();
+			InvoicePayments = new List<InvoicePayment>();
 			Deductions = new List<PayrollDeduction>();
 			PayChecks = new List<int>();
 			VoidedCreditedChecks = new List<int>();
@@ -114,9 +113,9 @@ namespace HrMaxx.OnlinePayroll.Models
 			ProcessedOn = DateTime.Now;
 
 			Notes = string.Empty;
-			if (prevInvoices.Any(i => i.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)))
+			if (prevInvoices.Any(i => i.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced)))
 			{
-				Notes = string.Format("Alert: Payment bounced for Invoices #{0}; ", prevInvoices.Where(i => i.Payments.Any(p => p.Status == PaymentStatus.PaymentBounced)).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", "));
+				Notes = string.Format("Alert: Payment bounced for Invoices #{0}; ", prevInvoices.Where(i => i.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced)).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", "));
 			}
 		}
 

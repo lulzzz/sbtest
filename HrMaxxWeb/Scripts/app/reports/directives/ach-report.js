@@ -9,14 +9,90 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/ach-report.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository',
-				function ($scope, $element, $location, $filter, payrollRepository, reportRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'ngTableParams',
+				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, ngTableParams) {
 					var dataSvc = {
 						startDate: null,
 						endDate: null,
 						postingDate: moment().toDate(),
-						extract: null
+						extract: null,
+						extractFiled: false,
+						isBodyOpen: true
 					}
+					
+					$scope.list = [];
+					$scope.selected = null;
+
+					$scope.tableData = [];
+					$scope.tableParams = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						sorting: {
+							lastModified: 'desc'     // initial sortingf.
+						}
+					}, {
+						total: $scope.list ? $scope.list.length : 0, // length of data
+						getData: function ($defer, params) {
+							$scope.fillTableData(params);
+							$defer.resolve($scope.tableData);
+						}
+					});
+
+					$scope.fillTableData = function (params) {
+						// use build-in angular filter
+						if ($scope.list && $scope.list.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.list, params.filter()) :
+																$scope.list;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParams = params;
+							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					$scope.setItem = function (item) {
+						$scope.selected = null;
+						dataSvc.extract = null;
+						$scope.selected = item;
+						showReview(item.extract.report, item.extract, true);
+
+
+					}
+
+					var getExtracts = function () {
+						reportRepository.getACHExtractList().then(function (data) {
+							$scope.list = data;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+
+						}, function (error) {
+							$scope.addAlert('error getting extract list for report: ACH', 'danger');
+						});
+					}
+
+					$scope.refresh = function () {
+						getExtracts();
+
+					}
+					$scope.downloadFile = function () {
+						reportRepository.downloadExtract(dataSvc.extract.file).then(function (data) {
+
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+						}, function (erorr) {
+							addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+						});
+					};
 					$scope.selectedHost = null;
 					$scope.set = function (host) {
 						$scope.selectedHost = host;
@@ -29,15 +105,51 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
-
+					$scope.view = function (ach) {
+						if (ach.transactionType === 1) {
+							var modalInstance = $modal.open({
+								templateUrl: 'popover/viewpaycheck.html',
+								controller: 'paycheckPopupACHCtrl',
+								size: 'lg',
+								resolve: {
+									paycheck: function() {
+										return ach.sourceId;
+									}
+								}
+							});
+						} else {
+							var modalInstance1 = $modal.open({
+								templateUrl: 'popover/viewinvoice.html',
+								controller: 'invoicePopupACHCtrl',
+								size: 'lg',
+								windowClass: 'my-modal-popup',
+								backdrop: true,
+								keyboard: true,
+								backdropClick: true,
+								resolve: {
+									invoiceId: function () {
+										return ach.sourceParentId;
+									},
+									mainData: function() {
+										return $scope.mainData;
+									},
+									selectedHost: function() {
+										return $scope.selectedHost;
+									}
+								}
+							});
+						}
+						
+					}
 					
-					var showReview = function (report, extract) {
+					var showReview = function (report, extract, extractFiled) {
 						dataSvc.extract = extract;
 						if (dataSvc.extract && dataSvc.extract.data.hosts.length > 0) {
 							$timeout(function () {
 								handleUnlimitedTabsRender();
 							}, 1);
 							$scope.set(dataSvc.extract.data.hosts[0]);
+							dataSvc.extractFiled = extractFiled;
 						}
 					}
 					$scope.getReport = function () {
@@ -48,11 +160,13 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							endDate: moment(dataSvc.endDate).format("MM/DD/YYYY"),
 							depositDate: moment(dataSvc.postingDate).format("MM/DD/YYYY")
 						}
+						$scope.selected = null;
 						reportRepository.getACHReport(request).then(function (extract) {
-							showReview(request, extract);
+							showReview(request, extract, false);
 							
 
 						}, function (erorr) {
+							dataSvc.extract = null;
 							addAlert('Error getting ACH Extract: ' + erorr.statusText, 'danger');
 						});
 					}
@@ -64,6 +178,8 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							a.download = data.name;
 							document.body.appendChild(a);
 							a.click();
+							dataSvc.extractFiled = true;
+							$scope.refresh();
 						}, function (erorr) {
 							addAlert('Failed to download ACH extract : ' + erorr, 'danger');
 						});
@@ -71,7 +187,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 					};
 					
 					var _init = function () {
-						
+						getExtracts();
 					}
 					_init();
 					var handleUnlimitedTabsRender = function () {
@@ -208,3 +324,25 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 		}
 	}
 ]);
+common.controller('paycheckPopupACHCtrl', function ($scope, $uibModalInstance, $filter, paycheck) {
+	$scope.checkId = paycheck;
+
+
+});
+common.controller('invoicePopupACHCtrl', function ($scope, $uibModalInstance, $filter, invoiceId, mainData, selectedHost, payrollRepository) {
+	$scope.invoiceId = invoiceId;
+	$scope.selectedHost = selectedHost;
+	$scope.mainData = mainData;
+	$scope.data = {};
+	$scope.invoice = null;
+	var _init = function() {
+		payrollRepository.getInvoiceById($scope.invoiceId).then(function (invoice) {
+			$scope.invoice = invoice;
+
+
+		}, function (erorr) {
+			//addAlert('Error getting invoice: ' + erorr.statusText, 'danger');
+		});
+	}
+	_init();
+});

@@ -221,7 +221,7 @@ common.factory('payrollRepository', [
 			},
 			getInvoiceById: function (invoiceId) {
 				var deferred = $q.defer();
-				payrollServer.one('Invoice').one(invoiceId).get().then(function (data) {
+				payrollServer.one('PayrollInvoice').one(invoiceId).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);
