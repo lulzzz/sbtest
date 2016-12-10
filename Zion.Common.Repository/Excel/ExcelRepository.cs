@@ -111,11 +111,11 @@ namespace HrMaxx.Common.Repository.Excel
 						var match = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == col);
 						if (!string.IsNullOrWhiteSpace(match.Key))
 						{
-							var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
-							var header = match.Key;
-							erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
+							
 						}
-						
+						var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
+						var header = string.IsNullOrWhiteSpace(match.Key) ? ("Col-" + col) : match.Key;
+						erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
 
 					}
 					result.Add(erow);

@@ -105,9 +105,23 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 								hourlyRate:0
 							});
 						}
-						else {
+						else if ($scope.selected.payType === 2) {
 							$scope.selected.payCodes = [];
 							$scope.selectedPayCodes = [];
+						} else {
+							$scope.selected.payCodes = [];
+							$scope.selectedPayCodes = [];
+							$scope.selected.rate = 0;
+							for (var i = 1; i <= 18; i++) {
+								$scope.selected.payCodes.push({
+									id: -2,
+									companyId: $scope.selected.companyId,
+									code: 'JC',
+									description: 'Job Cost ' + i ,
+									hourlyRate: 0
+								});
+							}
+							
 						}
 					}
 
@@ -130,7 +144,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.selected;
 						if (!c.payrollSchedule || !c.payType)
 							return false;
-						if (c.payType!==3 && (c.rate<0 || c.rate===null))
+						if ((c.payType===1 || c.payType===2) && (c.rate<0 || c.rate===null))
 							return false;
 						if (c.paymentMethod === 2) {
 							//var b = c.bankAccount;

@@ -30,21 +30,21 @@
 				<th class="text-center">Amount</th>
 				<th class="text-center">YTD</th>
 			</tr>
-			<tr ng-repeat-start="pc in check.payCodes">
+			<tr ng-repeat-start="pc in check.payCodes" ng-if="check.employee.payType<4">
 				<td>{{pc.payCode.description}} - Hours</td>
 				<td class="text-right">{{pc.hours}}</td>
 				<td class="text-right">{{pc.payCode.hourlyRate | currency:'$'}}</td>
 				<td class="text-right">{{pc.amount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytd | currency:'$'}}</td>
 			</tr>
-			<tr ng-repeat-end ng-if="pc.overtimeHours>0 || pc.ytdOvertime>0">
+			<tr ng-repeat-end ng-if="check.employee.payType<4 && (pc.overtimeHours>0 || pc.ytdOvertime>0)">
 				<td>{{pc.payCode.description}} - Overtime</td>
 				<td class="text-right">{{pc.overtimeHours}}</td>
 				<td class="text-right">{{pc.payCode.hourlyRate * 1.5 | currency:'$'}}</td>
 				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
 			</tr>
-			<tr ng-if="check.employee.payType===2">
+			<tr ng-if="check.employee.payType===2 || check.employee.payType===4">
 				<td>Salary</td>
 				<td class="text-right"></td>
 				<td class="text-right"></td>

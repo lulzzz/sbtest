@@ -169,11 +169,11 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal CalculatedSalary
 		{
-			get { return Employee.PayType == EmployeeType.Salary ? Salary : Math.Round(PayCodes.Sum(pc => pc.Amount + pc.OvertimeAmount), 2, MidpointRounding.AwayFromZero); }
+			get { return Employee.PayType == EmployeeType.Salary || Employee.PayType == EmployeeType.JobCost ? Salary : Math.Round(PayCodes.Sum(pc => pc.Amount + pc.OvertimeAmount), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal CalculatedSalaryYTD
 		{
-			get { return Employee.PayType == EmployeeType.Salary ? YTDSalary : Math.Round(PayCodes.Sum(pc => pc.YTD + pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); }
+			get { return Employee.PayType == EmployeeType.Salary || Employee.PayType == EmployeeType.JobCost ? YTDSalary : Math.Round(PayCodes.Sum(pc => pc.YTD + pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal Regular
 		{
@@ -223,6 +223,11 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				YTDSalary = Math.Round(YTDSalary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 				
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.JobCost)
+			{
+				YTDSalary = Math.Round(YTDSalary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+				AddToYTDPayCodes(paycheck.PayCodes);
 			}
 			else
 			{

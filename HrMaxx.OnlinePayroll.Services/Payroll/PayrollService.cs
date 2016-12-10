@@ -109,6 +109,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 							paycheck.PayCodes = new List<PayrollPayCode>();
 						}
+						else if (paycheck.Employee.PayType == EmployeeType.JobCost)
+						{
+							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+						}
 						else
 						{
 							var pc = paycheck.PayCodes[0];
@@ -255,7 +259,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private decimal CalculatePayTypeUsage(Employee employee, decimal compnesaitonAmount)
 		{
 			var quotient = employee.Rate;
-			if (employee.PayType == EmployeeType.Salary)
+			if (employee.PayType == EmployeeType.Salary || employee.PayType == EmployeeType.JobCost)
 			{
 				if (employee.PayrollSchedule == PayrollSchedule.Weekly)
 					quotient = employee.Rate/(40);
@@ -1117,7 +1121,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", journal.Memo));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", payroll.Company.Memo));
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", company.Name));
-					if (payCheck.Employee.PayType == EmployeeType.Salary)
+					if (payCheck.Employee.PayType == EmployeeType.Salary || payCheck.Employee.PayType == EmployeeType.JobCost)
 					{
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr1-s-1", "Salary"));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-1-1", payCheck.Salary.ToString("C")));
@@ -1181,7 +1185,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				}
 				decimal prwytd = 0;
-				if (payCheck.Employee.PayType == EmployeeType.Salary)
+				if (payCheck.Employee.PayType == EmployeeType.Salary || payCheck.Employee.PayType==EmployeeType.JobCost)
 				{
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr1-s", "Salary"));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-1", payCheck.Salary.ToString("C")));
@@ -1377,7 +1381,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private decimal GetGrossWage(PayCheck paycheck)
 		{
 			
-			if (paycheck.Employee.PayType == EmployeeType.Salary)
+			if (paycheck.Employee.PayType == EmployeeType.Salary || paycheck.Employee.PayType == EmployeeType.JobCost)
 				return Math.Round(paycheck.Salary, 2);
 			else
 			{

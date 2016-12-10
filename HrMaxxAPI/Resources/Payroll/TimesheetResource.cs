@@ -21,14 +21,17 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string EmployeeNo { get; set; }
 		public string SSN { get; set; }
 		public decimal Salary { get; set; }
+		public decimal Gross { get; set; }
 		public string Notes { get; set; }
 		public List<PayrollPayCodeResource> PayCodes { get; set; }
+		public List<PayrollPayCodeResource> JobCostCodes { get; set; }
 		public List<PayrollPayTypeResource> Compensations { get; set; }
 
 		public void FillFromImport(ExcelRead er, CompanyResource company, List<PayType> payTypes)
 		{
 			PayCodes = new List<PayrollPayCodeResource>();
-			Compensations = new ListStack<PayrollPayTypeResource>();
+			JobCostCodes = new List<PayrollPayCodeResource>();
+			Compensations = new List<PayrollPayTypeResource>();
 			var error = string.Empty;
 			const string ssnRegex = @"^(\d{3}-\d{2}-\d{4})$";
 			if (!Regex.IsMatch(er.Value("ssn"), ssnRegex))
@@ -53,6 +56,13 @@ namespace HrMaxxAPI.Resources.Payroll
 				decimal.TryParse(er.ValueFromContains("salary"), out sala);
 				if (sala > 0)
 					Salary = sala;
+			}
+			if (!string.IsNullOrWhiteSpace(er.ValueFromContains("gross")))
+			{
+				decimal gross = 0;
+				decimal.TryParse(er.ValueFromContains("gross"), out gross);
+				if (gross > 0)
+					Gross = gross;
 			}
 			if (!string.IsNullOrWhiteSpace(er.Value("employee name")))
 			{
@@ -217,6 +227,7 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public void FillFromImportWithMap(ExcelRead er, CompanyResource company, List<PayType> payTypes, ImportMap importMap)
 		{
+			JobCostCodes = new List<PayrollPayCodeResource>();
 			PayCodes = new List<PayrollPayCodeResource>();
 			Compensations = new ListStack<PayrollPayTypeResource>();
 			var error = string.Empty;
@@ -263,6 +274,13 @@ namespace HrMaxxAPI.Resources.Payroll
 					decimal.TryParse(val, out sala);
 					if (sala > 0)
 						Salary = sala;
+				}
+				else if (col.Key.Contains("Gross"))
+				{
+					decimal gross = 0;
+					decimal.TryParse(val, out gross);
+					if (gross > 0)
+						Gross = gross;
 				}
 				else if (col.Key.Equals("Notes"))
 				{
@@ -320,6 +338,40 @@ namespace HrMaxxAPI.Resources.Payroll
 				}
 				
 				 
+			}
+			if (importMap.HasJobCost && importMap.JobCostStartingColumn > 0 &&
+			    (importMap.JobCostColumnCount == 3 || importMap.JobCostColumnCount == 4))
+			{
+				for (var jci=importMap.JobCostStartingColumn;jci<importMap.ColumnCount && JobCostCodes.Count<18;jci=jci+importMap.JobCostColumnCount)
+				{
+					var jccode = new PayrollPayCodeResource()
+					{
+						ScreenOvertime = "0" ,Amount=0, OvertimeHours = 0, OvertimeAmount=0, ScreenHours = "0", Hours = 0,
+						PayCode = new CompanyPayCodeResource
+						{
+							Code="JC", CompanyId = company.Id.Value, Description = "Job Cost", HourlyRate = 0, Id=-2
+						}
+					};
+					foreach (var jobcost in importMap.JobCostMap.OrderBy(j=>j.Value))
+					{
+						if ((jci + jobcost.Value - 2) < importMap.ColumnCount)
+						{
+							var val = er.ValueAtIndex(jci + jobcost.Value - 2);
+							if (jobcost.Key.Equals("Amount"))
+								jccode.PWAmount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							else if (jobcost.Key.Equals("Rate"))
+								jccode.PayCode.HourlyRate = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							else if (jobcost.Key.Equals("Pieces"))
+								jccode.Hours = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							else
+							{
+								jccode.PayCode.Description = val;
+							}	
+						}
+						
+					}
+					JobCostCodes.Add(jccode);
+				}
 			}
 			if (!string.IsNullOrWhiteSpace(error))
 			{

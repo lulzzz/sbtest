@@ -166,3 +166,6 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_ACHTransactionExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[ACHTransactionExtract]'))
 ALTER TABLE [dbo].[ACHTransactionExtract] CHECK CONSTRAINT [FK_ACHTransactionExtract_MasterExtracts]
 GO
+
+
+

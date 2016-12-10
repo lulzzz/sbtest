@@ -138,9 +138,9 @@ namespace HrMaxx.Common.Services.Excel
 				var error = string.Empty;
 
 				var data = new List<ExcelRead>();
-				if (fileName.EndsWith(".xlsx"))
+				if (fileName.ToLower().EndsWith(".xlsx"))
 					data = _excelRepository.GetExcelDataWithMap(file, importMap.StartingRow, importMap);
-				else if (fileName.EndsWith(".csv"))
+				else if (fileName.ToLower().EndsWith(".csv") || fileName.ToLower().EndsWith(".txt"))
 				{
 					var lines = File.ReadAllLines(file.Directory.FullName + "/" + file.Name);
 					var rowCounter = 1;
@@ -154,10 +154,9 @@ namespace HrMaxx.Common.Services.Excel
 							foreach (var value in values)
 							{
 								var mapVal = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == colCounter);
-								if (!string.IsNullOrWhiteSpace(mapVal.Key))
-								{
-									keyVals.Add(new KeyValuePair<string, string>(mapVal.Key, value));
-								}
+								
+								var header = string.IsNullOrWhiteSpace(mapVal.Key) ? "Col " + colCounter : mapVal.Key;
+								keyVals.Add(new KeyValuePair<string, string>(header, value.Replace("\"", string.Empty)));
 								colCounter++;
 							}
 							data.Add(new ExcelRead()

@@ -199,7 +199,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	{
 		Hourly=1,
 		Salary=2,
-		PieceWork=3
+		PieceWork=3,
+		JobCost=4
 	}
 
 	public enum EmployeeTaxStatus

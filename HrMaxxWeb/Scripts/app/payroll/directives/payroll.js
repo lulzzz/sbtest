@@ -216,6 +216,18 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							}
 						});
 					}
+					$scope.showjobcost = function (listitem) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/updatejobcost.html',
+							controller: 'updateJobCostCtrl',
+							size: 'md',
+							resolve: {
+								paycheck: function () {
+									return listitem;
+								}
+							}
+						});
+					}
 					$scope.showdeds = function (listitem) {
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatededs.html',
@@ -548,6 +560,34 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 	_init();
 });
 
+common.controller('updateJobCostCtrl', function ($scope, $uibModalInstance, $filter, paycheck) {
+	$scope.original = paycheck;
+	$scope.paycheck = angular.copy(paycheck);
+	
+	$scope.changesMade = false;
+	
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	$scope.save = function () {
+		if (false === $('form[name="jobcostform"]').parsley().validate()) {
+			var errors = $('.parsley-error');
+			return false;
+		}
+		$scope.original.payCodes = [];
+		$.each($scope.paycheck.payCodes, function (index, pt) {
+			$scope.original.payCodes.push($scope.paycheck.payCodes[index]);
+		});
+		$uibModalInstance.close($scope);
+	};
+	
+	
+	var _init = function () {
+		
+	}
+	_init();
+});
+
 common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, agencies, companyRepository) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
@@ -656,18 +696,22 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		$scope.importMap = {
 			startingRow: 1,
 			columnCount: 1,
-			columnMap: []
+			columnMap: [],
+			hasJobCost: false,
+			jobCostStartingColumn: 0,
+			jobCostColumnCount: 4,
+			jobCostMap: []
 		};
 	}
-	
+	var jobCostColumns = ['Amount', 'Rate', 'Pieces'];
 	var requiredColumns = ['Employee No', 'Employee Name', 'SSN', 'Pay Rate/Salary'];
 	$scope.selected = null;
 	$scope.files = [];
 	$scope.onFileSelect = function ($files) {
 		$scope.files = [];
-		if (!$files[0] || !($files[0].name.endsWith(".xlsx") || $files[0].name.endsWith(".csv"))) {
+		if (!$files[0] || !($files[0].name.toLowerCase().endsWith(".xlsx") || $files[0].name.toLowerCase().endsWith(".csv") || $files[0].name.toLowerCase().endsWith(".txt"))) {
 			$scope.alerts.push({
-				message: 'Please select an excel or csv file '
+				message: 'Please select an excel, csv or txt (comma separated file) file '
 			});
 			return false;
 		} else {
@@ -727,8 +771,25 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 
 				if (pc) {
 					counter++;
-					if (pc.employee.payType === 2)
+					if (pc.employee.payType === 2) {
 						pc.salary = t.salary;
+					}
+					else if (pc.employee.payType === 4) {
+						pc.salary = t.gross ? t.gross : t.salary;
+						pc.payCodes = [];
+
+						$.each(t.jobCostCodes, function (pcind, paycode) {
+							var payc = {
+								payCode: paycode.payCode,
+								screenHours: paycode.hours,
+								screenOvertime: 0,
+								hours: 0,
+								overtimeHours: 0,
+								pwAmount: paycode.pwAmount
+							};
+							pc.payCodes.push(payc);
+						});
+					}
 					else if (pc.employee.payType === 1) {
 						$.each(t.payCodes, function (pcind, paycode) {
 							var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
@@ -739,8 +800,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 									exists[0].screenOvertime = paycode.screenOvertime;
 									exists[0].hours = paycode.hours;
 									exists[0].overtimeHours = paycode.overtimeHours;
-									if (paycode.payCode.id === 0 && paycode.payCode.hourlyRate) {
-										exists[0].payCode.hourlyRate = paycode.payCode.hourlyRate;
+									if (paycode.payCode.id === 0 && t.salary) {
+										exists[0].payCode.hourlyRate = t.salary;
 									}
 								} else
 									pc.payCodes.push(paycode);
@@ -840,8 +901,48 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			$scope.importMap.columnMap.splice(index, 1);
 		$scope.selected = null;
 	}
+	$scope.changeHasJobCost = function() {
+		if ($scope.importMap.hasJobCost) {
+			$.each(jobCostColumns, function (i2, jc) {
+				$scope.importMap.jobCostMap.push({
+					key: jc,
+					value: i2 + 1
+				});
+			});
+			$scope.importMap.jobCostMap.push({
+				key: 'Description',
+				value: 4
+			});
+
+		} else {
+			$scope.jobCostMap = [];
+			$scope.importMap.jobCostColumnCount = 4;
+			$scope.importMap.jobCostStartingColumn = 0;
+
+		}
+	}
+	$scope.setJobCost = function () {
+		if ($scope.importMap.jobCostColumnCount === 3) {
+			var desc = $filter('filter')($scope.importMap.jobCostMap, { key: 'Description' })[0];
+			if (desc) {
+				$scope.importMap.jobCostMap.splice($scope.importMap.jobCostMap.indexOf(desc),1);
+			}
+		}
+		if ($scope.importMap.jobCostColumnCount === 4) {
+			var desc = $filter('filter')($scope.importMap.jobCostMap, { key: 'Description' })[0];
+			if (!desc) {
+				var max = $filter('orderBy')($scope.importMap.jobCostMap, 'value', true);
+				$scope.importMap.jobCostMap.push({
+					key: 'Description',
+					value: max
+				});
+			}
+			
+		}
+	}
 	var init = function () {
 		requiredColumns.push('Notes');
+		requiredColumns.push('Gross Wage');
 		requiredColumns.push('Base Rate Hours');
 		requiredColumns.push('Base Rate Overtime');
 		
@@ -854,34 +955,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			requiredColumns.push(pt.name);
 			
 		});
-		//$scope.importMap.columnMap.push({
-		//	key: 'Base Rate',
-		//	value: 0
-		//});
-		//$scope.importMap.columnMap.push({
-		//	key: 'Base Rate Hours',
-		//	value: 0
-		//});
-		//$scope.importMap.columnMap.push({
-		//	key: 'Base Rate Overtime',
-		//	value: 0
-		//});
-		//$.each(company.payCodes, function(i, pc) {
-		//	$scope.importMap.columnMap.push({
-		//		key: pc.code + ' Hours',
-		//		value: 0
-		//	});
-		//	$scope.importMap.columnMap.push({
-		//		key: pc.code + ' Overtime',
-		//		value: 0
-		//	});
-		//});
-		//$.each(payTypes, function(i1, pt) {
-		//	$scope.importMap.columnMap.push({
-		//		key: pt.name,
-		//		value: 0
-		//	});
-		//});
+		
 	}
 	init();
 });
