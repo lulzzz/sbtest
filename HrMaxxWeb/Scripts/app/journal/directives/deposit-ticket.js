@@ -31,8 +31,7 @@ common.directive('depositTicket', ['zionAPI','version',
 
 					$scope.data = dataSvc;
 					$scope.cancel = function () {
-						$scope.$parent.$parent.selected = null;
-						$scope.datasvc.isBodyOpen = true;
+						$scope.$parent.$parent.cancel();
 					}
 
 					var addAlert = function (error, type) {
@@ -78,12 +77,25 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.selectedjd = $scope.item.journalDetails[currentLength];
 					}
 
-					$scope.saveJournalDetail = function(jd) {
+					$scope.saveJournalDetail = function (jd) {
+						if (jd.screenPayee) {
+							if (!jd.screenPayee.id) {
+								jd.payee = {
+									id : '00000000-0000-0000-0000-000000000000',
+									name: jd.screenPayee,
+									isVendor: true
+								};
+								dataSvc.allPayees.push(jd.payee);
+							} else {
+								jd.payee = jd.screenPayee;
+							}
+						}
 						$scope.selectedjd = null;
+
 						updateItemAmount();
 					}
 					$scope.isJournalDetailValid = function(jd) {
-						if (!jd.accountId || !jd.accountName || !jd.amount || !jd.depositMethod || !jd.payee)
+						if (!jd.accountId || !jd.accountName || !jd.amount || !jd.depositMethod || (!jd.payee && !jd.screenPayee))
 							return false;
 						else if (jd.depositMethod && jd.depositMethod.key === 1 && !jd.checkNumber)
 							return false;
@@ -195,6 +207,7 @@ common.directive('depositTicket', ['zionAPI','version',
 						}
 
 						$.each($scope.item.journalDetails, function (index, jd) {
+							jd.screenPayee = angular.copy(jd.payee);
 							if (!jd.accountId!==$scope.datasvc.selectedAccount.id) {
 								var dp = $filter('filter')(dataSvc.depositMethods, { key: jd.depositMethod })[0];
 								if (dp) {

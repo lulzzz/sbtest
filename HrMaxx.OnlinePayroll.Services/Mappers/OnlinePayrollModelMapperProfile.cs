@@ -442,6 +442,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Payroll, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.PrintStatus, opt => opt.MapFrom(src => 0))
+				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.Notes) ? string.Empty : src.Notes))
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
 				.ForMember(dest => dest.PayCheckExtracts, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollInvoice, opt => opt.Ignore())

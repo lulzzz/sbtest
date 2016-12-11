@@ -17,7 +17,7 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 				function ($scope, $rootScope, $filter, companyRepository) {
 					
 				$scope.selected = null;
-				
+					$scope.mainData = $scope.$parent.$parent.mainData;
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};
@@ -29,7 +29,8 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 						payType: null,
 						ratePerHour: 0,
 						annualLimit: 0,
-						isNew:true
+						isNew: true,
+						companyManaged: false
 					};
 					$scope.list.push($scope.selected);
 				},

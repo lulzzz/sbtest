@@ -137,6 +137,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public PayType PayType { get; set; }
 		public decimal RatePerHour { get; set; }
 		public decimal AnnualLimit { get; set; }
+		public bool CompanyManaged { get; set; }
 	}
 
 	public class CompanyTaxState

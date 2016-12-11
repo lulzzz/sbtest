@@ -691,6 +691,9 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 	$scope.alerts = [];
 	if (map) {
 		$scope.importMap = map;
+		if (!$scope.importMap.selfManagedPayTypes) {
+			$scope.importMap.selfManagedPayTypes = [];
+		}
 
 	} else {
 		$scope.importMap = {
@@ -700,7 +703,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			hasJobCost: false,
 			jobCostStartingColumn: 0,
 			jobCostColumnCount: 4,
-			jobCostMap: []
+			jobCostMap: [],
+			selfManagedPayTypes: []
 		};
 	}
 	var jobCostColumns = ['Amount', 'Rate', 'Pieces'];
@@ -750,7 +754,12 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 
 	$scope.uploadDocument = function () {
 		var importMap = angular.copy($scope.importMap);
-		importMap.columnMap = $filter('filter')($scope.importMap.columnMap, { value: '!' + 0 });
+		importMap.columnMap = [];
+		$.each($scope.importMap.columnMap, function(i3, cm) {
+			if (cm.value !== 0)
+				importMap.columnMap.push(cm);
+		});
+		//importMap.columnMap = $filter('filter')($scope.importMap.columnMap, { value: '!' + 0 });
 		$scope.files[0].data = JSON.stringify({
 			companyId: $scope.company.id,
 			payTypes: $scope.payTypes,
@@ -777,7 +786,13 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 					else if (pc.employee.payType === 4) {
 						pc.salary = t.gross ? t.gross : t.salary;
 						pc.payCodes = [];
-
+						var basePC = $filter('filter')(t.payCodes, { payCode: { id: 0 } })[0];
+						if (basePC) {
+							if (t.salary) {
+								basePC.payCode.hourlyRate = t.salary;
+							}
+							pc.payCodes.push(basePC);
+						}
 						$.each(t.jobCostCodes, function (pcind, paycode) {
 							var payc = {
 								payCode: paycode.payCode,
@@ -825,6 +840,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							pc.compensations.push(comp);
 					});
 					pc.notes = t.notes;
+					if (t.accumulations.length > 0)
+						pc.accumulations = t.accumulations;
 				}
 
 			});
@@ -855,6 +872,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			
 		}
 	}
+	$scope.selfManagedAccumulations = [];
+		
 	
 	$scope.availableColumns = function(index) {
 		var returnList = [];
@@ -901,6 +920,9 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			$scope.importMap.columnMap.splice(index, 1);
 		$scope.selected = null;
 	}
+	$scope.delete = function(index) {
+		$scope.importMap.columnMap.splice(index, 1);
+	}
 	$scope.changeHasJobCost = function() {
 		if ($scope.importMap.hasJobCost) {
 			$.each(jobCostColumns, function (i2, jc) {
@@ -941,6 +963,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		}
 	}
 	var init = function () {
+		var selfManagedAccumulations = $filter('filter')($scope.company.accumulatedPayTypes, { companyManaged: true });
 		requiredColumns.push('Notes');
 		requiredColumns.push('Gross Wage');
 		requiredColumns.push('Base Rate Hours');
@@ -954,6 +977,35 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		$.each(payTypes, function (i1, pt) {
 			requiredColumns.push(pt.name);
 			
+		});
+		requiredColumns.push('Base Rate Amount');
+		requiredColumns.push('Base Rate Overtime Amount');
+		$.each(selfManagedAccumulations, function (i2, apt) {
+			var exists = $filter('filter')($scope.importMap.selfManagedPayTypes, { payTypeId: apt.id })[0];
+			if (exists) {
+				exists.payType = apt.payType;
+			} else {
+				var apt1 = {
+					payType: apt.payType,
+					payTypeId: apt.id,
+					importMap: []
+				}
+				apt1.importMap.push({
+					key: 'Used', value: 0
+				});
+				apt1.importMap.push({
+					key: 'Accumulated', value: 0
+				});
+				apt1.importMap.push({
+					key: 'YTD Accumulated', value: 0
+				});
+				apt1.importMap.push({
+					key: 'YTD Used', value: 0
+				});
+				$scope.importMap.selfManagedPayTypes.push(apt1);
+			}
+			
+
 		});
 		
 	}

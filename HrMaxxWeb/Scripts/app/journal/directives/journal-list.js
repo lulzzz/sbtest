@@ -91,7 +91,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					};
 					$scope.cancel = function () {
 						$scope.selected = null;
-						$scope.data.isBodyOpen = true;
+						dataSvc.isBodyOpen = true;
 					}
 					
 					$scope.set = function(item) {
@@ -192,7 +192,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 								if (data.transactionType === 4 && data.checkNumber > dataSvc.startingAdjustmentNumber) {
 									dataSvc.startingAdjustmentNumber = data.checkNumber + 1;
 								}
-								if (check.transactionType === 1) {
+								if (check.transactionType === 2 || check.transactionType===3) {
 									addPayeeToVendorCustomers(data);
 								}
 								
@@ -215,23 +215,37 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						}
 					}
 					var addPayeeToVendorCustomers = function (j) {
-						var payee = {
-							id: j.payeeId,
-							name: j.payeeName,
-							isVendor: j.entityType === EntityTypes.Vendor
-						};
-						if (j.entityType === EntityTypes.Vendor) {
-							var exists = $filter('filter')(dataSvc.vendors, { id: payee.id })[0];
-							if (!exists) {
-								dataSvc.vendors.push(payee);
+						if (j.transactionType === 2) {
+							var payee = {
+								id: j.payeeId,
+								name: j.payeeName,
+								isVendor: j.entityType === EntityTypes.Vendor
+							};
+							if (j.entityType === EntityTypes.Vendor) {
+								var exists = $filter('filter')(dataSvc.vendors, { id: payee.id })[0];
+								if (!exists) {
+									dataSvc.vendors.push(payee);
+								}
+							}
+							if (j.entityType === EntityTypes.Customer) {
+								var exists1 = $filter('filter')(dataSvc.customers, { id: payee.id })[0];
+								if (!exists1) {
+									dataSvc.customers.push(payee);
+								}
 							}
 						}
-						if (j.entityType === EntityTypes.Customer) {
-							var exists1 = $filter('filter')(dataSvc.customers, { id: payee.id })[0];
-							if (!exists1) {
-								dataSvc.customers.push(payee);
-							}
+						else if (j.transactionType === 3) {
+							$.each(j.journalDetails, function (i, jd) {
+								if (jd.payee && jd.payee.id) {
+									var exists = $filter('filter')(dataSvc.vendors, { id: jd.payee.id })[0];
+									if (!exists) {
+										dataSvc.vendors.push(payee);
+									}
+								}
+							});
+							
 						}
+						
 						
 					}
 					$scope.filterByDateRange = function() {
@@ -351,6 +365,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							newItem.payeeName = '';
 						}
 						$scope.selected = newItem;
+						dataSvc.isBodyOpen = false;
 					}
 					$scope.refresh = function() {
 						getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, null, null);

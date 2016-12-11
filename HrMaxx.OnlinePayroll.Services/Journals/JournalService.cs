@@ -162,8 +162,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				{
 					journal.PayrollPayCheckId = null;
 
-					if ((journal.TransactionType == TransactionType.RegularCheck || journal.TransactionType == TransactionType.Deposit) &&
-					    journal.PayeeId == Guid.Empty)
+					if (journal.TransactionType == TransactionType.RegularCheck  && journal.PayeeId == Guid.Empty)
 					{
 						if (journal.EntityType == EntityTypeEnum.Vendor || journal.EntityType == EntityTypeEnum.Customer)
 						{
@@ -173,6 +172,30 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							var savedVC = _companyService.SaveVendorCustomers(vc);
 							journal.PayeeId = savedVC.Id;
 						}
+					}
+					else if (journal.TransactionType == TransactionType.Deposit && journal.JournalDetails.Any(jd=>jd.Payee!=null && jd.Payee.Id==Guid.Empty))
+					{
+						var newVendors = new List<VendorCustomer>();
+						var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();
+						jds.ForEach(p=>
+						{
+							if (newVendors.Any(v => v.Name.Equals(p.Payee.Name)))
+							{
+								p.Payee = newVendors.First(v => v.Name.Equals(p.Payee.Name));
+							}
+							else
+							{
+								var vc = new VendorCustomer();
+								vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, p.Payee.Name,
+									p.Payee.IsVendor, journal.LastModifiedBy);
+								var savedVC = _companyService.SaveVendorCustomers(vc);
+								p.Payee = savedVC;
+								newVendors.Add(savedVC);
+							}
+							
+							
+						});
+						
 					}
 					var saved =  _journalRepository.SaveJournal(journal);
 					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);

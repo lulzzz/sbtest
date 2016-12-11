@@ -315,7 +315,7 @@
 				</div>
 
 				<div class="row" ng-show="showTable()">
-					<div class="col-sm-8">
+					<div class="col-sm-4">
 						<table class="table table-header table-bordered table-condensed form-controls input-sm">
 							<thead>
 								<tr>
@@ -343,13 +343,16 @@
 										<!-- form -->
 										<form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
 											<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-												<i class="fa fa-edit m-r-5"></i> edit
+												<i class="fa fa-edit m-r-5"></i> 
+											</button>
+											<button type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="delete($index)">
+												<i class="fa fa-recycle m-r-5"></i> 											
 											</button>
 											<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success">
-												<i class="fa fa-save m-r-5"></i> save
+												<i class="fa fa-save m-r-5"></i> 
 											</button>
 											<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default">
-												<i class="fa fa-remove m-r-5"></i> cancel
+												<i class="fa fa-remove m-r-5"></i> 
 											</button>
 										</form>
 									</td>
@@ -364,6 +367,33 @@
 
 							</tbody>
 						</table>
+					</div>
+					<div class="col-sm-4" ng-if="importMap.selfManagedPayTypes.length>0">
+						<div class="col-sm-12" ng-repeat="apt in importMap.selfManagedPayTypes track by $index">
+							<div class="row alert alert-success">
+								{{apt.payType.description}}
+							</div>
+							<table class="table table-header table-bordered table-condensed form-controls input-sm">
+								<thead>
+									<tr>
+										<td class="col-sm-6">Field</td>
+										<td class="col-sm-3">Position</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="f in apt.importMap track by $index">
+										<td>
+											{{ f.key }}
+										</td>
+										<td>
+											<input class="form-control" type="number" ng-model="f.value" required data-parsley-pattern="/^[0-9]?$/" />
+										</td>
+									</tr>
+
+
+								</tbody>
+							</table>
+						</div>
 					</div>
 					<div class="col-sm-4" ng-if="importMap.hasJobCost && importMap.jobCostStartingColumn>0 && importMap.jobCostColumnCount>0">
 						<table class="table table-header table-bordered table-condensed form-controls input-sm">
@@ -380,8 +410,7 @@
 							<tbody>
 								<tr ng-repeat="f in importMap.jobCostMap track by $index">
 									<td>
-										{{ f.key }}
-										
+										{{ f.key }}										
 									</td>
 									<td>
 										<input class="form-control" type="number" ng-model="f.value" required data-parsley-pattern="/^[0-9]?$/" />

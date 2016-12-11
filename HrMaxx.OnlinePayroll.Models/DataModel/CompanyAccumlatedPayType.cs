@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.Guid CompanyId { get; set; }
         public decimal RatePerHour { get; set; }
         public decimal AnnualLimit { get; set; }
+        public bool CompanyManaged { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual PayType PayType { get; set; }

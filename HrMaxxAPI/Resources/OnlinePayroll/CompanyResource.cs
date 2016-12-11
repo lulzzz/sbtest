@@ -147,6 +147,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal RatePerHour { get; set; }
 		[Required]
 		public decimal AnnualLimit { get; set; }
+		public bool CompanyManaged { get; set; }
 	}
 
 	public class CompanyTaxStateResource

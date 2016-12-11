@@ -138,7 +138,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							}
 							paycheck.Employee.Rate = pc.PayCode.HourlyRate;
 						}
-						paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, employeePayChecks);
+						if(paycheck.Employee.PayType!=EmployeeType.JobCost)
+							paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, employeePayChecks);
 						paycheck.YTDSalary = Math.Round(employeePayChecks.Sum(p => p.Salary) + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 						
 						var grossWage = GetGrossWage(paycheck);
@@ -213,44 +214,57 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var fiscalYTDChecks = employeeChecks.Where(p => p.PayDay < paycheck.PayDay).ToList();
 			foreach (var payType in accumulatedPayTypes)	
 			{
-				var ytdAccumulation =
-					fiscalYTDChecks.SelectMany(e => e.Accumulations)
-						.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
-						.Sum(a => a.AccumulatedValue);
-
-				var ytdUsed =
-					fiscalYTDChecks.SelectMany(e => e.Accumulations)
-						.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
-						.Sum(a => a.Used);
-
-				var carryOver =
-					employeeChecks.Where(p => p.PayDay < fiscalStartDate)
-						.SelectMany(p => p.Accumulations)
-						.ToList()
-						.Sum(pc => (pc.AccumulatedValue - pc.Used));
-
-				var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
-				var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id) ? CalculatePayTypeUsage(paycheck.Employee, paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount) :
-				(decimal) 0;
-				var accumulationValue = (decimal)0;
-				if ((ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
-					accumulationValue = payType.AnnualLimit - ytdAccumulation;
-				else
+				if (!payType.CompanyManaged)
 				{
-					accumulationValue = thisCheckValue;
+					var ytdAccumulation =
+						fiscalYTDChecks.SelectMany(e => e.Accumulations)
+							.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
+							.Sum(a => a.AccumulatedValue);
+
+					var ytdUsed =
+						fiscalYTDChecks.SelectMany(e => e.Accumulations)
+							.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
+							.Sum(a => a.Used);
+
+					var carryOver =
+						employeeChecks.Where(p => p.PayDay < fiscalStartDate)
+							.SelectMany(p => p.Accumulations)
+							.ToList()
+							.Sum(pc => (pc.AccumulatedValue - pc.Used));
+
+					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
+					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
+						? CalculatePayTypeUsage(paycheck.Employee,
+							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
+						: (decimal) 0;
+					var accumulationValue = (decimal) 0;
+					if ((ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
+						accumulationValue = payType.AnnualLimit - ytdAccumulation;
+					else
+					{
+						accumulationValue = thisCheckValue;
+					}
+
+					result.Add(new PayTypeAccumulation
+					{
+						PayType = payType,
+						AccumulatedValue = Math.Round(accumulationValue, 2, MidpointRounding.AwayFromZero),
+						YTDFiscal = Math.Round(ytdAccumulation + accumulationValue, 2, MidpointRounding.AwayFromZero),
+						FiscalStart = fiscalStartDate,
+						FiscalEnd = fiscalEndDate,
+						Used = Math.Round(thisCheckUsed, 2, MidpointRounding.AwayFromZero),
+						YTDUsed = Math.Round(ytdUsed + thisCheckUsed, 2, MidpointRounding.AwayFromZero),
+						CarryOver = Math.Round(carryOver, 2, MidpointRounding.AwayFromZero)
+					});
 				}
-
-				result.Add(new PayTypeAccumulation
+				else if(paycheck.Accumulations.Any(apt=>apt.PayType.Id==payType.Id))
 				{
-					PayType = payType,
-					AccumulatedValue = Math.Round(accumulationValue, 2, MidpointRounding.AwayFromZero),
-					YTDFiscal = Math.Round(ytdAccumulation + accumulationValue, 2, MidpointRounding.AwayFromZero),
-					FiscalStart = fiscalStartDate,
-					FiscalEnd = fiscalEndDate,
-					Used = Math.Round(thisCheckUsed, 2, MidpointRounding.AwayFromZero),
-					YTDUsed = Math.Round(ytdUsed + thisCheckUsed, 2, MidpointRounding.AwayFromZero),
-					CarryOver = Math.Round(carryOver, 2, MidpointRounding.AwayFromZero)
-				});
+					var pt = paycheck.Accumulations.First(apt => apt.PayType.Id == payType.Id);
+					pt.FiscalStart = fiscalStartDate;
+					pt.FiscalEnd = fiscalEndDate;
+					result.Add(pt);
+				}
+				
 
 			}
 			return result;

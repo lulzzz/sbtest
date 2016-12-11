@@ -26,6 +26,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<PayrollPayCodeResource> PayCodes { get; set; }
 		public List<PayrollPayCodeResource> JobCostCodes { get; set; }
 		public List<PayrollPayTypeResource> Compensations { get; set; }
+		public List<PayTypeAccumulationResource> Accumulations { get; set; } 
 
 		public void FillFromImport(ExcelRead er, CompanyResource company, List<PayType> payTypes)
 		{
@@ -229,7 +230,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			JobCostCodes = new List<PayrollPayCodeResource>();
 			PayCodes = new List<PayrollPayCodeResource>();
-			Compensations = new ListStack<PayrollPayTypeResource>();
+			Compensations = new List<PayrollPayTypeResource>();
+			Accumulations = new List<PayTypeAccumulationResource>();
 			var error = string.Empty;
 			foreach (var col in importMap.ColumnMap)
 			{
@@ -320,7 +322,18 @@ namespace HrMaxxAPI.Resources.Payroll
 						pcode.ScreenOvertime = string.IsNullOrWhiteSpace(val)? "0" : val;
 						pcode.OvertimeHours = dval;
 					}
-					
+					else if (col.Key.EndsWith("Rate Amount"))
+					{
+						if(pcode.PayCode.Id==0)
+							pcode.Amount = string.IsNullOrWhiteSpace(val) ? 0 :Convert.ToDecimal( val);
+						
+					}
+					else if (col.Key.EndsWith("Overtime Amount"))
+					{
+						if (pcode.PayCode.Id == 0)
+							pcode.OvertimeAmount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+
+					}
 					
 					if(add)
 						PayCodes.Add(pcode);
@@ -371,6 +384,36 @@ namespace HrMaxxAPI.Resources.Payroll
 						
 					}
 					JobCostCodes.Add(jccode);
+				}
+			}
+			if (importMap.SelfManagedPayTypes.Any(apt=>apt.ImportMap.All(f=>f.Value>0)))
+			{
+				foreach (var sapt in importMap.SelfManagedPayTypes.Where(apt => apt.ImportMap.All(f => f.Value > 0)))
+				{
+					var aptId = sapt.PayTypeId;
+					var apt = new PayTypeAccumulationResource()
+					{
+						PayType = company.AccumulatedPayTypes.First(a => a.Id == aptId)
+					};
+					foreach (var pair in sapt.ImportMap)
+					{
+						var val = pair.Value==-1 ? "0" : er.ValueAtIndex(pair.Value-1);
+						if (pair.Key.Equals("Used"))
+							apt.Used = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+						else if (pair.Key.Equals("Accumulated"))
+						{
+							if (sapt.ImportMap.Count(v => v.Value == pair.Value) > 1)
+								apt.AccumulatedValue = 0;
+							else
+								apt.AccumulatedValue = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+						}
+							
+						else if (pair.Key.Equals("YTD Accumulated"))
+							apt.YTDFiscal = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+						else if (pair.Key.Equals("YTD Used"))
+							apt.YTDUsed = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+					}
+					Accumulations.Add(apt);
 				}
 			}
 			if (!string.IsNullOrWhiteSpace(error))

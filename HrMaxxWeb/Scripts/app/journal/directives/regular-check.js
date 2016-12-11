@@ -29,8 +29,8 @@ common.directive('regularCheck', ['zionAPI','version',
 					
 					$scope.data = dataSvc;
 					$scope.cancel = function () {
-						$scope.$parent.$parent.selected = null;
-						$scope.datasvc.isBodyOpen = true;
+						$scope.$parent.$parent.cancel();
+						
 					}
 
 					var addAlert = function (error, type) {
@@ -143,7 +143,7 @@ common.directive('regularCheck', ['zionAPI','version',
 					var init = function () {
 						
 						dataSvc.allPayees = dataSvc.vendors.concat(dataSvc.customers);
-						if ($scope.item.payeeId != '00000000-0000-0000-0000-000000000000') {
+						if ($scope.item.payeeId && $scope.item.payeeId != '00000000-0000-0000-0000-000000000000') {
 							var exists = $filter('filter')(dataSvc.allPayees, { id: $scope.item.payeeId })[0];
 							if (exists) {
 								dataSvc.selectedPayee = exists;

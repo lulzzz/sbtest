@@ -38,6 +38,13 @@ namespace HrMaxx.Common.Models
 		public int JobCostStartingColumn { get; set; }
 		public int JobCostColumnCount { get; set; }
 		public List<KeyValuePair<string, int>> JobCostMap { get; set; }
+		public List<ManagedPayType> SelfManagedPayTypes { get; set; } 
+	}
+
+	public class ManagedPayType
+	{
+		public int PayTypeId { get; set; }
+		public List<KeyValuePair<string, int>> ImportMap { get; set; }
 	}
 	
 }

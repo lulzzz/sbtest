@@ -29,8 +29,7 @@ common.directive('taxPayment', ['zionAPI', 'version',
 
 					$scope.data = dataSvc;
 					$scope.cancel = function () {
-						$scope.$parent.$parent.selected = null;
-						$scope.datasvc.isBodyOpen = true;
+						$scope.$parent.$parent.cancel();
 					}
 
 					var addAlert = function (error, type) {

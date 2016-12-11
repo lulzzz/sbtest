@@ -180,9 +180,9 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							var invoice = $scope.invoice;
 							if (!invoice.invoiceNumber)
 								return 'Please enter a valid Invoice Number';
-							else if (!invoice.total)
+							if (!invoice.total)
 								return 'The invoice total cannot be blank';
-							else if (invoice.miscCharges.length > 0) {
+							if (invoice.miscCharges.length > 0) {
 								var returnVal = true;
 								$.each(invoice.miscCharges, function (index, p) {
 									if (!$scope.isLineItemValid(p)) {
@@ -193,7 +193,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								if (!returnVal)
 									return 'Please add correct fee(s) and charge(s)';
 							}
-							else if (invoice.invoicePayments.length > 0) {
+							if (invoice.invoicePayments.length > 0) {
 								var returnVal1 = true;
 								$.each(invoice.invoicePayments, function (index1, p) {
 									p.hasChanged = false;
@@ -214,8 +214,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								if (!returnVal1)
 									return 'Please correct payments. ACH payment must be after today';
 							}
-							else
-								return '';
+							return '';
 						}
 						
 					}

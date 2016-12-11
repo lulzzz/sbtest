@@ -191,7 +191,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	public class PayTypeAccumulationResource
 	{
 		[Required]
-		public AccumulatedPayType PayType { get; set; }
+		public AccumulatedPayTypeResource PayType { get; set; }
 		[Required]
 		public DateTime FiscalStart { get; set; }
 		[Required]

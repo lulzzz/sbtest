@@ -144,7 +144,7 @@
 									{{item.checkNumberText}}
 								</td>
 								<td data-title=" 'Payee' " filter="{ 'payeeName': 'text' }" sortable=" 'payeeName' " class="col-sm-1 text-center">
-									{{item.transactionType>2 ? '':item.payeeName}}
+									{{item.transactionType===3 || item.transactionType===4 ? '':item.payeeName}}
 								</td>
 								<td data-title=" 'Amount' " class="col-sm-1 text-center show-red">
 									{{item.displayAmount | currency:'$'}}
@@ -233,7 +233,7 @@
 
 			</div>
 		</div>
-		<div class="col-sm-2" ng-show="mainData.userRole==='Master'">
+		<div class="col-sm-2" ng-if="selected.id" ng-show="mainData.userRole==='Master'">
 			<memento-list main-data="mainData" source-type-id="selected.entityType1" memento-id="selected.mementoId" heading="'Check Versions'" data="data" />
 		</div>
 		
