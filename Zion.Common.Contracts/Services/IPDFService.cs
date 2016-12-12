@@ -8,6 +8,7 @@ namespace HrMaxx.Common.Contracts.Services
 {
 	public interface IPDFService
 	{
+		FileDto Print(List<PDFModel> models);
 		FileDto Print(PDFModel model);
 		FileDto AppendAllDocuments(Guid name, string fileName, List<Guid> documents, byte[] data);
 		FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false);

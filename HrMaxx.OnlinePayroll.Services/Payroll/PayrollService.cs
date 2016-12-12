@@ -1344,8 +1344,35 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
 				}
-
-				return _pdfService.Print(pdf);
+				if (payCheck.Employee.PayType == EmployeeType.JobCost)
+				{
+					var jcModel = new PDFModel()
+					{
+						Name =
+							string.Format("Pay Check_{1}_{2} {0}-Page2.pdf", payCheck.PayDay.ToString("MMddyyyy"), payCheck.PayrollId, payCheck.Id),
+						TargetId = payCheck.Id,
+						NormalFontFields = new List<KeyValuePair<string, string>>(),
+						BoldFontFields = new List<KeyValuePair<string, string>>(),
+						TargetType = EntityTypeEnum.PayCheck,
+						Template = "JobCostPage.pdf",
+						DocumentId = journal.DocumentId,
+						Signature = null
+					};
+					int jcCounter = 0;
+					payCheck.PayCodes.Where(pc => pc.PayCode.Id == -2).ToList().ForEach(pc =>
+					{
+						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcr-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
+						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcp-" + (jcCounter + 1), pc.Hours.ToString()));
+						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcam-" + (jcCounter + 1), pc.Amount.ToString("c")));
+						jcCounter++;
+					});
+					var modelList = new List<PDFModel> {pdf, jcModel};
+					return _pdfService.Print(modelList);
+				}
+				else
+				{
+					return _pdfService.Print(pdf);	
+				}
 			}
 			catch (Exception e)
 			{

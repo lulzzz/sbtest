@@ -1,4 +1,4 @@
 ﻿common.constant('zionAPI', {
-	URL: 'http://localhost/HrMaxxAPI/',
-	Web: 'http://localhost/HrMaxxWeb/'
+	URL: 'http://hrmaxxapi.azurewebsites.net/',
+	Web: 'http://hrmaxx.azurewebsites.net/'
 });
