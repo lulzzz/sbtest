@@ -32,7 +32,7 @@ namespace HrMaxx.Common.Services.PDF
 		{
 			try
 			{
-				PdfManager objPDF = new PdfManager();
+				var objPDF = new PdfManager();
 
 				// Create new document.
 				var objDoc = objPDF.OpenDocument(_templatePath + model.Template);
@@ -64,8 +64,19 @@ namespace HrMaxx.Common.Services.PDF
 						if (objField != null)
 							objField.SetFieldValue(field.Value, objFontBold);
 				}
-				
 
+				if (model.Signature != null)
+				{
+					var sign = objDoc.OpenImage(model.Signature.Path);
+					var page = objDoc.Pages[1];
+					var param = objPDF.CreateParam();
+
+					param["x"] = model.Signature.X;
+					param["y"] = model.Signature.Y;
+					param["ScaleX"] = model.Signature.ScaleX;
+					param["ScaleY"] = model.Signature.ScaleY;
+					page.Canvas.DrawImage(sign, param);
+				}
 				// Save, generate unique file name to avoid overwriting existing file.
 				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), true);
 				objDoc.Close();

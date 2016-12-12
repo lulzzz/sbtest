@@ -16,6 +16,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 				function ($scope, $element, $location, ngTableParams, $filter, commonRepository, EntityTypes) {
 					$scope.targetTypeId = EntityTypes.Document;
 					$scope.list = [];
+					$scope.selectedType = 0;
 					$scope.addAlert = function (error, type) {
 						$scope.alerts = [];
 						$scope.alerts.push({
@@ -72,29 +73,36 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 					$scope.onFileSelect = function ($files) {
 						for (var i = 0; i < $files.length; i++) {
 							var $file = $files[i];
-
-							var fileReader = new FileReader();
-							fileReader.readAsDataURL($files[i]);
-							var loadFile = function (fileReader, index) {
-								fileReader.onload = function (e) {
-									$timeout(function () {
-										$scope.files.push({
-											doc: {
-												file: $files[index],
-												file_data: e.target.result,
-												uploaded: false
-											},
-											data: JSON.stringify({
-												entityTypeId: $scope.sourceTypeId,
-												entityId: $scope.sourceId,
-												mimeType: $files[index].type
-											}),
-											currentProgress: 0,
-											completed: false
+							if ($scope.selectedType===1 && (!$file || !($file.name.toLowerCase().endsWith(".bmp") || $file.name.toLowerCase().endsWith(".png") || $file.name.toLowerCase().endsWith(".jpg") || $file.name.toLowerCase().endsWith(".jpeg") || $file.name.toLowerCase().endsWith(".tiff") || $file.name.toLowerCase().endsWith(".gif")))) {
+								$scope.alerts.push({
+									message: 'Please select an image (png, tiff, jpg, jpeg, bmp) file '
+								});
+								return false;
+							} else {
+								var fileReader = new FileReader();
+								fileReader.readAsDataURL($files[i]);
+								var loadFile = function(fileReader, index) {
+									fileReader.onload = function(e) {
+										$timeout(function() {
+											$scope.files.push({
+												doc: {
+													file: $files[index],
+													file_data: e.target.result,
+													uploaded: false
+												},
+												data: JSON.stringify({
+													entityTypeId: $scope.sourceTypeId,
+													entityId: $scope.sourceId,
+													mimeType: $files[index].type,
+													type: $scope.selectedType
+												}),
+												currentProgress: 0,
+												completed: false
+											});
 										});
-									});
-								}
-							}(fileReader, i);
+									}
+								}(fileReader, i);
+							}
 						}
 					};
 

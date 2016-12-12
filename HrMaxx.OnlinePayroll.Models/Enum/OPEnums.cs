@@ -443,4 +443,5 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "CCD")]
 		CCD=2
 	}
+
 }

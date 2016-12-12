@@ -23,4 +23,12 @@ namespace HrMaxx.Common.Models.Enum
 		[HrMaxxSecurity(DbId = 3, DbName = "Terminated")]
 		Terminated=3
 	}
+
+	public enum DocumentType
+	{
+		[HrMaxxSecurity(DbId = 0, DbName = "Misc")]
+		Misc=0,
+		[HrMaxxSecurity(DbId = 1, DbName = "Signature")]
+		Signature=1
+	}
 }

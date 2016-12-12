@@ -13,6 +13,8 @@ namespace HrMaxxAPI.Resources.Common
 		public EntityTypeEnum EntityTypeId { get; set; }
 		[JsonProperty("mimeType")]
 		public string MimeType { get; set; }
+		[JsonProperty("type")]
+		public int DocumentType { get; set; }
 		
 		[JsonIgnore]
 		public string FileName { get; set; }

@@ -1031,6 +1031,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var company = payroll.Company;
 				if (payCheck.PEOASOCoCheck && !payroll.Company.Contract.InvoiceSetup.PrintClientName)
 					company = host.Company;
+
+				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
+					company.Id);
 				
 				var bankcoa = coas.First(c => c.Id == journal.MainAccountId);
 				var pdf = new PDFModel
@@ -1040,9 +1043,26 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					NormalFontFields = new List<KeyValuePair<string, string>>(),
 					BoldFontFields = new List<KeyValuePair<string, string>>(),
 					TargetType = EntityTypeEnum.PayCheck,
-					Template = payroll.Company.PayCheckStock.GetHrMaxxName(),
-					DocumentId = journal.DocumentId
+					Template = company1.PayCheckStock.GetHrMaxxName(),
+					DocumentId = journal.DocumentId,
+					Signature = null
 				};
+
+				if (companyDocs.Any(d => d.DocumentType == DocumentType.Signature))
+				{
+					var signature =
+						companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).First();
+					pdf.Signature = new PDFSignature
+					{
+						Path = _fileRepository.GetDocumentLocation(signature.Doc), 
+						X = 375,
+ 						Y = company1.PayCheckStock==PayCheckStock.LaserTop || company1.PayCheckStock==PayCheckStock.MICREncodedTop || company1.PayCheckStock==PayCheckStock.MICRQb ? 580 : 330,
+						ScaleX = (float)0.7,
+						ScaleY = (float)0.7
+
+					};
+					
+				}
 				
 				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
@@ -1329,7 +1349,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + payCheck.Id);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Print Pay Check By id=" + payCheck.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1520,12 +1540,28 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
 				}
+				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
+					company.Id);
+				if (companyDocs.Any(d => d.DocumentType == DocumentType.Signature))
+				{
+					var signature =
+						companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).First();
+					pdf.Signature = new PDFSignature
+					{
+						Path = _fileRepository.GetDocumentLocation(signature.Doc), 
+						X = 375,
+						Y =  325,
+						ScaleX = (float)0.7,
+						ScaleY = (float)0.7
 
+					};
+
+				}
 				return _pdfService.Print(pdf);
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Payrolls for Invoice By id=" + payCheck.Id);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Print Check id=" + payCheck.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

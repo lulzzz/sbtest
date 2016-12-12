@@ -16,6 +16,16 @@ namespace HrMaxx.Common.Models
 		public List<KeyValuePair<string, string>> BoldFontFields { get; set; }
 		public Guid DocumentId { get; set; }
 		public string Name { get; set; }
+		public PDFSignature Signature { get; set; }
+	}
+
+	public class PDFSignature
+	{
+		public string Path { get; set; }
+		public float X { get; set; }
+		public float Y { get; set; }
+		public float ScaleX { get; set; }
+		public float ScaleY { get; set; }
 	}
 
 	

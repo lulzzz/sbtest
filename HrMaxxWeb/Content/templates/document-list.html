@@ -28,6 +28,18 @@
 							<td data-title=" 'Name' " filter="{ 'documentName': 'text' }" sortable=" 'documentName' " class="col-sm-3">
 								{{item.documentName}}.{{item.documentExtension}}
 							</td>
+							<td data-title=" 'Name' " filter="{ 'documentName': 'text' }" sortable=" 'documentName' " class="col-sm-3">
+								{{item.documentName}}.{{item.documentExtension}}
+							</td>
+							<td data-title=" 'Type' " filter="{ 'documentTypeText': 'text' }" sortable=" 'documentTypeText' " class="col-sm-1">
+								{{item.documentTypeText}}
+							</td>
+							<td data-title=" 'Uploaded' " filter="{ 'lastModified': 'text' }" sortable=" 'lastModified' " class="col-sm-1">
+								{{item.lastModified | date:'MM/dd/yyyy'}}
+							</td>
+							<td data-title=" 'Uploaded by' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-1">
+								{{item.userName}}
+							</td>
 							<td class="col-sm-2">
 								<a ng-href="{{getDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-primary">View</button></a>
 								<button class="btn btn-sm btn-danger" ng-click="deleteDocument(item)">Delete</button>
@@ -56,6 +68,12 @@
 					</script>
 				</div>
 				<div class="row">
+					<div class="col-sm-2 form-group">
+						<select ng-model="selectedType" name="type" class="form-control" convert-to-number>
+							<option value="0">Misc</option>
+							<option value="1">Signature</option>
+						</select>
+					</div>
 					<div class="col-sm-3">
 						<div ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;">
 							<button class="btn btn-success attach-button " id="attachments">

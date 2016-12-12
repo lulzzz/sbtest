@@ -30,9 +30,7 @@ namespace HrMaxx.Common.Services.Mappers
 				.ForMember(dest => dest.DocumentName, opt => opt.MapFrom(src => src.OriginalFileName))
 				.ForMember(dest => dest.MimeType, opt => opt.MapFrom(src => src.MimeType))
 				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.FileExtension))
-				.ForMember(dest => dest.UserId, opt => opt.Ignore())
-				.ForMember(dest => dest.UserName, opt => opt.Ignore())
-				.ForMember(dest => dest.LastModified, opt => opt.Ignore());
+				.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.Notification, NotificationDto>();
 				

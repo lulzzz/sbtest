@@ -88,6 +88,9 @@ namespace HrMaxxAPI.Controllers
 				EntityDocumentResource fileUploadObj = await ProcessMultipartContent();
 
 				var entityDocument = Mapper.Map<EntityDocumentResource, EntityDocumentAttachment>(fileUploadObj);
+				entityDocument.UserName = CurrentUser.FullName;
+				entityDocument.LastModified = DateTime.Now;
+
 				DocumentDto document = MakeServiceCall(() => _documentService.AddEntityDocument(entityDocument),
 					"Save Entity Document", true);
 
