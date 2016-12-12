@@ -781,8 +781,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 				if (pc) {
 					counter++;
 					if (pc.employee.payType === 2) {
-						pc.salary = t.salary;
-					}
+						pc.salary = t.gross ? t.gross : t.salary;
+					} 
 					else if (pc.employee.payType === 4) {
 						pc.salary = t.gross ? t.gross : t.salary;
 						pc.payCodes = [];
@@ -825,7 +825,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 					} else {
 						var pw = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
 						if (pw.length > 0 && pc.payCodes.length === 1) {
-							pc.payCodes[0].pwAmount = pw[0].payCode.hourlyRate;
+							pc.payCodes[0].pwAmount = t.gross? t.gross : pw[0].payCode.hourlyRate;
 							pc.payCodes[0].hours = pw[0].hours;
 							pc.payCodes[0].overtimeHours = pw[0].overtimeHours;
 							pc.payCodes[0].screenHours = pw[0].screenHours;
@@ -839,7 +839,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 						else
 							pc.compensations.push(comp);
 					});
-					pc.notes = t.notes;
+					pc.notes = t.notes ? t.notes : '';
 					if (t.accumulations.length > 0)
 						pc.accumulations = t.accumulations;
 				}

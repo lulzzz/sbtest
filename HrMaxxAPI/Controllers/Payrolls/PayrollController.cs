@@ -272,6 +272,12 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var mappedResource = Mapper.Map<PayrollInvoiceResource, PayrollInvoice>(invoice);
 			mappedResource.LastModified = DateTime.Now;
 			mappedResource.UserName = CurrentUser.FullName;
+			mappedResource.InvoicePayments.Where(ip=>ip.HasChanged).ToList().ForEach(ip =>
+			{
+				ip.LastModifiedBy = CurrentUser.FullName;
+				ip.LastModified = mappedResource.LastModified;
+
+			});
 
 			var processed = MakeServiceCall(() => _payrollService.SavePayrollInvoice(mappedResource), string.Format("save payroll invoice for invoice={0}", invoice.Id));
 			var returnInvocie = Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);

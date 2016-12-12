@@ -304,7 +304,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.addBankAccount = function () {
 						var acc = {
 							id: 0,
-							employeeId: $scope.employeeId,
+							employeeId: $scope.selected.id,
 							percentage: $scope.ddPercentageAvailable(),
 							bankAccount:null
 						};
@@ -315,7 +315,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 
 					$scope.saveBank = function () {
 						$scope.selectedBank = null;
-						
+						$scope.selectedBankIndex = null;
 					}
 					$scope.delete = function (index) {
 						$scope.selected.bankAccounts.splice(index, 1);
@@ -328,10 +328,13 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selected.bankAccounts[index] = angular.copy($scope.originalBank);
 						}
 						$scope.selectedBank = null;
+						$scope.selectedBankIndex = null;
 					}
 					$scope.setSelectedBank = function (index) {
 						$scope.selectedBank = null;
-						$timeout(function() {
+						$scope.selectedBankIndex = null;
+						$timeout(function () {
+							$scope.selectedBankIndex = index;
 							$scope.selectedBank = $scope.selected.bankAccounts[index];
 							$scope.originalBank = angular.copy($scope.selectedBank);
 						}, 1);

@@ -201,8 +201,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 									if (existInOriginal) {
 										if (!angular.equals(p, existInOriginal))
 											p.hasChanged = true;
-										else
-											p.hasChanged = false;
+									} else {
+										p.hasChanged = true;
 									}
 
 
@@ -240,10 +240,12 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 					};
 					var saveInvoice = function () {
-						$.each($scope.invoice.invoicePayments, function (i, p) {
+						var inv = angular.copy($scope.invoice);
+
+						$.each(inv.invoicePayments, function (i, p) {
 							p.paymentDate = moment(p.paymentDate).format('MM/DD/YYYY');
 						});
-						payrollRepository.savePayrollInvoice($scope.invoice).then(function (data) {
+						payrollRepository.savePayrollInvoice(inv).then(function (data) {
 							$scope.invoice = null;
 							$timeout(function () {
 								$scope.invoice = data;

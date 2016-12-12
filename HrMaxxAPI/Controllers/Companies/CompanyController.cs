@@ -189,6 +189,10 @@ namespace HrMaxxAPI.Controllers.Companies
 		public EmployeeResource SaveEmployee(EmployeeResource resource)
 		{
 			var mappedResource = Mapper.Map<EmployeeResource, Employee>(resource);
+			mappedResource.BankAccounts.Where(b=>b.EmployeeId==Guid.Empty).ToList().ForEach(b =>
+			{
+				b.EmployeeId = mappedResource.Id;
+			});
 			var vendor = MakeServiceCall(() => _companyService.SaveEmployee(mappedResource), string.Format("saving employee for {0}", resource.CompanyId), true);
 			return Mapper.Map<Employee, EmployeeResource>(vendor);
 		}

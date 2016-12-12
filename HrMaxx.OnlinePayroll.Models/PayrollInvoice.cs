@@ -61,7 +61,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal PaidAmount
 		{
-			get { return Math.Round(InvoicePayments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount), 2, MidpointRounding.AwayFromZero); }
+			get { return Math.Round(InvoicePayments!=null ? InvoicePayments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount) : 0, 2, MidpointRounding.AwayFromZero); }
 		}
 		public decimal Balance
 		{

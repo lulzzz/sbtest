@@ -217,10 +217,10 @@
 														<tbody>
 															<tr ng-repeat="bank in selected.bankAccounts track by $index">
 																<td>
-																	<span ng-show="!selectedBank || selectedBank.id!==bank.id">
+																	<span ng-show="!selectedBank || selectedBankIndex!==$index">
 																		{{ bank.bankAccount? bank.bankAccount.bankName : '' }}
 																	</span>
-																	<div class="row" ng-if="selectedBank && selectedBank.id===bank.id">
+																	<div class="row" ng-if="selectedBank && selectedBankIndex===$index">
 																		<div class="form-group">
 																			<label>Bank Name</label>
 																			<input type="text" required ng-model="selectedBank.bankAccount.bankName" class="form-control" />
@@ -256,25 +256,25 @@
 																</td>
 																<td>
 																	<!-- editable comment (text with validation) -->
-																	<span ng-show="!selectedBank || selectedBank.id!==bank.id">
+																	<span ng-show="!selectedBank || selectedBankIndex!==$index">
 																		{{ bank.percentage | currency }}%
 																	</span>
-																	<input type="number" class="form-control" ng-model="selectedBank.percentage" ng-show="selectedBank && selectedBank.id===bank.id" step="0.01" ng-max="100" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+																	<input type="number" class="form-control" ng-model="selectedBank.percentage" ng-show="selectedBank && selectedBankIndex===$index" step="0.01" ng-max="100" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
 																</td>
 
 																<td style="white-space: nowrap">
 																	<!-- form -->
 
-																	<button type="button" ng-show="!selectedBank || selectedBank.id!==bank.id" class="btn btn-primary btn-xs" ng-click="setSelectedBank($index)">
+																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-primary btn-xs" ng-click="setSelectedBank($index)">
 																		<i class="fa fa-edit m-r-5"></i> edit
 																	</button>
-																	<button type="button" ng-show="!selectedBank || selectedBank.id!==bank.id" class="btn btn-danger btn-xs" ng-click="delete($index)">
+																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-xs" ng-click="delete($index)">
 																		<i class="fa fa-recycle m-r-5"></i> delete
 																	</button>
-																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBank.id===bank.id" ng-click="saveBank()" ng class="btn btn-success btn-xs">
+																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-xs">
 																		<i class="fa fa-save m-r-5"></i> save
 																	</button>
-																	<button type="button" ng-show="selectedBank && selectedBank.id===bank.id" ng-click="cancelBank($index)" class="btn btn-default btn-xs">
+																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-xs">
 																		<i class="fa fa-remove m-r-5"></i> cancel
 																	</button>
 
