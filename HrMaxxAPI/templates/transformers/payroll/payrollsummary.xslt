@@ -259,10 +259,24 @@
 							Salary
 						</td>
 						<td style="width:33%; text-align:right;">
-							$<xsl:value-of select="format-number(Salary,'#,##0.00')"/>
+							$<xsl:choose>
+								<xsl:when test="Employee/PayType='JobCost'">
+									<xsl:value-of select="format-number(GrossWage,'#,##0.00')"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="format-number(Salary,'#,##0.00')"/>
+								</xsl:otherwise>
+							</xsl:choose>
 						</td>
 						<td style="width:33%; text-align:right;">
-							$<xsl:value-of select="format-number(YTDSalary,'#,##0.00')"/>
+							$<xsl:choose>
+							<xsl:when test="Employee/PayType='JobCost'">
+								<xsl:value-of select="format-number(YTDGrossWage,'#,##0.00')"/>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="format-number(YTDSalary,'#,##0.00')"/>
+							</xsl:otherwise>
+						</xsl:choose>
 						</td>
 					</tr>
 					<tr>

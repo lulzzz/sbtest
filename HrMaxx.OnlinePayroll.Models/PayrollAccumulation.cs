@@ -250,6 +250,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				if (d1 != null)
 				{
 					d1.Amount += Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
+					d1.Wage += Math.Round(d.Wage, 2, MidpointRounding.AwayFromZero);
 				}
 				else
 				{
@@ -330,6 +331,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				if (d1 != null)
 				{
 					d1.Amount -= Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
+					d1.Wage -= Math.Round(d.Wage, 2, MidpointRounding.AwayFromZero);
 				}
 			});
 			

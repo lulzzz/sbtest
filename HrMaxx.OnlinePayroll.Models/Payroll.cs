@@ -147,6 +147,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Math.Round(Deductions.Sum(d => d.YTD), 2, MidpointRounding.AwayFromZero); }
 		}
+		public decimal DeductionYTDWage
+		{
+			get { return Math.Round(Deductions.Sum(d => d.YTDWage), 2, MidpointRounding.AwayFromZero); }
+		}
 
 		public decimal CompensationTaxableAmount
 		{
@@ -488,6 +492,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
+		public decimal YTDWage { get; set; }
 		public string Name
 		{
 			get { return string.Format("{0} - {1}",Deduction.Type.Name, Deduction.DeductionName); }

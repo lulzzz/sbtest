@@ -451,6 +451,7 @@
     <Content Include="templates\GovtForms\BlankForms\I9-Spanish.pdf" />
     <Content Include="templates\GovtForms\BlankForms\FormDE26.pdf" />
     <Content Include="templates\GovtForms\BlankForms\Form8655.pdf" />
+    <Content Include="templates\JobCost.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

@@ -97,6 +97,7 @@ namespace HrMaxx.Common.Services.PDF
 		{
 			try
 			{
+				var docs = new List<PdfDocument>();
 				var objPDF = new PdfManager();
 				// Create new document.
 				var objDoc = objPDF.CreateDocument();
@@ -107,11 +108,14 @@ namespace HrMaxx.Common.Services.PDF
 				
 				foreach (var document in documents)
 				{
-					objDoc.AppendDocument(objPDF.OpenDocument(pdfPath + document + ".pdf"));
+					var objDoc1 = objPDF.OpenDocument(pdfPath + document + ".pdf");
+					docs.Add(objDoc1);
+					objDoc.AppendDocument(objDoc1);
 				}
 				var resultBytes = objDoc.SaveToMemory();
 				
 				objDoc.Close();
+				docs.ForEach(d => d.Close());
 				
 				return new FileDto
 				{

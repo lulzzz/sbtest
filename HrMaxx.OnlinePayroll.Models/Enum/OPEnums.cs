@@ -27,7 +27,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(HrMaxxName = "LaserTopPayCheck.pdf")]
 		LaserTop=3,
 		[HrMaxxSecurity(HrMaxxName = "MICRQBPayCheck.pdf")]
-		MICRQb=4
+		MICRQb=4,
+		[HrMaxxSecurity(HrMaxxName = "JobCost.pdf")]
+		JobCost = 5
 	}
 
 	public enum DepositSchedule941
