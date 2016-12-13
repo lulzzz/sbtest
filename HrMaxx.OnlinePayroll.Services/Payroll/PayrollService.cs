@@ -1514,6 +1514,38 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-1", payCheck.GrossWage.ToString("C")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-1", payCheck.YTDGrossWage.ToString("C")));
+						var hrcounter = 2;
+						var otcounter = 2;
+						foreach (var payCode in payCheck.PayCodes.Where(p =>p.PayCode.Id==0 && (p.Hours > 0 || p.OvertimeHours > 0 || p.YTD > 0 || p.YTDOvertime > 0)).OrderByDescending(p => p.Hours).ThenByDescending(p => p.OvertimeHours).ThenByDescending(p => p.YTD).ThenByDescending(p => p.YTDOvertime).ToList())
+						{
+							if (hrcounter < 4 && (payCode.Amount > 0 || payCode.YTD > 0))
+							{
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", "Regular"));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter,
+									payCode.PayCode.HourlyRate.ToString("C")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter, payCode.Amount.ToString("c")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter, payCode.YTD.ToString("C")));
+
+								hrcounter++;
+							}
+							if (otcounter < 4 && (payCode.OvertimeAmount > 0 || payCode.YTDOvertime > 0))
+							{
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
+									"Overtime"));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter,
+									payCode.OvertimeHours.ToString()));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter,
+									(payCode.PayCode.HourlyRate * (decimal)1.5).ToString("C")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter,
+									payCode.OvertimeAmount.ToString("c")));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter,
+									payCode.YTDOvertime.ToString("c")));
+
+								otcounter++;
+							}
+
+						}
 					}
 				}
 				else

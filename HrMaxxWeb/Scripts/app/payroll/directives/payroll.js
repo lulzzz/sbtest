@@ -800,7 +800,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 								screenOvertime: 0,
 								hours: 0,
 								overtimeHours: 0,
-								pwAmount: paycode.pwAmount
+								amount: paycode.amount
 							};
 							pc.payCodes.push(payc);
 						});

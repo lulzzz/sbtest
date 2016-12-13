@@ -210,13 +210,23 @@
 							<td class="text-right"><em><u>{{invoice.grossWages | currency:'$'}}</u></em></td>
 						</tr>
 						<tr ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType!==2}">
-							<td><em><u>Employee Contribution</u></em></td>
+							<td>
+								<i class="fa fa-lg hidden-print" ng-class="{'fa-minus-circle': invoice.expandedEE, 'fa-plus-circle':!invoice.expandedEE}" ng-click="invoice.expandedEE=!invoice.expandedEE"></i>
+								<em><u>Employee Contribution</u></em>
+							</td>
 							<td></td>
 							<td></td>
 							<td class="text-right"><em><u>{{invoice.employeeContribution | currency:'$'}}</u></em></td>
 						</tr>
+						<tr ng-show="invoice.expandedEE" class="hidden-print" ng-repeat="ee in invoice.employeeTaxes | orderBy:'tax.id'">
+							<td> - {{ee.tax.name}}</td>
+							<td>{{ee.taxableWage | currency:'$'}}</td>
+							<td></td>
+							<td class="text-left">{{ee.amount | currency:'$'}}</td>
+						</tr>
 						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===1" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType > 2}">
 							<td colspan="3">
+								<i class="fa fa-lg hidden-print" ng-show="invoice.companyInvoiceSetup.invoiceStype!==2" ng-class="{'fa-minus-circle': invoice.expandedER, 'fa-plus-circle':!invoice.expandedER}" ng-click="invoice.expandedER=!invoice.expandedER"></i>
 								<em>
 									<u>
 										Employer Contribution<br />
@@ -231,9 +241,9 @@
 							<td colspan="3"><em><u>Employer Contributions</u></em></td>
 							<td class="text-right"><em><u>{{invoice.employerContribution | currency:'$'}}</u></em></td>
 						</tr>
-						<tr ng-show="invoice.companyInvoiceSetup.invoiceStyle===2" ng-repeat="et in invoice.employerTaxes | orderBy:'tax.id'">
+						<tr ng-show="invoice.companyInvoiceSetup.invoiceStyle===2 || invoice.expandedER" ng-repeat="et in invoice.employerTaxes | orderBy:'tax.id'">
 							<td> - {{et.tax.name}}</td>
-							<td></td>
+							<td>{{et.taxableWage | currency:'$'}}</td>
 							<td></td>
 							<td class="text-left">{{et.amount | currency:'$'}}</td>
 						</tr>

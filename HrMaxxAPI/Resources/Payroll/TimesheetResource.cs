@@ -371,7 +371,7 @@ namespace HrMaxxAPI.Resources.Payroll
 						{
 							var val = er.ValueAtIndex(jci + jobcost.Value - 2);
 							if (jobcost.Key.Equals("Amount"))
-								jccode.PWAmount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+								jccode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
 							else if (jobcost.Key.Equals("Rate"))
 								jccode.PayCode.HourlyRate = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
 							else if (jobcost.Key.Equals("Pieces"))
