@@ -114,7 +114,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selected.rate = 0;
 							for (var i = 1; i <= 18; i++) {
 								$scope.selected.payCodes.push({
-									id: -2,
+									id: (-1 - i),
 									companyId: $scope.selected.companyId,
 									code: 'JC',
 									description: 'Job Cost ' + i ,

@@ -337,13 +337,19 @@ namespace HrMaxx.OnlinePayroll.Models
 			SubtractFromYTDDeductions(paycheck.Deductions);
 			SubtractFromYTDTaxes(paycheck.Taxes);
 			SubtractFromYTDAccumulations(paycheck.Accumulations);
-			if (paycheck.Employee.PayType == EmployeeType.Hourly)
+			if (paycheck.Employee.PayType == EmployeeType.Salary)
 			{
+				YTDSalary = Math.Round(YTDSalary - paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+				
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.JobCost)
+			{
+				YTDSalary = Math.Round(YTDSalary - paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 				SubtractFromYTDPayCodes(paycheck.PayCodes);
 			}
 			else
 			{
-				YTDSalary = Math.Round(YTDSalary - paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+				SubtractFromYTDPayCodes(paycheck.PayCodes);
 			}
 			YTDGrossWage = Math.Round(YTDGrossWage - paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
 			YTDNetWage = Math.Round(YTDNetWage - paycheck.NetWage, 2, MidpointRounding.AwayFromZero);

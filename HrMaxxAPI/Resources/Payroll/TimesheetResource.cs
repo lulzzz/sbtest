@@ -355,6 +355,7 @@ namespace HrMaxxAPI.Resources.Payroll
 			if (importMap.HasJobCost && importMap.JobCostStartingColumn > 0 &&
 			    (importMap.JobCostColumnCount == 3 || importMap.JobCostColumnCount == 4))
 			{
+				var jobCostCodeId = -2;
 				for (var jci=importMap.JobCostStartingColumn;jci<importMap.ColumnCount && JobCostCodes.Count<18;jci=jci+importMap.JobCostColumnCount)
 				{
 					var jccode = new PayrollPayCodeResource()
@@ -362,7 +363,7 @@ namespace HrMaxxAPI.Resources.Payroll
 						ScreenOvertime = "0" ,Amount=0, OvertimeHours = 0, OvertimeAmount=0, ScreenHours = "0", Hours = 0,
 						PayCode = new CompanyPayCodeResource
 						{
-							Code="JC", CompanyId = company.Id.Value, Description = "Job Cost", HourlyRate = 0, Id=-2
+							Code="JC", CompanyId = company.Id.Value, Description = "Job Cost", HourlyRate = 0, Id=jobCostCodeId--
 						}
 					};
 					foreach (var jobcost in importMap.JobCostMap.OrderBy(j=>j.Value))
