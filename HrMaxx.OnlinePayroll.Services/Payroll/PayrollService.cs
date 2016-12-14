@@ -280,11 +280,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				else if (employee.PayrollSchedule == PayrollSchedule.BiWeekly)
 					quotient = employee.Rate/(40*52/26);
 				else if (employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
-					quotient = employee.Rate / (40 * 52 / 24);
+					quotient = employee.Rate/(40*52/24);
 				else if (employee.PayrollSchedule == PayrollSchedule.Monthly)
-					quotient = employee.Rate / (40 * 52 / 12);
+					quotient = employee.Rate/(40*52/12);
 			}
-			return Convert.ToDecimal(Math.Round(compnesaitonAmount / quotient, 2, MidpointRounding.AwayFromZero));
+			else
+			{
+				if (employee.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate > 0))
+					quotient = employee.PayCodes.First(pc => pc.Id == 0).HourlyRate;
+				else
+				{
+					quotient = employee.PayCodes.Any() ?  employee.PayCodes.OrderBy(pc => pc.HourlyRate).First().HourlyRate : 0;
+				}
+			}
+			return quotient==0 ? 0 : Convert.ToDecimal(Math.Round(compnesaitonAmount / quotient, 2, MidpointRounding.AwayFromZero));
 		}
 
 		private decimal CalculatePayTypeAccumulation(PayCheck paycheck, decimal ratePerHour)
