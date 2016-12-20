@@ -24,10 +24,11 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 				$scope.selectedHost = null;
 					$scope.isBodyOpen = true;
 				$scope.addHost = function () {
-					$scope.selectedHost = {
+					var newhost = {
 						statusId: 1,
 						isPeoHost: true
 					};
+					$scope.setSelectedHost(newhost);
 				}
 				
 				$scope.mainData.showFilterPanel = false;

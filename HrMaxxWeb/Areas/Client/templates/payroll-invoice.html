@@ -72,7 +72,7 @@
 							<label class="label label-success" ng-if="payment.status===3 && payment.marker">Will be marked Paid when saved</label>
 							<label class="label label-danger" ng-if="payment.status===4 && payment.marker">Will be marked Bounced when saved</label>
 
-							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
+							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && payment.status===2">Bounced?</button>
 							<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;unsavedPayments=true" ng-show="payment.status===2">Paid?</button>
 							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="isPaymentEditable(payment) && showControls"></i>
 						</td>
