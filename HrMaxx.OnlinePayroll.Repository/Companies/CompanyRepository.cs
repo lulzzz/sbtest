@@ -54,16 +54,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public Models.Company SaveCompany(Models.Company company)
 		{
 			var dbMappedCompany = _mapper.Map<Models.Company, Models.DataModel.Company>(company);
-			var dbCompanies = _dbContext.Companies.Where(c => c.HostId == company.HostId && (c.Id == company.Id || c.FederalEIN==dbMappedCompany.FederalEIN)).ToList();
+			var dbCompanies = _dbContext.Companies.Where(c => c.HostId == company.HostId && (c.Id == company.Id || (!company.IsLocation && c.FederalEIN==dbMappedCompany.FederalEIN))).ToList();
 			if (!dbCompanies.Any())
 			{
 				_dbContext.Companies.Add(dbMappedCompany);
 			}
-			else if (dbCompanies.Any(c => c.Id != company.Id && c.FederalEIN == dbMappedCompany.FederalEIN))
+			else if (!company.IsLocation && dbCompanies.Any(c => c.Id != company.Id && c.FederalEIN == dbMappedCompany.FederalEIN && !c.ParentId.HasValue))
 				throw new Exception("FEIN already exists for another Company withing the same Host");
 			else
 			{
-				var dbCompany = dbCompanies.First();
+				var dbCompany = dbCompanies.First(c=>c.Id==company.Id);
 				dbCompany.BusinessAddress = dbMappedCompany.BusinessAddress;
 				dbCompany.CompanyAddress = dbMappedCompany.CompanyAddress;
 				dbCompany.CompanyName = dbMappedCompany.CompanyName;
@@ -599,6 +599,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				});
 			}
 			_dbContext.SaveChanges();
+		}
+
+		public List<Company> GetLocations(Guid parentId)
+		{
+			var companies = _dbContext.Companies.Where(c => c.ParentId == parentId);
+			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(companies.ToList());
 		}
 	}
 }

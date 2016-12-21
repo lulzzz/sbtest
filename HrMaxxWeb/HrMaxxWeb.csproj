@@ -268,6 +268,7 @@
     <Content Include="Areas\Client\templates\insurance-group-list.html" />
     <Content Include="Areas\Client\templates\invoice-delivery-list.html" />
     <Content Include="Areas\Client\templates\invoicedelivery.html" />
+    <Content Include="Areas\Client\templates\company-locations.html" />
     <Content Include="Areas\Client\templates\paycheck-list.html" />
     <Content Include="Areas\Client\templates\tax-payment.html" />
     <Content Include="Areas\Client\templates\vendor-customer.html" />
@@ -1310,6 +1311,7 @@
     <Content Include="Scripts\app\company\directives\company.js" />
     <Content Include="Scripts\app\company\directives\employee-deduction-list.js" />
     <Content Include="Scripts\app\company\directives\employee.js" />
+    <Content Include="Scripts\app\company\directives\company-locations.js" />
     <Content Include="Scripts\app\company\directives\tax-year-rate-list.js" />
     <Content Include="Scripts\app\company\directives\accumulated-pay-type-list.js" />
     <Content Include="Scripts\app\company\directives\pay-code-list.js" />

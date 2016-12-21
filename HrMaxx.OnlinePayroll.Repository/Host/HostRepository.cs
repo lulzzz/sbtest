@@ -58,6 +58,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 				dbCPA.PTIN = mappedCPA.PTIN;
 				dbCPA.DesigneeName940941 = mappedCPA.DesigneeName940941;
 				dbCPA.IsPeoHost = mappedCPA.IsPeoHost;
+				dbCPA.BankCustomerId = mappedCPA.BankCustomerId;
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(mappedCPA);

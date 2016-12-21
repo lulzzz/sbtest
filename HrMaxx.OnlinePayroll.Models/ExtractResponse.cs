@@ -74,6 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string PTIN { get; set; }
 		public string DesigneeName940941 { get; set; }
 		public string PIN940941 { get; set; }
+		public string BankCustomerId { get; set; }
 
 		public BankAccount HostBank { get; set; }
 		public ExtractDBCompany HostCompany { get; set; }
@@ -196,7 +197,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ClientNo { get; set; }
 		public string InsuranceGroup { get; set; }
 		public string InsuranceGroupName { get; set; }
-
+		public Guid? ParentId { get; set; }
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }
 		public List<ExtractVendor> Vendors { get; set; } 

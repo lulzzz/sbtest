@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
@@ -92,6 +93,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
 
+				.ForMember(dest => dest.Locations, opt => opt.MapFrom(src => src.Locations))
 				.ForMember(dest => dest.AccumulatedPayTypes, opt => opt.MapFrom(src => src.CompanyAccumlatedPayTypes))
 				.ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.CompanyContracts.FirstOrDefault()))
 				.ForMember(dest => dest.CompanyTaxRates, opt => opt.MapFrom(src => src.CompanyTaxRates))
@@ -144,6 +146,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyTaxStates, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyAccounts, opt => opt.Ignore())
 				.ForMember(dest => dest.Employees, opt => opt.Ignore())
+				.ForMember(dest => dest.Locations, opt => opt.Ignore())
+				.ForMember(dest => dest.Parent, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
 				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src=>string.IsNullOrWhiteSpace(src.Memo) ? string.Empty: src.Memo))
 				.ForMember(dest => dest.PayrollInvoices, opt => opt.Ignore())
@@ -187,6 +191,12 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.Tax, opt => opt.Ignore());
 
+
+			CreateMap<Models.DataModel.Company, Models.CompanyLocation>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.Parent.Id))
+				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CompanyName))
+				.ForMember(dest => dest.Address, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.CompanyAddress)));
 
 			CreateMap<Models.DataModel.CompanyTaxState, Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))
@@ -361,6 +371,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => CombGuid.Generate()))
 				.ForMember(dest => dest.DocumentPath, opt => opt.Ignore())
+				.ForMember(dest => dest.DocumentType, opt => opt.MapFrom(src=>DocumentType.Misc))
 				.ForMember(dest => dest.DocumentName, opt => opt.MapFrom(src => src.OriginalFileName))
 				.ForMember(dest => dest.MimeType, opt => opt.MapFrom(src => src.MimeType))
 				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.FileExtension));
@@ -600,6 +611,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.Created, opt => opt.Ignore())
+				.ForMember(dest => dest.Locations, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceGroup, opt => opt.MapFrom(src=>src))
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))
 				.ForMember(dest => dest.UserName, opt => opt.Ignore());

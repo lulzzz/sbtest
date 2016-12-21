@@ -13,7 +13,7 @@
 	<xsl:variable name="mainHost" select="/ACHResponse/Hosts/ExtractHost[Host/FirmName='GIIG']"/>
 
 	<xsl:template match="/">
-101113011258$$spaces2$$<xsl:value-of select="$mainHost/HostCompany/FederalEIN"/><xsl:value-of select="$today"/><xsl:value-of select="$time"/>A094101CALIFORNIA BANK &amp; TRUST<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate($mainHost/HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="23"/></xsl:call-template>$$spaces5$$$$spaces2$$$$spaces1$$<xsl:text>$$n</xsl:text>
+101$$spaces1$$<xsl:value-of select="$mainHost/HostBank/RoutingNumber"/>$$spaces1$$<xsl:value-of select="$mainHost/HostBank/RoutingNumber"/><xsl:value-of select="$today"/><xsl:value-of select="$time"/>A094101CALIFORNIA BANK &amp; TRUST<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate($mainHost/HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="23"/></xsl:call-template>$$spaces5$$$$spaces2$$$$spaces1$$<xsl:text>$$n</xsl:text>
 	<xsl:apply-templates select="ACHResponse/Hosts/ExtractHost[count(ACHTransactions/ACHTransaction)>0]" >
 	</xsl:apply-templates>
 <xsl:variable name="rowstype5" select="count(ACHResponse/Hosts/ExtractHost[count(ACHTransactions/ACHTransaction[TransactionType='PPD'])>0]) + count(ACHResponse/Hosts/ExtractHost[count(ACHTransactions/ACHTransaction[TransactionType='CCD'])>0])"/>
@@ -30,23 +30,23 @@
 	<xsl:variable name ="pos" select="position()"/>
 	<xsl:if test="ACHTransactions/ACHTransaction[TransactionType='PPD']">
 <xsl:variable name="posppd" select="count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='PPD']) + count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='CCD']) + 1"/>
-5$$spaces2$$$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="HostCompany/FederalEIN"/>PPDPAYROLL$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posppd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
+5220$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="Host/BankCustomerId"/>PPDPAYROLL$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posppd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="ACHTransactions/ACHTransaction[TransactionType='PPD']">
 </xsl:apply-templates>
 8220<xsl:call-template name="padLeft">
 		<xsl:with-param name="data" select="count(ACHTransactions/ACHTransaction[TransactionType='PPD']/EmployeeBankAccounts/EmployeeBankAccount)"/>
 		<xsl:with-param name="count" select="6"/>
-	</xsl:call-template><xsl:value-of select="format-number(sum(ACHTransactions/ACHTransaction[TransactionType='PPD']/EmployeeBankAccounts/EmployeeBankAccount/BankAccount/RoutingNumber1),'0000000000')"/><xsl:value-of select="translate(format-number(sum(ACHTransactions/ACHTransaction[TransactionType='PPD']/Amount),'0000000000.00'),'.','')"/>0000000000001<xsl:value-of select="HostCompany/FederalEIN"/>$$spaces20$$$$spaces5$$113011250000001<xsl:text>$$n</xsl:text>
+	</xsl:call-template><xsl:value-of select="format-number(sum(ACHTransactions/ACHTransaction[TransactionType='PPD']/EmployeeBankAccounts/EmployeeBankAccount/BankAccount/RoutingNumber1),'0000000000')"/><xsl:value-of select="translate(format-number(sum(ACHTransactions/ACHTransaction[TransactionType='PPD']/Amount),'0000000000.00'),'.','')"/>0000000000001<xsl:value-of select="Host/BankCustomerId"/>$$spaces20$$$$spaces5$$<xsl:value-of select="HostBank/RoutingNumber1"></xsl:value-of>0000001<xsl:text>$$n</xsl:text>
 	</xsl:if>
 	<xsl:if test="ACHTransactions/ACHTransaction[TransactionType='CCD']">
 <xsl:variable name="posccd" select="count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='PPD']) + count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='CCD']) + 1 + count(ACHTransactions[ACHTransaction[TransactionType='PPD']])"/>
-5$$spaces2$$$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="HostCompany/FederalEIN"/>CCDINVOICE$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posccd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
+5225$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="Host/BankCustomerId"/>CCDINVOICE$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posccd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="ACHTransactions/ACHTransaction[TransactionType='CCD']">
 </xsl:apply-templates>
 8225<xsl:call-template name="padLeft">
 		<xsl:with-param name="data" select="count(ACHTransactions/ACHTransaction[TransactionType='CCD']/CompanyBankAccount)"/>
 		<xsl:with-param name="count" select="6"/>
-	</xsl:call-template><xsl:value-of select="format-number(sum(ACHTransactions/ACHTransaction[TransactionType='CCD']/CompanyBankAccount/RoutingNumber1),'0000000000')"/><xsl:value-of select="translate(format-number(sum(ACHTransactions/ACHTransaction[TransactionType='CCD']/Amount),'0000000000.00'),'.','')"/>0000000000001<xsl:value-of select="HostCompany/FederalEIN"/>$$spaces20$$$$spaces5$$11301125<xsl:choose><xsl:when test="ACHTransactions/ACHTransaction[TransactionType='PPD']">0000002</xsl:when><xsl:otherwise>0000001</xsl:otherwise></xsl:choose><xsl:text>$$n</xsl:text>
+	</xsl:call-template><xsl:value-of select="format-number(sum(ACHTransactions/ACHTransaction[TransactionType='CCD']/CompanyBankAccount/RoutingNumber1),'0000000000')"/><xsl:value-of select="translate(format-number(sum(ACHTransactions/ACHTransaction[TransactionType='CCD']/Amount),'0000000000.00'),'.','')"/>0000000000001<xsl:value-of select="Host/BankCustomerId"/>$$spaces20$$$$spaces5$$<xsl:value-of select="HostBank/RoutingNumber1"/><xsl:choose><xsl:when test="ACHTransactions/ACHTransaction[TransactionType='PPD']">0000002</xsl:when><xsl:otherwise>0000001</xsl:otherwise></xsl:choose><xsl:text>$$n</xsl:text>
 	</xsl:if>
 </xsl:template>
 <xsl:template match="ACHTransaction">
@@ -67,7 +67,7 @@
 	</xsl:call-template><xsl:value-of select="translate(format-number(Amount,'00000000.00'),'.','')"/>$$spaces10$$$$spaces5$$<xsl:call-template name="padRight">
 		<xsl:with-param name="data" select="Name"/>
 		<xsl:with-param name="count" select="22"/>
-	</xsl:call-template>$$spaces2$$011301125<xsl:call-template name="padLeft">
+	</xsl:call-template>$$spaces2$$0<xsl:value-of select="../../HostBank/RoutingNumber1"/><xsl:call-template name="padLeft">
 		<xsl:with-param name="data" select="position()"/>
 		<xsl:with-param name="count" select="7"/>
 	</xsl:call-template><xsl:text>$$n</xsl:text>
@@ -86,7 +86,7 @@
 </xsl:call-template><xsl:value-of select="translate(format-number((../../Amount)*Percentage div 100,'00000000.00'),'.','')"/>$$spaces10$$$$spaces5$$<xsl:call-template name="padRight">
 <xsl:with-param name="data" select="../../Name"/>
 <xsl:with-param name="count" select="22"/>
-</xsl:call-template>$$spaces2$$011301125<xsl:call-template name="padLeft">
+</xsl:call-template>$$spaces2$$0<xsl:value-of select="../../../../HostBank/RoutingNumber1"/><xsl:call-template name="padLeft">
 <xsl:with-param name="data" select="$counter"/>
 <xsl:with-param name="count" select="7"/>
 </xsl:call-template><xsl:text>$$n</xsl:text>

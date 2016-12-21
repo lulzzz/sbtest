@@ -18,6 +18,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using Magnum;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services
 {
@@ -113,7 +114,40 @@ namespace HrMaxx.OnlinePayroll.Services
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;
+					if (!company.IsLocation)
+					{
+						var children = _companyRepository.GetLocations(company.Id);
+						children.ForEach(child =>
+						{
+							child.FileUnderHost = savedcompany.FileUnderHost;
+							child.IsVisibleToHost = savedcompany.IsVisibleToHost;
+							child.FederalEIN = savedcompany.FederalEIN;
+							child.FederalPin = savedcompany.FederalPin;
+							child.IsFiler944 = savedcompany.IsFiler944;
+							child.AllowEFileFormFiling = savedcompany.AllowEFileFormFiling;
+							child.AllowTaxPayments = savedcompany.AllowTaxPayments;
+							child.DepositSchedule = savedcompany.DepositSchedule;
+							for (var i = 0; i < child.States.Count; i++)
+							{
+								var cs = child.States[i];
+								var ps =
+									savedcompany.States.FirstOrDefault(s => s.CountryId == cs.CountryId && s.State.StateId == cs.State.StateId);
+								if (ps != null)
+								{
+									cs.StateEIN = ps.StateEIN;
+									cs.StatePIN = ps.StatePIN;
+								}
+								else
+								{
+									child.States.Remove(cs);
+								}
+							}
+							_companyRepository.SaveCompany(child);
+							_companyRepository.SaveTaxStates(child, child.States);
 
+						});
+					}
+					
 					
 					txn.Complete();
 
@@ -527,6 +561,91 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" save TS Import Map"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var parent = _companyRepository.GetCompanyById(mappedResource.ParentId);
+					var child = JsonConvert.DeserializeObject<Company>(JsonConvert.SerializeObject(parent));
+					child.Id = mappedResource.Id;
+					child.ParentId = parent.Id;
+					child.CompanyAddress = mappedResource.Address;
+					child.BusinessAddress = mappedResource.Address;
+					child.Name = mappedResource.Name;
+					child.Locations = null;
+					child.Created = DateTime.Now;
+					child.LastModified = DateTime.Now;
+					child.UserName = fullName;
+					child.UserId = guid;
+					child.CompanyTaxRates.ForEach(ct =>
+					{
+						ct.CompanyId = child.Id;
+
+					});
+					
+					child.States.ForEach(ct =>
+					{
+						ct.Id = 0;
+
+					});
+					
+					var savedcompany = _companyRepository.SaveCompany(child);
+					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, child.Contract);
+					var savedstates = _companyRepository.SaveTaxStates(savedcompany, child.States);
+					savedcompany.Contract = savedcontract;
+					savedcompany.States = savedstates;
+					child.Deductions.ForEach(ct =>
+					{
+						ct.Id = 0;
+						ct.CompanyId = child.Id;
+						ct.Id =_companyRepository.SaveDeduction(ct).Id;
+
+					});
+					child.WorkerCompensations.ForEach(ct =>
+					{
+						ct.Id = 0;
+						ct.CompanyId = child.Id;
+						ct.Id = _companyRepository.SaveWorkerCompensation(ct).Id;
+					});
+					child.PayCodes.ForEach(ct =>
+					{
+						ct.Id = 0;
+						ct.CompanyId = child.Id;
+						ct.Id = _companyRepository.SavePayCode(ct).Id;
+					});
+					child.AccumulatedPayTypes.ForEach(ct =>
+					{
+						ct.Id = 0;
+						ct.CompanyId = child.Id;
+						ct.Id = _companyRepository.SaveAccumulatedPayType(ct).Id;
+					});
+					
+					txn.Complete();
+					Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
+					{
+						SavedObject = savedcompany,
+						UserId = guid,
+						TimeStamp = DateTime.Now,
+						NotificationText = string.Format("{0} by {1}", string.Format("A new location has been added for {0}", parent.Name), child.UserName),
+						EventType = NotificationTypeEnum.Created
+					});
+				}
+				var saved = _companyRepository.GetCompanyById(mappedResource.Id);
+				var memento = Memento<Company>.Create(saved, EntityTypeEnum.Company, saved.UserName, "Company Location Added", guid);
+				_mementoDataService.AddMementoData(memento);
+				return saved;
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" location for company " + mappedResource.ParentId));
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

@@ -42,6 +42,7 @@ common.directive('host', ['zionAPI','localStorageService','version',
 					return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
 				}
 				var validateStep1 = function () {
+					
 					return true;
 					
 				}

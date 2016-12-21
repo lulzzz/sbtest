@@ -180,6 +180,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
+		public decimal YTDWage { get; set; }
 
 		public string Name
 		{

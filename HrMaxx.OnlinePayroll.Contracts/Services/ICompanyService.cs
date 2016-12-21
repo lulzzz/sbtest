@@ -37,5 +37,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		List<Employee> GetAllEmployees();
 		void SaveTSImportMap(Guid id, ImportMap importMap);
+		Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid);
 	}
 }

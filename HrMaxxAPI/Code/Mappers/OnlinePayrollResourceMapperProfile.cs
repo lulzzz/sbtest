@@ -66,6 +66,10 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<CompanyDeductionResource, CompanyDeduction>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0));
 
+			CreateMap<CompanyLocationResource, CompanyLocation>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => CombGuid.Generate()));
+			CreateMap<CompanyLocation, CompanyLocationResource>();
+
 			CreateMap<CompanyTaxRate, CompanyTaxRateResource>();
 			CreateMap<CompanyTaxRateResource, CompanyTaxRate>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0));

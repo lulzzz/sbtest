@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string PIN940941 { get; set; }
 		public HostHomePage HomePage { get; set; }
 		public bool IsPeoHost { get; set; }
+		public string BankCustomerId { get; set; }
 		public Guid MementoId { get { return Id; } }
 		public void ApplyMemento(Memento<Host> memento)
 		{

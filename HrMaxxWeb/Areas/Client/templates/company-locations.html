@@ -1,0 +1,63 @@
+﻿<div class="table-responsive col-sm-8 col-sm-offset-2">
+	<div class="row">
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	</div>
+	<table class="table table-header table-bordered table-condensed form-controls input-sm">
+		<thead>
+			<tr>
+				<td class="col-sm-1">#</td>
+				<td class="col-sm-3">Name</td>
+				<td class="col-sm-6">Address</td>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="item in list track by $index">
+				<td>
+					{{$index+1}}
+				</td>
+				<td>
+					<span e-ng-change="item.name = $data" editable-text="item.name" e-name="name" e-form="rowform" class="col-sm-12" >
+						{{ item.name }}
+					</span>
+				</td>
+				<td>
+					<div class="form-group" ng-show="rowform.$visible">
+						<address type="0" data="selected.address" source-type-id="2" source-id="selected.id" ></address>
+					</div>
+					<span ng-show="!rowform.$visible">
+						{{ item.address.addressLine1 + ' ' + item.address.addressLine2 }}
+					</span>
+				</td>
+				
+				<td style="white-space: nowrap" ng-show="showControls">
+					<!-- form -->
+					<form editable-form id="rowform" onbeforesave="save(item)" name="rowform" class="form-buttons form-inline" shown="selected===item">
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
+							<i class="fa fa-save m-r-5"></i> save
+						</button>
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+							<i class="fa fa-remove m-r-5"></i> cancel
+						</button>
+						<button type="button"  ng-show="item.id" ng-click="jump(item)" class="btn btn-info">
+							<i class="fa fa-anchor m-r-5"></i> jump
+						</button>
+					</form>
+				</td>
+				
+			</tr>
+			<tr ng-show="!selected">
+				<td colspan="3">
+					<span ng-show="list.length===0">No Locationst found</span>
+				</td>
+
+				<td ng-show="showControls">
+					<button type="button" ng-click="add()" class="btn btn-primary">
+						Add
+					</button>
+				</td>
+			</tr>
+			
+		</tbody>
+	</table>
+</div>

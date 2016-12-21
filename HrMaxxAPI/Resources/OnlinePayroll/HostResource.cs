@@ -22,6 +22,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string DesigneeName940941 { get; set; }
 		public string PIN940941 { get; set; }
 		public bool IsPeoHost { get; set; }
+		public string BankCustomerId { get; set; }
+
 		public HomePageResource HomePage { get; set; }
 	}
 }

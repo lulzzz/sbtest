@@ -158,12 +158,16 @@
 			}
 		}
 
-		$scope.getCompanies = function () {
+		$scope.getCompanies = function (sel) {
 			companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
 				dataSvc.companies = data;
 				if (dataSvc.userCompany) {
 					var selected = $filter('filter')(dataSvc.companies, {id: dataSvc.userCompany})[0];
 					dataSvc.selectedCompany = selected;
+				}
+				else if (sel) {
+					var selected2 = $filter('filter')(dataSvc.companies, { id: sel.id })[0];
+					dataSvc.selectedCompany = selected2;
 				}
 			}, function (erorr) {
 				$scope.addAlert('error getting company list', 'danger');
@@ -175,7 +179,7 @@
 			if (dataSvc.selectedHost) {
 				var match = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
 				dataSvc.selectedHost = angular.copy(match);
-				$scope.getCompanies();
+				$scope.getCompanies(null);
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 			}
 				
@@ -188,8 +192,26 @@
 		}
 		$scope.$on('companyUpdated', function (event, args) {
 			var company = args.company;
-			updateInList(dataSvc.companies, company);
+			var children = $filter('filter')(dataSvc.companies, { parentId: company.id });
+			if (children.length > 0) {
+				$scope.getCompanies(company);
+			} else {
 			
+				updateInList(dataSvc.companies, company);
+			
+				if (dataSvc.selectedHost && dataSvc.selectedHost.company.id === company.id) {
+					dataSvc.selectedHost.company = company;
+				}
+				if (dataSvc.selectedCompany && dataSvc.selectedCompany.id === company.id) {
+					dataSvc.selectedCompany = company;
+					dataSvc.selectedCompany1 = angular.copy(company);
+				}
+			}
+		});
+		$scope.$on('companyLocationUpdated', function (event, args) {
+			var company = args.location;
+			updateInList(dataSvc.companies, company);
+
 			if (dataSvc.selectedHost && dataSvc.selectedHost.company.id === company.id) {
 				dataSvc.selectedHost.company = company;
 			}
@@ -197,6 +219,15 @@
 				dataSvc.selectedCompany = company;
 				dataSvc.selectedCompany1 = angular.copy(company);
 			}
+		});
+		$scope.$on('switchCompany', function (event, args) {
+			var id = args.newcomp;
+			var newcomp = $filter('filter')(dataSvc.companies, { id: id })[0];
+			if (newcomp) {
+				dataSvc.fromSearch = true;
+				$scope.setHostandCompany(newcomp.hostId, newcomp.id, "#!/Client/Company/" + +(new Date().getTime()));
+			}
+			
 		});
 		$scope.$on('hostUpdated', function (event, args) {
 			var host = args.host;

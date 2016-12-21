@@ -133,6 +133,15 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
 		}
 
+		[HttpPost]
+		[Route(CompanyRoutes.SaveLocation)]
+		public CompanyResource SaveLocation(CompanyLocationResource resource)
+		{
+			var mappedResource = Mapper.Map<CompanyLocationResource, CompanyLocation>(resource);
+			var child = MakeServiceCall(() => _companyService.SaveLocation(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "save company pay code", true);
+			return Mapper.Map<Company, CompanyResource>(child);
+		}
+
 		[HttpGet]
 		[Route(CompanyRoutes.VendorCustomerList)]
 		public List<VendorCustomerResource> SavePayCode(Guid? companyId, bool isVendor)

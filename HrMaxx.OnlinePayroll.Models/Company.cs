@@ -53,6 +53,15 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 		public List<CompanyPayCode> PayCodes { get; set; }
 		public DateTime Created { get; set; }
+		public Guid? ParentId { get; set; }
+
+		public bool IsLocation
+		{
+			get { return ParentId.HasValue; }
+		}
+
+		public List<CompanyLocation> Locations { get; set; } 
+
 		public Guid MementoId
 		{
 			get { return Id; }
@@ -166,6 +175,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Code { get; set; }
 		public string Description { get; set; }
 		public decimal HourlyRate { get; set; }
+	}
+
+	public class CompanyLocation
+	{
+		public Guid Id { get; set; }
+		public string Name { get; set; }
+		public Address Address { get; set; }
+		public Guid ParentId { get; set; }
 	}
 
 	public class InvoiceSetup

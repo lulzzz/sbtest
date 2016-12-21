@@ -30,6 +30,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             this.Hosts = new HashSet<Host>();
             this.VendorCustomers = new HashSet<VendorCustomer>();
             this.PayrollInvoices = new HashSet<PayrollInvoice>();
+            this.Locations = new HashSet<Company>();
         }
     
         public System.Guid Id { get; set; }
@@ -62,6 +63,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Memo { get; set; }
         public string ClientNo { get; set; }
         public System.DateTime Created { get; set; }
+        public Nullable<System.Guid> ParentId { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }
@@ -92,5 +94,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual InsuranceGroup InsuranceGroup { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Company> Locations { get; set; }
+        public virtual Company Parent { get; set; }
     }
 }

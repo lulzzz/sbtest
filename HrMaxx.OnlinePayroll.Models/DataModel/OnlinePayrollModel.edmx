@@ -97,6 +97,7 @@
           <Property Name="Memo" Type="varchar(max)" Nullable="false" />
           <Property Name="ClientNo" Type="varchar(max)" Nullable="false" />
           <Property Name="Created" Type="datetime" Nullable="false" />
+          <Property Name="ParentId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -313,6 +314,7 @@
           <Property Name="DesigneeName940941" Type="varchar(max)" />
           <Property Name="PIN940941" Type="varchar(max)" />
           <Property Name="IsPeoHost" Type="bit" Nullable="false" />
+          <Property Name="BankCustomerId" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="InsuranceGroup">
           <Key>
@@ -620,6 +622,18 @@
             </Principal>
             <Dependent Role="BankAccount">
               <PropertyRef Name="EntityTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Company_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="0..1" />
+          <End Role="Company1" Type="Self.Company" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company1">
+              <PropertyRef Name="ParentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1132,6 +1146,10 @@
             <End Role="EntityType" EntitySet="EntityType" />
             <End Role="BankAccount" EntitySet="BankAccount" />
           </AssociationSet>
+          <AssociationSet Name="FK_Company_Company" Association="Self.FK_Company_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="Company1" EntitySet="Company" />
+          </AssociationSet>
           <AssociationSet Name="FK_Company_Host" Association="Self.FK_Company_Host">
             <End Role="Host" EntitySet="Host" />
             <End Role="Company" EntitySet="Company" />
@@ -1507,6 +1525,10 @@
             <End Role="MasterExtract" EntitySet="MasterExtracts" />
             <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtracts" />
           </AssociationSet>
+          <AssociationSet Name="FK_Company_Company" Association="HrMaxxModel.FK_Company_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="Company1" EntitySet="Companies" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1529,6 +1551,7 @@
           <Property Name="DesigneeName940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="PIN940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="IsPeoHost" Type="Boolean" Nullable="false" />
+          <Property Name="BankCustomerId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_CPA_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -1592,6 +1615,9 @@
           <Property Name="ClientNo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Created" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Company" FromRole="Company" ToRole="PayrollInvoice" />
+          <Property Name="ParentId" Type="Guid" />
+          <NavigationProperty Name="Locations" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company" ToRole="Company1" />
+          <NavigationProperty Name="Parent" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company1" ToRole="Company" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2667,6 +2693,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Company_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
+          <End Type="HrMaxxModel.Company" Role="Company1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2684,6 +2722,7 @@
           <EntitySetMapping Name="Hosts">
             <EntityTypeMapping TypeName="HrMaxxModel.Host">
               <MappingFragment StoreEntitySet="Host">
+                <ScalarProperty Name="BankCustomerId" ColumnName="BankCustomerId" />
                 <ScalarProperty Name="IsPeoHost" ColumnName="IsPeoHost" />
                 <ScalarProperty Name="PIN940941" ColumnName="PIN940941" />
                 <ScalarProperty Name="DesigneeName940941" ColumnName="DesigneeName940941" />
@@ -2704,6 +2743,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Created" ColumnName="Created" />
                 <ScalarProperty Name="ClientNo" ColumnName="ClientNo" />
                 <ScalarProperty Name="Memo" ColumnName="Memo" />

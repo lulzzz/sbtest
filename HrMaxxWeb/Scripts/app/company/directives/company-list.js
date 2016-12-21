@@ -150,7 +150,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 					}
 
 
-					$scope.$watch('mainData.companies.length',
+					$scope.$watch('mainData.companies',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue) {
 						 		$scope.list = $scope.mainData.companies;

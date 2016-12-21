@@ -63,7 +63,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public List<CompanyDeductionResource> Deductions { get; set; }
 		public List<CompanyWorkerCompensationResource> WorkerCompensations { get; set; }
 		public ContractDetailsResource Contract { get; set; }
-		public List<CompanyPayCodeResource> PayCodes { get; set; } 
+		public List<CompanyPayCodeResource> PayCodes { get; set; }
+		public List<CompanyLocation> Locations { get; set; } 
+		public Guid? ParentId { get; set; }
+
+		public bool IsLocation { get; set; }
 
 		public string GetTextForStatus
 		{
@@ -187,6 +191,14 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		{
 			get { return string.Format("{0}:{1} ({2} per hour)", Code, Description, HourlyRate.ToString("c")); }
 		}
+	}
+
+	public class CompanyLocationResource
+	{
+		public Guid Id { get; set; }
+		public string Name { get; set; }
+		public Address Address { get; set; }
+		public Guid ParentId { get; set; }
 	}
 
 	public class InvoiceSetupResource
