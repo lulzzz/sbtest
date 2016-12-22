@@ -489,7 +489,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 						var journal = CreateJournalEntryTP(accounts, fullName, host.HostCompany.Id, amount,
 							globalVendors.First(
-								v => (masterExtract.IsFederal && v.Name.Contains("IRS") || (!masterExtract.IsFederal && v.Name.Contains("CA")))),
+								v => (masterExtract.IsFederal && v.Name.Contains("941") || (!masterExtract.IsFederal && v.Name.Contains("CA")))),
 							extract.Report.Description, extract.Report.DepositDate.Value);
 						journals.Add(journal.Id);
 						payCheckIds.AddRange(host.Companies.SelectMany(c => c.PayChecks.Select(pc => pc.Id).ToList()).ToList());
