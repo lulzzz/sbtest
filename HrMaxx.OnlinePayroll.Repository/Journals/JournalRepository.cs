@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		public JournalRepository(IMapper mapper, OnlinePayrollEntities dbContext)
 		{
 			_dbContext = dbContext;
+			_dbContext.Database.CommandTimeout = 180;
 			_mapper = mapper;
 		}
 
