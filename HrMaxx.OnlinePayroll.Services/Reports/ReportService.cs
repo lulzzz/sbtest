@@ -713,7 +713,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			};
 		}
 
-		public FileDto PrintPayrollWithSummary(Models.Payroll payroll, List<Guid> documents )
+		public FileDto PrintPayrollSummary(Models.Payroll payroll )
 		{
 			var fileName = string.Format("Payroll_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
 			var xml = GetXml<Models.Payroll>(payroll);
@@ -724,7 +724,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrollsummary.xslt"), args);
 
 			var summary = _pdfService.PrintHtml(transformed.Reports.First());
-			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, summary.Data);
+			return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
 		}
 
 		public DashboardData GetDashboardData(DashboardRequest dashboardRequest)
@@ -904,6 +904,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public FileDto PrintPayrollWithoutSummary(Models.Payroll payroll, List<Guid> documents)
+		{
+			var fileName = string.Format("Payroll_Checks_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+			
+			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, new byte[0]);
 		}
 
 

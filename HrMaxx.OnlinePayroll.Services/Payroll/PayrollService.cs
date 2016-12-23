@@ -676,7 +676,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				_payrollRepository.ChangePayCheckStatus(payCheckId, PaycheckStatus.PrintedAndPaid);
 		}
 
-		public FileDto PrintPayroll(Models.Payroll payroll)
+		public FileDto PrintPayrollReport(Models.Payroll payroll)
+		{
+			try
+			{
+				var returnFile = _reportService.PrintPayrollSummary(payroll);
+				return returnFile;
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Print Payrolls for id=" + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public FileDto PrintPayrollChecks(Models.Payroll payroll)
 		{
 			try
 			{
@@ -684,9 +700,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var documents = new List<Guid>();
 					var updateStatus = false;
-					if ((int)payroll.Status> 2 && (int)payroll.Status<6)
+					if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
 					{
-						foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.EmployeeNo))
+						foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc => pc.Employee.EmployeeNo))
 						{
 							if (!_fileRepository.FileExists(paychecks.DocumentId))
 							{
@@ -696,11 +712,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							documents.Add(paychecks.DocumentId);
 						}
 					}
-					
 
 
-					var returnFile = _reportService.PrintPayrollWithSummary(payroll, documents);
-					if(payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && updateStatus))
+
+					var returnFile = _reportService.PrintPayrollWithoutSummary(payroll, documents);
+					if (payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && updateStatus))
 						_payrollRepository.MarkPayrollPrinted(payroll.Id);
 					txn.Complete();
 					return returnFile;

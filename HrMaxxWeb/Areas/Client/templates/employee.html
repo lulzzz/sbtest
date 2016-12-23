@@ -49,6 +49,7 @@
 											<div class="form-group">
 												<label>Gender</label>
 												<select ng-model="selected.gender" name="gender" class="form-control" convert-to-number required data-parsley-group="wizard-step-1" data-parsley-type="number">
+													<option value="0">NA</option>
 													<option value="1">Male</option>
 													<option value="2">Female</option>
 												</select>
@@ -272,7 +273,7 @@
 																		<i class="fa fa-recycle m-r-5"></i> delete
 																	</button>
 																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-xs">
-																		<i class="fa fa-save m-r-5"></i> save
+																		<i class="fa fa-save m-r-5"></i> enter
 																	</button>
 																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-xs">
 																		<i class="fa fa-remove m-r-5"></i> cancel

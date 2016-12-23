@@ -34,6 +34,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum DepositSchedule941
 	{
+		NextDay=0,
 		SemiWeekly=1,
 		Monthly=2,
 		Quarterly=3
@@ -193,6 +194,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum GenderType
 	{
+		NA=0,
 		Male=1,
 		Female=2
 	}

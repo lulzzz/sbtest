@@ -113,6 +113,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
 				.ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Name))
 				.ForMember(dest => dest.CompanyNo, opt => opt.MapFrom(src => src.CompanyNo))
+				.ForMember(dest => dest.CompanyNumber, opt => opt.Ignore())
 				.ForMember(dest => dest.TaxFilingName, opt => opt.MapFrom(src => src.TaxFilingName))
 				.ForMember(dest => dest.ManageEFileForms, opt => opt.MapFrom(src => src.AllowEFileFormFiling))
 				.ForMember(dest => dest.ManageTaxPayment, opt => opt.MapFrom(src => src.AllowTaxPayments))

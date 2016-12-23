@@ -15,12 +15,13 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ReportResponse GetReport(ReportRequest request);
 		FileDto GetReportDocument(ReportRequest request);
 		Extract GetExtractDocument(ReportRequest request);
-		FileDto PrintPayrollWithSummary(Payroll payroll, List<Guid> documents );
+		FileDto PrintPayrollSummary(Payroll payroll );
 		DashboardData GetDashboardData(DashboardRequest dashboardRequest);
 		List<MasterExtract> GetExtractList(string report);
 		List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company);
 		ACHExtract GetACHReport(ReportRequest request);
 		ACHExtract GetACHExtract(ACHExtract data, string fullName);
 		List<ACHMasterExtract> GetACHExtractList();
+		FileDto PrintPayrollWithoutSummary(Payroll payroll, List<Guid> documents);
 	}
 }

@@ -106,8 +106,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('error printing pay check', 'danger');
 						});
 					}
-					$scope.printPayroll = function (payroll) {
-						payrollRepository.printPayroll(payroll).then(function (data) {
+					$scope.printPayrollChecks = function (payroll) {
+						payrollRepository.printPayrollChecks(payroll).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
@@ -115,6 +115,20 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							document.body.appendChild(a);
 							a.click();
 							if(payroll.status>2)
+								$scope.$parent.$parent.updatePrintStatus();
+						}, function (error) {
+							addAlert('error printing pay check', 'danger');
+						});
+					}
+					$scope.printPayrollReport = function (payroll) {
+						payrollRepository.printPayrollReport(payroll).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							if (payroll.status > 2)
 								$scope.$parent.$parent.updatePrintStatus();
 						}, function (error) {
 							addAlert('error printing pay check', 'danger');

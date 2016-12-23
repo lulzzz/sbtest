@@ -98,6 +98,7 @@
           <Property Name="ClientNo" Type="varchar(max)" Nullable="false" />
           <Property Name="Created" Type="datetime" Nullable="false" />
           <Property Name="ParentId" Type="uniqueidentifier" />
+          <Property Name="CompanyNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1618,6 +1619,7 @@
           <Property Name="ParentId" Type="Guid" />
           <NavigationProperty Name="Locations" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company" ToRole="Company1" />
           <NavigationProperty Name="Parent" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company1" ToRole="Company" />
+          <Property Name="CompanyNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2743,6 +2745,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="CompanyNumber" ColumnName="CompanyNumber" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Created" ColumnName="Created" />
                 <ScalarProperty Name="ClientNo" ColumnName="ClientNo" />

@@ -20,7 +20,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 		protected override void Load(ContainerBuilder builder)
 		{
 			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
-			string _templatePath = HttpContext.Current.Server.MapPath("~/Templates/");
+			string _templatePath = HttpContext.Current !=null ? HttpContext.Current.Server.MapPath("~/Templates/") : string.Empty;
 			
 			builder.RegisterType<HostService>()
 				.As<IHostService>()

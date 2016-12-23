@@ -23,7 +23,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayCheck(int payCheck);
 		FileDto PrintPayCheck(PayCheck payCheck);
 		void MarkPayCheckPrinted(int payCheckId);
-		FileDto PrintPayroll(Payroll payroll);
+		FileDto PrintPayrollReport(Payroll payroll);
 		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, Guid userId, bool fetchCompany);
 		List<PayrollInvoice> GetHostInvoices(Guid hostId, InvoiceStatus submitted = (InvoiceStatus)0);
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
@@ -43,5 +43,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<PayCheck> GetEmployeePayChecks(Guid companyId, Guid employeeId);
 		void FixInvoiceData();
 		PayrollInvoice GetInvoiceById(Guid invoiceId);
+		FileDto PrintPayrollChecks(Payroll payroll);
 	}
 }

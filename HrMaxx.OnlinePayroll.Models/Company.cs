@@ -17,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid HostId { get; set; }
 		public string Name { get; set; }
 		public string CompanyNo { get; set; }
+		public int CompanyNumber { get; set; }
 		public Address CompanyAddress { get; set; }
 		public bool IsVisibleToHost { get; set; }
 		public StatusOption StatusId { get; set; }

@@ -105,20 +105,24 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 									stateId:1
 								}
 							},
+							gender: 0,
 							rate:0,
 							payCodes:[],
 							compensations: [],
 							federalAdditionalAmount: 0,
 							federalExemptions: 0,
+							federalStatus:1,
 							state: {
 								state: $scope.mainData.selectedCompany.states[0].state,
 								exemptions: 0,
-								additionalAmount:0
+								additionalAmount: 0,
+								taxStatus:1
 							},
-							workerCompensation: $scope.mainData.selectedCompany.workerCompensations.length>1? $filter('orderBy')($scope.mainData.selectedCompany.workerCompensations,'rate',true)[0] : null,
+							workerCompensation: $scope.mainData.selectedCompany.workerCompensations.length>0? $filter('orderBy')($scope.mainData.selectedCompany.workerCompensations,'rate',true)[0] : null,
 							taxCategory: 1,
 							payrollSchedule: $scope.mainData.selectedCompany.payrollSchedule,
-							paymentMethod: 1
+							paymentMethod: 1,
+							bankAccounts:[]
 
 						};
 						

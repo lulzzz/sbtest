@@ -47,7 +47,7 @@ BEGIN
 		and c.FileUnderHost=1
 		and ((@depositSchedule is not null and host.DepositSchedule941=@depositSchedule) or @depositSchedule is null)
 		and ((@host is not null and c.HostId=@host) or (@host is null))
-		and c.ParentId is null
+		
 		union
 		select id CompanyId, id FilingCompanyId, HostId Host
 		from Company

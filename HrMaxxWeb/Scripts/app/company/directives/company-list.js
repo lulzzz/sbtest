@@ -37,6 +37,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						var selectedCompany = {
 							hostId: $scope.mainData.selectedHost.id,
 							statusId: 1,
+							companyNumber:0,
 							isAddressSame: true,
 							isVisibleToHost: true,
 							fileUnderHost: $scope.mainData.selectedHost.isPeoHost,

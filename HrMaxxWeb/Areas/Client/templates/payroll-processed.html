@@ -76,7 +76,8 @@
 	<div class="col-sm-12">
 		<button class="btn btn-sm btn-primary pull-right" ng-if="item.status===2 || item.status===6" ng-disabled="!canConfirm()" ng-click="save()">confirm</button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
-		<button class="btn btn-sm btn-success" ng-click="printPayroll(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print all</button>
+		<button class="btn btn-sm btn-success" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print report</button>
+		<button class="btn btn-sm btn-success" ng-click="printPayrollChecks(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print checks</button>
 		<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 	</div>
 	

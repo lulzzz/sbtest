@@ -130,7 +130,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var validateStep1 = function () {
 						var c = $scope.selected;
-						if (!c.gender || !c.ssn || !c.hireDate || !c.statusId)
+						if (!c.ssn || !c.hireDate || !c.statusId)
 							return false;
 						else if (!c.contact.firstName || !c.contact.lastName || !c.contact.email)
 							return false;
