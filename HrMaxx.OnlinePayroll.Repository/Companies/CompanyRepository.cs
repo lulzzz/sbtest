@@ -360,16 +360,20 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var dbEmployees = _dbContext.Employees.Where(e => e.CompanyId==employee.CompanyId && (e.Id == me.Id || e.SSN.Equals(me.SSN))).ToList();
 			if (!dbEmployees.Any())
 			{
-				var maxEmployeeNumber =
+				if (string.IsNullOrWhiteSpace(employee.EmployeeNo) || employee.EmployeeNo.Equals("0"))
+				{
+					var maxEmployeeNumber =
 					_dbContext.Employees.Where(e => e.CompanyId == employee.CompanyId).Select(e => e.EmployeeNo).ToList();
-				if (maxEmployeeNumber.Any(e => !string.IsNullOrWhiteSpace(e)))
-				{
-					me.EmployeeNo = (maxEmployeeNumber.Select(e => Convert.ToInt32(e)).Max() + 1).ToString();
+					if (maxEmployeeNumber.Any(e => !string.IsNullOrWhiteSpace(e)))
+					{
+						me.EmployeeNo = (maxEmployeeNumber.Select(e => Convert.ToInt32(e)).Max() + 1).ToString();
+					}
+					else
+					{
+						me.EmployeeNo = "1";
+					}
 				}
-				else
-				{
-					me.EmployeeNo = "1";
-				}
+				
 				_dbContext.Employees.Add(me);
 			}
 			else if(dbEmployees.Count>1)

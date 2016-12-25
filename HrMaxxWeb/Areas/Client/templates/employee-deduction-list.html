@@ -20,6 +20,24 @@
 					<span e-ng-change="item.deduction = $data;" editable-select="item.deduction" e-name="deduction" e-form="rowform" e-ng-options="ded.description for ded in availableCompanyDeductions($index) track by ded.id">
 						{{ item.deduction? item.deduction.description : '' }}
 					</span>
+					<div class="row" ng-show="item.deduction.type.id!==3">
+						<div class="form-group col-sm-12">
+							<div class="col-sm-6 text-right">
+								<label>Ceiling Per Check</label>
+							</div>
+							<div class="col-sm-6">
+								<span editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck ? (item.ceilingPerCheck | currency:'$') : 'none'  }}</span>
+									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck ? ((item.ceilingPerCheck | currency:'') + '%') : 'none'  }}</span>
+								</span>
+								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="type" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
+
+								</span>
+							</div>
+
+
+						</div>
+					</div>
 					<div class="row" ng-show="item.deduction.type.id===3">
 						<div class="form-group col-sm-12">
 							<div class="col-sm-6 text-right">
@@ -72,8 +90,8 @@
 						<div class="form-group col-sm-12">
 							<div class="col-sm-6 text-right"><label>Agency</label></div>
 							<div class="col-sm-6 pull-left">
-								<span ng-show="item.deduction.type.id===3" e-ng-change="item.agencyId = $data;" editable-select="item.agencyId" e-name="agnecy" e-form="rowform" e-ng-options="a.id as a.name for a in data.agencies">
-									{{ item.agencyId? getAgencyName() : '' }}
+								<span ng-show="item.deduction.type.id===3" e-ng-change="item.agencyId = $data;" editable-select="item.agencyId" e-name="agnecy" e-form="rowform" e-ng-options="a.id as a.name + '(' + a.contact.firstName + ' ' + a.contact.lastName + ')' for a in data.agencies">
+									{{ item.agencyId? getAgencyName(item.agencyId) : '' }}
 								</span>
 							</div>
 							

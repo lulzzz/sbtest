@@ -41,7 +41,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				var deductiontypes = _metaDataRepository.GetDeductionTypes();
 				var paytypes = _metaDataRepository.GetAccumulablePayTypes();
 				var insurancegroups = _commonService.GetInsuranceGroups();
-				return new {Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups};
+				return new CompanyMetaData(){Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups};
 			}
 			catch (Exception e)
 			{
@@ -54,7 +54,7 @@ namespace HrMaxx.OnlinePayroll.Services
 		public object GetAccountsMetaData()
 		{
 			return
-				new
+				new AccountsMetaData
 				{
 					Types = HrMaaxxSecurity.GetEnumList<AccountType>(),
 					SubTypes = HrMaaxxSecurity.GetEnumList<AccountSubType>()
@@ -67,7 +67,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
-				return new { PayTypes = paytypes, Agencies = agencies };
+				return new EmployeeMetaData { PayTypes = paytypes, Agencies = agencies };
 			}
 			catch (Exception e)
 			{

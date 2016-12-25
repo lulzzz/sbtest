@@ -61,6 +61,7 @@
     <Compile Include="ACHTransaction.cs" />
     <Compile Include="BankAccount.cs" />
     <Compile Include="Company.cs" />
+    <Compile Include="CompanyMetaData.cs" />
     <Compile Include="CompanyPayrollCube.cs" />
     <Compile Include="CompanyTax.cs" />
     <Compile Include="DashboardData.cs" />

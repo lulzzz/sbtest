@@ -41,10 +41,10 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 
 				
 				$scope.getAgencyName = function(id) {
-					if (!id) {
+					if (id) {
 						var fil = $filter('filter')(dataSvc.agencies, { id: id })[0];
 						if (fil)
-							return fil.name;
+							return fil.name + '(' + fil.contact.firstName + ' ' + fil.contact.lastName + ')';
 					}
 				}
 				var addAlert = function (error, type) {
@@ -126,12 +126,15 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				}
 				$scope.availableCompanyDeductions = function(index) {
 					var returnList = [];
-					$.each($scope.companyDeductions, function(ind, d) {
-						var matching = $filter('filter')($scope.list, { deduction: { id: d.id } })[0];
-						if (!matching || (index!==-1 && $scope.list.indexOf(matching) === index)) {
-							returnList.push(d);
-						}
-					});
+					if ($scope.companyDeductions) {
+						$.each($scope.companyDeductions, function (ind, d) {
+							var matching = $filter('filter')($scope.list, { deduction: { id: d.id } })[0];
+							if (!matching || (index !== -1 && $scope.list.indexOf(matching) === index)) {
+								returnList.push(d);
+							}
+						});
+					}
+					
 					return returnList;
 				}
 				
