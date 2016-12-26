@@ -30,7 +30,7 @@
 	<xsl:variable name ="pos" select="position()"/>
 	<xsl:if test="ACHTransactions/ACHTransaction[TransactionType='PPD']">
 <xsl:variable name="posppd" select="count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='PPD']) + count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='CCD']) + 1"/>
-5220$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="Host/BankCustomerId"/>PPDPAYROLL$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posppd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
+5220<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="Host/BankCustomerId"/>PPDPAYROLL$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posppd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="ACHTransactions/ACHTransaction[TransactionType='PPD']">
 </xsl:apply-templates>
 8220<xsl:call-template name="padLeft">
@@ -40,7 +40,7 @@
 	</xsl:if>
 	<xsl:if test="ACHTransactions/ACHTransaction[TransactionType='CCD']">
 <xsl:variable name="posccd" select="count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='PPD']) + count(preceding-sibling::ACHTransactions/ACHTransaction[TransactionType='CCD']) + 1 + count(ACHTransactions[ACHTransaction[TransactionType='PPD']])"/>
-5225$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="Host/BankCustomerId"/>CCDINVOICE$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posccd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
+5225<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="16"/></xsl:call-template>$$spaces20$$1<xsl:value-of select="Host/BankCustomerId"/>CCDINVOICE$$spaces2$$$$spaces1$$<xsl:value-of select="$today"/><xsl:value-of select="$postingDate"/>$$spaces2$$$$spaces1$$1<xsl:value-of select="substring(HostBank/RoutingNumber,1,8)"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="$posccd"/><xsl:with-param name="count" select="7"/></xsl:call-template><xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="ACHTransactions/ACHTransaction[TransactionType='CCD']">
 </xsl:apply-templates>
 8225<xsl:call-template name="padLeft">
