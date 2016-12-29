@@ -34,7 +34,7 @@ namespace SiteInspectionStatus_Utility
 			var builder = new ContainerBuilder();
 			builder.RegisterModule<LoggingModule>();
 			builder.RegisterModule<MapperModule>();
-			
+
 			builder.RegisterModule<ControllerModule>();
 			builder.RegisterModule<BusModule>();
 
@@ -48,11 +48,11 @@ namespace SiteInspectionStatus_Utility
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.MappingModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.ServicesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.CommandHandlerModule>();
-			
+
 			var container = builder.Build();
 			ImportData(container);
-			
-			
+
+
 			Console.WriteLine("Utility run finished for ");
 		}
 
@@ -87,22 +87,23 @@ namespace SiteInspectionStatus_Utility
 					var _mementoDataService = scope.Resolve<IMementoDataService>();
 
 
-					var companyMetaData =(CompanyMetaData) _metaDataService.GetCompanyMetaData();
-					var accountMetaData = (AccountsMetaData) _metaDataService.GetAccountsMetaData();
+					var companyMetaData = (CompanyMetaData)_metaDataService.GetCompanyMetaData();
+					var accountMetaData = (AccountsMetaData)_metaDataService.GetAccountsMetaData();
 					var taxes = _metaDataService.GetCompanyTaxesForYear(2016);
 					var employeeMetaData = (EmployeeMetaData)_metaDataService.GetEmployeeMetaData();
 					var companyKeys = new List<KeyValuePair<string, Guid>>();
 					var employeeKeys = new List<KeyValuePair<string, Guid>>();
-					
+
 					var hostList = _hostService.GetHostList(Guid.Empty);
-					var companiestoimport = new List<string>() {"3012", "647"};
+					var companiestoimport = new List<string>() { "3012", "647", "2613" };
+					var existingcompanies = _companyRepository.GetAllCompanies();
 					using (var txn = TransactionScopeHelper.Transaction())
 					{
 						///Agencies
 						var dbAgencies = _companyService.GetVendorCustomers(null, true).Where(v => v.IsAgency).ToList();
 						agencies.ForEach(ag =>
 						{
-							if(!dbAgencies.Any(dba=>!string.IsNullOrWhiteSpace(dba.AccountNo) && dba.AccountNo.Equals(ag.AccountNo)))
+							if (!dbAgencies.Any(dba => !string.IsNullOrWhiteSpace(dba.AccountNo) && dba.AccountNo.Equals(ag.AccountNo)))
 							{
 								var vc = new HrMaxx.OnlinePayroll.Models.VendorCustomer()
 								{
@@ -116,9 +117,9 @@ namespace SiteInspectionStatus_Utility
 									StatusId = StatusOption.Active,
 									Contact = new Contact()
 									{
-										FirstName = ag.FirstName,
-										MiddleInitial = !string.IsNullOrWhiteSpace(ag.MI) ? ag.MI : string.Empty,
-										LastName = ag.LastName,
+										FirstName = "NA",
+										MiddleInitial = string.Empty,
+										LastName = "NA",
 										IsPrimary = true,
 										Email = "na@na.com",
 										Address = new Address()
@@ -132,7 +133,11 @@ namespace SiteInspectionStatus_Utility
 											Zip = ag.AZip.Trim(),
 											ZipExtension = !string.IsNullOrWhiteSpace(ag.ZipExtension) ? ag.ZipExtension.Trim() : string.Empty
 										}
-									}, UserId = Guid.Empty, LastModified = DateTime.Now, UserName = "System", Note=string.Empty
+									},
+									UserId = Guid.Empty,
+									LastModified = DateTime.Now,
+									UserName = "System",
+									Note = string.Empty
 								};
 								var savedvc = _companyService.SaveVendorCustomers(vc);
 								dbAgencies.Add(savedvc);
@@ -141,18 +146,25 @@ namespace SiteInspectionStatus_Utility
 						/// end Agencies
 						/// 
 						/// 
-						foreach (var c in companies.Where(co => companiestoimport.Any(c2=>c2.Equals(co.CompanyNo))))
+						
+						foreach (var c in companies.Where(co => companiestoimport.Any(c2 => c2.Equals(co.CompanyNo))))
 						{
 							var companyDeductionKeys = new List<KeyValuePair<string, int>>();
 							var companyWCKeys = new List<KeyValuePair<string, int>>();
 							var company = mapper.Map<SiteInspectionStatus_Utility.Company, HrMaxx.OnlinePayroll.Models.Company>(c);
+							var existingCompany =
+								existingcompanies.FirstOrDefault(c2 => c2.FederalEIN.Equals(company.FederalEIN) && c2.HostId == company.HostId);
 							var host = hostList.First(h => h.Id == company.HostId);
+
 							if (company.IsHostCompany)
 							{
 								company = host.Company;
+								existingCompany = host.Company;
 							}
 							else
 							{
+								if (existingCompany!=null)
+									company.Id = existingCompany.Id;
 								company.CompanyAddress = new Address { AddressLine1 = c.AddressLine1, City = c.City, CountryId = 1, StateId = 1, Type = AddressType.Business, Zip = c.Zip.Trim(), ZipExtension = string.Empty };
 								company.BusinessAddress = new Address { AddressLine1 = c.AddressLine1, City = c.City, CountryId = 1, StateId = 1, Type = AddressType.Business, Zip = c.Zip.Trim(), ZipExtension = string.Empty };
 								company.UserName = "System";
@@ -170,8 +182,8 @@ namespace SiteInspectionStatus_Utility
 										AdminFeeMethod = Convert.ToInt32(c.AdminFeeMethod),
 										ApplyEnvironmentalFee = c.ApplyEnvironmentalFee.Equals("1"),
 										ApplyWCCharge = c.ApplyWCCharge.Equals("1"),
-										ApplyStatuaryLimits = c.ApplyStatuaryLimits.Equals("1"),
-										PrintClientName = c.PrintCompanyNameOnChecks.Equals("1"),
+										ApplyStatuaryLimits = c.ApplyStatuaryLimits.ToLower().Equals("1"),
+										PrintClientName = c.PrintCompanyNameOnChecks.Equals("1") || c.HostId.ToLower().Equals("75a78be4-7226-466b-86ba-a6e200dcaaac"),
 										RecurringCharges = new List<RecurringCharge>(),
 										SUIManagement = Convert.ToDecimal(c.SUIManagementRate)
 									}
@@ -247,15 +259,15 @@ namespace SiteInspectionStatus_Utility
 								}
 								var memento = Memento<HrMaxx.OnlinePayroll.Models.Company>.Create(savedcompany, EntityTypeEnum.Company, savedcompany.UserName, "Company Imported", company.UserId);
 								_mementoDataService.AddMementoData(memento);
-								bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
-								{
-									SavedObject = savedcompany,
-									UserId = savedcompany.UserId,
-									TimeStamp = DateTime.Now,
-									NotificationText = string.Format("{0} by {1}", string.Format("Company Added", savedcompany.Name), savedcompany.UserName),
-									EventType = NotificationTypeEnum.Created
-								});
-								
+								//bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
+								//{
+								//	SavedObject = savedcompany,
+								//	UserId = savedcompany.UserId,
+								//	TimeStamp = DateTime.Now,
+								//	NotificationText = string.Format("{0} by {1}", string.Format("Company Added", savedcompany.Name), savedcompany.UserName),
+								//	EventType = NotificationTypeEnum.Created
+								//});
+
 							}
 							companyKeys.Add(new KeyValuePair<string, Guid>(company.CompanyNo, company.Id));
 							///deductions import
@@ -266,12 +278,21 @@ namespace SiteInspectionStatus_Utility
 								mapper
 									.Map<SiteInspectionStatus_Utility.CompanyDeduction, HrMaxx.OnlinePayroll.Models.CompanyDeduction>(
 										cd);
+								if (existingCompany != null)
+								{
+									var existingDeduction =
+								existingCompany.Deductions.FirstOrDefault(d => d.Type.Id == Convert.ToInt32(cd.DeductionType));
+									if (existingDeduction != null)
+										companyDeduction.Id = existingDeduction.Id;
+								}
+							
 								companyDeduction.Type = companyMetaData.DeductionTypes.First(t => t.Id == Convert.ToInt32(cd.DeductionType));
 								companyDeduction.W2_12 = companyDeduction.Type.W2_12;
 								companyDeduction.W2_13R = companyDeduction.Type.W2_13R;
 								companyDeduction.R940_R = companyDeduction.Type.R940_R;
 								companyDeduction.CompanyId = company.Id;
-								companyDeduction.AnnualMax = null;
+								companyDeduction.AnnualMax = 0;
+								
 								var ded = _companyService.SaveDeduction(companyDeduction, "System", Guid.Empty);
 								company.Deductions.Add(ded);
 								companyDeductionKeys.Add(new KeyValuePair<string, int>(cd.DeductionId, ded.Id));
@@ -282,6 +303,15 @@ namespace SiteInspectionStatus_Utility
 							cws.ForEach(cw =>
 							{
 								var companyWC = mapper.Map<SiteInspectionStatus_Utility.CompanyWorkerCompensation, HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation>(cw);
+								if (existingCompany != null)
+								{
+									var existingWC =
+										existingCompany.WorkerCompensations.FirstOrDefault(w => w.Code == companyWC.Code);
+									if (existingWC != null)
+									{
+										companyWC.Id = existingWC.Id;
+									}	
+								}
 								companyWC.CompanyId = company.Id;
 								var wc = _companyService.SaveWorkerCompensation(companyWC, "System", Guid.Empty);
 								company.WorkerCompensations.Add(wc);
@@ -292,22 +322,41 @@ namespace SiteInspectionStatus_Utility
 							company.AccumulatedPayTypes = new List<AccumulatedPayType>();
 							companyMetaData.PayTypes.ToList().ForEach(apt =>
 							{
-								var apts = new AccumulatedPayType()
+								if (existingCompany != null)
 								{
-									AnnualLimit = 24,
-									CompanyId = company.Id,
-									CompanyManaged = false,
-									Id = 0,
-									PayType = apt,
-									RatePerHour = (decimal) 0.0333
-								};
-								_companyService.SaveAccumulatedPayType(apts, "System", Guid.Empty);
-
+									var existingPayType = existingCompany.AccumulatedPayTypes.FirstOrDefault(pt => pt.PayType.Id == apt.Id);
+									if (existingPayType == null)
+									{
+										var apts = new AccumulatedPayType()
+										{
+											AnnualLimit = 24,
+											CompanyId = company.Id,
+											CompanyManaged = false,
+											Id = 0,
+											PayType = apt,
+											RatePerHour = (decimal)0.0333
+										};
+										_companyService.SaveAccumulatedPayType(apts, "System", Guid.Empty);
+									}
+								}
+								else
+								{
+									var apts = new AccumulatedPayType()
+									{
+										AnnualLimit = 24,
+										CompanyId = company.Id,
+										CompanyManaged = false,
+										Id = 0,
+										PayType = apt,
+										RatePerHour = (decimal)0.0333
+									};
+									_companyService.SaveAccumulatedPayType(apts, "System", Guid.Empty);
+								}
 							});
 							/// end accumulated paytype
 							/// Company Bank Account
 							var banks = companybankaccoutns.Where(b => b.CompanyNo.Equals(c.CompanyNo)).ToList();
-							if (!banks.Any())
+							if (!banks.Any() || banks.Any(ba=>string.IsNullOrWhiteSpace(ba.AccountNumber) || string.IsNullOrWhiteSpace(ba.RoutingNumber)))
 							{
 								var ca = new Account()
 								{
@@ -376,20 +425,42 @@ namespace SiteInspectionStatus_Utility
 							}
 							/// end company bank account
 							/// employees and their bank accounts
+							var existing = _companyRepository.GetEmployeeList(company.Id);
+							
 							var cemps = employees.Where(e => e.CompanyNo.Equals(c.CompanyNo)).ToList();
 							cemps.ForEach(e =>
 							{
 								var emp = mapper.Map<SiteInspectionStatus_Utility.Employee, HrMaxx.OnlinePayroll.Models.Employee>(e);
+								var existingEmployee = existing.FirstOrDefault(e2 => e2.SSN.Equals(emp.SSN));
+								if (existingEmployee != null)
+									emp.Id = existingEmployee.Id;
 								emp.CompanyId = company.Id;
 								emp.Contact = new Contact()
 								{
 									Address = new Address()
 									{
-										AddressLine1 = e.EAddressLine1, City = e.ECity, StateId = 1, CountryId = 1, LastModified = DateTime.Now, Type = AddressType.Personal, Zip = e.EZip.Trim(), UserName = "System", UserId = Guid.Empty, ZipExtension = string.Empty
-									}, Email = "na@na.com", FirstName = e.FirstName, LastModified = DateTime.Now, LastName = e.LastName, MiddleInitial = e.MiddleInitial, IsPrimary=true, UserId = Guid.Empty, UserName = "System"
+										AddressLine1 = e.EAddressLine1,
+										City = e.ECity,
+										StateId = 1,
+										CountryId = 1,
+										LastModified = DateTime.Now,
+										Type = AddressType.Personal,
+										Zip = e.EZip.Trim(),
+										UserName = "System",
+										UserId = Guid.Empty,
+										ZipExtension = string.Empty
+									},
+									Email = "na@na.com",
+									FirstName = e.FirstName,
+									LastModified = DateTime.Now,
+									LastName = e.LastName,
+									MiddleInitial = e.MiddleInitial,
+									IsPrimary = true,
+									UserId = Guid.Empty,
+									UserName = "System"
 								};
 								var empbank = employeebankaccounts.FirstOrDefault(eb => eb.EmployeeNo.Equals(e.EmployeeNo));
-								if (empbank!=null)
+								if (empbank != null)
 								{
 									emp.DirectDebitAuthorized = true;
 									emp.BankAccounts = new List<HrMaxx.OnlinePayroll.Models.EmployeeBankAccount>();
@@ -397,7 +468,7 @@ namespace SiteInspectionStatus_Utility
 									{
 										Id = 0,
 										EmployeeId = emp.Id,
-										Percentage = (decimal)100,
+										Percentage = (decimal) 100,
 										BankAccount = new BankAccount()
 										{
 											AccountName = "Bank Account",
@@ -412,14 +483,27 @@ namespace SiteInspectionStatus_Utility
 											SourceTypeId = EntityTypeEnum.Employee
 										}
 									});
-									emp.State = new EmployeeState(){State = company.States.First().State, TaxStatus = (EmployeeTaxStatus)Convert.ToInt32(e.StateFilingStatus), AdditionalAmount = Convert.ToDecimal(e.StateAdditionalAmount), Exemptions = Convert.ToInt32(e.StateExemptions)};
+								}
+								emp.State = new EmployeeState() { State = company.States.First().State, TaxStatus = (EmployeeTaxStatus)Convert.ToInt32(e.StateFilingStatus), AdditionalAmount = Convert.ToDecimal(e.StateAdditionalAmount), Exemptions = Convert.ToInt32(e.StateExemptions) };
 									if (!string.IsNullOrWhiteSpace(e.WCId))
 									{
 										var wcId = companyWCKeys.First(wc => wc.Key == e.WCId).Value;
 										emp.WorkerCompensation = company.WorkerCompensations.First(wc => wc.Id == wcId);
-										
+
 									}
-									
+									if (emp.PayType == EmployeeType.Hourly && (emp.PayCodes == null || !emp.PayCodes.Any(pc => pc.Id == 0)))
+									{
+										if (emp.PayCodes == null)
+											emp.PayCodes = new List<CompanyPayCode>();
+										emp.PayCodes.Add(new CompanyPayCode()
+										{
+											Id = 0,
+											CompanyId = emp.CompanyId,
+											Code = "Default",
+											Description = "Base Rate",
+											HourlyRate = emp.Rate
+										});
+									}
 									var savedEmployee = _companyRepository.SaveEmployee(emp);
 									employeeKeys.Add(new KeyValuePair<string, Guid>(emp.EmployeeNo, emp.Id));
 									var memento = Memento<HrMaxx.OnlinePayroll.Models.Employee>.Create(savedEmployee, EntityTypeEnum.Employee, savedEmployee.UserName);
@@ -438,7 +522,7 @@ namespace SiteInspectionStatus_Utility
 											Deduction = cded,
 											AgencyId = null,
 											Rate = Convert.ToDecimal(ed.Rate),
-											Method = (DeductionMethod) Convert.ToInt32(ed.Method),
+											Method = (DeductionMethod)Convert.ToInt32(ed.Method),
 											CeilingMethod = !string.IsNullOrWhiteSpace(ed.CeilingMethod) ? Convert.ToInt32(ed.CeilingMethod) : 0,
 											CeilingPerCheck =
 												!string.IsNullOrWhiteSpace(ed.CeilingPerCheck) ? Convert.ToDecimal(ed.CeilingPerCheck) : default(decimal?),
@@ -455,15 +539,23 @@ namespace SiteInspectionStatus_Utility
 									var empg = garnishments.Where(g => g.EmployeeNo.Equals(savedEmployee.EmployeeNo)).ToList();
 									empg.ForEach(eg =>
 									{
-										var agency = dbAgencies.First(dba =>!string.IsNullOrWhiteSpace(dba.AccountNo) && dba.AccountNo.Equals(eg.AgencyAccountNo));
+										var agency = dbAgencies.First(dba => !string.IsNullOrWhiteSpace(dba.AccountNo) && dba.AccountNo.Equals(eg.AgencyAccountNo));
 										var cded = company.Deductions.FirstOrDefault(d => d.Type.Id == 3 && d.DeductionName.Equals(agency.Name));
-										if (cded==null)
+										if (cded == null)
 										{
+											
 											var companyDeduction = new HrMaxx.OnlinePayroll.Models.CompanyDeduction();
 											companyDeduction.Id = 0;
+											if (existingCompany != null)
+											{
+												var existingDeduction =
+											existingCompany.Deductions.FirstOrDefault(d => d.Type.Id == 3 && d.DeductionName.Equals(agency.Name));
+												if (existingDeduction != null)
+													companyDeduction.Id = existingDeduction.Id;
+											}
 											companyDeduction.DeductionName = agency.Name;
 											companyDeduction.Description = agency.Name;
-											companyDeduction.Type = companyMetaData.DeductionTypes.First(t => t.Id==3);
+											companyDeduction.Type = companyMetaData.DeductionTypes.First(t => t.Id == 3);
 											companyDeduction.W2_12 = companyDeduction.Type.W2_12;
 											companyDeduction.W2_13R = companyDeduction.Type.W2_13R;
 											companyDeduction.R940_R = companyDeduction.Type.R940_R;
@@ -473,6 +565,7 @@ namespace SiteInspectionStatus_Utility
 											companyDeductionKeys.Add(new KeyValuePair<string, int>(eg.GId, ded.Id));
 											cded = ded;
 										}
+
 										var garnishment = new HrMaxx.OnlinePayroll.Models.EmployeeDeduction()
 										{
 											Id = 0,
@@ -480,7 +573,7 @@ namespace SiteInspectionStatus_Utility
 											Deduction = cded,
 											AgencyId = agency.Id,
 											Rate = Convert.ToDecimal(eg.Rate),
-											Method = (DeductionMethod) Convert.ToInt32(eg.Method),
+											Method = (DeductionMethod)Convert.ToInt32(eg.Method),
 											CeilingMethod = !string.IsNullOrWhiteSpace(eg.CPC) ? 2 : 0,
 											CeilingPerCheck =
 												!string.IsNullOrWhiteSpace(eg.CPC) ? Convert.ToDecimal(eg.CPC) : default(decimal?),
@@ -489,28 +582,34 @@ namespace SiteInspectionStatus_Utility
 											Limit = !string.IsNullOrWhiteSpace(eg.Limit) ? Convert.ToDecimal(eg.Limit) : default(decimal?),
 											Priority = !string.IsNullOrWhiteSpace(eg.Priority) ? Convert.ToInt32(eg.Priority) : 1
 										};
+										if (existingEmployee != null)
+										{
+											var existingGarnishment = existingEmployee.Deductions.FirstOrDefault(ed2 => ed2.Deduction.Id == cded.Id);
+											if (existingGarnishment != null)
+												garnishment.Id = existingGarnishment.Id;
+										}
 										_companyService.SaveEmployeeDeduction(garnishment, "System");
 									});
 									/// end employee garnishments
 
-									bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
-									{
-										SavedObject = savedEmployee,
-										UserId = savedEmployee.UserId,
-										TimeStamp = DateTime.Now,
-										NotificationText = string.Format("{0} by {1}", string.Format("Employee Imported", savedEmployee.FullName), savedEmployee.UserName),
-										EventType = NotificationTypeEnum.Created
-									});
+									//bus.Publish<EmployeeUpdatedEvent>(new EmployeeUpdatedEvent
+									//{
+									//	SavedObject = savedEmployee,
+									//	UserId = savedEmployee.UserId,
+									//	TimeStamp = DateTime.Now,
+									//	NotificationText = string.Format("{0} by {1}", string.Format("Employee Imported", savedEmployee.FullName), savedEmployee.UserName),
+									//	EventType = NotificationTypeEnum.Created
+									//});
 
-								}
+								
 							});
 							/// end employees and their bank accounts
-							
+
 
 						}
 						txn.Complete();
 					}
-					
+
 
 
 				}
@@ -519,9 +618,9 @@ namespace SiteInspectionStatus_Utility
 			{
 				var messages = string.Empty;
 			}
-			
+
 		}
 
-		
+
 	}
 }

@@ -29,16 +29,18 @@
 	
 	<!-- end #page-loader -->
 	<!-- begin #page-container -->
+
 	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed" ng-app="common">
-		<!-- begin #header -->
-		@Html.Partial("_TopNavbar") 
-		<!-- end #header -->
-		<!-- begin #sidebar -->
 		@if (User.Identity.IsAuthenticated)
 		{
+			<!-- begin #header -->
+			@Html.Partial("_TopNavbar")
+			<!-- end #header -->
+			<!-- begin #sidebar -->
+
 			@Html.Partial("_Navigation")
+
 		}
-		
 		<!-- end #sidebar -->
 		<!-- begin #content -->
 		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName">
@@ -131,28 +133,38 @@
 				</div>
 
 			</script>
-			<div class="panel panel-inverse  hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
-				<div class="panel-body">
-					<div class="row form-group">
-						<div class="col-sm-4">
-							<select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
-								<option value="">Select Host</option>
-							</select>
-						</div>
-						<div class="col-sm-4">
-							<input type="text" placeholder="Type Company Name" ng-disabled="data.companies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null" ng-mouseleave="data.selectedCompany1=data.selectedCompany" typeahead-show-hint="true" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.companies | filter:{name:$viewValue}" class="form-control">
-						</div>
-						<div class="col-sm-4" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
-
-					</div>
+@if (User.Identity.IsAuthenticated)
+{
+	<div class="panel panel-inverse  hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
+		<div class="panel-body">
+			<div class="row form-group">
+				<div class="col-sm-4">
+					<select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
+						<option value="">Select Host</option>
+					</select>
 				</div>
+				<div class="col-sm-4">
+					<input type="text" placeholder="Type Company Name" ng-disabled="data.companies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null" ng-mouseleave="data.selectedCompany1=data.selectedCompany" typeahead-show-hint="true" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.companies | filter:{name:$viewValue}" class="form-control">
+				</div>
+				<div class="col-sm-4" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
+
 			</div>
-			<div ng-view></div>
+		</div>
+	</div>
+	<div ng-view></div>
+}
+else
+{
+	if (!Request.IsAuthenticated)
+	{
+		@Html.Partial("_LogiPartialModal")
+	}
+}
+
 			@RenderBody()
 		</div>
 		
 	</div>
-		
 
 	<div class="modal fade" id="modal-dialog">
 		<div class="modal-dialog">
@@ -179,7 +191,7 @@
 	<script>
 		$(document).ready(function() {
 			App.init();
-			angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
+			//angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
 			var min = $('a[data-click=sidebar-minify]:first');
 			min.click();
 		});

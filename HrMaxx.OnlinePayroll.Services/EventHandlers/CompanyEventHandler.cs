@@ -85,20 +85,20 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					HostId = comp.HostId,
 					SearchText = event1.SavedObject.GetSearchText
 				});
-				var users = _userService.GetUsers(null, event1.SavedObject.CompanyId).Select(u => u.UserId).ToList();
+				//var users = _userService.GetUsers(null, event1.SavedObject.CompanyId).Select(u => u.UserId).ToList();
 
-				Bus.Publish<Notification>(new Notification
-				{
-					SavedObject = event1.SavedObject,
-					SourceId = event1.SavedObject.Id,
-					UserId = event1.UserId,
-					Source = event1.UserName,
-					TimeStamp = event1.TimeStamp,
-					Text = event1.NotificationText,
-					ReturnUrl = "#!/Client/Employee/?id=" + event1.SavedObject.Id,
-					EventType = event1.EventType,
-					AffectedUsers = users.Distinct().ToList()
-				});
+				//Bus.Publish<Notification>(new Notification
+				//{
+				//	SavedObject = event1.SavedObject,
+				//	SourceId = event1.SavedObject.Id,
+				//	UserId = event1.UserId,
+				//	Source = event1.UserName,
+				//	TimeStamp = event1.TimeStamp,
+				//	Text = event1.NotificationText,
+				//	ReturnUrl = "#!/Client/Employee/?id=" + event1.SavedObject.Id,
+				//	EventType = event1.EventType,
+				//	AffectedUsers = users.Distinct().ToList()
+				//});
 			}
 			catch (Exception e)
 			{

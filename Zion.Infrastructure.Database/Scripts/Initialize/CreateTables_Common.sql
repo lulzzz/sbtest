@@ -347,6 +347,10 @@ INSERT [dbo].[EntityType] ([EntityTypeId], [EntityTypeName]) VALUES (13, N'Docum
 GO
 INSERT [dbo].[EntityType] ([EntityTypeId], [EntityTypeName]) VALUES (14, N'Comment')
 GO
+INSERT [dbo].[EntityType] ([EntityTypeId], [EntityTypeName]) VALUES (15, N'Vendor')
+GO
+INSERT [dbo].[EntityType] ([EntityTypeId], [EntityTypeName]) VALUES (16, N'Customer')
+GO
 SET IDENTITY_INSERT [dbo].[EntityType] OFF
 GO
 

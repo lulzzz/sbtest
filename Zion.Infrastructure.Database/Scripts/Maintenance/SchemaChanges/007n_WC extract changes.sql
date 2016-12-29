@@ -34,15 +34,17 @@ GO
 SET IDENTITY_INSERT [dbo].[InsuranceGroup] ON 
 
 GO
-INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (0, N'CA070', N'CA070')
+INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (0, N'No', N'Insurance')
 GO
-INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (1, N'CA071', N'CA071')
+INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (1, N'CA061', N'CMD (Leasing)')
 GO
-INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (2, N'CA072', N'CA072')
+INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (2, N'CA060', N'GIIG (CEDAR HILLS INS.)')
 GO
-INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (3, N'CA073', N'CA073')
+INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (3, N'CA761', N'CAL BUSINESS MNG (LEASING)')
 GO
-INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (4, N'CA075', N'CA075')
+INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (4, N'CA057', N'CALEMP')
+GO
+INSERT [dbo].[InsuranceGroup] ([Id], [GroupNo], [GroupName]) VALUES (5, N'CA', N'CBC')
 GO
 SET IDENTITY_INSERT [dbo].[InsuranceGroup] OFF
 GO

@@ -15,6 +15,7 @@ using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using Magnum;
@@ -413,6 +414,16 @@ namespace HrMaxx.OnlinePayroll.Services
 					var exists = _companyRepository.EmployeeExists(employee.Id);
 					var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
 					var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
+					if (employee.PayType == EmployeeType.Hourly &&
+					    (employee.PayCodes == null || !employee.PayCodes.Any(pc => pc.Id == 0)))
+					{
+						if(employee.PayCodes==null)
+							employee.PayCodes=new List<CompanyPayCode>();
+						employee.PayCodes.Add(new CompanyPayCode()
+						{
+							Id=0, CompanyId = employee.CompanyId, Code = "Default", Description = "Base Rate", HourlyRate = employee.Rate
+						});
+					}
 					var savedEmployee = _companyRepository.SaveEmployee(employee);
 					var memento = Memento<Employee>.Create(savedEmployee, EntityTypeEnum.Employee, savedEmployee.UserName);
 					_mementoDataService.AddMementoData(memento);

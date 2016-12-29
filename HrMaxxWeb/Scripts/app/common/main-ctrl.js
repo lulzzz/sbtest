@@ -16,12 +16,12 @@
 				}
 				
 			});
-			$window.addEventListener("beforeunload", function (e) {
-				var confirmationMessage = "\o/";
+			//$window.addEventListener("beforeunload", function (e) {
+			//	var confirmationMessage = "\o/";
 
-				(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-				return confirmationMessage;                            //Webkit, Safari, Chrome
-			});
+			//	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+			//	return confirmationMessage;                            //Webkit, Safari, Chrome
+			//});
 			var modalInstance = $modal.open({
 				templateUrl: 'popover/messages.html',
 				controller: 'messageCtrl',
@@ -104,8 +104,11 @@
 				if (dataInput.host !== '00000000-0000-0000-0000-000000000000') {
 					dataSvc.userHost = dataInput.host;
 				}
-				if (dataInput.company !== '00000000-0000-0000-0000-000000000000')
+				
+				if (dataInput.company !== '00000000-0000-0000-0000-000000000000') {
 					dataSvc.userCompany = dataInput.company;
+					
+				}
 				hostRepository.getHostList().then(function (data) {
 					dataSvc.hosts = data;
 					if (dataSvc.userHost) {
@@ -127,6 +130,7 @@
 				dataSvc.showFilterPanel = !dataSvc.userHost || (dataSvc.userHost && !dataSvc.userCompany);
 				dataSvc.showCompanies = !dataSvc.userCompany;
 				dataSvc.isReady = true;
+
 			}
 		};
 		
@@ -164,6 +168,7 @@
 				if (dataSvc.userCompany) {
 					var selected = $filter('filter')(dataSvc.companies, {id: dataSvc.userCompany})[0];
 					dataSvc.selectedCompany = selected;
+					$window.location.href = "#!/Client/Company/" + (new Date().getTime());
 				}
 				else if (sel) {
 					var selected2 = $filter('filter')(dataSvc.companies, { id: sel.id })[0];
@@ -225,7 +230,7 @@
 			var newcomp = $filter('filter')(dataSvc.companies, { id: id })[0];
 			if (newcomp) {
 				dataSvc.fromSearch = true;
-				$scope.setHostandCompany(newcomp.hostId, newcomp.id, "#!/Client/Company/" + +(new Date().getTime()));
+				$scope.setHostandCompany(newcomp.hostId, newcomp.id, "#!/Client/Company/"  +(new Date().getTime()));
 			}
 			
 		});

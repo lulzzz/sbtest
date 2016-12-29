@@ -15,12 +15,13 @@
 				<li><a href="#!/My/News">My News</a></li>
 				<li><a href="#!/My/Profile" target="_self">My Profile</a></li>
 				<li class="divider"></li>
-				<li>
-					@using (Html.BeginForm("LogOff", "Account", new {area=""}, FormMethod.Get, new {id = "logoutForm", @class = "navbar-right"}))
+				<li ng-controller="loginCtrl">
+					@using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Get, new { id = "logoutForm", @class = "navbar-right" }))
 					{
 						@Html.AntiForgeryToken()
 					}
-					<a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+					<!--<a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>-->
+					<a href="" ng-click="logout($event)">Log off</a>
 				</li>
 			</ul>
 		

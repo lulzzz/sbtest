@@ -51,7 +51,7 @@ namespace SiteInspectionStatus_Utility
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
 				.ForMember(dest => dest.PayCheckStock, opt => opt.MapFrom(src => src.PayCheckStock))
 				.ForMember(dest => dest.PayrollDaysInPast, opt => opt.MapFrom(src => 0))
-				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollSchedule))
+				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => (Convert.ToInt32(src.PayrollSchedule) + 1)))
 				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => (StatusOption)1))
 				.ForMember(dest => dest.TaxFilingName, opt => opt.MapFrom(src => src.TaxFilingName))
 

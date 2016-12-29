@@ -1,10 +1,10 @@
 'use strict';
 
 common.controller('loginCtrl', [
-	'$scope', 'authService', 'commonRepository', '$window',
-	function ($scope, authService, commonRepository, $window) {
-		$scope.username = "";
-		$scope.password = "";
+	'$scope', 'authService', 'commonRepository', '$window', 'localStorageService',
+	function ($scope, authService, commonRepository, $window, localStorageService) {
+		$scope.username = localStorageService.get('username');
+		$scope.password = localStorageService.get('password');
 		$scope.rememberMe = true;
 		$scope.returnUrl = "";
 		$scope.alerts = [];
@@ -38,7 +38,10 @@ common.controller('loginCtrl', [
 			login.then(function () {
 				authService.fillAuthData();
 				$('#loginFormSubmit').submit();
-
+				if ($scope.rememberMe) {
+					localStorageService.set('username', $scope.username);
+					localStorageService.set('password', $scope.password);
+				}
 			}, function (error) {
 				if (error) {
 					$scope.addAlert(error.error_description, 'danger');
@@ -47,9 +50,13 @@ common.controller('loginCtrl', [
 				$($event.target).button('reset');
 			});
 		};
-
-		function _init() {
+		$scope.logout = function ($event) {
+			$event.stopPropagation();
 			authService.clearToken();
+			$('#logoutForm').submit();
+		}
+		function _init() {
+			
 		};
 
 		_init();
