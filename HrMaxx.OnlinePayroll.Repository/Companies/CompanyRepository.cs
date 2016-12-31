@@ -146,7 +146,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbState.Pin = existingState.Pin;
 			}
 			_dbContext.SaveChanges();
-			return _mapper.Map<List<Models.DataModel.CompanyTaxState>, List<CompanyTaxState>>(dbStates);
+			return _mapper.Map<List<Models.DataModel.CompanyTaxState>, List<CompanyTaxState>>(_dbContext.CompanyTaxStates.Where(c => c.CompanyId == savedcompany.Id).ToList());
 		}
 
 		public CompanyDeduction SaveDeduction(CompanyDeduction deduction)

@@ -11,6 +11,12 @@ namespace HrMaxx.Infrastructure.Transactions
 			return new TransactionScope(option,
 				new TransactionOptions {IsolationLevel = isolationLevel, Timeout = TimeSpan.FromSeconds(120)});
 		}
+		public static TransactionScope TransactionNoTimeout(TransactionScopeOption option = TransactionScopeOption.Required,
+			IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+		{
+			return new TransactionScope(option,
+				new TransactionOptions { IsolationLevel = isolationLevel, Timeout =TransactionManager.MaximumTimeout });
+		}
 
 		public static void Wrap(Action action)
 		{

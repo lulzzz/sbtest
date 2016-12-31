@@ -65,7 +65,7 @@ namespace SiteInspectionStatus_Utility
 				.ForMember(dest => dest.IsLocation, opt => opt.Ignore())
 				.ForMember(dest => dest.LastPayrollDate, opt => opt.Ignore())
 				.ForMember(dest => dest.Locations, opt => opt.Ignore())
-				.ForMember(dest => dest.ParentId, opt => opt.MapFrom(src=> !string.IsNullOrWhiteSpace(src.ParentId) ? new Guid(src.ParentId) : default(Guid?)))
+				.ForMember(dest => dest.ParentId, opt => opt.Ignore())
 				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
 				.ForMember(dest => dest.States, opt => opt.Ignore())
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src=>new List<CompanyWorkerCompensation>()))
