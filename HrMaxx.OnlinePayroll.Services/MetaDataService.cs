@@ -176,29 +176,44 @@ namespace HrMaxx.OnlinePayroll.Services
 
 		public List<SearchResult> FillSearchTable()
 		{
-			var companies = _companyService.GetAllCompanies();
-			var employees = _companyService.GetAllEmployees();
-			var searchResults = new List<SearchResult>();
-			foreach (var company in companies)
+			try
 			{
-				searchResults.Add(new SearchResult()
+				var companies = _companyService.GetAllCompanies();
+				var employees = _companyService.GetAllEmployees();
+				var searchResults = new List<SearchResult>();
+				foreach (var company in companies)
 				{
-					Id=0, SourceTypeId = EntityTypeEnum.Company, SourceId = company.Id, HostId = company.HostId, CompanyId=company.Id, SearchText = company.GetSearchText
-				});
+					searchResults.Add(new SearchResult()
+					{
+						Id = 0,
+						SourceTypeId = EntityTypeEnum.Company,
+						SourceId = company.Id,
+						HostId = company.HostId,
+						CompanyId = company.Id,
+						SearchText = company.GetSearchText
+					});
+				}
+				foreach (var employee in employees)
+				{
+					searchResults.Add(new SearchResult()
+					{
+						Id = 0,
+						SourceTypeId = EntityTypeEnum.Employee,
+						SourceId = employee.Id,
+						HostId = companies.First(c => c.Id == employee.CompanyId).HostId,
+						CompanyId = employee.CompanyId,
+						SearchText = employee.GetSearchText
+					});
+				}
+				return _metaDataRepository.FillSearchResults(searchResults);
 			}
-			foreach (var employee in employees)
+			catch (Exception e)
 			{
-				searchResults.Add(new SearchResult()
-				{
-					Id = 0,
-					SourceTypeId = EntityTypeEnum.Employee,
-					SourceId = employee.Id,
-					HostId = companies.First(c=>c.Id==employee.CompanyId).HostId,
-					CompanyId = employee.CompanyId,
-					SearchText = employee.GetSearchText
-				});
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "fill search table ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
 			}
-			return _metaDataRepository.FillSearchResults(searchResults);
+			
 		}
 	}
 }
