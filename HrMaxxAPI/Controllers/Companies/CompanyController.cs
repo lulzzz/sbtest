@@ -439,5 +439,11 @@ namespace HrMaxxAPI.Controllers.Companies
 			};
 			return response;
 		}
+		[HttpGet]
+		[Route(CompanyRoutes.RaiseMinWage)]
+		public void RaiseMinWage(decimal minWage)
+		{
+			MakeServiceCall(() => _companyService.RaiseMinWage(minWage), "Raise Min Wage "+ minWage);
+		}
   }
 }

@@ -213,7 +213,7 @@ namespace HrMaxxAPI.Controllers.User
 				}
 
 				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Active = model.Active, PhoneNumber = model.Phone };
-				var result = await UserManager.CreateAsync(user, "HrMaxx1234!");
+				var result = await UserManager.CreateAsync(user, "Paxol1234!");
 				if (result.Succeeded)
 				{
 					await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());

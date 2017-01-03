@@ -31,5 +31,6 @@
 		public const string ImportTaxRates = "Company/ImportTaxRates";
 		public const string SaveTaxRates = "Company/SaveTaxRates";
 		public const string GetCaliforniaEDDExport = "Company/CaliforniaEDD";
+		public const string RaiseMinWage = "Company/RaiseMinWage/{minWage:decimal}";
 	}
 }

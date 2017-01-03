@@ -610,5 +610,23 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var companies = _dbContext.Companies.Where(c => c.ParentId == parentId);
 			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(companies.ToList());
 		}
+
+		public void UpdateMinWage(decimal minWage, List<Employee> selectEmployees)
+		{
+			var companies = _dbContext.Companies.ToList();
+			companies.ForEach(c=>c.MinWage = minWage);
+			_dbContext.Employees.ToList().ForEach(e1 =>
+			{
+				var e = selectEmployees.FirstOrDefault(e2 => e2.Id == e1.Id);
+				if (e != null)
+				{
+					e1.Rate = minWage;
+					e1.PayCodes = JsonConvert.SerializeObject(e.PayCodes);
+				}
+				
+			});
+			
+			_dbContext.SaveChanges();
+		}
 	}
 }

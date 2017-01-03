@@ -50,14 +50,20 @@ namespace SiteInspectionStatus_Utility
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.CommandHandlerModule>();
 
 			var container = builder.Build();
-			ImportData(container);
+			Console.Write("Staring Batch ? ");
+			int startingBatch = Convert.ToInt32(Console.ReadLine());
+			Console.Write("Batch Size? ");
+			int batchSize = Convert.ToInt32(Console.ReadLine());
+			Console.Write("Number of Batches ? ");
+			int runBatches = Convert.ToInt32(Console.ReadLine());
+			ImportData(container, startingBatch, batchSize, runBatches);
 
 
 			Console.WriteLine("Utility run finished for ");
 		}
 
 
-		private static void ImportData(IContainer container)
+		private static void ImportData(IContainer container, int startingBatch, int batchSize, int runBatches)
 		{
 			var importLog = string.Empty;
 			var companyKeys = new List<KeyValuePair<string, Guid>>();
@@ -67,7 +73,7 @@ namespace SiteInspectionStatus_Utility
 			{
 				using (var scope = container.BeginLifetimeScope())
 				{
-					var excelFile = new ExcelQueryFactory("C:\\Users\\sherj\\Desktop\\import data.xlsx");
+					var excelFile = new ExcelQueryFactory("import data.xlsx");
 
 					var companies = excelFile.Worksheet<Company>("2Company").ToList();// from c in excelFile.Worksheet<Company>("2Company") select c;
 					var companydeductions = excelFile.Worksheet<CompanyDeduction>("3Company Deduction").ToList();
@@ -155,9 +161,9 @@ namespace SiteInspectionStatus_Utility
 						companies.Where(co => !string.IsNullOrWhiteSpace(co.CompanyNo))
 							.OrderBy(co => co.ParentId)
 							.ThenBy(co => Convert.ToInt32(co.CompanyNo)).ToList();
-					int startingBatch = 6;
-					int batchSize = 50;
-					int runBatches = 3;
+					
+					
+					
 					for (var i = startingBatch; i < (runBatches + startingBatch); i++)
 					{
 						Console.WriteLine(string.Format("Batch # {0} - starting at {1}", i, DateTime.Now.ToString("g") ));
@@ -664,7 +670,8 @@ namespace SiteInspectionStatus_Utility
 			}
 			catch (Exception e)
 			{
-				var messages = string.Empty;
+				Console.WriteLine(e.Message);
+				Console.WriteLine(e.StackTrace);
 			}
 
 		}

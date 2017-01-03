@@ -661,5 +661,54 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void RaiseMinWage(decimal minWage)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var selectEmployees = new List<Employee>();
+					var employees = _companyRepository.GetAllEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
+					employees.ForEach(e =>
+					{
+						var resave = false;
+						if (e.Id == new Guid("00716D1B-F866-427B-AE28-A68D006F4A32"))
+						{
+							var str = string.Empty;
+						}
+						if (e.Rate < minWage)
+						{
+							e.Rate = minWage;
+							resave = true;
+						}
+
+						if (e.PayCodes != null && e.PayCodes.Any())
+						{
+							e.PayCodes.Where(pc => pc.Id == 0).ToList().ForEach(pc =>
+							{
+								if (pc.HourlyRate < minWage)
+								{
+									pc.HourlyRate = minWage;
+									resave = true;
+								}
+
+							});
+						}
+						if(resave)
+							selectEmployees.Add(e);
+							//_companyRepository.SaveEmployee(e);
+					});
+					_companyRepository.UpdateMinWage(minWage, selectEmployees);
+					txn.Complete();
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "raise min wage");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }
