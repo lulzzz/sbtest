@@ -364,7 +364,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var savedPayroll = _payrollRepository.SavePayroll(payroll);
 					savedPayroll.PayChecks.ForEach(pc =>
 					{
-						var j = CreateJournalEntry(pc, coaList, payroll.UserName);
+						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
 						pc.DocumentId = j.DocumentId;
 						pc.CheckNumber = j.CheckNumber;
 						
@@ -378,7 +378,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
 						savedPayroll.PayChecks.ForEach(pc =>
 						{
-							var j = CreateJournalEntry(pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
+							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
 							pc.DocumentId = j.DocumentId;
 							pc.CheckNumber = j.CheckNumber;
 						});
@@ -447,7 +447,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var savedPayroll = _payrollRepository.SavePayroll(payroll);
 					savedPayroll.PayChecks.ForEach(pc =>
 					{
-						var j = CreateJournalEntry(pc, coaList, payroll.UserName);
+						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
 						pc.DocumentId = j.DocumentId;
 					});
 
@@ -459,7 +459,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
 						savedPayroll.PayChecks.ForEach(pc =>
 						{
-							var j = CreateJournalEntry(pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
+							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
 							pc.DocumentId = j.DocumentId;
 						});
 					}
@@ -1665,7 +1665,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		private Journal CreateJournalEntry(PayCheck pc, List<Account> coaList, string userName, bool PEOASOCoCheck = false, Guid? companyId = null)
+		private Journal CreateJournalEntry(Company company, PayCheck pc, List<Account> coaList, string userName, bool PEOASOCoCheck = false, Guid? companyId = null)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -1705,7 +1705,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			}
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero), LastModfied = journal.LastModified, LastModifiedBy = userName });
-			return _journalService.SaveJournalForPayroll(journal);
+			return _journalService.SaveJournalForPayroll(journal, company);
 		}
 
 		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, IEnumerable<PayCheck> previousChecks  )

@@ -37,11 +37,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			_mementoDataService = mementoDataService;
 		}
 
-		public Models.Journal SaveJournalForPayroll(Models.Journal journal)
+		public Journal SaveJournalForPayroll(Journal journal, Company company)
 		{
 			try
 			{
-				var j = _journalRepository.SaveJournal(journal);
+				var j = _journalRepository.SaveJournal(journal, company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck);
 				return j;
 			}
 			catch (Exception e)

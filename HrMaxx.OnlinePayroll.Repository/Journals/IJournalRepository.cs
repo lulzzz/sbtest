@@ -7,7 +7,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 {
 	public interface IJournalRepository
 	{
-		Journal SaveJournal(Journal journal);
+		Journal SaveJournal(Journal journal, bool isPEOCheck = false);
 		Journal GetPayCheckJournal(int payCheckId, bool peoasoCoCheck);
 		Journal VoidJournal(int id, TransactionType transactionType, string name);
 		List<Journal> GetJournalList(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);

@@ -23,16 +23,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			_mapper = mapper;
 		}
 
-		public Models.Journal SaveJournal(Models.Journal journal)
+		public Models.Journal SaveJournal(Models.Journal journal, bool isPEOCheck = false)
 		{
 			var mapped = _mapper.Map<Models.Journal, Journal>(journal);
 			if (mapped.Id == 0)
 			{
-				if (mapped.CheckNumber > 0 &&
+				if (isPEOCheck && mapped.CheckNumber > 0 &&
 				    _dbContext.Journals.Any(
-					    j => j.TransactionType == mapped.TransactionType && j.CheckNumber==mapped.CheckNumber && j.PayrollPayCheckId != mapped.PayrollPayCheckId))
+					    j => j.CheckNumber==mapped.CheckNumber && j.PayrollPayCheckId != mapped.PayrollPayCheckId))
 				{
-					mapped.CheckNumber = _dbContext.Journals.Max(j => j.CheckNumber) + 1;
+					mapped.CheckNumber = _dbContext.Journals.Where(j=>j.PEOASOCoCheck).Max(j => j.CheckNumber) + 1;
 					if (mapped.PayrollPayCheckId.HasValue)
 					{
 						_dbContext.PayrollPayChecks.First(pc => pc.Id == mapped.PayrollPayCheckId).CheckNumber = mapped.CheckNumber;
