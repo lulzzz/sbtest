@@ -409,7 +409,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								if (t.ssn)
 									pc = $filter('filter')($scope.list, { employee: { ssn: t.ssn } })[0];
 								else if (t.employeeNo) {
-									pc = $filter('filter')($scope.list, { employee: { employeeNo: t.employeeNo } })[0];
+									pc = $filter('filter')($scope.list, { employee: { companyEmployeeNo: t.employeeNo } })[0];
 								}
 								
 								if (pc) {
@@ -652,6 +652,7 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 	$scope.save = function (result) {
 		$scope.paycheck.employee = result;
 		$scope.paycheck.employeeNo = result.employeeNo;
+		$scope.paycheck.companyEmployeeNo = result.companyEmployeeNo;
 		$scope.paycheck.name = result.name;
 		$scope.paycheck.department = result.department;
 		$scope.paycheck.salary = result.payType === 2 ? result.rate : 0;
@@ -772,7 +773,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 				if (t.ssn)
 					pc = $filter('filter')($scope.payChecks, { employee: { ssn: t.ssn } })[0];
 				else if (t.employeeNo) {
-					pc = $filter('filter')($scope.payChecks, { employee: { employeeNo: t.employeeNo } })[0];
+					pc = $filter('filter')($scope.payChecks, { employee: { companyEmployeeNo: t.employeeNo } })[0];
 				}
 				else if (t.name) {
 					pc = $filter('filter')($scope.payChecks, { name: t.name })[0];

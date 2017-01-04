@@ -96,6 +96,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(payroll.Company.Id, payroll.PayDay);
 					var payCheckCount = 0;
+					if (payroll.Company.IsLocation)
+					{
+						var parentCompany = _companyRepository.GetCompanyById(payroll.Company.ParentId.Value);
+						payroll.Company.CompanyTaxRates = JsonConvert.DeserializeObject<List<CompanyTaxRate>>(JsonConvert.SerializeObject(parentCompany.CompanyTaxRates));
+					}
 					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included))
 					{
 						var employeePayChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id).ToList();
@@ -149,6 +154,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 						var host = _hostService.GetHost(payroll.Company.HostId);
 						paycheck.Deductions.ForEach(d=>d.Amount = d.Method==DeductionMethod.Amount ? d.Rate : d.Rate*grossWage/100);
+						
 						paycheck.Taxes = _taxationService.ProcessTaxes(payroll.Company, paycheck, paycheck.PayDay, grossWage, employeePayChecks, host.Company);
 						paycheck.Deductions = ApplyDeductions(grossWage, paycheck, employeePayChecks);
 						paycheck.GrossWage = grossWage;
@@ -360,6 +366,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						var j = CreateJournalEntry(pc, coaList, payroll.UserName);
 						pc.DocumentId = j.DocumentId;
+						pc.CheckNumber = j.CheckNumber;
+						
 					});
 
 					//PEO/ASO Co Check
@@ -372,6 +380,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							var j = CreateJournalEntry(pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
 							pc.DocumentId = j.DocumentId;
+							pc.CheckNumber = j.CheckNumber;
 						});
 					}
 
@@ -1058,8 +1067,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 
 				var company = payroll.Company;
-				if (payCheck.PEOASOCoCheck && !payroll.Company.Contract.InvoiceSetup.PrintClientName)
+				if (payCheck.PEOASOCoCheck)
 					company = host.Company;
+
+				var nameCompany = payroll.Company.Contract.InvoiceSetup.PrintClientName ? payroll.Company : company;
 
 				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
 					company.Id);
@@ -1095,16 +1106,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", company.Name));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", nameCompany.Name));
 				if (payroll.Company.PayCheckStock == PayCheckStock.LaserMiddle)
 				{
-					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name-2", company.Name));
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name-2", nameCompany.Name));
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date-3", payCheck.PayDay.ToString("MM/dd/yyyy")));
 				}
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", company.CompanyAddress.AddressLine1));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", company.CompanyAddress.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", nameCompany.CompanyAddress.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo", payroll.Company.Memo));

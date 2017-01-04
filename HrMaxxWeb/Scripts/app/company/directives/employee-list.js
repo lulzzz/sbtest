@@ -122,8 +122,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							taxCategory: 1,
 							payrollSchedule: $scope.mainData.selectedCompany.payrollSchedule,
 							paymentMethod: 1,
-							bankAccounts:[]
-
+							bankAccounts:[],
+							companyEmployeeNo:null
 						};
 						
 						$scope.set(selected);

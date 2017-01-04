@@ -71,13 +71,43 @@ namespace HrMaxx.OnlinePayroll.Repository
 			if (journals.Any())
 			{
 				var max  = journals.Max(p => p.CheckNumber) + 1;
-				max = max <= 0 ? 1001 : max;
+
+				if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") && max < 1000001)
+				{
+					max = 1000001 + max;
+				}
+				else if (companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") && max < 5000001)
+				{
+					max = 5000001 + max;
+				}
+				else if (companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73") && max <= 10000001)
+				{
+					max = 10000001 + max;
+				}
+				else
+				{
+					if(max<1001)
+						max = 1001;
+				}
+				
 				return max; 
 			}
-				
 			else
 			{
-				return 1001;
+				if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092"))
+				{
+					return 1000001;
+				}
+				else if (companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC"))
+				{
+					return 5000001;
+				}
+				else if (companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
+				{
+					return 10000001;
+				}
+				else
+					return 1001;
 			}
 		}
 

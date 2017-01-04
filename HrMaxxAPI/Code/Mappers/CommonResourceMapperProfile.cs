@@ -40,6 +40,8 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<EntityDocumentResource, EntityDocumentAttachment>()
 				.ForMember(dest => dest.SourceFileName, opt => opt.MapFrom(src => src.file.Name))
+				.ForMember(dest => dest.UserName, opt => opt.Ignore())
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
 				.ForMember(dest => dest.OriginalFileName, opt => opt.MapFrom(src => src.FileName.Replace(Path.GetExtension(src.FileName), string.Empty)))
 				.ForMember(dest => dest.FileExtension, opt => opt.MapFrom(src => Path.GetExtension(src.FileName).Replace(".", "")));
 

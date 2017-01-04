@@ -221,6 +221,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				{
 					wc.RatePerHour = mappedwc.RatePerHour;
 					wc.AnnualLimit = mappedwc.AnnualLimit;
+					wc.CompanyManaged = mappedwc.CompanyManaged;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -408,6 +409,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.State = me.State;
 				dbEmployee.WorkerCompensationId = me.WorkerCompensationId;
 				dbEmployee.Rate = me.Rate;
+				dbEmployee.CompanyEmployeeNo = me.CompanyEmployeeNo;
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
 				{
@@ -611,16 +613,23 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(companies.ToList());
 		}
 
-		public void UpdateMinWage(decimal minWage, List<Employee> selectEmployees)
+		public void UpdateMinWage(decimal minWage, List<Employee> selectEmployees, List<Company> selectedCompanies)
 		{
 			var companies = _dbContext.Companies.ToList();
-			companies.ForEach(c=>c.MinWage = minWage);
+			companies.ForEach(c =>
+			{
+				var comp = selectedCompanies.FirstOrDefault(c1 => c1.Id == c.Id);
+				if (comp != null)
+				{
+					c.MinWage = 10;
+				}
+			});
 			_dbContext.Employees.ToList().ForEach(e1 =>
 			{
 				var e = selectEmployees.FirstOrDefault(e2 => e2.Id == e1.Id);
 				if (e != null)
 				{
-					e1.Rate = minWage;
+					e1.Rate = 10;
 					e1.PayCodes = JsonConvert.SerializeObject(e.PayCodes);
 				}
 				

@@ -103,7 +103,7 @@ namespace SiteInspectionStatus_Utility
 					var employeeMetaData = (EmployeeMetaData)_metaDataService.GetEmployeeMetaData();
 
 					var hostList = _hostService.GetHostList(Guid.Empty);
-					var companiestoimport = new List<string>() { "3012", "647", "2613" };
+					var companiestoimport = new List<string>() { "2823","3306","3432","3855" };
 					var existingcompanies = _companyRepository.GetAllCompanies();
 
 
@@ -158,7 +158,7 @@ namespace SiteInspectionStatus_Utility
 
 					//foreach (var c in companies.Where(co => companiestoimport.Any(c2 => c2.Equals(co.CompanyNo))))
 					var companyOrdered =
-						companies.Where(co => !string.IsNullOrWhiteSpace(co.CompanyNo))
+						companies.Where(co => !string.IsNullOrWhiteSpace(co.CompanyNo) && companiestoimport.Contains(co.CompanyNo))
 							.OrderBy(co => co.ParentId)
 							.ThenBy(co => Convert.ToInt32(co.CompanyNo)).ToList();
 					

@@ -156,7 +156,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						 	if (newValue !== oldValue) {
 						 		$scope.list = $scope.mainData.companies;
 						 		$scope.tableParams.reload();
-						 		$scope.fillTableData($scope.tableParams);
+						 		$scope.tableParams.$params.page = 1;
+								$scope.fillTableData($scope.tableParams);
 						 	}
 
 						 }, true

@@ -37,6 +37,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public StatusOption StatusId { get; set; }
 		public string EmployeeNo { get; set; }
+		public int? CompanyEmployeeNo { get; set; }
 		public string Memo { get; set; }
 		//Payroll
 		[Required]

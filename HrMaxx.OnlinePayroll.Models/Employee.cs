@@ -27,6 +27,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Department { get; set; }
 		public StatusOption StatusId { get; set; }
 		public string EmployeeNo { get; set; }
+		public int? CompanyEmployeeNo { get; set; }
 		public string Memo { get; set; }
 		//Payroll
 		public PayrollSchedule PayrollSchedule { get; set; }

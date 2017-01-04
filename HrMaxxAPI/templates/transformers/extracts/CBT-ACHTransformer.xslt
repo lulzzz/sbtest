@@ -10,7 +10,7 @@
 	<xsl:output method="text" indent="no"/>
 	<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
 	<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-	<xsl:variable name="mainHost" select="/ACHResponse/Hosts/ExtractHost[Host/FirmName='GIIG']"/>
+	<xsl:variable name="mainHost" select="/ACHResponse/Hosts/ExtractHost[translate(Host/Id,$smallcase, $uppercase)='75A78BE4-7226-466B-86BA-A6E200DCAAAC']"/>
 
 	<xsl:template match="/">
 101$$spaces1$$<xsl:value-of select="$mainHost/HostBank/RoutingNumber"/>$$spaces1$$<xsl:value-of select="$mainHost/HostBank/RoutingNumber"/><xsl:value-of select="$today"/><xsl:value-of select="$time"/>A094101CALIFORNIA BANK &amp; TRUST<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate($mainHost/HostCompany/TaxFilingName, $smallcase, $uppercase)"/><xsl:with-param name="count" select="23"/></xsl:call-template>$$spaces5$$$$spaces2$$$$spaces1$$<xsl:text>$$n</xsl:text>
@@ -83,7 +83,10 @@
 <xsl:value-of select="BankAccount/RoutingNumber"/><xsl:call-template name="padRight">
 <xsl:with-param name="data" select="BankAccount/AccountNumber"/>
 <xsl:with-param name="count" select="17"/>
-</xsl:call-template><xsl:value-of select="translate(format-number((../../Amount)*Percentage div 100,'00000000.00'),'.','')"/>$$spaces10$$$$spaces5$$<xsl:call-template name="padRight">
+</xsl:call-template><xsl:value-of select="translate(format-number((../../Amount)*Percentage div 100,'00000000.00'),'.','')"/><xsl:call-template name="padRight">
+	<xsl:with-param name="data" select="../../Id"/>
+	<xsl:with-param name="count" select="15"/>
+</xsl:call-template><xsl:call-template name="padRight">
 <xsl:with-param name="data" select="../../Name"/>
 <xsl:with-param name="count" select="22"/>
 </xsl:call-template>$$spaces2$$0<xsl:value-of select="../../../../HostBank/RoutingNumber1"/><xsl:call-template name="padLeft">

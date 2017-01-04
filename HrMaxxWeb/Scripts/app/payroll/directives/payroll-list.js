@@ -50,7 +50,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						$.each(dataSvc.employees, function (index, employee) {
 							var paycheck = {
 								id: 0,
-								employeeNo: employee.employeeNo,
+								employeeNo: employee.employeeNo ? parseInt(employee.employeeNo) : employee.employeeNo,
+								companyEmployeeNo: employee.companyEmployeeNo,
 								name: employee.name,
 								department: employee.department ? employee.department : '',
 								employee: employee,
@@ -174,6 +175,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							var paycheck = {
 								id: matching ? matching.id : 0,
 								employeeNo: employee.employeeNo,
+								companyEmployeeNo: employee.companyEmployeeNo,
 								name: employee.name,
 								department: employee.department ? employee.department : '',
 								employee: employee,
@@ -328,7 +330,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.mainData.selectedCompany;
 						var hostcomp = $scope.mainData.selectedHost.company;
 						
-						if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0 || (c.contract.billingOption===3 && !c.contract.invoiceSetup) || (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount))
+						if ($scope.selected || $scope.processed || $scope.committed || dataSvc.employees.length == 0 || (c.contract.billingOption === 3 && !c.contract.invoiceSetup) || (c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount) || (!(c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1) && !dataSvc.payrollAccount))
 							return false;
 						else {
 							var draftPayroll = $filter('filter')($scope.list, { statusText: 'Draft' });
@@ -346,10 +348,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.requiresCompanyPayrollAccount = function() {
 						var c = $scope.mainData.selectedCompany;
-						if (!dataSvc.payrollAccount)
-							return true;
-						else {
+						if (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1)
 							return false;
+						else {
+							return dataSvc.payrollAccount ? false :true;
+							
 						}
 					}
 					var getCompanyPayrollMetaData = function(companyId) {

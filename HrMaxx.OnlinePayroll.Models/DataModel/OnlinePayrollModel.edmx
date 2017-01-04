@@ -263,6 +263,7 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastPayrollDate" Type="datetime" />
           <Property Name="WorkerCompensationId" Type="int" />
+          <Property Name="CompanyEmployeeNo" Type="int" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -2068,6 +2069,7 @@
           <NavigationProperty Name="CompanyWorkerCompensation" Relationship="HrMaxxModel.FK_Employee_CompanyWorkerCompensation" FromRole="Employee" ToRole="CompanyWorkerCompensation" />
           <Property Name="LastPayrollDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="EmployeeBankAccounts" Relationship="HrMaxxModel.FK_EmployeeBankAccount_Employee" FromRole="Employee" ToRole="EmployeeBankAccount" />
+          <Property Name="CompanyEmployeeNo" Type="Int32" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -2975,6 +2977,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="CompanyEmployeeNo" ColumnName="CompanyEmployeeNo" />
                 <ScalarProperty Name="LastPayrollDate" ColumnName="LastPayrollDate" />
                 <ScalarProperty Name="WorkerCompensationId" ColumnName="WorkerCompensationId" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />

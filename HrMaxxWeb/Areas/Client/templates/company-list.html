@@ -18,7 +18,7 @@
 						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3">
 							{{item.name}}
 						</td>
-						<td data-title=" 'Legacy No' " filter="{ 'companyNo': 'text' }" sortable=" 'companyNo' " class="col-sm-3">
+						<td data-title=" 'Legacy No' " filter="{ 'companyNo': 'text' }" sortable=" 'companyNo' " class="col-sm-1">
 							{{item.companyNo}}
 						</td>
 						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
@@ -26,6 +26,12 @@
 						</td>
 						<td data-title=" 'First Setup' " sortable=" 'created' " class="col-sm-1">
 							{{item.created | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'File Under Host' " sortable=" 'fileUnderHost' " class="col-sm-1">
+							{{item.fileUnderHost ? 'Yes' : 'No'}}
+						</td>
+						<td data-title=" 'Contract Type' " filter="{ 'contractType': 'text' }" sortable=" 'contractType' " class="col-sm-1">
+							{{item.contractType}}
 						</td>
 						<td data-title=" 'Status' " class="col-sm-1">
 							{{item.getTextForStatus}}

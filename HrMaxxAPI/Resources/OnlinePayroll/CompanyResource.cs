@@ -79,6 +79,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		{
 			get { return States.Any(s => s.State.StateId == 1); }
 		}
+
+		public string ContractType
+		{
+			get { return Contract.InvoiceSetup==null ? string.Empty : Contract.InvoiceSetup.InvoiceType.GetDbName(); }
+		}
 	}
 	public class ContractDetailsResource
 	{

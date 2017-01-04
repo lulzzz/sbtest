@@ -38,6 +38,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		List<Employee> GetAllEmployees();
 		void SaveTSImportMap(Guid id, ImportMap importMap);
 		List<Company> GetLocations(Guid parentId);
-		void UpdateMinWage(decimal minWage, List<Employee> selectEmployees);
+		void UpdateMinWage(decimal minWage, List<Employee> selectEmployees, List<Company> selectedCompanies);
 	}
 }

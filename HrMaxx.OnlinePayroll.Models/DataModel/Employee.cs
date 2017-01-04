@@ -51,6 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
         public Nullable<int> WorkerCompensationId { get; set; }
         public Nullable<System.DateTime> LastPayrollDate { get; set; }
+        public Nullable<int> CompanyEmployeeNo { get; set; }
     
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }

@@ -668,38 +668,49 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var selectEmployees = new List<Employee>();
+					var companies = _companyRepository.GetAllCompanies().Where(c => c.HostId == new Guid("75A78BE4-7226-466B-86BA-A6E200DCAAAC") || c.HostId == new Guid("9AF2FC03-5D35-4A82-9E17-A6E200DDBA73")).ToList();
 					var employees = _companyRepository.GetAllEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
-					employees.ForEach(e =>
+					var selectEmployees = new List<Employee>();
+					var selectedCompanies = new List<Company>();
+					companies.ForEach(c =>
 					{
-						var resave = false;
-						if (e.Id == new Guid("00716D1B-F866-427B-AE28-A68D006F4A32"))
+						var emps = employees.Where(e => e.CompanyId == c.Id).ToList();
+						if (emps.Count() <= 25)
 						{
-							var str = string.Empty;
-						}
-						if (e.Rate < minWage)
-						{
-							e.Rate = minWage;
-							resave = true;
-						}
-
-						if (e.PayCodes != null && e.PayCodes.Any())
-						{
-							e.PayCodes.Where(pc => pc.Id == 0).ToList().ForEach(pc =>
+							selectedCompanies.Add(c);
+							emps.ForEach(e =>
 							{
-								if (pc.HourlyRate < minWage)
+								var resave = false;
+								
+								if (e.Rate ==(decimal)10.5)
 								{
-									pc.HourlyRate = minWage;
+									e.Rate = 10;
 									resave = true;
 								}
 
+								if (e.PayCodes != null && e.PayCodes.Any())
+								{
+									e.PayCodes.Where(pc => pc.Id == 0).ToList().ForEach(pc =>
+									{
+										if (pc.HourlyRate ==(decimal)10.5)
+										{
+											pc.HourlyRate = 10;
+											resave = true;
+										}
+
+									});
+								}
+								if (resave)
+									selectEmployees.Add(e);
 							});
 						}
-						if(resave)
-							selectEmployees.Add(e);
-							//_companyRepository.SaveEmployee(e);
+							
+
+
 					});
-					_companyRepository.UpdateMinWage(minWage, selectEmployees);
+					
+					
+					_companyRepository.UpdateMinWage(minWage, selectEmployees, selectedCompanies);
 					txn.Complete();
 				}
 			}
