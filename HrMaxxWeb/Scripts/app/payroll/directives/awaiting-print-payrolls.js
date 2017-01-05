@@ -80,7 +80,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 					
 					
 					$scope.printPayroll = function (payroll) {
-						payrollRepository.printPayroll(payroll).then(function (data) {
+						payrollRepository.printPayrollChecks(payroll).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';

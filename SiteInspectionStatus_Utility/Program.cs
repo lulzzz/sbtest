@@ -103,7 +103,7 @@ namespace SiteInspectionStatus_Utility
 					var employeeMetaData = (EmployeeMetaData)_metaDataService.GetEmployeeMetaData();
 
 					var hostList = _hostService.GetHostList(Guid.Empty);
-					var companiestoimport = new List<string>() { "3652", "3792" };
+					var companiestoimport = new List<string>() { "3662" };
 					var existingcompanies = _companyRepository.GetAllCompanies();
 
 

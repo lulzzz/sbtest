@@ -226,6 +226,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			if (CompanyInvoiceSetup.SUIManagement > 0)
 			{
+				
 				EmployerTaxes.Where(t => t.Tax.StateId == 1).ToList().ForEach(t =>
 				{
 					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? GrossWages : t.TaxableWage;
@@ -234,8 +235,14 @@ namespace HrMaxx.OnlinePayroll.Models
 					{
 						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
 					}
-					t.Amount = Math.Round((decimal)(taxableWage * (rate + CompanyInvoiceSetup.SUIManagement) / 100), 2, MidpointRounding.AwayFromZero);
+					if (!t.Tax.Code.Equals("ETT"))
+					{
+						rate = rate + CompanyInvoiceSetup.SUIManagement;
+					}
+
+					t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
 					t.TaxableWage = taxableWage;
+					
 				});
 			}
 		}

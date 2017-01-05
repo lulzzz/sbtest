@@ -42,6 +42,14 @@ namespace HrMaxxAPI.Controllers.Companies
 	  {
 			return MakeServiceCall(() => _metaDataService.GetCompanyMetaData(), "Get company meta data", true);
 	  }
+
+		[HttpGet]
+		[Route(CompanyRoutes.PEOCompanies)]
+		public List<CompanySUIRate> PEOCompanies()
+		{
+			return MakeServiceCall(() => _metaDataService.GetPEOCompanies(), "Get PEO Companies", true);
+		}
+
 		[HttpGet]
 		[Route(CompanyRoutes.EmployeeMetaData)]
 		public object GetEmployeeMetaData()

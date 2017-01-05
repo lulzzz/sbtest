@@ -310,6 +310,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			else
 			{
+				if (paycheck.Employee.Rate <= 0)
+					return 0;
 				var val = (paycheck.Salary/paycheck.Employee.Rate)*(40*52/365)*ratePerHour;
 				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
 					return 7*val;

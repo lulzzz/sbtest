@@ -32,5 +32,7 @@
 		public const string SaveTaxRates = "Company/SaveTaxRates";
 		public const string GetCaliforniaEDDExport = "Company/CaliforniaEDD";
 		public const string RaiseMinWage = "Company/RaiseMinWage/{minWage:decimal}";
+
+		public const string PEOCompanies = "Company/AllPEOCompanies";
 	}
 }

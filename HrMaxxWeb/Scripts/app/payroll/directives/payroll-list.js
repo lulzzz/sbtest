@@ -346,13 +346,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							return false;
 						}
 					}
-					$scope.requiresCompanyPayrollAccount = function() {
+					$scope.requiresCompanyPayrollAccount = function () {
 						var c = $scope.mainData.selectedCompany;
-						if (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1)
-							return false;
+						if (!dataSvc.payrollAccount)
+							return true;
 						else {
-							return dataSvc.payrollAccount ? false :true;
-							
+							return false;
 						}
 					}
 					var getCompanyPayrollMetaData = function(companyId) {

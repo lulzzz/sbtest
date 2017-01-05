@@ -215,5 +215,21 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 			
 		}
+
+		public List<CompanySUIRate> GetPEOCompanies()
+		{
+			var companies = _companyService.GetAllCompanies().Where(c=>c.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck).ToList();
+			return
+				companies.Select(
+					c =>
+						new
+						CompanySUIRate{
+							Id = c.Id,
+							CompanyNo = c.CompanyNo,
+							TaxRates = c.CompanyTaxRates,
+							SUIManagementRate = c.Contract.InvoiceSetup.SUIManagement,
+							Name = c.Name
+						}).ToList();
+		}
 	}
 }

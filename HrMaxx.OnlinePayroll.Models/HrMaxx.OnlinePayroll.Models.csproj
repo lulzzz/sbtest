@@ -63,6 +63,7 @@
     <Compile Include="Company.cs" />
     <Compile Include="CompanyMetaData.cs" />
     <Compile Include="CompanyPayrollCube.cs" />
+    <Compile Include="CompanySUIRate.cs" />
     <Compile Include="CompanyTax.cs" />
     <Compile Include="DashboardData.cs" />
     <Compile Include="DataModel\AccountTemplate.cs">

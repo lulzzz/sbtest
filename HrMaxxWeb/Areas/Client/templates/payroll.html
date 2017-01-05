@@ -35,14 +35,27 @@
 		No employees found
 	</div>
 	<div class="col-sm-12" ng-if="showList()">
+		<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process</button>
+		<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+		<button class="btn btn-sm btn-warning" ng-click="includeAll()" ng-if="showList()"><i class="fa fa-check m-r-5"></i> {{data.toggleState? 'Exclude' : 'Include'}} all</button>
+		<button class="btn btn-sm btn-success attach-button pull-right" ng-if="false" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+			<i class="fa fa-upload"></i>Import Timesheets
+		</button>
+		<button class="btn btn-sm btn-success" ng-click="importTimesheet()" ng-if="showList()"><i class="fa fa-upload"></i>Import</button>
+		<button class="btn btn-sm btn-info" ng-if="showList()" ng-click="getTimesheetmportTemplate()"><i class="fa fa-download"></i>Export Template</button>
+
+	</div>
+	<div class="col-sm-12" ng-if="showList()">
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/pager">
 			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'danger': isPayCheckInvalid(listitem)}">
-				<td data-title="'No'" filter="{ 'employeeNo': 'text' }" sortable=" 'employeeNo' " class="col-sm-1">
-					<label class="checkbox-inline"><input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)">{{listitem.employeeNo}}</label>
-					
+				<td data-title="'No'" filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " class="col-sm-1">
+					<label class="checkbox-inline">
+						<input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)">{{listitem.companyEmployeeNo}}
+					</label>
+
 				</td>
 				<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
-					<button type="button" class="btn btn-link" data-ng-click="showemployee(listitem)">{{listitem.name}}<span ng-show="listitem.companyEmployeeNo"> ({{listitem.companyEmployeeNo}})</span></button>
+					<button type="button" class="btn btn-link" data-ng-click="showemployee(listitem)">{{listitem.name}}<span ng-show="listitem.companyEmployeeNo"> ({{listitem.employeeNo}})</span></button>
 
 				</td>
 				<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-1">
@@ -141,8 +154,7 @@
 					<div class="col-sm-6">{{paytype.payType.description}}</div>
 					<div class="col-sm-3">
 						<input class="form-control"
-									 type="number"
-									 ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+									 ng-model="paytype.amount" required data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
 					</div>
 					<div class="col-sm-1">
 						<button class="btn btn-sm btn-danger" ng-show="!item.id" ng-click="remove($index)"><i class="fa fa-remove"></i></button>
