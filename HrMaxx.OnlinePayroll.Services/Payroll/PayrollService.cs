@@ -705,8 +705,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
+				
 					var documents = new List<Guid>();
 					var updateStatus = false;
 					if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
@@ -716,7 +715,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							if (!_fileRepository.FileExists(paychecks.DocumentId))
 							{
 								PrintPayCheck(payroll, paychecks);
-								updateStatus = true;
+								if(paychecks.Status!=PaycheckStatus.Printed && paychecks.Status!=PaycheckStatus.PrintedAndPaid)
+									updateStatus = true;
 							}
 							documents.Add(paychecks.DocumentId);
 						}
@@ -725,11 +725,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 
 					var returnFile = _reportService.PrintPayrollWithoutSummary(payroll, documents);
-					if (payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && updateStatus))
-						_payrollRepository.MarkPayrollPrinted(payroll.Id);
-					txn.Complete();
+					using (var txn = TransactionScopeHelper.Transaction())
+					{
+						if (payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && updateStatus))
+							_payrollRepository.MarkPayrollPrinted(payroll.Id);
+						txn.Complete();
+					}
 					return returnFile;
-				}
+				
 			}
 			catch (Exception e)
 			{

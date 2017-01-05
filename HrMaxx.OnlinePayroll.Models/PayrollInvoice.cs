@@ -230,9 +230,9 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? GrossWages : t.TaxableWage;
 					var rate = t.Tax.Rate;
-					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxId == t.Tax.Id))
+					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
 					{
-						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxId == t.Tax.Id).Rate;
+						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
 					}
 					t.Amount = Math.Round((decimal)(taxableWage * (rate + CompanyInvoiceSetup.SUIManagement) / 100), 2, MidpointRounding.AwayFromZero);
 					t.TaxableWage = taxableWage;

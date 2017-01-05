@@ -273,11 +273,36 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					}
 				}
 			}
-			
-			var taxRate = !tax.Tax.IsCompanySpecific
-				? (tax.Rate.HasValue ? tax.Rate.Value : tax.Tax.DefaultRate )
-				: !company.FileUnderHost ? (company.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? company.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate) : (hostCompany.CompanyTaxRates.Any(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year) ? hostCompany.CompanyTaxRates.First(ct => ct.TaxId == tax.Id && ct.TaxYear == payDay.Year).Rate : tax.Tax.DefaultRate);
 
+			var taxRate = (decimal)0;
+
+			if (!tax.Tax.IsCompanySpecific)
+				taxRate = tax.Rate.HasValue ? tax.Rate.Value : tax.Tax.DefaultRate;
+			else
+			{
+				if (!company.FileUnderHost)
+				{
+					if (company.CompanyTaxRates.Any(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year))
+					{
+						taxRate = company.CompanyTaxRates.First(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year).Rate;
+					}
+					else
+					{
+						taxRate = tax.Tax.DefaultRate;
+					}
+				}
+				else
+				{
+					if (hostCompany.CompanyTaxRates.Any(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year))
+					{
+						taxRate = hostCompany.CompanyTaxRates.First(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year).Rate;
+					}
+					else
+					{
+						taxRate = tax.Tax.DefaultRate;
+					}
+				}
+			}
 			taxAmount = taxableWage * taxRate / 100;
 			return new PayrollTax
 			{

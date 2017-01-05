@@ -222,6 +222,9 @@ namespace SiteInspectionStatus_Utility
 		[ExcelColumn("EmployeeNo")]
 		public string EmployeeNo { get; set; }
 
+		[ExcelColumn("CompanyEmployeeNo")]
+		public string CompanyEmployeeNo { get; set; }
+
 		[ExcelColumn("CompanyNo")]
 		public string CompanyNo { get; set; }
 

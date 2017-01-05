@@ -103,7 +103,7 @@ namespace SiteInspectionStatus_Utility
 					var employeeMetaData = (EmployeeMetaData)_metaDataService.GetEmployeeMetaData();
 
 					var hostList = _hostService.GetHostList(Guid.Empty);
-					var companiestoimport = new List<string>() { "2823","3306","3432","3855" };
+					var companiestoimport = new List<string>() { "3652", "3792" };
 					var existingcompanies = _companyRepository.GetAllCompanies();
 
 
@@ -396,35 +396,7 @@ namespace SiteInspectionStatus_Utility
 								var banks = companybankaccoutns.Where(b => b.CompanyNo.Equals(c.CompanyNo)).ToList();
 								if (!banks.Any() || banks.Any(ba => string.IsNullOrWhiteSpace(ba.AccountNumber) || string.IsNullOrWhiteSpace(ba.RoutingNumber)))
 								{
-									var ca = new Account()
-									{
-										Id = 0,
-										CompanyId = company.Id,
-										Name = "Bank Account",
-										Type = AccountType.Assets,
-										SubType = AccountSubType.Bank,
-										TaxCode = string.Empty,
-										TemplateId = null,
-										LastModified = DateTime.Now,
-										LastModifiedBy = "System",
-										OpeningBalance = 0,
-										OpeningDate = DateTime.Now,
-										UseInPayroll = true,
-										BankAccount = new BankAccount()
-										{
-											AccountName = "CALIFORNIA BANK & TRUST",
-											Id = 0,
-											BankName = "CALIFORNIA BANK & TRUST",
-											AccountNumber = "3400149791",
-											RoutingNumber = "122003396",
-											AccountType = BankAccountType.Checking,
-											LastModified = DateTime.Now,
-											LastModifiedBy = "System",
-											SourceId = company.Id,
-											SourceTypeId = EntityTypeEnum.Company
-										}
-									};
-									_companyService.SaveCompanyAccount(ca);
+									
 								}
 								else
 								{

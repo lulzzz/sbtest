@@ -28,7 +28,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		bool EmployeeExists(Guid id);
 		void DeleteEmployeeDeduction(int deductionId);
 		void UpdateLastPayrollDateCompany(Guid id, DateTime payDay);
-		void UpdateLastPayrollDateEmployee(Guid id, DateTime payDay);
+		void UpdateLastPayrollDateEmployee(Guid id);
 		CompanyTaxRate SaveCompanyTaxRate(CompanyTaxRate mappedResource);
 		Company GetCompanyById(Guid companyId);
 		VendorCustomer GetVendorCustomersById(Guid vcId);

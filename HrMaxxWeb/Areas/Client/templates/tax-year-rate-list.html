@@ -35,10 +35,10 @@
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
 							<i class="fa fa-edit m-r-5"></i> edit
 						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-if="rowform.$visible" class="btn btn-success">
 							<i class="fa fa-save m-r-5"></i> save
 						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+						<button type="button" ng-disabled="rowform.$waiting" ng-if="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
 							<i class="fa fa-remove m-r-5"></i> cancel
 						</button>
 					</form>

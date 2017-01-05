@@ -109,6 +109,7 @@ namespace SiteInspectionStatus_Utility
 				.ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
 				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => StatusOption.Active))
 				.ForMember(dest => dest.EmployeeNo, opt => opt.MapFrom(src => src.EmployeeNo))
+				.ForMember(dest => dest.CompanyEmployeeNo, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.CompanyEmployeeNo) ? default(int?) : Convert.ToInt32(src.CompanyEmployeeNo)))
 				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src => src.Memo))
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => (PayrollSchedule)Convert.ToInt32(src.PayrollSchedule)))
 				.ForMember(dest => dest.PayType, opt => opt.MapFrom(src => (EmployeeType) Convert.ToInt32(src.PayType)))

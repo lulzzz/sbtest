@@ -496,7 +496,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 		}
 
-		public void UpdateLastPayrollDateEmployee(Guid id, DateTime payDay)
+		public void UpdateLastPayrollDateEmployee(Guid id)
 		{
 			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
 			if (dbEmployee != null)
