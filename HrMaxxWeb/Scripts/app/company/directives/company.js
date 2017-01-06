@@ -261,6 +261,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 								invoiceStyle: 1,
 								adminFeeMethod: 1,
 								adminFee: 0,
+								adminFeeThreshold: 35,
 								suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
 								applyWCCharge: true,
 								applyStatuaryLimits: !$scope.mainData.selectedHost.isPeoHost,
@@ -407,6 +408,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.tab = 1;
 					}
 					var init = function () {
+						$scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold = 35;
 						$scope.original = angular.copy($scope.selectedCompany);
 						companyRepository.getCompanyMetaData().then(function (data) {
 							dataSvc.companyMetaData = data;

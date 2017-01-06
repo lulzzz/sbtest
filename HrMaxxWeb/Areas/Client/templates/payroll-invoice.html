@@ -121,15 +121,17 @@
 			<div class="col-sm-12 table-responsive">
 				<table class="table table-borderless" >
 					<tr>
-						<td>
+						<td class="col-sm-7">
 							<img ng-src="{{getHostLogo()}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:200px;height:40px" /><br />
-							<h4>{{invoice.company.name}}<i class="fa fa-lg fa-info-circle hidden-print" ng-click="showcompany()"></i></h4><br />
+							<span class="printspan">
+								<h5>{{invoice.company.name}}<i class="fa fa-lg fa-info-circle hidden-print" ng-click="showcompany()"></i></h5>
+							</span>
 							{{invoice.company.companyAddress.addressLine1}}<br />
 							{{invoice.company.companyAddress.city}}, CA {{invoice.company.companyAddress.zip}}{{invoice.company.companyAddress.zipExtension? ' - ' + invoice.company.companyAddress.zipExtension : ''}}<br />
 							{{ getContactPhone(data.companyContact) }}<br />
 							{{ data.companyContact.firstName + ' ' + data.companyContact.lastName}}
 						</td>
-						<td class="text-right" ng-class="{'visible-print': invoice.status===1}">
+						<td class="text-right col-sm-5" ng-class="{'visible-print': invoice.status===1}">
 							<div class="invoice-detail">Invoice# {{invoice.invoiceNumber}}</div>
 							<div class="date m-t-5 text-bold"><h5>{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</h5></div>
 							<div class="invoice-detail">
@@ -153,7 +155,7 @@
 							
 							
 						</td>
-						<td class="text-right hidden-print" ng-if="invoice.status===1">
+						<td class="text-right hidden-print col-sm-5" ng-if="invoice.status===1">
 							<div class="col-sm-12 form-group">
 								<div class="col-sm-6 "><label class="control-label text-right">Invoice Date <span class="text-danger">*</span></label></div>
 								<div class="col-sm-6">{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</div>
@@ -326,7 +328,8 @@
 						</tr>
 						<tr class="visible-print" ng-show="invoice.notes">
 							<td colspan="4" style="border:1px solid black">
-								<em><u>Notes: </u></em>&nbsp;&nbsp;&nbsp;{{invoice.notes}}
+								<em><u>Notes: </u></em>
+								<div ng-bind-html="invoice.notes"></div>
 							</td>
 							
 						</tr>

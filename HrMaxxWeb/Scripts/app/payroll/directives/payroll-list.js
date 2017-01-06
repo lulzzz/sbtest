@@ -63,7 +63,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								status: 1,
 								memo: '',
 								notes:'',
-								included: true
+								included: false
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
 								var pc = {
@@ -74,6 +74,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 									overtimeHours: 0,
 									pwAmount: 0
 								};
+								pc.payCode.hourlyRate = +paycode.hourlyRate.toFixed(2);
+								
 								paycheck.payCodes.push(pc);
 							});
 							$.each(employee.compensations, function (index2, comp) {
@@ -326,21 +328,21 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					
-					$scope.canRunPayroll = function() {
+					$scope.canRunPayroll = function () {
 						var c = $scope.mainData.selectedCompany;
 						var hostcomp = $scope.mainData.selectedHost.company;
-						
-						if ($scope.selected || $scope.processed || $scope.committed || dataSvc.employees.length == 0 || (c.contract.billingOption === 3 && !c.contract.invoiceSetup) || (c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount) || (!(c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1) && !dataSvc.payrollAccount))
+
+						if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0 || (c.contract.billingOption === 3 && !c.contract.invoiceSetup) || (c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount))
 							return false;
 						else {
 							var draftPayroll = $filter('filter')($scope.list, { statusText: 'Draft' });
-							return draftPayroll.length>0 ? false : true;
+							return draftPayroll.length > 0 ? false : true;
 						}
 					}
-					$scope.requiresHostPayrollAccount = function() {
+					$scope.requiresHostPayrollAccount = function () {
 						var c = $scope.mainData.selectedCompany;
-						
-						if (c.contract.billingOption===3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType===1 && !dataSvc.hostPayrollAccount)
+
+						if (c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount)
 							return true;
 						else {
 							return false;

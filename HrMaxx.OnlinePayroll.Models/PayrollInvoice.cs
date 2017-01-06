@@ -87,7 +87,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			PayrollId = payroll.Id;
 			GrossWages = payroll.TotalGrossWage;
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddTaxes(pc.Taxes));
-			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation));
+			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation, company));
 
 			NetPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage);
 			CheckPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.CheckPay);
@@ -349,7 +349,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		}
 
-		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp)
+		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp, Company company)
 		{
 			if (wcomp != null)
 			{
@@ -363,12 +363,13 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 				else
 				{
+					var companyWC = company.WorkerCompensations.FirstOrDefault(wc1 => wc1.Id == wcomp.WorkerCompensation.Id);
 					var temp = new InvoiceWorkerCompensation
 					{
 						Amount = wcomp.Amount,
 						OriginalAmount = wcomp.Amount,
 						OriginalWage = wcomp.Wage,
-						WorkerCompensation = wcomp.WorkerCompensation,
+						WorkerCompensation = companyWC ?? wcomp.WorkerCompensation,
 						Wage = wcomp.Wage
 					};
 					WorkerCompensations.Add(temp);
@@ -379,6 +380,11 @@ namespace HrMaxx.OnlinePayroll.Models
 		private void CalculateAdminFee(Payroll payroll)
 		{
 			AdminFee = CompanyInvoiceSetup.AdminFeeMethod == 1 ? CompanyInvoiceSetup.AdminFee : Math.Round(CompanyInvoiceSetup.AdminFee * payroll.TotalGrossWage / 100, 2, MidpointRounding.AwayFromZero);
+			CompanyInvoiceSetup.AdminFeeThreshold = CompanyInvoiceSetup.AdminFeeThreshold.HasValue
+				? CompanyInvoiceSetup.AdminFeeThreshold
+				: 35;
+			if (AdminFee < CompanyInvoiceSetup.AdminFeeThreshold.Value)
+				AdminFee = CompanyInvoiceSetup.AdminFeeThreshold.Value;
 		}
 
 		public Guid MementoId

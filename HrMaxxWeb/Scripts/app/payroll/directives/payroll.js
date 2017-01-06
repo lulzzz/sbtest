@@ -19,7 +19,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						payTypes: $scope.datasvc.payTypes,
 						employees: $scope.datasvc.employees,
 						payTypeFilter: 0,
-						toggleState: true,
+						toggleState: false,
 						tabindex:1
 					}
 					
@@ -346,12 +346,15 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								}
 							}
 						});
-						modalInstance.result.then(function (pcs) {
-							
+						modalInstance.result.then(function (pcs, messages) {
+								dataSvc.toggleState = true;
 								$scope.item.payChecks = angular.copy(pcs);
 								$scope.list = $scope.item.payChecks;
 								$scope.tableParams.reload();
 								$scope.fillTableData($scope.tableParams);
+							$.each(messages, function(i, m) {
+								addAlert(m, 'warning');
+							});
 						}, function () {
 							return false;
 						});
@@ -511,6 +514,7 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 			if($scope.newPayTypes[index1].amount>0)
 			$scope.original.compensations.push($scope.newPayTypes[index1]);
 		});
+		$scope.original.included = true;
 		$uibModalInstance.close($scope);
 	};
 	$scope.addPayType = function() {
@@ -578,6 +582,7 @@ common.controller('updateJobCostCtrl', function ($scope, $uibModalInstance, $fil
 		$.each($scope.paycheck.payCodes, function (index, pt) {
 			$scope.original.payCodes.push($scope.paycheck.payCodes[index]);
 		});
+		$scope.original.included = true;
 		$uibModalInstance.close($scope);
 	};
 	
@@ -601,6 +606,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 	};
 	$scope.empty = function() {
 		$scope.original.deductions = [];
+		$scope.original.included = true;
 		$uibModalInstance.close($scope);
 	}
 	$scope.permanentSave = function () {
@@ -609,6 +615,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			companyRepository.saveEmployeeDeduction(dd);
 			$scope.original.deductions.push(dd);
 		});
+		$scope.original.included = true;
 		$uibModalInstance.close($scope);
 	};
 	$scope.save = function () {
@@ -630,7 +637,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			dd.employeeDeduction.accountNo = dd.accountNo;
 			dd.employeeDeduction.agencyId = dd.agencyId;
 			dd.employeeDeduction.priority = dd.priority;
-			
+			$scope.original.included = true;
 			$scope.original.deductions.push(dd);
 		});
 		$uibModalInstance.close($scope);
@@ -690,6 +697,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 	$scope.payChecks = angular.copy(payChecks);
 	$scope.payTypes = payTypes;
 	$scope.alerts = [];
+	 
 	if (map) {
 		$scope.importMap = map;
 		if (!$scope.importMap.selfManagedPayTypes) {
@@ -768,23 +776,24 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		});
 		payrollRepository.importTimesheetsWithMap($scope.files[0]).then(function (timesheets) {
 			var counter = 0;
+			var messages = [];
 			$.each(timesheets, function (ind, t) {
 				var pc = null;
 				if (t.ssn)
 					pc = $filter('filter')($scope.payChecks, { employee: { ssn: t.ssn } })[0];
 				else if (t.employeeNo) {
-					pc = $filter('filter')($scope.payChecks, { employee: { companyEmployeeNo: t.employeeNo } })[0];
+					pc = $filter('filter')($scope.payChecks, { employee: { companyEmployeeNo: parseInt(t.employeeNo) } }, true)[0];
 				}
 				else if (t.name) {
 					pc = $filter('filter')($scope.payChecks, { name: t.name })[0];
 				}
 
 				if (pc) {
+					pc.included = true;
 					counter++;
 					if (pc.employee.payType === 2) {
 						pc.salary = t.gross ? t.gross : t.salary;
-					} 
-					else if (pc.employee.payType === 4) {
+					} else if (pc.employee.payType === 4) {
 						pc.salary = t.gross ? t.gross : t.salary;
 						pc.payCodes = [];
 						var basePC = $filter('filter')(t.payCodes, { payCode: { id: 0 } })[0];
@@ -794,7 +803,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							}
 							pc.payCodes.push(basePC);
 						}
-						$.each(t.jobCostCodes, function (pcind, paycode) {
+						$.each(t.jobCostCodes, function(pcind, paycode) {
 							var payc = {
 								payCode: paycode.payCode,
 								screenHours: paycode.hours,
@@ -805,9 +814,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							};
 							pc.payCodes.push(payc);
 						});
-					}
-					else if (pc.employee.payType === 1) {
-						$.each(t.payCodes, function (pcind, paycode) {
+					} else if (pc.employee.payType === 1) {
+						$.each(t.payCodes, function(pcind, paycode) {
 							var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
 							if (ec) {
 								var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
@@ -826,14 +834,14 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 					} else {
 						var pw = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
 						if (pw.length > 0 && pc.payCodes.length === 1) {
-							pc.payCodes[0].pwAmount = t.gross? t.gross : pw[0].payCode.hourlyRate;
+							pc.payCodes[0].pwAmount = t.gross ? t.gross : pw[0].payCode.hourlyRate;
 							pc.payCodes[0].hours = pw[0].hours;
 							pc.payCodes[0].overtimeHours = pw[0].overtimeHours;
 							pc.payCodes[0].screenHours = pw[0].screenHours;
 							pc.payCodes[0].screenOvertime = pw[0].screenOvertime;
 						}
 					}
-					$.each(t.compensations, function (cind, comp) {
+					$.each(t.compensations, function(cind, comp) {
 						var exists = $filter('filter')(pc.compensations, { payType: { id: comp.payType.id } });
 						if (exists.length > 0)
 							exists[0].amount = comp.amount;
@@ -843,10 +851,18 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 					pc.notes = t.notes ? t.notes : '';
 					if (t.accumulations.length > 0)
 						pc.accumulations = t.accumulations;
+				} else {
+					if (t.ssn)
+						messages.push(t.ssn);
+					else if (t.employeeNo) {
+						messages.push(t.employeeNo);
+					} else if (t.name) {
+						messages.push(t.name);
+					}
 				}
 
 			});
-			$uibModalInstance.close($scope.payChecks);
+			$uibModalInstance.close($scope.payChecks, messages);
 
 			
 		}, function (error) {

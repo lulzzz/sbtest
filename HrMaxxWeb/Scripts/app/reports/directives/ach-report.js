@@ -22,7 +22,11 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 					
 					$scope.list = [];
 					$scope.selected = null;
-
+					$scope.toggleAll = function() {
+						$.each($scope.selectedHost.achTransactions, function(i, t) {
+							t.included = $scope.selectedHost.toggleState;
+						});
+					}
 					$scope.tableData = [];
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
@@ -95,7 +99,9 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 					};
 					$scope.selectedHost = null;
 					$scope.set = function (host) {
+						
 						$scope.selectedHost = host;
+						
 					}
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;

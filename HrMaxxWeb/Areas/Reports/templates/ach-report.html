@@ -115,13 +115,16 @@
 								<table class="table table-bordered table-condensed" ng-show="selectedHost.achTransactions.length>0">
 									<thead>
 										<tr>
-											<th class-="col-sm-1" ng-hide="data.extractFiled"></th>
+											<th class-="col-sm-1" ng-hide="data.extractFiled">
+												<input name="toggle" type="checkbox" ng-model="selectedHost.toggleState" ng-change="toggleAll()"/>
+											</th>
 											<th class="col-sm-1">Type</th>
 											<th class="col-sm-1">Date</th>
 											<th class="col-sm-1">Description</th>
 											<th class="col-sm-1">Amount</th>
 											<th class="col-sm-1">Name</th>
-											<th class="col-sm-6"></th>
+											<th class="col-sm-1">Id</th>
+											<th class="col-sm-5"></th>
 										</tr>
 									</thead>
 									<tr ng-repeat-start="ach in selectedHost.achTransactions track by $index" ng-class="{'success': ach.transactionType===2, 'danger':ach.transactionType===1}">
@@ -142,6 +145,9 @@
 										</td>
 										<td>
 											{{ach.name}}
+										</td>
+										<td>
+											{{ach.id}}
 										</td>
 										<td>
 											<i class="fa fa-lg" ng-class="{'fa-minus-circle':ach.expanded, 'fa-plus-circle':!ach.expanded}" ng-click="ach.expanded=!ach.expanded"></i>

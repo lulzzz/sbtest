@@ -129,7 +129,7 @@ namespace HrMaxxAPI.Resources.Payroll
 							if (Salary > 0 && pc.Id == 0)
 							{
 								pcode.PayCode = JsonConvert.DeserializeObject<CompanyPayCodeResource>(JsonConvert.SerializeObject(pc));
-								pcode.PayCode.HourlyRate = Salary;
+								pcode.PayCode.HourlyRate = Math.Round(Salary,2,MidpointRounding.AwayFromZero);
 							}
 
 							PayCodes.Add(pcode);
@@ -275,14 +275,14 @@ namespace HrMaxxAPI.Resources.Payroll
 					decimal sala = 0;
 					decimal.TryParse(val, out sala);
 					if (sala > 0)
-						Salary = sala;
+						Salary = Math.Round(sala,2, MidpointRounding.AwayFromZero);
 				}
 				else if (col.Key.Contains("Gross"))
 				{
 					decimal gross = 0;
 					decimal.TryParse(val, out gross);
 					if (gross > 0)
-						Gross = gross;
+						Gross = Math.Round(gross, 2, MidpointRounding.AwayFromZero);
 				}
 				else if (col.Key.Equals("Notes"))
 				{
@@ -309,7 +309,7 @@ namespace HrMaxxAPI.Resources.Payroll
 						};
 						if (Salary > 0 && payCode.Id == 0)
 						{
-							pcode.PayCode.HourlyRate = Salary;
+							pcode.PayCode.HourlyRate = Math.Round(Salary, 2, MidpointRounding.AwayFromZero);
 						}
 					}
 					if (col.Key.EndsWith("Hours"))
@@ -325,13 +325,13 @@ namespace HrMaxxAPI.Resources.Payroll
 					else if (col.Key.EndsWith("Rate Amount"))
 					{
 						if(pcode.PayCode.Id==0)
-							pcode.Amount = string.IsNullOrWhiteSpace(val) ? 0 :Convert.ToDecimal( val);
+							pcode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round(Convert.ToDecimal( val));
 						
 					}
 					else if (col.Key.EndsWith("Overtime Amount"))
 					{
 						if (pcode.PayCode.Id == 0)
-							pcode.OvertimeAmount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							pcode.OvertimeAmount = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round(Convert.ToDecimal(val));
 
 					}
 					
@@ -374,7 +374,7 @@ namespace HrMaxxAPI.Resources.Payroll
 							if (jobcost.Key.Equals("Amount"))
 								jccode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
 							else if (jobcost.Key.Equals("Rate"))
-								jccode.PayCode.HourlyRate = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+								jccode.PayCode.HourlyRate = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round( Convert.ToDecimal(val),2, MidpointRounding.AwayFromZero);
 							else if (jobcost.Key.Equals("Pieces"))
 								jccode.Hours = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
 							else

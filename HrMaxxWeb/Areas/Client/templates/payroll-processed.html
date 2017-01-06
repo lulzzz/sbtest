@@ -23,48 +23,51 @@
 	</div>
 	
 	<div class="col-sm-12">
-		<table class="table table-bordered table-condensed" >
-			<tr>
-				<th colspan="2">Employee</th>
-				<th>Gross Pay</th>
-				<th>Deductions</th>
-				<th>Taxes EE</th>
-				<th>Net Pay</th>
-				<th>Taxes ER</th>
-				<th>Total Cost</th>
-				<th>Payment Method</th>
-				<th>Status</th>
-				<th></th>
-			</tr>
-			<tr ng-repeat="listitem in item.payChecks | filter:{included:true} | orderBy:'employeeNo' track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2)}">
-				<td colspan="2">
-					{{listitem.employee.name}}
+		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager">
+
+			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2)}">
+				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " >
+					{{listitem.companyEmployeeNo}}
 				</td>
-				<td class="text-right">{{listitem.grossWage | currency:"$"}}</td>
-				<td class="text-right">{{listitem.deductionAmount | currency:"$"}}</td>
-				<td class="text-right">{{listitem.employeeTaxes | currency:"$"}}</td>
-				<td class="text-right">{{listitem.netWage | currency:"$"}}</td>
-				<td class="text-right">{{listitem.employerTaxes | currency:"$"}}</td>
-				<td class="text-right">{{listitem.grossWage + listitem.employerTaxes | currency:"$"}}</td>
-				<td class="text-right">{{listitem.paymentMethodText}}<span ng-show="listitem.paymentMethod===1">&nbsp;#{{listitem.checkNumber}}</span></td>
-				<td>
-					{{listitem.statusText}}
+				<td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
+					{{listitem.name}}
 				</td>
-				<td>
-					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2 || item.status===6? 'review' : 'view'}}</button>
-					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" >void</button>
-					<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-print m-r-5"></i> print</button>
+				<td data-title=" 'Gross Pay' " sortable=" 'grossWage' " class="col-sm-1 text-right">
+					{{listitem.grossWage | currency:"$"}}
+				</td>
+				<td data-title=" 'Deductions' " sortable=" 'grossWage' " class="col-sm-1 text-right">
+					{{listitem.deductionAmount | currency:"$"}}
+				</td>
+				<td data-title=" 'Taxes EE' " sortable=" 'employeeTaxes' " class="col-sm-1 text-right">
+					{{listitem.employeeTaxes | currency:"$"}}
+				</td>
+				<td data-title=" 'Net Pay' " sortable=" 'netWage' " class="col-sm-1 text-right">
+					{{listitem.netWage | currency:"$"}}
+				</td>
+				<td data-title=" 'Taxes ER' " sortable=" 'employerTaxes' " class="col-sm-1 text-right">
+					{{listitem.employerTaxes | currency:"$"}}
+				</td>
+				<td data-title=" 'Payment Method' " sortable=" 'employerTaxes' " class="col-sm-1 text-right">
+					{{listitem.paymentMethodText}}
 				</td>
 				
+				<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1">
+					{{listitem.statusText}}
+				</td>
+				<td class="col-sm-2">
+					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)">{{item.status===2 || item.status===6? 'review' : 'view'}}</button>
+					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)">void</button>
+					<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-print m-r-5"></i> print</button>
+				</td>
+
 			</tr>
 			<tr>
-				<td colspan="2"></td>
+				<td colspan="2"># Checks {{tableData.length}}</td>
 				<td class="text-right">{{item.totalGrossWage | currency:'$'}}</td>
 				<td class="text-right">{{item.deductionAmount | currency:'$'}}</td>
 				<td class="text-right">{{item.employeeTaxes | currency:'$'}}</td>
 				<td class="text-right">{{item.totalNetWage | currency:'$'}}</td>
 				<td class="text-right">{{item.employerTaxes | currency:'$'}}</td>
-				<td class="text-right">{{item.totalGrossWage + item.employerTaxes | currency:'$'}}</td>
 				<td></td>
 				<td></td>
 				<td></td>

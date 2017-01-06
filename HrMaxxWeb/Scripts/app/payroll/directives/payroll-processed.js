@@ -18,6 +18,39 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
+					$scope.tableData = [];
+					$scope.tableParams = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+						filter: {
+							included: true
+						},
+						sorting: {
+							companyEmployeeNo: 'asc'     // initial sorting
+						}
+					}, {
+						total: $scope.list ? $scope.list.length : 0, // length of data
+						getData: function ($defer, params) {
+							$scope.fillTableData(params);
+							$defer.resolve($scope.tableData);
+						}
+					});
+
+					$scope.fillTableData = function (params) {
+						// use build-in angular filter
+						if ($scope.list && $scope.list.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.list, params.filter()) :
+																$scope.list;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+							$scope.tableData = orderedData;
+							$scope.tableParams = params;
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
 					$scope.cancel = function () {
 						if ($scope.item.status > 2 && $scope.item.status!==6) {
 							$scope.$parent.$parent.committed = null;
@@ -31,6 +64,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						else {
 							$.each($scope.item.payChecks, function (index1, paycheck) {
 								paycheck.employeeNo = paycheck.employee.employeeNo;
+								paycheck.companyEmployeeNo = paycheck.employee.companyEmployeeNo;
 								paycheck.name = paycheck.employee.name;
 								paycheck.department = paycheck.employee.department;
 								paycheck.status = 1;
@@ -211,7 +245,14 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							$scope.datasvc.isBodyOpen = false;
 						else
 							$scope.datasvc.isBodyOpen = true;
-						
+						$scope.list = $scope.item.payChecks;
+						$.each($scope.list, function(i, p) {
+							p.name = p.employee.name;
+							p.companyEmployeeNo = p.employee.companyEmployeeNo;
+							p.employeeNo = p.employee.employeeNo;
+						});
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
 					}
 					init();
 

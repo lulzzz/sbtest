@@ -191,6 +191,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public CompanyInvoiceType InvoiceType { get; set; }
 		public CompanyInvoiceStyle InvoiceStyle { get; set; }
 		public int AdminFeeMethod { get; set; }
+		public decimal? AdminFeeThreshold { get; set; }
 		public decimal AdminFee { get; set; }
 		public decimal SUIManagement { get; set; }
 		public bool ApplyStatuaryLimits { get; set; }
