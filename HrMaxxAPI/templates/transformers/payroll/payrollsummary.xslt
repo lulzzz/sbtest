@@ -91,7 +91,7 @@
 							
 						</thead>
 						<tbody>
-							<xsl:apply-templates select="PayChecks/PayCheck">
+							<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
 								<xsl:sort select="Employee/EmployeeNo"/>
 							</xsl:apply-templates>
 						</tbody>
@@ -112,19 +112,19 @@
 
 							<tr>
 								<td style="text-align:right">
-									<xsl:value-of select="count(PayChecks/PayCheck)"/>
+									<xsl:value-of select="count(PayChecks/PayCheck[IsVoid='false'])"/>
 								</td>
 								<td style="text-align:right">
-									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck/GrossWage),'#,##0.00')"/>
+									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck[IsVoid='false']/GrossWage),'#,##0.00')"/>
 								</td>
 								<td style="text-align:right">
-									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck/Deductions/PayrollDeduction/Amount),'#,##0.00')"/>
+									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck[IsVoid='false']/Deductions/PayrollDeduction/Amount),'#,##0.00')"/>
 								</td>
 								<td style="text-align:right">
-									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck/Taxes/PayrollTax[Tax/IsEmployeeTax='true']/Amount),'#,##0.00')"/>
+									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck[IsVoid='false']/Taxes/PayrollTax[Tax/IsEmployeeTax='true']/Amount),'#,##0.00')"/>
 								</td>
 								<td style="text-align:right">
-									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck/NetWage),'#,##0.00')"/>
+									$<xsl:value-of select="format-number(sum(PayChecks/PayCheck[IsVoid='false']/NetWage),'#,##0.00')"/>
 								</td>
 								
 

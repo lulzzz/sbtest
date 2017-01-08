@@ -65,6 +65,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
 							params.$params.filter.status1 = filterbystatus;
+
 							$scope.tableParams = params;
 							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 
@@ -129,7 +130,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					var getInvoices = function (selectedInvoiceId) {
 						payrollRepository.getInvoicesForHost().then(function (data) {
 							$scope.list = data;
-							//$scope.tableParams.reload();
+							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							$scope.selectedInvoice = null;
 							if (selectedInvoiceId) {

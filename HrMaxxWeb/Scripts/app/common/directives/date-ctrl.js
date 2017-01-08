@@ -23,6 +23,7 @@ common.directive('dateCtrl', ['zionAPI','version',
 					readonly: $scope.disabled ? "readonly" : ""
 				}
 				$scope.data = dataSvc;
+				$scope.readonly = $scope.disabled ? "readonly" : "";
 				$scope.dateOptions = {
 					minDate: $scope.min ? $scope.min : moment("01/01/1920", "MM/DD/YYYY").toDate(),
 					maxDate: $scope.max ? $scope.max : moment("12/31/2050", "MM/DD/YYYY").toDate(),

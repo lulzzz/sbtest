@@ -103,7 +103,7 @@ namespace SiteInspectionStatus_Utility
 					var employeeMetaData = (EmployeeMetaData)_metaDataService.GetEmployeeMetaData();
 
 					var hostList = _hostService.GetHostList(Guid.Empty);
-					var companiestoimport = new List<string>() { "3376" };
+					var companiestoimport = new List<string>() { "3820" };
 					var existingcompanies = _companyRepository.GetAllCompanies();
 
 
@@ -205,35 +205,68 @@ namespace SiteInspectionStatus_Utility
 									var parent = existingcompanies.FirstOrDefault(co1 => co1.CompanyNo == c.ParentId);
 									if (parent == null)
 										break;
-									var child = JsonConvert.DeserializeObject<HrMaxx.OnlinePayroll.Models.Company>(JsonConvert.SerializeObject(parent));
-									child.Id = company.Id;
-									child.ParentId = parent.Id;
-									child.CompanyAddress = new Address { AddressLine1 = c.AddressLine1, City = c.City, CountryId = 1, StateId = 1, Type = AddressType.Business, Zip = c.Zip.Trim(), ZipExtension = string.Empty };
-									child.BusinessAddress = new Address { AddressLine1 = c.AddressLine1, City = c.City, CountryId = 1, StateId = 1, Type = AddressType.Business, Zip = c.Zip.Trim(), ZipExtension = string.Empty };
-									child.Name = company.Name;
-									child.Locations = null;
-									child.Created = DateTime.Now;
-									child.LastModified = DateTime.Now;
-									child.UserName = "System";
-									child.UserId = Guid.Empty;
-									child.CompanyTaxRates.ForEach(ct =>
+									var exists =
+										existingcompanies.FirstOrDefault(
+											c2 =>
+												c2.FederalEIN.Equals(c.FederalEIN) && c2.HostId == company.HostId && c2.CompanyNo == c.CompanyNo &&
+												c2.IsLocation);
+									if (exists == null)
 									{
-										ct.CompanyId = child.Id;
+										var child =
+											JsonConvert.DeserializeObject<HrMaxx.OnlinePayroll.Models.Company>(JsonConvert.SerializeObject(parent));
+										child.Id = company.Id;
+										child.ParentId = parent.Id;
+										child.CompanyAddress = new Address
+										{
+											AddressLine1 = c.AddressLine1,
+											City = c.City,
+											CountryId = 1,
+											StateId = 1,
+											Type = AddressType.Business,
+											Zip = c.Zip.Trim(),
+											ZipExtension = string.Empty
+										};
+										child.BusinessAddress = new Address
+										{
+											AddressLine1 = c.AddressLine1,
+											City = c.City,
+											CountryId = 1,
+											StateId = 1,
+											Type = AddressType.Business,
+											Zip = c.Zip.Trim(),
+											ZipExtension = string.Empty
+										};
+										child.Name = company.Name;
+										child.Locations = null;
+										child.Created = DateTime.Now;
+										child.LastModified = DateTime.Now;
+										child.UserName = "System";
+										child.UserId = Guid.Empty;
+										child.CompanyNo = c.CompanyNo;
+										child.CompanyTaxRates.ForEach(ct =>
+										{
+											ct.CompanyId = child.Id;
 
-									});
+										});
 
-									child.States.ForEach(ct =>
+										child.States.ForEach(ct =>
+										{
+											ct.Id = 0;
+
+										});
+
+										var savedcompany = _companyRepository.SaveCompany(child);
+										var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, child.Contract);
+										var savedstates = _companyRepository.SaveTaxStates(savedcompany, child.States);
+										savedcompany.Contract = savedcontract;
+										savedcompany.States = savedstates;
+										company = savedcompany;
+									}
+									else
 									{
-										ct.Id = 0;
-
-									});
-
-									var savedcompany = _companyRepository.SaveCompany(child);
-									var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, child.Contract);
-									var savedstates = _companyRepository.SaveTaxStates(savedcompany, child.States);
-									savedcompany.Contract = savedcontract;
-									savedcompany.States = savedstates;
-									company = savedcompany;
+										company = exists;
+									}
+									
 								}
 								else
 								{

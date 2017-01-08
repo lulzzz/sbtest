@@ -44,7 +44,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					if (id) {
 						var fil = $filter('filter')(dataSvc.agencies, { id: id })[0];
 						if (fil)
-							return fil.name + '(' + fil.contact.firstName + ' ' + fil.contact.lastName + ')';
+							return fil.name;
 					}
 				}
 				var addAlert = function (error, type) {

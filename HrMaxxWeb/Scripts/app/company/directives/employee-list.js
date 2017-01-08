@@ -138,7 +138,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							name: '',       // initial filter
 						},
 						sorting: {
-							name: 'asc'     // initial sorting
+							companyEmployeeNo: 'asc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data

@@ -242,7 +242,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 					t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
 					t.TaxableWage = taxableWage;
-					
+					t.Tax.Rate = company.CompanyTaxRates.First(t1 => t1.TaxId == t.Tax.Id && t1.TaxYear==year).Rate;
 				});
 			}
 		}
@@ -323,14 +323,18 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 
 			});
-			Deductions.ForEach(d => MiscCharges.Add(new MiscFee
+			if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 			{
-				RecurringChargeId = d.Deduction.Id * -1,
-				Amount = d.Amount * -1,
-				Description = d.Name,
-				PayCheckId = 0,
-				isEditable = true
-			}));
+				Deductions.ForEach(d => MiscCharges.Add(new MiscFee
+				{
+					RecurringChargeId = d.Deduction.Id * -1,
+					Amount = d.Amount * -1,
+					Description = d.Name,
+					PayCheckId = 0,
+					isEditable = true
+				}));	
+			}
+			
 			if (CompanyInvoiceSetup.InvoiceType!=CompanyInvoiceType.PEOASOCoCheck && payroll.PayChecks.Any(pc => !pc.IsVoid && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit))
 			{
 				var ddSum =

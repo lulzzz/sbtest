@@ -426,6 +426,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					var matching = me.EmployeeBankAccounts.First(meb => meb.Id == b.Id);
 					b.BankAccount.AccountName = matching.BankAccount.AccountName;
 					b.BankAccount.AccountNumber = matching.BankAccount.AccountNumber;
+					b.BankAccount.FractionId = matching.BankAccount.FractionId;
 					b.BankAccount.AccountType = matching.BankAccount.AccountType;
 					b.BankAccount.RoutingNumber = matching.BankAccount.RoutingNumber;
 					b.BankAccount.BankName = matching.BankAccount.BankName;

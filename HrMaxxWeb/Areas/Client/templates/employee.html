@@ -14,7 +14,7 @@
 				</ul>
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
-						Employee Details
+						Employee Details - {{selected.name}}
 					</a>
 				</h3>
 			</div>
@@ -258,6 +258,13 @@
 																			<label>Account Number</label>
 																			<div>
 																				<input type="text" class="form-control" placeholder="Account Number between 8-15 numbers" name="accountnumber" ng-model="selectedBank.bankAccount.accountNumber" ng-pattern="/^\d{8,15}$/" />
+
+																			</div>
+																		</div>
+																		<div class="form-group">
+																			<label>Fraction Id</label>
+																			<div>
+																				<input type="text" class="form-control" placeholder="Fraction Id" name="accountnumber" ng-model="selectedBank.bankAccount.fractionId" />
 
 																			</div>
 																		</div>

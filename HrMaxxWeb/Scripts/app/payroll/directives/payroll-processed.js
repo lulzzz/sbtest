@@ -26,7 +26,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							included: true
 						},
 						sorting: {
-							companyEmployeeNo: 'asc'     // initial sorting
+							checkNumber: 'asc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -154,6 +154,42 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('error printing pay check', 'danger');
 						});
 					}
+					$scope.printPayrollChecksOneByOne = function(payroll) {
+						var payrollBlob = null;
+						
+						var printed = [];
+						$.each(payroll.payChecks, function (i, pc) {
+
+							if (!pc.isVoid) {
+								payrollRepository.printPayCheck(pc.documentId, pc.id).then(function (data) {
+									if (payrollBlob)
+										payrollBlob += data.file;
+									else
+										payrollBlob = data.file;
+									printed.push(pc.id);
+
+								}, function (error) {
+
+								});
+							} else {
+								printed.push(pc.id);
+							}
+						});
+						while (printed.length !== (payroll.payChecks.length + 1)) {
+							if (printed.length === payroll.payChecks.length) {
+								var a = document.createElement('a');
+								a.href = payrollBlob;
+								a.target = '_blank';
+								a.download = 'Payroll Printed';
+								document.body.appendChild(a);
+								a.click();
+								printed.push(123);
+
+							}
+						}
+						
+					}
+
 					$scope.printPayrollReport = function (payroll) {
 						payrollRepository.printPayrollReport(payroll).then(function (data) {
 							var a = document.createElement('a');

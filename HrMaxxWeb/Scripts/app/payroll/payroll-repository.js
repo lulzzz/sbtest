@@ -339,7 +339,7 @@ common.factory('payrollRepository', [
 					});
 
 				return deferred.promise;
-			},
+			},	
 			getTimesheetImportTemplate: function (companyId, payTypes) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Payroll/TimesheetImportTemplate", {

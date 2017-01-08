@@ -229,6 +229,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\009B_checknumber and company employee no.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\009C_Gen010817.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>

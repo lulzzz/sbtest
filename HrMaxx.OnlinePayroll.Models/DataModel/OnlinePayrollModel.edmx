@@ -62,6 +62,7 @@
           <Property Name="RoutingNumber" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="FractionId" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="Company">
           <Key>
@@ -1950,6 +1951,7 @@
           <NavigationProperty Name="EntityType" Relationship="HrMaxxModel.FK_BankAccount_EntityType" FromRole="BankAccount" ToRole="EntityType" />
           <NavigationProperty Name="CompanyAccounts" Relationship="HrMaxxModel.FK_CompanyAccount_BankAccount" FromRole="BankAccount" ToRole="CompanyAccount" />
           <NavigationProperty Name="EmployeeBankAccounts" Relationship="HrMaxxModel.FK_EmployeeBankAccount_BankAccount" FromRole="BankAccount" ToRole="EmployeeBankAccount" />
+          <Property Name="FractionId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -2934,6 +2936,7 @@
           <EntitySetMapping Name="BankAccounts">
             <EntityTypeMapping TypeName="HrMaxxModel.BankAccount">
               <MappingFragment StoreEntitySet="BankAccount">
+                <ScalarProperty Name="FractionId" ColumnName="FractionId" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
                 <ScalarProperty Name="LastModified" ColumnName="LastModified" />
                 <ScalarProperty Name="RoutingNumber" ColumnName="RoutingNumber" />

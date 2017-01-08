@@ -246,7 +246,7 @@
 						<tr ng-show="invoice.companyInvoiceSetup.invoiceStyle===2 || invoice.expandedER" ng-repeat="et in invoice.employerTaxes | orderBy:'tax.id'">
 							<td> - {{et.tax.name}}</td>
 							<td>{{et.taxableWage | currency:'$'}}</td>
-							<td></td>
+							<td><span class="hidden-print" ng-show="et.tax.isCompanySpecific">{{et.tax.rate | currency:'$'}}</span></td>
 							<td class="text-left">{{et.amount | currency:'$'}}</td>
 						</tr>
 						<tr ng-if="invoice.workerCompensations.length>0" class="info">

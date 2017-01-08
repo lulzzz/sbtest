@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Common.Contracts.Services;
@@ -9,6 +10,7 @@ using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using Magnum;
+using PdfSharp.Pdf.IO;
 using Persits.PDF;
 
 namespace HrMaxx.Common.Services.PDF
@@ -194,29 +196,61 @@ namespace HrMaxx.Common.Services.PDF
 		{
 			try
 			{
-				var docs = new List<PdfDocument>();
-				var objPDF = new PdfManager();
-				// Create new document.
-				var objDoc = objPDF.CreateDocument();
+				//var docs = new List<PdfDocument>();
+				//var objPDF = new PdfManager();
+				//// Create new document.
+				//var objDoc = objPDF.CreateDocument();
+				//var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
+				
+				//if(data.Length>0)
+				//	objDoc.AppendDocument(objPDF.OpenDocument(data));
+				
+				//foreach (var document in documents)
+				//{
+				//	var objDoc1 = objPDF.OpenDocument(pdfPath + document + ".pdf");
+				//	docs.Add(objDoc1);
+				//	objDoc.AppendDocument(objDoc1);
+				//}
+				//var resultBytes = objDoc.SaveToMemory();
+				
+				//objDoc.Close();
+				//docs.ForEach(d => d.Close());
+				
+				//return new FileDto
+				//{
+				//	Data = resultBytes,
+				//	Filename = fileName.Split('.')[0],
+				//	DocumentExtension = ".pdf",
+				//	MimeType = "application/pdf"
+				//};
+
+				var docs = new List<PdfSharp.Pdf.PdfDocument>();
+				var objDoc = new PdfSharp.Pdf.PdfDocument();
 				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
-				
-				if(data.Length>0)
-					objDoc.AppendDocument(objPDF.OpenDocument(data));
-				
 				foreach (var document in documents)
 				{
-					var objDoc1 = objPDF.OpenDocument(pdfPath + document + ".pdf");
-					docs.Add(objDoc1);
-					objDoc.AppendDocument(objDoc1);
+					var objDoc1 = PdfReader.Open(pdfPath + document + ".pdf", PdfDocumentOpenMode.Import);
+					int count = objDoc1.PageCount;
+					for (int idx = 0; idx < count; idx++)
+					{
+						// Get the page from the external document...
+						var page = objDoc1.Pages[idx];
+						// ...and add it to the output document.
+						objDoc.AddPage(page);
+					}
 				}
-				var resultBytes = objDoc.SaveToMemory();
-				
-				objDoc.Close();
-				docs.ForEach(d => d.Close());
-				
+				var payrollFile = pdfPath + identifier + ".pdf";
+				objDoc.Save(payrollFile);
+
+				byte[] fileContents = _fileRepository.GetFileBytesByPath(payrollFile);
+				//using (var stream = new MemoryStream())
+				//{
+				//	objDoc.Save(stream, true);
+				//	fileContents = stream.ToArray();
+				//}
 				return new FileDto
 				{
-					Data = resultBytes,
+					Data = fileContents,
 					Filename = fileName.Split('.')[0],
 					DocumentExtension = ".pdf",
 					MimeType = "application/pdf"

@@ -20,6 +20,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string AccountNumber { get; set; }
 		[Required]
 		public string RoutingNumber { get; set; }
+		
+		public string FractionId { get; set; }
 		[Required]
 		public int SourceTypeId { get; set; }
 		public Guid? SourceId { get; set; }

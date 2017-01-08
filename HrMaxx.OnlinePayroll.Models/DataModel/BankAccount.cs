@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string RoutingNumber { get; set; }
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
+        public string FractionId { get; set; }
     
         public virtual EntityType EntityType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

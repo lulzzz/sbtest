@@ -198,7 +198,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
 				dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
 				dbPayrollInvoice.Deductions = mapped.Deductions;
-				dbPayrollInvoice.InvoiceNumber = mapped.InvoiceNumber;
 				dbPayrollInvoice.Courier = mapped.Courier;
 				dbPayrollInvoice.Notes = mapped.Notes;
 				dbPayrollInvoice.Balance = mapped.Balance;

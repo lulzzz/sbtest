@@ -37,6 +37,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 					dbBankAccount.AccountType = mappedAccount.AccountType;
 					dbBankAccount.AccountName = mappedAccount.AccountName;
 					dbBankAccount.AccountNumber = mappedAccount.AccountNumber;
+					dbBankAccount.FractionId = mappedAccount.FractionId;
 					dbBankAccount.BankName = mappedAccount.BankName;
 					dbBankAccount.LastModified = mappedAccount.LastModified;
 					dbBankAccount.LastModifiedBy = mappedAccount.LastModifiedBy;

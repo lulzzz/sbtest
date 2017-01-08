@@ -29,6 +29,9 @@
 				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " >
 					{{listitem.companyEmployeeNo}}
 				</td>
+				<td data-title=" 'Check #' " filter="{ 'checkNumber': 'text' }" sortable=" 'checkNumber' ">
+					{{listitem.checkNumber}}
+				</td>
 				<td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
 					{{listitem.name}}
 				</td>
@@ -62,7 +65,7 @@
 
 			</tr>
 			<tr>
-				<td colspan="2"># Checks {{tableData.length}}</td>
+				<td colspan="3"># Checks {{tableData.length}}</td>
 				<td class="text-right">{{item.totalGrossWage | currency:'$'}}</td>
 				<td class="text-right">{{item.deductionAmount | currency:'$'}}</td>
 				<td class="text-right">{{item.employeeTaxes | currency:'$'}}</td>

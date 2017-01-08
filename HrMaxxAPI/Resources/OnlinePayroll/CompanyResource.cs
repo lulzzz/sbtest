@@ -217,6 +217,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int AdminFeeMethod { get; set; }
 		[Required]
 		public decimal AdminFee { get; set; }
+		public decimal? AdminFeeThreshold { get; set; }
 		public decimal SUIManagement { get; set; }
 		public bool ApplyStatuaryLimits { get; set; }
 		public bool ApplyEnvironmentalFee { get; set; }

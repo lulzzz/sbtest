@@ -320,7 +320,7 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 					});
 					$scope.fillTableDataRegister = function (params) {
 						// use build-in angular filter
-						if ($scope.selected && $scope.selected.journals.length > 0) {
+						if ($scope.selected && $scope.selected.journals && $scope.selected.journals.length > 0) {
 							var orderedData = params.filter() ?
 																$filter('filter')($scope.selected.journals, params.filter()) :
 																$scope.selected.journals;
