@@ -98,7 +98,7 @@
 							</div>
 							<div class="row" ng-repeat="pc in listitem.payCodes | orderBy:'payCode.id'">
 								<div class="col-sm-6" ng-show="pc.payCode.id>0">{{pc.payCode.description }} ({{pc.payCode.hourlyRate | currency:'$'}} per hour)</div>
-								<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control"  ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" /></div>
+								<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control"  ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" style="width:10em;" convert-to-decimal /></div>
 								<div class="col-sm-3"><input class="form-control"  ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
 								<div class="col-sm-3"><input class="form-control"  ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" style="width:10em;" /></div>
 							</div>

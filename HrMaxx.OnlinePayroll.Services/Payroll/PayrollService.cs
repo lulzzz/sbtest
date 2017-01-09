@@ -1154,12 +1154,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if (payroll.Company.PayCheckStock == PayCheckStock.MICREncodedTop ||
 						payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", "****" + payCheck.NetWage));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", "****" + payCheck.NetWage.ToString("F")));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, "****")));
 				}
 				else
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString("F")));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, string.Empty)));
 
 					if (payCheck.PaymentMethod == EmployeePaymentMethod.Check)
@@ -1424,9 +1424,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					int jcCounter = 0;
 					payCheck.PayCodes.Where(pc => pc.PayCode.Id <= -2).ToList().ForEach(pc =>
 					{
-						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcr-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
-						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcp-" + (jcCounter + 1), pc.Hours.ToString()));
-						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcam-" + (jcCounter + 1), pc.Amount.ToString("c")));
+						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcr1-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
+						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcp1-" + (jcCounter + 1), pc.Hours.ToString()));
+						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcam1-" + (jcCounter + 1), pc.Amount.ToString("c")));
 						jcCounter++;
 					});
 					var modelList = new List<PDFModel> {pdf, jcModel};
@@ -1476,9 +1476,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					int jcCounter = 0;
 					payCheck.PayCodes.Where(pc=>pc.PayCode.Id<=-2).ToList().ForEach(pc=>
 					{
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("jcr-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("jcp-" + (jcCounter + 1), pc.Hours.ToString()));
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("jcam-" + (jcCounter + 1), pc.Amount.ToString("c")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("jcr1-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("jcp1-" + (jcCounter + 1), pc.Hours.ToString()));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("jcam1-" + (jcCounter + 1), pc.Amount.ToString("c")));
 						jcCounter++;
 					});
 				}
@@ -1505,7 +1505,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date", payCheck.PayDay.ToString("MM/dd/yyyy")));
 				var words = Utilities.NumberToWords(Math.Floor(payCheck.NetWage));
 				var decPlaces = (int)(((decimal)payCheck.NetWage % 1) * 100);
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString()));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString("F")));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, string.Empty)));
 				if (payCheck.PaymentMethod == EmployeePaymentMethod.Check)
 				{
@@ -1548,7 +1548,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("95", (payCheck.EmployeeTaxes + payCheck.DeductionAmount).ToString("C")));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("96", (payCheck.EmployeeTaxesYTD + payCheck.DeductionYTD).ToString("C")));
-				//pdf.NormalFontFields.Add(new KeyValuePair<string, string>("96-1", (payCheck.EmployeeTaxesYTDWage + payCheck.DeductionYTDWage).ToString("C")));
+				
 
 				var payrate = (decimal) 0;
 				if (payCheck.Employee.PayType == EmployeeType.Hourly)

@@ -88,6 +88,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			GrossWages = payroll.TotalGrossWage;
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddTaxes(pc.Taxes));
 			payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc => AddWorkerCompensation(pc.WorkerCompensation, company));
+			ApplyWCMinWage();
 
 			NetPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.NetWage);
 			CheckPay = payroll.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.CheckPay);
@@ -117,6 +118,20 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				Notes = string.Format("Alert: Payment bounced for Invoices #{0}; ", prevInvoices.Where(i => i.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced)).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", "));
 			}
+		}
+
+		private void ApplyWCMinWage()
+		{
+			ApplyWCMinWageLimit = true;
+			WorkerCompensations.ForEach(wc =>
+			{
+				if (wc.WorkerCompensation.MinGrossWage.HasValue && wc.OriginalWage < wc.WorkerCompensation.MinGrossWage)
+				{
+					wc.Wage = wc.WorkerCompensation.MinGrossWage.Value;
+					wc.Amount = Math.Round(wc.Wage*wc.WorkerCompensation.Rate/100, 2, MidpointRounding.AwayFromZero);
+
+				}
+			});
 		}
 
 		private void HandleVoidedChecks(List<PayrollInvoice> prevInvoices, Company company, List<PayCheck> voidedPayChecks)
@@ -242,7 +257,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 					t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
 					t.TaxableWage = taxableWage;
-					t.Tax.Rate = company.CompanyTaxRates.First(t1 => t1.TaxId == t.Tax.Id && t1.TaxYear==year).Rate;
+					
 				});
 			}
 		}
@@ -323,17 +338,14 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 
 			});
-			if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+			Deductions.ForEach(d => MiscCharges.Add(new MiscFee
 			{
-				Deductions.ForEach(d => MiscCharges.Add(new MiscFee
-				{
-					RecurringChargeId = d.Deduction.Id * -1,
-					Amount = d.Amount * -1,
-					Description = d.Name,
-					PayCheckId = 0,
-					isEditable = true
-				}));	
-			}
+				RecurringChargeId = d.Deduction.Id * -1,
+				Amount = d.Amount * -1,
+				Description = d.Name,
+				PayCheckId = 0,
+				isEditable = true
+			}));	
 			
 			if (CompanyInvoiceSetup.InvoiceType!=CompanyInvoiceType.PEOASOCoCheck && payroll.PayChecks.Any(pc => !pc.IsVoid && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit))
 			{

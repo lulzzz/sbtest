@@ -12,6 +12,8 @@ using HrMaxx.Infrastructure.Services;
 using Magnum;
 using PdfSharp.Pdf.IO;
 using Persits.PDF;
+using PdfDocument = Persits.PDF.PdfDocument;
+using PdfReader = PdfSharp.Pdf.IO.PdfReader;
 
 namespace HrMaxx.Common.Services.PDF
 {
@@ -91,8 +93,12 @@ namespace HrMaxx.Common.Services.PDF
 				// Create new document.
 				
 				// Save, generate unique file name to avoid overwriting existing file.
-				string strFilename = finalDoc.Save(string.Format("{0}{1}", _filePath, models.First().Name), true);
+				var objDoc2 = objPDF.OpenDocument(finalDoc.SaveToMemory());
+				objDoc2.Form.Modify("Flatten=true; Reset=true");
+				string strFilename = objDoc2.Save(string.Format("{0}{1}", _filePath, models.First().Name), true);
+				objDoc2.Close();
 				finalDoc.Close();
+				
 				Guid target = Guid.Empty;
 				int test = 0;
 				;
@@ -166,8 +172,12 @@ namespace HrMaxx.Common.Services.PDF
 					page.Canvas.DrawImage(sign, param);
 				}
 				// Save, generate unique file name to avoid overwriting existing file.
-				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), true);
+				var objDoc2 = objPDF.OpenDocument(objDoc.SaveToMemory());
+				objDoc2.Form.Modify("Flatten=true; Reset=true");
+				string strFilename = objDoc2.Save(string.Format("{0}{1}", _filePath, model.Name), true);
 				objDoc.Close();
+				objDoc2.Close();
+				
 				Guid target = Guid.Empty;
 				int test = 0;
 				;
@@ -224,6 +234,7 @@ namespace HrMaxx.Common.Services.PDF
 				//	MimeType = "application/pdf"
 				//};
 
+				
 				var docs = new List<PdfSharp.Pdf.PdfDocument>();
 				var objDoc = new PdfSharp.Pdf.PdfDocument();
 				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
@@ -234,9 +245,12 @@ namespace HrMaxx.Common.Services.PDF
 					for (int idx = 0; idx < count; idx++)
 					{
 						// Get the page from the external document...
+						
 						var page = objDoc1.Pages[idx];
+						
 						// ...and add it to the output document.
 						objDoc.AddPage(page);
+
 					}
 				}
 				var payrollFile = pdfPath + identifier + ".pdf";
@@ -255,6 +269,41 @@ namespace HrMaxx.Common.Services.PDF
 					DocumentExtension = ".pdf",
 					MimeType = "application/pdf"
 				};
+				
+
+				/* iTextsharp printing
+				var outputMS = new MemoryStream();
+				var document = new iTextSharp.text.Document();
+				var writer = new PdfCopy(document, outputMS);
+				PdfImportedPage page = null;
+				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
+				document.Open();
+
+				foreach (var doc in documents)
+				{
+					var reader = new iTextSharp.text.pdf.PdfReader(pdfPath + doc + ".pdf");
+					int n = reader.NumberOfPages;
+
+					for (int i = 1; i <= n; i++)
+					{
+						page = writer.GetImportedPage(reader, i);
+						writer.AddPage(page);
+					}
+
+					//PRAcroForm form = reader.AcroForm;
+					//if (form != null)
+					//	writer.CopyDocumentFields(reader);
+				}
+
+				document.Close();
+				return new FileDto
+				{
+					Data = outputMS.ToArray(),
+					Filename = fileName.Split('.')[0],
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+				 */
 			}
 			catch (Exception e)
 			{

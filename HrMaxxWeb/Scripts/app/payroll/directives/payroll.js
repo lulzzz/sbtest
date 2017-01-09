@@ -98,10 +98,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						});
 					}
 					$scope.itemIncluded = function(pc) {
-						if (!pc.included) {
-							pc.status = 1;
-							pc.paymentMethod = 1;
-						}
+						pc.userActioned = true;
 
 					}
 					
@@ -174,7 +171,12 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							}
 						}
 					}
-					$scope.isPayCheckInvalid = function(pc) {
+					$scope.isPayCheckInvalid = function (pc) {
+						var original = $filter('filter')($scope.originals, { employee: { id: pc.employee.id } })[0];
+						
+						if (!pc.included && !pc.userActioned  && original && !angular.equals(pc, original)) {
+							pc.included = true;
+						}
 						var returnVal = false;
 						var salary = pc.salary;
 						var payCodeSum = 0;
@@ -248,6 +250,12 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 									return companyRepository;
 								}
 							}
+						});
+						modalInstance.result.then(function (dedscope) {
+							listitem.deductions = dedscope.original.deductions;
+
+						}, function () {
+							return false;
 						});
 					}
 
@@ -469,6 +477,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 
 
 					var init = function () {
+						$scope.originals = angular.copy($scope.item.payChecks);
 						$scope.list = $scope.item.payChecks;
 						//$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
@@ -602,11 +611,10 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 
 
 	$scope.cancel = function () {
-		$uibModalInstance.close($scope);
+		$uibModalInstance.dismiss();
 	};
 	$scope.empty = function() {
 		$scope.original.deductions = [];
-		$scope.original.included = true;
 		$uibModalInstance.close($scope);
 	}
 	$scope.permanentSave = function () {
@@ -615,7 +623,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			companyRepository.saveEmployeeDeduction(dd);
 			$scope.original.deductions.push(dd);
 		});
-		$scope.original.included = true;
+		
 		$uibModalInstance.close($scope);
 	};
 	$scope.save = function () {
@@ -628,7 +636,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 					deduction: dd.deduction
 				}
 			}
-
+			dd.employeeDeduction.employeeId = $scope.original.employee.id;
 			dd.employeeDeduction.method = dd.method;
 			dd.employeeDeduction.rate = dd.rate;
 			dd.employeeDeduction.annualMax = dd.annualMax;
@@ -637,7 +645,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			dd.employeeDeduction.accountNo = dd.accountNo;
 			dd.employeeDeduction.agencyId = dd.agencyId;
 			dd.employeeDeduction.priority = dd.priority;
-			$scope.original.included = true;
+			
 			$scope.original.deductions.push(dd);
 		});
 		$uibModalInstance.close($scope);

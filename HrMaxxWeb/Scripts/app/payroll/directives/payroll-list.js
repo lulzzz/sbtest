@@ -63,7 +63,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								status: 1,
 								memo: '',
 								notes:'',
-								included: false
+								included: false,
+								paymentMethod: employee.paymentMethod
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
 								var pc = {
@@ -87,6 +88,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								paycheck.compensations.push(pt);
 							});
 							$.each(employee.deductions, function (index3, ded) {
+								ded.employeeId = employee.id;
 								paycheck.deductions.push({
 									deduction: ded.deduction,
 									employeeDeduction: ded,
