@@ -159,7 +159,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 										}
 									});
 									$.each(pc.deductions, function (index3, ded) {
-										ded.employeeId = employee.id;
+										ded.employeeId = pc.employee.id;
 										if (!ded.employeeDeduction) {
 											var eded = $filter('filter')(pc.employee.deductions, { deduction: { id: ded.deduction.id } })[0];
 											ded.employeeDeduction = eded;
@@ -173,9 +173,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.refresh = function (payroll) {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
-							startDate: payroll.startDate,
-							endDate: payroll.endDate,
-							payDay: payroll.payDay,
+							startDate: moment(payroll.startDate).toDate(),
+							endDate: moment(payroll.endDate).toDate(),
+							payDay: moment(payroll.payDay).toDate(),
 							payChecks: [],
 							startingCheckNumber: payroll.startingCheckNumber,
 							status: 1,

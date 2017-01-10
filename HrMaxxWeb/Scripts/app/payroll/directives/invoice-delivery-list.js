@@ -39,9 +39,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					$scope.tableData = [];
 					$scope.tableParams = new ngTableParams({
 						count: $scope.list ? $scope.list.length : 0,
-						filter: {
-							invoiceNumber: 0,       // initial filter
-						},
+						
 						sorting: {
 							invoiceNumber: 'desc'     // initial sorting
 						}

@@ -1140,7 +1140,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo", payroll.Company.Memo));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo", payroll.Company.Memo.Replace(Environment.NewLine, string.Empty).Replace("\n",string.Empty)));
 				if (payroll.Company.PayCheckStock == PayCheckStock.MICREncodedTop || payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
 				{
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName3", payCheck.Employee.FullName));

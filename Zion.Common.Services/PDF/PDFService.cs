@@ -93,10 +93,10 @@ namespace HrMaxx.Common.Services.PDF
 				// Create new document.
 				
 				// Save, generate unique file name to avoid overwriting existing file.
-				var objDoc2 = objPDF.OpenDocument(finalDoc.SaveToMemory());
-				objDoc2.Form.Modify("Flatten=true; Reset=true");
-				string strFilename = objDoc2.Save(string.Format("{0}{1}", _filePath, models.First().Name), true);
-				objDoc2.Close();
+				//var objDoc2 = objPDF.OpenDocument(finalDoc.SaveToMemory());
+				//objDoc2.Form.Modify("Flatten=true; Reset=true");
+				string strFilename = finalDoc.Save(string.Format("{0}{1}", _filePath, models.First().Name), true);
+				//objDoc2.Close();
 				finalDoc.Close();
 				
 				Guid target = Guid.Empty;
@@ -172,13 +172,13 @@ namespace HrMaxx.Common.Services.PDF
 					page.Canvas.DrawImage(sign, param);
 				}
 				// Save, generate unique file name to avoid overwriting existing file.
-				var objDoc2 = objPDF.OpenDocument(objDoc.SaveToMemory());
+				//var objDoc2 = objPDF.OpenDocument(objDoc.SaveToMemory());
 				
-				objDoc2.Form.Modify("Flatten=true; Reset=true");
+				//objDoc2.Form.Modify("Flatten=true; Reset=true");
 				
-				string strFilename = objDoc2.Save(string.Format("{0}{1}", _filePath, model.Name), true);
+				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), true);
 				objDoc.Close();
-				objDoc2.Close();
+				//objDoc2.Close();
 				
 				Guid target = Guid.Empty;
 				int test = 0;

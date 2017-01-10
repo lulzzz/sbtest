@@ -141,47 +141,50 @@ namespace HrMaxx.OnlinePayroll.Models
 				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)) && prevInvoices.Any(pi => pi.Id == vpc.InvoiceId))
 				{
 					var prevInv = prevInvoices.First(pi => pi.Id == vpc.InvoiceId);
-
-					var pcCredit = new MiscFee
+					if (prevInv.Balance == 0)
 					{
-						PayCheckId = vpc.Id,
-						RecurringChargeId = -1,
-						Amount = 0,
-						Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
-						isEditable = false
-					};
-					if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
-					{
-						pcCredit.Amount += Math.Round(vpc.GrossWage, 2, MidpointRounding.AwayFromZero);
-						pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
-					}
-					else if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
-					{
-						pcCredit.Amount += Math.Round(vpc.EmployeeTaxes, 2, MidpointRounding.AwayFromZero);
-						pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
-
-
-					}
-					pcCredit.Amount *= -1;
-					VoidedCreditedChecks.Add(vpc.Id);
-					MiscCharges.Add(pcCredit);
-					vpc.Deductions.ForEach(vpcd =>
-					{
-						if (prevInv.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id * -1))
+						var pcCredit = new MiscFee
 						{
-							var chargedDeduction = prevInv.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id * -1);
-							var dedCredit = new MiscFee
-							{
-								PayCheckId = 0,
-								RecurringChargeId = vpcd.Deduction.Id * -1,
-								Amount = chargedDeduction.Amount * -1,
-								Description = string.Format("Reverse Credit for Deduction:{1} on voided PayCheck #{0} ", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", chargedDeduction.Description),
-								isEditable = false
-							};
-
-							MiscCharges.Add(dedCredit);
+							PayCheckId = vpc.Id,
+							RecurringChargeId = -1,
+							Amount = 0,
+							Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
+							isEditable = false
+						};
+						if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+						{
+							pcCredit.Amount += Math.Round(vpc.GrossWage, 2, MidpointRounding.AwayFromZero);
+							pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
 						}
-					});
+						else if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
+						{
+							pcCredit.Amount += Math.Round(vpc.EmployeeTaxes, 2, MidpointRounding.AwayFromZero);
+							pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
+
+
+						}
+						pcCredit.Amount *= -1;
+						VoidedCreditedChecks.Add(vpc.Id);
+						MiscCharges.Add(pcCredit);
+						vpc.Deductions.ForEach(vpcd =>
+						{
+							if (prevInv.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id * -1))
+							{
+								var chargedDeduction = prevInv.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id * -1);
+								var dedCredit = new MiscFee
+								{
+									PayCheckId = 0,
+									RecurringChargeId = vpcd.Deduction.Id * -1,
+									Amount = chargedDeduction.Amount * -1,
+									Description = string.Format("Reverse Credit for Deduction:{1} on voided PayCheck #{0} ", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", chargedDeduction.Description),
+									isEditable = false
+								};
+
+								MiscCharges.Add(dedCredit);
+							}
+						});
+					}
+					
 
 
 				}
