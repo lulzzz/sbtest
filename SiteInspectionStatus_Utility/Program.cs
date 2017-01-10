@@ -321,7 +321,7 @@ namespace SiteInspectionStatus_Utility
 											taxrate.Rate = ctx.Tax.DefaultRate;
 										else
 										{
-											taxrate.Rate = ctx.Tax.Id == 9 ? Convert.ToDecimal(ctaxes.ETTRate) : Convert.ToDecimal(ctaxes.SUIRate);
+											taxrate.Rate = ctx.Tax.Code.Equals("ETT") ? Convert.ToDecimal(ctaxes.ETTRate) : Convert.ToDecimal(ctaxes.SUIRate);
 										}
 										company.CompanyTaxRates.Add(taxrate);
 									});

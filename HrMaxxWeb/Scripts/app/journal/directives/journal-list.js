@@ -184,12 +184,12 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 
 						if (check.transactionType > 1) {
 							check.paymentMethod = check.paymentMethod ? 2 : 1;
-							
+							check.transactionDate = moment(check.transactionDate).format("MM/DD/YYYY");
 							journalRepository.saveCheck(check).then(function (data) {
-								if (data.paymentMethod === 1 && data.checkNumber>dataSvc.startingCheckNumber) {
+								if ((check.transactionType === 2 || check.transactionType === 3) && data.paymentMethod === 1 && data.checkNumber >= dataSvc.startingCheckNumber) {
 									dataSvc.startingCheckNumber = data.checkNumber + 1;
 								}
-								if (data.transactionType === 4 && data.checkNumber > dataSvc.startingAdjustmentNumber) {
+								if (data.transactionType === 4 && data.checkNumber >= dataSvc.startingAdjustmentNumber) {
 									dataSvc.startingAdjustmentNumber = data.checkNumber + 1;
 								}
 								if (check.transactionType === 2 || check.transactionType===3) {
@@ -330,7 +330,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 
 					$scope.$watch('mainData.selectedCompany',
 						 function (newValue, oldValue) {
-						 	if (newValue !== oldValue) {
+						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
 						 		dataSvc.selectedAccount = null;
 						 		dataSvc.selectedAccountBalance = 0;
 								 $scope.selected = null;

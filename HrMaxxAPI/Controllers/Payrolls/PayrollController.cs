@@ -136,19 +136,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public HttpResponseMessage PrintPayrollChecks(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
-			try
-			{
-				var payrollDoc = _documentService.GetDocumentById(mapped.Id, "pdf",
-				string.Format("Payroll-{0}.{1}", payroll.Id, "pdf"));
-				return Printed(payrollDoc);
-			}
-			catch (Exception)
-			{
-				var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(mapped), "print all check for payroll with id " + mapped.Id, true);
-				return Printed(printed);
-			}
 			
-			
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(mapped), "print all check for payroll with id " + mapped.Id, true);
+			return Printed(printed);
 		}
 
 		[HttpGet]

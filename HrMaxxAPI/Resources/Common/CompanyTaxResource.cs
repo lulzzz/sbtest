@@ -51,8 +51,8 @@ namespace HrMaxxAPI.Resources.Common
 				StateEin = Edd;
 			}
 
-			DefaultUiRate = companyOverrideableTaxes.First(t => t.Tax.Id == 10).Tax.DefaultRate;
-			DefaultEttRate = companyOverrideableTaxes.First(t => t.Tax.Id == 9).Tax.DefaultRate;
+			DefaultUiRate = companyOverrideableTaxes.First(t => t.Tax.Code.Equals("SUI")).Tax.DefaultRate;
+			DefaultEttRate = companyOverrideableTaxes.First(t => t.Tax.Code.Equals("ETT")).Tax.DefaultRate;
 		}
 	}
 }

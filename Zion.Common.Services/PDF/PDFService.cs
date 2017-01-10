@@ -173,7 +173,9 @@ namespace HrMaxx.Common.Services.PDF
 				}
 				// Save, generate unique file name to avoid overwriting existing file.
 				var objDoc2 = objPDF.OpenDocument(objDoc.SaveToMemory());
+				
 				objDoc2.Form.Modify("Flatten=true; Reset=true");
+				
 				string strFilename = objDoc2.Save(string.Format("{0}{1}", _filePath, model.Name), true);
 				objDoc.Close();
 				objDoc2.Close();

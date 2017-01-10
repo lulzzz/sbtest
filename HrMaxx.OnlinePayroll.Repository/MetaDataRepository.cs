@@ -254,5 +254,19 @@ namespace HrMaxx.OnlinePayroll.Repository
 			var agencies = _dbContext.VendorCustomers.Where(vc => !vc.CompanyId.HasValue && vc.IsAgency).ToList();
 			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<Models.VendorCustomer>>(agencies);
 		}
+
+		public int GetMaxRegularCheckNumber(Guid companyId)
+		{
+			var journals = _dbContext.Journals.Where(p => p.TransactionType==(int)TransactionType.RegularCheck && p.CompanyId == companyId && !p.IsVoid).ToList();
+			if (journals.Any())
+			{
+				var max = journals.Max(p => p.CheckNumber) + 1;
+				return max;
+			}
+			else
+			{
+				return 101;
+			}
+		}
 	}
 }

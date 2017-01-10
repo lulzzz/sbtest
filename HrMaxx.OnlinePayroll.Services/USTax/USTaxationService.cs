@@ -282,9 +282,9 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			{
 				if (!company.FileUnderHost)
 				{
-					if (company.CompanyTaxRates.Any(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year))
+					if (company.CompanyTaxRates.Any(ct => ct.TaxCode == tax.Tax.Code && ct.TaxYear == payDay.Year))
 					{
-						taxRate = company.CompanyTaxRates.First(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year).Rate;
+						taxRate = company.CompanyTaxRates.First(ct => ct.TaxCode == tax.Tax.Code && ct.TaxYear == payDay.Year).Rate;
 					}
 					else
 					{
@@ -293,9 +293,9 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				}
 				else
 				{
-					if (hostCompany.CompanyTaxRates.Any(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year))
+					if (hostCompany.CompanyTaxRates.Any(ct => ct.TaxCode == tax.Tax.Code && ct.TaxYear == payDay.Year))
 					{
-						taxRate = hostCompany.CompanyTaxRates.First(ct => ct.TaxId == tax.Tax.Id && ct.TaxYear == payDay.Year).Rate;
+						taxRate = hostCompany.CompanyTaxRates.First(ct => ct.TaxCode == tax.Tax.Code && ct.TaxYear == payDay.Year).Rate;
 					}
 					else
 					{

@@ -361,7 +361,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					Month = quarter>0 ? @group.Key.Month % 3 > 0 ? @group.Key.Month%3 : 3 : @group.Key.Month,
 					Day = @group.Key.Day,
-					Value = @group.ToList().SelectMany(p=>p.Taxes.Where(t=>t.Tax.Id<6)).ToList().Sum(t=>t.Amount)
+					Value = @group.ToList().SelectMany(p=>p.Taxes.Where(t=>!t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA"))).ToList().Sum(t=>t.Amount)
 				};
 				DailyAccumulations.Add(ea);
 			}

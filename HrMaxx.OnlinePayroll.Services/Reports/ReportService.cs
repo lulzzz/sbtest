@@ -723,8 +723,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var transformed = TransformXml(xml,
 				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrollsummary.xslt"), args);
 
-			var summary = _pdfService.PrintHtml(transformed.Reports.First());
-			return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
+			return _pdfService.PrintHtml(transformed.Reports.First());
+			//return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
 		}
 
 		public DashboardData GetDashboardData(DashboardRequest dashboardRequest)
@@ -1114,9 +1114,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("month1", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 2)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 2)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id!=6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month2", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 1)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 1)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id!=6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month3", "", cubes.Any(c => c.Month == (request.Quarter * 3)) ? cubes.First(c => c.Month == (request.Quarter * 3)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id!=6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month1", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 2)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 2)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month2", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 1)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 1)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month3", "", cubes.Any(c => c.Month == (request.Quarter * 3)) ? cubes.First(c => c.Month == (request.Quarter * 3)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
 
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/941/Fed941-" + request.Year + ".xslt");
 
@@ -1136,18 +1136,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("month1", "", cubes.Any(c => c.Month == 1) ? cubes.First(c => c.Month == 1).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month2", "", cubes.Any(c => c.Month == 2) ? cubes.First(c => c.Month == 2).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month3", "", cubes.Any(c => c.Month == 3) ? cubes.First(c => c.Month == 3).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month4", "", cubes.Any(c => c.Month == 4) ? cubes.First(c => c.Month == 4).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month5", "", cubes.Any(c => c.Month == 5) ? cubes.First(c => c.Month == 5).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month6", "", cubes.Any(c => c.Month == 6) ? cubes.First(c => c.Month == 6).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month7", "", cubes.Any(c => c.Month == 7) ? cubes.First(c => c.Month == 7).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month8", "", cubes.Any(c => c.Month == 8) ? cubes.First(c => c.Month == 8).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month9", "", cubes.Any(c => c.Month == 9) ? cubes.First(c => c.Month == 9).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month10", "", cubes.Any(c => c.Month == 10) ? cubes.First(c => c.Month == 10).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month11", "", cubes.Any(c => c.Month == 11) ? cubes.First(c => c.Month == 11).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
-			argList.AddParam("month12", "", cubes.Any(c => c.Month == 12) ? cubes.First(c => c.Month == 12).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Id != 6).Sum(t => t.Amount) : 0);
+			argList.AddParam("month1", "", cubes.Any(c => c.Month == 1) ? cubes.First(c => c.Month == 1).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month2", "", cubes.Any(c => c.Month == 2) ? cubes.First(c => c.Month == 2).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month3", "", cubes.Any(c => c.Month == 3) ? cubes.First(c => c.Month == 3).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month4", "", cubes.Any(c => c.Month == 4) ? cubes.First(c => c.Month == 4).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month5", "", cubes.Any(c => c.Month == 5) ? cubes.First(c => c.Month == 5).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month6", "", cubes.Any(c => c.Month == 6) ? cubes.First(c => c.Month == 6).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month7", "", cubes.Any(c => c.Month == 7) ? cubes.First(c => c.Month == 7).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month8", "", cubes.Any(c => c.Month == 8) ? cubes.First(c => c.Month == 8).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month9", "", cubes.Any(c => c.Month == 9) ? cubes.First(c => c.Month == 9).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month10", "", cubes.Any(c => c.Month == 10) ? cubes.First(c => c.Month == 10).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month11", "", cubes.Any(c => c.Month == 11) ? cubes.First(c => c.Month == 11).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			argList.AddParam("month12", "", cubes.Any(c => c.Month == 12) ? cubes.First(c => c.Month == 12).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/944/Fed944-" + request.Year + ".xslt");
 
 		}
@@ -1214,8 +1214,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var paychecks = _reportRepository.GetReportPayChecks(request, false);
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
-				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id == 6)).Sum(t => t.Amount)
-				: paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id < 6)).Sum(t => t.Amount);
+				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("FUTA"))).Sum(t => t.Amount)
+				: paychecks.SelectMany(p => p.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA"))).Sum(t => t.Amount);
 			var totalstr = total.ToString("000000000.00").Replace(".", string.Empty);
 			var argList = new XsltArgumentList();
 			argList.AddParam("type", "", type);
@@ -1385,10 +1385,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.PayChecks = paychecks;
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
-				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id > 6 && t.Tax.Id < 11)).Sum(t => t.Amount)
+				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.StateId.HasValue)).Sum(t => t.Amount)
 				: type == 2
-					? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id == 9 || t.Tax.Id == 10)).Sum(t => t.Amount)
-					: paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id == 8)).Sum(t => t.Amount);
+					? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI"))).Sum(t => t.Amount)
+					: paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI"))).Sum(t => t.Amount);
 			var totalstr = Math.Round(total,2, MidpointRounding.AwayFromZero).ToString("00000000.00").Replace(".", string.Empty);
 			var argList = new XsltArgumentList();
 			argList.AddParam("type", "", type);

@@ -1032,9 +1032,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					});
 					pc.Taxes.ForEach(t =>
 					{
-						if (t.Tax.Id == 7)
+						if (t.Tax.Code.Equals("SIT"))
 						{
-							t.TaxableWage = pc.Taxes.First(t1 => t1.Tax.Id == 1).TaxableWage;
+							t.TaxableWage = pc.Taxes.First(t1 => t1.Tax.Code.Equals("FIT")).TaxableWage;
 						}
 					});
 					if (pc.Employee.PayType == EmployeeType.JobCost)
@@ -1082,7 +1082,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				else
 					coas = _companyService.GetComanyAccounts(journal.CompanyId);
 
-				if (company1.PayCheckStock == PayCheckStock.JobCost)
+				if (payCheck.Employee.PayType == EmployeeType.JobCost)
 				{
 					return PrintJobCostCheck(payroll, payCheck, journal, host, coas);
 				}
@@ -1147,7 +1147,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text1", payCheck.Employee.Contact.Address.AddressLine1));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text3", payCheck.Employee.Contact.Address.AddressLine2));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date", payCheck.PayDay.ToString("MM/dd/yyyy")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date1", payCheck.PayDay.ToString("MM/dd/yyyy")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date2", payCheck.PayDay.ToString("MM/dd/yyyy")));
 
 				var words = Utilities.NumberToWords(Math.Floor(payCheck.NetWage));
 				var decPlaces = (int)(((decimal)payCheck.NetWage % 1) * 100);
@@ -1178,13 +1179,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
 				var caption8 = string.Format("****-**-{0}                                                {1} {2}",
-					payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4), "Employee No:", payCheck.Employee.EmployeeNo);
+					payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4), "Employee No:", (payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", caption8));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", nameCompany.Name));
 
 				if (payroll.Company.PayCheckStock != PayCheckStock.MICRQb)
 				{
-					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2",
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2",
 						payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", company.CompanyAddress.AddressLine1));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", company.CompanyAddress.AddressLine2));
@@ -1407,35 +1408,36 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
 				}
-				if (payCheck.Employee.PayType == EmployeeType.JobCost)
-				{
-					var jcModel = new PDFModel()
-					{
-						Name =
-							string.Format("Pay Check_{1}_{2} {0}-Page2.pdf", payCheck.PayDay.ToString("MMddyyyy"), payCheck.PayrollId, payCheck.Id),
-						TargetId = payCheck.Id,
-						NormalFontFields = new List<KeyValuePair<string, string>>(),
-						BoldFontFields = new List<KeyValuePair<string, string>>(),
-						TargetType = EntityTypeEnum.PayCheck,
-						Template = "JobCostPage.pdf",
-						DocumentId = journal.DocumentId,
-						Signature = null
-					};
-					int jcCounter = 0;
-					payCheck.PayCodes.Where(pc => pc.PayCode.Id <= -2).ToList().ForEach(pc =>
-					{
-						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcr1-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
-						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcp1-" + (jcCounter + 1), pc.Hours.ToString()));
-						jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcam1-" + (jcCounter + 1), pc.Amount.ToString("c")));
-						jcCounter++;
-					});
-					var modelList = new List<PDFModel> {pdf, jcModel};
-					return _pdfService.Print(modelList);
-				}
-				else
-				{
-					return _pdfService.Print(pdf);	
-				}
+				//if (payCheck.Employee.PayType == EmployeeType.JobCost)
+				//{
+				//	var jcModel = new PDFModel()
+				//	{
+				//		Name =
+				//			string.Format("Pay Check_{1}_{2} {0}-Page2.pdf", payCheck.PayDay.ToString("MMddyyyy"), payCheck.PayrollId, payCheck.Id),
+				//		TargetId = payCheck.Id,
+				//		NormalFontFields = new List<KeyValuePair<string, string>>(),
+				//		BoldFontFields = new List<KeyValuePair<string, string>>(),
+				//		TargetType = EntityTypeEnum.PayCheck,
+				//		Template = "JobCostPage.pdf",
+				//		DocumentId = journal.DocumentId,
+				//		Signature = null
+				//	};
+				//	int jcCounter = 0;
+				//	payCheck.PayCodes.Where(pc => pc.PayCode.Id <= -2).ToList().ForEach(pc =>
+				//	{
+				//		jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcr1-" + (jcCounter + 1), pc.PayCode.HourlyRate.ToString("c")));
+				//		jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcp1-" + (jcCounter + 1), pc.Hours.ToString()));
+				//		jcModel.NormalFontFields.Add(new KeyValuePair<string, string>("jcam1-" + (jcCounter + 1), pc.Amount.ToString("c")));
+				//		jcCounter++;
+				//	});
+				//	var modelList = new List<PDFModel> {pdf, jcModel};
+				//	return _pdfService.Print(modelList);
+				//}
+				//else
+				//{
+				//	return _pdfService.Print(pdf);	
+				//}
+				return _pdfService.Print(pdf);	
 			}
 			catch (Exception e)
 			{
@@ -1485,16 +1487,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Bank", bankcoa.BankAccount.BankName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("BankfractionId", bankcoa.BankAccount.FractionId));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("comp", nameCompany.Name + Environment.NewLine + nameCompany.CompanyAddress.AddressLine1 + Environment.NewLine + nameCompany.CompanyAddress.AddressLine2));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("ee", "Emp No" + Environment.NewLine + payCheck.Employee.EmployeeNo));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("ee", "Emp No" + Environment.NewLine + (payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty)));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("pp", "Period Begin                   Period End" + Environment.NewLine + payCheck.StartDate.ToString("MM/dd/yyyy") + "                     " + payCheck.EndDate.ToString("MM/dd/yyyy")));
 				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
+				else
+				{
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", string.Empty));
+				}
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", company.Name));
 				
 				
 				
 				
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo1-1", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", company.CompanyAddress.AddressLine1));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", company.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
@@ -1521,8 +1527,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
 
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", nameCompany.Name));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("EmpNo", payCheck.Employee.EmployeeNo));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("EmpNo", payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString():string.Empty));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("gross", payCheck.GrossWage.ToString("c")));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("startdate", payCheck.StartDate.ToString("MM/dd/yyyy")));
@@ -1587,7 +1593,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							if (hrcounter < 4 && (payCode.Amount > 0 || payCode.YTD > 0))
 							{
-								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", "Regular"));
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", string.Format("Regular @ {0}", payCode.PayCode.HourlyRate.ToString("c"))));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter,
 									payCode.PayCode.HourlyRate.ToString("C")));
@@ -1599,7 +1605,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							if (otcounter < 4 && (payCode.OvertimeAmount > 0 || payCode.YTDOvertime > 0))
 							{
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
-									"Overtime"));
+									string.Format("Overtime @ {0}", (payCode.PayCode.HourlyRate*(decimal)1.5).ToString("c"))));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter,
 									payCode.OvertimeHours.ToString()));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter,
@@ -1661,7 +1667,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					var scl = payCheck.Accumulations.First();
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype", string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.Used.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-1", scl.AccumulatedValue.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
@@ -1683,6 +1689,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					};
 
 				}
+				var compCounter = 1;
+				foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, compensation.PayType.Description));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compytd" + compCounter, compensation.YTD.ToString("C")));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compamt" + compCounter, compensation.Amount.ToString("C")));
+					compCounter++;
+				}
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("15-3", payCheck.GrossWage.ToString("C")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-3", payCheck.YTDGrossWage.ToString("C")));
 				return _pdfService.Print(pdf);
 			}
 			catch (Exception e)

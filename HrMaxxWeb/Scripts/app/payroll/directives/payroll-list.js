@@ -158,6 +158,13 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 											pcode.pwAmount = matchingPayCode.pwAmount;
 										}
 									});
+									$.each(pc.deductions, function (index3, ded) {
+										ded.employeeId = employee.id;
+										if (!ded.employeeDeduction) {
+											var eded = $filter('filter')(pc.employee.deductions, { deduction: { id: ded.deduction.id } })[0];
+											ded.employeeDeduction = eded;
+										}
+									});
 								}
 							});
 							$scope.set(selected);
@@ -191,8 +198,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								status: 1,
 								memo: '',
 								notes: matching ? matching.notes : '',
-								included: matching ? matching.included : false
+								included: matching ? matching.included : false,
+								paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
 							};
+							
 							$.each(employee.payCodes, function (index1, paycode) {
 								var pc = {
 									payCode: paycode,
@@ -223,14 +232,20 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								paycheck.compensations.push(pt);
 							});
 							$.each(employee.deductions, function (index3, ded) {
+								ded.employeeId = employee.id;
 								paycheck.deductions.push({
 									deduction: ded.deduction,
+									employeeDeduction: ded,
 									rate: ded.rate,
 									annualMax: ded.annualMax,
 									method: ded.method,
-
 									amount: 0,
-									ytd: 0
+									ytd: 0,
+									ceilingPerCheck: ded.ceilingPerCheck,
+									accountNo: ded.accountNo,
+									agencyId: ded.agencyId,
+									limit: ded.limit,
+									priority: ded.priority
 								});
 							});
 							selected.payChecks.push(paycheck);
@@ -414,7 +429,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.$watch('mainData.selectedCompany.id',
 						 function (newValue, oldValue) {
-						 	if (newValue !== oldValue) {
+						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
 						 		getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 						 		getEmployees($scope.mainData.selectedCompany.id);
 						 		getPayrolls($scope.mainData.selectedCompany.id);

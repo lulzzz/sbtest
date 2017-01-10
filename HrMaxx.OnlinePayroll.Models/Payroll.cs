@@ -322,7 +322,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			Taxes.ForEach(t =>
 			{
-				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
+				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Code == t.Tax.Code);
 				if (t1 != null)
 				{
 					t.YTDWage = Math.Round(t.YTDWage + t1.TaxableWage, 2, MidpointRounding.AwayFromZero);
@@ -420,7 +420,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			Taxes.ForEach(t =>
 			{
-				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Id == t.Tax.Id);
+				var t1 = taxes.FirstOrDefault(tax => tax.Tax.Code == t.Tax.Code);
 				if (t1 != null)
 				{
 					t.YTDWage = Math.Round(t.YTDWage - t1.TaxableWage, 2, MidpointRounding.AwayFromZero);

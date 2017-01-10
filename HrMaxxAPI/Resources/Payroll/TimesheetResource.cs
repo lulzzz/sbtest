@@ -325,13 +325,13 @@ namespace HrMaxxAPI.Resources.Payroll
 					else if (col.Key.EndsWith("Rate Amount"))
 					{
 						if(pcode.PayCode.Id==0)
-							pcode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round(Convert.ToDecimal( val));
+							pcode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round(Convert.ToDecimal( val),2,MidpointRounding.AwayFromZero);
 						
 					}
 					else if (col.Key.EndsWith("Overtime Amount"))
 					{
 						if (pcode.PayCode.Id == 0)
-							pcode.OvertimeAmount = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round(Convert.ToDecimal(val));
+							pcode.OvertimeAmount = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round(Convert.ToDecimal(val),2,MidpointRounding.AwayFromZero);
 
 					}
 					

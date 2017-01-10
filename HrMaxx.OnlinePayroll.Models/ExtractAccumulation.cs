@@ -51,13 +51,13 @@ namespace HrMaxx.OnlinePayroll.Models
 			get
 			{
 				if (ExtractType == ExtractType.Federal940)
-					return Taxes.Where(t => t.Tax.Id == 6).ToList();
+					return Taxes.Where(t => t.Tax.Code.Equals("FUTA")).ToList();
 				if (ExtractType == ExtractType.Federal941)
-					return Taxes.Where(t => t.Tax.Id < 6).ToList();
+					return Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).ToList();
 				if (ExtractType == ExtractType.CAPITSDI)
-					return Taxes.Where(t => t.Tax.Id == 7 || t.Tax.Id==8).ToList();
+					return Taxes.Where(t => t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI")).ToList();
 				if (ExtractType == ExtractType.CAETTUI)
-					return Taxes.Where(t => t.Tax.Id == 9 || t.Tax.Id==10).ToList();
+					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI")).ToList();
 				
 				return Taxes;
 
@@ -279,35 +279,35 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			Q1Wage =
 				PayChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q1Amount =
 				PayChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 			Q2Wage =
 				PayChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q2Amount =
 				PayChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 			Q3Wage =
 				PayChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q3Amount =
 				PayChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 			Q4Wage =
 				PayChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q4Amount =
 				PayChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
-					.Select(p => p.Taxes.First(t => t.Tax.Id == 6))
+					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 		}
 
@@ -322,7 +322,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					Month = quarter > 0 ? @group.Key.Month % 3 > 0 ? @group.Key.Month % 3 : 3 : @group.Key.Month,
 					Day = @group.Key.Day,
-					Value = @group.ToList().SelectMany(p => p.Taxes.Where(t => t.Tax.Id < 6)).ToList().Sum(t => t.Amount)
+					Value = @group.ToList().SelectMany(p => p.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA"))).ToList().Sum(t => t.Amount)
 				};
 				DailyAccumulations.Add(ea);
 			}

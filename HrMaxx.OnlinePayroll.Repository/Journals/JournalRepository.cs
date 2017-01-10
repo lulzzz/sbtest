@@ -28,16 +28,29 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			var mapped = _mapper.Map<Models.Journal, Journal>(journal);
 			if (mapped.Id == 0)
 			{
-				if (isPEOCheck && mapped.CheckNumber > 0 &&
-				    _dbContext.Journals.Any(
-					    j => j.CheckNumber==mapped.CheckNumber && j.PayrollPayCheckId != mapped.PayrollPayCheckId))
+				if (journal.TransactionType == TransactionType.PayCheck)
 				{
-					mapped.CheckNumber = _dbContext.Journals.Where(j=>j.PEOASOCoCheck).Max(j => j.CheckNumber) + 1;
-					if (mapped.PayrollPayCheckId.HasValue)
+					if (isPEOCheck && mapped.CheckNumber > 0 &&
+					    _dbContext.Journals.Any(
+						    j => j.CheckNumber == mapped.CheckNumber && j.PayrollPayCheckId != mapped.PayrollPayCheckId))
 					{
-						_dbContext.PayrollPayChecks.First(pc => pc.Id == mapped.PayrollPayCheckId).CheckNumber = mapped.CheckNumber;
+						mapped.CheckNumber = _dbContext.Journals.Where(j => j.PEOASOCoCheck).Max(j => j.CheckNumber) + 1;
+						if (mapped.PayrollPayCheckId.HasValue)
+						{
+							_dbContext.PayrollPayChecks.First(pc => pc.Id == mapped.PayrollPayCheckId).CheckNumber = mapped.CheckNumber;
+						}
 					}
 				}
+				else if(journal.TransactionType == TransactionType.RegularCheck)
+				{
+					if (mapped.CheckNumber > 0 &&
+							_dbContext.Journals.Any(
+								j => j.CheckNumber == mapped.CheckNumber && j.TransactionType==(int)TransactionType.RegularCheck ))
+					{
+						mapped.CheckNumber = _dbContext.Journals.Where(j=>j.CompanyId==mapped.CompanyId).Max(j => j.CheckNumber) + 1;
+					}
+				}
+				
 				_dbContext.Journals.Add(mapped);
 				_dbContext.SaveChanges();
 			}

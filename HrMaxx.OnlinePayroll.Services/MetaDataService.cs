@@ -106,7 +106,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				var companyAccounts = _companyService.GetComanyAccounts(companyId);
 				var vendors = _companyService.GetVendorCustomers(companyId, true);
 				var customers = _companyService.GetVendorCustomers(companyId, false);
-				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber(companyId);
+				var maxCheckNumber = _metaDataRepository.GetMaxRegularCheckNumber(companyId);
 				var maxAdjustmentNumber = _metaDataRepository.GetMaxAdjustmenetNumber(companyId);
 				return new { Accounts = companyAccounts, Vendors = vendors, Customers = customers, startingCheckNumber = maxCheckNumber, StartingAdjustmentNumber = maxAdjustmentNumber };
 			}
