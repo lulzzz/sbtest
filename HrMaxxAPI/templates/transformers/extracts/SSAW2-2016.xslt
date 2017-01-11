@@ -33,15 +33,15 @@ RF$$spaces5$$<xsl:call-template name="padLeft"><xsl:with-param name="data" selec
   </xsl:template>
 	<xsl:template match="ExtractHost">
 		<xsl:variable name="totalTips" select="sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="fitWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage)"/>
-		<xsl:variable name="totalSSWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage)"/>
-		<xsl:variable name="SSETax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount)"/>
-		<xsl:variable name="MDETax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount)"/>
+		<xsl:variable name="fitWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage)"/>
+		<xsl:variable name="totalSSWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage)"/>
+		<xsl:variable name="SSETax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount)"/>
+		<xsl:variable name="MDETax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount)"/>
 
-		<xsl:variable name="totalMDWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage)"/>
-		<xsl:variable name="totalFITTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount)"/>
-		<xsl:variable name="totalSSTax" select="(sum(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount) + sum(Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount))"/>
-		<xsl:variable name="totalMDTax" select="(sum(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount) + sum(Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount))"/>
+		<xsl:variable name="totalMDWages" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage)"/>
+		<xsl:variable name="totalFITTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount)"/>
+		<xsl:variable name="totalSSTax" select="(sum(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount) + sum(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount))"/>
+		<xsl:variable name="totalMDTax" select="(sum(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount) + sum(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount))"/>
 RE<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 0$$spaces10$$$$spaces2$$$$spaces1$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(HostCompany/TaxFilingName,$smallcase,$uppercase)"/><xsl:with-param name="count" select="57"/></xsl:call-template>
@@ -99,12 +99,12 @@ RW<xsl:value-of select="translate(Employee/SSN,'-','')"/><xsl:call-template name
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Employee/Contact/Address/AddressLine1,$smallcase,$uppercase)"/><xsl:with-param name="count" select="22"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Employee/Contact/Address/City,$smallcase,$uppercase)"/><xsl:with-param name="count" select="22"/></xsl:call-template><xsl:value-of select="'CA'"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="Employee/Contact/Address/Zip"/><xsl:with-param name="count" select="5"/></xsl:call-template><xsl:call-template name="padRight"><xsl:with-param name="data" select="Employee/Contact/Address/ZipExtension"/><xsl:with-param name="count" select="4"/></xsl:call-template>
 $$spaces20$$$$spaces20$$$$spaces5$$
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number((Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)),'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number((Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)),'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount,'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="translate(format-number(sum(Accumulation/Compensations[PayType/Id=3]/Amount),'#########.00'),'.','')"/><xsl:with-param name="count" select="11"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>

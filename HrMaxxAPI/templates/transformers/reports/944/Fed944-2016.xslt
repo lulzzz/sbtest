@@ -24,16 +24,16 @@
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
 	<xsl:variable name="fein1" select="translate(/ReportResponse/Company/FederalEIN,'-','')"/>
-	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=4]/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=5]/Tax/Rate) div 100"/>
-	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=2]/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=3]/Tax/Rate) div 100"/>
+	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
+	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
 	<xsl:variable name="totalTips" select="/ReportResponse/CompanyAccumulation/Compensations[PayType/Id=3]/Amount"/>
-	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
-	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage"/>
+	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
+	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
 
-	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=4]/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=5]/Amount)"/>
-	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=2]/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=3]/Amount)"/>
+	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount)"/>
+	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount)"/>
 
 	<xsl:variable name="line4a" select="format-number($totalSSWages * $ssConst,'###0.00')"/>
 	<xsl:variable name="line4b" select="format-number($totalTips * $ssConst,'###0.00')"/>

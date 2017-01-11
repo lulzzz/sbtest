@@ -130,11 +130,11 @@
 	</xsl:template>
 
 	<xsl:template match="ExtractHost">
-		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="totalSSTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount"/>
-		<xsl:variable name="totalMDTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount"/>
+		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
+		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+		<xsl:variable name="totalSSTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount"/>
+		<xsl:variable name="totalMDTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount"/>
 		<xsl:variable name="line11" select="format-number(($totalFITTax + $totalSSTax + $totalMDTax),'000000000000.00')"/>
 		<xsl:variable name="SSSum" select="format-number($totalSSTax,'000000000000.00')"/>
 		<xsl:variable name="MDSum" select="format-number($totalMDTax,'000000000000.00')"/>

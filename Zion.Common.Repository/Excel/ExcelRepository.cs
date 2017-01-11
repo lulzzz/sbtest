@@ -103,7 +103,7 @@ namespace HrMaxx.Common.Repository.Excel
 				var workSheet = xl.Worksheet;
 
 				var end = workSheet.Dimension.End;
-				for (int row = startingRow; row <= end.Row; row++)
+				for (int row = startingRow; row <=(importMap.RowCount.HasValue ? startingRow + importMap.RowCount.Value : end.Row); row++)
 				{ // Row by row...
 					var erow = new ExcelRead { Row = row, Values = new List<KeyValuePair<string, string>>() };
 					for (int col = 1; col <= end.Column; col++)
@@ -111,11 +111,11 @@ namespace HrMaxx.Common.Repository.Excel
 						var match = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == col);
 						if (!string.IsNullOrWhiteSpace(match.Key))
 						{
-							
+							var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
+							var header = string.IsNullOrWhiteSpace(match.Key) ? ("Col-" + col) : match.Key;
+							erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
 						}
-						var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
-						var header = string.IsNullOrWhiteSpace(match.Key) ? ("Col-" + col) : match.Key;
-						erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
+						
 
 					}
 					result.Add(erow);

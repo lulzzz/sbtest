@@ -34,17 +34,17 @@
 <xsl:template match="EmployeeAccumulation">
 	<xsl:variable name="ssn" select="concat(substring(Employee/SSN,1,3),'-',substring(Employee/SSN,4,2),'-',substring(Employee/SSN,6,4))"/>
 	<xsl:variable name="empDetails" select="translate(concat(Employee/FirstName, ' ', Employee/LastName,'\n',Employee/Contact/Address/AddressLine1,'\n',Employee/Contact/Address/City,', ','CA',', ',Employee/Contact/Address/Zip,'-',Employee/Contact/Address/ZipExtension),$smallcase,$uppercase)"/>
-	<xsl:variable name="FITWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage,'###0.00')"/>
-	<xsl:variable name="FITTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount,'###0.00')"/>
-	<xsl:variable name="SSWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage,'###0.00')"/>
-	<xsl:variable name="SSTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount,'###0.00')"/>
-	<xsl:variable name="MDWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage,'###0.00')"/>
-	<xsl:variable name="MDTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount,'###0.00')"/>
+	<xsl:variable name="FITWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage,'###0.00')"/>
+	<xsl:variable name="FITTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount,'###0.00')"/>
+	<xsl:variable name="SSWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage,'###0.00')"/>
+	<xsl:variable name="SSTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount,'###0.00')"/>
+	<xsl:variable name="MDWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage,'###0.00')"/>
+	<xsl:variable name="MDTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount,'###0.00')"/>
 	<xsl:variable name="Tips" select="format-number(sum(Accumulation/Compensations[PayType/Id=3]/Amount),'###0.00')"/>
-	<xsl:variable name="SITWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage,'###0.00')"/>
-	<xsl:variable name="SITTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount,'###0.00')"/>
-	<xsl:variable name="SDIWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=8]/TaxableWage,'###0.00')"/>
-	<xsl:variable name="SDITax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=8]/Amount,'###0.00')"/>
+	<xsl:variable name="SITWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage,'###0.00')"/>
+	<xsl:variable name="SITTax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount,'###0.00')"/>
+	<xsl:variable name="SDIWage" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SDI']/TaxableWage,'###0.00')"/>
+	<xsl:variable name="SDITax" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SDI']/Amount,'###0.00')"/>
 	<Report>
 		<TemplatePath>GovtForms\W2\</TemplatePath>
 		<Template>W2-<xsl:value-of select="$selectedYear"/>.pdf</Template>

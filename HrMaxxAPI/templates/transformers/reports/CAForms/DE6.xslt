@@ -87,11 +87,11 @@
 				<xsl:with-param name="currPage" select="$currPage"/>				
 			</xsl:apply-templates>		
 			<xsl:variable name="pageSubjectWages" select="sum(../EmployeeAccumulations/EmployeeAccumulation[position()>$start and position() &lt; $end]/Accumulation/GrossWage) - sum(../EmployeeAccumulations/EmployeeAccumulation[position()>$start and position() &lt; $end]/Accumulation/Deductions/PayrollDeduction[Deduction/Type/Id=9]/Amount)"/>
-			<xsl:variable name="pagePITWages" select="sum(../EmployeeAccumulations/EmployeeAccumulation[position()>$start and position() &lt; $end]/Accumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage)"/>
-			<xsl:variable name="pagePIT" select="sum(../EmployeeAccumulations/EmployeeAccumulation[position()>$start and position() &lt; $end]/Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount)"/>
+			<xsl:variable name="pagePITWages" select="sum(../EmployeeAccumulations/EmployeeAccumulation[position()>$start and position() &lt; $end]/Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage)"/>
+			<xsl:variable name="pagePIT" select="sum(../EmployeeAccumulations/EmployeeAccumulation[position()>$start and position() &lt; $end]/Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount)"/>
 			<xsl:variable name="totalSubjectWages" select="../CompanyAccumulation/GrossWage - sum(../CompanyAccumulation/Deductions/PayrollDeduction[Deduction/Type/Id=9]/Amount)"/>
-			<xsl:variable name="totalPITWages" select="../CompanyAccumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage"/>
-			<xsl:variable name="totalPIT" select="../CompanyAccumulation/Taxes/PayrollTax[Tax/Id=7]/Amount"/>
+			<xsl:variable name="totalPITWages" select="../CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage"/>
+			<xsl:variable name="totalPIT" select="../CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount"/>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'67'"/><xsl:with-param name="val1" select="$pageSubjectWages"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'68'"/><xsl:with-param name="val1" select="$pagePITWages"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'69'"/><xsl:with-param name="val1" select="$pagePIT"/></xsl:call-template>
@@ -123,8 +123,8 @@
 	<xsl:param name="currPage"/>
 	<xsl:variable name="starter" select="7*(position() - 1) + 18"/>
 	<xsl:variable name="subjectWages" select="Accumulation/GrossWage - sum(Accumualtion/Deductions/PayrollDeduction[Deduction/Type/Id=9]/Amount)"/>
-	<xsl:variable name="PITWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage"/>
-	<xsl:variable name="PIT" select="Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount"/>
+	<xsl:variable name="PITWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage"/>
+	<xsl:variable name="PIT" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount"/>
 	<xsl:variable name="ssn" select="concat(substring(Employee/SSN,1,3),'-',substring(Employee/SSN,4,2),'-',substring(Employee/SSN,6,4))"/>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="$starter"/><xsl:with-param name="val1" select="$ssn"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="$starter+1"/><xsl:with-param name="val1" select="Employee/FirstName"/></xsl:call-template>

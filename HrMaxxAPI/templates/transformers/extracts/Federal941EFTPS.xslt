@@ -26,11 +26,11 @@
   </xsl:template>
   
   <xsl:template match="ExtractHost">
-		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="totalSSTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount"/>
-		<xsl:variable name="totalMDTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount"/>
+		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
+		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+		<xsl:variable name="totalSSTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount"/>
+		<xsl:variable name="totalMDTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount"/>
 		<xsl:variable name="line11" select="format-number(($totalFITTax + $totalSSTax + $totalMDTax),'000000000000.00')"/>
 		<xsl:variable name="SSSum" select="format-number($totalSSTax,'000000000000.00')"/>
 		<xsl:variable name="MDSum" select="format-number($totalMDTax,'000000000000.00')"/>
@@ -39,7 +39,7 @@
 <xsl:when test="$line11>0">
 <xsl:value-of select="format-number($batchFilerId,'000000000')"/><xsl:value-of select="format-number($masterPinNumber,'0000')"/>
 <xsl:value-of select="$today"/><xsl:value-of select="format-number($fileSeq,'000')"/><xsl:value-of select="format-number(position(),'0000')"/>
-P<xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/><xsl:value-of select="HostCompany/FederalPin"/>B94105<xsl:value-of select="$selectedYear"/><xsl:value-of select="$endQuarterMonth"/><xsl:value-of select="$settleDate"/> 
+P<xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/><xsl:value-of select="HostCompany/FederalPin"/>B94105<xsl:value-of select="$selectedYear"/><xsl:value-of select="format-number($endQuarterMonth,'00')"/><xsl:value-of select="$settleDate"/> 
 <xsl:value-of select="format-number(translate($line11,'.',''),'000000000000000')"/>001
 <xsl:choose>
 <xsl:when test="$totalSSTax>0"><xsl:value-of select="format-number(translate($SSSum,'.',''),'000000000000000')"/></xsl:when>

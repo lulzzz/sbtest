@@ -55,16 +55,16 @@
 	</xsl:template>
 	<xsl:template match="CompanyPayrollCube">
 		<xsl:variable name="grossWage" select="Accumulation/GrossWage"/>
-		<xsl:variable name="futaWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=6]/TaxableWage"/>
-		<xsl:variable name="futaTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=6]/Amount"/>
-		<xsl:variable name="fitWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
-		<xsl:variable name="fitTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="ssWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage"/>
-		<xsl:variable name="ssTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=4 or Tax/Id=5]/Amount)"/>
-		<xsl:variable name="mdWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="mdTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=2 or Tax/Id=3]/Amount)"/>
+		<xsl:variable name="futaWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/TaxableWage"/>
+		<xsl:variable name="futaTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount"/>
+		<xsl:variable name="fitWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
+		<xsl:variable name="fitTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+		<xsl:variable name="ssWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
+		<xsl:variable name="ssTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee' or Tax/Code='SS_Employer']/Amount)"/>
+		<xsl:variable name="mdWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+		<xsl:variable name="mdTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee' or Tax/Code='MD_Employer']/Amount)"/>
 		<xsl:variable name="tipWage" select="sum(Accumulation/Compensations/PayrollPayType[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="SSRate" select="format-number(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Id=4]/Tax/Rate,'###0.00')"/>
+		<xsl:variable name="SSRate" select="format-number(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Tax/Rate,'###0.00')"/>
 		<xsl:variable name="tipTax" select="format-number($tipWage * $SSRate div 100,'###0.00')"/>
 		<xsl:variable name="fmonth" select="Quarter*3 - 2"/>
 		<xsl:variable name="smonth" select="Quarter*3 - 1"/>
@@ -79,14 +79,14 @@
 		<xsl:variable name="thirdMonthS" select="sum(/ReportResponse/Cubes/CompanyPayrollCube[Month=$tmonth]/Accumulation/Taxes/PayrollTax[Tax/Id>6 and Tax/Id &lt; 11]/Amount)"/>
 		<xsl:variable name="quarterSL" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id>6 and Tax/Id &lt; 11]/Amount)"/>
 
-		<xsl:variable name="uiWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=10]/TaxableWage"/>
-		<xsl:variable name="uiTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=10]/Amount"/>
-		<xsl:variable name="ettWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=9]/TaxableWage"/>
-		<xsl:variable name="ettTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=9]/Amount"/>
-		<xsl:variable name="sdiWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=8]/TaxableWage"/>
-		<xsl:variable name="sdiTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=8]/Amount)"/>
-		<xsl:variable name="sitWage" select="Accumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage"/>
-		<xsl:variable name="sitTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount)"/>
+		<xsl:variable name="uiWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='SUI']/TaxableWage"/>
+		<xsl:variable name="uiTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='SUI']/Amount"/>
+		<xsl:variable name="ettWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='ETT']/TaxableWage"/>
+		<xsl:variable name="ettTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='ETT']/Amount"/>
+		<xsl:variable name="sdiWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='SDI']/TaxableWage"/>
+		<xsl:variable name="sdiTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SDI']/Amount)"/>
+		<xsl:variable name="sitWage" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage"/>
+		<xsl:variable name="sitTax" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount)"/>
 		
 		<xsl:call-template name="Amount">
 			<xsl:with-param name="name1" select="concat('f1-q', Quarter, 'tw')"/>
@@ -211,28 +211,28 @@
 		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="CompanyAccumulation">
-		<xsl:variable name="futaWage" select="Taxes/PayrollTax[Tax/Id=6]/TaxableWage"/>
-		<xsl:variable name="futaTax" select="Taxes/PayrollTax[Tax/Id=6]/Amount"/>
-		<xsl:variable name="fitWage" select="Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
-		<xsl:variable name="fitTax" select="Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="ssWage" select="Taxes/PayrollTax[Tax/Id=4]/TaxableWage"/>
-		<xsl:variable name="ssTax" select="sum(Taxes/PayrollTax[Tax/Id=4 or Tax/Id=5]/Amount)"/>
-		<xsl:variable name="mdWage" select="Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="mdTax" select="sum(Taxes/PayrollTax[Tax/Id=2 or Tax/Id=3]/Amount)"/>
+		<xsl:variable name="futaWage" select="Taxes/PayrollTax[Tax/Code='FUTA']/TaxableWage"/>
+		<xsl:variable name="futaTax" select="Taxes/PayrollTax[Tax/Code='FUTA']/Amount"/>
+		<xsl:variable name="fitWage" select="Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
+		<xsl:variable name="fitTax" select="Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+		<xsl:variable name="ssWage" select="Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
+		<xsl:variable name="ssTax" select="sum(Taxes/PayrollTax[Tax/Code='SS_Employee' or Tax/Code='SS_Employer']/Amount)"/>
+		<xsl:variable name="mdWage" select="Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+		<xsl:variable name="mdTax" select="sum(Taxes/PayrollTax[Tax/Code='MD_Employee' or Tax/Code='MD_Employer']/Amount)"/>
 		<xsl:variable name="tipWage" select="sum(Compensations/PayrollPayType[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="SSRate" select="format-number(Taxes/PayrollTax[Tax/Id=4]/Tax/Rate,'###0.00')"/>
+		<xsl:variable name="SSRate" select="format-number(Taxes/PayrollTax[Tax/Code='SS_Employee']/Tax/Rate,'###0.00')"/>
 		<xsl:variable name="tipTax" select="format-number($tipWage * $SSRate div 100,'###0.00')"/>
 		<xsl:variable name="year941" select="sum(Taxes/PayrollTax[Tax/Id &lt; 6]/Amount)"/>
 		<xsl:variable name="yearSL" select="sum(Taxes/PayrollTax[Tax/Id>6 and Tax/Id &lt; 11]/Amount)"/>
 
-		<xsl:variable name="sitWage" select="Taxes/PayrollTax[Tax/Id=7]/TaxableWage"/>
-		<xsl:variable name="sitTax" select="Taxes/PayrollTax[Tax/Id=7]/Amount"/>
-		<xsl:variable name="sdiWage" select="Taxes/PayrollTax[Tax/Id=8]/TaxableWage"/>
-		<xsl:variable name="sdiTax" select="Taxes/PayrollTax[Tax/Id=8]/Amount"/>
-		<xsl:variable name="ettWage" select="Taxes/PayrollTax[Tax/Id=9]/TaxableWage"/>
-		<xsl:variable name="ettTax" select="sum(Taxes/PayrollTax[Tax/Id=9]/Amount)"/>
-		<xsl:variable name="uiWage" select="Taxes/PayrollTax[Tax/Id=10]/TaxableWage"/>
-		<xsl:variable name="uiTax" select="sum(Taxes/PayrollTax[Tax/Id=10]/Amount)"/>
+		<xsl:variable name="sitWage" select="Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage"/>
+		<xsl:variable name="sitTax" select="Taxes/PayrollTax[Tax/Code='SIT']/Amount"/>
+		<xsl:variable name="sdiWage" select="Taxes/PayrollTax[Tax/Code='SDI']/TaxableWage"/>
+		<xsl:variable name="sdiTax" select="Taxes/PayrollTax[Tax/Code='SDI']/Amount"/>
+		<xsl:variable name="ettWage" select="Taxes/PayrollTax[Tax/Code='ETT']/TaxableWage"/>
+		<xsl:variable name="ettTax" select="sum(Taxes/PayrollTax[Tax/Code='ETT']/Amount)"/>
+		<xsl:variable name="uiWage" select="Taxes/PayrollTax[Tax/Code='SUI']/TaxableWage"/>
+		<xsl:variable name="uiTax" select="sum(Taxes/PayrollTax[Tax/Code='SUI']/Amount)"/>
 		
 		<xsl:call-template name="Amount">
 			<xsl:with-param name="name1" select="concat('f1-t','tw')"/>

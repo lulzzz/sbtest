@@ -1889,8 +1889,8 @@
 		
 			<xsl:variable name="fein1" select="translate(HostCompany/FederalEIN,'-','')" />
 			<xsl:variable name="totalGrossWages" select="Accumulation/GrossWage" />
-			<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage" />
-			<xsl:variable name="totalFUTAWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=6]/TaxableWage" />
+			<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage" />
+			<xsl:variable name="totalFUTAWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/TaxableWage" />
 			<xsl:variable name="line3" select="$totalGrossWages" />
 			<xsl:variable name="line4" select="$totalGrossWages - $totalMDWages" />
 			<xsl:variable name="line5" select="$totalGrossWages - $line4 - $totalFUTAWages" />
@@ -1904,8 +1904,8 @@
 			<xsl:variable name="line11" select="format-number($line7*0.003,'######.00')" />
 			<xsl:variable name="line12" select="$line8 + $line11" />
 			<xsl:variable name="line12a" select="format-number($line7*0.008,'####.00')" />
-			<xsl:variable name="line13" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Id=6]/Amount,'####.00')" />
-			<xsl:variable name="lineI" select="sum(Accumulation/Taxes/PayrollTax[Tax/Id=10]/Amount)" />
+			<xsl:variable name="line13" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount,'####.00')" />
+			<xsl:variable name="lineI" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SUI']/Amount)" />
 			<Row>
 				<Cell>
 					<Data ss:Type="Number">

@@ -141,7 +141,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)) && prevInvoices.Any(pi => pi.Id == vpc.InvoiceId))
 				{
 					var prevInv = prevInvoices.First(pi => pi.Id == vpc.InvoiceId);
-					if (prevInv.Balance == 0)
+					if (prevInv.Balance <= 0)
 					{
 						var pcCredit = new MiscFee
 						{

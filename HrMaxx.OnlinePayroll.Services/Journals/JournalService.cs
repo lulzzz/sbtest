@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Markup;
+using System.Xml;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
@@ -19,6 +21,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using Magnum;
+using Magnum.FileSystem;
 
 namespace HrMaxx.OnlinePayroll.Services.Journals
 {
@@ -28,13 +31,17 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private readonly ICompanyService _companyService;
 		private readonly IPDFService _pdfService;
 		private readonly IMementoDataService _mementoDataService;
+		private readonly ICommonService _commonService;
+		private readonly IFileRepository _fileRepository;
 
-		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService)
+		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository)
 		{
 			_journalRepository = journalRepository;
 			_companyService = companyService;
 			_pdfService = pdfService;
 			_mementoDataService = mementoDataService;
+			_fileRepository = fileRepository;
+			_commonService = commonService;
 		}
 
 		public Journal SaveJournalForPayroll(Journal journal, Company company)
@@ -326,6 +333,28 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 			}
 
+			if (journal.PaymentMethod == EmployeePaymentMethod.Check)
+			{
+				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
+					company.Id);
+
+				if (companyDocs.Any(d => d.DocumentType == DocumentType.Signature))
+				{
+					var signature =
+						companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).First();
+					pdf.Signature = new PDFSignature
+					{
+						Path = _fileRepository.GetDocumentLocation(signature.Doc),
+						X = 375,
+						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 580 : 330,
+						ScaleX = (float)0.7,
+						ScaleY = (float)0.7
+
+					};
+
+				}
+			}
+			
 
 			return _pdfService.Print(pdf);
 		}

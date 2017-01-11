@@ -81,7 +81,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get 
 			{
-				if (Balance == 0 )
+				if (Balance <= 0 )
 				{
 					var lastPayment =
 						InvoicePayments.Where(p => p.Status == PaymentStatus.Paid).OrderByDescending(p => p.PaymentDate.Date).FirstOrDefault();

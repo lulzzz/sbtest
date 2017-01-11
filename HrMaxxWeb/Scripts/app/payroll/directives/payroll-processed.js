@@ -68,6 +68,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								paycheck.name = paycheck.employee.name;
 								paycheck.department = paycheck.employee.department;
 								paycheck.status = 1;
+								
 								$.each(paycheck.deductions, function (ind2, d) {
 									if (d.employeeDeduction) {
 										d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
@@ -77,6 +78,13 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 										d.priority = d.employeeDeduction.priority;
 									}
 								});
+								if (paycheck.grossWage > 0)
+									paycheck.included = true;
+								else {
+									paycheck.included = false;
+								}
+								paycheck.hasError = false;
+								
 							});
 							$scope.item.startDate = moment($scope.item.startDate).toDate();
 							$scope.item.endDate = moment($scope.item.endDate).toDate();

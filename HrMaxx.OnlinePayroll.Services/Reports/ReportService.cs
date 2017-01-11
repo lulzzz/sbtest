@@ -514,7 +514,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
 			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
 			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
+			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month +2/ 3)*3);
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -536,7 +536,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
 			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
 			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
+			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month+2 / 3)*3);
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPSExcel.xslt", "xls", string.Format("Federal {2} 941 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -617,7 +617,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			var argList = new XsltArgumentList();
 
-			argList.AddParam("endQuarterMonth", "", request.EndDate.Month);
+			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month+2 / 3)*3);
 			argList.AddParam("selectedYear", "", request.Year);
 
 
@@ -1113,6 +1113,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new XsltArgumentList();
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month+2/3)*3);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
 			argList.AddParam("month1", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 2)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 2)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
 			argList.AddParam("month2", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 1)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 1)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);

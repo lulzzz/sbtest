@@ -21,8 +21,8 @@
   </xsl:template>
   
   <xsl:template match="ExtractHost">
-		<xsl:variable name="UISum" select="Accumulation/Taxes/PayrollTax[Tax/Id=10]/Amount"/>
-		<xsl:variable name="ETTSum" select="Accumulation/Taxes/PayrollTax[Tax/Id=9]/Amount"/>
+		<xsl:variable name="UISum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SUI']/Amount"/>
+		<xsl:variable name="ETTSum" select="Accumulation/Taxes/PayrollTax[Tax/Code='ETT']/Amount"/>
 		<xsl:variable name="totalTax" select="$UISum + $ETTSum"/>
 		<xsl:variable name="UISumString" select="format-number($UISum,'0000000000.00')"/>
 		<xsl:variable name="ETTSumString" select="format-number($ETTSum,'0000000000.00')"/>

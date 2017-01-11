@@ -25,8 +25,8 @@ T<xsl:value-of select="format-number(count(EmployeeAccumulations/EmployeeAccumul
 <xsl:variable name="WagesSum" select="Accumulation/GrossWage" />
 <xsl:variable name="Sum125C" select="sum(Accumulation/Deductions/PayrollDeduction[Deduction/Type/Id=9]/Amount)"/>
 <xsl:variable name="SUIWageSum" select="($WagesSum - $Sum125C)" />
-<xsl:variable name="SITWageSum" select="Accumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage" />
-<xsl:variable name="SITSum" select="Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount" />
+<xsl:variable name="SITWageSum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage" />
+<xsl:variable name="SITSum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount" />
 <xsl:value-of select="translate(format-number($SUIWageSum,'000000000000.00'),'.','')"/>
 $$spaces100$$$$spaces20$$$$spaces20$$$$spaces10$$$$spaces5$$$$spaces2$$$$spaces1$$
 <xsl:value-of select="translate(format-number($SITWageSum,'000000000000.00'),'.','')"/>
@@ -89,8 +89,8 @@ S<xsl:value-of select="translate(Employee/SSN,'-','')"/> <xsl:value-of select="s
 </xsl:choose>
 $$spaces20$$$$spaces20$$$$spaces20$$$$spaces5$$$$spaces2$$$$spaces2$$
 <xsl:value-of select="translate(../../States/CompanyTaxState[State/StateId=$empState]/StateEIN,'-','')"/>000$$spaces10$$$$spaces5$$$$spaces2$$$$spaces2$$
-<xsl:value-of select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=7]/TaxableWage,'000000000000.00'),'.','')"/>
-<xsl:value-of select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount,'000000000000.00'),'.','')"/>
+<xsl:value-of select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/TaxableWage,'000000000000.00'),'.','')"/>
+<xsl:value-of select="translate(format-number(Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount,'000000000000.00'),'.','')"/>
 $$spaces5$$$$spaces1$$S$$spaces2$$$$spaces1$$<xsl:value-of select="format-number($endQuarterMonth,'00')"/><xsl:value-of select="$selectedYear"/>$$spaces20$$$$spaces20$$$$spaces5$$$$spaces5$$$$spaces5$$
 <xsl:text>$$n</xsl:text>
   </xsl:template>

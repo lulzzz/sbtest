@@ -20,7 +20,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						employees: $scope.datasvc.employees,
 						payTypeFilter: 0,
 						toggleState: false,
-						tabindex:1
+						tabindex: 1,
+						showingErrors: false,
+						showingSelected: false
 					}
 					
 					$scope.list = [];
@@ -64,8 +66,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							if (filterbypaytype) {
 								//dataSvc.payTypeFilter = filterbypaytype;
 								orderedData = $filter('filter')(orderedData, { employee: { payType: filterbypaytype } });
-							} 
-
+							}
+							
 							orderedData = params.sorting() ?
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
@@ -77,7 +79,23 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							params.total(orderedData.length); // set total for recalc pagination
 						}
 					};
-					
+					$scope.showErrors =function() {
+						if (dataSvc.showingErrors) {
+							delete $scope.tableParams.$params.filter.hasError;
+						} else {
+							$scope.tableParams.$params.filter.hasError = true;
+						}
+						dataSvc.showingErrors = !dataSvc.showingErrors;
+						$scope.fillTableData($scope.tableParams);
+					}
+					$scope.erroneousChecks = function() {
+						var checks = $filter('filter')($scope.list, { included: true, hasError: true });
+						return checks.length;
+					}
+					$scope.correctChecks = function () {
+						var checks = $filter('filter')($scope.list, { included: true });
+						return checks.length;
+					}
 					$scope.removePayCheck = function(listitem) {
 						var pc = $filter('filter')($scope.list, { employee: { id: listitem.employee.id } })[0];
 						if (pc) {
@@ -182,7 +200,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var payCodeSum = 0;
 						var comps = 0;
 						if (!pc.included)
-							return false;
+							return pc.hasError=false;
 						$.each(pc.payCodes, function (index1, paycode) {
 							paycode.hours = calculateHours(paycode.screenHours);
 							paycode.overtimeHours = calculateHours(paycode.screenOvertime);
@@ -201,7 +219,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						else {
 							returnVal = false;
 						}
-						return returnVal;
+
+						return pc.hasError=returnVal;
 					}
 					$scope.showcomps = function(listitem) {
 						var modalInstance = $modal.open({
@@ -354,13 +373,13 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								}
 							}
 						});
-						modalInstance.result.then(function (pcs, messages) {
+						modalInstance.result.then(function (scope) {
 								dataSvc.toggleState = true;
-								$scope.item.payChecks = angular.copy(pcs);
+								$scope.item.payChecks = angular.copy(scope.payChecks);
 								$scope.list = $scope.item.payChecks;
 								$scope.tableParams.reload();
 								$scope.fillTableData($scope.tableParams);
-							$.each(messages, function(i, m) {
+							$.each(scope.messages, function(i, m) {
 								addAlert(m, 'warning');
 							});
 						}, function () {
@@ -716,6 +735,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		$scope.importMap = {
 			startingRow: 1,
 			columnCount: 1,
+			rowCount: null,
 			columnMap: [],
 			hasJobCost: false,
 			jobCostStartingColumn: 0,
@@ -814,11 +834,11 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 						$.each(t.jobCostCodes, function(pcind, paycode) {
 							var payc = {
 								payCode: paycode.payCode,
-								screenHours: paycode.hours,
+								screenHours: paycode.hours ? paycode.hours : 0,
 								screenOvertime: 0,
 								hours: 0,
 								overtimeHours: 0,
-								amount: paycode.amount
+								amount: paycode.amount ? paycode.amount : 0
 							};
 							pc.payCodes.push(payc);
 						});
@@ -828,10 +848,10 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							if (ec) {
 								var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
 								if (exists.length > 0) {
-									exists[0].screenHours = paycode.screenHours;
-									exists[0].screenOvertime = paycode.screenOvertime;
-									exists[0].hours = paycode.hours;
-									exists[0].overtimeHours = paycode.overtimeHours;
+									exists[0].screenHours = paycode.screenHours ? paycode.screenHours : 0;
+									exists[0].screenOvertime = paycode.screenOvertime ? paycode.screenOvertime : 0;
+									exists[0].hours = paycode.hours ? paycode.hours : 0;
+									exists[0].overtimeHours = paycode.overtimeHours ? paycode.hours : 0;
 									if (paycode.payCode.id === 0 && t.salary) {
 										exists[0].payCode.hourlyRate = t.salary;
 									}
@@ -841,12 +861,33 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 						});
 					} else {
 						var pw = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
+						//if (pc.payCodes.length!==1) {
+						//	pc.payCodes = [];
+						//	var pc1 = {
+						//		payCode: {
+						//			id: -1,
+						//			companyId: pc.companyId,
+						//			code: 'PW',
+						//			description: 'Piece-work',
+						//			hourlyRate: 0
+						//		},
+						//		screenHours: 0,
+						//		screenOvertime: 0,
+						//		hours: 0,
+						//		overtimeHours: 0,
+						//		pwAmount: 0
+						//	};
+							
+						//	pc.payCodes.push(pc1);
+						//}
 						if (pw.length > 0 && pc.payCodes.length === 1) {
 							pc.payCodes[0].pwAmount = t.gross ? t.gross : pw[0].payCode.hourlyRate;
-							pc.payCodes[0].hours = pw[0].hours;
-							pc.payCodes[0].overtimeHours = pw[0].overtimeHours;
-							pc.payCodes[0].screenHours = pw[0].screenHours;
-							pc.payCodes[0].screenOvertime = pw[0].screenOvertime;
+							pc.payCodes[0].hours = pw[0].hours ? pw[0].hours : 0;
+							pc.payCodes[0].overtimeHours = pw[0].overtimeHours ? pw[0].overtimeHours : 0;
+							pc.payCodes[0].screenHours = pw[0].screenHours ? pw[0].screenHours : 0;
+							pc.payCodes[0].screenOvertime = pw[0].screenOvertime ? pw[0].screenOvertime : 0;
+							pc.payCodes[0].pwBreakTime = t.breakTime ? t.breakTime : 0;
+							pc.payCodes[0].pwSickLeaveTime = t.sickLeaveTime ? t.sickLeaveTime : 0;
 						}
 					}
 					$.each(t.compensations, function(cind, comp) {
@@ -870,7 +911,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 				}
 
 			});
-			$uibModalInstance.close($scope.payChecks, messages);
+			$uibModalInstance.close($scope);
 
 			
 		}, function (error) {
@@ -1005,6 +1046,9 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		});
 		requiredColumns.push('Base Rate Amount');
 		requiredColumns.push('Base Rate Overtime Amount');
+		requiredColumns.push('Break Time');
+		requiredColumns.push('Sick Leave Time');
+
 		$.each(selfManagedAccumulations, function (i2, apt) {
 			var exists = $filter('filter')($scope.importMap.selfManagedPayTypes, { payTypeId: apt.id })[0];
 			if (exists) {

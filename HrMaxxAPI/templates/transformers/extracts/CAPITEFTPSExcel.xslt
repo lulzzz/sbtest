@@ -113,8 +113,8 @@
 	</xsl:template>
 
 	<xsl:template match="ExtractHost">
-		<xsl:variable name="SDISum" select="Accumulation/Taxes/PayrollTax[Tax/Id=8]/Amount"/>
-		<xsl:variable name="SITSum" select="Accumulation/Taxes/PayrollTax[Tax/Id=7]/Amount"/>
+		<xsl:variable name="SDISum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SDI']/Amount"/>
+		<xsl:variable name="SITSum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount"/>
 		<xsl:variable name="totalTax" select="$SDISum + $SITSum"/>
 		<xsl:variable name="SDISumString" select="format-number($SDISum,'00000000000.00')"/>
 		<xsl:variable name="SITSumString" select="format-number($SITSum,'00000000000.00')"/>

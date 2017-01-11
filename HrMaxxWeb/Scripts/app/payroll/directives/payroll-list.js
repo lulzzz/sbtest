@@ -64,6 +64,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								memo: '',
 								notes:'',
 								included: false,
+								hasError:false,
 								paymentMethod: employee.paymentMethod
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
@@ -199,9 +200,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								memo: '',
 								notes: matching ? matching.notes : '',
 								included: matching ? matching.included : false,
+								hasError: false,
 								paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
 							};
-							
 							$.each(employee.payCodes, function (index1, paycode) {
 								var pc = {
 									payCode: paycode,
@@ -223,11 +224,18 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								}
 								paycheck.payCodes.push(pc);
 							});
+							
 							$.each(employee.compensations, function (index2, comp) {
 								var pt = {
 									payType: comp.payType,
 									amount: comp.amount,
 									ytd: 0
+								}
+								if (matching) {
+									var matchingComp = $filter('filter')(matching.compensations, { payType: { id: comp.payType.id } })[0];
+									if (matchingComp) {
+										pt.amount = matchingComp.amount;
+									} 
 								}
 								paycheck.compensations.push(pt);
 							});

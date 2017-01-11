@@ -23,6 +23,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal Salary { get; set; }
 		public decimal Gross { get; set; }
 		public string Notes { get; set; }
+		public decimal BreakTime { get; set; }
+		public decimal SickLeaveTime { get; set; }
 		public List<PayrollPayCodeResource> PayCodes { get; set; }
 		public List<PayrollPayCodeResource> JobCostCodes { get; set; }
 		public List<PayrollPayTypeResource> Compensations { get; set; }
@@ -58,6 +60,14 @@ namespace HrMaxxAPI.Resources.Payroll
 				if (sala > 0)
 					Salary = sala;
 			}
+			if (!string.IsNullOrWhiteSpace(er.ValueFromContains("gross")))
+			{
+				decimal gross = 0;
+				decimal.TryParse(er.ValueFromContains("gross"), out gross);
+				if (gross > 0)
+					Gross = gross;
+			}
+			
 			if (!string.IsNullOrWhiteSpace(er.ValueFromContains("gross")))
 			{
 				decimal gross = 0;
@@ -288,6 +298,21 @@ namespace HrMaxxAPI.Resources.Payroll
 				{
 					Notes = val;
 				}
+				else if (col.Key.Equals("Break Time"))
+				{
+					decimal bt = 0;
+					decimal.TryParse(val, out bt);
+					if (bt > 0)
+						BreakTime = bt;
+				}
+				else if (col.Key.Equals("Sick Leave Time"))
+				{
+					decimal slt = 0;
+					decimal.TryParse(val, out slt);
+					if (slt > 0)
+						SickLeaveTime = slt;
+				}
+				
 				else if (company.PayCodes.Any(pc=>col.Key.StartsWith(pc.Code) || (pc.Id==0 && col.Key.StartsWith("Base Rate"))))
 				{
 					var payCode = company.PayCodes.First(pc => col.Key.StartsWith(pc.Code) || (pc.Id==0 && col.Key.StartsWith("Base Rate")));

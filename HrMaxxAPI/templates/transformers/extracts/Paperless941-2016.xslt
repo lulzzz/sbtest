@@ -1153,16 +1153,16 @@
 		
 	</xsl:template>
 	<xsl:template match="ExtractHost" mode="i941">
-		<xsl:variable name="ssConst" select="(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Tax/Rate + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Tax/Rate) div 100"/>
-		<xsl:variable name="mdConst" select="(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Tax/Rate + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Tax/Rate) div 100"/>
+		<xsl:variable name="ssConst" select="(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Tax/Rate + Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
+		<xsl:variable name="mdConst" select="(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Tax/Rate + Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
 		<xsl:variable name="totalTips" select="sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="totalFITWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
-		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage"/>
+		<xsl:variable name="totalFITWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
+		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
 
-		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="totalSSTax" select="(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount)"/>
-		<xsl:variable name="totalMDTax" select="(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount)"/>
+		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+		<xsl:variable name="totalSSTax" select="(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount)"/>
+		<xsl:variable name="totalMDTax" select="(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount)"/>
 
 
 			<xsl:variable name="line5d" select="format-number($totalSSWages*$ssConst,'######0.00') + format-number($totalTips*$ssConst,'######0.00') + format-number($totalMDWages*$mdConst,'######0.00')"/>	
@@ -1356,13 +1356,13 @@
 	<xsl:template match="ExtractHost" mode="i777">
 		
 		<xsl:variable name="totalTips" select="sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="fitWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/TaxableWage"/>
-		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=4]/TaxableWage"/>
+		<xsl:variable name="fitWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
+		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
 
-		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Id=2]/TaxableWage"/>
-		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Id=1]/Amount"/>
-		<xsl:variable name="totalSSTax" select="(Accumulation/Taxes/PayrollTax[Tax/Id=4]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=5]/Amount)"/>
-		<xsl:variable name="totalMDTax" select="(Accumulation/Taxes/PayrollTax[Tax/Id=2]/Amount + Accumulation/Taxes/PayrollTax[Tax/Id=3]/Amount)"/>
+		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
+		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
+		<xsl:variable name="totalSSTax" select="(Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount)"/>
+		<xsl:variable name="totalMDTax" select="(Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount)"/>
 
 
 		

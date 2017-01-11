@@ -31,7 +31,7 @@ namespace HrMaxx.Common.Models
 	{
 		
 		public int StartingRow { get; set; }
-		
+		public int? RowCount { get; set; }
 		public int ColumnCount { get; set; }
 		public List<KeyValuePair<string, int>> ColumnMap { get; set; }
 		public bool HasJobCost { get; set; }
