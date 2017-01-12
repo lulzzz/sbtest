@@ -76,7 +76,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public string Name
 		{
-			get { return string.Format("{0} {1} {2}", Contact.FirstName, Contact.MiddleInitial, Contact.LastName); }
+			get { return string.Format("{0}{2}{1}", Contact.FirstName, Contact.LastName, string.Format(" {0}", !string.IsNullOrWhiteSpace(Contact.MiddleInitial) ? Contact.MiddleInitial.Substring(0, 1) + " " : string.Empty)); }
 		}
 
 		public EmployeeResource FillFromImport(ExcelRead er, CompanyResource company)

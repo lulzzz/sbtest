@@ -314,6 +314,32 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			printPayrollTimesheet: function (payroll) {
+				var deferred = $q.defer();
+				$http.post(zionAPI.URL + "Payroll/PrintPayrollTimesheet", payroll, { responseType: "arraybuffer" }).success(
+					function (data, status, headers) {
+						var type = headers('Content-Type');
+						var disposition = headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}).error(function (data, status) {
+						var e = /* error */
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
 			printPayrollChecks: function (payroll) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Payroll/PrintPayrollChecks", payroll, { responseType: "arraybuffer" }).success(

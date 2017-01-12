@@ -224,38 +224,37 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								}
 								paycheck.payCodes.push(pc);
 							});
-							
-							$.each(employee.compensations, function (index2, comp) {
-								var pt = {
-									payType: comp.payType,
-									amount: comp.amount,
-									ytd: 0
-								}
-								if (matching) {
-									var matchingComp = $filter('filter')(matching.compensations, { payType: { id: comp.payType.id } })[0];
-									if (matchingComp) {
-										pt.amount = matchingComp.amount;
-									} 
-								}
-								paycheck.compensations.push(pt);
-							});
-							$.each(employee.deductions, function (index3, ded) {
-								ded.employeeId = employee.id;
-								paycheck.deductions.push({
-									deduction: ded.deduction,
-									employeeDeduction: ded,
-									rate: ded.rate,
-									annualMax: ded.annualMax,
-									method: ded.method,
-									amount: 0,
-									ytd: 0,
-									ceilingPerCheck: ded.ceilingPerCheck,
-									accountNo: ded.accountNo,
-									agencyId: ded.agencyId,
-									limit: ded.limit,
-									priority: ded.priority
+							if (matching) {
+								paycheck.compensations = angular.copy(matching.compensations);
+								paycheck.deductions = angular.copy(matching.deductions);
+							} else {
+								$.each(employee.compensations, function (index2, comp) {
+									var pt = {
+										payType: comp.payType,
+										amount: comp.amount,
+										ytd: 0
+									}
+									paycheck.compensations.push(pt);
 								});
-							});
+								$.each(employee.deductions, function (index3, ded) {
+									ded.employeeId = employee.id;
+									paycheck.deductions.push({
+										deduction: ded.deduction,
+										employeeDeduction: ded,
+										rate: ded.rate,
+										annualMax: ded.annualMax,
+										method: ded.method,
+										amount: 0,
+										ytd: 0,
+										ceilingPerCheck: ded.ceilingPerCheck,
+										accountNo: ded.accountNo,
+										agencyId: ded.agencyId,
+										limit: ded.limit,
+										priority: ded.priority
+									});
+								});
+							}
+							
 							selected.payChecks.push(paycheck);
 						});
 						
@@ -277,8 +276,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$defer.resolve($scope.tableData);
 						}
 					});
-
+					if ($scope.tableParams.settings().$scope == null) {
+						$scope.tableParams.settings().$scope = $scope;
+					}
 					$scope.fillTableData = function (params) {
+						
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
 							var orderedData = params.filter() ?

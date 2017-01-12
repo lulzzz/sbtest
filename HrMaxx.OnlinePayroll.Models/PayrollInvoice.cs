@@ -193,7 +193,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		private void AddDeductions(IEnumerable<PayrollDeduction> deds)
 		{
-			deds.Where(d => d.Deduction.Type.Id == 4).ToList().ForEach(d =>
+			deds.ToList().ForEach(d =>
 			{
 				var d1 = Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 				if (d1 != null)
@@ -341,7 +341,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 
 			});
-			Deductions.ForEach(d => MiscCharges.Add(new MiscFee
+			Deductions.Where(d => d.Deduction.Type.Id == 4).ToList().ForEach(d => MiscCharges.Add(new MiscFee
 			{
 				RecurringChargeId = d.Deduction.Id * -1,
 				Amount = d.Amount * -1,

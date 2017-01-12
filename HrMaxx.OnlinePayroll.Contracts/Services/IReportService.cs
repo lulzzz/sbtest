@@ -23,5 +23,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ACHExtract GetACHExtract(ACHExtract data, string fullName);
 		List<ACHMasterExtract> GetACHExtractList();
 		FileDto PrintPayrollWithoutSummary(Payroll payroll, List<Guid> documents);
+		FileDto PrintPayrollTimesheet(Payroll payroll);
 	}
 }

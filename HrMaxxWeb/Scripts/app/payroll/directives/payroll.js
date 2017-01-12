@@ -54,7 +54,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							$defer.resolve($scope.tableData);
 						}
 					});
-
+					if ($scope.tableParams.settings().$scope == null) {
+						$scope.tableParams.settings().$scope = $scope;
+					}
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
@@ -374,14 +376,19 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							}
 						});
 						modalInstance.result.then(function (scope) {
-								dataSvc.toggleState = true;
-								$scope.item.payChecks = angular.copy(scope.payChecks);
-								$scope.list = $scope.item.payChecks;
-								$scope.tableParams.reload();
-								$scope.fillTableData($scope.tableParams);
-							$.each(scope.messages, function(i, m) {
-								addAlert(m, 'warning');
-							});
+							dataSvc.toggleState = true;
+							$scope.item.payChecks = angular.copy(scope.payChecks);
+							$scope.list = $scope.item.payChecks;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							if (scope.messages.length > 0) {
+								var warning = 'No Matching Employees found for # ';
+								$.each(scope.messages, function(i, m) {
+									warning += m + ', ';
+								});
+								addAlert(warning, 'warning');
+							}
+							
 						}, function () {
 							return false;
 						});
@@ -528,6 +535,7 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.cancel = function () {
 		$uibModalInstance.close($scope);
 	};
+	
 	$scope.save = function () {
 		if (false === $('form[name="compform"]').parsley().validate()) {
 			var errors = $('.parsley-error');
@@ -628,7 +636,34 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 	$scope.deductionList = companydeductions;
 	$scope.agencies = agencies;
 
+	$scope.isValid = function () {
+		var returnVal = true;
+		$.each($scope.dedList, function(i,d)
+		{
+			if (!isDeductionValid(d)) {
+				returnVal = false;
+				return false;
+			}
+		});
+		return returnVal;
+	}
+	var isDeductionValid = function (item) {
+		if (!item.deduction || !item.method || !item.rate)
+			return false;
+		else if (item.deduction.type.id === 3) {
+			if (!item.accountNo || !item.agencyId)
+				return false;
+			else {
+				if (item.limit === undefined || item.ceilingPerCheck === undefined || (item.ceilingMethod === 1 && (item.ceilingPerCheck < 0 || item.ceilingPerCheck > 100)))
+					return false;
+				else
+					return true;
+			}
 
+		}
+		else
+			return true;
+	}
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();
 	};
@@ -724,7 +759,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 	$scope.payChecks = angular.copy(payChecks);
 	$scope.payTypes = payTypes;
 	$scope.alerts = [];
-	 
+	$scope.messages = [];
 	if (map) {
 		$scope.importMap = map;
 		if (!$scope.importMap.selfManagedPayTypes) {
@@ -911,6 +946,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 				}
 
 			});
+			$scope.messages = messages;
 			$uibModalInstance.close($scope);
 
 			

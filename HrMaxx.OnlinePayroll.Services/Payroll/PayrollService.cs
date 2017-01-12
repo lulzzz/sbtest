@@ -142,21 +142,30 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							{
 								rate = Math.Round(pc.PWAmount/(pc.Hours + pc.OvertimeHours - pc.PwBreakTime), 2, MidpointRounding.AwayFromZero);
 							}
-							paycheck.Employee.Rate = rate;
-							pc.PayCode.HourlyRate = rate;
+							
+							var breakPay = (decimal) 0;
 							if (pc.PwBreakTime > 0)
 							{
 								var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 13);
+								breakPay = Math.Round(pc.PwBreakTime*rate,2, MidpointRounding.AwayFromZero);
 								if (breakComp != null)
 								{
-									breakComp.Amount = Math.Round(rate*pc.PwBreakTime, 2, MidpointRounding.AwayFromZero);
+									breakComp.Amount = breakPay;
 								}
 								else
 								{
-									paycheck.Compensations.Add(new PayrollPayType() { Amount = Math.Round(rate * pc.PwBreakTime, 2, MidpointRounding.AwayFromZero) , PayType = new PayType(){Description = "Break Pay", Id = 13, Name = "Break", IsAccumulable = false, IsTaxable = true}, YTD = 0});
+									paycheck.Compensations.Add(new PayrollPayType() { Amount = breakPay , PayType = new PayType(){Description = "Break Pay", Id = 13, Name = "Break", IsAccumulable = false, IsTaxable = true}, YTD = 0});
 								}
 
 							}
+							rate = Math.Round((pc.PWAmount + breakPay)/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+							if (rate < payroll.Company.MinWage)
+							{
+								rate = payroll.Company.MinWage;
+							}
+							paycheck.Employee.Rate = rate;
+							pc.PayCode.HourlyRate = rate;
+							
 							if (pc.PWSickLeaveTime > 0)
 							{
 								var sickComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 6);
@@ -237,7 +246,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-
+		
 		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes)
 		{
 			var result = new List<PayTypeAccumulation>();
@@ -792,6 +801,21 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		public FileDto PrintPayrollTimesheet(Models.Payroll payroll)
+		{
+			try
+			{
+				var returnFile = _reportService.PrintPayrollTimesheet(payroll);
+				return returnFile;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Print Payroll Timesheet for id=" + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public PayrollInvoice CreatePayrollInvoice(Models.Payroll payroll, string fullName, Guid userId, bool fetchCompany)
 		{
 			var payrollInvoice = new PayrollInvoice { Id = CombGuid.Generate(), UserId = userId, UserName = fullName, LastModified = DateTime.Now, ProcessedBy = fullName };
@@ -1141,7 +1165,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if (payCheck.PaymentMethod == EmployeePaymentMethod.Check)
 				{
 					var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
-					company.Id);
+						company.Id);
 
 					if (companyDocs.Any(d => d.DocumentType == DocumentType.Signature))
 					{
@@ -1151,19 +1175,28 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							Path = _fileRepository.GetDocumentLocation(signature.Doc),
 							X = 375,
-							Y = company1.PayCheckStock == PayCheckStock.LaserTop || company1.PayCheckStock == PayCheckStock.MICREncodedTop || company1.PayCheckStock == PayCheckStock.MICRQb ? 580 : 330,
-							ScaleX = (float)0.7,
-							ScaleY = (float)0.7
+							Y =
+								company1.PayCheckStock == PayCheckStock.LaserTop || company1.PayCheckStock == PayCheckStock.MICREncodedTop ||
+								company1.PayCheckStock == PayCheckStock.MICRQb
+									? 580
+									: 330,
+							ScaleX = (float) 0.7,
+							ScaleY = (float) 0.7
 
 						};
 
 					}
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", string.Empty));
+				}
+				else
+				{
+					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
 				}
 				
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Bank", bankcoa.BankAccount.BankName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("BankfractionId", bankcoa.BankAccount.FractionId));
-				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
-					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
+				
+					
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", nameCompany.Name));
 				if (payroll.Company.PayCheckStock == PayCheckStock.LaserMiddle)
 				{
@@ -1172,6 +1205,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date-3", payCheck.PayDay.ToString("MM/dd/yyyy")));
 				}
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", nameCompany.CompanyAddress.AddressLine1));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
@@ -2160,7 +2194,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void FixInvoiceData()
+		public List<Guid> FixInvoiceData()
 		{
 			try
 			{
@@ -2170,30 +2204,72 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var invoices = _payrollRepository.GetAllPayrollInvoices();
 					var paychecks = payrolls.SelectMany(p => p.PayChecks);
 					var newpayments = invoices.SelectMany(i => i.InvoicePayments).ToList();
+					var invoiceList = new List<Guid>();
 					invoices.OrderBy(i => i.PayrollPayDay).ToList().ForEach(i =>
 					{
-						var prevInvoices =
-							invoices.Where(i1 => i1.CompanyId == i.CompanyId && i1.InvoiceNumber < i.InvoiceNumber).ToList();
-						var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
-						i.NetPay = pcs.Sum(p => p.NetWage);
-						i.CheckPay = pcs.Sum(p => p.CheckPay);
-						i.DDPay = pcs.Sum(p => p.DDPay);
-						i.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
+						var payroll = payrolls.First(p => p.Id == i.PayrollId);
+						if (payroll.PayChecks.Any(pc => !pc.IsVoid && pc.Deductions.Any(pcd => !i.Deductions.Any(icd=>icd.Deduction.Id==pcd.Deduction.Id))))
 						{
-							var rc = i.CompanyInvoiceSetup.RecurringCharges.First(r => r.Id == mc.RecurringChargeId);
-							if (!rc.Year.HasValue)
+							invoiceList.Add(i.Id);
+							//i.Deductions = new List<PayrollDeduction>();
+							payroll.PayChecks.Where(pc => !pc.IsVoid && pc.Deductions.Any(pcd => !i.Deductions.Any(icd => icd.Deduction.Id == pcd.Deduction.Id))).ToList().ForEach(pc =>
 							{
-								mc.PreviouslyClaimed = prevInvoices.SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc.Amount);
-							}
-							else
-							{
-								mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
-							}
-						});
+								pc.Deductions.Where(pcd=>!i.Deductions.Any(icd=>icd.Deduction.Id==pcd.Deduction.Id)).ToList().ForEach(d =>
+								{
+									var d1 = i.Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
+									if (d1 != null)
+									{
+										d1.Amount += Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
+									}
+									else
+									{
+										var temp = JsonConvert.SerializeObject(d);
+										i.Deductions.Add(JsonConvert.DeserializeObject<PayrollDeduction>(temp));
+									}
+								});
+							});
+
+						}
+						//var prevInvoices =
+						//	invoices.Where(i1 => i1.CompanyId == i.CompanyId && i1.InvoiceNumber < i.InvoiceNumber).ToList();
+						//var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
+						//i.NetPay = pcs.Sum(p => p.NetWage);
+						//i.CheckPay = pcs.Sum(p => p.CheckPay);
+						//i.DDPay = pcs.Sum(p => p.DDPay);
+						//i.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
+						//{
+						//	var rc = i.CompanyInvoiceSetup.RecurringCharges.First(r => r.Id == mc.RecurringChargeId);
+						//	if (!rc.Year.HasValue)
+						//	{
+						//		mc.PreviouslyClaimed = prevInvoices.SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc.Amount);
+						//	}
+						//	else
+						//	{
+						//		mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
+						//	}
+						//});
+						//i.Deductions = new List<PayrollDeduction>();
+						//payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
+						//{
+						//	pc.Deductions.ToList().ForEach(d =>
+						//	{
+						//		var d1 = i.Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
+						//		if (d1 != null)
+						//		{
+						//			d1.Amount += Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
+						//		}
+						//		else
+						//		{
+						//			var temp = JsonConvert.SerializeObject(d);
+						//			i.Deductions.Add(JsonConvert.DeserializeObject<PayrollDeduction>(temp));
+						//		}
+						//	});
+						//});
 						
 						_payrollRepository.SavePayrollInvoice(i);
 					});
 					txn.Complete();
+					return invoiceList;
 				}
 			}
 			catch (Exception e)

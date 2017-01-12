@@ -346,6 +346,9 @@
     <Content Include="templates\transformers\other\quarterannualtaxsummary.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\payroll\payrolltimesheet.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\payroll\payrollsummary.xslt">
       <SubType>Designer</SubType>
     </Content>

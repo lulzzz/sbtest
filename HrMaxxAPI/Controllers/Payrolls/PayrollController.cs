@@ -64,17 +64,17 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpGet]
 		[Route(PayrollRoutes.FixInvoices)]
-		public HttpStatusCode FixInvoiceData()
+		public List<Guid> FixInvoiceData()
 		{
 			try
 			{
-				_payrollService.FixInvoiceData();
-				return HttpStatusCode.OK;
+				return _payrollService.FixInvoiceData();
+				
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
 
-				return HttpStatusCode.ExpectationFailed;
+				throw e;
 			}
 		}
 
@@ -128,6 +128,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
 			var printed = MakeServiceCall(() => _payrollService.PrintPayrollReport(mapped), "print all check for payroll with id " + mapped.Id, true);
+			return Printed(printed);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.PrintPayrollTimesheet)]
+		public HttpResponseMessage PrintPayrollTimesheet(PayrollResource payroll)
+		{
+			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollTimesheet(mapped), "print payroll timesheet", true);
 			return Printed(printed);
 		}
 

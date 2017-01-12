@@ -253,9 +253,9 @@
 		<div class="modal-footer">
 			<div class="row">
 				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()">cancel</button>
-				<button type="button" class="btn btn-warning btn-sm pull-right" ng-click="save()">only on this check</button>
-				<button type="button" class="btn btn-success btn-sm pull-right" ng-click="permanentSave()">permanently save</button>
-				<button type="button" class="btn btn-danger btn-sm pull-right" ng-click="empty()">pay no deductions on this check</button>
+				<button type="button" class="btn btn-warning btn-sm pull-right" ng-disabled="!isValid()" ng-click="save()">only on this check</button>
+				<button type="button" class="btn btn-success btn-sm pull-right" ng-disabled="!isValid()" ng-click="permanentSave()">permanently save</button>
+				<button type="button" class="btn btn-danger btn-sm pull-right" ng-disabled="!isValid()" ng-click="empty()">pay no deductions on this check</button>
 			</div>
 
 		</div>

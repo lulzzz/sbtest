@@ -223,8 +223,14 @@
 						<tr ng-show="invoice.expandedEE" class="hidden-print" ng-repeat="ee in invoice.employeeTaxes | orderBy:'tax.id'">
 							<td> - {{ee.tax.name}}</td>
 							<td>{{ee.taxableWage | currency:'$'}}</td>
-							<td class="text-right"><span class="hidden-print">{{(ee.taxableWage ? (ee.amount*100/ee.taxableWage) : 0) | currency:''}}%</span></td>
+							<td><span class="hidden-print">{{(ee.taxableWage ? (ee.amount*100/ee.taxableWage) : 0) | currency:''}}%</span></td>
 							<td class="text-left">{{ee.amount | currency:'$'}}</td>
+						</tr>
+						<tr ng-show="invoice.expandedEE" class="hidden-print" ng-repeat="dd in invoice.deductions | orderBy:'name'">
+							<td> - {{dd.name}}</td>
+							<td></td>
+							<td>{{dd.method===1?'':'$'}}{{dd.rate | currency:''}}{{dd.method===1?'%':''}}</td>
+							<td class="text-left">{{dd.amount | currency:'$'}}</td>
 						</tr>
 						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===1" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType > 2}">
 							<td colspan="3">
@@ -246,7 +252,7 @@
 						<tr ng-show="invoice.companyInvoiceSetup.invoiceStyle===2 || invoice.expandedER" ng-repeat="et in invoice.employerTaxes | orderBy:'tax.id'">
 							<td> - {{et.tax.name}}</td>
 							<td>{{et.taxableWage | currency:'$'}}</td>
-							<td class="text-right"><span class="hidden-print">{{(et.taxableWage? (et.amount*100/et.taxableWage) : 0) | currency:''}}%</span></td>
+							<td><span class="hidden-print">{{(et.taxableWage? (et.amount*100/et.taxableWage) : 0) | currency:''}}%</span></td>
 							<td class="text-left">{{et.amount | currency:'$'}}</td>
 						</tr>
 						<tr ng-if="invoice.workerCompensations.length>0" class="info">

@@ -92,7 +92,7 @@
 						</thead>
 						<tbody>
 							<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
-								<xsl:sort select="Employee/EmployeeNo"/>
+								<xsl:sort select="Employee/CompanyEmployeeNo"/>
 							</xsl:apply-templates>
 						</tbody>
 					</table>
@@ -184,7 +184,7 @@
 	<xsl:template match="PayrollPayCode">
 		<tr>
 			<td style="width:40%;">
-				<xsl:value-of select="PayCode/Description"/>
+				<xsl:value-of select="PayCode/Description"/> ($<xsl:value-of select="format-number(PayCode/HourlyRate,'#,##0.00')"/>)
 			</td>
 			<td style="width:20%; text-align:center">
 				<xsl:value-of select="format-number(Hours,'#,##0.00')"/>
@@ -229,7 +229,14 @@
 							</xsl:choose>
 						</td>
 					</tr>
-				
+					<tr>
+						<td style="width:50%; text-align:left;">
+							<strong>Pay Rate:</strong>
+						</td>
+						<td style="width:50%; text-align:right;">
+							$<xsl:value-of select="format-number(Employee/Rate,'#,##0.00')"/>
+						</td>
+					</tr>
 					<tr>
 						<td colspan="2">
 							<xsl:if test="Notes.length>0">

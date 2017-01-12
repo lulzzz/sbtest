@@ -41,8 +41,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Payroll> GetUnPrintedPayrolls();
 
 		List<PayCheck> GetEmployeePayChecks(Guid companyId, Guid employeeId);
-		void FixInvoiceData();
+		List<Guid> FixInvoiceData();
 		PayrollInvoice GetInvoiceById(Guid invoiceId);
 		FileDto PrintPayrollChecks(Payroll payroll);
+		FileDto PrintPayrollTimesheet(Payroll mapped);
 	}
 }

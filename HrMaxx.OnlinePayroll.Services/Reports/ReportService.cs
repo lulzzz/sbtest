@@ -597,7 +597,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.ReportName = "StateCAUI";
 			request.Description = string.Format("California State UI & ETT Excel for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
+			var tempDepositSchedule = request.DepositSchedule;
+			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
+			request.DepositSchedule = tempDepositSchedule;
 
 			var argList = new XsltArgumentList();
 
@@ -911,6 +914,19 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var fileName = string.Format("Payroll_Checks_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
 			
 			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, new byte[0]);
+		}
+
+		public FileDto PrintPayrollTimesheet(Models.Payroll payroll)
+		{
+			var fileName = string.Format("Payroll_Timesheets_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+			var xml = GetXml<Models.Payroll>(payroll);
+
+			var args = new XsltArgumentList();
+
+			var transformed = TransformXml(xml,
+				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrolltimesheet.xslt"), args);
+
+			return _pdfService.PrintHtml(transformed.Reports.First());
 		}
 
 
@@ -1535,6 +1551,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportTransformed TransformXml(XmlDocument source, string transformer, XsltArgumentList args)
 		{
 			var strOutput = XmlTransform(source, transformer, args);
+			strOutput = Transform(strOutput);
 			var serializer = new XmlSerializer(typeof(ReportTransformed));
 			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput));
 			return (ReportTransformed)serializer.Deserialize(memStream);
