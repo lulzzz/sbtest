@@ -113,24 +113,24 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 
 							if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
 								selected.endDate = moment(selected.startDate).add(1, 'week').add(-1, 'day').toDate();
-								selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
+								//selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
 							}
 							else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
 								selected.endDate = moment(selected.startDate).add(2, 'week').add(-1, 'day').toDate();
-								selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
+								//selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
 							}
 							else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
 								if (moment(selected.startDate).date() === 1) {
 									selected.endDate = moment(selected.startDate).add(14, 'day').toDate();
-									selected.payDay = moment(sorted[0].payDay).add(15, 'day').toDate();
+									//selected.payDay = moment(sorted[0].payDay).add(15, 'day').toDate();
 								} else {
 									selected.endDate = moment(selected.startDate).endOf('month').toDate();
-									selected.payDay = moment(sorted[0].startDate).endOf('month').toDate();
+									//selected.payDay = moment(sorted[0].startDate).endOf('month').toDate();
 								}
 								
 							} else {
 								selected.endDate = moment(selected.startDate).add(1, 'month').toDate();
-								selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
+								//selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
 							}
 							
 

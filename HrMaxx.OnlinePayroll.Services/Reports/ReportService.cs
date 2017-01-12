@@ -726,7 +726,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var transformed = TransformXml(xml,
 				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrollsummary.xslt"), args);
 
-			return _pdfService.PrintHtml(transformed.Reports.First());
+			var transformedtimesheet = TransformXml(xml,
+				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrolltimesheet.xslt"), args);
+
+			//return _pdfService.PrintHtml(transformed.Reports.First());
+			return _pdfService.PrintHtmls(new List<Report>(){transformed.Reports.First(), transformedtimesheet.Reports.First()});
 			//return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
 		}
 
@@ -915,7 +919,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, new byte[0]);
 		}
+		public FileDto PrintPayrollWithoutSummary(Models.Payroll payroll, List<FileDto> documents)
+		{
+			var fileName = string.Format("Payroll_Checks_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
 
+			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents);
+		}
 		public FileDto PrintPayrollTimesheet(Models.Payroll payroll)
 		{
 			var fileName = string.Format("Payroll_Timesheets_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
@@ -928,6 +937,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return _pdfService.PrintHtml(transformed.Reports.First());
 		}
+
+		
 
 
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
@@ -1551,7 +1562,6 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportTransformed TransformXml(XmlDocument source, string transformer, XsltArgumentList args)
 		{
 			var strOutput = XmlTransform(source, transformer, args);
-			strOutput = Transform(strOutput);
 			var serializer = new XmlSerializer(typeof(ReportTransformed));
 			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput));
 			return (ReportTransformed)serializer.Deserialize(memStream);

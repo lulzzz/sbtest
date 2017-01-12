@@ -375,7 +375,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 										if (ui.index == 0) {
 											// step-1 validation
 											if (false === $('form[name="form-wizard"]').parsley().validate('wizard-step-1') || false === validateStep1()) {
-												return true;
+												return false;
 											}
 										} else if (ui.index == 1) {
 											// step-2 validation

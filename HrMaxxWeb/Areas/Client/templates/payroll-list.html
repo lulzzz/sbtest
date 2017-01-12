@@ -83,7 +83,7 @@
 		</div>
 	</div>
 	
-	<div class="panel panel-info hidden-print" ng-if="selected">
+	<div class="panel panel-info hidden-print" ng-if="mainData.selectedCompany && selected">
 		<div class="panel-heading">
 			<h4 class="panel-title">Payroll Step 1</h4>
 		</div>
@@ -94,15 +94,15 @@
 		</div>
 
 	</div>
-	<div class="panel panel-info hidden-print" ng-if="processed" >
+	<div class="panel panel-info hidden-print" ng-if="mainData.selectedCompany && processed">
 		<div class="panel-heading">
 			<h4 class="panel-title">Payroll Details - Payroll Step 2</h4>
 		</div>
 		<div class="panel-body tab-content">
-			<payroll-processed item="processed" datasvc="data" company="mainData.selectedCompany" main-data="mainData"/>
+			<payroll-processed item="processed" datasvc="data" company="mainData.selectedCompany" main-data="mainData" />
 		</div>
 	</div>
-	<div class="panel panel-info hidden-print" ng-if="committed">
+	<div class="panel panel-info hidden-print" ng-if="mainData.selectedCompany && committed">
 		<div class="panel-heading">
 			<h4 class="panel-title">Payroll Details</h4>
 		</div>
@@ -110,11 +110,11 @@
 			<payroll-processed item="committed" datasvc="data" company="mainData.selectedCompany" main-data="mainData" />
 		</div>
 	</div>
-	<div class="panel panel-info" id="invoice">
-		<div class="panel-heading hidden-print" ng-if="selectedInvoice">
+	<div class="panel panel-info" id="invoice" >
+		<div class="panel-heading hidden-print" ng-if="mainData.selectedCompany && selectedInvoice">
 			<h4 class="panel-title">Invoice Details</h4>
 		</div>
-		<div class="panel-body tab-content" ng-if="selectedInvoice">
+		<div class="panel-body tab-content" ng-if="mainData.selectedCompany && selectedInvoice">
 			<form data-parsley-validate="true" name="invoice">
 				<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" show-controls="true" />
 			</form>

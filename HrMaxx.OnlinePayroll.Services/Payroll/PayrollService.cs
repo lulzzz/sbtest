@@ -765,19 +765,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				
-					var documents = new List<Guid>();
+					var documents = new List<FileDto>();
 					var updateStatus = false;
 					if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
 					{
 						foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc => pc.CheckNumber))
 						{
-							if (!_fileRepository.FileExists(paychecks.DocumentId))
-							{
-								PrintPayCheck(payroll, paychecks);
+							
+								var file = PrintPayCheck(payroll, paychecks);
 								if(paychecks.Status!=PaycheckStatus.Printed && paychecks.Status!=PaycheckStatus.PrintedAndPaid)
 									updateStatus = true;
-							}
-							documents.Add(paychecks.DocumentId);
+							
+							documents.Add(file);
 						}
 					}
 
@@ -1664,8 +1663,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("summary6", (payCheck.EmployeeTaxesYTD + payCheck.DeductionYTD).ToString("C")));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("summary7", payCheck.YTDNetWage.ToString("C")));
 
+
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr-s", "Salary"));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am", payCheck.GrossWage.ToString("C")));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam", payCheck.YTDGrossWage.ToString("C")));
+
 				var hrcounter = 1;
 				var otcounter = 1;
 				foreach (var payCode in payCheck.PayCodes.Where(p => p.PayCode.Id == 0 && (p.Hours > 0 || p.OvertimeHours > 0 || p.YTD > 0 || p.YTDOvertime > 0)).OrderByDescending(p => p.Hours).ThenByDescending(p => p.OvertimeHours).ThenByDescending(p => p.YTD).ThenByDescending(p => p.YTDOvertime).ToList())
@@ -1788,14 +1790,37 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		} 
 		private List<PayrollPayCode> ProcessPayCodes(List<PayrollPayCode> payCodes, IEnumerable<PayCheck> previousChecks, PayCheck paycheck)
 		{
-			if (paycheck.Employee.PayType != EmployeeType.JobCost)
+			if ( paycheck.Employee.PayType == EmployeeType.Hourly)
 			{
 				const decimal overtimequotiant = (decimal) 1.5;
+				
 				var previousPayCodes = previousChecks.SelectMany(p => p.PayCodes).ToList();
 				payCodes.ForEach(pc =>
 				{
 					pc.Amount = Math.Round(pc.Hours*pc.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
 					pc.OvertimeAmount = Math.Round(pc.OvertimeHours*pc.PayCode.HourlyRate*overtimequotiant, 2,
+						MidpointRounding.AwayFromZero);
+					pc.YTD =
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCode.Id == pc.PayCode.Id).Sum(ppc => ppc.Amount) + pc.Amount, 2,
+							MidpointRounding.AwayFromZero);
+					pc.YTDOvertime =
+						Math.Round(
+							previousPayCodes.Where(ppc => ppc.PayCode.Id == pc.PayCode.Id).Sum(ppc => ppc.OvertimeAmount) + pc.OvertimeAmount,
+							2, MidpointRounding.AwayFromZero);
+				});
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.Salary)
+			{
+				payCodes = new List<PayrollPayCode>();
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.PieceWork)
+			{
+				const decimal overtimequotiantForPieceWork = (decimal)0.5;
+				var previousPayCodes = previousChecks.SelectMany(p => p.PayCodes).ToList();
+				payCodes.ForEach(pc =>
+				{
+					pc.Amount = pc.PWAmount;
+					pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.PayCode.HourlyRate * overtimequotiantForPieceWork, 2,
 						MidpointRounding.AwayFromZero);
 					pc.YTD =
 						Math.Round(previousPayCodes.Where(ppc => ppc.PayCode.Id == pc.PayCode.Id).Sum(ppc => ppc.Amount) + pc.Amount, 2,

@@ -92,7 +92,7 @@
 						</thead>
 						<tbody>
 							<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
-								<xsl:sort select="Employee/CompanyEmployeeNo"/>
+								<xsl:sort select="Employee/CompanyEmployeeNo" data-type="number"/>
 							</xsl:apply-templates>
 						</tbody>
 					</table>

@@ -674,6 +674,22 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 	$scope.permanentSave = function () {
 		$scope.original.deductions = [];
 		$.each($scope.dedList, function (index, dd) {
+			if (!dd.employeeDeduction) {
+				dd.employeeDeduction = {
+					id: 0,
+					employeeId: $scope.original.employee.id,
+					deduction: dd.deduction
+				}
+			}
+			dd.employeeDeduction.employeeId = $scope.original.employee.id;
+			dd.employeeDeduction.method = dd.method;
+			dd.employeeDeduction.rate = dd.rate;
+			dd.employeeDeduction.annualMax = dd.annualMax;
+			dd.employeeDeduction.ceilingPerCheck = dd.ceilingPerCheck;
+			dd.employeeDeduction.limit = dd.limit;
+			dd.employeeDeduction.accountNo = dd.accountNo;
+			dd.employeeDeduction.agencyId = dd.agencyId;
+			dd.employeeDeduction.priority = dd.priority;
 			companyRepository.saveEmployeeDeduction(dd);
 			$scope.original.deductions.push(dd);
 		});

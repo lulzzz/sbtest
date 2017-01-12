@@ -48,7 +48,7 @@
 			<tr ng-repeat-end ng-if="(check.employee.payType<4  || (check.employee.payType===4 && check.expanded) ) && (pc.overtimeHours>0 || pc.ytdOvertime>0)">
 				<td>{{pc.payCode.description}} - Overtime</td>
 				<td class="text-right">{{pc.overtimeHours}}</td>
-				<td class="text-right">{{pc.payCode.hourlyRate * 1.5 | currency:'$'}}</td>
+				<td class="text-right">{{ (pc.employee.payType===3 ? pc.payCode.hourlyRate * 0.5 : pc.payCode.hourlyRate * 1.5) | currency:'$'}}</td>
 				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
 			</tr>

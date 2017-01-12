@@ -90,29 +90,32 @@ namespace HrMaxx.Common.Services.PDF
 					objDoc.Close();
 
 				});
-				// Create new document.
 				
-				// Save, generate unique file name to avoid overwriting existing file.
-				//var objDoc2 = objPDF.OpenDocument(finalDoc.SaveToMemory());
-				//objDoc2.Form.Modify("Flatten=true; Reset=true");
-				string strFilename = finalDoc.Save(string.Format("{0}{1}", _filePath, models.First().Name), true);
-				//objDoc2.Close();
+				string strFilename = string.Format("{0}", models.First().Name);
+				var finalDocbytes = finalDoc.SaveToMemory();
 				finalDoc.Close();
 				
-				Guid target = Guid.Empty;
-				int test = 0;
-				;
-				var pdfdoc = new EntityDocumentAttachment
+				//Guid target = Guid.Empty;
+				//int test = 0;
+				//;
+				//var pdfdoc = new EntityDocumentAttachment
+				//{
+				//	EntityId = Guid.TryParse(models.First().TargetId.ToString(), out target) ? target : int.TryParse(models.First().TargetId.ToString(), out test) ? Int2Guid(test) : CombGuid.Generate(),
+				//	EntityTypeId = (int)models.First().TargetType,
+				//	FileExtension = "PDF",
+				//	MimeType = "application/pdf",
+				//	OriginalFileName = models.First().Name.Split('.')[0],
+				//	SourceFileName = strFilename
+				//};
+				//var doc = _documentService.AddEntityPDF(pdfdoc, models.First().DocumentId);
+				//return _documentService.GetDocument(doc.Id);
+				return new FileDto
 				{
-					EntityId = Guid.TryParse(models.First().TargetId.ToString(), out target) ? target : int.TryParse(models.First().TargetId.ToString(), out test) ? Int2Guid(test) : CombGuid.Generate(),
-					EntityTypeId = (int)models.First().TargetType,
-					FileExtension = "PDF",
-					MimeType = "application/pdf",
-					OriginalFileName = models.First().Name.Split('.')[0],
-					SourceFileName = strFilename
+					Data = finalDocbytes,
+					Filename = strFilename.Split('.')[0],
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
 				};
-				var doc = _documentService.AddEntityPDF(pdfdoc, models.First().DocumentId);
-				return _documentService.GetDocument(doc.Id);
 			}
 			catch (Exception e)
 			{
@@ -176,24 +179,34 @@ namespace HrMaxx.Common.Services.PDF
 				
 				//objDoc2.Form.Modify("Flatten=true; Reset=true");
 				
-				string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), true);
+				//string strFilename = objDoc.Save(string.Format("{0}{1}", _filePath, model.Name), true);
+				string strFilename = string.Format("{0}", model.Name);
+				var content = objDoc.SaveToMemory();
 				objDoc.Close();
 				//objDoc2.Close();
 				
-				Guid target = Guid.Empty;
-				int test = 0;
-				;
-				var pdfdoc = new EntityDocumentAttachment
+				//Guid target = Guid.Empty;
+				//int test = 0;
+				//;
+				//var pdfdoc = new EntityDocumentAttachment
+				//{
+				//	EntityId	= Guid.TryParse(model.TargetId.ToString(), out target)? target : int.TryParse(model.TargetId.ToString(), out test) ? Int2Guid(test) : CombGuid.Generate(),
+				//	EntityTypeId = (int)model.TargetType,
+				//	FileExtension = "PDF",
+				//	MimeType = "application/pdf",
+				//	OriginalFileName = model.Name.Split('.')[0],
+				//	SourceFileName = strFilename
+				//};
+				//var doc = _documentService.AddEntityPDF(pdfdoc, model.DocumentId);
+				//return _documentService.GetDocument(doc.Id);
+
+				return new FileDto
 				{
-					EntityId	= Guid.TryParse(model.TargetId.ToString(), out target)? target : int.TryParse(model.TargetId.ToString(), out test) ? Int2Guid(test) : CombGuid.Generate(),
-					EntityTypeId = (int)model.TargetType,
-					FileExtension = "PDF",
-					MimeType = "application/pdf",
-					OriginalFileName = model.Name.Split('.')[0],
-					SourceFileName = strFilename
+					Data = content,
+					Filename = strFilename.Split('.')[0],
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
 				};
-				var doc = _documentService.AddEntityPDF(pdfdoc, model.DocumentId);
-				return _documentService.GetDocument(doc.Id);
 
 			}
 			catch (Exception e)
@@ -203,7 +216,53 @@ namespace HrMaxx.Common.Services.PDF
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<FileDto> documents)
+		{
+			try
+			{
+				var docs = new List<PdfSharp.Pdf.PdfDocument>();
+				var objDoc = new PdfSharp.Pdf.PdfDocument();
+				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
+				var docCount = 0;
+				foreach (var document in documents)
+				{
+					using (var stream = new MemoryStream(document.Data))
+					{
+						var objDoc1 = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+						int count = objDoc1.PageCount;
+						for (int idx = 0; idx < count; idx++)
+						{
+							var page = objDoc1.Pages[idx];
+							//objDoc.AddPage(page);
+							objDoc.InsertPage(docCount, page);
+						}
+						docCount++;
+					}
+					
+				}
+				byte[] fileContents = null;
 
+				using (var stream = new MemoryStream())
+				{
+					objDoc.Save(stream, true);
+					fileContents = stream.ToArray();
+				}
+				return new FileDto
+				{
+					Data = fileContents,
+					Filename = fileName.Split('.')[0],
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " Print PDF for " + fileName);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<Guid> documents, byte[] data)
 		{
 			try
@@ -256,14 +315,16 @@ namespace HrMaxx.Common.Services.PDF
 					}
 				}
 				var payrollFile = pdfPath + identifier + ".pdf";
-				objDoc.Save(payrollFile);
+				//objDoc.Save(payrollFile);
 
-				byte[] fileContents = _fileRepository.GetFileBytesByPath(payrollFile);
-				//using (var stream = new MemoryStream())
-				//{
-				//	objDoc.Save(stream, true);
-				//	fileContents = stream.ToArray();
-				//}
+				//byte[] fileContents = _fileRepository.GetFileBytesByPath(payrollFile);
+				byte[] fileContents = null;
+
+				using (var stream = new MemoryStream())
+				{
+					objDoc.Save(stream, true);
+					fileContents = stream.ToArray();
+				}
 				return new FileDto
 				{
 					Data = fileContents,
@@ -393,7 +454,7 @@ namespace HrMaxx.Common.Services.PDF
 					objDoc1.Dispose();
 					return new FileDto();
 				}
-				objDoc1.SaveToMemory();
+				resultbytes = objDoc1.SaveToMemory();
 				objDoc1.Close();
 				objDoc1.Dispose();
 				
@@ -491,6 +552,55 @@ namespace HrMaxx.Common.Services.PDF
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public FileDto PrintHtmls(List<Report> reports)
+		{
+			try
+			{
+				var objPDF = new PdfManager();
+				var finalDoc = objPDF.CreateDocument();
+				var param = objPDF.CreateParam();
+
+
+				param["RightMargin"] = (float)20;
+				param["LeftMargin"] = (float)20;
+
+				reports.ForEach(r =>
+				{
+					var objDoc = objPDF.CreateDocument();
+					if (r.ReportType.ToLower().Equals("html"))
+					{
+						objDoc.ImportFromUrl(r.HtmlData.OuterXml, param);
+						
+					}
+					var result = objDoc.SaveToMemory();
+
+					objDoc.Close();
+					objDoc.Dispose();
+					finalDoc.AppendDocument(objPDF.OpenDocument(result));
+				});
+				
+				return new FileDto
+				{
+					Data = finalDoc.SaveToMemory(),
+					Filename = reports.First().Template,
+					DocumentExtension = ".pdf",
+					MimeType = "application/pdf"
+				};
+			}
+			catch (Exception e)
+			{
+				var message = string.Empty;
+				if (e.Message == ReportNotAvailable)
+					message = e.Message;
+				else
+					message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " Print PDF for report");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		
 
 		private Guid Int2Guid(int value)
 		{
