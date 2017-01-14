@@ -334,13 +334,14 @@
 								<em><u>Notes: </u></em>
 							</td>
 							<td ng-if="!isInvoiceEditable()">
-								{{invoice.notes}}
+								<pre>{{invoice.notes}}</pre>
 							</td>
 						</tr>
 						<tr class="visible-print" ng-show="invoice.notes">
-							<td colspan="4" style="border:1px solid black">
+							<td colspan="4">
 								<em><u>Notes: </u></em>
-								<div ng-bind-html="invoice.notes"></div>
+								<pre>{{invoice.notes}}</pre>
+								
 							</td>
 							
 						</tr>
