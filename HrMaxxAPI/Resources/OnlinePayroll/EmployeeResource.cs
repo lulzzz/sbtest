@@ -39,6 +39,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string EmployeeNo { get; set; }
 		public int? CompanyEmployeeNo { get; set; }
 		public string Memo { get; set; }
+		public string Notes { get; set; }
 		//Payroll
 		[Required]
 		public PayrollSchedule PayrollSchedule { get; set; }

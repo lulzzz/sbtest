@@ -88,6 +88,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.MinWage = dbMappedCompany.MinWage;
 				dbCompany.Memo = dbMappedCompany.Memo;
 				dbCompany.ClientNo = dbMappedCompany.ClientNo;
+				dbCompany.Notes = dbMappedCompany.Notes;
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);
@@ -361,10 +362,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var dbEmployees = _dbContext.Employees.Where(e => e.CompanyId==employee.CompanyId && (e.Id == me.Id || e.SSN.Equals(me.SSN))).ToList();
 			if (!dbEmployees.Any())
 			{
+				var emps = _dbContext.Employees.Where(e => e.CompanyId == employee.CompanyId);
 				if (string.IsNullOrWhiteSpace(employee.EmployeeNo) || employee.EmployeeNo.Equals("0"))
 				{
-					var maxEmployeeNumber =
-					_dbContext.Employees.Where(e => e.CompanyId == employee.CompanyId).Select(e => e.EmployeeNo).ToList();
+					
+					var maxEmployeeNumber = emps.Select(e => e.EmployeeNo).ToList();
 					if (maxEmployeeNumber.Any(e => !string.IsNullOrWhiteSpace(e)))
 					{
 						me.EmployeeNo = (maxEmployeeNumber.Select(e => Convert.ToInt32(e)).Max() + 1).ToString();
@@ -374,7 +376,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 						me.EmployeeNo = "1";
 					}
 				}
-				
+				if (!employee.CompanyEmployeeNo.HasValue)
+					me.CompanyEmployeeNo = emps.Max(e => e.CompanyEmployeeNo) + 1;
 				_dbContext.Employees.Add(me);
 			}
 			else if(dbEmployees.Count>1)
@@ -410,6 +413,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.WorkerCompensationId = me.WorkerCompensationId;
 				dbEmployee.Rate = me.Rate;
 				dbEmployee.CompanyEmployeeNo = me.CompanyEmployeeNo;
+				dbEmployee.Notes = me.Notes;
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
 				{

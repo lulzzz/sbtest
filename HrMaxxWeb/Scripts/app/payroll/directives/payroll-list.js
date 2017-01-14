@@ -419,6 +419,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								payrollRepository.deletePayroll(payroll).then(function(data) {
 									if (data) {
 										$scope.list.splice($scope.list.indexOf(payroll), 1);
+										$scope.list.push(data);
 										$scope.tableParams.reload();
 										$scope.fillTableData($scope.tableParams);
 										$scope.processed = null;
@@ -427,6 +428,23 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 									$scope.addAlert('error: ' + erorr.statusText, 'danger');
 								});
 							}
+						);
+
+					}
+					$scope.voidPayroll = function (event, payroll) {
+						event.stopPropagation();
+						$scope.$parent.$parent.confirmDialog('Are you sure you want to Void all checks in this Payroll?', 'danger', function () {
+							payrollRepository.voidPayroll(payroll).then(function (data) {
+								if (data) {
+									$scope.list.splice($scope.list.indexOf(payroll), 1);
+									$scope.tableParams.reload();
+									$scope.fillTableData($scope.tableParams);
+									$scope.processed = null;
+								}
+							}, function (erorr) {
+								$scope.addAlert('error: ' + erorr.statusText, 'danger');
+							});
+						}
 						);
 
 					}

@@ -45,6 +45,7 @@
 						</td>
 						<td class="col-sm-2 text-center" ng-if="showInvoices()">
 							<button class="btn btn-xs btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status===6">delete</button>
+							<button class="btn btn-xs btn-danger" ng-click="voidPayroll($event, item)" ng-show="item.invoice && item.totalGrossWage>0">void payroll</button>
 							<button class="btn btn-xs btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice">view invoice</button>
 							<button class="btn btn-xs btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0 && item.status>2 && item.status!==6">create invoice</button>
 							<button class="btn btn-xs btn-success" ng-click="copyPayroll($event, item)" ng-show="canRunPayroll()">Copy to New</button>

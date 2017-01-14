@@ -392,7 +392,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbName = "Paid")]
 		Paid = 3,
 		[HrMaxxSecurity(DbName = "Bounced")]
-		PaymentBounced = 4
+		PaymentBounced = 4,
+		[HrMaxxSecurity(DbName = "Deposited")]
+		Deposited = 5
 	}
 
 	public enum RiskLevel

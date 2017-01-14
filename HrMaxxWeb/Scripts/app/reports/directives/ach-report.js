@@ -76,7 +76,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							$scope.fillTableData($scope.tableParams);
 
 						}, function (error) {
-							$scope.addAlert('error getting extract list for report: ACH', 'danger');
+							addAlert('error getting extract list for report: ACH', 'danger');
 						});
 					}
 

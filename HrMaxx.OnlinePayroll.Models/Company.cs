@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public PayrollSchedule PayrollSchedule { get; set; }
 		public decimal MinWage { get; set; }
 		public string Memo { get; set; }
+		public string Notes { get; set; }
 		//Tax Setup
 		public string TaxFilingName { get; set; }
 		public bool IsAddressSame { get; set; }

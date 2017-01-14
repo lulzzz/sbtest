@@ -72,6 +72,19 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public List<Journal> GetPayrollJournals(Guid payrollId, bool PEOASOCoCheck = false)
+		{
+			try
+			{
+				return _journalRepository.GetPayrollJournals(payrollId, PEOASOCoCheck);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Journals for Payroll Id=" + payrollId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public Journal VoidJournal(int id, TransactionType transactionType, string name, Guid userId)
 		{
@@ -613,6 +626,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		
 
 		private Journal CreateJournalEntryTP(List<Account> coaList, string userName,  Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
 		{

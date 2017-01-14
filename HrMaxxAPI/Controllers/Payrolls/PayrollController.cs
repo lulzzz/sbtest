@@ -240,6 +240,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 
+
+		[HttpPost]
+		[Route(PayrollRoutes.VoidPayroll)]
+		public PayrollResource VoidPayroll(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+			var processed = MakeServiceCall(() => _payrollService.VoidPayroll(mappedResource, CurrentUser.FullName, CurrentUser.UserId), string.Format("Void all pay checks and invocie for Payroll={0}", resource.Id));
+			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+
 		[HttpGet]
 		[Route(PayrollRoutes.VoidPayCheck)]
 		public PayrollResource CommitPayroll(Guid payrollId, int payCheckId)

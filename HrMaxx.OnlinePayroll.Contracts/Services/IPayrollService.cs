@@ -45,5 +45,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		PayrollInvoice GetInvoiceById(Guid invoiceId);
 		FileDto PrintPayrollChecks(Payroll payroll);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
+		Payroll VoidPayroll(Payroll mappedResource, string userName, string userId);
 	}
 }

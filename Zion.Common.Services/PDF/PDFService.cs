@@ -10,6 +10,7 @@ using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using Magnum;
+using Magnum.Extensions;
 using PdfSharp.Pdf.IO;
 using Persits.PDF;
 using PdfDocument = Persits.PDF.PdfDocument;
@@ -33,46 +34,51 @@ namespace HrMaxx.Common.Services.PDF
 			_templatePath = templatePath;
 		}
 
-		public FileDto Print(List<PDFModel> models)
+		public FileDto Print(string fileName, List<PDFModel> models)
 		{
 			try
 			{
-				
+				var returnDoc = new PdfSharp.Pdf.PdfDocument();
 				var objPDF = new PdfManager();
-				var finalDoc = objPDF.CreateDocument();
-				var docs = new List<PdfDocument>();
+				var docs = new List<FileDto>();
 				models.ForEach(model =>
 				{
 					var objDoc = objPDF.OpenDocument(_templatePath + model.Template);
-
-					// Obtain font.
 					var objFont = objDoc.Fonts["Helvetica"];
 					var objFontBold = objDoc.Fonts["Helvetica-Bold"];
+					// Obtain font.
+					
 					objDoc.Form.RemoveXFA();
-					foreach (var field in model.NormalFontFields)
+					var fileFields = objDoc.Form.Fields;
+					for (var m = 1; m <= fileFields.Count; m++)
 					{
-						if (field.Key.Equals("MICR"))
+						var objField = fileFields[m];
+						var normalField = model.NormalFontFields.FirstOrDefault(nf => nf.Key.ToLower().Equals(objField.FieldName.ToLower()));
+ 						var boldField = model.BoldFontFields.FirstOrDefault(nf => nf.Key.ToLower().Equals(objField.FieldName.ToLower()));
+						if (normalField.Key!=null)
 						{
-							var micrFont = objDoc.Fonts.LoadFromFile(_templatePath + "micro.ttf");
-							var objField = objDoc.Form.FindField(field.Key);
-							if (objField != null)
-								objField.SetFieldValue(field.Value, micrFont);
+							if (normalField.Key.Equals("MICR"))
+							{
+								var micrFont = objDoc.Fonts.LoadFromFile(_templatePath + "micro.ttf");
+								objField.SetFieldValue(normalField.Value, micrFont);
+							}
+							else
+							{
+								objField.SetFieldValue(normalField.Value, objFont);
+								
+							}	
+						}
+						else if (boldField.Key!=null)
+						{
+							objField.SetFieldValue(boldField.Value, objFontBold);
 						}
 						else
 						{
-							var objField = objDoc.Form.FindField(field.Key);
-							if (objField != null && field.Value != null)
-								objField.SetFieldValue(field.Value, objFont);
+							if (string.IsNullOrWhiteSpace(objField.FieldValue))
+								objField.SetFieldValue(string.Empty, objFont);	
 						}
-
 					}
-					foreach (var field in model.BoldFontFields)
-					{
-						var objField = objDoc.Form.FindField(field.Key);
-						if (objField != null)
-							objField.SetFieldValue(field.Value, objFontBold);
-					}
-
+					
 					if (model.Signature != null)
 					{
 						var sign = objDoc.OpenImage(model.Signature.Path);
@@ -85,15 +91,36 @@ namespace HrMaxx.Common.Services.PDF
 						param["ScaleY"] = model.Signature.ScaleY;
 						page.Canvas.DrawImage(sign, param);
 					}
-					var bytes = objDoc.SaveToMemory();
-					finalDoc.AppendDocument(objPDF.OpenDocument(bytes));
+					docs.Add(new FileDto(){Data=objDoc.SaveToMemory()}); 
 					objDoc.Close();
+					//var docCount = 0;
+					//using (var stream = new MemoryStream(bytes))
+					//{
+					//	var objDoc1 = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+					//	int count = objDoc1.PageCount;
+					//	for (int idx = 0; idx < count; idx++)
+					//	{
+					//		var page = objDoc1.Pages[idx];
+					//		//objDoc.AddPage(page);
+					//		returnDoc.AddPage(page);
+					//	}
+					//	docCount++;
+					//}
+					
 
 				});
+				return AppendAllDocuments(Guid.Empty, fileName, docs);
+				var fileContents = new byte[1];
+				using (var stream = new MemoryStream())
+				{
+					returnDoc.Save(stream, true);
+					fileContents = stream.ToArray();
+				}
+
+
 				
-				string strFilename = string.Format("{0}", models.First().Name);
-				var finalDocbytes = finalDoc.SaveToMemory();
-				finalDoc.Close();
+				//var finalDocbytes = finalDoc.SaveToMemory();
+				//finalDoc.Close();
 				
 				//Guid target = Guid.Empty;
 				//int test = 0;
@@ -111,8 +138,8 @@ namespace HrMaxx.Common.Services.PDF
 				//return _documentService.GetDocument(doc.Id);
 				return new FileDto
 				{
-					Data = finalDocbytes,
-					Filename = strFilename.Split('.')[0],
+					Data = fileContents,
+					Filename = fileName,
 					DocumentExtension = ".pdf",
 					MimeType = "application/pdf"
 				};
@@ -138,6 +165,12 @@ namespace HrMaxx.Common.Services.PDF
 				var objFont = objDoc.Fonts["Helvetica"];
 				var objFontBold = objDoc.Fonts["Helvetica-Bold"];
 				objDoc.Form.RemoveXFA();
+				//var fileFieldCount = objDoc.Form.Fields.Count;
+				//for (var m = 1; m <= fileFieldCount; m++)
+				//{
+				//	if (string.IsNullOrWhiteSpace(objDoc.Form.Fields[m].FieldValue))
+				//		objDoc.Form.Fields[m].SetFieldValue(string.Empty, objFont);
+				//}
 				foreach (var field in model.NormalFontFields)
 				{
 					if (field.Key.Equals("MICR"))
@@ -221,8 +254,8 @@ namespace HrMaxx.Common.Services.PDF
 			try
 			{
 				var docs = new List<PdfSharp.Pdf.PdfDocument>();
-				var objDoc = new PdfSharp.Pdf.PdfDocument();
 				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
+				var objDoc = new PdfSharp.Pdf.PdfDocument();
 				var docCount = 0;
 				foreach (var document in documents)
 				{
@@ -299,20 +332,17 @@ namespace HrMaxx.Common.Services.PDF
 				var docs = new List<PdfSharp.Pdf.PdfDocument>();
 				var objDoc = new PdfSharp.Pdf.PdfDocument();
 				var pdfPath = _filePath.Replace("PDFTemp/", string.Empty);
+				var docCount = 1;
 				foreach (var document in documents)
 				{
 					var objDoc1 = PdfReader.Open(pdfPath + document + ".pdf", PdfDocumentOpenMode.Import);
 					int count = objDoc1.PageCount;
 					for (int idx = 0; idx < count; idx++)
 					{
-						// Get the page from the external document...
-						
 						var page = objDoc1.Pages[idx];
-						
-						// ...and add it to the output document.
-						objDoc.AddPage(page);
-
+						objDoc.InsertPage(docCount, page);
 					}
+					docCount++;
 				}
 				var payrollFile = pdfPath + identifier + ".pdf";
 				//objDoc.Save(payrollFile);

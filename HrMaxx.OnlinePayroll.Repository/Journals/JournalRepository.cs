@@ -38,6 +38,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 						if (mapped.PayrollPayCheckId.HasValue)
 						{
 							_dbContext.PayrollPayChecks.First(pc => pc.Id == mapped.PayrollPayCheckId).CheckNumber = mapped.CheckNumber;
+							var peoCompanyCheck = _dbContext.Journals.FirstOrDefault(j => j.TransactionType==(int)TransactionType.PayCheck && j.PayrollPayCheckId==mapped.PayrollPayCheckId);
+							if(peoCompanyCheck!=null)
+								peoCompanyCheck.CheckNumber = mapped.CheckNumber;
 						}
 					}
 				}
@@ -82,6 +85,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				_dbContext.Journals.First(
 					j => j.PayrollPayCheckId == payCheckId && j.TransactionType == (int) TransactionType.PayCheck && j.PEOASOCoCheck==peoasoCoCheck);
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(journal);
+		}
+
+		public List<Models.Journal> GetPayrollJournals(Guid payrollId, bool peoasoCoCheck)
+		{
+			var journals =
+				_dbContext.Journals.Where(
+					j => j.PayrollPayCheck.PayrollId==payrollId && j.TransactionType == (int)TransactionType.PayCheck && j.PEOASOCoCheck == peoasoCoCheck).ToList();
+			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals);
 		}
 
 		public Models.Journal VoidJournal(int id, TransactionType transactionType, string name)
@@ -146,5 +157,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			_dbContext.SaveChanges();
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(mapped);
 		}
+
+		
 	}
 }

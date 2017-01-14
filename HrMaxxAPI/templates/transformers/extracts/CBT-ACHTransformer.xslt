@@ -64,7 +64,10 @@
 </xsl:choose><xsl:value-of select="CompanyBankAccount/RoutingNumber"/><xsl:call-template name="padRight">
 		<xsl:with-param name="data" select="CompanyBankAccount/AccountNumber"/>
 		<xsl:with-param name="count" select="17"/>
-	</xsl:call-template><xsl:value-of select="translate(format-number(Amount,'00000000.00'),'.','')"/>$$spaces10$$$$spaces5$$<xsl:call-template name="padRight">
+	</xsl:call-template><xsl:value-of select="translate(format-number(Amount,'00000000.00'),'.','')"/><xsl:call-template name="padRight">
+		<xsl:with-param name="data" select="Id"/>
+		<xsl:with-param name="count" select="15"/>
+	</xsl:call-template><xsl:call-template name="padRight">
 		<xsl:with-param name="data" select="Name"/>
 		<xsl:with-param name="count" select="22"/>
 	</xsl:call-template>$$spaces2$$0<xsl:value-of select="../../HostBank/RoutingNumber1"/><xsl:call-template name="padLeft">

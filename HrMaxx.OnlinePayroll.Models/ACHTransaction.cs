@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid OriginatorId { get; set; }
 		public Guid ReceiverId { get; set; }
 		public string Name { get; set; }
+		public string CompanyName { get; set; }
 		public List<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
 		public BankAccount CompanyBankAccount { get; set; }
 		public bool Included { get; set; }

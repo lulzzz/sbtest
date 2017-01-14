@@ -89,7 +89,7 @@ namespace HrMaxx.Common.Services.Excel
 		{
 			var company = _companyService.GetCompanyById(companyId);
 			var employees = _companyService.GetEmployeeList(companyId);
-			var columnList = new List<string> { "SSN", "Employee No", "Salary", "Base Rate", "Base Rate Hours", "Base Rate Overtime" };
+			var columnList = new List<string> { "Employee No", "Name", "Salary", "Base Rate", "Base Rate Hours", "Base Rate Overtime" };
 			var rowList = new List<List<string>>();
 			company.PayCodes.ForEach(pc =>
 			{
@@ -97,11 +97,11 @@ namespace HrMaxx.Common.Services.Excel
 				columnList.Add(pc.Code + " Overtime");
 			});
 			columnList.AddRange(payTypes);
-			employees.Where(e=>e.StatusId==StatusOption.Active).ToList().ForEach(e =>
+			employees.Where(e=>e.StatusId==StatusOption.Active).OrderBy(e=>e.CompanyEmployeeNo).ToList().ForEach(e =>
 			{
 				var row = new List<string>();
-				row.Add(string.Format("{0}-{1}-{2}",e.SSN.Substring(0,3), e.SSN.Substring(3,2), e.SSN.Substring(5,4)));
-				row.Add(e.EmployeeNo);
+				row.Add(e.CompanyEmployeeNo.ToString());
+				row.Add(e.FullName);
 				if(e.PayType==EmployeeType.Salary)
 					row.Add(e.Rate.ToString());
 				rowList.Add(row);

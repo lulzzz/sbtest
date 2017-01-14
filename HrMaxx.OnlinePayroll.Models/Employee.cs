@@ -29,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string EmployeeNo { get; set; }
 		public int? CompanyEmployeeNo { get; set; }
 		public string Memo { get; set; }
+		public string Notes { get; set; }
 		//Payroll
 		public PayrollSchedule PayrollSchedule { get; set; }
 		public EmployeeType PayType { get; set; }

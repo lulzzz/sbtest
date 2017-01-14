@@ -32,7 +32,7 @@
 			</tr>
 			
 			<tr ng-if="check.employee.payType===2 || check.employee.payType===4">
-				<td><i class="fa fa-lg info" ng-class="{'fa-minus-circle': check.expanded, 'fa-plus-circle':!check.expanded}" ng-click="check.expanded=!check.expanded" ng-show="check.employee.payType===4"></i>Salary</td>
+				<td><i class="fa fa-lg info" ng-class="{'fa-minus-circle': check.expanded, 'fa-plus-circle':!check.expanded}" ng-click="check.expanded=!check.expanded" ng-show="check.employee.payType===4"></i>{{check.employee.payType===3 || check.employee.payType===4 ? 'Salary/Job/Piece Total' : 'Salary'}}</td>
 				<td class="text-right"></td>
 				<td class="text-right"></td>
 				<td class="text-right">{{check.salary | currency:'$'}}</td>
@@ -46,9 +46,9 @@
 				<td class="text-right">{{pc.ytd | currency:'$'}}</td>
 			</tr>
 			<tr ng-repeat-end ng-if="(check.employee.payType<4  || (check.employee.payType===4 && check.expanded) ) && (pc.overtimeHours>0 || pc.ytdOvertime>0)">
-				<td>{{pc.payCode.description}} - Overtime</td>
+				<td>{{ check.employee.payType===3 || check.employee.payType===4 ? '0.5 OT' : pc.payCode.description}} - Overtime</td>
 				<td class="text-right">{{pc.overtimeHours}}</td>
-				<td class="text-right">{{ (pc.employee.payType===3 ? pc.payCode.hourlyRate * 0.5 : pc.payCode.hourlyRate * 1.5) | currency:'$'}}</td>
+				<td class="text-right">{{ (check.employee.payType===3 || check.employee.payType===4 ? pc.payCode.hourlyRate * 0.5 : pc.payCode.hourlyRate * 1.5) | currency:'$'}}</td>
 				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
 			</tr>

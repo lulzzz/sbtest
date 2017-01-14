@@ -21,5 +21,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Journal> GetJournalList(Guid companyId, DateTime startDate, DateTime endDate);
 		MasterExtract FileTaxes(Extract extract, string fullName);
 		List<Journal> GetJournalListByDate(Guid? value, DateTime date, DateTime dateTime);
+		List<Journal> GetPayrollJournals(Guid payrollId, bool peoasoCoCheck);
 	}
 }

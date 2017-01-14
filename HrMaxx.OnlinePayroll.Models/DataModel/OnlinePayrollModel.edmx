@@ -100,6 +100,7 @@
           <Property Name="Created" Type="datetime" Nullable="false" />
           <Property Name="ParentId" Type="uniqueidentifier" />
           <Property Name="CompanyNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Notes" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -265,6 +266,7 @@
           <Property Name="LastPayrollDate" Type="datetime" />
           <Property Name="WorkerCompensationId" Type="int" />
           <Property Name="CompanyEmployeeNo" Type="int" />
+          <Property Name="Notes" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -1622,6 +1624,7 @@
           <NavigationProperty Name="Locations" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company" ToRole="Company1" />
           <NavigationProperty Name="Parent" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company1" ToRole="Company" />
           <Property Name="CompanyNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2072,6 +2075,7 @@
           <Property Name="LastPayrollDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="EmployeeBankAccounts" Relationship="HrMaxxModel.FK_EmployeeBankAccount_Employee" FromRole="Employee" ToRole="EmployeeBankAccount" />
           <Property Name="CompanyEmployeeNo" Type="Int32" />
+          <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -2749,6 +2753,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="CompanyNumber" ColumnName="CompanyNumber" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="Created" ColumnName="Created" />
@@ -2980,6 +2985,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="CompanyEmployeeNo" ColumnName="CompanyEmployeeNo" />
                 <ScalarProperty Name="LastPayrollDate" ColumnName="LastPayrollDate" />
                 <ScalarProperty Name="WorkerCompensationId" ColumnName="WorkerCompensationId" />
