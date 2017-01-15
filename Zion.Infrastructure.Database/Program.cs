@@ -21,7 +21,7 @@ namespace HrMaxx.Infrastructure.Database
 			 * connection strings should be in app.config and linked to the deployment profile
 			 * put the non-embeded db and powershell scripts in the outputdirectory so they can be referenced from there rather than a physical location
 			 * */
-
+			//this is my test
 			string profile = null;
 			if (args.Length == 0)
 			{
