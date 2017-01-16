@@ -222,11 +222,17 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 
 						$scope.list = $scope.mainData.hostCompanies;
 						var querystring = $location.search();
-						if ($scope.mainData.fromSearch && $scope.mainData.selectedCompany) {
+						if ($scope.mainData.fromSearch) {
 							$scope.mainData.fromSearch = false;
-							var exists2 = $filter('filter')($scope.list, { id: $scope.mainData.selectedCompany.id }, true)[0];
-							$scope.setCompany(exists2, 1);
-						} else if($scope.mainData.selectedCompany) {
+							if ($scope.mainData.selectedCompany && $scope.mainData.selectedCompany.contract) {
+								$scope.selectedCompany = angular.copy($scope.mainData.selectedCompany);
+								$scope.data.isBodyOpen = false;
+							} else {
+								var exists2 = $filter('filter')($scope.list, { id: $scope.mainData.selectedCompany.id }, true)[0];
+								$scope.setCompany(exists2, 1);
+							}
+						}
+						else if($scope.mainData.selectedCompany && $scope.mainData.selectedCompany.contract) {
 							$scope.selectedCompany = angular.copy($scope.mainData.selectedCompany);
 							$scope.data.isBodyOpen = false;
 						}

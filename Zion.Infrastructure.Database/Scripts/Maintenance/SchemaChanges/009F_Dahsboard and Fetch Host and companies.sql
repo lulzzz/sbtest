@@ -77,3 +77,53 @@ BEGIN
 END' 
 END
 GO
+/****** Object:  StoredProcedure [dbo].[GetSearchResults]    Script Date: 15/01/2017 8:00:50 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSearchResults]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetSearchResults]
+GO
+/****** Object:  StoredProcedure [dbo].[GetSearchResults]    Script Date: 15/01/2017 8:00:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetSearchResults]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetSearchResults]
+	@criteria varchar(max),
+	@company varchar(max) = null,
+	@host varchar(max) = null,
+	@role varchar(max) = null
+AS
+BEGIN
+	declare @rootHost uniqueidentifier
+	select @rootHost = RootHostId from ApplicationConfiguration
+	select 
+	(select SearchTable.Id, 
+	case 
+		when SearchTable.SourceTypeId=2 then
+			''Company''
+		else
+			''Employee''
+		end SourceTypeId, SearchTable.SourceId, SearchTable.HostId, SearchTable.CompanyId, SearchTable.SearchText
+	
+	from 
+	SearchTable, Company, Host
+	Where 
+	SearchTable.HostId = Host.Id
+	and SearchTable.CompanyId = Company.Id
+	and (
+			(@role is not null and @role=''HostStaff'' and Company.IsHostCompany=0) 
+			or (@role is not null and @role=''CorpStaff'' and (Company.HostId<>@rootHost or (Company.HostId=@rootHost and IsHostCompany=0))) 
+			or (@role is null)
+		)
+	and ((@host is not null and SearchTable.HostId=@host) or (@host is null))
+	and ((@company is not null and SearchTable.CompanyId=@company) or (@company is null))
+	and SearchTable.SearchText like ''%'' + @criteria + ''%''
+	for xml path (''SearchResult''), elements, type
+	) Results
+	for xml path(''SearchResults''), ELEMENTS, type
+
+
+END' 
+END
+GO

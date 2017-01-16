@@ -134,28 +134,41 @@
 		};
 		
 		$scope.setHostandCompany = function (hostId, companyId, url) {
-			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
-				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
-				$scope.hostSelected();
-			}
 			
-			if (dataSvc.selectedHost) {
-				if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
-					dataSvc.selectedCompany = null;
+			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
+				dataSvc.selectedHost = null;
+				dataSvc.selectedCompany = null;
+				dataSvc.selectedCompany1 = null;
+
+				hostRepository.getHost(hostId).then(function (data) {
+					dataSvc.selectedHost = angular.copy(data);
+					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+					$scope.getCompanies(null);
 					dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
 					if (dataSvc.selectedCompany1) {
-						dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
+						$scope.companySelected();
 						if (url)
 							$window.location.href = url;
 					}
-				} else {
-					if (url) {
-						$window.location.href = url;
-					}
-						
-				}
+					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+				}, function (erorr) {
+					addAlert('error getting host details', 'danger');
+				});
 				
+			} else if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
+				dataSvc.selectedCompany = null;
+				dataSvc.selectedCompany1 = null;
+				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
+				if (dataSvc.selectedCompany1) {
+					$scope.companySelected();
+					if (url)
+						$window.location.href = url;
+				}
+			} else {
+				if (url)
+					$window.location.href = url;
 			}
+			
 		}
 		$scope.setHostandCompanyFromInvoice = function(hostId, company){
 			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
@@ -182,7 +195,7 @@
 			//	$scope.addAlert('error getting company list', 'danger');
 			//});
 			dataSvc.hostCompanies = $filter('filter')(dataSvc.companies, {hostId: dataSvc.selectedHost.id});
-
+			
 		}
 		$scope.hostSelected = function () {
 			dataSvc.selectedCompany = null;

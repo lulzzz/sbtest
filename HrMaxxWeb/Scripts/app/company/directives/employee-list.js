@@ -232,7 +232,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							$scope.list = data;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							$scope.selected = null;
+							
 							if ($scope.mainData.fromSearch && $scope.mainData.showemployee) {
 								var exists = $filter('filter')($scope.list, { id: $scope.mainData.showemployee })[0];
 								if (exists) {
@@ -256,6 +256,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 
 						 }, true
 				 );
+					
 					var init = function () {
 						if ($scope.mainData.selectedCompany) {
 							
