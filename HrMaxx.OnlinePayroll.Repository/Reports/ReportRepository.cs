@@ -259,7 +259,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Parameters.AddWithValue("@criteria", criteria.Replace("-", string.Empty));
-					if(role.Equals("HostStaff"))
+					if(!role.Equals(RoleTypeEnum.Master.GetDbName()))
 						cmd.Parameters.AddWithValue("@role", role);
 					if(host!=Guid.Empty)
 						cmd.Parameters.AddWithValue("@host", host);

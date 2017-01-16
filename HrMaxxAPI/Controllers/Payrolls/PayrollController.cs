@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -318,6 +320,15 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public List<PayrollInvoiceResource> GetHostInvoices()
 		{
 			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
+			{
+				invoices = invoices.Where(i => !i.Company.IsHostCompany && i.Company.IsVisibleToHost).ToList();
+			}
+			var appConfig = _taxationService.GetApplicationConfig();
+			if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName() && appConfig.RootHostId.HasValue)
+			{
+				invoices = invoices.Where(i => !(i.Company.HostId==appConfig.RootHostId && i.Company.IsHostCompany)).ToList();
+			}
 			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
 			var ic =_taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i=>i.TaxPaneltyConfig = ic);

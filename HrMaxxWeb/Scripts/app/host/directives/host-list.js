@@ -52,7 +52,9 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						$defer.resolve($scope.tableData);
 					}
 				});
-
+				if ($scope.tableParams.settings().$scope == null) {
+					$scope.tableParams.settings().$scope = $scope;
+				}
 				$scope.fillTableData = function (params) {
 					// use build-in angular filter
 					if ($scope.list && $scope.list.length>0) {
@@ -84,14 +86,9 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						hostRepository.getHost(item.id).then(function (data) {
 							$scope.selectedHost = angular.copy(data);
 							$scope.mainData.selectedHost = data;
+							$scope.$parent.$parent.hostSelected();
 							$scope.isBodyOpen = false;
-							$scope.mainData.selectedCompany = null;
-							$scope.mainData.selectedCompany1 = null;
-							if (!$scope.mainData.selectedHost || ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id)) {
-								$scope.mainData.selectedHost = item;
-
-								$scope.$parent.$parent.hostSelected();
-							}
+							
 							$scope.tab = 1;
 							$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
 						}, function (erorr) {
