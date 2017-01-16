@@ -32,6 +32,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int ReceiverType { get; set; }
         public System.Guid ReceiverId { get; set; }
         public string Name { get; set; }
+        public string CompanyName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ACHTransactionExtract> ACHTransactionExtracts { get; set; }

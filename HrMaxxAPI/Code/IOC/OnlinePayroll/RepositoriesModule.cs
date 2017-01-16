@@ -3,6 +3,7 @@ using System.Configuration;
 using Autofac;
 using HrMaxx.Infrastructure.Extensions;
 using HrMaxx.OnlinePayroll.Models.DataModel;
+using HrMaxx.OnlinePayroll.ReadRepository;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Dashboard;
@@ -84,6 +85,12 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 			builder.RegisterType<ReportRepository>()
 				.WithParameter(sqlCon)
 				.As<IReportRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ReadRepository>()
+				.WithParameter(sqlCon)
+				.As<IReadRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

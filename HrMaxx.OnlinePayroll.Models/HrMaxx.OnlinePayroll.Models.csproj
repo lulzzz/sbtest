@@ -242,6 +242,7 @@
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="HostHomePageDocument.cs" />
+    <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="InvoiceDeliveryClaim.cs" />
     <Compile Include="Journal.cs" />

@@ -87,6 +87,14 @@ namespace HrMaxxAPI.Controllers.Companies
 			}
 			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.ToList());
 		}
+		[HttpGet]
+		[Route(CompanyRoutes.Company)]
+		public CompanyResource GetCompany(Guid id)
+		{
+			var companies = MakeServiceCall(() => _companyService.GetCompanyById(id), "Get company by id", true);
+			
+			return Mapper.Map<HrMaxx.OnlinePayroll.Models.Company, CompanyResource>(companies);
+		}
 
 		[HttpPost]
 		[Route(CompanyRoutes.Save)]

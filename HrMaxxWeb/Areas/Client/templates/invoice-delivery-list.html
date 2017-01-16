@@ -2,7 +2,9 @@
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
 		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Invoice List for Delivery<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+			<h4 class="panel-title">Invoice List for Delivery  
+				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>		
+			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">

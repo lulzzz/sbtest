@@ -106,6 +106,10 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 							return false;
 						}
 					}
+					$scope.refreshData = function(event) {
+						event.stopPropagation();
+						getPayrolls();
+					}
 					var init = function () {
 
 						getPayrolls();

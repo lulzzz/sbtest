@@ -116,23 +116,22 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 					}
 					
 					$scope.setCompany = function (item, tab) {
-						$scope.selectedCompany = null;
-						$timeout(function () {
-							$scope.selectedCompany = angular.copy(item);
-							
-							$scope.data.isBodyOpen = false;
-							if (item && item.id) {
-								$scope.mainData.selectedCompany = item;
+						if (!$scope.selectedCompany || $scope.selectedCompany.id !== item.id) {
+							$scope.selectedCompany = null;
+							companyRepository.getCompany(item.id).then(function(comp) {
+								$scope.selectedCompany = angular.copy(comp);
+								$scope.data.isBodyOpen = false;
+
+								$scope.mainData.selectedCompany = comp;
 								$scope.mainData.selectedCompany1 = item;
-							}
-							
-						
 
-							$scope.tab = tab;
-
-						}, 1);
-
-
+								$scope.tab = tab;
+							}, function(error) {
+								addAlert('error getting company details', 'danger');
+							});
+						} else if($scope.selectedCompany){
+							$scope.data.isBodyOpen = false;
+						}
 					}
 
 					$scope.save = function (result) {
@@ -151,10 +150,10 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 					}
 
 
-					$scope.$watch('mainData.companies',
+					$scope.$watch('mainData.hostCompanies',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue) {
-						 		$scope.list = $scope.mainData.companies;
+						 		$scope.list = $scope.mainData.hostCompanies;
 						 		$scope.tableParams.reload();
 						 		$scope.tableParams.$params.page = 1;
 								$scope.fillTableData($scope.tableParams);
@@ -181,6 +180,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 					$scope.$on('hostChanged', function() {
 						$scope.selectedCompany = null;
 						dataSvc.isBodyOpen = true;
+						
 					});
 					$scope.copycompany = function (event, item) {
 						event.stopPropagation();
@@ -212,9 +212,13 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							return false;
 						});
 					}
+					$scope.refreshData = function (event) {
+						event.stopPropagation();
+						$scope.$parent.$parent.refreshHostAndCompanies();
+					}
 					var init = function () {
 
-						$scope.list = $scope.mainData.companies;
+						$scope.list = $scope.mainData.hostCompanies;
 						var querystring = $location.search();
 						if ($scope.mainData.fromSearch && $scope.mainData.selectedCompany) {
 							$scope.mainData.fromSearch = false;

@@ -30,7 +30,7 @@ namespace HrMaxxAPI.Controllers.Hosts
 		}
 
 		[HttpGet]
-		[Route(HostRoutes.Host)]
+		[Route(HostRoutes.MyHost)]
 		public Host GetHost()
 		{
 			return MakeServiceCall(() => _hostService.GetHost(CurrentUser.Host), "Get Current User's host", true);
@@ -41,6 +41,13 @@ namespace HrMaxxAPI.Controllers.Hosts
 		public IList<Host> GetHosts()
 		{
 			return MakeServiceCall(() => _hostService.GetHostList(CurrentUser.Host), "Get list of all hosts", true);
+		}
+
+		[HttpGet]
+		[Route(HostRoutes.Host)]
+		public Host GetHostById(Guid id)
+		{
+			return MakeServiceCall(() => _hostService.GetHost(id), "Get Host by id=" + id, true);
 		}
 
 		[HttpGet]

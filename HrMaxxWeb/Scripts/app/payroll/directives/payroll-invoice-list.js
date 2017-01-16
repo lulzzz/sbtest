@@ -105,6 +105,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							$timeout(function () {
 								
 								$scope.selectedInvoice = angular.copy(item);
+								$scope.$parent.$parent.setHostandCompanyFromInvoice(item.company.hostId, item.company);
 								$location.hash('invoice');
 
 								// call $anchorScroll()
@@ -146,16 +147,10 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							
 						});
 					}
-					
-					$scope.$watch('mainData.selectedHost',
-						 function (newValue, oldValue) {
-						 	if (newValue !== oldValue) {
-								 getInvoices($scope.mainData.selectedHost.id, null);
-							 }
-
-						 }, true
-				 );
-					
+					$scope.refreshData = function(event) {
+						event.stopPropagation();
+						getInvoices();
+					}
 					var init = function () {
 						var invoice = null;
 						var querystring = $location.search();

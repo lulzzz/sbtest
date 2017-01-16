@@ -281,6 +281,7 @@
     <Compile Include="Resources\Common\FileAttachmentResource.cs" />
     <Compile Include="Resources\Common\NewsResource.cs" />
     <Compile Include="Resources\Common\NotificationsResource.cs" />
+    <Compile Include="Resources\Common\ViewObjectResources.cs" />
     <Compile Include="Resources\EntityIDResource.cs" />
     <Compile Include="Resources\Journals\JournalListResource.cs" />
     <Compile Include="Resources\Journals\JournalResource.cs" />
@@ -466,6 +467,14 @@
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Models\HrMaxx.OnlinePayroll.Models.csproj">
       <Project>{47df73ff-0053-4e97-9477-06ce38ad3020}</Project>
       <Name>HrMaxx.OnlinePayroll.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.ReadRepository\HrMaxx.OnlinePayroll.ReadRepository.csproj">
+      <Project>{A2EA6FCA-A8B2-445F-B8B8-4FF4D60034D3}</Project>
+      <Name>HrMaxx.OnlinePayroll.ReadRepository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.ReadServices\HrMaxx.OnlinePayroll.ReadServices.csproj">
+      <Project>{6B85B4D8-7767-42D9-9F64-9E4CD0B2225E}</Project>
+      <Name>HrMaxx.OnlinePayroll.ReadServices</Name>
     </ProjectReference>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Repository\HrMaxx.OnlinePayroll.Repository.csproj">
       <Project>{519f5a7e-cb1b-4bfa-8df5-441507365547}</Project>

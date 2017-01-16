@@ -55,6 +55,7 @@
     <Compile Include="Services\ICompanyService.cs" />
     <Compile Include="Services\IJournalService.cs" />
     <Compile Include="Services\IDashboardService.cs" />
+    <Compile Include="Services\IReaderService.cs" />
     <Compile Include="Services\IReportService.cs" />
     <Compile Include="Services\IScheduledJobService.cs" />
     <Compile Include="Services\ITaxationService.cs" />

@@ -10,7 +10,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		List<EmployeeAccumulation> GetEmployeeGroupedChecks(ReportRequest request, bool includeVoids);
 		PayrollAccumulation GetCompanyPayrollCube(ReportRequest request);
 		List<CompanyPayrollCube> GetCompanyCubesForYear(Guid companyId, int year);
-		DashboardData GetDashboardData(DashboardRequest dashboardRequest);
+		List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest);
 		ExtractResponse GetExtractReport(ReportRequest extractReport);
 		List<MasterExtract> GetExtractList(string report);
 		SearchResults GetSearchResults(string criteria, string role, Guid host, Guid company);

@@ -103,7 +103,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.GetDashBoardReport)]
-		public DashboardData GetDashboardData(DashboardRequestResource request)
+		public List<DashboardData> GetDashboardData(DashboardRequestResource request)
 		{
 			var dashboardRequest = Mapper.Map<DashboardRequestResource, DashboardRequest>(request);
 			if(CurrentUser.Host!=Guid.Empty)

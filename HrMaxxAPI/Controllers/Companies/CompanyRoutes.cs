@@ -4,6 +4,7 @@
 	{
 		public const string MetaData = "Company/MetaData";
 		public const string Companies = "Company/Companies/{hostId:guid}";
+		public const string Company = "Company/Company/{id:guid}";
 		public const string Save = "Company/Save";
 
 		public const string SaveDeduction = "Company/Deduction";

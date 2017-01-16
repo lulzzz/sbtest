@@ -20,7 +20,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						payrollsWithoutInvoice: [],
 						companiesWithoutPayroll: [],
 						filterApproachingPayroll: '',
-						myNews:[]
+						myNews: [],
+						reportData:[]
 					}
 
 					$scope.zionAPI = zionAPI; 
@@ -39,13 +40,20 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedChart = null;
 						var element = angular.element(document.querySelector('#ncDetailedCriteriaForProject'));
 						element.html('');
+						reportRepository.getDashboardData('GetUserDashboard', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+							dataSvc.reportData = data;
+							$scope.chartData = [];
+							$scope.drawPayrollChart();
+							$scope.drawInvoiceChart();
+							$scope.drawPayrollWithoutInvoiceChart();
+							$scope.drawCompaniesWithApproachingPayrolls();
+							$scope.drawCompaniesWithoutPayrollChart();
+
+						}, function (error) {
+							console.log(error);
+						});
 						
-						$scope.chartData = [];
-						$scope.drawPayrollChart();
-						$scope.drawInvoiceChart();
-						$scope.drawPayrollWithoutInvoiceChart();
-						$scope.drawCompaniesWithApproachingPayrolls();
-						$scope.drawCompaniesWithoutPayrollChart();
+						
 					};
 					var mapListToDataTable = function (input) {
 						return new google.visualization.arrayToDataTable(input.data);
@@ -70,7 +78,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					$scope.drawInvoiceChart = function () {
-						reportRepository.getDashboardData('GetInvoiceChartData', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+						var data = $filter('filter')(dataSvc.reportData, { result: 'GetInvoiceChartData' }, true)[0];
+						if (data) {
 							var ws_data = null;
 							ws_data = mapListToDataTable(data);
 							clearIfExists('InvoiceChartData', data.data, 'Companies with outstanding invoices by age');
@@ -93,14 +102,13 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							var chart = new google.visualization.ComboChart($element.find('#invoiceChart')[0]);
 							var element = angular.element(document.querySelector('#invoiceChart'));
 							handleChart(chart, element, ws_data, data, options, true);
-
-						}, function (error) {
-							console.log(error);
-						});
+						}
+						
 
 					};
 					$scope.drawPayrollChart = function () {
-						reportRepository.getDashboardData('GetPayrollChartData', $scope.data.startDate, $scope.data.endDate,  '').then(function (data) {
+						var data = $filter('filter')(dataSvc.reportData, { result: 'GetPayrollChartData' }, true)[0];
+						if (data) {
 							var ws_data = null;
 							ws_data = mapListToDataTable(data);
 							clearIfExists('PayrollChartData', data.data, 'Companies with outstanding invoices with approaching payroll date');
@@ -123,39 +131,30 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							var element = angular.element(document.querySelector('#payrollChart'));
 							handleChart(chart, element, ws_data, data, options, true);
 
-						}, function (error) {
-							console.log(error);
-						});
+						}
+						
 
 					};
 
 					$scope.drawPayrollWithoutInvoiceChart = function () {
-						reportRepository.getDashboardData('GetPayrollsWithoutInvoice', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+						var data = $filter('filter')(dataSvc.reportData, { result: 'GetPayrollsWithoutInvoice' })[0];
+						if (data) {
 							dataSvc.payrollsWithoutInvoice = data.data;
-
-						}, function (error) {
-							console.log(error);
-						});
-
+						}
 					};
 					$scope.drawCompaniesWithoutPayrollChart = function () {
-						reportRepository.getDashboardData('GetCompaniesWithoutPayroll', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+						var data = $filter('filter')(dataSvc.reportData, { result: 'GetCompaniesWithoutPayroll' })[0];
+						if (data) {
 							dataSvc.companiesWithoutPayroll = data.data;
-
-						}, function (error) {
-							console.log(error);
-						});
-
+						}
 					};
 
 					$scope.drawCompaniesWithApproachingPayrolls = function () {
-						reportRepository.getDashboardData('GetCompaniesNextPayrollChartData', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+						var data = $filter('filter')(dataSvc.reportData, { result: 'GetCompaniesNextPayrollChartData' })[0];
+						if (data) {
 							dataSvc.approachingPayrolls = data.data;
 							dataSvc.filteredApproachingPayrolls = angular.copy(data.data);
-						}, function (error) {
-							console.log(error);
-						});
-
+						}
 					};
 
 					$scope.filterCompaniesApproachingPayroll = function() {

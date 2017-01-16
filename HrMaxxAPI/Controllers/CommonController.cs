@@ -7,6 +7,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Resources.Common;
@@ -19,12 +20,14 @@ namespace HrMaxxAPI.Controllers
 		public readonly ICommonService _commonService;
 		public readonly IMetaDataService _metaDataService;
 		private readonly IMementoDataService _mementoDataService;
+		private readonly IReaderService _readerService;
 		
-		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService)
+		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService, IReaderService readerService)
 		{
 			_commonService = commonService;
 			_metaDataService = metaDataService;
 			_mementoDataService = mementoDataService;
+			_readerService = readerService;
 		}
 
 		[HttpGet]
@@ -149,6 +152,21 @@ namespace HrMaxxAPI.Controllers
 		public List<SearchResult> FillSearchTable()
 		{
 			return MakeServiceCall(() => _metaDataService.FillSearchTable(), "fill search table", true);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.GetHostsAndCompanies)]
+		public HostAndCompaniesResource GetHostsAndCompanies()
+		{
+			var paramList = new List<FilterParam>
+			{
+				new FilterParam() {Key = "host", Value = CurrentUser.Host==Guid.Empty ? null : CurrentUser.Host.ToString()},
+				new FilterParam() {Key = "company", Value = CurrentUser.Company==Guid.Empty ? null : CurrentUser.Company.ToString()},
+				new FilterParam() {Key = "role", Value = CurrentUser.Role==RoleTypeEnum.Master.GetDbName() ? null : CurrentUser.Role}
+			};
+
+			var data = MakeServiceCall(() => _readerService.GetDataFromStoreProc<HostAndCompanies>("GetHostAndCompanies", paramList), "fill search table", true);
+			return Mapper.Map<HostAndCompanies, HostAndCompaniesResource>(data);
 		}
 	}
 }

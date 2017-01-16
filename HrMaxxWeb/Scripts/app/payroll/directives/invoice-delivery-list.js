@@ -113,6 +113,10 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 						});
 						$window.print();
 					}
+					$scope.refreshData = function(event) {
+						event.stopPropagation();
+						init();
+					}
 					var init = function () {
 						
 						getInvoices();

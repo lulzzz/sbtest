@@ -31,6 +31,7 @@
           <Property Name="ReceiverType" Type="int" Nullable="false" />
           <Property Name="ReceiverId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Name" Type="varchar(max)" Nullable="false" />
+          <Property Name="CompanyName" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="ACHTransactionExtract">
           <Key>
@@ -2668,6 +2669,7 @@
           <Property Name="ReceiverId" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="ACHTransactionExtracts" Relationship="HrMaxxModel.FK_ACHTransactionExtract_ACHTransaction" FromRole="ACHTransaction" ToRole="ACHTransactionExtract" />
+          <Property Name="CompanyName" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ACHTransactionExtract">
           <Key>
@@ -3322,6 +3324,7 @@
           <EntitySetMapping Name="ACHTransactions">
             <EntityTypeMapping TypeName="HrMaxxModel.ACHTransaction">
               <MappingFragment StoreEntitySet="ACHTransaction">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ReceiverId" ColumnName="ReceiverId" />
                 <ScalarProperty Name="ReceiverType" ColumnName="ReceiverType" />

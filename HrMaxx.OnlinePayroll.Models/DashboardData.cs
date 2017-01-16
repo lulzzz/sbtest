@@ -8,6 +8,7 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class DashboardData
 	{
+		public string Result { get; set; }
 		public List<object> Data { get; set; }
 	}
 

@@ -2,7 +2,7 @@
 {
 	public class HostRoutes
 	{
-		
+		public const string Host = "Host/Host/{id:guid}";
 		public const string Hosts = "Host/Hosts";
 		public const string Save = "Host/Save";
 		public const string HostHomePage = "Host/HomePage/{cpaId:guid}";
@@ -13,6 +13,6 @@
 		public const string HostWelcomeByFirmName = "Host/HostWelcomeByFirmName/{firmName}";
 
 		public const string NewsMetaData = "Host/NewsMetaData";
-		public const string Host = "Host/MyHost";
+		public const string MyHost = "Host/MyHost";
 	}
 }

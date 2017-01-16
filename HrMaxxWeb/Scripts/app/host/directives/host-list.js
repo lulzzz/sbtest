@@ -74,25 +74,30 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					$scope.selectedHost = null;
 					$scope.isBodyOpen = true;
 				}
-				
+				$scope.refreshData = function (event) {
+					event.stopPropagation();
+					$scope.$parent.$parent.refreshHostAndCompanies();
+				}
 				$scope.setSelectedHost = function (item) {
-					$scope.selectedHost = null;
-					$timeout(function () {
-						$scope.selectedHost = angular.copy(item);
-						$scope.selectedHost.sourceTypeId = $scope.sourceTypeId;
-						$scope.isBodyOpen = false;
-						$scope.mainData.selectedCompany = null;
-						$scope.mainData.selectedCompany1 = null;
-						if (!$scope.mainData.selectedHost || ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id)) {
-							$scope.mainData.selectedHost = item;
-							
-							$scope.$parent.$parent.hostSelected();
-						}
-						$scope.tab = 1;
-						$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
-					}, 1);
-					
-					
+					if (!$scope.selectedHost || $scope.selectedHost.id !== item.id) {
+						$scope.selectedHost = null;
+						hostRepository.getHost(item.id).then(function (data) {
+							$scope.selectedHost = angular.copy(data);
+							$scope.mainData.selectedHost = data;
+							$scope.isBodyOpen = false;
+							$scope.mainData.selectedCompany = null;
+							$scope.mainData.selectedCompany1 = null;
+							if (!$scope.mainData.selectedHost || ($scope.mainData.selectedHost && $scope.mainData.selectedHost.id !== item.id)) {
+								$scope.mainData.selectedHost = item;
+
+								$scope.$parent.$parent.hostSelected();
+							}
+							$scope.tab = 1;
+							$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
+						}, function (erorr) {
+							addAlert('error getting host details', 'danger');
+						});
+					}
 				}
 
 				$scope.getRowClass = function(item) {
@@ -147,31 +152,24 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 				var init = function () {
 					if (!$scope.mainData.userHost) {
 						var querystring = $location.search();
-						hostRepository.getHostList().then(function (data) {
-							$scope.list = data;
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-							if ($scope.mainData.selectedHost) {
-								var selected1 = $filter('filter')($scope.list, { id: $scope.mainData.selectedHost.id });
-								if (selected1.length > 0) {
-									$scope.setSelectedHost(selected1[0]);
-								}
+						$scope.list = $scope.mainData.hosts;
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
+						if ($scope.mainData.selectedHost) {
+							var selected1 = $filter('filter')($scope.list, { id: $scope.mainData.selectedHost.id });
+							if (selected1.length > 0) {
+								$scope.setSelectedHost(selected1[0]);
 							}
-							else if (querystring.host) {
-								var selected = $filter('filter')($scope.list, { firmName: querystring.host });
-								if (selected.length > 0) {
-									$scope.setSelectedHost(selected[0]);
-								}
+						}
+						else if (querystring.host) {
+							var selected = $filter('filter')($scope.list, { firmName: querystring.host });
+							if (selected.length > 0) {
+								$scope.setSelectedHost(selected[0]);
 							}
-						}, function (erorr) {
-
-						});
+						}
 					} else {
-						hostRepository.getMyHost().then(function(data) {
-							$scope.setSelectedHost(data);
-						}, function(error) {
-							addAlert('Error getting the host', 'danger');
-						});
+						$scope.setSelectedHost($scope.mainData.selectedHost);
+						
 					}
 					
 				}

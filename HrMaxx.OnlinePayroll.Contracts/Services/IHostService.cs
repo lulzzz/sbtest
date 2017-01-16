@@ -21,6 +21,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetHostHomePageByUrl(string url, Guid host);
 		object GetNewsfeedMetaData(RoleTypeEnum role, Guid? entityId);
 		object GetHostHomePageByFirmName(string firmName, Guid host);
-		
+
+		HostAndCompanies GetHostAndCompanies(Guid host, Guid company, string role);
 	}
 }

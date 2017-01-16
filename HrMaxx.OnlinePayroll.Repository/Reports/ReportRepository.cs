@@ -98,7 +98,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return _mapper.Map<List<Models.DataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes);
 		}
 
-		public DashboardData GetDashboardData(DashboardRequest dashboardRequest)
+		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
 		{
 			return getDashboardData(dashboardRequest.Report, dashboardRequest.Host, dashboardRequest.Role, dashboardRequest.StartDate, dashboardRequest.EndDate, dashboardRequest.Criteria);
 		}
@@ -291,9 +291,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		}
 
 
-		private DashboardData getDashboardData(string query, Guid? host, string role, DateTime? startDate = null, DateTime? endDate = null, string criteria = null)
+		private List<DashboardData> getDashboardData(string query, Guid? host, string role, DateTime? startDate = null, DateTime? endDate = null, string criteria = null)
 		{
-			var chartData = new List<object>();
+			
 			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(query))
@@ -314,26 +314,43 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 
 					cmd.Connection = con;
 					con.Open();
+					var returnList = new List<DashboardData>();
 					using (SqlDataReader sdr = cmd.ExecuteReader())
 					{
-						var columns = new List<object>();
-						for (int i = 0; i < sdr.FieldCount; i++)
+						while (sdr.HasRows)
 						{
-							columns.Add(sdr.GetName(i));
-						}
-						chartData.Add(columns.ToArray());
-						while (sdr.Read())
-						{
-							var row = new List<object>();
-							for (int i = 0; i < sdr.FieldCount; i++)
+							var resultset = sdr.GetName(0);
+							if (!string.IsNullOrWhiteSpace(resultset) && resultset.Equals("Report"))
 							{
-								row.Add(sdr[columns[i].ToString()]);
+								sdr.Read();
+								var dashboardData = new DashboardData() { Result = sdr[resultset].ToString() };
+								sdr.NextResult();
+								var chartData = new List<object>();
+								var columns = new List<object>();
+								for (int i = 0; i < sdr.FieldCount; i++)
+								{
+									columns.Add(sdr.GetName(i));
+								}
+								chartData.Add(columns.ToArray());
+								while (sdr.Read())
+								{
+									var row = new List<object>();
+									for (int i = 0; i < sdr.FieldCount; i++)
+									{
+										row.Add(sdr[columns[i].ToString()]);
+									}
+									chartData.Add(row.ToArray());
+								}
+								dashboardData.Data = chartData;
+								returnList.Add(dashboardData);
 							}
-							chartData.Add(row.ToArray());
+							sdr.NextResult();
+							
 						}
+						
 					}
 					con.Close();
-					return new DashboardData { Data = chartData };
+					return returnList;
 				}
 			}
 		}

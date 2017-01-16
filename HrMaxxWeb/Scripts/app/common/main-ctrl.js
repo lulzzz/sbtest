@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal',
-	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal) {
+	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal', 'commonRepository',
+	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal, commonRepository) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
@@ -16,12 +16,7 @@
 				}
 				
 			});
-			//$window.addEventListener("beforeunload", function (e) {
-			//	var confirmationMessage = "\o/";
-
-			//	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-			//	return confirmationMessage;                            //Webkit, Safari, Chrome
-			//});
+			
 			var modalInstance = $modal.open({
 				templateUrl: 'popover/messages.html',
 				controller: 'messageCtrl',
@@ -70,6 +65,7 @@
 		var dataSvc = {
 			hosts: [],
 			companies: [],
+			hostCompanies: [],
 			selectedHost: null,
 			selectedCompany: null,
 			isFilterOpen: true,
@@ -91,9 +87,29 @@
 					quarter: 0
 				}
 			},
-			
+			refreshedOn: null
 		};
 		$scope.data = dataSvc;
+		$scope.refreshHostAndCompanies = function() {
+			commonRepository.getHostsAndCompanies().then(function (data) {
+				dataSvc.hosts = data.hosts;
+				dataSvc.companies = data.companies;
+				dataSvc.refreshedOn = new Date();
+				if (dataSvc.userHost) {
+					var uhost = $filter('filter')(dataSvc.hosts, { id: dataSvc.userHost })[0];
+					dataSvc.selectedHost = uhost;
+				}
+				else if (dataSvc.hosts.length === 1) {
+					dataSvc.selectedHost = dataSvc.hosts[0];
+				}
+				if (dataSvc.selectedHost) {
+					$scope.hostSelected();
+				}
+			}, function (error) {
+				$scope.addAlert('error getting list of hosts', 'danger');
+			});
+		}
+		
 		
 		function _init() {
 			var auth = localStorageService.get('authorizationData');
@@ -109,24 +125,7 @@
 					dataSvc.userCompany = dataInput.company;
 					
 				}
-				hostRepository.getHostList().then(function (data) {
-					dataSvc.hosts = data;
-					if (dataSvc.userHost) {
-						var uhost = $filter('filter')(dataSvc.hosts, { id: dataSvc.userHost })[0];
-						dataSvc.selectedHost = uhost;
-					}
-					else if (dataSvc.hosts.length === 1) {
-						dataSvc.selectedHost = dataSvc.hosts[0];
-					}
-					if (dataSvc.selectedHost) {
-						$scope.hostSelected();
-					}
-				}, function (error) {
-					$scope.addAlert('error getting list of hosts', 'danger');
-				});
-				
-				
-
+				$scope.refreshHostAndCompanies();
 				dataSvc.showFilterPanel = !dataSvc.userHost || (dataSvc.userHost && !dataSvc.userCompany);
 				dataSvc.showCompanies = !dataSvc.userCompany;
 				dataSvc.isReady = true;
@@ -135,23 +134,20 @@
 		};
 		
 		$scope.setHostandCompany = function (hostId, companyId, url) {
-			if(!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id!==hostId))
+			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
+				$scope.hostSelected();
+			}
 			
 			if (dataSvc.selectedHost) {
 				if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
 					dataSvc.selectedCompany = null;
-					companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function(data) {
-						dataSvc.companies = data;
-						var selected = $filter('filter')(dataSvc.companies, { id: companyId })[0];
-						dataSvc.selectedCompany1 = selected;
-						$scope.companySelected();
-						if(url)
+					dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
+					if (dataSvc.selectedCompany1) {
+						dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
+						if (url)
 							$window.location.href = url;
-					}, function(erorr) {
-						$scope.addAlert('error getting company list', 'danger');
-					});
-					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+					}
 				} else {
 					if (url) {
 						$window.location.href = url;
@@ -161,37 +157,62 @@
 				
 			}
 		}
+		$scope.setHostandCompanyFromInvoice = function(hostId, company){
+			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
+				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
+				$scope.hostSelected();
+			}
+			dataSvc.selectedCompany1 = company;
+			dataSvc.selectedCompany = angular.copy(company);
+		}
 
 		$scope.getCompanies = function (sel) {
-			companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
-				dataSvc.companies = data;
-				if (dataSvc.userCompany) {
-					var selected = $filter('filter')(dataSvc.companies, {id: dataSvc.userCompany})[0];
-					dataSvc.selectedCompany = selected;
-					$window.location.href = "#!/Client/Company/" + (new Date().getTime());
-				}
-				else if (sel) {
-					var selected2 = $filter('filter')(dataSvc.companies, { id: sel.id })[0];
-					dataSvc.selectedCompany = selected2;
-				}
-			}, function (erorr) {
-				$scope.addAlert('error getting company list', 'danger');
-			});
+			//companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
+			//	dataSvc.companies = data;
+			//	if (dataSvc.userCompany) {
+			//		var selected = $filter('filter')(dataSvc.companies, {id: dataSvc.userCompany})[0];
+			//		dataSvc.selectedCompany = selected;
+			//		$window.location.href = "#!/Client/Company/" + (new Date().getTime());
+			//	}
+			//	else if (sel) {
+			//		var selected2 = $filter('filter')(dataSvc.companies, { id: sel.id })[0];
+			//		dataSvc.selectedCompany = selected2;
+			//	}
+			//}, function (erorr) {
+			//	$scope.addAlert('error getting company list', 'danger');
+			//});
+			dataSvc.hostCompanies = $filter('filter')(dataSvc.companies, {hostId: dataSvc.selectedHost.id});
+
 		}
 		$scope.hostSelected = function () {
 			dataSvc.selectedCompany = null;
 			dataSvc.selectedCompany1 = null;
 			if (dataSvc.selectedHost) {
-				var match = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
-				dataSvc.selectedHost = angular.copy(match);
+				//var match = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
+				//dataSvc.selectedHost = angular.copy(match);
+				if (!dataSvc.selectedHost.company) {
+					getHostDetails();
+				}
 				$scope.getCompanies(null);
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 			}
 				
 		}
+		var getHostDetails = function() {
+			hostRepository.getHost(dataSvc.selectedHost.id).then(function (data) {
+				dataSvc.selectedHost = angular.copy(data);
+			}, function (erorr) {
+				addAlert('error getting host details', 'danger');
+			});
+		}
 		$scope.companySelected = function ($item, $model, $label, $event) {
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
 				dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
+				companyRepository.getCompany(dataSvc.selectedCompany.id).then(function (comp) {
+					dataSvc.selectedCompany = angular.copy(comp);
+				}, function (error) {
+					$scope.addAlert('error getting company details', 'danger');
+				});
 				dataSvc.isFilterOpen = false;
 			}
 		}

@@ -253,5 +253,10 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public HostAndCompanies GetHostAndCompanies(Guid host, Guid company, string role)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

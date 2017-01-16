@@ -734,7 +734,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			//return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
 		}
 
-		public DashboardData GetDashboardData(DashboardRequest dashboardRequest)
+		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
 		{
 			try
 			{

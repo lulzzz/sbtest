@@ -15,6 +15,7 @@ using HrMaxxAPI.Resources.OnlinePayroll;
 using HrMaxxAPI.Resources.Payroll;
 using HrMaxxAPI.Resources.Reports;
 using Magnum;
+using Newtonsoft.Json;
 
 namespace HrMaxxAPI.Code.Mappers
 {
@@ -28,6 +29,11 @@ namespace HrMaxxAPI.Code.Mappers
 		protected override void Configure()
 		{
 			base.Configure();
+
+			CreateMap<HostAndCompanies, HostAndCompaniesResource>();
+			CreateMap<HostListItem, HostListItemResource>();
+			CreateMap<CompanyListItem, CompanyListItemResource>()
+				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
 
 			CreateMap<HostResource, Host>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))

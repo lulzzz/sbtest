@@ -22,6 +22,16 @@ common.factory('hostRepository', [
 
 				return deferred.promise;
 			},
+			getHost: function (id) {
+				var deferred = $q.defer();
+				hostServer.one('Host').one(id).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getHostWelcomePage: function (url) {
 				var deferred = $q.defer();
 				hostServer.one('HostWelcome', url).get().then(function (data) {

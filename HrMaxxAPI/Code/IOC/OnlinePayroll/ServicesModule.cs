@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Web;
 using Autofac;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.ReadServices;
 using HrMaxx.OnlinePayroll.Services;
 using HrMaxx.OnlinePayroll.Services.ACH;
 using HrMaxx.OnlinePayroll.Services.Dashboard;
@@ -71,6 +72,11 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<ScheduledJobService>()
 				.As<IScheduledJobService>()
+				.SingleInstance()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ReaderService>()
+				.As<IReaderService>()
 				.SingleInstance()
 				.PropertiesAutowired();
 

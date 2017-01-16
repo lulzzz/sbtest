@@ -63,6 +63,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			getCompany: function (id) {
+				var deferred = $q.defer();
+				companyServer.one('Company', id).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveCompany: function (company) {
 				var deferred = $q.defer();
 				companyServer.all('Save').post(company).then(function (data) {
