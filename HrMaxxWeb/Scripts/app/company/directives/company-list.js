@@ -92,7 +92,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							$defer.resolve($scope.tableData);
 						}
 					});
-
+					if ($scope.tableParams.settings().$scope == null) {
+						$scope.tableParams.settings().$scope = $scope;
+					}
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
@@ -224,6 +226,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							$scope.mainData.fromSearch = false;
 							var exists2 = $filter('filter')($scope.list, { id: $scope.mainData.selectedCompany.id }, true)[0];
 							$scope.setCompany(exists2, 1);
+						} else if($scope.mainData.selectedCompany) {
+							$scope.selectedCompany = angular.copy($scope.mainData.selectedCompany);
+							$scope.data.isBodyOpen = false;
 						}
 						else if ($scope.mainData.userCompany !== '00000000-0000-0000-0000-000000000000') {
 							var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userCompany }, true)[0];

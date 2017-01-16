@@ -147,7 +147,9 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							$defer.resolve($scope.tableData);
 						}
 					});
-
+					if ($scope.tableParams.settings().$scope == null) {
+						$scope.tableParams.settings().$scope = $scope;
+					}
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {

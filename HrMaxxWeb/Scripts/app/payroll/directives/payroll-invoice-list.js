@@ -49,7 +49,9 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							$defer.resolve($scope.tableData);
 						}
 					});
-
+					if ($scope.tableParams.settings().$scope == null) {
+						$scope.tableParams.settings().$scope = $scope;
+					}
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
