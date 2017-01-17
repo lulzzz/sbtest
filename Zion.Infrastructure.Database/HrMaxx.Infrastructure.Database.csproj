@@ -241,6 +241,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\009F_Dahsboard and Fetch Host and companies.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\009G_extract changes corpstaff access changes.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Zion.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>
