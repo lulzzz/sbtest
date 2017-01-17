@@ -36,8 +36,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
-					
-					
+
+					$scope.host = $scope.$parent.$parent.mainData.selectedHost;
 					$scope.tableData = [];
 					$scope.tableParams = new ngTableParams({
 						count: $scope.list ? $scope.list.length : 0,

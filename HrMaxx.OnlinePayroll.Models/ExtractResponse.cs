@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Xsl;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
@@ -14,6 +15,10 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public ReportRequest Report { get; set; }
 		public ExtractResponse Data { get; set; }
+		public string Template { get; set; }
+		public string ArgumentList { get; set; }
+		public string FileName { get; set; }
+		public string Extension { get; set; }
 		public FileDto File { get; set; }
 	}
 

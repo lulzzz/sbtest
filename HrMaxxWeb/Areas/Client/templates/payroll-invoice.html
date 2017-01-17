@@ -134,6 +134,7 @@
 							{{invoice.company.companyAddress.addressLine1}}<br />
 							{{invoice.company.companyAddress.city}}, CA {{invoice.company.companyAddress.zip}}{{invoice.company.companyAddress.zipExtension? ' - ' + invoice.company.companyAddress.zipExtension : ''}}<br />
 							{{ getContactPhone(data.companyContact) }}<br />
+							<span ng-show="data.companyContact.fax">{{ getContactFax(data.companyContact) }}<br /></span>
 							{{ data.companyContact.firstName + ' ' + data.companyContact.lastName}}
 						</td>
 						<td class="text-right col-sm-5" ng-class="{'visible-print': invoice.status===1}">
@@ -237,7 +238,7 @@
 							<td>{{dd.method===1?'':'$'}}{{dd.rate | currency:''}}{{dd.method===1?'%':''}}</td>
 							<td class="text-left">{{dd.amount | currency:'$'}}</td>
 						</tr>
-						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===1" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType > 2}">
+						<tr ng-if="invoice.companyInvoiceSetup.invoiceStyle===1 || !invoice.companyInvoiceSetup.invoiceStyle" ng-class="{'info': invoice.companyInvoiceSetup.invoiceType===1 || invoice.companyInvoiceSetup.invoiceType===2, 'hidden-print': invoice.companyInvoiceSetup.invoiceType > 2}">
 							<td colspan="3">
 								<i class="fa fa-lg hidden-print" ng-show="invoice.companyInvoiceSetup.invoiceStype!==2" ng-class="{'fa-minus-circle': invoice.expandedER, 'fa-plus-circle':!invoice.expandedER}" ng-click="invoice.expandedER=!invoice.expandedER"></i>
 								<em>

@@ -71,7 +71,10 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						}
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
 						
-						$scope.setCompany(selectedCompany, 1);
+						$scope.selectedCompany = angular.copy(selectedCompany);
+						$scope.data.isBodyOpen = false;
+
+						$scope.tab = 1;
 					}
 
 					$scope.tableData = [];

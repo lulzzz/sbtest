@@ -55,7 +55,7 @@ namespace HrMaxx.Common.Services.PDF
 						var objField = fileFields[m];
 						var normalField = model.NormalFontFields.FirstOrDefault(nf => nf.Key.ToLower().Equals(objField.FieldName.ToLower()));
  						var boldField = model.BoldFontFields.FirstOrDefault(nf => nf.Key.ToLower().Equals(objField.FieldName.ToLower()));
-						if (normalField.Key!=null)
+						if (normalField.Key!=null && normalField.Value!=null)
 						{
 							if (normalField.Key.Equals("MICR"))
 							{
@@ -68,7 +68,7 @@ namespace HrMaxx.Common.Services.PDF
 								
 							}	
 						}
-						else if (boldField.Key!=null)
+						else if (boldField.Key != null && boldField.Value != null)
 						{
 							objField.SetFieldValue(boldField.Value, objFontBold);
 						}

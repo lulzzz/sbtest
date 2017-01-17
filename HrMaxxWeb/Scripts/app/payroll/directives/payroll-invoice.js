@@ -379,7 +379,18 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							p = c.phone ? c.phone : (c.mobile ? c.mobile : '');
 						}
 						if (p)
-							return '(' + p.substring(0, 3) + ') ' + p.substring(3, 7) + '-' + p.substring(7, 12);
+							return 'Ph: (' + p.substring(0, 3) + ') ' + p.substring(3, 7) + '-' + p.substring(7, 12);
+						else {
+							return '';
+						}
+					}
+					$scope.getContactFax = function (c) {
+						var p = '';
+						if (c) {
+							p = c.fax ? c.fax : '';
+						}
+						if (p)
+							return 'Fax: (' + p.substring(0, 3) + ') ' + p.substring(3, 7) + '-' + p.substring(7, 12);
 						else {
 							return '';
 						}

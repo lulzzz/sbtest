@@ -524,7 +524,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					{
 						var accounts = _companyService.GetComanyAccounts(host.HostCompany.Id);
 						if (!accounts.Any() || !accounts.Any(a => a.UseInPayroll))
-							throw new Exception("No Payroll Account");
+							throw new Exception(string.Format("No Payroll Account for Company {0}", host.HostCompany.Name));
 
 
 						var amount = CalculateTaxAmount(extract.Report, host);
@@ -545,7 +545,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " File Taxes for " + extract.Report.Description);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " File Taxes for " + extract.Report.Description + " - " + e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

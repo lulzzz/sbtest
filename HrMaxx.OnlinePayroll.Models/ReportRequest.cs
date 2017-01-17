@@ -21,6 +21,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? DepositDate { get; set; }
 		public string Description { get; set; }
 		public bool AllowFiling { get; set; }
+		public bool AllowExclude { get; set; }
 		public bool IncludeVoids { get; set; }
 		
 		public ExtractType ExtractType

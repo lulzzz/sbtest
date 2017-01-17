@@ -25,6 +25,7 @@ using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxx.OnlinePayroll.Repository.Reports;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services.Reports
 {
@@ -254,7 +255,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = false;
 
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 			
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostWCReport.xslt", "xls", request.Description + ".xls");
 		}
@@ -312,8 +313,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.Description = string.Format("Daily Deposit Report {0}-{1}", request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = false;
 
-			var argList = new XsltArgumentList();
-			argList.AddParam("today", "", request.StartDate.ToString("MM/dd/yyyy"));
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("today", request.StartDate.ToString("MM/dd/yyyy")));
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/DailyDepositReport.xslt", "xls", request.Description + ".xls");
 		}
 
@@ -325,7 +326,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
 			request.AllowFiling = false;
 
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/InternalPositivePayReport.xslt", "xls", request.Description + ".xls");
 		}
@@ -340,7 +341,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.Description = string.Format("Garnishment Report {0} - {1}", request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"));
 			request.AllowFiling = true;
 
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/GarnishmentReport.xslt", "xls", request.Description + ".xls");
 		}
@@ -376,7 +377,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.Description = string.Format("{0} Positive Pay Report {1}", data.Hosts.First().Host.FirmName,  request.StartDate.ToString("MMddyyyy"));
 			request.AllowFiling = false;
 
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/PositivePayReport.xslt", "txt", request.Description + ".txt");
 		}
@@ -463,19 +464,20 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Federal 940 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
+			request.AllowExclude = true;
 			var tempDepositSchedule = request.DepositSchedule;
 			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
 			var reportConst = _taxationService.PullReportConstant("Form940", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("batchFilerId", "", config.BatchFilerId);
-			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
-			argList.AddParam("fileSeq", "", reportConst);
-			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
-			argList.AddParam("selectedYear", "", request.Year);
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("batchFilerId", config.BatchFilerId));
+			argList.Add(new KeyValuePair<string, string>("masterPinNumber", config.MasterInquiryPin));
+			argList.Add(new KeyValuePair<string, string>("fileSeq", reportConst.ToString()));
+			argList.Add(new KeyValuePair<string, string>("today", DateTime.Today.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal {2} 940 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
 		}
@@ -489,13 +491,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			var reportConst = _taxationService.PullReportConstant("Form940", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("batchFilerId", "", config.BatchFilerId);
-			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
-			argList.AddParam("fileSeq", "", reportConst);
-			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
-			argList.AddParam("selectedYear", "", request.Year);
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("batchFilerId", config.BatchFilerId));
+			argList.Add(new KeyValuePair<string, string>("masterPinNumber", config.MasterInquiryPin));
+			argList.Add(new KeyValuePair<string, string>("fileSeq",  reportConst.ToString()));
+			argList.Add(new KeyValuePair<string, string>("today", DateTime.Today.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPSExcel.xslt", "xls", string.Format("Federal {2} 940 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));
 		}
@@ -507,14 +509,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			var reportConst = _taxationService.PullReportConstant("Form941", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("batchFilerId", "", config.BatchFilerId);
-			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
-			argList.AddParam("fileSeq", "", reportConst);
-			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month +2/ 3)*3);
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("batchFilerId",  config.BatchFilerId));
+			argList.Add(new KeyValuePair<string, string>("masterPinNumber",  config.MasterInquiryPin));
+			argList.Add(new KeyValuePair<string, string>("fileSeq",  reportConst.ToString()));
+			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)(request.EndDate.Month +2/ 3)*3).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -529,14 +531,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			var reportConst = _taxationService.PullReportConstant("Form941", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("batchFilerId", "", config.BatchFilerId);
-			argList.AddParam("masterPinNumber", "", config.MasterInquiryPin);
-			argList.AddParam("fileSeq", "", reportConst);
-			argList.AddParam("today", "", DateTime.Today.ToString("yyyyMMdd"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("yyyyMMdd"));
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month+2 / 3)*3);
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("batchFilerId", config.BatchFilerId));
+			argList.Add(new KeyValuePair<string, string>("masterPinNumber", config.MasterInquiryPin));
+			argList.Add(new KeyValuePair<string, string>("fileSeq",  reportConst.ToString()));
+			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)(request.EndDate.Month+2 / 3)*3).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPSExcel.xslt", "xls", string.Format("Federal {2} 941 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -546,12 +548,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = true;
 			var data = GetExtractResponse(request);
 			
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 		
-			argList.AddParam("reportConst", "", request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104");
-			argList.AddParam("enddate", "",request.EndDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
-			argList.AddParam("selectedYear", "", request.Year);
+			argList.Add(new KeyValuePair<string, string>("reportConst", request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104"));
+			argList.Add(new KeyValuePair<string, string>("enddate", request.EndDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPS.xslt", "txt", string.Format("California State {2} PIT & DI GovOne File-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
@@ -563,12 +565,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = true;
 			var data = GetExtractResponse(request);
 
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
-			argList.AddParam("reportConst", "", request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104");
-			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
-			argList.AddParam("selectedYear", "", request.Year);
+			argList.Add(new KeyValuePair<string, string>("reportConst",  request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104"));
+			argList.Add(new KeyValuePair<string, string>("enddate",  request.EndDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPSExcel.xslt", "xls", string.Format("California State {2} PIT & DI Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
@@ -578,16 +580,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("California State UI & ETT for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
+			request.AllowExclude = true;
 			var tempDepositSchedule = request.DepositSchedule;
 			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
-			argList.AddParam("reportConst", "", "01300");
-			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
-			argList.AddParam("selectedYear", "", request.Year);
+			argList.Add(new KeyValuePair<string, string>("reportConst", "01300"));
+			argList.Add(new KeyValuePair<string, string>("enddate",  request.EndDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPS.xslt", "txt", string.Format("California State {2} UI & ETT GovOne File-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
@@ -602,12 +605,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
 
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
-			argList.AddParam("reportConst", "", "01300");
-			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("settleDate", "", request.DepositDate.Value.Date.ToString("MM/dd/yyyy"));
-			argList.AddParam("selectedYear", "", request.Year);
+			argList.Add(new KeyValuePair<string, string>("reportConst",  "01300"));
+			argList.Add(new KeyValuePair<string, string>("enddate",  request.EndDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPSExcel.xslt", "xls", string.Format("California State {2} UI & ETT Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));
@@ -618,10 +621,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = true;
 			var data = GetExtractResponse(request, true);
 			
-			var argList = new XsltArgumentList();
+			var argList = new List<KeyValuePair<string, string>>();
 
-			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month+2 / 3)*3);
-			argList.AddParam("selectedYear", "", request.Year);
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)(request.EndDate.Month+2 / 3)*3).ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE6Transformer.xslt", "txt", string.Format("California State Quarterly DE 6 Reporting File-{0}-{1}.txt", request.Year, request.Quarter));
@@ -633,11 +636,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = false;
 			var data = GetExtractResponse(request);
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("currentYear", "", DateTime.Today.Year);
-			argList.AddParam("tcc", "", config.TCC);
-			argList.AddParam("MagFileUserId", "", config.SsaBsoW2MagneticFileId);
-			argList.AddParam("selectedYear", "", request.Year);
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("currentYear",  DateTime.Today.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("tcc",  config.TCC.ToString()));
+			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.SsaBsoW2MagneticFileId));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/F1099-" + request.Year + ".xslt", "txt", string.Format("Federal/State Form 1099 Magnetic File -{0}.txt", request.Year));
 
@@ -649,12 +652,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = false;
 			var data = GetExtractResponse(request);
 			
-			var argList = new XsltArgumentList();
-			argList.AddParam("quarter", "", request.Quarter);
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("startdate", "", request.StartDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("quarter",  request.Quarter.ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("todaydate", DateTime.Today.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("startdate",  request.StartDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("enddate", request.EndDate.ToString("MM/dd/yyyy")));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Paperless940-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 940-{0}.xls", request.Year));
 			
@@ -666,12 +669,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = false;
 			var data = GetExtractResponse(request, buildCounts:true, buildDaily:true);
 			
-			var argList = new XsltArgumentList();
-			argList.AddParam("quarter", "", request.Quarter);
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("startdate", "", request.StartDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("enddate", "", request.EndDate.ToString("MM/dd/yyyy"));
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("quarter",  request.Quarter.ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("todaydate",  DateTime.Today.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("startdate", request.StartDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("enddate", request.EndDate.ToString("MM/dd/yyyy")));
 
 
 			return
@@ -685,35 +688,50 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var data = GetExtractResponse(request, buildEmployeeAccumulations:true);
 			
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("MagFileUserId", "", config.BatchFilerId);
-			argList.AddParam("selectedYear", "", request.Year);
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.BatchFilerId));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
 			
 		}
-		private Extract GetExtractTransformed(ReportRequest request, ExtractResponse data, XsltArgumentList argList, string template, string extension, string filename)
+		private Extract GetExtractTransformed(ReportRequest request, ExtractResponse data, List<KeyValuePair<string,string>> argList, string template, string extension, string filename)
 		{
-			var xml = GetXml<ExtractResponse>(data);
-
-			var transformed = XmlTransform(xml,
-				string.Format("{0}{1}", _templatePath, template), argList);
-
-			if (extension.Equals("txt"))
-				transformed = Transform(transformed);
-
-			return new Extract()
+			var extract = new Extract()
 			{
 				Report = request,
 				Data = data,
-				File = new FileDto
-				{
-					Data = Encoding.UTF8.GetBytes(transformed),
-					DocumentExtension = extension,
-					Filename = filename,
-					MimeType = "application/octet-stream"	
-				}
+				Template = string.Format("{0}{1}", _templatePath, template),
+				ArgumentList =  JsonConvert.SerializeObject(argList),
+				FileName = filename,
+				Extension = extension
 			};
+			if (!request.AllowExclude)
+			{
+				return GetExtractTransformedWithFile(extract);
+			}
+			return extract;
+		}
+		public Extract GetExtractTransformedWithFile(Extract extract)
+		{
+			var xml = GetXml<ExtractResponse>(extract.Data);
+			var args = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList);
+			var argList = new XsltArgumentList();
+			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
+			var transformed = XmlTransform(xml,
+				extract.Template, argList);
+
+			if (extract.Extension.Equals("txt"))
+				transformed = Transform(transformed);
+
+			extract.File = new FileDto{
+					Data = Encoding.UTF8.GetBytes(transformed),
+					DocumentExtension = extract.Extension,
+					Filename = extract.FileName,
+					MimeType = "application/octet-stream"
+				};
+			return extract;
+			
 		}
 
 		public FileDto PrintPayrollSummary(Models.Payroll payroll )

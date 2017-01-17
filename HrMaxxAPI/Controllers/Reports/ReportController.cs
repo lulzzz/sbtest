@@ -102,6 +102,14 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 
 		[HttpPost]
+		[Route(ReportRoutes.DownloadExtract)]
+		public HttpResponseMessage DownloadExtract(Extract extract)
+		{
+			var result = MakeServiceCall(() => _reportService.GetExtractTransformedWithFile(extract), string.Format("getting extract file"));
+			return Printed(result.File);
+		}
+
+		[HttpPost]
 		[Route(ReportRoutes.GetDashBoardReport)]
 		public List<DashboardData> GetDashboardData(DashboardRequestResource request)
 		{

@@ -21,7 +21,12 @@
 	<div class="col-sm-12" ng-if="item.notes">
 		<label>Notes: </label> {{item.notes}}
 	</div>
-	
+	<pre class="col-sm-12 alert alert-info text-center" ng-if="company.contract.invoiceSetup.invoiceType===1 && (item.status===2 || item.status===6)">
+		<b>These checks will be issued under and paid from {{mainData.selectedHost.firmName}}'s bank account!</b>
+	</pre>
+	<pre class="col-sm-12 alert alert-info text-center" ng-if="!(item.status===2 || item.status===6)">
+		<b>{{company.payCheckStock===1? 'MICR' : company.payCheckStock===2 ? 'Laser Middle' : company.payCheckStock===3 ? 'Laser Top' : 'MICR QB'}}!</b>
+	</pre>
 	<div class="col-sm-12">
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager">
 

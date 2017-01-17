@@ -6,7 +6,7 @@
 				<ul class="nav nav-tabs nav-tabs-inverse">
 					<li class="prev-button"><a href="javascript:;" data-click="prev-tab" class="text-success"><i class="fa fa-arrow-left"></i></a></li>
 					
-					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}"  ng-click="set(host)" ng-repeat="host in data.hosts | orderBy:'hostCompany.name' track by $index" ><a data-toggle="tab">{{host.hostCompany.name}}</a></li>
+					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}"  ng-click="set(host)" ng-repeat="host in data.hosts | orderBy:'hostCompany.name' track by $index" ><a data-toggle="tab">{{host.hostCompany.name}} <button class="btn btn-xs btn-danger" ng-if="report.allowExclude && !masterExtract.id" ng-click="exclude($event, host)"><i class="fa fa-lg fa-times-circle-o"></i></button></a></li>
 					
 					<li class="next-button"><a href="javascript:;" data-click="next-tab" class="text-success"><i class="fa fa-arrow-right"></i></a></li>
 				</ul>

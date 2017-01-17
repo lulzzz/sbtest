@@ -447,9 +447,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							controller: 'extractViewCtrl',
 							size: 'lg',
 							windowClass: 'my-modal-popup',
-							backdrop: true,
-							keyboard: true,
-							backdropClick: true,
+							backdrop: 'static',
+							keyboard: false,
+							backdropClick: false,
 							resolve: {
 								extract: function () {
 									return extract;
@@ -679,6 +679,9 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 	}
 	$scope.masterExtract = item;
 	
+	$scope.dismiss = function() {
+		$uibModalInstance.dismiss();
+	}
 	$scope.cancel = function () {
 		$uibModalInstance.close(false);
 	};
@@ -692,22 +695,37 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 			$scope.masterExtract.journal = result.journals;
 			addAlert('successfully filed taxes for report: ' + $scope.masterExtract.extract.report.description, 'success');
 		}, function (erorr) {
-			addAlert('Failed to download report ' + $scope.masterExtract.extract.description + ': ' + erorr, 'danger');
+			addAlert(erorr.statusText, 'danger');
 		});
 		
 	};
 	$scope.downloadFile = function () {
-		reportRepository.downloadExtract($scope.masterExtract.extract.file).then(function (data) {
+		if ($scope.masterExtract.extract.report.allowExclude && !$scope.masterExtract.id) {
+			reportRepository.downloadExtractFile($scope.masterExtract.extract).then(function(data) {
 
-			var a = document.createElement('a');
-			a.href = data.file;
-			a.target = '_blank';
-			a.download = data.name;
-			document.body.appendChild(a);
-			a.click();
-		}, function (erorr) {
-			addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
-		});
+				var a = document.createElement('a');
+				a.href = data.file;
+				a.target = '_blank';
+				a.download = data.name;
+				document.body.appendChild(a);
+				a.click();
+			}, function(erorr) {
+				addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+			});
+		} else {
+			reportRepository.downloadExtract($scope.masterExtract.extract.file).then(function (data) {
+
+				var a = document.createElement('a');
+				a.href = data.file;
+				a.target = '_blank';
+				a.download = data.name;
+				document.body.appendChild(a);
+				a.click();
+			}, function (erorr) {
+				addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+			});
+		}
+		
 	};
 
 

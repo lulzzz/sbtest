@@ -97,7 +97,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 								listItem.statusText = 'Printed';
 							}
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+							$scope.addAlert('error printing pay check', 'danger');
 						});
 					}
 					$scope.isPrintable = function (payroll) {

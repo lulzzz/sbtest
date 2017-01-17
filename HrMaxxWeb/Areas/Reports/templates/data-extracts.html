@@ -15,7 +15,7 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
-							<select name="year940" ng-model="data.filter940.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+							<select name="year940" ng-model="data.filter940.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
@@ -34,7 +34,7 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
-							<select ng-model="data.paperless941.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+							<select ng-model="data.paperless941.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
@@ -61,7 +61,7 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
-							<select name="yearW2" ng-model="data.filterW2.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+							<select name="yearW2" ng-model="data.filterW2.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years  | orderBy:'year':true track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
@@ -81,7 +81,7 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
-							<select name="year1099" ng-model="data.filter1099.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+							<select name="year1099" ng-model="data.filter1099.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
@@ -108,7 +108,7 @@
 					</div>
 					<div class="col-sm-12">
 						<div class="col-sm-3">
-							<select ng-model="data.filterDE6Q.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+							<select ng-model="data.filterDE6Q.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
@@ -161,7 +161,7 @@
 							</div>
 							<div class="col-sm-2 form-group">
 								<label>Year</label>
-								<select name="year941" ng-model="data.filter941.year" ng-change="fill941PayPeriods()" ng-disabled="!data.filter941.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<select name="year941" ng-model="data.filter941.year" ng-change="fill941PayPeriods()" ng-disabled="!data.filter941.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 									<option value=""> select year</option>
 								</select>
 							</div>
@@ -227,7 +227,7 @@
 							</div>
 							<div class="col-sm-2">
 								<label>Year</label>
-								<select name="year941" ng-model="data.filter940Q.year" class="form-control" ng-change="fill940PayPeriods()" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<select name="year941" ng-model="data.filter940Q.year" class="form-control" ng-change="fill940PayPeriods()" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 									<option value=""> select year</option>
 								</select>
 							</div>
@@ -297,7 +297,7 @@
 							</div>
 							<div class="col-sm-2 form-group">
 								<label>Year</label>
-								<select ng-model="data.filterCAPIT.year" ng-change="fillCAPITPayPeriods()" ng-disabled="!data.filterCAPIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<select ng-model="data.filterCAPIT.year" ng-change="fillCAPITPayPeriods()" ng-disabled="!data.filterCAPIT.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 									<option value=""> select year</option>
 								</select>
 							</div>
@@ -363,7 +363,7 @@
 							</div>
 							<div class="col-sm-2 form-group">
 								<label>Year</label>
-								<select ng-model="data.filterCAUIQ.year" ng-change="fillCAUIPayPeriods()" ng-disabled="!data.filterCAUIQ.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<select ng-model="data.filterCAUIQ.year" ng-change="fillCAUIPayPeriods()" ng-disabled="!data.filterCAUIQ.depositSchedule" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
 									<option value=""> select year</option>
 								</select>
 							</div>
@@ -523,7 +523,9 @@
 	<script type="text/ng-template" id="popover/extractView.html">
 
 		<div class="modal-header">
-			<h3 class="modal-title">{{masterExtract.extract.report.description}} Data</h3><br />
+			<h3 class="modal-title">{{masterExtract.extract.report.description}} Data
+			<i class="pull-right fa fa-lg fa-times-circle-o" ng-click="dismiss()"/>
+			</h3><br />
 			<h5><u><i><strong>Date Range: {{masterExtract.extract.report.startDate | date:'MM/dd/yyyy'}} - {{masterExtract.extract.report.endDate | date:'MM/dd/yyyy'}}</strong></i></u></h5>
 			<div class="alert" ng-if="alerts.length>0" ng-class="'alert-' + alerts[0].status">
 				{{alerts[0].message}}
@@ -532,8 +534,8 @@
 		<div class="modal-body">
 			<div class="row m-b-5 p-b-5">
 				<span ng-show="masterExtract.extract.report.allowFiling && masterExtract.extract.report.depositDate"><u><i><strong>Deposit Date: {{masterExtract.extract.report.depositDate | date:'MM/dd/yyyy'}}</strong></i></u></span>
-				<button class="btn btn-sm btn-info" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id" ng-click="fileTaxes()">File Taxes</button>
-				<button class="btn btn-sm btn-primary pull-right" ng-click="downloadFile()">View File</button>
+				<button class="btn btn-sm btn-info" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File Taxes</button>
+				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
 			</div>
 			<extract-view master-extract="masterExtract" />
 

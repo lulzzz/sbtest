@@ -18,7 +18,7 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id}">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':(selected && selected.extract.id===item.extract.id)}">
 						<td data-title="' Date'" class="col-sm-1">
 							{{item.lastModified | date:'MM/dd/yyyy'}}
 						</td>

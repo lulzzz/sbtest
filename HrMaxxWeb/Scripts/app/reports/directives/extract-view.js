@@ -62,7 +62,15 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						});
 						$scope.selectedAgency.payChecks = checks;
 					}
-					
+					$scope.exclude = function(event, host) {
+						event.stopPropagation();
+						if ($scope.selectedHost && host.id === $scope.selectedHost.id) {
+							$scope.selectedHost = null;
+							$scope.selectedCompany = null;
+							$scope.selectedAgency = null;
+						}
+						$scope.data.hosts.splice($scope.data.hosts.indexOf(host), 1);
+					}
 
 					var handleUnlimitedTabsRender = function() {
 
