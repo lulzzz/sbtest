@@ -202,7 +202,7 @@
 				<xsl:value-of select="format-number(OvertimeHours,'#,##0.00')"/>
 			</td>
 			<td style="width:20%; text-align:center">
-				$<xsl:value-of select="format-number(Amount,'#,##0.00')"/>
+				$<xsl:value-of select="format-number(Amount + OvertimeAmount,'#,##0.00')"/>
 			</td>
 		</tr>
 	</xsl:template>

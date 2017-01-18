@@ -100,7 +100,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selected.payCodes.push({
 								id: -1,
 								companyId: $scope.selected.companyId,
-								code: 'PW',
+								code: 'PieceRate',
 								description: 'Piece-work',
 								hourlyRate:0
 							});
@@ -210,7 +210,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.save = function () {
 						if (false === $('form[name="employee"]').parsley().validate())
 							return false;
-						if ($scope.selected.payType === 1) {
+						if ($scope.selected.payType === 1 || $scope.selectedBank.payType===3) {
 							var baseRatePC = $filter('filter')($scope.selected.payCodes, { id: 0 })[0];
 							if (baseRatePC)
 								baseRatePC.hourlyRate = $scope.selected.rate;
@@ -218,7 +218,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 								$scope.selected.payCodes.push({
 									id: 0,
 									companyId: $scope.selected.companyId,
-									code: 'Default',
+									code: 'Base Rate',
 									description: 'Base Rate',
 									hourlyRate: $scope.selected.rate
 								});

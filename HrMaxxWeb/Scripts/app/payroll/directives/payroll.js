@@ -911,34 +911,30 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							}
 						});
 					} else {
-						var pw = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
-						//if (pc.payCodes.length!==1) {
-						//	pc.payCodes = [];
-						//	var pc1 = {
-						//		payCode: {
-						//			id: -1,
-						//			companyId: pc.companyId,
-						//			code: 'PW',
-						//			description: 'Piece-work',
-						//			hourlyRate: 0
-						//		},
-						//		screenHours: 0,
-						//		screenOvertime: 0,
-						//		hours: 0,
-						//		overtimeHours: 0,
-						//		pwAmount: 0
-						//	};
-							
-						//	pc.payCodes.push(pc1);
-						//}
-						if (pw.length > 0 && pc.payCodes.length === 1) {
-							pc.payCodes[0].pwAmount = t.gross ? t.gross : pw[0].payCode.hourlyRate;
-							pc.payCodes[0].hours = pw[0].hours ? pw[0].hours : 0;
-							pc.payCodes[0].overtimeHours = pw[0].overtimeHours ? pw[0].overtimeHours : 0;
-							pc.payCodes[0].screenHours = pw[0].screenHours ? pw[0].screenHours : 0;
-							pc.payCodes[0].screenOvertime = pw[0].screenOvertime ? pw[0].screenOvertime : 0;
-							pc.payCodes[0].pwBreakTime = t.breakTime ? t.breakTime : 0;
-							pc.payCodes[0].pwSickLeaveTime = t.sickLeaveTime ? t.sickLeaveTime : 0;
+						var pw = $filter('filter')(t.payCodes, { payCode: { id: -1 } });
+						var ppw = $filter('filter')(pc.payCodes, { payCode: { id: -1 } });
+						if (pw.length > 0 && ppw.length>0) {
+
+							ppw[0].pwAmount = t.gross ? t.gross : pw[0].payCode.hourlyRate;
+							ppw[0].hours = pw[0].hours ? pw[0].hours : 0;
+							ppw[0].overtimeHours = pw[0].overtimeHours ? pw[0].overtimeHours : 0;
+							ppw[0].screenHours = pw[0].screenHours ? pw[0].screenHours : 0;
+							ppw[0].screenOvertime = pw[0].screenOvertime ? pw[0].screenOvertime : 0;
+							ppw[0].breakTime = t.prBreakTime ? t.prBreakTime : 0;
+							ppw[0].sickLeaveTime = t.sickLeaveTime ? t.sickLeaveTime : 0;
+						}
+						var br = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
+						var pbr = $filter('filter')(pc.payCodes, { payCode: { id: 0 } });
+						if (br.length > 0 && pbr.length > 0) {
+
+							pbr[0].hours = br[0].hours ? br[0].hours : 0;
+							pbr[0].overtimeHours = br[0].overtimeHours ? br[0].overtimeHours : 0;
+							pbr[0].screenHours = br[0].screenHours ? br[0].screenHours : 0;
+							pbr[0].screenOvertime = br[0].screenOvertime ? br[0].screenOvertime : 0;
+							pbr[0].breakTime = t.breakTime ? t.breakTime : 0;
+							if (pbr[0].payCode.id === 0 && t.salary) {
+								pbr[0].payCode.hourlyRate = t.salary;
+							}
 						}
 					}
 					$.each(t.compensations, function(cind, comp) {
@@ -1013,7 +1009,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		if (!field.key || !field.value)
 			return false;
 		else {
-			var matches = $filter('filter')($scope.importMap.columnMap, { value: field.value });
+			var matches = $filter('filter')($scope.importMap.columnMap, { value: field.value }, true);
 			if (matches.length > 1)
 				return false;
 			else {
@@ -1083,10 +1079,13 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 	var init = function () {
 		var selfManagedAccumulations = $filter('filter')($scope.company.accumulatedPayTypes, { companyManaged: true });
 		requiredColumns.push('Notes');
-		requiredColumns.push('Gross Wage');
+		
 		requiredColumns.push('Base Rate Hours');
 		requiredColumns.push('Base Rate Overtime');
-		
+		requiredColumns.push('Base Rate Amount');
+		requiredColumns.push('Base Rate Overtime Amount');
+		requiredColumns.push('Break Time');
+		requiredColumns.push('Sick Leave Time');
 		$.each(company.payCodes, function (i, pc) {
 			requiredColumns.push(pc.code + ' Hours');
 			requiredColumns.push(pc.code + ' Overtime');
@@ -1096,10 +1095,11 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			requiredColumns.push(pt.name);
 			
 		});
-		requiredColumns.push('Base Rate Amount');
-		requiredColumns.push('Base Rate Overtime Amount');
-		requiredColumns.push('Break Time');
-		requiredColumns.push('Sick Leave Time');
+		requiredColumns.push('Gross Wage/PieceRate Amount');
+		requiredColumns.push('PieceRate Hours');
+		requiredColumns.push('PieceRate Overtime');
+		requiredColumns.push('PieceRate Break Time');
+		
 
 		$.each(selfManagedAccumulations, function (i2, apt) {
 			var exists = $filter('filter')($scope.importMap.selfManagedPayTypes, { payTypeId: apt.id })[0];

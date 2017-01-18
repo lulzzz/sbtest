@@ -136,8 +136,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal Hours { get; set; }
 		public decimal OvertimeHours { get; set; }
 		public decimal PWAmount { get; set; }
-		public decimal PwBreakTime { get; set; }
-		public decimal PWSickLeaveTime { get; set; }
+		public decimal BreakTime { get; set; }
+		public decimal SickLeaveTime { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
 		public decimal OvertimeAmount { get; set; }
@@ -165,6 +165,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public PayType PayType { get; set; }
 		[Required]
 		public decimal Amount { get; set; }
+		public decimal Hours { get; set; }
+		public decimal Rate { get; set; }
 		public decimal YTD { get; set; }
 	}
 

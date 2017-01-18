@@ -30,7 +30,9 @@ common.directive('payrollSummary', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.selected = null;
-
+					$scope.print = function () {
+						$window.print();
+					}
 					$scope.getReport = function () {
 						var m = $scope.mainData;
 						var request = {

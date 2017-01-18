@@ -62,7 +62,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						count: 10,
 
 						sorting: {
-							transactionDate: 'desc'     // initial sorting
+							checkNumber: 'desc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data

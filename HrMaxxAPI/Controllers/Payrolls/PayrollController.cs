@@ -502,6 +502,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					Id = 0,
 					HourlyRate = 0
 				});
+				company.PayCodes.Add(new CompanyPayCodeResource
+				{
+					Code = "PieceRate",
+					Description = "Piece-Rate",
+					CompanyId = company.Id.Value,
+					Id = -1,
+					HourlyRate = 0
+				});
 				importedRows.ForEach(er =>
 				{
 					try
