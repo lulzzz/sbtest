@@ -36,8 +36,8 @@
 						<td data-title=" 'Balance' " sortable=" 'balance' " class="col-sm-1 text-center show-red">
 							{{item.balance | currency:'$'}}
 						</td>
-						<td data-title=" 'Last Deposit Date' " sortable=" 'lastDepositDate' " class="col-sm-1 text-center">
-							{{item.lastDepositDate | date:'MM/dd/yyyy'}}
+						<td data-title=" 'Checks' " filter="{'checkNumbers':'text'}" sortable=" 'checkNumbers' " class="col-sm-1 text-center">
+							{{item.checkNumbers}}
 						</td>
 						<td data-title=" 'Status' " filter="{'status1':'status'}" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}

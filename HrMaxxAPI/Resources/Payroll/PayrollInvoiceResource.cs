@@ -120,6 +120,18 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get { return InvoicePayments.Any() ? InvoicePayments.OrderByDescending(p => p.PaymentDate).First().PaymentDate : default(DateTime?); }
 		}
+
+		public string CheckNumbers
+		{
+			get
+			{
+				return InvoicePayments.Any(p => p.Method == InvoicePaymentMethod.Check)
+					? InvoicePayments.Where(p => p.Method == InvoicePaymentMethod.Check)
+						.ToList()
+						.Aggregate(string.Empty, (current, m) => current + m.CheckNumber + ", ")
+					: string.Empty;
+			}
+		}
 	}
 	
 }
