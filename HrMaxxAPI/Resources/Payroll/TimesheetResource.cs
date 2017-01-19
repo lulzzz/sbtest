@@ -309,14 +309,14 @@ namespace HrMaxxAPI.Resources.Payroll
 					if (bt > 0)
 						BreakTime = bt;
 				}
-				else if (col.Key.Equals("PieceRate Break Time"))
+				else if (col.Key.Equals("PieceRate Break Hours"))
 				{
 					decimal bt = 0;
 					decimal.TryParse(val, style, culture, out bt);
 					if (bt > 0)
 						PRBreakTime = bt;
 				}
-				else if (col.Key.Equals("Sick Leave Time"))
+				else if (col.Key.Equals("PieceRate Sick Leave Hours"))
 				{
 					decimal slt = 0;
 					decimal.TryParse(val, style, culture, out slt);

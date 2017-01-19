@@ -1086,7 +1086,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		requiredColumns.push('Base Rate Amount');
 		requiredColumns.push('Base Rate Overtime Amount');
 		requiredColumns.push('Break Time');
-		requiredColumns.push('Sick Leave Time');
+		
 		$.each(company.payCodes, function (i, pc) {
 			requiredColumns.push(pc.code + ' Hours');
 			requiredColumns.push(pc.code + ' Overtime');
@@ -1099,8 +1099,8 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		requiredColumns.push('Gross Wage/PieceRate Amount');
 		requiredColumns.push('PieceRate Hours');
 		requiredColumns.push('PieceRate Overtime');
-		requiredColumns.push('PieceRate Break Time');
-		
+		requiredColumns.push('PieceRate Break Hours');
+		requiredColumns.push('PieceRate Sick Leave Hours');
 
 		$.each(selfManagedAccumulations, function (i2, apt) {
 			var exists = $filter('filter')($scope.importMap.selfManagedPayTypes, { payTypeId: apt.id })[0];
