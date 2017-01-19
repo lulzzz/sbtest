@@ -158,7 +158,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 				.ForMember(dest => dest.Locations, opt => opt.MapFrom(src => src.Locations))
 				.ForMember(dest => dest.AccumulatedPayTypes, opt => opt.MapFrom(src => src.CompanyAccumlatedPayTypes))
-				.ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.CompanyContracts.FirstOrDefault()))
+				.ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.CompanyContract))
 				.ForMember(dest => dest.CompanyTaxRates, opt => opt.MapFrom(src => src.CompanyTaxRates))
 				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.CompanyTaxStates))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.CompanyDeductions))

@@ -49,9 +49,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal CheckPay { get; set; }
 		public decimal DDPay { get; set; }
 
-		public virtual CompanyJson Company { get; set; }
-		public virtual List<InvoicePaymentJson> InvoicePayments { get; set; }
-		public virtual PayrollJson Payroll { get; set; }
+		public CompanyJson Company { get; set; }
+		public List<InvoicePaymentJson> InvoicePayments { get; set; }
+		public PayrollJson Payroll { get; set; }
 	}
 
 	public class InvoicePaymentJson

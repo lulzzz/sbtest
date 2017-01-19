@@ -45,23 +45,23 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Notes { get; set; }
 
 
-		public virtual List<CompanyTaxRate> CompanyTaxRates { get; set; }
+		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 
-		public virtual List<CompanyTaxState> CompanyTaxStates { get; set; }
+		public List<CompanyTaxState> CompanyTaxStates { get; set; }
 
-		public virtual List<CompanyContract> CompanyContracts { get; set; }
+		public CompanyContract CompanyContract { get; set; }
 
-		public virtual List<CompanyDeduction> CompanyDeductions { get; set; }
+		public List<CompanyDeduction> CompanyDeductions { get; set; }
 
-		public virtual List<CompanyWorkerCompensation> CompanyWorkerCompensations { get; set; }
+		public List<CompanyWorkerCompensation> CompanyWorkerCompensations { get; set; }
 
-		public virtual List<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
+		public List<CompanyAccumlatedPayType> CompanyAccumlatedPayTypes { get; set; }
 
-		public virtual List<CompanyPayCode> CompanyPayCodes { get; set; }
+		public List<CompanyPayCode> CompanyPayCodes { get; set; }
 
-		public virtual InsuranceGroup InsuranceGroup { get; set; }
+		public InsuranceGroup InsuranceGroup { get; set; }
 
-		public virtual List<CompanyJson> Locations { get; set; }
+		public List<CompanyJson> Locations { get; set; }
 		
 	}
 	public class CompanyTaxRate
@@ -159,7 +159,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool CompanyManaged { get; set; }
 
 		
-		public virtual PayType PayType { get; set; }
+		public PayType PayType { get; set; }
 	}
 	public class PayType
 	{
