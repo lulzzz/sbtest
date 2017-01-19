@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
@@ -29,8 +30,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		private readonly ITaxationService _taxationService;
 		private readonly ICompanyService _companyService;
 		private readonly IExcelService _excelService;
+		private readonly IReaderService _readerService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService, IReaderService readerService)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
@@ -38,7 +40,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			_taxationService = taxationService;
 			_companyService = companyService;
 			_excelService = excelService;
+			_readerService = readerService;
 		}
+		
 
 		[HttpGet]
 		[Route(PayrollRoutes.FixCompanyCubes)]
@@ -334,6 +338,28 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			result.ForEach(i=>i.TaxPaneltyConfig = ic);
 			return result;
 		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.PayrollInvoices)]
+		public List<PayrollInvoiceResource> GetPayrollInvoices()
+		{
+			
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoicesXml(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
+			{
+				invoices = invoices.Where(i => !i.Company.IsHostCompany && i.Company.IsVisibleToHost).ToList();
+			}
+			var appConfig = _taxationService.GetApplicationConfig();
+			if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName() && appConfig.RootHostId.HasValue)
+			{
+				invoices = invoices.Where(i => !(i.Company.HostId == appConfig.RootHostId && i.Company.IsHostCompany)).ToList();
+			}
+			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
+			result.ForEach(i => i.TaxPaneltyConfig = ic);
+			return result;
+		}
+
 		[HttpGet]
 		[Route(PayrollRoutes.ApprovedInvoices)]
 		public List<PayrollInvoiceResource> GetApprovedInvoices()

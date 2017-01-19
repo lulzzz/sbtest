@@ -211,7 +211,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedAccPayType)
 		{
 			var mappedwc = _mapper.Map<AccumulatedPayType, Models.DataModel.CompanyAccumlatedPayType>(mappedAccPayType);
-			if (mappedwc.Id == 0 || _dbContext.CompanyAccumlatedPayTypes.Any(cat=>cat.CompanyId==mappedwc.CompanyId && cat.PayTypeId==mappedwc.PayTypeId))
+			if (mappedwc.Id == 0 && !_dbContext.CompanyAccumlatedPayTypes.Any(cat=>cat.CompanyId==mappedwc.CompanyId && cat.PayTypeId==mappedwc.PayTypeId))
 			{
 				_dbContext.CompanyAccumlatedPayTypes.Add(mappedwc);
 			}

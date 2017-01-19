@@ -210,7 +210,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.save = function () {
 						if (false === $('form[name="employee"]').parsley().validate())
 							return false;
-						if ($scope.selected.payType === 1 || $scope.selectedBank.payType===3) {
+						if ($scope.selected.payType === 1 || $scope.selected.payType===3) {
 							var baseRatePC = $filter('filter')($scope.selected.payCodes, { id: 0 })[0];
 							if (baseRatePC)
 								baseRatePC.hourlyRate = $scope.selected.rate;

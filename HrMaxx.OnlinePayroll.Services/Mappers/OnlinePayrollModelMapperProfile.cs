@@ -184,14 +184,14 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.InvoiceSetup,
 					opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.InvoiceSetup)));
 
-			CreateMap<Models.DataModel.CompanyTaxRate, Models.CompanyTaxRate>()
-				.ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => src.Tax.Code));
-
+			
 			CreateMap<Models.CompanyTaxRate, Models.DataModel.CompanyTaxRate>()
 				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src=>src.CompanyId))
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.Tax, opt => opt.Ignore());
 
+			CreateMap<Models.DataModel.CompanyTaxRate, Models.CompanyTaxRate>()
+				.ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => src.Tax.Code));
 
 			CreateMap<Models.DataModel.Company, Models.CompanyLocation>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -243,12 +243,13 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EmployeeDeductions, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId));
 
-			CreateMap<Models.DataModel.CompanyWorkerCompensation, CompanyWorkerCompensation>();
+			
 
 			CreateMap<Models.CompanyWorkerCompensation, Models.DataModel.CompanyWorkerCompensation>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.Employees, opt => opt.Ignore());
 
+			CreateMap<Models.DataModel.CompanyWorkerCompensation, CompanyWorkerCompensation>();
 			CreateMap<Models.DataModel.PayType, PayType>();
 
 			CreateMap<Models.DataModel.CompanyAccumlatedPayType, AccumulatedPayType>()
@@ -697,6 +698,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EmployeeBankAccounts, opt => opt.Ignore());
 
 			CreateMap<Models.ACHResponseDB, Models.ACHResponse>();
+
+
+
 
 		}
 	}

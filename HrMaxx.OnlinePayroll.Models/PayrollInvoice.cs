@@ -341,14 +341,19 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 
 			});
-			Deductions.Where(d => d.Deduction.Type.Id == 4).ToList().ForEach(d => MiscCharges.Add(new MiscFee
+			if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck ||
+			    CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
 			{
-				RecurringChargeId = d.Deduction.Id * -1,
-				Amount = d.Amount * -1,
-				Description = d.Name,
-				PayCheckId = 0,
-				isEditable = true
-			}));	
+				Deductions.Where(d => d.Deduction.Type.Id == 4).ToList().ForEach(d => MiscCharges.Add(new MiscFee
+				{
+					RecurringChargeId = d.Deduction.Id * -1,
+					Amount = d.Amount * -1,
+					Description = d.Name,
+					PayCheckId = 0,
+					isEditable = true
+				}));	
+				
+			}
 			
 			if (CompanyInvoiceSetup.InvoiceType!=CompanyInvoiceType.PEOASOCoCheck && payroll.PayChecks.Any(pc => !pc.IsVoid && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit))
 			{

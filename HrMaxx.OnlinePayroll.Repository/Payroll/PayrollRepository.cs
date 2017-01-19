@@ -246,7 +246,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				invoices = invoices.Where(pi => pi.CompanyId == companyId);
 			if (status > 0)
 				invoices = invoices.Where(pi => pi.Status == (int)status);
-
+			invoices = invoices.OrderBy(i => i.InvoiceNumber);
 			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
 		}
 

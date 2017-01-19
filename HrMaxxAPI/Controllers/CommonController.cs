@@ -165,7 +165,7 @@ namespace HrMaxxAPI.Controllers
 				new FilterParam() {Key = "role", Value = CurrentUser.Role==RoleTypeEnum.Master.GetDbName() ? null : CurrentUser.Role}
 			};
 
-			var data = MakeServiceCall(() => _readerService.GetDataFromStoreProc<HostAndCompanies>("GetHostAndCompanies", paramList), "fill search table", true);
+			var data = MakeServiceCall(() => _readerService.GetDataFromStoredProc<HostAndCompanies>("GetHostAndCompanies", paramList), "fill search table", true);
 			return Mapper.Map<HostAndCompanies, HostAndCompaniesResource>(data);
 		}
 	}

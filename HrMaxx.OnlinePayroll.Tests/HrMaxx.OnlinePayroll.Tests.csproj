@@ -93,6 +93,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mappers\OnlinePayrollJsonModelMapperTests.cs" />
     <Compile Include="Mappers\USTaxTablesModelMapperTests.cs" />
     <Compile Include="Mappers\CompanyModelMapperTests.cs" />
     <Compile Include="Mappers\OnlinePayrollModelMapperTests.cs" />
@@ -104,6 +105,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.ReadServices\HrMaxx.OnlinePayroll.ReadServices.csproj">
+      <Project>{6B85B4D8-7767-42D9-9F64-9E4CD0B2225E}</Project>
+      <Name>HrMaxx.OnlinePayroll.ReadServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Services\HrMaxx.OnlinePayroll.Services.csproj">
       <Project>{2177DB95-B80F-4356-BBA6-C089112C84CF}</Project>
       <Name>HrMaxx.OnlinePayroll.Services</Name>

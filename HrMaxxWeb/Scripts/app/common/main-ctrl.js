@@ -307,7 +307,7 @@
 		});
 		$scope.$on('companyPayTypeUpdated', function (event, args) {
 			var pt = args.pt;
-			updateInList(dataSvc.selectedCompany.payCodes, pt);
+			updateInList(dataSvc.selectedCompany.accumulatedPayTypes, pt);
 
 		});
 		var updateInList = function(list, match) {

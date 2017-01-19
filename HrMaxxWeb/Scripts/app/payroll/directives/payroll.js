@@ -377,6 +377,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						});
 						modalInstance.result.then(function (scope) {
 							dataSvc.toggleState = true;
+							$scope.datasvc.importMap = scope.importMap;
 							$scope.item.payChecks = angular.copy(scope.payChecks);
 							$scope.list = $scope.item.payChecks;
 							$scope.tableParams.reload();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -239,6 +240,8 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public void FillFromImportWithMap(ExcelRead er, CompanyResource company, List<PayType> payTypes, ImportMap importMap)
 		{
+			var style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol;
+			var culture = CultureInfo.CreateSpecificCulture("en-US");
 			JobCostCodes = new List<PayrollPayCodeResource>();
 			PayCodes = new List<PayrollPayCodeResource>();
 			Compensations = new List<PayrollPayTypeResource>();
@@ -284,14 +287,14 @@ namespace HrMaxxAPI.Resources.Payroll
 				else if (col.Key.Equals("Pay Rate/Salary"))
 				{
 					decimal sala = 0;
-					decimal.TryParse(val, out sala);
+					decimal.TryParse(val, style, culture, out sala);
 					if (sala > 0)
 						Salary = Math.Round(sala,2, MidpointRounding.AwayFromZero);
 				}
 				else if (col.Key.Contains("Gross Wage"))
 				{
 					decimal gross = 0;
-					decimal.TryParse(val, out gross);
+					decimal.TryParse(val, style, culture, out gross);
 					if (gross > 0)
 						Gross = Math.Round(gross, 2, MidpointRounding.AwayFromZero);
 				}
@@ -302,21 +305,21 @@ namespace HrMaxxAPI.Resources.Payroll
 				else if (col.Key.Equals("Break Time"))
 				{
 					decimal bt = 0;
-					decimal.TryParse(val, out bt);
+					decimal.TryParse(val, style, culture, out bt);
 					if (bt > 0)
 						BreakTime = bt;
 				}
 				else if (col.Key.Equals("PieceRate Break Time"))
 				{
 					decimal bt = 0;
-					decimal.TryParse(val, out bt);
+					decimal.TryParse(val, style, culture, out bt);
 					if (bt > 0)
 						PRBreakTime = bt;
 				}
 				else if (col.Key.Equals("Sick Leave Time"))
 				{
 					decimal slt = 0;
-					decimal.TryParse(val, out slt);
+					decimal.TryParse(val, style, culture, out slt);
 					if (slt > 0)
 						SickLeaveTime = slt;
 				}
@@ -326,7 +329,7 @@ namespace HrMaxxAPI.Resources.Payroll
 					var payCode = company.PayCodes.First(pc => col.Key.StartsWith(pc.Code) || (pc.Id == 0 && col.Key.StartsWith("Base Rate")) || (pc.Id == -1 && col.Key.StartsWith("PieceRate")));
 
 					var dval = (decimal) 0;
-					decimal.TryParse(val, out dval);
+					decimal.TryParse(val, style, culture, out dval);
 					PayrollPayCodeResource pcode;
 					var add = true;
 					if (PayCodes.Any(pc => pc.PayCode.Id == payCode.Id))
@@ -375,7 +378,7 @@ namespace HrMaxxAPI.Resources.Payroll
 				{
 					var comp = payTypes.First(pt => pt.Name.Equals(col.Key));
 					var dval = (decimal)0;
-					decimal.TryParse(val, out dval);
+					decimal.TryParse(val, style, culture, out dval);
 					Compensations.Add(new PayrollPayTypeResource
 					{
 						PayType = comp,
@@ -401,15 +404,21 @@ namespace HrMaxxAPI.Resources.Payroll
 					};
 					foreach (var jobcost in importMap.JobCostMap.OrderBy(j=>j.Value))
 					{
+						
 						if ((jci + jobcost.Value - 2) < importMap.ColumnCount)
 						{
+							var dval = (decimal)0;
 							var val = er.ValueAtIndex(jci + jobcost.Value - 2);
+							decimal.TryParse(val, style, culture, out dval);
 							if (jobcost.Key.Equals("Amount"))
-								jccode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							{
+								
+								jccode.Amount = string.IsNullOrWhiteSpace(val) ? 0 : dval;
+							}
 							else if (jobcost.Key.Equals("Rate"))
-								jccode.PayCode.HourlyRate = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round( Convert.ToDecimal(val),2, MidpointRounding.AwayFromZero);
+								jccode.PayCode.HourlyRate = string.IsNullOrWhiteSpace(val) ? 0 : Math.Round( dval,2, MidpointRounding.AwayFromZero);
 							else if (jobcost.Key.Equals("Pieces"))
-								jccode.Hours = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+								jccode.Hours = string.IsNullOrWhiteSpace(val) ? 0 : dval;
 							else
 							{
 								jccode.PayCode.Description = val;
@@ -431,21 +440,23 @@ namespace HrMaxxAPI.Resources.Payroll
 					};
 					foreach (var pair in sapt.ImportMap)
 					{
+						var dval = (decimal) 0;
 						var val = pair.Value==-1 ? "0" : er.ValueAtIndex(pair.Value-1);
+						decimal.TryParse(val, style, culture, out dval);
 						if (pair.Key.Equals("Used"))
-							apt.Used = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							apt.Used = string.IsNullOrWhiteSpace(val) ? 0 : dval;
 						else if (pair.Key.Equals("Accumulated"))
 						{
 							if (sapt.ImportMap.Count(v => v.Value == pair.Value) > 1)
 								apt.AccumulatedValue = 0;
 							else
-								apt.AccumulatedValue = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+								apt.AccumulatedValue = string.IsNullOrWhiteSpace(val) ? 0 : dval;
 						}
 							
 						else if (pair.Key.Equals("YTD Accumulated"))
-							apt.YTDFiscal = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							apt.YTDFiscal = string.IsNullOrWhiteSpace(val) ? 0 : dval;
 						else if (pair.Key.Equals("YTD Used"))
-							apt.YTDUsed = string.IsNullOrWhiteSpace(val) ? 0 : Convert.ToDecimal(val);
+							apt.YTDUsed = string.IsNullOrWhiteSpace(val) ? 0 : dval;
 					}
 					Accumulations.Add(apt);
 				}
