@@ -1428,8 +1428,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s-1", payCode.PayCode.Description));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter + "-1", payCode.Hours.ToString()));
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter + "-1",
-								payCode.PayCode.HourlyRate.ToString("C")));
+							if(payCode.PayCode.Id!=-1)
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter + "-1",
+									payCode.PayCode.HourlyRate.ToString("C")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter + "-1", payCode.Amount.ToString("c")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter + "-1", payCode.YTD.ToString("C")));
 
@@ -1456,8 +1457,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 									payCode.PayCode.Description + " 0.5 OT"));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter + "-1",
 									payCode.OvertimeHours.ToString()));
-								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter + "-1",
-									(payCode.PayCode.HourlyRate * (decimal)0.5).ToString("C")));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter + "-1",
 									payCode.OvertimeAmount.ToString("c")));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter + "-1",
@@ -1475,7 +1474,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 					{
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", string.Format("{0}-{1}hrs @{2}", compensation.PayType.Description,compensation.Hours, compensation.Rate)));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", string.Format("{0}{1}", compensation.PayType.Description, compensation.Hours>0? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)));
 					}
 					else
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", compensation.PayType.Description));
@@ -1521,7 +1520,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", payCode.PayCode.Description));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.PayCode.HourlyRate.ToString("C")));
+						if(payCode.PayCode.Id!=-1)
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.PayCode.HourlyRate.ToString("C")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter, payCode.Amount.ToString("c")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter, payCode.YTD.ToString("C")));
 
@@ -1547,8 +1547,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
 								payCode.PayCode.Description + " 0.5 OT"));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter, payCode.OvertimeHours.ToString()));
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter,
-								(payCode.PayCode.HourlyRate * (decimal)0.5).ToString("C")));
+							
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter,
 								payCode.OvertimeAmount.ToString("c")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter,
@@ -1576,7 +1575,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, string.Format("{0}-{1}hrs @{2}", compensation.PayType.Description, compensation.Hours, compensation.Rate)));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, string.Format("{0}{1}", compensation.PayType.Description, compensation.Hours>0? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)));
 				}
 				else
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, compensation.PayType.Description));

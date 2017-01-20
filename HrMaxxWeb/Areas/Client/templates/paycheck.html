@@ -55,7 +55,7 @@
 			<tr ng-repeat="comp in check.compensations | filter:{payType: {isTaxable:true}}" ng-if="comp.amount>0 || comp.ytd>0">
 				<td >{{comp.payType.description}}</td>
 				<td class="text-right" ><span ng-show="comp.hours && comp.rate">{{comp.hours ? (comp.hours | currency:'') : ''}}</span></td>
-				<td class="text-right" ><span ng-show="comp.hours && comp.rate">{{comp.rate ? (comp.rate | currency:'$') : ''}}</span></td>
+				<td class="text-right" ></td>
 				<td class="text-right">{{comp.amount | currency:'$'}}</td>
 				<td class="text-right">{{comp.ytd | currency: '$'}}</td>
 			</tr>
