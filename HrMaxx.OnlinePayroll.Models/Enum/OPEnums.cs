@@ -374,12 +374,10 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		PartialPayment = 7,
 		[HrMaxxSecurity(DbName = "Deposited")]
 		Deposited = 8,
-		[HrMaxxSecurity(DbName = "Partial Deposited")]
-		PartialDeposited = 9,
+		[HrMaxxSecurity(DbName = "Not Deposited")]
+		NotDeposited = 9,
 		[HrMaxxSecurity(DbName = "ACH Pending")]
-		ACHPending = 10,
-		[HrMaxxSecurity(DbName = "ACH Posted")]
-		ACHPosted = 11
+		ACHPending = 10
 		
 	}
 

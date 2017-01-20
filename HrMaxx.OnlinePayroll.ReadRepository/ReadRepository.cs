@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 using HrMaxx.Common.Models;
 using HrMaxx.Infrastructure.Mapping;
@@ -53,6 +54,17 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 			}
 		}
 
+		private static T Deserialize<T>(string xmlStream, params Type[] additionalTypes)
+		{
+			var serializer = new XmlSerializer(typeof(T), new XmlRootAttribute("PayrollInvoiceJsonList"));
+
+
+			using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(xmlStream)))
+			{
+				return (T)serializer.Deserialize(reader);
+			}
+		}
+		
 		private string GetDataJson(string proc, List<FilterParam> paramList)
 		{
 			using (var con = new SqlConnection(_sqlCon))
@@ -91,6 +103,7 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList)
 		{
 			var data = GetData(proc, paramList);
+			//var intermediary = Deserialize<List<PayrollInvoiceJson>>(data);
 			var serializer = new XmlSerializer(typeof(XmlResult));
 			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
 			var intermediary = (XmlResult)serializer.Deserialize(memStream);

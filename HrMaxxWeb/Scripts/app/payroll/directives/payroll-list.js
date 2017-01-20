@@ -64,7 +64,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								memo: '',
 								notes:'',
 								included: false,
-								hasError:false,
+								hasError: false,
+								hasWarning:false,
 								paymentMethod: employee.paymentMethod
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
@@ -144,41 +145,19 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.copyPayroll = function (event, payroll) {
 						event.stopPropagation();
-						$scope.$parent.$parent.confirmDialog('This action will ONLY copy time sheet data and NOT salaries or rates. Do you want to continue?', 'warning', function() {
-							var selected = addNew();
-							$.each(selected.payChecks, function(index, pc) {
-								var matching = $filter('filter')(payroll.payChecks, { employee: { id: pc.employee.id } })[0];
-								if (matching) {
-									$.each(pc.payCodes, function(i, pcode) {
-										var matchingPayCode = $filter('filter')(matching.payCodes, { payCode: { id: pcode.payCode.id } })[0];
-										if (matchingPayCode) {
-											pcode.hours = matchingPayCode.hours;
-											pcode.screenHours = matchingPayCode.hours;
-											pcode.overtimeHours = matchingPayCode.overtimeHours;
-											pcode.screenOvertime = matchingPayCode.overtimeHours;
-											pcode.pwAmount = matchingPayCode.pwAmount;
-										}
-									});
-									$.each(pc.deductions, function (index3, ded) {
-										ded.employeeId = pc.employee.id;
-										if (!ded.employeeDeduction) {
-											var eded = $filter('filter')(pc.employee.deductions, { deduction: { id: ded.deduction.id } })[0];
-											ded.employeeDeduction = eded;
-										}
-									});
-								}
-							});
-							$scope.set(selected);
+						$scope.$parent.$parent.confirmDialog('This action will ONLY copy time sheet data and NOT salaries or rates. Do you want to continue?', 'warning', function () {
+							$scope.refresh(payroll, 0);
+						
 						});
 					}
-					$scope.refresh = function (payroll) {
+					$scope.refresh = function (payroll, copydates) {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
-							startDate: moment(payroll.startDate).toDate(),
-							endDate: moment(payroll.endDate).toDate(),
-							payDay: moment(payroll.payDay).toDate(),
+							startDate: copydates ? moment(payroll.startDate).toDate() : null,
+							endDate: copydates ? moment(payroll.endDate).toDate() : null,
+							payDay: copydates ? moment(payroll.payDay).toDate() : null,
 							payChecks: [],
-							startingCheckNumber: payroll.startingCheckNumber,
+							startingCheckNumber: copydates ? payroll.startingCheckNumber : dataSvc.startingCheckNumber,
 							status: 1,
 							notes: payroll.notes
 						};
@@ -201,6 +180,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								notes: matching ? matching.notes : '',
 								included: matching ? matching.included : false,
 								hasError: false,
+								hasWarning: false,
 								paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
 							};
 							$.each(employee.payCodes, function (index1, paycode) {
@@ -220,6 +200,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 										pc.hours = matchingpc.hours;
 										pc.overtimeHours = matchingpc.overtimeHours;
 										pc.pwAmount = matchingpc.pwAmount;
+										if (pc.payCode.id >= 0) {
+											pc.payCode.hourlyRate = matchingpc.payCode.hourlyRate;
+										}
 									}
 								}
 								paycheck.payCodes.push(pc);
@@ -419,7 +402,6 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								payrollRepository.deletePayroll(payroll).then(function(data) {
 									if (data) {
 										$scope.list.splice($scope.list.indexOf(payroll), 1);
-										$scope.list.push(data);
 										$scope.tableParams.reload();
 										$scope.fillTableData($scope.tableParams);
 										$scope.processed = null;
@@ -437,6 +419,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							payrollRepository.voidPayroll(payroll).then(function (data) {
 								if (data) {
 									$scope.list.splice($scope.list.indexOf(payroll), 1);
+									$scope.list.push(data);
 									$scope.tableParams.reload();
 									$scope.fillTableData($scope.tableParams);
 									$scope.processed = null;

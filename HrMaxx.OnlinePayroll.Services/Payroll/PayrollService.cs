@@ -163,7 +163,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var breakRate =
 								Math.Round(
 									((pc.PWAmount + regularWage - regularBreakPay)/
-									 (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime))), 2);
+									 (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime))), 2, MidpointRounding.AwayFromZero);
 
 							if (breakRate < payroll.Company.MinWage)
 							{
@@ -172,22 +172,24 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var PRBreakPay = Math.Round(breakRate * pc.BreakTime, 2, MidpointRounding.AwayFromZero);
 							var totalBreakPay = Math.Round(PRBreakPay + (breakRate - regularRate) * regularBreaktime, 2, MidpointRounding.AwayFromZero);
 
-							var prCalculatedRate = Math.Round((pc.PWAmount + PRBreakPay) / (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+							var prCalculatedRate = (pc.Hours + pc.OvertimeHours)>0 ? Math.Round((pc.PWAmount + PRBreakPay) / (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero) : 0;
 							var prApplicableRate = (decimal) 0 + prCalculatedRate;
 							if (prCalculatedRate < payroll.Company.MinWage)
 							{
 								prApplicableRate = payroll.Company.MinWage;
 								var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
-								var makeUp = Math.Round((prApplicableRate - prCalculatedRate) * pc.Hours, 2, MidpointRounding.AwayFromZero);
+								var finalAmount = Math.Round(prApplicableRate*(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+								var makeUpAmount = Math.Round(finalAmount - pc.PWAmount, 2, MidpointRounding.AwayFromZero);
+								
 								if (makeUpComp != null)
 								{
-									makeUpComp.Amount = makeUp;
-									makeUpComp.Hours = pc.Hours;
-									makeUpComp.Rate = Math.Round(prApplicableRate - prCalculatedRate, 2, MidpointRounding.AwayFromZero);
+									makeUpComp.Amount = makeUpAmount;
+									makeUpComp.Hours = 0;
+									makeUpComp.Rate = 0;
 								}
 								else
 								{
-									paycheck.Compensations.Add(new PayrollPayType() { Amount = makeUp, Hours = pc.Hours, Rate = Math.Round(prApplicableRate - prCalculatedRate, 2, MidpointRounding.AwayFromZero), PayType = new PayType() { Description = "Make-up Wages", Id = 12, Name = "Make-up", IsAccumulable = false, IsTaxable = true }, YTD = 0 });
+									paycheck.Compensations.Add(new PayrollPayType() { Amount = makeUpAmount, Hours = 0, Rate = 0, PayType = new PayType() { Description = "Min-Wage Make-up", Id = 12, Name = "Make-up", IsAccumulable = false, IsTaxable = true }, YTD = 0 });
 								}
 							}
 
@@ -701,7 +703,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					});
 
 					txn.Complete();
-					payroll1 = JsonConvert.DeserializeObject<Models.Payroll>(JsonConvert.SerializeObject(payroll));
+					payroll1 = _payrollRepository.GetPayrollById(payroll1.Id);
 				}
 
 				foreach (var payCheck in payroll1.PayChecks)
@@ -1110,7 +1112,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							invoice.DeliveredBy = invoice.UserName;
 						}
 
-						if (invoice.Status != InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.PartialDeposited || invoice.Status == InvoiceStatus.ACHPending || invoice.Status == InvoiceStatus.ACHPosted))
+						if (invoice.Status != InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.NotDeposited || invoice.Status == InvoiceStatus.ACHPending ))
 						{
 							if (invoice.Balance == 0)
 								invoice.Status = InvoiceStatus.Paid;
@@ -1121,14 +1123,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 									invoice.Status = InvoiceStatus.PaymentBounced;
 									_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment{ Content = string.Format("Invoice #{0} - Payment Bounced",invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName});
 								}
+								else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Submitted))
+								{
+									invoice.Status = InvoiceStatus.NotDeposited;
+								}
 								else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Deposited))
 								{
 									invoice.Status = InvoiceStatus.Deposited;
 									
 								}
-								else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Submitted))
+								else if (invoice.InvoicePayments.Any(p => p.Method==InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted))
 								{
-									invoice.Status = InvoiceStatus.PartialDeposited;
+									invoice.Status = InvoiceStatus.ACHPending;
 								}
 								else if (invoice.InvoicePayments.Any())
 								{
@@ -1467,7 +1473,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var compCounter1 = 1;
 				foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
 				{
-					if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13 || compensation.PayType.Id == 12))
+					if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 					{
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", string.Format("{0}-{1}hrs @{2}", compensation.PayType.Description,compensation.Hours, compensation.Rate)));
 					}
@@ -1568,7 +1574,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var compCounter = 1;
 			foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
 			{
-				if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13 || compensation.PayType.Id == 12))
+				if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 				{
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, string.Format("{0}-{1}hrs @{2}", compensation.PayType.Description, compensation.Hours, compensation.Rate)));
 				}
@@ -2117,7 +2123,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var totalPayments = invoice.InvoicePayments.Where(p => p.Status != PaymentStatus.PaymentBounced).Sum(p => p.Amount);
 									if (totalPayments < invoice.Total)
 									{
-										invoice.Status = InvoiceStatus.PartialDeposited;
+										invoice.Status = InvoiceStatus.NotDeposited;
 									}
 									else
 									{

@@ -60,7 +60,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						}
 						else if ($scope.item.status === 6) {
 							$scope.$parent.$parent.$parent.$parent.confirmDialog('This action will ONLY retain the matching timesheets from the draft. Are you sure you want to proceed? You may cancel at Step 1 to retain the draft', 'info', function() {
-								$scope.$parent.$parent.refresh($scope.item);
+								$scope.$parent.$parent.refresh($scope.item, 1);
 								$scope.datasvc.isBodyOpen = true;
 							});
 						}

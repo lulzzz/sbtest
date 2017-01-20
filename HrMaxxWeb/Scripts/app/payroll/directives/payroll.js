@@ -22,6 +22,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						toggleState: false,
 						tabindex: 1,
 						showingErrors: false,
+						showingWarnings: false,
 						showingSelected: false
 					}
 					
@@ -45,7 +46,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							name: '',       // initial filter
 						},
 						sorting: {
-							name: 'desc'     // initial sorting
+							companyEmployeeNo: 'asc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -90,8 +91,21 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						dataSvc.showingErrors = !dataSvc.showingErrors;
 						$scope.fillTableData($scope.tableParams);
 					}
+					$scope.showWarnings = function () {
+						if (dataSvc.showingWarnings) {
+							delete $scope.tableParams.$params.filter.hasWarning;
+						} else {
+							$scope.tableParams.$params.filter.hasWarning = true;
+						}
+						dataSvc.showingWarnings = !dataSvc.showingWarnings;
+						$scope.fillTableData($scope.tableParams);
+					}
 					$scope.erroneousChecks = function() {
 						var checks = $filter('filter')($scope.list, { included: true, hasError: true });
+						return checks.length;
+					}
+					$scope.warningChecks = function () {
+						var checks = $filter('filter')($scope.list, { included: true, hasWarning: true });
 						return checks.length;
 					}
 					$scope.correctChecks = function () {
@@ -201,16 +215,22 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var salary = pc.salary;
 						var payCodeSum = 0;
 						var comps = 0;
-						if (!pc.included)
-							return pc.hasError=false;
+						if (!pc.included) {
+							pc.hasWarning = false;
+							return pc.hasError = false ;
+						}
+						pc.hasWarning = false;
 						$.each(pc.payCodes, function (index1, paycode) {
 							paycode.hours = calculateHours(paycode.screenHours);
 							paycode.overtimeHours = calculateHours(paycode.screenOvertime);
 							payCodeSum += (paycode.hours + paycode.overtimeHours);
+							if (paycode.payCode.id >= 0 && paycode.payCode.hourlyRate < $scope.company.minWage && (paycode.hours>0 || paycode.overtimeHours>0))
+								pc.hasWarning = true;
 							if (paycode.payCode.id === -1 && paycode.pwAmount <= 0) {
 								payCodeSum = 0;
 								return;
 							}
+							
 						});
 						$.each(pc.compensations, function (index1, comp) {
 							comps += comp.amount;
@@ -754,6 +774,7 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 				screenOvertime: 0,
 				pwAmount: 0
 			};
+			pc.payCode.hourlyRate = 0;
 			$scope.paycheck.payCodes.push(pc);
 		});
 		$.each(result.compensations, function (index2, comp) {
@@ -895,20 +916,22 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							pc.payCodes.push(payc);
 						});
 					} else if (pc.employee.payType === 1) {
-						$.each(t.payCodes, function(pcind, paycode) {
-							var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
-							if (ec) {
-								var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
-								if (exists.length > 0) {
-									exists[0].screenHours = paycode.screenHours ? paycode.screenHours : 0;
-									exists[0].screenOvertime = paycode.screenOvertime ? paycode.screenOvertime : 0;
-									exists[0].hours = paycode.hours ? paycode.hours : 0;
-									exists[0].overtimeHours = paycode.overtimeHours ? paycode.hours : 0;
-									if (paycode.payCode.id === 0 && t.salary) {
-										exists[0].payCode.hourlyRate = t.salary;
-									}
-								} else
-									pc.payCodes.push(paycode);
+						$.each(t.payCodes, function (pcind, paycode) {
+							if (paycode.payCode.id >= 0) {
+								var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
+								if (ec) {
+									var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
+									if (exists.length > 0) {
+										exists[0].screenHours = paycode.screenHours ? paycode.screenHours : 0;
+										exists[0].screenOvertime = paycode.screenOvertime ? paycode.screenOvertime : 0;
+										exists[0].hours = paycode.hours ? paycode.hours : 0;
+										exists[0].overtimeHours = paycode.overtimeHours ? paycode.hours : 0;
+										if (paycode.payCode.id === 0 && t.salary) {
+											exists[0].payCode.hourlyRate = t.salary;
+										}
+									} else
+										pc.payCodes.push(paycode);
+								}
 							}
 						});
 					} else {
@@ -938,12 +961,9 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							}
 						}
 					}
+					pc.compensations = [];
 					$.each(t.compensations, function(cind, comp) {
-						var exists = $filter('filter')(pc.compensations, { payType: { id: comp.payType.id } });
-						if (exists.length > 0)
-							exists[0].amount = comp.amount;
-						else
-							pc.compensations.push(comp);
+						pc.compensations.push(comp);
 					});
 					pc.notes = t.notes ? t.notes : '';
 					if (t.accumulations.length > 0)

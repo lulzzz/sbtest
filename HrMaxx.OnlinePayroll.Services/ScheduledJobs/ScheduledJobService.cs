@@ -42,12 +42,10 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 							var depositedPayments =
 								i.InvoicePayments.Where(
 									p =>
-										p.Status == PaymentStatus.Submitted &&
-										(
-											(p.Method == InvoicePaymentMethod.Check && p.PaymentDate.Date >= minDate.Date) 
+											(p.Status == PaymentStatus.Deposited && p.Method == InvoicePaymentMethod.Check && p.PaymentDate.Date <= minDate.Date)
 											||
-											(p.Method == InvoicePaymentMethod.ACH && p.PaymentDate.Date >= minDate.Date)
-										)).ToList();
+											(p.Method == InvoicePaymentMethod.ACH && p.PaymentDate.Date <= minDate.Date)
+										).ToList();
 							depositedPayments.ForEach(p =>
 							{
 								p.Status = PaymentStatus.Paid;

@@ -148,7 +148,15 @@ namespace HrMaxx.OnlinePayroll.Services
 
 						});
 					}
-					
+					var employees = _companyRepository.GetEmployeeList(savedcompany.Id);
+					employees.Where(e=>e.PayType!=EmployeeType.Salary && (e.Rate<savedcompany.MinWage || e.PayCodes.Any(pc=>pc.Id==0 && pc.HourlyRate<savedcompany.MinWage)))
+						.ToList()
+						.ForEach(e =>
+						{
+							e.Rate = e.Rate < savedcompany.MinWage ? savedcompany.MinWage : e.Rate;
+							e.PayCodes.Where(pc=>pc.Id==0 && pc.HourlyRate<savedcompany.MinWage).ToList().ForEach(pc=>pc.HourlyRate=savedcompany.MinWage);
+							SaveEmployee(e);
+						});
 					
 					txn.Complete();
 
