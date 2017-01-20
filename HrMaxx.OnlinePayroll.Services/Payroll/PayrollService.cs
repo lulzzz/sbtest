@@ -184,8 +184,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								if (makeUpComp != null)
 								{
 									makeUpComp.Amount = makeUpAmount;
-									makeUpComp.Hours = 0;
-									makeUpComp.Rate = 0;
+									makeUpComp.Hours = Math.Round(pc.Hours + pc.OvertimeHours, 2, MidpointRounding.AwayFromZero);
+									makeUpComp.Rate = Math.Round(makeUpAmount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
 								}
 								else
 								{
@@ -703,9 +703,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					});
 
 					txn.Complete();
-					payroll1 = _payrollRepository.GetPayrollById(payroll1.Id);
+					
 				}
-
+				payroll1 = _payrollRepository.GetPayrollById(payroll1.Id);
 				foreach (var payCheck in payroll1.PayChecks)
 				{
 					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
