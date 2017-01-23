@@ -31,9 +31,7 @@
 						<td data-title=" 'Net Wage' " sortable=" 'totalNetWage' " class="col-sm-1 text-center show-red">
 							{{item.totalNetWage | currency:'$'}}
 						</td>
-						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
-							{{item.statusText}}
-						</td>
+						
 						<td data-title=" 'Invoice #' " sortable=" 'invoice.invoiceNumber' " class="col-sm-1 text-center" ng-show="showInvoices()">
 							{{item.invoice.invoiceNumber}}
 						</td>
@@ -43,12 +41,18 @@
 						<td data-title=" 'Invoice Total' " sortable=" 'invoice.total' " class="col-sm-1 text-center" ng-show="showInvoices()">
 							{{item.invoice.total | currency:'$'}}
 						</td>
-						<td class="col-sm-2 text-center" ng-if="showInvoices()">
-							<button class="btn btn-xs btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status===6">delete</button>
-							<button class="btn btn-xs btn-danger" ng-click="voidPayroll($event, item)" ng-show="item.invoice && item.totalGrossWage>0 && mainData.userRole==='Master'">void payroll</button>
-							<button class="btn btn-xs btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice">view invoice</button>
-							<button class="btn btn-xs btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0 && item.status>2 && item.status!==6">create invoice</button>
-							<button class="btn btn-xs btn-success" ng-click="copyPayroll($event, item)" ng-show="canRunPayroll()">Copy to New</button>
+						<td data-title=" 'Processed By' " sortable=" 'userName' " class="col-sm-1 text-center">
+							{{item.userName}} ({{item.lastModified | date:'MM/dd/yyyy hh:mm a'}})
+						</td>
+						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+							{{item.statusText}}
+						</td>
+						<td class="col-sm-1 text-right" ng-if="showInvoices()">
+							<button class="btn btn-xs btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status===6" title="Delete"><i class="fa fa-lg fa-fire"></i></button>
+							<button class="btn btn-xs btn-danger" ng-click="voidPayroll($event, item)" ng-show="item.invoice && item.totalGrossWage>0 && mainData.userRole==='Master'" title="void payroll"><i class="fa fa-lg fa-ban"></i></button>
+							<button class="btn btn-xs btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoice" title="view invoice"><i class="fa fa-lg fa-eye"></i></button>
+							<button class="btn btn-xs btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoice && item.totalGrossWage>0 && item.status>2 && item.status!==6" title="create invoice"><i class="fa fa-lg fa-edit"></i></button>
+							<button class="btn btn-xs btn-success" ng-click="copyPayroll($event, item)" ng-show="canRunPayroll()" title="copy to new"><i class="fa fa-lg fa-copy"></i></button>
 						</td>
 					</tr>
 

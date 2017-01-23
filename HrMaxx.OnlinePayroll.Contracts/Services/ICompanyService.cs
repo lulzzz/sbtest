@@ -11,7 +11,12 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
 	public interface ICompanyService
 	{
-		IList<Company> GetCompanies(Guid id, Guid hostId);
+		List<Account> GetComanyAccounts(Guid companyId);
+		List<Account> GetCompanyPayrollAccounts(Guid id);
+		VendorCustomer GetVendorCustomersById(Guid vcId);
+		List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year);
+		
+
 		Company Save(Company mappedResource);
 		Company SaveHostCompany(Company company, Host savedHost);
 		CompanyDeduction SaveDeduction(CompanyDeduction deduction, string fullName, Guid userId);
@@ -20,22 +25,18 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CompanyPayCode SavePayCode(CompanyPayCode mappedResource, string fullName, Guid guid);
 		List<VendorCustomer> GetVendorCustomers(Guid? companyId, bool isVendor);
 		VendorCustomer SaveVendorCustomers(VendorCustomer mappedResource);
-		List<Account> GetComanyAccounts(Guid companyId);
+		
 		Account SaveCompanyAccount(Account mappedResource);
-		List<Employee> GetEmployeeList(Guid companyId);
+		
 		Employee SaveEmployee(Employee mappedResource, bool sendNotification = true);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction mappedResource, string fullName);
 		void DeleteEmployeeDeduction(int deductionId);
-		List<Account> GetCompanyPayrollAccounts(Guid id);
+		
 		CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource, string fullName, Guid guid);
-		Company GetCompanyById(Guid companyId);
-		VendorCustomer GetVendorCustomersById(Guid vcId);
+		
 		List<Employee> SaveEmployees(List<Employee> employees);
 
-		List<Company> GetAllCompanies();
-		List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year);
-
-		List<Employee> GetAllEmployees();
+		
 		void SaveTSImportMap(Guid id, ImportMap importMap);
 		Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid);
 		void RaiseMinWage(decimal minWage);

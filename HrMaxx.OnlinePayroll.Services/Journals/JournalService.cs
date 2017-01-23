@@ -22,6 +22,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using Magnum;
 using Magnum.FileSystem;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services.Journals
 {
@@ -33,8 +34,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private readonly IMementoDataService _mementoDataService;
 		private readonly ICommonService _commonService;
 		private readonly IFileRepository _fileRepository;
+		private readonly IReaderService _readerService;
+		private readonly IDocumentService _documentService;
 
-		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository)
+		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository, IReaderService readerService, IDocumentService documentService)
 		{
 			_journalRepository = journalRepository;
 			_companyService = companyService;
@@ -42,6 +45,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			_mementoDataService = mementoDataService;
 			_fileRepository = fileRepository;
 			_commonService = commonService;
+			_readerService = readerService;
+			_documentService = documentService;
 		}
 
 		public Journal SaveJournalForPayroll(Journal journal, Company company)
@@ -431,7 +436,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			try
 			{
 				var coas = _companyService.GetComanyAccounts(journal.CompanyId);
-				var company = _companyService.GetCompanyById(journal.CompanyId);
+				var company = _readerService.GetCompany(journal.CompanyId);
 				if(journal.TransactionType==TransactionType.RegularCheck || journal.TransactionType==TransactionType.TaxPayment || journal.TransactionType==TransactionType.DeductionPayment)
 					return PrintRegularCheck(coas, company, journal);
 				return PrintDepositTicket(coas, company, journal);
@@ -494,14 +499,6 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 		public MasterExtract FileTaxes(Extract extract, string fullName)
 		{
-			if (extract.Report.ReportName.Equals("GarnishmentReport"))
-				return CreateGarnishmentPayments(extract, fullName);
-
-			return CreateTaxPayments(extract, fullName);
-		}
-
-		private MasterExtract CreateTaxPayments(Extract extract, string fullName)
-		{
 			try
 			{
 				var masterExtract = new MasterExtract
@@ -514,6 +511,27 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				};
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					if (extract.Report.ReportName.Equals("GarnishmentReport"))
+						masterExtract = CreateGarnishmentPayments(extract, fullName, masterExtract);
+					else
+						masterExtract = CreateTaxPayments(extract, fullName, masterExtract);
+					txn.Complete();
+				}
+				return masterExtract;
+			}
+			catch (Exception e)
+			{
+				
+				throw;
+			}
+			
+		}
+
+		private MasterExtract CreateTaxPayments(Extract extract, string fullName, MasterExtract masterExtract)
+		{
+			try
+			{
+				
 					var globalVendors = _companyService.GetVendorCustomers(null, true);
 					globalVendors = globalVendors.Where(v => v.IsTaxDepartment).ToList();
 
@@ -538,10 +556,29 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						voidedCheckIds.AddRange(host.Companies.SelectMany(c => c.VoidedPayChecks.Select(pc => pc.Id).ToList()).ToList());
 					}
 					masterExtract.Journals = journals;
+					var file = (FileDto)null;
+					if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
+					{
+
+						file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
+						masterExtract.Extract.File.Data = null;
+
+					}
+					else
+					{
+						Log.Info("Extract Id " + masterExtract.Id + " missing file");
+					}
+
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
-					txn.Complete();
+					if (file != null)
+					{
+						file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
+								masterExtract.Id);
+						file.DocumentExtension = "txt";
+						var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
+					}
 					return masterExtract;
-				}
+				
 			}
 			catch (Exception e)
 			{
@@ -550,20 +587,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		private MasterExtract CreateGarnishmentPayments(Extract extract, string fullName)
+		private MasterExtract CreateGarnishmentPayments(Extract extract, string fullName, MasterExtract masterExtract)
 		{
 			try
 			{
-				var masterExtract = new MasterExtract
-				{
-					Id = 0,
-					Extract = extract,
-					LastModified = DateTime.Now,
-					LastModifiedBy = fullName,
-					IsFederal = !extract.Report.ReportName.Contains("State")
-				};
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
+				
 					var journals = new List<int>();
 					var payCheckIds = new List<int>();
 					var voidedCheckIds = new List<int>();
@@ -600,10 +628,30 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						
 					}
 					masterExtract.Journals = journals;
+					var file = (FileDto)null;
+					if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
+					{
+						
+						file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
+						masterExtract.Extract.File.Data = null;
+
+					}
+					else
+					{
+						Log.Info("Extract Id " + masterExtract.Id + " missing file");
+					}
+					
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
-					txn.Complete();
+					if (file != null)
+					{
+						file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
+								masterExtract.Id);
+						file.DocumentExtension = "txt";
+						var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
+					}
+					
 					return masterExtract;
-				}
+				
 			}
 			catch (Exception e)
 			{

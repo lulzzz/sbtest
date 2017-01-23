@@ -16,6 +16,7 @@ common.directive('mementoList', ['$uibModal', 'zionAPI', '$timeout', '$window', 
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Comment;
+				$scope.loaded = false;
 				$scope.list = [];
 				$scope.selected = null;
 				$scope.EntityTypes = EntityTypes;
@@ -26,15 +27,18 @@ common.directive('mementoList', ['$uibModal', 'zionAPI', '$timeout', '$window', 
 
 					}, 1);
 				}
-				
-				
-				var init = function () {
+				$scope.loadMementos = function () {
+					$scope.loaded = true;
 					commonRepository.getMementos($scope.sourceTypeId, $scope.mementoId).then(function (data) {
 						$scope.list = data;
-
+						$scope.loaded = true;
 					}, function (erorr) {
 
 					});
+				}
+				
+				var init = function () {
+					
 				}
 				$scope.showmemento = function (memento) {
 					$scope.selected = memento.object;

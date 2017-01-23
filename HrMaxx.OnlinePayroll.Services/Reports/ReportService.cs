@@ -41,6 +41,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly IPayrollRepository _payrollRepository;
 		private readonly IMetaDataRepository _metaDataRepository;
 
+		private readonly IReaderService _readerService;
+
 		private readonly string _filePath;
 		private readonly string _templatePath;
 
@@ -52,7 +54,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IPayrollRepository payrollRepository, IMetaDataRepository metaDataRepository, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IPayrollRepository payrollRepository, IMetaDataRepository metaDataRepository, IReaderService readerService, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -65,6 +67,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_metaDataRepository = metaDataRepository;
 			_hostService = hostService;
 			_taxationService = taxationService;
+			_readerService = readerService;
 		}
 
 
@@ -263,7 +266,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract GetDailyDepositReport(ReportRequest request)
 		{
 			request.EndDate = request.StartDate.AddHours(24);
-			var invoices = _payrollRepository.GetPayrollInvoices(Guid.Empty, null);
+			var invoices = _readerService.GetPayrollInvoices(Guid.Empty);
 			var invoicePayments = invoices.SelectMany(i => i.InvoicePayments.Select(p => new ExtractInvoicePayment
 			{
 				CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
@@ -273,7 +276,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			if (!filtered.Any())
 				throw new Exception(NoData);
 			var hosts = _hostService.GetHostList(Guid.Empty);
-			var companies = _companyRepository.GetAllCompanies();
+			var companies = _readerService.GetCompanies();
 			var hostList = new List<ExtractHost>();
 			var companyList = new List<ExtractCompany>();
 			filtered.ForEach(j =>
@@ -718,8 +721,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var args = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList);
 			var argList = new XsltArgumentList();
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
+			var splits = extract.Template.Split('\\');
+			var templateName = splits[splits.Length - 1];
 			var transformed = XmlTransform(xml,
-				extract.Template, argList);
+				string.Format("{0}{1}", _templatePath, templateName), argList);
 
 			if (extract.Extension.Equals("txt"))
 				transformed = Transform(transformed);
@@ -771,12 +776,40 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			try
 			{
-				return _reportRepository.GetExtractList(report);
+				var extracts = _readerService.GetExtracts(report);
+				//extracts.ForEach(me => me.Extract.Data.Hosts.ForEach(h =>
+				//{
+				//	h.Accumulation.ExtractType = me.Extract.Report.ExtractType;
+				//	h.Companies.ForEach(c => c.Accumulation.ExtractType = me.Extract.Report.ExtractType);
+				//}));
+				return extracts;
+				//return _reportRepository.GetExtractList(report);
 			}
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
 					"Extract List for report " + report);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public MasterExtract GetExtract(int id)
+		{
+			try
+			{
+				var extracts = _readerService.GetExtract(id);
+				extracts.Extract.Data.Hosts.ForEach(h =>
+				{
+					h.Accumulation.ExtractType = extracts.Extract.Report.ExtractType;
+					h.Companies.ForEach(c => c.Accumulation.ExtractType = extracts.Extract.Report.ExtractType);
+				});
+				return extracts;
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+					"Extract with id " + id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1067,7 +1100,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse
 			{
-				Company = _companyRepository.GetCompanyById(request.CompanyId),
+				Company = _readerService.GetCompany(request.CompanyId),
 				EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false),
 				CompanyAccumulation = new PayrollAccumulation()
 			};
@@ -1079,7 +1112,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportResponse GetDeductionsReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			response.Company = _companyRepository.GetCompanyById(request.CompanyId);
+			response.Company = _readerService.GetCompany(request.CompanyId);
 			response.EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false);
 			response.CompanyAccumulation = new PayrollAccumulation();
 			response.EmployeeAccumulations.Where(ea=>ea.Accumulation.EmployeeDeductions>0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
@@ -1236,7 +1269,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				return _pdfService.GetTemplateFile("GovtForms\\EmployerForms\\fw4", DateTime.Now.Year, "W4");
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			response.Employees = _companyRepository.GetEmployeeList(request.CompanyId).Where(e => e.StatusId == StatusOption.Active).ToList();
+			response.Employees = _readerService.GetEmployees(company:request.CompanyId).Where(e => e.StatusId == StatusOption.Active).ToList();
 			if (!response.Employees.Any())
 				throw new Exception(NoData);
 
@@ -1276,7 +1309,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				return _pdfService.GetTemplateFile("GovtForms\\EmployerForms\\I9", DateTime.Now.Year, "I9");
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			response.Employees = _companyRepository.GetEmployeeList(request.CompanyId).Where(e => e.StatusId == StatusOption.Active).ToList();
+			response.Employees = _readerService.GetEmployees(company:request.CompanyId).Where(e => e.StatusId == StatusOption.Active).ToList();
 			if(!response.Employees.Any())
 				throw new Exception(NoData);
 
@@ -1414,7 +1447,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			var emps = _companyRepository.GetEmployeeList(request.CompanyId);
+			var emps = _readerService.GetEmployees(company:request.CompanyId);
 			response.Employees = emps.Where(e=>e.StatusId==StatusOption.Active && e.HireDate>=request.StartDate ).ToList();
 			if(!response.Employees.Any())
 				throw new Exception(NoData);
@@ -1482,7 +1515,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Company GetCompany(Guid companyId)
 		{
-			return _companyRepository.GetCompanyById(companyId);
+			return _readerService.GetCompany(companyId);
 		}
 
 		private Models.Host GetHost(Guid hostId)

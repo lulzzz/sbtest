@@ -9,8 +9,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/data-extracts.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository',
-				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository', 'commonRepository',
+				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository, commonRepository) {
 					var dataSvc = {
 						isBodyOpen: false,
 						isBodyOpenExtract: false,
@@ -700,9 +700,9 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 		
 	};
 	$scope.downloadFile = function () {
-		if ($scope.masterExtract.extract.report.allowExclude && !$scope.masterExtract.id) {
+		if (($scope.masterExtract.extract.report.allowExclude && !$scope.masterExtract.id) || !$scope.masterExtract.extract.file || $scope.masterExtract.extract.file.documentId === '00000000-0000-0000-0000-000000000000') {
 			reportRepository.downloadExtractFile($scope.masterExtract.extract).then(function(data) {
-
+				
 				var a = document.createElement('a');
 				a.href = data.file;
 				a.target = '_blank';

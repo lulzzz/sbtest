@@ -81,13 +81,15 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 										d.priority = d.employeeDeduction.priority;
 									}
 								});
-								if (paycheck.grossWage > 0)
+								if (paycheck.grossWage > 0) {
 									paycheck.included = true;
+									paycheck.hasError = false;
+									paycheck.hasWarning = false;
+								}
 								else {
 									paycheck.included = false;
 								}
-								paycheck.hasError = false;
-								
+								paycheck.userActioned = true;
 							});
 							$scope.item.startDate = moment($scope.item.startDate).toDate();
 							$scope.item.endDate = moment($scope.item.endDate).toDate();

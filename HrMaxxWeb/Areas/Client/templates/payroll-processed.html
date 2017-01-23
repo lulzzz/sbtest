@@ -1,4 +1,4 @@
-﻿<div class="row">
+﻿<div class="row table-responsive">
 	<div class="col-sm-12">
 		<div class="col-sm-1"><label>Pay Period</label></div>
 		<div class="col-sm-2 form-group">
@@ -48,7 +48,7 @@
 				</td>
 				<td data-title=" 'Pay Rates' "  class="col-sm-3 text-right">
 					<div class="row" ng-if="listitem.employee.payType===2">
-						<div class="col-sm-6 text-left">Salary</div><div class="col-sm-6 text-right">{{listitem.salary}}</div>
+						<div class="col-sm-6 text-left">Salary</div><div class="col-sm-6 text-right">{{listitem.salary | currency:'$'}}</div>
 					</div>
 					<div class="row" ng-if="listitem.employee.payType===1 || listitem.employee.payType===3">
 						<div class="col-sm-12">
@@ -79,26 +79,24 @@
 					{{listitem.netWage | currency:"$"}}
 				</td>
 			
-				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-1 text-right">
-					{{listitem.paymentMethodText}}
+				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-2">
+					<div class="col-sm-4 text-left">{{listitem.paymentMethodText}}</div>
+					<div class="col-sm-8 text-right">
+						<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)"><i class="fa fa-lg fa-eye"></i></button>
+						<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)"><i class="fa fa-lg fa-fire"></i></button>
+						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-lg fa-print m-r-5"></i></button>
+					</div>
 				</td>
-				<td class="col-sm-1">
-					<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)"><i class="fa fa-eye"></i></button>
-					<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)"><i class="fa fa-ban"></i></button>
-					<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-print m-r-5"></i></button>
-				</td>
-
+				
 			</tr>
 			<tr>
 				<td colspan="3"># Checks {{tableData.length}}</td>
 				<td class="text-right">{{item.totalGrossWage | currency:'$'}}</td>
 				<td class="text-right">{{item.deductionAmount | currency:'$'}}</td>
-				<td class="text-right">{{item.employeeTaxes | currency:'$'}}</td>
+				<td></td>
 				<td class="text-right">{{item.totalNetWage | currency:'$'}}</td>
-				<td class="text-right">{{item.employerTaxes | currency:'$'}}</td>
 				<td></td>
-				<td></td>
-				<td></td>
+				
 			</tr>
 		</table>
 		

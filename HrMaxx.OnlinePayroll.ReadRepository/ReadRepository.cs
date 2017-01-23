@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Serialization;
 using HrMaxx.Common.Models;
 using HrMaxx.Infrastructure.Mapping;
-using HrMaxx.OnlinePayroll.Models;
-using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.ReadRepository
@@ -27,14 +22,15 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 			_sqlCon = sqlCon;
 		}
 
-		private string GetData(string proc, List<FilterParam> paramList)
+		private string GetData(string proc, IEnumerable<FilterParam> paramList)
 		{
 			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(proc))
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
-					paramList.ForEach(p => cmd.Parameters.AddWithValue(string.Format("@{0}", p.Key), p.Value));
+					paramList.Where(p=>!string.IsNullOrWhiteSpace(p.Key) && !string.IsNullOrWhiteSpace(p.Value)).ToList()
+									.ForEach(p => cmd.Parameters.AddWithValue(string.Format("@{0}", p.Key), p.Value));
 					cmd.Connection = con;
 					con.Open();
 
@@ -54,11 +50,11 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 			}
 		}
 
-		private static T Deserialize<T>(string xmlStream, params Type[] additionalTypes)
+		private static T Deserialize<T>(string xmlStream, XmlRootAttribute rootAttribute)
 		{
-			var serializer = new XmlSerializer(typeof(T), new XmlRootAttribute("PayrollInvoiceJsonList"));
-
-
+			var serializer = new XmlSerializer(typeof(T), rootAttribute);
+			if (string.IsNullOrWhiteSpace(xmlStream))
+				return default(T);
 			using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(xmlStream)))
 			{
 				return (T)serializer.Deserialize(reader);
@@ -100,20 +96,30 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 			return (T)serializer.Deserialize(memStream);
 			
 		}
-		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList)
+		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute)
 		{
 			var data = GetData(proc, paramList);
-			//var intermediary = Deserialize<List<PayrollInvoiceJson>>(data);
-			var serializer = new XmlSerializer(typeof(XmlResult));
-			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-			var intermediary = (XmlResult)serializer.Deserialize(memStream);
-			return _mapper.Map<List<PayrollInvoiceJson>, T>(intermediary.ResultList);
+			var intermediary = Deserialize<T1>(data,rootAttribute);
+			return _mapper.Map<T1, T>(intermediary);
 		}
 
 		public T GetDataFromJsonStoredProc<T, T1>(string proc, List<FilterParam> paramList)
 		{
 			var data = GetDataJson(proc, paramList);
+			if (string.IsNullOrWhiteSpace(data))
+				return default(T);
 			var intermediary = JsonConvert.DeserializeObject<T1>(data);
+			return _mapper.Map<T1, T>(intermediary);
+		}
+
+		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList)
+		{
+			var data = GetData(proc, paramList);
+			if (string.IsNullOrWhiteSpace(data))
+				return default(T);
+			var serializer = new XmlSerializer(typeof(T1));
+			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
+			var intermediary = (T1)serializer.Deserialize(memStream);
 			return _mapper.Map<T1, T>(intermediary);
 		}
 	}

@@ -26,13 +26,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			_mapper = mapper;
 		}
 
-		public List<PayCheck> GetPayChecksTillPayDay(Guid companyId, DateTime payDay)
-		{
-			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.CompanyId==companyId && pc.PayDay.Year == payDay.Year && pc.PayDay <= payDay && !pc.IsVoid);
-			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
-
-		}
-
 		public Models.Payroll SavePayroll(Models.Payroll payroll)
 		{
 			var mapped = _mapper.Map<Models.Payroll, Models.DataModel.Payroll>(payroll);
@@ -45,12 +38,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			}
 			return _mapper.Map<Models.DataModel.Payroll, Models.Payroll>(mapped);
 
-		}
-
-		public List<PayCheck> GetPayChecksPostPayDay(Guid companyId, DateTime payDay)
-		{
-			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.CompanyId == companyId && pc.PayDay.Year == payDay.Year && pc.PayDay > payDay && !pc.IsVoid);
-			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
 		}
 
 		public void UpdatePayCheckYTD(PayCheck employeeFutureCheck)
@@ -70,37 +57,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			}
 		}
 
-		public List<Models.Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate)
-		{
-			var company = _dbContext.Companies.First(c => c.Id == companyId);
-			var dbPayrolls = _dbContext.Payrolls.AsQueryable();
-			if (!company.IsHostCompany)
-				dbPayrolls = dbPayrolls.Where(p => p.CompanyId == companyId);
-			else
-			{
-				var allHostCompanies = _dbContext.Companies.Where(c => c.HostId == company.HostId).Select(c => c.Id).ToList();
-				dbPayrolls = dbPayrolls.Where(p => allHostCompanies.Any(c => c == p.CompanyId));
-				dbPayrolls = dbPayrolls.Where(p => p.CompanyId == companyId || p.PEOASOCoCheck);
-			}
-			if (startDate.HasValue)
-				dbPayrolls = dbPayrolls.Where(p => p.PayDay >= startDate);
-			if (endDate.HasValue)
-				dbPayrolls = dbPayrolls.Where(p => p.PayDay <= endDate);
-			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(dbPayrolls.ToList());
-		}
-
-		public List<PayCheck> GetEmployeePayChecks(Guid id, DateTime fiscalStartDate, DateTime fiscalEndDate)
-		{
-			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == id && pc.PayDay<=fiscalEndDate && !pc.IsVoid);
-			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
-		}
-
-		public PayCheck GetPayCheckById(Guid payrollId, int payCheckId)
-		{
-			var paycheck = _dbContext.PayrollPayChecks.First(pc => pc.PayrollId == payrollId && pc.Id == payCheckId);
-			return _mapper.Map<PayrollPayCheck, PayCheck>(paycheck);
-		}
-
 		public PayCheck VoidPayCheck(PayCheck paycheck, string name)
 		{
 			var pc = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == paycheck.Id);
@@ -114,35 +70,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				_dbContext.SaveChanges();
 			}
 			return _mapper.Map<PayrollPayCheck, PayCheck>(pc);
-		}
-
-		public Models.Payroll GetPayrollById(Guid payrollId)
-		{
-			var payroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == payrollId);
-			return _mapper.Map<Models.DataModel.Payroll, Models.Payroll>(payroll);
-		}
-
-		public PayCheck GetPayCheckById(int payCheckId)
-		{
-			var paycheck = _dbContext.PayrollPayChecks.First(p => p.Id == payCheckId);
-			return _mapper.Map<PayrollPayCheck, PayCheck>(paycheck);
-		}
-
-		public List<Models.Payroll> GetInvoicePayrolls(Guid invoiceId)
-		{
-			var payrolls = _dbContext.Payrolls.Where(p => p.InvoiceId == invoiceId);
-			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls.ToList());
-		}
-
-		public void SetPayrollInvoiceId(Invoice savedInvoice)
-		{
-			var dbPayrolls = _dbContext.Payrolls.Where(p => savedInvoice.PayrollIds.Any(pi => pi == p.Id)).ToList();
-			dbPayrolls.ForEach(p =>
-			{
-				p.InvoiceId = savedInvoice.Id;
-				p.Status = (int) PayrollStatus.Invoiced;
-			});
-			_dbContext.SaveChanges();
 		}
 
 		public void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed)
@@ -239,23 +166,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(dbPayrollInvoice);
 		}
 
-		public List<PayrollInvoice> GetPayrollInvoices(Guid hostId, Guid? companyId, InvoiceStatus status = (InvoiceStatus) 0)
-		{
-			var invoices = _dbContext.PayrollInvoices.Where(pi => (hostId!=Guid.Empty && pi.Company.HostId == hostId) || hostId==Guid.Empty).AsQueryable();
-			if (companyId.HasValue)
-				invoices = invoices.Where(pi => pi.CompanyId == companyId);
-			if (status > 0)
-				invoices = invoices.Where(pi => pi.Status == (int)status);
-			invoices = invoices.OrderBy(i => i.InvoiceNumber);
-			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
-		}
-
-		public PayrollInvoice GetPayrollInvoiceById(Guid id)
-		{
-			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == id);
-			return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(db);
-		}
-
 		public void DeletePayrollInvoice(Guid invoiceId)
 		{
 			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);
@@ -291,44 +201,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPaycheck.YTDNetWage = mapped.YTDNetWage;
 				_dbContext.SaveChanges();
 			}
-		}
-
-		public List<PayCheck> GetUnclaimedVoidedchecks(Guid companyId)
-		{
-			var dbChecks =
-				_dbContext.PayrollPayChecks.Where(pc => pc.CompanyId==companyId && pc.IsVoid && pc.InvoiceId.HasValue && !pc.CreditInvoiceId.HasValue);
-			return _mapper.Map<List<PayrollPayCheck>, List<PayCheck>>(dbChecks.ToList());
-		}
-
-		public List<Models.Payroll> GetAllPayrolls(Guid? companyId)
-		{
-			var payrolls = _dbContext.Payrolls.AsQueryable();
-			if (companyId.HasValue)
-				payrolls = payrolls.Where(p => p.CompanyId == companyId.Value);
-			//var returnList = new List<Models.Payroll>();
-			//payrolls.ToList().ForEach(p =>
-			//{
-			//	try
-			//	{
-			//		returnList.Add(_mapper.Map<Models.DataModel.Payroll, Models.Payroll>(p));
-			//	}
-			//	catch (Exception)
-			//	{
-
-			//		throw;
-			//	}
-
-			//});
-			//return returnList;
-			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(payrolls.ToList());
-		}
-
-		public List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits()
-		{
-			var invoices =
-				_dbContext.PayrollInvoices.Where(
-					i => i.Status == (int) InvoiceStatus.Deposited || i.Status == (int) InvoiceStatus.PartialPayment || i.Status == (int)InvoiceStatus.NotDeposited);
-			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice>>(invoices.ToList());
 		}
 
 		public void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date)
@@ -374,57 +246,5 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			return _mapper.Map<List<Models.DataModel.InvoiceDeliveryClaim>, List<Models.InvoiceDeliveryClaim>>(dbClaims);
 		}
 
-		public List<Models.Payroll> GetAllPayrolls(PayrollStatus status)
-		{
-			var dbPayrolls = _dbContext.Payrolls.Where(p => p.Status == (int) status);
-			return _mapper.Map<List<Models.DataModel.Payroll>, List<Models.Payroll>>(dbPayrolls.ToList());
-		}
-
-		public List<PayCheck> GetEmployeePayChecks(Guid employeeId)
-		{
-			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == employeeId);
-			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
-		}
-
-		public List<PayrollInvoice> GetAllPayrollInvoices()
-		{
-			var invoices = _dbContext.PayrollInvoices.ToList();
-			return _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<PayrollInvoice>>(invoices);
-		}
-
-		public List<PayCheck> GetACHPayChecks()
-		{
-			var pcs =
-				_dbContext.PayrollPayChecks.Where(p => !p.IsVoid 
-					&& p.PaymentMethod == (int) EmployeePaymentMethod.DirectDebit 
-					&& !_dbContext.ACHTransactions.Any(ach=>ach.TransactionType == (int)ACHTransactionType.PPD && ach.SourceId==p.Id && ach.SourceParentId==p.PayrollId)
-					);
-
-			return _mapper.Map<List<Models.DataModel.PayrollPayCheck>, List<PayCheck>>(pcs.ToList());
-		}
-
-		public int SaveACHTransactions(List<Models.ACHTransaction> payChecks)
-		{
-			var mapped = _mapper.Map<List<Models.ACHTransaction>, List<Models.DataModel.ACHTransaction>>(payChecks);
-			var add =
-				mapped.Where(
-					m =>
-						!_dbContext.ACHTransactions.Any(
-							a => a.TransactionType == m.TransactionType && a.SourceId == m.SourceId && a.SourceParentId == m.SourceParentId))
-					.ToList();
-			_dbContext.ACHTransactions.AddRange(add);
-			_dbContext.SaveChanges();
-			return add.Count();
-		}
-
-		public List<PayrollInvoice> GetACHPayrollInvoices()
-		{
-			var invoices = _dbContext.PayrollInvoices.Where(i => i.Status > 3 && i.Status != 5).ToList();
-			var mapped = _mapper.Map<List<Models.DataModel.PayrollInvoice>, List<Models.PayrollInvoice> > (invoices);
-			return mapped.Where(i => i.InvoicePayments.Any(p => p.Method == InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted
-														&& !_dbContext.ACHTransactions.Any(a=>a.TransactionType==(int)ACHTransactionType.CCD && a.SourceId==p.Id && a.SourceParentId==i.Id)
-														)
-													).ToList();
-		}
 	}
 }

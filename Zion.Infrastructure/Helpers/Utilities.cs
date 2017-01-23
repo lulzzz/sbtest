@@ -75,5 +75,12 @@ namespace HrMaxx.Infrastructure.Helpers
 		{
 			return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source));
 		}
+
+		public static Guid GetGuidFromEntityTypeAndId(int type, int id)
+		{
+			var str = string.Format("{0}-0000-0000-0000-{1}", type.ToString().PadLeft(8, '0'),
+					id.ToString().PadLeft(12, '0'));
+			return new Guid(str);
+		}
 	}
 }

@@ -95,6 +95,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals);
 		}
 
+		
 		public Models.Journal VoidJournal(int id, TransactionType transactionType, string name)
 		{
 			var journal = _dbContext.Journals.FirstOrDefault(j => j.Id == id && j.TransactionType == (int) transactionType);
@@ -130,6 +131,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				journals = journals.Where(j => j.TransactionDate <= endDate);
 
 			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals.ToList());
+		}
+		public MasterExtract FixMasterExtract(MasterExtract masterExtract)
+		{
+			//var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
+			//_dbContext.MasterExtracts.Add(mapped);
+			var dbExtracts = _dbContext.MasterExtracts.First(e => e.Id == masterExtract.Id);
+			dbExtracts.Extract = JsonConvert.SerializeObject(masterExtract.Extract);
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtracts);
 		}
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)

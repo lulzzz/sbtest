@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
-	//[XmlRoot("PayrollInvoiceJsonList")]
 	public class PayrollInvoiceJson
 	{
 		public Guid Id { get; set; }
@@ -50,10 +49,10 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal NetPay { get; set; }
 		public decimal CheckPay { get; set; }
 		public decimal DDPay { get; set; }
-
+		public DateTime PayrollPayDay { get; set; }
 		public CompanyJson Company { get; set; }
 		public List<InvoicePaymentJson> InvoicePayments { get; set; }
-		public PayrollJson Payroll { get; set; }
+		
 	}
 
 	public class InvoicePaymentJson

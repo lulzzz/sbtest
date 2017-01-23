@@ -21,7 +21,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? InvoiceId { get; set; }
 		public bool PEOASOCoCheck { get; set; }
 		public string Notes { get; set; }
-		public List<PayrollInvoiceJson> PayrollInvoices { get; set; }
-		public  List<PayrollPayCheckJson> PayrollPayChecks { get; set; }
+		public PayrollInvoiceJson PayrollInvoice { get; set; }
+		public List<PayrollPayCheckJson> PayrollPayChecks { get; set; }
 	}
 }

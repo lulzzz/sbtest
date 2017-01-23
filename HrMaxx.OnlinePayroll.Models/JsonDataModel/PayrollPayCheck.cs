@@ -46,8 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
 		public Guid? CreditInvoiceId { get; set; }
-
-		public virtual PayrollJson Payroll { get; set; }
-		public virtual PayrollInvoiceJson PayrollInvoice { get; set; }
+		public Guid DocumentId { get; set; }
+		
 	}
 }

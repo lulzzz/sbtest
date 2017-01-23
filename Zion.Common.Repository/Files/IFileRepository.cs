@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using HrMaxx.Common.Models.Dtos;
 
 namespace HrMaxx.Common.Repository.Files
 {
@@ -25,5 +26,6 @@ namespace HrMaxx.Common.Repository.Files
 		void SaveUserImage(string user, string image);
 		bool FileExists(Guid documentId);
 		void DeleteTargetFile(string file);
+		void SaveFile(Guid id, string documentExtension, byte[] file);
 	}
 }

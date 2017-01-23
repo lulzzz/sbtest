@@ -14,15 +14,17 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 	public class AccumulationCubesHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<PayrollRedateEvent>.All
 	{
 		private readonly IPayrollService _payrollService;
+		private readonly IReaderService _readerService;
 		private readonly IDashboardService _dashboardService;
 		private readonly IHostService _hostService;
 		private readonly IMementoDataService _mementoDataService;
-		public AccumulationCubesHandler(IDashboardService dashboardService, IHostService hostService, IPayrollService payrollService, IMementoDataService mementoDataService)
+		public AccumulationCubesHandler(IDashboardService dashboardService, IHostService hostService, IPayrollService payrollService, IMementoDataService mementoDataService, IReaderService readerService)
 		{
 			_dashboardService = dashboardService;
 			_hostService = hostService;
 			_payrollService = payrollService;
 			_mementoDataService = mementoDataService;
+			_readerService = readerService;
 		}
 
 
@@ -52,7 +54,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		{
 			try
 			{
-				var companyPayrolls = _payrollService.GetCompanyPayrolls(message.CompanyId, new DateTime(message.Year, 1, 1).Date,
+				var companyPayrolls = _readerService.GetPayrolls(message.CompanyId, new DateTime(message.Year, 1, 1).Date,
 					new DateTime(message.Year, 12, 31));
 				_dashboardService.FixCompanyCubes(companyPayrolls, message.CompanyId, message.Year);
 				foreach (var pc in message.AffectedPayChecks)

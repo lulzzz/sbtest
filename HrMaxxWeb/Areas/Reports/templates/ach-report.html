@@ -34,11 +34,11 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-						<div class="panel-heading">
-							<h4 class="panel-title">ACH History<i class="pull-right fa fa-refresh" ng-click="refresh()" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+						<div class="panel-heading" >
+							<h4 class="panel-title">ACH History  <button class="btn btn-sm btn-success" ng-click="refesh($event)"><i class="fa fa-refresh"></i></button><i class="pull-right glyphicon" ng-click="data.isBodyOpen=!data.isBodyOpen" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 						</div>
-						<div class="panel-body">
+						<div class="panel-body" ng-show="data.isBodyOpen">
 							<div ng-show="list.length===0" class="row table table-bordered">
 								No Extracts found
 							</div>

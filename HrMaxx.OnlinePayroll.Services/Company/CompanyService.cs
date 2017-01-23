@@ -27,52 +27,23 @@ namespace HrMaxx.OnlinePayroll.Services
 	{
 		private readonly ICompanyRepository _companyRepository;
 		private readonly IMementoDataService _mementoDataService;
+		private readonly IReaderService _readerService;
 		
 		public IBus Bus { get; set; }
 		
-		public CompanyService(ICompanyRepository companyRepository, IMementoDataService mementoDataService)
+		public CompanyService(ICompanyRepository companyRepository, IMementoDataService mementoDataService, IReaderService readerService)
 		{
 			_companyRepository = companyRepository;
 			_mementoDataService = mementoDataService;
+			_readerService = readerService;
 		}
 
 		
-
-		public IList<Company> GetCompanies(Guid hostId, Guid companyId)
-		{
-			try
-			{
-				var companies = _companyRepository.GetCompanies(hostId, companyId);
-				return companies;
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "company list for host");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		public List<Company> GetAllCompanies()
-		{
-			try
-			{
-				var companies = _companyRepository.GetAllCompanies();
-				return companies;
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "all companies in the system");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
 		public List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year)
 		{
 			try
 			{
-				var companies = GetAllCompanies().Where(c=>c.States.Any(s=>s.CountryId==1 && s.State.StateId==1) && c.CompanyTaxRates.Any(ct=>ct.TaxYear==year)).ToList();
+				var companies = _readerService.GetCompanies().Where(c=>c.States.Any(s=>s.CountryId==1 && s.State.StateId==1) && c.CompanyTaxRates.Any(ct=>ct.TaxYear==year)).ToList();
 				return companies.Select(c =>
 						new CaliforniaCompanyTax()
 						{
@@ -148,7 +119,7 @@ namespace HrMaxx.OnlinePayroll.Services
 
 						});
 					}
-					var employees = _companyRepository.GetEmployeeList(savedcompany.Id);
+					var employees = _readerService.GetEmployees(company:savedcompany.Id);
 					employees.Where(e=>e.PayType!=EmployeeType.Salary && (e.Rate<savedcompany.MinWage || e.PayCodes.Any(pc=>pc.Id==0 && pc.HourlyRate<savedcompany.MinWage)))
 						.ToList()
 						.ForEach(e =>
@@ -170,7 +141,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					});
 					
 				}
-				var returnCompany = _companyRepository.GetCompanyById(company.Id);
+				var returnCompany = _readerService.GetCompany(company.Id);
 				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName, "Company Updated", company.UserId);
 				_mementoDataService.AddMementoData(memento);
 				return returnCompany;
@@ -206,7 +177,7 @@ namespace HrMaxx.OnlinePayroll.Services
 
 					if (savedHost.IsPeoHost)
 					{
-						var hostCompanies = _companyRepository.GetCompanies(savedHost.Id, Guid.Empty);
+						var hostCompanies = _readerService.GetCompanies(host:savedHost.Id);
 						hostCompanies.Where(c => !c.IsHostCompany && c.DepositSchedule != company.DepositSchedule).ToList().ForEach(c =>
 						{
 							c.DepositSchedule = company.DepositSchedule;
@@ -235,7 +206,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var returnDed = _companyRepository.SaveDeduction(deduction);
-				var returnCompany = _companyRepository.GetCompanyById(deduction.CompanyId);
+				var returnCompany = _readerService.GetCompany(deduction.CompanyId);
 				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, returnCompany.UserName, string.Format("Deduction Updated {0}", deduction.DeductionName), userId);
 				_mementoDataService.AddMementoData(memento, true);
 				
@@ -254,7 +225,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var wc = _companyRepository.SaveWorkerCompensation(workerCompensation);
-				var returnCompany = _companyRepository.GetCompanyById(wc.CompanyId);
+				var returnCompany = _readerService.GetCompany(wc.CompanyId);
 				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("WC definition updated {0}", workerCompensation.Code), userId);
 				_mementoDataService.AddMementoData(memento, true);
 				return wc;
@@ -272,7 +243,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var apt =  _companyRepository.SaveAccumulatedPayType(mappedResource);
-				var returnCompany = _companyRepository.GetCompanyById(apt.CompanyId);
+				var returnCompany = _readerService.GetCompany(apt.CompanyId);
 				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("Accumulated PayType Updated {0}", mappedResource.PayType.Name), userId);
 				_mementoDataService.AddMementoData(memento, true);
 				return apt;
@@ -292,7 +263,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					var pc = _companyRepository.SavePayCode(mappedResource);
-					var employees = _companyRepository.GetEmployeeList(mappedResource.CompanyId);
+					var employees = _readerService.GetEmployees(company:mappedResource.CompanyId);
 					employees.Where(e => e.PayCodes.Any(ec => ec.Id == pc.Id)).ToList().ForEach(e =>
 					{
 						e.PayCodes.RemoveAll(ec => ec.Id == pc.Id);
@@ -300,7 +271,7 @@ namespace HrMaxx.OnlinePayroll.Services
 						_companyRepository.SaveEmployee(e);
 						
 					});
-					var returnCompany = _companyRepository.GetCompanyById(pc.CompanyId);
+					var returnCompany = _readerService.GetCompany(pc.CompanyId);
 					var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, "Pay Code updated: " + mappedResource.Code, userId);
 					_mementoDataService.AddMementoData(memento, true);
 					txn.Complete();
@@ -375,19 +346,6 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public List<Employee> GetEmployeeList(Guid companyId)
-		{
-			try
-			{
-				return _companyRepository.GetEmployeeList(companyId);
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("getting employee list for {0}", companyId));
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
 		public List<Employee> SaveEmployees(List<Employee> employees)
 		{
 			try
@@ -465,7 +423,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var ed = _companyRepository.SaveEmployeeDeduction(deduction);
-				var returnCompany = _companyRepository.GetEmployeeById(ed.EmployeeId);
+				var returnCompany = _readerService.GetEmployee(ed.EmployeeId);
 				var memento = Memento<Employee>.Create(returnCompany, EntityTypeEnum.Employee, user);
 				_mementoDataService.AddMementoData(memento, true);
 				return ed;
@@ -515,7 +473,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				var tr = _companyRepository.SaveCompanyTaxRate(mappedResource);
 
-				var returnCompany = _companyRepository.GetCompanyById(tr.CompanyId);
+				var returnCompany = _readerService.GetCompany(tr.CompanyId);
 				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("Tax rate updated {0}", mappedResource.TaxCode), userId);
 				_mementoDataService.AddMementoData(memento, true);
 
@@ -524,20 +482,6 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "tax year rate for company ");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		public Company GetCompanyById(Guid companyId)
-		{
-			try
-			{
-				return _companyRepository.GetCompanyById(companyId);
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "company by Id= "+companyId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -552,20 +496,6 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "vendor customer by Id= " + vcId);
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		public List<Employee> GetAllEmployees()
-		{
-			try
-			{
-				return _companyRepository.GetAllEmployees();
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" all employees"));
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -591,7 +521,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var parent = _companyRepository.GetCompanyById(mappedResource.ParentId);
+					var parent = _readerService.GetCompany(mappedResource.ParentId);
 					var child = JsonConvert.DeserializeObject<Company>(JsonConvert.SerializeObject(parent));
 					child.Id = mappedResource.Id;
 					child.ParentId = parent.Id;
@@ -656,7 +586,7 @@ namespace HrMaxx.OnlinePayroll.Services
 						EventType = NotificationTypeEnum.Created
 					});
 				}
-				var saved = _companyRepository.GetCompanyById(mappedResource.Id);
+				var saved = _readerService.GetCompany(mappedResource.Id);
 				var memento = Memento<Company>.Create(saved, EntityTypeEnum.Company, saved.UserName, "Company Location Added", guid);
 				_mementoDataService.AddMementoData(memento);
 				return saved;
@@ -676,8 +606,8 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var companies = _companyRepository.GetAllCompanies().Where(c => c.HostId == new Guid("75A78BE4-7226-466B-86BA-A6E200DCAAAC") || c.HostId == new Guid("9AF2FC03-5D35-4A82-9E17-A6E200DDBA73")).ToList();
-					var employees = _companyRepository.GetAllEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
+					var companies = _readerService.GetCompanies().Where(c => c.HostId == new Guid("75A78BE4-7226-466B-86BA-A6E200DCAAAC") || c.HostId == new Guid("9AF2FC03-5D35-4A82-9E17-A6E200DDBA73")).ToList();
+					var employees = _readerService.GetEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
 					var selectEmployees = new List<Employee>();
 					var selectedCompanies = new List<Company>();
 					companies.ForEach(c =>

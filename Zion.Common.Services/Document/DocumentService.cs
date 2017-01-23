@@ -10,6 +10,7 @@ using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
+using Magnum;
 using MassTransit.Configurators;
 
 namespace HrMaxx.Common.Services.Document
@@ -265,6 +266,32 @@ namespace HrMaxx.Common.Services.Document
 		public bool DocumentExists(Guid documentId)
 		{
 			return _fileRepository.FileExists(documentId);
+		}
+
+		public DocumentDto SaveEntityDocument(EntityTypeEnum sourceType, FileDto file)
+		{
+			try
+			{
+				var document = new DocumentDto()
+					{
+						DocumentExtension = file.DocumentExtension,
+						DocumentName = file.Filename,
+						MimeType = file.MimeType,
+						DocumentType = DocumentType.Misc,
+						Id = file.DocumentId
+
+					};
+					_commonService.SaveEntityRelation<DocumentDto>(sourceType, EntityTypeEnum.Document, document.Id, document);
+					_fileRepository.SaveFile(document.Id, document.DocumentExtension, file.Data);
+					return document;
+				
+				
+			}
+			catch (Exception e)
+			{
+				
+				throw;
+			}
 		}
 	}
 }

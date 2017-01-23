@@ -6,10 +6,10 @@
 		</div>
 		<div class="panel-body">
 
-			<div ng-show="list.length===0">
-				No versions found
+			<div ng-if="list.length===0">
+				{{ loaded ? 'No versions found' : 'Not loaded yet'}} <button class="btn btn-sm btn-primary" ng-click="loadMementos()" ng-show="!loaded"><i class="fa fa-refresh"></i></button>
 			</div>
-			<div class="row" ng-show="list.length>0">
+			<div class="row" ng-if="list.length>0">
 				<div class="detailBox">
 					<div class="actionBox">
 						<ul class="commentList">

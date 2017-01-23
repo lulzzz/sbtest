@@ -28,12 +28,14 @@ namespace HrMaxxAPI.Controllers.Reports
 		public readonly IReportService _reportService;
 		public readonly IJournalService _journalService;
 		public readonly IACHService _achService;
+		public readonly IDocumentService _documentService;
 
-		public ReportController(IReportService reportService, IJournalService journalService, IACHService achService)
+		public ReportController(IReportService reportService, IJournalService journalService, IACHService achService, IDocumentService documentService)
 		{
 			_reportService = reportService;
 			_journalService = journalService;
 			_achService = achService;
+			_documentService = documentService;
 		}
 		
 		[HttpPost]
@@ -98,7 +100,8 @@ namespace HrMaxxAPI.Controllers.Reports
 		[Route(ReportRoutes.DownloadReport)]
 		public HttpResponseMessage DownloadReport(FileDto document)
 		{
-			return Printed(document);
+			var doc = _documentService.GetDocument(document.DocumentId);
+			return Printed(doc);
 		}
 
 		[HttpPost]
@@ -135,6 +138,15 @@ namespace HrMaxxAPI.Controllers.Reports
 			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for report " + report, true);
 
 		}
+
+		[HttpGet]
+		[Route(ReportRoutes.Extract)]
+		public MasterExtract Extract(int id)
+		{
+			return MakeServiceCall(() => _reportService.GetExtract(id), "Extract with id " + id, true);
+
+		}
+
 		[HttpGet]
 		[Route(ReportRoutes.ACHExtractList)]
 		public List<ACHMasterExtract> ACHExtractList()

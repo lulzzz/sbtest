@@ -16,5 +16,6 @@
 		public const string ACHExtractList = "Reports/ACHExtractList";
 		public const string GetSearchResults = "Reports/SearchResults/{criteria}";
 		public const string DownloadExtract = "Reports/DownloadExtract";
+		public const string Extract = "Reports/Extract/{id:int}";
 	}
 }

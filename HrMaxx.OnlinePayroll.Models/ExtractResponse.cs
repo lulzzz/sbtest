@@ -20,6 +20,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string FileName { get; set; }
 		public string Extension { get; set; }
 		public FileDto File { get; set; }
+		
 	}
 
 	public class ACHExtract

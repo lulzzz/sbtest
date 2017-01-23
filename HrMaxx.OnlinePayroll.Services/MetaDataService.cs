@@ -24,12 +24,14 @@ namespace HrMaxx.OnlinePayroll.Services
 		private readonly ICompanyService _companyService;
 		private readonly IHostService _hostService;
 		private readonly IMetaDataRepository _metaDataRepository;
-		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IHostService hostService)
+		private readonly IReaderService _readerService;
+		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IHostService hostService, IReaderService readerService)
 		{
 			_metaDataRepository = metaDataRepository;
 			_commonService = commonService;
 			_companyService = companyService;
 			_hostService = hostService;
+			_readerService = readerService;
 		}
 
 		public object GetCompanyMetaData()
@@ -81,7 +83,7 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var company = _companyService.GetCompanyById(companyId);
+				var company = _readerService.GetCompany(companyId);
 				var host = _hostService.GetHost(company.HostId);
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var bankAccount = _metaDataRepository.GetPayrollAccount(companyId);
@@ -178,8 +180,8 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var companies = _companyService.GetAllCompanies();
-				var employees = _companyService.GetAllEmployees();
+				var companies = _readerService.GetCompanies(); //_companyService.GetAllCompanies();
+				var employees = _readerService.GetEmployees();
 				var searchResults = new List<SearchResult>();
 				foreach (var company in companies)
 				{
@@ -218,7 +220,7 @@ namespace HrMaxx.OnlinePayroll.Services
 
 		public List<CompanySUIRate> GetPEOCompanies()
 		{
-			var companies = _companyService.GetAllCompanies().Where(c=>c.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck).ToList();
+			var companies = _readerService.GetCompanies().Where(c=>c.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck).ToList();
 			return
 				companies.Select(
 					c =>

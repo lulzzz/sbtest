@@ -50,10 +50,10 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			try
 			{
-				var companies = _companyService.GetAllCompanies();
+				var companies = _readerService.GetCompanies(); //_companyService.GetAllCompanies();
 				companies.ForEach(c =>
 				{
-					var payrolls = _payrollService.GetCompanyPayrolls(c.Id, new DateTime(year, 1, 1).Date,
+					var payrolls = _readerService.GetPayrolls(c.Id, new DateTime(year, 1, 1).Date,
 					new DateTime(year, 12, 31));
 					if (payrolls.Any())
 					{
@@ -178,7 +178,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.Payrolls)]
 		public List<PayrollResource> GetPayrolls(PayrollFilterResource filter)
 		{
-			var payrolls = MakeServiceCall(() => _payrollService.GetCompanyPayrolls(filter.CompanyId, filter.StartDate, filter.EndDate, true), string.Format("get list of payrolls for company={0}", filter.CompanyId));
+			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(filter.CompanyId, filter.StartDate, filter.EndDate, true), string.Format("get list of payrolls for company={0}", filter.CompanyId));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 
@@ -186,7 +186,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.UnPrintedPayrolls)]
 		public List<PayrollResource> GetUnPrintedPayrolls()
 		{
-			var payrolls = MakeServiceCall(() => _payrollService.GetUnPrintedPayrolls(), string.Format("get list of un printed payrolls "));
+			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, status:(int)PayrollStatus.Committed), string.Format("get list of un printed payrolls "));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 
@@ -268,7 +268,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.PayCheck)]
 		public PayCheckResource GetPayCheck(int checkId)
 		{
-			var check = MakeServiceCall(() => _payrollService.GetPayCheck(checkId), string.Format("get paycheck with id={0}", checkId));
+			var check = MakeServiceCall(() => _readerService.GetPaycheck(checkId), string.Format("get paycheck with id={0}", checkId));
 			return Mapper.Map<PayCheck, PayCheckResource>(check);
 		}
 
@@ -277,7 +277,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.GetInvoicePayroll)]
 		public List<PayrollResource> GetInvoicePayroll(Guid invoiceId)
 		{
-			var payrolls = MakeServiceCall(() => _payrollService.GetInvoicePayrolls(invoiceId), string.Format("get payrolls for invoice with id={0}", invoiceId));
+			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, invoiceId:invoiceId), string.Format("get payrolls for invoice with id={0}", invoiceId));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 		[HttpGet]
@@ -320,31 +320,11 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
-		[Route(PayrollRoutes.HostInvoices)]
-		public List<PayrollInvoiceResource> GetHostInvoices()
-		{
-			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
-			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
-			{
-				invoices = invoices.Where(i => !i.Company.IsHostCompany && i.Company.IsVisibleToHost).ToList();
-			}
-			var appConfig = _taxationService.GetApplicationConfig();
-			if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName() && appConfig.RootHostId.HasValue)
-			{
-				invoices = invoices.Where(i => !(i.Company.HostId==appConfig.RootHostId && i.Company.IsHostCompany)).ToList();
-			}
-			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
-			var ic =_taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
-			result.ForEach(i=>i.TaxPaneltyConfig = ic);
-			return result;
-		}
-
-		[HttpGet]
 		[Route(PayrollRoutes.PayrollInvoices)]
 		public List<PayrollInvoiceResource> GetPayrollInvoices()
 		{
 			
-			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoicesXml(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
 			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
 			{
 				invoices = invoices.Where(i => !i.Company.IsHostCompany && i.Company.IsVisibleToHost).ToList();
@@ -364,7 +344,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.ApprovedInvoices)]
 		public List<PayrollInvoiceResource> GetApprovedInvoices()
 		{
-			var invoices = MakeServiceCall(() => _payrollService.GetHostInvoices(CurrentUser.Host, InvoiceStatus.Submitted), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, status:InvoiceStatus.Submitted), string.Format("get invoices for host with id={0}", CurrentUser.Host));
 			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
 			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i => i.TaxPaneltyConfig = ic);
@@ -381,7 +361,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.GetInvoiceById)]
 		public PayrollInvoiceResource GetInvoiceById(Guid invoiceId)
 		{
-			var invoice = MakeServiceCall(() => _payrollService.GetInvoiceById(invoiceId), string.Format("get invoice with id={0}", invoiceId));
+			var invoice = MakeServiceCall(() => _readerService.GetPayrollInvoice(invoiceId), string.Format("get invoice with id={0}", invoiceId));
 			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
 
 		}
@@ -429,7 +409,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.EmployeeChecks)]
 		public List<PayCheck> GetEmployeeChecks(Guid companyId, Guid employeeId)
 		{
-			return MakeServiceCall(() => _payrollService.GetEmployeePayChecks(companyId, employeeId), "Get Pay Check for employee");
+			return MakeServiceCall(() => _readerService.GetPayChecks(companyId:companyId, employeeId:employeeId, isvoid:0), "Get Pay Check for employee");
 		}
 		
 		[HttpPost]
@@ -460,7 +440,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			{
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
-				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
+				var company = Mapper.Map<Company, CompanyResource>(_readerService.GetCompany(fileUploadObj.CompanyId));
 				var importedRows = _excelService.ImportFromExcel(fileUploadObj.file, 2);
 				var timesheets = new List<TimesheetResource>();
 				var error = string.Empty;
@@ -516,7 +496,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			{
 				var fileUploadObj = await ProcessMultipartContentWithMap();
 				filename = fileUploadObj.file.FullName;
-				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
+				var company = Mapper.Map<Company, CompanyResource>(_readerService.GetCompany(fileUploadObj.CompanyId));
 				var importedRows = _excelService.ImportWithMap(fileUploadObj.file, fileUploadObj.ImportMap, fileUploadObj.FileName);
 				var timesheets = new List<TimesheetResource>();
 				var error = string.Empty;

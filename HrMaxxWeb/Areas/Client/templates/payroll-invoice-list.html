@@ -81,15 +81,19 @@
 				<script type="text/ng-template" id="ng-table/filters/status.html">
 					<select id="statuslist" class="form-control" ng-model="params.filter()[name]" name="filter-status1" convert-to-number>
 						<option value="0">All</option>
+						<option value="8">Deposited</option>
+						<option value="9">Not Deposited</option>
+						<option value="5">Taxes Delayed</option>
+						<option value="6">Bounced</option>
 						<option value="1">Draft</option>
 						<option value="2">Approved</option>
 						<option value="3">Delivered</option>
-						<option value="4">Closed</option>
-						<option value="6">Bounced</option>
+						<option value="4">Closed</option>						
 						<option value="7">Partial Payment</option>
-						<option value="9">Partial Deposited</option>
-						<option value="8">Deposited</option>
-						<option value="5">Taxes Delayed</option>
+						<option value="10">ACH Pending</option>
+						
+						
+						
 					</select>
 				</script>
 			</div>

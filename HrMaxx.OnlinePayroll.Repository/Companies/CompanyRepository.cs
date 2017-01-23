@@ -43,13 +43,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			_sqlCon = sqlCon;
 		}
 
-		public IList<Company> GetCompanies(Guid hostId, Guid companyId)
-		{
-			var companies = _dbContext.Companies.Where(c => c.HostId == hostId);
-			if (companyId != Guid.Empty)
-				companies = companies.Where(c => c.Id == companyId);
-			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(companies.ToList());
-		}
 
 		public Models.Company SaveCompany(Models.Company company)
 		{
@@ -339,12 +332,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _dbContext.Companies.Any(c => c.Id == companyId || c.FederalEIN.Equals(fein));
 		}
 
-		public List<Employee> GetEmployeeList(Guid companyId)
-		{
-			var employees = _dbContext.Employees.Where(e => e.CompanyId == companyId);
-			return _mapper.Map<List<Models.DataModel.Employee>, List<Employee>>(employees.ToList());
-		}
-
 		public Employee SaveEmployee(Employee employee)
 		{
 			if (employee.BankAccounts != null && employee.BankAccounts.Any())
@@ -548,11 +535,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.CompanyTaxRate, CompanyTaxRate>(taxyearrate);
 		}
 
-		public Company GetCompanyById(Guid companyId)
-		{
-			var dbCompany = _dbContext.Companies.First(c => c.Id == companyId);
-			return _mapper.Map<Models.DataModel.Company, Models.Company>(dbCompany);
-		}
 
 		public VendorCustomer GetVendorCustomersById(Guid vcId)
 		{
@@ -593,26 +575,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				}
 			}
 		}
-
-		public List<Company> GetAllCompanies()
-		{
-			var dbComps = _dbContext.Companies.ToList();
-			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(dbComps);
-		}
-
-		public Employee GetEmployeeById(Guid employeeId)
-		{
-			var dbemp = _dbContext.Employees.First(e => e.Id == employeeId);
-			return _mapper.Map<Models.DataModel.Employee, Models.Employee>(dbemp);
-		}
-
 		
-		public List<Employee> GetAllEmployees()
-		{
-			var emps = _dbContext.Employees.ToList();
-			return _mapper.Map<List<Models.DataModel.Employee>, List<Models.Employee>>(emps);
-		}
-
 		public void SaveTSImportMap(Guid id, ImportMap importMap)
 		{
 			var dbVal = _dbContext.CompanyTSImportMaps.FirstOrDefault(m => m.CompanyId == id);

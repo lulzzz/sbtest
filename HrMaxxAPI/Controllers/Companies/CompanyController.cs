@@ -26,14 +26,16 @@ namespace HrMaxxAPI.Controllers.Companies
 		private readonly IPayrollService _payrollService;
 		private readonly IExcelService _excelServce ;
 	  private readonly ITaxationService _taxationService;
+	  private readonly IReaderService _readerService;
 	  
-	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, ITaxationService taxationService, IPayrollService payrollService)
+	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, ITaxationService taxationService, IPayrollService payrollService, IReaderService readerService)
 	  {
 			_metaDataService = metaDataService;
 		  _companyService = companyService;
 		  _excelServce = excelService;
 		  _taxationService = taxationService;
 		  _payrollService = payrollService;
+		  _readerService = readerService;
 	  }
 
 	  [HttpGet]
@@ -72,10 +74,21 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 
 		[HttpGet]
+		[Route(CompanyRoutes.CompanyList)]
+		public IList<CompanyResource> GetAllCompanies()
+		{
+			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
+			var companies = MakeServiceCall(() => _readerService.GetCompanies(), "Get companies for hosts", true);
+			
+			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c => c.CompanyNumber).ToList());
+		}
+
+		[HttpGet]
 		[Route(CompanyRoutes.Companies)]
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{
-			var companies =  MakeServiceCall(() => _companyService.GetCompanies(hostId, CurrentUser.Company), "Get companies for hosts", true);
+			//var companies =  MakeServiceCall(() => _companyService.GetCompanies(hostId, CurrentUser.Company), "Get companies for hosts", true);
+			var companies = MakeServiceCall(() => _readerService.GetCompanies(host: hostId, company:(CurrentUser.Company==Guid.Empty? default(Guid?) : CurrentUser.Company)), "Get companies for hosts", true);
 			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
 			{
 				companies = companies.Where(c => !c.IsHostCompany && c.IsVisibleToHost).ToList();
@@ -85,14 +98,14 @@ namespace HrMaxxAPI.Controllers.Companies
 			{
 				companies = companies.Where(c => !(c.HostId==appConfig.RootHostId.Value && c.IsHostCompany)).ToList();
 			}
-			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.ToList());
+			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c=>c.CompanyNumber).ToList());
 		}
 		[HttpGet]
 		[Route(CompanyRoutes.Company)]
 		public CompanyResource GetCompany(Guid id)
 		{
-			var companies = MakeServiceCall(() => _companyService.GetCompanyById(id), "Get company by id", true);
-			
+			//var companies = MakeServiceCall(() => _companyService.GetCompanyById(id), "Get company by id", true);
+			var companies = MakeServiceCall(() => _readerService.GetCompany(id), "Get company by id", true);
 			return Mapper.Map<HrMaxx.OnlinePayroll.Models.Company, CompanyResource>(companies);
 		}
 
@@ -205,8 +218,9 @@ namespace HrMaxxAPI.Controllers.Companies
 		[Route(CompanyRoutes.EmployeeList)]
 		public List<EmployeeResource> EmployeeList(Guid companyId)
 		{
-			var vendors = MakeServiceCall(() => _companyService.GetEmployeeList(companyId), string.Format("getting list of employees for {0}", companyId), true);
-			return Mapper.Map<List<Employee>, List<EmployeeResource>>(vendors);
+			//var employees = MakeServiceCall(() => _companyService.GetEmployeeList(companyId), string.Format("getting list of employees for {0}", companyId), true);
+			var employees = MakeServiceCall(() => _readerService.GetEmployees(company:companyId), string.Format("getting list of employees for {0}", companyId), true);
+			return Mapper.Map<List<Employee>, List<EmployeeResource>>(employees);
 		}
 
 		[HttpPost]
@@ -268,7 +282,7 @@ namespace HrMaxxAPI.Controllers.Companies
 			{
 				var fileUploadObj = await ProcessMultipartContent();
 				filename = fileUploadObj.file.FullName;
-				var company = Mapper.Map<Company, CompanyResource>(_companyService.GetCompanyById(fileUploadObj.CompanyId));
+				var company = Mapper.Map<Company, CompanyResource>(_readerService.GetCompany(fileUploadObj.CompanyId));
 				var importedRows = _excelServce.ImportFromExcel(fileUploadObj.file, 3);
 				var employees = new List<EmployeeResource>();
 				var error = string.Empty;
@@ -288,7 +302,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				if (!string.IsNullOrWhiteSpace(error))
 					throw new Exception(error);
 
-				var employeeList = _companyService.GetEmployeeList(company.Id.Value);
+				var employeeList = _readerService.GetEmployees(company:company.Id.Value);
 				if (employeeList.Any(e=>employees.Any(e1=>e1.SSN==e.SSN)))
 				{
 					var exists = employeeList.Where(e=>employees.Any(e1=>e1.SSN==e.SSN)).Aggregate(string.Empty, (current, emp) => current + (emp.SSN + ", "));
@@ -353,7 +367,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				var fileUploadObj = await ProcessMultipartContentTaxRateImport();
 				filename = fileUploadObj.file.FullName;
 				var companyOverrideableTaxes = _metaDataService.GetCompanyTaxesForYear(fileUploadObj.Year);
-				var companies = _companyService.GetAllCompanies();
+				var companies = _readerService.GetCompanies(); //_companyService.GetAllCompanies();
 				if(!companyOverrideableTaxes.Any())
 					throw new Exception("No Company Specific Taxes Found for Year " + fileUploadObj.Year);
 

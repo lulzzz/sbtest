@@ -80,8 +80,11 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 						});
 					}
 
-					$scope.refresh = function () {
+					$scope.refresh = function (event) {
+						event.stopPropagation();
+						event.preventDefault();
 						getExtracts();
+						data.isBodyOpen = true;
 
 					}
 					$scope.downloadFile = function () {

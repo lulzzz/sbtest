@@ -69,9 +69,9 @@
 							<div class="label label-info" ng-if="payment.status===5 && !payment.marker">Deposited</div>
 							<div class="label label-success" ng-if="payment.status===3 && !payment.marker">Paid</div>
 							<div class="label label-danger" ng-if="payment.status===4 && !payment.marker">Bounced</div>
-							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && payment.status===2"><i class="fa fa-lg fa-bomb"></i> Bounced?</button>
+							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && (payment.status===2 || payment.status===5)"><i class="fa fa-lg fa-bomb"></i> Bounced?</button>
 							<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;unsavedPayments=true" ng-show="payment.status===2 || payment.status===5"><i class="fa fa-lg fa-money"/> Paid?</button>
-							<button class="btn btn-xs btn-info" ng-click="payment.status=5; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && payment.status===2"><i class="fa fa-lg fa-bank" /> Deposited?</button>
+							<button class="btn btn-xs btn-info" ng-click="payment.status=5; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && (payment.status===2 || payment.status===4)"><i class="fa fa-lg fa-bank" /> Deposited?</button>
 							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="isPaymentEditable(payment) && showControls"></i>
 							<label class="label label-success" ng-if="payment.status===3 && payment.marker">Will be marked Paid when saved</label>
 							<label class="label label-danger" ng-if="payment.status===4 && payment.marker">Will be marked Bounced when saved</label>

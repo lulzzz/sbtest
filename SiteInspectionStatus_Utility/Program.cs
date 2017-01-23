@@ -10,6 +10,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
@@ -17,6 +18,7 @@ using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Companies;
+using HrMaxx.OnlinePayroll.Repository.Journals;
 using HrMaxxAPI.Code.IOC;
 using LinqToExcel;
 using Magnum;
@@ -50,15 +52,15 @@ namespace SiteInspectionStatus_Utility
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.CommandHandlerModule>();
 
 			var container = builder.Build();
-			Console.Write("Staring Batch ? ");
-			int startingBatch = Convert.ToInt32(Console.ReadLine());
-			Console.Write("Batch Size? ");
-			int batchSize = Convert.ToInt32(Console.ReadLine());
-			Console.Write("Number of Batches ? ");
-			int runBatches = Convert.ToInt32(Console.ReadLine());
-			ImportData(container, startingBatch, batchSize, runBatches);
+			//Console.Write("Staring Batch ? ");
+			//int startingBatch = Convert.ToInt32(Console.ReadLine());
+			//Console.Write("Batch Size? ");
+			//int batchSize = Convert.ToInt32(Console.ReadLine());
+			//Console.Write("Number of Batches ? ");
+			//int runBatches = Convert.ToInt32(Console.ReadLine());
+			//ImportData(container, startingBatch, batchSize, runBatches);
 
-
+			FixMasterExtracts(container);
 			Console.WriteLine("Utility run finished for ");
 		}
 
@@ -95,6 +97,7 @@ namespace SiteInspectionStatus_Utility
 					var _companyRepository = scope.Resolve<ICompanyRepository>();
 					var _hostService = scope.Resolve<IHostService>();
 					var _mementoDataService = scope.Resolve<IMementoDataService>();
+					var _readerService = scope.Resolve<IReaderService>();
 
 
 					var companyMetaData = (CompanyMetaData)_metaDataService.GetCompanyMetaData();
@@ -104,7 +107,7 @@ namespace SiteInspectionStatus_Utility
 
 					var hostList = _hostService.GetHostList(Guid.Empty);
 					var companiestoimport = new List<string>() { "3820" };
-					var existingcompanies = _companyRepository.GetAllCompanies();
+					var existingcompanies = _readerService.GetCompanies();
 
 
 
@@ -468,7 +471,7 @@ namespace SiteInspectionStatus_Utility
 								}
 								/// end company bank account
 								/// employees and their bank accounts
-								var existing = _companyRepository.GetEmployeeList(company.Id);
+								var existing = _readerService.GetEmployees(company:company.Id);
 
 								var cemps = employees.Where(e => e.CompanyNo.Equals(c.CompanyNo)).ToList();
 								cemps.ForEach(e =>
@@ -681,6 +684,39 @@ namespace SiteInspectionStatus_Utility
 
 		}
 
-
+		private static void FixMasterExtracts(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _journalRepository = scope.Resolve<IJournalRepository>();
+				var _documentService = scope.Resolve<IDocumentService>();
+				var extracts = _readerService.GetExtracts();
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					extracts.ForEach(masterExtract =>
+					{
+						if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data!=null)
+						{
+							var file = masterExtract.Extract.File;
+							masterExtract.Extract.File.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int) EntityTypeEnum.Extract,
+								masterExtract.Id);
+							masterExtract.Extract.File.DocumentExtension = "txt";
+							var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
+							masterExtract.Extract.File.Data = null;
+							masterExtract = _journalRepository.FixMasterExtract(masterExtract);
+						}
+						else
+						{
+							Console.WriteLine("Extract Id " + masterExtract.Id + " missing file");
+						}
+						
+						
+					});
+					txn.Complete();
+				}
+				
+			}
+		}
 	}
 }

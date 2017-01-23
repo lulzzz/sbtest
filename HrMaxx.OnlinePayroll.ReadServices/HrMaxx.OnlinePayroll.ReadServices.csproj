@@ -77,6 +77,10 @@
       <Project>{a2ea6fca-a8b2-445f-b8b8-4ff4d60034d3}</Project>
       <Name>HrMaxx.OnlinePayroll.ReadRepository</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Zion.Common.Contracts\HrMaxx.Common.Contracts.csproj">
+      <Project>{577C20F5-FC4C-48F7-8CCA-F9D27998500A}</Project>
+      <Name>HrMaxx.Common.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Zion.Common.Models\HrMaxx.Common.Models.csproj">
       <Project>{6b33e83d-006b-45ae-8657-9676568ec734}</Project>
       <Name>HrMaxx.Common.Models</Name>

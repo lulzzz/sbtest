@@ -23,16 +23,16 @@
 							{{item.lastModified | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Extract' " class="col-sm-3">
-							{{item.extract.report.description}}
+							{{item.extractName}}
 						</td>
 						<td data-title=" 'Period Start' "  sortable=" 'extract.report.startDate' " class="col-sm-2">
-							{{item.extract.report.startDate | date:'MM/dd/yyyy'}}
+							{{item.startDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Period End' " sortable=" 'extract.report.endDate' " class="col-sm-2">
-							{{item.extract.report.endDate | date:'MM/dd/yyyy'}}
+							{{item.endDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Deposit Date' " sortable=" 'extract.report.depositDate' " class="col-sm-2">
-							{{item.extract.report.depositDate | date:'MM/dd/yyyy'}}
+							{{item.depositDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Run By' " class="col-sm-1">
 							{{item.lastModifiedBy}}

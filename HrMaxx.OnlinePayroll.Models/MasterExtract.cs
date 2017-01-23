@@ -9,6 +9,10 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class MasterExtract
 	{
 		public int Id { get; set; }
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
+		public string ExtractName { get; set; }
+		public DateTime DepositDate { get; set; }
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }
 		public Extract Extract { get; set; }

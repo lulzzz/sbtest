@@ -15,5 +15,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 
 		MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
 		List<Journal> GetPayrollJournals(Guid payrollId, bool peoasoCoCheck);
+		MasterExtract FixMasterExtract(MasterExtract masterExtract);
 	}
 }

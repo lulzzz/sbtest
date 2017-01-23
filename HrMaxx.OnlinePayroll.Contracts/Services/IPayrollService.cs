@@ -13,38 +13,42 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
 	public interface IPayrollService
 	{
-		List<Payroll> GetCompanyPayrolls(Guid companyId, DateTime? startDate, DateTime? endDate, bool includeDrafts = false);
-
+		
+		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
+		
+		//Payroll
 		Payroll ProcessPayroll(Payroll payroll);
 		Payroll ConfirmPayroll(Payroll mappedResource);
-		Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string fullName);
-		PayCheck GetPayCheck(int checkId);
-		List<Payroll> GetInvoicePayrolls(Guid invoiceId);
-		FileDto PrintPayCheck(int payCheck);
-		FileDto PrintPayCheck(PayCheck payCheck);
-		void MarkPayCheckPrinted(int payCheckId);
 		FileDto PrintPayrollReport(Payroll payroll);
-		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, Guid userId, bool fetchCompany);
-		List<PayrollInvoice> GetHostInvoices(Guid hostId, InvoiceStatus submitted = (InvoiceStatus)0);
-		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
-		void DeletePayrollInvoice(Guid invoiceId);
 		List<Payroll> FixPayrollData(Guid? companyId);
-		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName, Guid guid);
-		List<PayrollInvoice> GetAllPayrollInvoicesWithDeposits();
-		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
-		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
-		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid guid);
-		InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds, string fullName, Guid guid);
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
 		Payroll DeletePayroll(Payroll mappedResource);
-		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
-		List<Payroll> GetUnPrintedPayrolls();
-
-		List<PayCheck> GetEmployeePayChecks(Guid companyId, Guid employeeId);
-		List<Guid> FixInvoiceData();
-		PayrollInvoice GetInvoiceById(Guid invoiceId);
 		FileDto PrintPayrollChecks(Payroll payroll);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
 		Payroll VoidPayroll(Payroll mappedResource, string userName, string userId);
+
+		//PayCheck
+		Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string fullName);
+		FileDto PrintPayCheck(int payCheck);
+		FileDto PrintPayCheck(PayCheck payCheck);
+		void MarkPayCheckPrinted(int payCheckId);
+		
+		//Invoice
+		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, Guid userId, bool fetchCompany);
+		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
+		void DeletePayrollInvoice(Guid invoiceId);
+		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName, Guid guid);
+		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
+		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
+		InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds, string fullName, Guid guid);
+		List<Guid> FixInvoiceData();
+
+		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid guid);
+		
+		
+		
+		
+		
+		
 	}
 }

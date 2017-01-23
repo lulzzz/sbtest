@@ -137,7 +137,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 
 		
 	}
-	public partial class CompanyWorkerCompensation
+	public class CompanyWorkerCompensation
 	{
 		
 		public int Id { get; set; }

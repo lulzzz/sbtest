@@ -91,14 +91,44 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 
 					$scope.set = function (item) {
 						$scope.selected = null;
-						$timeout(function () {
-							var history = [];
-							$.each($scope.list, function(i, it) {
-								if (it.extract.report.depositDate < item.extract.report.depositDate) {
-									history.push(it);
-								}
-							});
-							item.extract.data.history = history;
+						getExtract(item);
+						//$timeout(function () {
+						//	var history = [];
+						//	$.each($scope.list, function(i, it) {
+						//		if (it.extract.report.depositDate < item.extract.report.depositDate) {
+						//			history.push(it);
+						//		}
+						//	});
+						//	item.extract.data.history = history;
+						//	//$scope.selected = angular.copy(item);
+						//	var modalInstance = $modal.open({
+						//		templateUrl: 'popover/extractView.html',
+						//		controller: 'extractViewCtrl',
+						//		size: 'lg',
+						//		windowClass: 'my-modal-popup',
+						//		backdrop: true,
+						//		keyboard: true,
+						//		backdropClick: true,
+						//		resolve: {
+						//			extract: function () {
+						//				return item.extract;
+						//			},
+						//			item: function () {
+						//				return item;
+						//			},
+						//			reportRepository: function () {
+						//				return reportRepository;
+						//			}
+						//		}
+						//	});
+
+						//}, 1);
+
+
+					}
+					var getExtract = function(ext) {
+						reportRepository.getMasterExtract(ext.id).then(function (data) {
+							data.extract.data.history = [];
 							//$scope.selected = angular.copy(item);
 							var modalInstance = $modal.open({
 								templateUrl: 'popover/extractView.html',
@@ -110,21 +140,20 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 								backdropClick: true,
 								resolve: {
 									extract: function () {
-										return item.extract;
+										return data.extract;
 									},
 									item: function () {
-										return item;
+										return data;
 									},
 									reportRepository: function () {
 										return reportRepository;
 									}
 								}
 							});
-							
-						}, 1);
-						
-						
-						
+
+						}, function (error) {
+							addAlert('error getting extract details', 'danger');
+						});
 					}
 				
 					var getExtracts = function (report) {
@@ -134,7 +163,7 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							$scope.fillTableData($scope.tableParams);
 
 						}, function (error) {
-							$scope.addAlert('error getting extract list for report: ' + report.desc, 'danger');
+							addAlert('error getting extract list for report: ' + report.desc, 'danger');
 						});
 					}
 				

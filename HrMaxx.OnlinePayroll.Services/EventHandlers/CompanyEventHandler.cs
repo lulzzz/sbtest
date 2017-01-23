@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
+using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
@@ -21,13 +23,15 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		private readonly IUserService _userService;
 		private readonly IMetaDataRepository _metaDataRepository;
 		private readonly ICompanyRepository _companyRepository;
+		private readonly IReaderService _readerService;
 
 		public CompanyEventHandler(IUserService userService, IMetaDataRepository metaDataRepository,
-			ICompanyRepository companyRepository)
+			ICompanyRepository companyRepository, IReaderService readerService)
 		{
 			_userService = userService;
 			_metaDataRepository = metaDataRepository;
 			_companyRepository = companyRepository;
+			_readerService = readerService;
 		}
 
 		public void Consume(CompanyUpdatedEvent event1)
@@ -76,7 +80,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		{
 			try
 			{
-				var comp = _companyRepository.GetCompanyById(event1.SavedObject.CompanyId);
+				var comp = _readerService.GetCompany(event1.SavedObject.CompanyId);
 				_metaDataRepository.UpdateSearchTable(new SearchResult
 				{
 					SourceTypeId = EntityTypeEnum.Employee,

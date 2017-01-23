@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using HrMaxx.Common.Models.Dtos;
 
 namespace HrMaxx.Common.Repository.Files
 {
@@ -157,6 +158,16 @@ namespace HrMaxx.Common.Repository.Files
 		public void DeleteTargetFile(string file)
 		{
 			File.Delete(file);
+		}
+
+		public void SaveFile(Guid id, string documentExtension, byte[] file)
+		{
+			var filePath = string.Format("{2}{0}.{1}", id, documentExtension, _destinationPath);
+			if (File.Exists(filePath))
+			{
+				File.Delete(filePath);
+			}
+			File.WriteAllBytes(filePath, file);
 		}
 	}
 }

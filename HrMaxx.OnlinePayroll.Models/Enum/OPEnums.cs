@@ -255,7 +255,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 	public enum EmployeeTaxCategory
 	{
 		USWorkerNonVisa=1,
-		NonImmigrantAlien=2
+		NonImmigrantAlien=2,
+		Clergy = 3
 	}
 
 	public enum EmployeePaymentMethod

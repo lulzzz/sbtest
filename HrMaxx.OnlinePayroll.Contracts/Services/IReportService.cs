@@ -26,5 +26,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayrollTimesheet(Payroll payroll);
 		FileDto PrintPayrollWithoutSummary(Payroll payroll, List<FileDto> documents);
 		Extract GetExtractTransformedWithFile(Extract extract);
+		MasterExtract GetExtract(int id);
 	}
 }

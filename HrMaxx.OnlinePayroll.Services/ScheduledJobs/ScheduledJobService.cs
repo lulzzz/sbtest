@@ -15,10 +15,12 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 	public class ScheduledJobService : BaseService, IScheduledJobService
 	{
 		public readonly IPayrollService _payrollService;
+		public readonly IReaderService _readerService;
 		public readonly IACHService _achService;
-		public ScheduledJobService(IPayrollService payrollService, IACHService achService)
+		public ScheduledJobService(IPayrollService payrollService, IACHService achService, IReaderService readerService)
 		{
 			_payrollService = payrollService;
+			_readerService = readerService;
 			_achService = achService;
 		}
 
@@ -29,7 +31,7 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 				Log.Info("Scheduled Job Service Invocie Payment initiated " + DateTime.Now);
 				var count = 0;
 				var minDate = DateTime.Today.AddDays(-7);
-				var invoices = _payrollService.GetAllPayrollInvoicesWithDeposits();
+				var invoices = _readerService.GetPayrollInvoices(Guid.Empty).Where(i=>i.Status==InvoiceStatus.Deposited || i.Status==InvoiceStatus.PartialPayment || i.Status==InvoiceStatus.NotDeposited);
 				if (invoices.Any())
 				{
 					var applicable = invoices.Where(

@@ -3,6 +3,7 @@
 	public class CompanyRoutes
 	{
 		public const string MetaData = "Company/MetaData";
+		public const string CompanyList = "Company/Companies";
 		public const string Companies = "Company/Companies/{hostId:guid}";
 		public const string Company = "Company/Company/{id:guid}";
 		public const string Save = "Company/Save";
@@ -35,5 +36,6 @@
 		public const string RaiseMinWage = "Company/RaiseMinWage/{minWage:decimal}";
 
 		public const string PEOCompanies = "Company/AllPEOCompanies";
+		public const string AllEmployees = "Company/EmployeeList";
 	}
 }

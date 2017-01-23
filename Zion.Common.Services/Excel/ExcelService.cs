@@ -25,11 +25,13 @@ namespace HrMaxx.Common.Services.Excel
 	{
 		private readonly ICompanyService _companyService;
 		private readonly IExcelRepository _excelRepository;
+		private readonly IReaderService _readerService;
 
-		public ExcelService(ICompanyService companyService, IExcelRepository excelRepository)
+		public ExcelService(ICompanyService companyService, IExcelRepository excelRepository, IReaderService readerService)
 		{
 			_companyService = companyService;
 			_excelRepository = excelRepository;
+			_readerService = readerService;
 		}
 
 
@@ -37,7 +39,7 @@ namespace HrMaxx.Common.Services.Excel
 		{
 			try
 			{
-				var company = _companyService.GetCompanyById(companyId);
+				var company = _readerService.GetCompany(companyId);
 				var columnList = new List<string> {"SSN", "First Name", "Middle Initial", "Last Name", "Email", "Phone", "Mobile", "Fax", "Address", "City", "Address State", "Zip", "Zip Extension", "Gender", "Birth Date", "Hire Date", "Department", "Employee No", "WC Job Class"};
 				columnList.AddRange(new List<string>{"Payroll Schedule", "Pay Type", "Base Salary"});
 				company.PayCodes.ForEach(pc=>columnList.Add(pc.Description));
@@ -87,8 +89,8 @@ namespace HrMaxx.Common.Services.Excel
 
 		public FileDto GetTimesheetImportTemplate(Guid companyId, List<string> payTypes)
 		{
-			var company = _companyService.GetCompanyById(companyId);
-			var employees = _companyService.GetEmployeeList(companyId);
+			var company = _readerService.GetCompany(companyId);
+			var employees = _readerService.GetEmployees(company:companyId);
 			var columnList = new List<string> { "Employee No", "Name", "Salary", "Base Rate", "Base Rate Hours", "Base Rate Overtime" };
 			var rowList = new List<List<string>>();
 			company.PayCodes.ForEach(pc =>
@@ -113,7 +115,7 @@ namespace HrMaxx.Common.Services.Excel
 		{
 			try
 			{
-				var companies = _companyService.GetAllCompanies();
+				var companies = _readerService.GetCompanies();// _companyService.GetAllCompanies();
 				var rowList = new List<List<string>>();
 				companies.Where(c=>c.StatusId==StatusOption.Active && c.States.Any(s=>s.CountryId==1 && s.State.StateId==1)).ToList().ForEach(
 					c =>

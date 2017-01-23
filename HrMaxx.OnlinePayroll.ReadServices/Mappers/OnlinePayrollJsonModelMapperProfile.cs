@@ -98,7 +98,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.PayChecks) ? JsonConvert.DeserializeObject<List<int>>(src.PayChecks) : new List<int>()))
 				.ForMember(dest => dest.VoidedCreditedChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.VoidedCreditChecks) ? JsonConvert.DeserializeObject<List<int>>(src.VoidedCreditChecks) : new List<int>()))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
-				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src => src.Payroll.PayDay));
+				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src => src.PayrollPayDay));
 
 			CreateMap<Models.JsonDataModel.InvoicePaymentJson, Models.InvoicePayment>()
 				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false));
@@ -115,7 +115,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PayrollId, opt => opt.MapFrom(src => src.PayrollId))
 				.ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.InvoiceId))
 				.ForMember(dest => dest.Included, opt => opt.MapFrom(src => true))
-				.ForMember(dest => dest.DocumentId, opt => opt.Ignore());
+				.ForMember(dest => dest.DocumentId, opt => opt.MapFrom(src=>src.DocumentId));
 
 
 			CreateMap<Models.JsonDataModel.PayrollJson, Models.Payroll>()
@@ -125,7 +125,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
 				.ForMember(dest => dest.StartingCheckNumber, opt => opt.MapFrom(src => src.StartingCheckNumber))
 				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
-				.ForMember(dest => dest.Invoice, opt => opt.MapFrom(src => src.PayrollInvoices.FirstOrDefault()))
+				.ForMember(dest => dest.Invoice, opt => opt.MapFrom(src => src.PayrollInvoice))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 			CreateMap<Models.JsonDataModel.CompanyJson, Models.Company>()
@@ -168,6 +168,36 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))
 				.ForMember(dest => dest.InsuranceGroup, opt => opt.MapFrom(src => src.InsuranceGroup));
 
+			CreateMap<Models.JsonDataModel.EmployeeJson, Models.Employee>()
+				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.HostId))
+				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Decrypt(src.SSN)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
+				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<CompanyPayCode>>(src.PayCodes)))
+				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<EmployeePayType>>(src.Compensations)))
+				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
+				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.CompanyWorkerCompensation))
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.BankAccounts, opt => opt.MapFrom(src => src.EmployeeBankAccounts))
+				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.EmployeeDeductions));
+
+			CreateMap<Models.JsonDataModel.EmployeeDeduction, Models.EmployeeDeduction>()
+				.ForMember(dest => dest.Deduction, opt => opt.MapFrom(src => src.CompanyDeduction));
+
+			CreateMap<Models.JsonDataModel.EmployeeBankAccount, Models.EmployeeBankAccount>()
+				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src => src.BankAccount));
+
+			CreateMap<Models.JsonDataModel.BankAccount, BankAccount>()
+				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccountNumber)))
+				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNumber)))
+				.ForMember(dest => dest.SourceTypeId, opt => opt.MapFrom(src => src.EntityTypeId))
+				.ForMember(dest => dest.SourceId, opt => opt.MapFrom(src => src.EntityId))
+				.ForMember(dest => dest.RoutingNumber1, opt => opt.Ignore());
+
+			CreateMap<Models.JsonDataModel.MasterExtractJson, Models.MasterExtract>()
+				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src =>!string.IsNullOrWhiteSpace(src.Extract) ? JsonConvert.DeserializeObject<Extract>(src.Extract) : null))
+				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<int>>(src.Journals)));
 		}
 	}
 }

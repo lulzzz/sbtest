@@ -240,7 +240,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 			TaxCategory = er.Value("tax status").Equals("1") || er.Value("tax status").ToLower().StartsWith("us")
 				? EmployeeTaxCategory.USWorkerNonVisa
-				: EmployeeTaxCategory.NonImmigrantAlien;
+				: er.Value("tax status").Equals("3") || er.Value("tax status").ToLower().StartsWith("clergy") ? EmployeeTaxCategory.Clergy : EmployeeTaxCategory.NonImmigrantAlien;
 
 			FederalStatus = GetFederalStatus(er.Value("federal filing status"));
 			FederalExemptions = Convert.ToInt32(er.Value("federal exemptions"));

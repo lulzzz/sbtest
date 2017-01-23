@@ -53,6 +53,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getMasterExtract: function (report) {
+				var deferred = $q.defer();
+				reportServer.one('Extract/' + report).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getACHExtractList: function () {
 				var deferred = $q.defer();
 				reportServer.one('ACHExtractList').getList().then(function (data) {
@@ -167,7 +177,8 @@ common.factory('reportRepository', [
 						var fileURL = URL.createObjectURL(blob);
 						deferred.resolve({
 							file: fileURL,
-							name: defaultFileName
+							name: defaultFileName,
+							data : response.data
 						});
 
 					}, function (data) {

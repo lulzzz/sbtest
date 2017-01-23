@@ -137,7 +137,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				else if (tax.Tax.Code.Equals("MD_Employer"))
 					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("SS_Employee"))
-					return GetMDEE(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("SS_Employer"))
 					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
 				else if (tax.Tax.Code.Equals("FUTA"))
@@ -202,7 +202,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		{
 			var ytdTax = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount);
 			var ytdWage = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage);
-			if (tax.IsFederal && payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
+			if (payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
 			{
 				return new PayrollTax
 				{
@@ -243,7 +243,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		{
 			var ytdTax = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount);
 			var ytdWage = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage);
-			if (tax.IsFederal && payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
+			if (payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
 			{
 				return new PayrollTax
 				{

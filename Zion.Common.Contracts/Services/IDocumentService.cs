@@ -27,5 +27,7 @@ namespace HrMaxx.Common.Contracts.Services
 		void DeleteEntityDocument(int entityTypeId, Guid entityId, Guid documentId);
 		FileDto GetDocumentById(Guid documentId, string extension , string fileName);
 		bool DocumentExists(Guid documentId);
+
+		DocumentDto SaveEntityDocument(EntityTypeEnum sourceType, FileDto file);
 	}
 }
