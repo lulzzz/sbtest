@@ -1,9 +1,9 @@
-host.machine_name: DESKTOP-OJJVO4F
+host.machine_name: REMOTE-PC
 mt.concurrent_receive_threads: 1
 mt.control_bus: loopback://localhost/HRMAXX-API
 mt.default_serializer: JsonMessageSerializer
 mt.max_consumer_threads: 16
-mt.network: desktop-ojjvo4f
+mt.network: remote-pc
 mt.receive_from: loopback://localhost/HRMAXX-API
 mt.receive_timeout: 00:00:03
 mt.service_count: 2
@@ -14,7 +14,7 @@ os.bits: x64
 os.version: Microsoft Windows NT 10.0.14393.0
 process.bits: x64
 process.fulltrust: True
-process.id: 15040
+process.id: 11004
 zz.mt.inbound_pipeline: Pipeline
 	Routed (MassTransit.IConsumeContext, MassTransit)
 		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts
@@ -31,6 +31,12 @@ zz.mt.inbound_pipeline: Pipeline
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.AccumulationCubesHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts)
+			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.AccumulationCubesHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts)
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts)
+			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts)
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.CompanyEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts)
@@ -52,6 +58,12 @@ zz.mt.outbound_pipeline: Pipeline
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts)
+			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts)
+			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API

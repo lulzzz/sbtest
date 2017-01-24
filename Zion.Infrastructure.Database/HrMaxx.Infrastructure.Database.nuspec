@@ -1,0 +1,8 @@
+﻿<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>HrMaxx.Infrastructure.Database</id>
+		<version>1.0.0</version>
+		<authors>Sherjeel Bedaar</authors>
+		<description>HrMaxx Database</description>
+	</metadata>
+</package>
