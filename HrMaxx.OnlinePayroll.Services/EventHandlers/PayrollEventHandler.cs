@@ -63,7 +63,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				{
 					var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName, string.Format("YTD affected because of Payroll ran on {0}", event1.SavedObject.PayDay.ToString("MM/DD/YYYY")), event1.UserId);
 					_mementoDataService.AddMementoData(memento, true);
-					_payrollService.PrintPayCheck(pc);
+					//_payrollService.PrintPayCheck(pc);
 				}
 
 			}
@@ -88,7 +88,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				{
 					var mem = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName, string.Format("YTD affected because of voiding of Check {0}", event1.SavedObject.CheckNumber), event1.UserId);
 					_mementoDataService.AddMementoData(mem, true);
-					_payrollService.PrintPayCheck(pc);
+					//_payrollService.PrintPayCheck(pc);
 				}
 			}
 			catch (Exception e)

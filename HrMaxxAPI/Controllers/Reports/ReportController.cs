@@ -58,6 +58,16 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		}
 		[HttpPost]
+		[Route(ReportRoutes.ExtractDocumentReport)]
+		public HttpResponseMessage GetExtractDocmentReport(ReportRequestResource resource)
+		{
+			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
+			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting report for request for company={0}", request.CompanyId));
+			return Printed(response.File);
+
+		}
+
+		[HttpPost]
 		[Route(ReportRoutes.ExtractDocument)]
 		public Extract GetExtractDocment(ReportRequestResource resource)
 		{

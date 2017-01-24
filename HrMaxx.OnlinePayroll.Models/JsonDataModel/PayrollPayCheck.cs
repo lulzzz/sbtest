@@ -4,9 +4,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
+	[Serializable]
+	[XmlRoot("PayCheckList")]
 	public class PayrollPayCheckJson
 	{
 		public int Id { get; set; }

@@ -482,26 +482,28 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: depositSchedule,
 							depositDate: depositDate ? moment(depositDate).format("MM/DD/YYYY") : null
 						}
-						reportRepository.getExtract(request).then(function (extract) {
-							if (!review) {
-								reportRepository.downloadExtract(extract.file).then(function(data) {
+						if (!review) {
+							reportRepository.getExtractDocument(request).then(function (data) {
 
-									var a = document.createElement('a');
-									a.href = data.file;
-									a.target = '_blank';
-									a.download = data.name;
-									document.body.appendChild(a);
-									a.click();
-								}, function(erorr) {
-									addAlert('Failed to download report ' + desc + ': ' + erorr, 'danger');
-								});
-							} else {
+								var a = document.createElement('a');
+								a.href = data.file;
+								a.target = '_blank';
+								a.download = data.name;
+								document.body.appendChild(a);
+								a.click();
+							}, function (erorr) {
+								addAlert('Failed to download report ' + desc + ': ' + erorr, 'danger');
+							});
+						} else {
+							reportRepository.getExtract(request).then(function (extract) {
 								showReview(request, extract);
-							}
-							
-						}, function (erorr) {
-							addAlert('Error generating extract ' + desc + ': ' + erorr.statusText, 'danger');
-						});
+								
+
+							}, function (erorr) {
+								addAlert('Error generating extract ' + desc + ': ' + erorr.statusText, 'danger');
+							});
+						}
+						
 					}
 					$scope.hasCalifornia = function() {
 						var comp = $scope.mainData.selectedCompany;
@@ -519,7 +521,6 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.getHostWCReport = function () {
 						var request = {
 							reportName: 'HostWCReport',
-							hostId: dataSvc.selectedHost.id,
 							year: moment().year(),
 							quarter: 0,
 							month:0,
@@ -528,20 +529,17 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtract(request).then(function (extract) {
-
-							reportRepository.downloadExtract(extract.file).then(function (data) {
-
-								var a = document.createElement('a');
-								a.href = data.file;
-								a.target = '_blank';
-								a.download = data.name;
-								document.body.appendChild(a);
-								a.click();
-							}, function (erorr) {
-								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
-							});
-
+						if (dataSvc.selectedHost) {
+							request.hosId = dataSvc.selectedHost.id;
+						}
+						reportRepository.getExtractDocument(request).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
 						}, function (erorr) {
 							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
 						});
@@ -564,20 +562,14 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtract(request).then(function (extract) {
-
-							reportRepository.downloadExtract(extract.file).then(function (data) {
-
-								var a = document.createElement('a');
-								a.href = data.file;
-								a.target = '_blank';
-								a.download = data.name;
-								document.body.appendChild(a);
-								a.click();
-							}, function (erorr) {
-								addAlert('Failed to download Daily Deposit Report : ' + erorr, 'danger');
-							});
-
+						reportRepository.getExtractDocument(request).then(function (extract) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
 						}, function (erorr) {
 							addAlert('Error generating Daily Deposit report: ' + erorr.statusText, 'danger');
 						});
@@ -596,20 +588,14 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtract(request).then(function(extract) {
-
-							reportRepository.downloadExtract(extract.file).then(function(data) {
-
-								var a = document.createElement('a');
-								a.href = data.file;
-								a.target = '_blank';
-								a.download = data.name;
-								document.body.appendChild(a);
-								a.click();
-							}, function(erorr) {
-								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
-							});
-
+						reportRepository.getExtractDocument(request).then(function(extract) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
 						}, function(erorr) {
 							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
 						});
@@ -627,20 +613,14 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtract(request).then(function (extract) {
-
-							reportRepository.downloadExtract(extract.file).then(function (data) {
-
-								var a = document.createElement('a');
-								a.href = data.file;
-								a.target = '_blank';
-								a.download = data.name;
-								document.body.appendChild(a);
-								a.click();
-							}, function (erorr) {
-								addAlert('Failed to download host WC Report : ' + erorr, 'danger');
-							});
-
+						reportRepository.getExtractDocument(request).then(function (extract) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
 						}, function (erorr) {
 							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
 						});

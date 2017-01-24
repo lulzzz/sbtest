@@ -25,6 +25,8 @@ using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxx.OnlinePayroll.Repository.Reports;
+using Magnum.Collections;
+using Magnum.Serialization;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services.Reports
@@ -387,7 +389,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
 		{
-			var data = _reportRepository.GetExtractReport(request);
+			//var data = _reportRepository.GetExtractReport(request);
+			var data = _readerService.GetExtractResponse(request);
 
 			if (request.ReportName.Contains("1099"))
 			{
@@ -717,13 +720,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		public Extract GetExtractTransformedWithFile(Extract extract)
 		{
-			var xml = GetXml<ExtractResponse>(extract.Data);
+			//var xml = GetXml<ExtractResponse>(extract.Data);
 			var args = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList);
 			var argList = new XsltArgumentList();
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
 			var splits = extract.Template.Split('\\');
 			var templateName = splits[splits.Length - 1];
-			var transformed = XmlTransform(xml,
+
+			var transformed = XmlTransformNew<ExtractResponse>(extract.Data,
 				string.Format("{0}{1}", _templatePath, templateName), argList);
 
 			if (extract.Extension.Equals("txt"))
@@ -735,6 +739,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					Filename = extract.FileName,
 					MimeType = "application/octet-stream"
 				};
+			
 			return extract;
 			
 		}
@@ -1588,11 +1593,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private XmlDocument GetXml<T>(T response)
 		{
-			var ser = new XmlSerializer(typeof(T));
+			
 			XmlDocument xd = null;
 
 			using (var memStm = new MemoryStream())
 			{
+				var ser = new XmlSerializer(typeof(T));
 				ser.Serialize(memStm, response);
 
 				memStm.Position = 0;
@@ -1613,28 +1619,69 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportTransformed TransformXml(XmlDocument source, string transformer, XsltArgumentList args)
 		{
 			var strOutput = XmlTransform(source, transformer, args);
-			var serializer = new XmlSerializer(typeof(ReportTransformed));
-			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput));
-			return (ReportTransformed)serializer.Deserialize(memStream);
 			
+			using (var memStream = new MemoryStream(Encoding.UTF8.GetBytes(strOutput)))
+			{
+				var serializer = new XmlSerializer(typeof(ReportTransformed));
+				return (ReportTransformed)serializer.Deserialize(memStream);
+			}
 		}
 		private string XmlTransform(XmlDocument source, string transformer, XsltArgumentList args)
 		{
 			string strOutput = null;
 			var sb = new System.Text.StringBuilder();
-			var xslt = new Mvp.Xml.Exslt.ExsltTransform();
-
-
-
-			xslt.Load(transformer);
+			
 			using (TextWriter xtw = new StringWriter(sb))
 			{
+				var xslt = new XslCompiledTransform();// Mvp.Xml.Exslt.ExsltTransform();
+
+				xslt.Load(transformer);
 				xslt.Transform(source, args, xtw);
 				xtw.Flush();
 			}
 			strOutput = sb.ToString();
 			return strOutput.Replace("encoding=\"utf-16\"", string.Empty);
 		}
+		private string XmlTransformNew<T>(T source1, string transformer, XsltArgumentList args)
+		{
+			string strOutput = null;
+			var sb = new System.Text.StringBuilder();
+			
+			using (var memstream = new MemoryStream())
+			{
+				var ser = new XmlSerializer(source1.GetType());
+				ser.Serialize(memstream, source1);
+				memstream.Position = 0;
+
+				var settings = new XmlReaderSettings();
+				settings.IgnoreWhitespace = true;
+				using (var xr = XmlReader.Create(memstream, settings))
+				{
+					xr.MoveToContent();
+					using (TextWriter xtw = new StringWriter(sb))
+					{
+						var xslt = new XslCompiledTransform();// Mvp.Xml.Exslt.ExsltTransform();
+
+						xslt.Load(transformer);
+						xslt.Transform(xr, args, xtw);
+						xtw.Flush();
+						xtw.Close();
+						xtw.Dispose();
+						
+					}
+					xr.Close();
+					xr.Dispose();
+				}
+				memstream.Close();
+				memstream.Dispose();
+				ser = null;
+			}
+				
+			
+			strOutput = sb.ToString();
+			return strOutput.Replace("encoding=\"utf-16\"", string.Empty);
+		}
+		
 
 		private void CalculateDates(ref ReportRequest request)
 		{

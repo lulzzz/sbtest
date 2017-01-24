@@ -99,7 +99,7 @@
 				<div class="col-sm-2 show-red" ng-if="unsavedPayments">changes will apply when you save</div>
 				<div class="col-sm-10">
 					<button class="btn btn-sm btn-success pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2"><i class="fa fa-truck m-r-5"></i> Delivered</button>
-					<button class="btn btn-sm btn-danger pull-left" ng-click="delayTaxes()" ng-show="!mainData.userCompany && invoice.status>2 && invoice.status!==5 && invoice.status!==4"><i class="fa fa-pause m-r-5"></i> Delay Taxes</button>
+					<button class="btn btn-sm btn-danger pull-left" ng-click="delayTaxes()" ng-show="!mainData.userCompany && invoice.status>2 && invoice.status!==5"><i class="fa fa-pause m-r-5"></i> Delay Taxes</button>
 					<button class="btn btn-sm btn-danger pull-left" ng-click="reDateInvoicePayroll()" ng-disabled="!data.reDate" ng-show="!mainData.userCompany && invoice.status===5"><i class="fa fa-play m-r-5"></i> Re-Date</button>
 
 

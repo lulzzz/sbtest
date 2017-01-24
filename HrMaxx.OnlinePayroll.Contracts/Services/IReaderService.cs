@@ -43,5 +43,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<MasterExtract> GetExtracts(string extractname = null);
 		MasterExtract GetExtract(int id);
 
+		//ExtractData
+		ExtractResponse GetExtractResponse(ReportRequest request);
+
 	}
 }

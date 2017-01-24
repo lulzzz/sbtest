@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
+	[Serializable]
+	[XmlRoot("PayrollList")]
 	public class PayrollJson
 	{
 		public Guid Id { get; set; }

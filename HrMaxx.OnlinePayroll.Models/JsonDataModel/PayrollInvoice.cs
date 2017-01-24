@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
+	[Serializable]
+	[XmlRoot("PayrollInvoiceJsonList")]
 	public class PayrollInvoiceJson
 	{
 		public Guid Id { get; set; }

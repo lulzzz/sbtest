@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using System.Xml.Xsl;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
@@ -29,10 +30,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ACHResponse Data { get; set; }
 		public FileDto File { get; set; }
 	}
-	public class ExtractResponse
+	[Serializable()]
+	[XmlRoot("ExtractResponse")]
+	public class ExtractResponse : IDisposable
 	{
 		public List<ExtractHost> Hosts { get; set; }
-		public List<MasterExtract> History { get; set; } 
+		public List<MasterExtract> History { get; set; }
+		public void Dispose()
+		{
+			GC.WaitForFullGCComplete();
+		}
 	}
 	public class ACHResponse
 	{
@@ -55,10 +62,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<Account> Accounts { get; set; }
 		public List<ACHTransaction> ACHTransactions { get; set; } 
 	}
-	public class ExtractResponseDB
+	[Serializable()]
+	[XmlRoot("ExtractResponseDB")]
+	public class ExtractResponseDB : IDisposable
 	{
 		public List<ExtractHostDB> Hosts { get; set; }
-		public List<MasterExtractDB> History { get; set; } 
+		public List<MasterExtractDB> History { get; set; }
+		public void Dispose()
+		{
+			GC.WaitForFullGCComplete();
+		}
 	}
 	public class ACHResponseDB
 	{

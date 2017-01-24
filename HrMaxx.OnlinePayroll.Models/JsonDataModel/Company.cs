@@ -4,10 +4,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
+	[Serializable]
+	[XmlRoot("CompanyList")]
 	public class CompanyJson
 	{
 		public Guid Id { get; set; }

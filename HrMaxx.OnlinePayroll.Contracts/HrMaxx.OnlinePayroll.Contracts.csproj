@@ -63,7 +63,9 @@
     <Compile Include="Services\IMetaDataService.cs" />
     <Compile Include="Services\IHostService.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Models\HrMaxx.OnlinePayroll.Models.csproj">
       <Project>{47df73ff-0053-4e97-9477-06ce38ad3020}</Project>

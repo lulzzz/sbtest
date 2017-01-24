@@ -4,10 +4,13 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 using HrMaxx.Common.Models;
+using HrMaxx.Infrastructure;
 using HrMaxx.Infrastructure.Mapping;
 using Newtonsoft.Json;
+using XmlSerializer = System.Xml.Serialization.XmlSerializer;
 
 namespace HrMaxx.OnlinePayroll.ReadRepository
 {
@@ -52,11 +55,13 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 
 		private static T Deserialize<T>(string xmlStream, XmlRootAttribute rootAttribute)
 		{
-			var serializer = new XmlSerializer(typeof(T), rootAttribute);
+			
 			if (string.IsNullOrWhiteSpace(xmlStream))
 				return default(T);
 			using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(xmlStream)))
 			{
+				//var serializer = new XmlSerializer(typeof(T), rootAttribute);
+				var serializer = XmlSerializerCache.Create(typeof(T), rootAttribute);
 				return (T)serializer.Deserialize(reader);
 			}
 		}
@@ -91,10 +96,12 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 		public T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList)
 		{
 			var data = GetData(proc, paramList);
-			var serializer = new XmlSerializer(typeof(T));
-			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-			return (T)serializer.Deserialize(memStream);
-			
+			//var serializer = new XmlSerializer(typeof(T));
+			using (var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data)))
+			{
+				var serializer = new XmlSerializer(typeof(T));
+				return (T)serializer.Deserialize(memStream);	
+			}
 		}
 		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute)
 		{
@@ -117,10 +124,17 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 			var data = GetData(proc, paramList);
 			if (string.IsNullOrWhiteSpace(data))
 				return default(T);
-			var serializer = new XmlSerializer(typeof(T1));
-			var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-			var intermediary = (T1)serializer.Deserialize(memStream);
-			return _mapper.Map<T1, T>(intermediary);
+
+			
+			using (var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data)))
+			{
+				var serializer = new XmlSerializer(typeof(T1));
+				var intermediary = (T1)serializer.Deserialize(memStream);
+
+				return _mapper.Map<T1, T>(intermediary);
+			}
+			
+			
 		}
 	}
 }

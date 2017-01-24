@@ -11,6 +11,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using Newtonsoft.Json;
 
+
 namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 {
 	public class OnlinePayrollJsonModelMapperProfile : ProfileLazy
