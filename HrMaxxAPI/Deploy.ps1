@@ -39,6 +39,7 @@ Write-Host "App pool exists."
 Write-Host "Checking site: " + $siteName
 $sitePath = ("IIS:\Sites\Default Web Site\" + $siteName)
 $site = Get-Item $sitePath -ErrorAction SilentlyContinue
+Write-Host "Site Path" + $siteName
 if (!$site) {
 Write-Host "Site does not exist, creating..."
 new-item $sitePath -physicalPath $webRoot -type Application
