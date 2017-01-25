@@ -11,6 +11,8 @@ $webRoot = [System.IO.Directory]::GetCurrentDirectory()
 
 Write-Host "WebRoot is " + $webRoot
 
+Copy-Item  -Path $webRoot\Scripts\app\Common\common-config.template.js -Destination $webRoot\Scripts\app\Common\common-config.js -Recurse -force
+
 cd IIS:\
 
 
