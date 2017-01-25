@@ -52,6 +52,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	public class PayCheckResource
 	{
 		public Guid PayrollId { get; set; }
+		public Guid CompanyId { get; set; }
 		public int? Id { get; set; }
 		[Required]
 		public EmployeeResource Employee { get; set; }
