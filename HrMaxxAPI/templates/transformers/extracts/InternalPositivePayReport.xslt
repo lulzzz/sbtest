@@ -72,7 +72,7 @@
 						<Data ss:Type="String">Void</Data>
 					</Cell>
 				</Row>
-				<xsl:apply-templates select="Hosts/ExtractHost/Companies/ExtractCompany[count(PayChecks/PayCheck[PaymentMethod='Check' and PEOASOCoCheck='true'])>0]"/>
+				<xsl:apply-templates select="Hosts/ExtractHost[count(PayChecks/PayCheck[PaymentMethod='Check' and PEOASOCoCheck='true'])>0]/Companies/ExtractCompany"/>
 			</Table>
 			<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
 				<PageSetup>
@@ -99,8 +99,9 @@
 		
 	</xsl:template>
 	<xsl:template match="ExtractCompany">
+		<xsl:variable name ="host" select="../.."/>
 		<xsl:variable name ="comp" select="Company"/>
-		<xsl:for-each select="PayChecks/PayCheck[PaymentMethod='Check' and PEOASOCoCheck='true']">
+		<xsl:for-each select="$host/PayChecks/PayCheck[CompanyId=$comp/Id and PaymentMethod='Check' and PEOASOCoCheck='true']">
 			<Row>
 				<Cell>
 					<Data ss:Type="String">

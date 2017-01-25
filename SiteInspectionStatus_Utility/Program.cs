@@ -19,6 +19,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Journals;
+using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxxAPI.Code.IOC;
 using LinqToExcel;
 using Magnum;
@@ -61,6 +62,7 @@ namespace SiteInspectionStatus_Utility
 			//ImportData(container, startingBatch, batchSize, runBatches);
 
 			FixMasterExtracts(container);
+			//FixAccumulatedSickLeaveValue(container);
 			Console.WriteLine("Utility run finished for ");
 		}
 
@@ -736,6 +738,216 @@ namespace SiteInspectionStatus_Utility
 				}
 				
 			}
+		}
+
+		private static void FixAccumulatedSickLeaveValue(IContainer container)
+		{
+			Console.WriteLine("Starting Sick Leave Import---Updating Checks");
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var _mementoService = scope.Resolve<IMementoDataService>();
+				var empList = new List<MissingSL>();
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("3A20B503-C155-4F1B-86F2-A6FF00D595F3"), missingVal = (decimal)0.13, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("A17EF1DB-F25A-4B27-9C21-A6FF00D52A31"), missingVal = (decimal)0.42, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("C073DC7A-F5AB-40FE-912B-A6FF00D497DF"), missingVal = (decimal)0.42, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("B79B9547-7E17-4FAC-9393-A6ED01577861"), missingVal = (decimal)0.43, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("6417FD2C-6A4E-4012-A65C-A6F800DD0676"), missingVal = (decimal)0.5, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("77C49080-5937-4199-9A08-A6F800DDB2BD"), missingVal = (decimal)0.77, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("55F8D49B-DA77-4AF2-8C2C-A6ED0157777B"), missingVal = (decimal)0.88, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("D9B41DC3-2A40-4195-B807-A6F800DC2F6E"), missingVal = (decimal)1.07, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("80696788-6F06-4EB4-89FC-A6ED01576AFE"), missingVal = (decimal)1.41, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("07A7E59D-A5D8-4456-9449-A6ED01575FF4"), missingVal = (decimal)1.7, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("D3E3DBA7-489D-47B3-BF30-A6ED01577701"), missingVal = (decimal)2.03, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("7782D814-9947-4AA5-9C01-A6ED01576056"), missingVal = (decimal)2.22, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("294DDB64-4E69-4E25-B4D3-A6ED01577544"), missingVal = (decimal)2.25, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("07183960-E647-4BF3-9D55-A6F800DBAE11"), missingVal = (decimal)2.3, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("BFE91378-2786-4DEE-B108-A6F800DB2338"), missingVal = (decimal)2.47, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("F1A336A8-04E9-4EE3-B2DA-A6ED015779AE"), missingVal = (decimal)3.33, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("CA82B140-683F-4B87-81DC-A6F800DAC032"), missingVal = (decimal)3.38, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("C23BA247-95E6-46F2-AA6E-A6ED01577939"), missingVal = (decimal)3.53, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("4B4BAEC7-5124-43B3-9D4A-A6F800DA5B1F"), missingVal = (decimal)3.56, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("D71A16C7-A067-4F81-81B9-A6ED01577C06"), missingVal = (decimal)3.62, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("FC4A316C-51EC-47C3-90EA-A6ED0157768C"), missingVal = (decimal)3.97, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("3E30A7D4-EDC8-454B-AAAB-A6F800D9B72C"), missingVal = (decimal)4, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("88FE08C3-3C5E-40FF-B1AA-A6F800D8AE0A"), missingVal = (decimal)4.09, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("BA97E9DF-1D54-4A21-8D5B-A6ED01576585"), missingVal = (decimal)4.34, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("F39547CD-A984-4FBC-B1EE-A6F100CE62C2"), missingVal = (decimal)4.43, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("63857E4B-CC02-47BC-8913-A6F800D92AC6"), missingVal = (decimal)4.54, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("899A601B-22E9-481D-896C-A6ED01577B8C"), missingVal = (decimal)4.83, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("C6CCE8E9-0090-4187-965D-A6F101195FE2"), missingVal = (decimal)4.92, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("278C34FA-0E0F-44DF-AC10-A6F800D83368"), missingVal = (decimal)4.98, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("8A68C318-4E24-4555-9697-A6ED01576AAA"), missingVal = (decimal)5.01, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("448B962D-B3A5-4D86-8612-A6F100CDC1F4"), missingVal = (decimal)5.32, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("3312B208-0111-4C2B-8BD6-A6ED01577138"), missingVal = (decimal)5.73, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("A9A1F36B-B7D7-4C9C-AFC0-A6ED01577471"), missingVal = (decimal)7.04, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("0FB52E23-E1F8-4775-ADA8-A6ED015778C8"), missingVal = (decimal)7.52, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("D61AB6D9-29FC-4ED0-9EE6-A6ED0157759D"), missingVal = (decimal)8, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("A4E80D47-CBC4-49B4-AA77-A6ED01577B17"), missingVal = (decimal)9.31, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("1A5076EA-12C9-47A8-8383-A6ED01577AA2"), missingVal = (decimal)9.83, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("DED30339-754F-468A-A380-A6ED015774E2"), missingVal = (decimal)10.34, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("4B876FF3-49D8-4563-8517-A6ED01577A28"), missingVal = (decimal)11.75, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("FC45E17E-27F6-4133-AFD6-A6ED01577298"), missingVal = (decimal)11.82, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("B4084E78-EBA4-4902-AF7C-A6ED01577390"), missingVal = (decimal)11.98, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("3509D642-D646-4FA3-9E04-A6ED01576900"), missingVal = (decimal)12.34, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("D9A47F26-C05F-4774-BA2D-A6ED0157688A"), missingVal = (decimal)14.45, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("40BC91A2-431D-4876-8B61-A6ED015772D9"), missingVal = (decimal)14.51, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("EC546EFF-44BB-419D-A0F5-A6ED015770E4"), missingVal = (decimal)14.62, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("74E8C3A2-56DF-4BFF-82E3-A6ED01577324"), missingVal = (decimal)15.2, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("F58BB01F-5E95-43CE-A513-A6ED015777F1"), missingVal = (decimal)17.3, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("B8552DC7-31C6-4630-BC48-A6ED01577617"), missingVal = (decimal)17.71, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("E4693E17-19D3-4B53-9ACF-A6ED01576D77"), missingVal = (decimal)18.62, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("9AE5F60D-D6F3-4B8B-8D88-A6ED01576A4C"), missingVal = (decimal)19.12, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("38863F1B-3BB2-472D-84AD-A6ED01577405"), missingVal = (decimal)20.03, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("6BA86570-D39F-48E1-AF4B-A6ED015769E1"), missingVal = (decimal)20.1, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("319CC647-B9BD-4F2A-A439-A6ED0157696B"), missingVal = (decimal)20.5, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("3415C77C-EDE3-40F8-8AD1-A6ED01577256"), missingVal = (decimal)22.39, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("F3A60789-706C-495F-A78A-A6ED015762A5"), missingVal = (decimal)23.64, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("C787BA7B-086B-4556-8529-A6ED01576510"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("77D74D8F-FAF5-4CDE-AB09-A6ED01576734"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("E479E38A-8CFD-4744-97E6-A6ED015764A4"), missingVal = (decimal)24, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("A339C2CC-3EB4-49C9-8818-A6ED015765FF"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("1ED7899A-F8E4-4BF7-A613-A6ED01576CB2"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("C6BC4E61-A123-4DCB-81B7-A6ED015767A0"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("229BF69F-1C61-4ABB-9DB1-A6ED015766DB"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("7D12547F-F22B-42FB-B561-A6ED0157630C"), missingVal = (decimal)24, missingUsed = (decimal)8 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("F52D756D-103F-4252-932E-A6ED01576D15"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("87D1D403-9CE9-4F2B-AEEA-A6ED01576B94"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("6DDE6F37-56BE-406B-AD0D-A6ED01576674"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("3812E68F-5363-403D-A176-A6ED01576BDB"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("80119078-9991-474F-B61C-A6ED01576450"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("11ACC125-05F6-49EA-BD93-A6ED015771CE"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("DF893A28-0920-448F-8AAA-A6ED01576B4E"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("EBCD6CFB-0F0E-42FE-B2ED-A6ED01576DEC"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("4B63EE14-058A-4FF9-AB68-A6ED01576239"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("4E8A498E-FA87-466F-8C34-A6ED015761DB"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("F6226836-D4C7-4F4A-8327-A6ED01577188"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("2F3B995E-6FD7-4D14-BD7A-A6ED01576166"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("38529BC6-55D6-4E2B-B4B3-A6ED0157702D"), missingVal = (decimal)24, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("1E842C36-428E-467E-9F36-A6ED01576F4C"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("63947574-7C5D-4D91-B6D7-A6ED01576E5D"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("B3CFC059-378C-4324-BB84-A6ED015760FF"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("81FD2EDC-34E9-4064-9447-A6ED01577215"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("824ED647-8C00-43D8-B6CA-A6ED01576FC1"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("2CE1EF24-FF40-4303-8A1D-A6ED01576381"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("679CC254-56A1-4877-97EF-A6ED01576ED7"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("7D98B095-84F3-4638-AC5E-A6ED01576C3D"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("40C86467-1791-4B34-BDA2-A6ED0157708B"), missingVal = (decimal)24, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("64846EBF-D061-4995-A994-A6ED015763ED"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("7803B4E4-FF6F-4413-B58E-A6ED015760AF"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("63E0E1B0-277C-4345-82F7-A6ED0158E297"), missingVal = (decimal)0.27, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("A2465B75-8900-41FC-A56A-A6ED0158FC85"), missingVal = (decimal)0.27, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("B74B2B30-1749-4F3A-801D-A6ED0158EDE4"), missingVal = (decimal)0.27, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("6FBF5A1C-B417-4B70-9B17-A6ED0158EBF7"), missingVal = (decimal)0.72, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("76B5AB53-EE3A-4C53-A56D-A6F800E27203"), missingVal = (decimal)1.04, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("18FBB91B-234E-4786-8DBB-A6ED0158E9BC"), missingVal = (decimal)1.51, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("2906A8BB-C4EE-4EE6-8486-A6ED0158EB66"), missingVal = (decimal)2.6, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("5E55228C-2F09-46D8-B45A-A6ED0158FB21"), missingVal = (decimal)4.32, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("575715A3-11EA-4231-B3A3-A6F100D08CF2"), missingVal = (decimal)4.64, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("90901807-EC96-45BD-889E-A6ED0158F1B3"), missingVal = (decimal)5.32, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("3E5DCB1F-2389-4AD9-B381-A6ED0158F0B1"), missingVal = (decimal)5.32, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("DD2B6AD9-820D-4B87-B66F-A6ED0159051B"), missingVal = (decimal)5.81, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("D7215A5D-F065-45AB-AFCC-A6ED0158EC76"), missingVal = (decimal)6.71, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("68A12436-136C-4C72-BECB-A6ED0158EA69"), missingVal = (decimal)7.28, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("FA95613B-53B6-4D26-9D4E-A6ED015903E6"), missingVal = (decimal)9.43, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("0DBCA05A-23AD-4664-9D63-A6ED0159047C"), missingVal = (decimal)11.13, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("A0CE715B-A873-478C-A14C-A6ED0158F9CA"), missingVal = (decimal)11.2, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("4EE355BE-9E97-4AF6-A71D-A6ED01590347"), missingVal = (decimal)11.97, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("D106703A-E74C-4574-B1EE-A6ED015900C4"), missingVal = (decimal)24, missingUsed = (decimal)24 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("ED406CD1-4303-4F08-B1A7-A6ED0158E909"), missingVal = (decimal)13.75, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("51897137-FAF1-4917-9503-A6ED0158F895"), missingVal = (decimal)13.81, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("CDEA99CE-9471-4973-ABAF-A6ED0158F6C5"), missingVal = (decimal)24, missingUsed = (decimal)24 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("5E1D3C7C-546C-4F69-85E0-A6ED0158FABA"), missingVal = (decimal)14.29, missingUsed = (decimal)8 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("2E23F7C2-26E8-4174-AC8F-A6ED0158F930"), missingVal = (decimal)14.79, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("3788A709-5FE8-44B2-8F45-A6ED0158EB0D"), missingVal = (decimal)15.15, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("1EC3804F-3686-4773-AA31-A6ED0158FF98"), missingVal = (decimal)15.22, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("38E10333-BA6A-4F4B-9CCF-A6ED0158FBE1"), missingVal = (decimal)24, missingUsed = (decimal)24 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("C0022EF0-D33D-4904-9BAF-A6ED0158ED6A"), missingVal = (decimal)15.5, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("7A5CBCB7-0CA5-468C-A91D-A6ED0158E8A2"), missingVal = (decimal)15.57, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("14105D62-AB96-4DD0-B2C8-A6ED01590208"), missingVal = (decimal)24, missingUsed = (decimal)24 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("50A3E56B-956C-4CED-B7A6-A6ED0158FB7A"), missingVal = (decimal)15.96, missingUsed = (decimal)8 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("FF3B2A32-CB59-43BE-8BE2-A6ED0158EA15"), missingVal = (decimal)16.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("F50817B9-D26F-450F-9E1A-A6ED015902A3"), missingVal = (decimal)16.41, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("863C09EC-29A8-48F2-9017-A6ED0159016D"), missingVal = (decimal)16.66, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("6F2B6C90-7AD0-4BD4-9CA5-A6ED0158FA49"), missingVal = (decimal)16.66, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("D548F26A-782E-4B39-B2A7-A6ED0158E962"), missingVal = (decimal)17, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("18CEDBA9-D733-4057-BF63-A6ED0158F760"), missingVal = (decimal)17.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("F2925B17-A257-47A1-BD4A-A6ED0158F7FF"), missingVal = (decimal)17.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("6782D933-7E47-4DB7-8A5E-A6ED0158E57C"), missingVal = (decimal)17.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("0ADE5A28-F726-4F48-A960-A6ED0158E617"), missingVal = (decimal)17.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("AC9F8196-D0BF-4452-AF12-A6ED0159002E"), missingVal = (decimal)17.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("75FBCAFE-B4A5-4DC1-9C02-A6ED0158FEF9"), missingVal = (decimal)17.29, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("D21E06F0-F1F2-435E-ADE7-A6ED0158E7BD"), missingVal = (decimal)17.57, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("FFE473F4-2D42-48D8-B109-A6ED0158E33B"), missingVal = (decimal)17.58, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("8BCC7F79-470B-426B-880B-A6ED0158E72B"), missingVal = (decimal)17.77, missingUsed = (decimal)8 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("7875BA0E-FE2D-499F-A93B-A6ED0158EAC2"), missingVal = (decimal)18.43, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("7745B3EE-2776-4FBE-B85B-A6ED0158FDBF"), missingVal = (decimal)18.72, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("482585B4-C220-438E-B290-A6ED0158E6A3"), missingVal = (decimal)18.87, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("C7407A47-7D9E-4B76-984D-A6ED0158F0F2"), missingVal = (decimal)19.16, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("2FA86710-1EFC-4D88-8282-A6ED0158E47F"), missingVal = (decimal)24, missingUsed = (decimal)24 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("5395CBA8-69BE-42C7-B36F-A6ED0158E832"), missingVal = (decimal)19.68, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("6ADFEADA-9045-4C27-B6B7-A6ED0158F626"), missingVal = (decimal)20.11, missingUsed = (decimal)8 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("EACCD2F5-8C01-45FD-9C4C-A6ED0158F3B2"), missingVal = (decimal)20.29, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("C66F01FF-AF00-45D7-B01E-A6ED0158F171"), missingVal = (decimal)20.5, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("50A9C52C-2179-4580-A850-A6ED0158F586"), missingVal = (decimal)20.79, missingUsed = (decimal)16 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("8E098C37-D21E-4B25-A9B8-A6ED0158EE4F"), missingVal = (decimal)20.99, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("E3F7913D-C6C3-4099-AD11-A6ED0158E502"), missingVal = (decimal)21, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("ED1DBCC5-E9A4-40FE-9BFF-A6ED0158F061"), missingVal = (decimal)21.66, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("156269CC-AFBB-4AFD-A015-A6ED0158FE5A"), missingVal = (decimal)21.69, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("1B2054B4-F52C-4E02-9FEC-A6ED0158ECEB"), missingVal = (decimal)22.54, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("938E1D13-E681-495B-88D6-A6ED0158E3E0"), missingVal = (decimal)22.88, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("E4050533-4594-43C5-9346-A6ED0158F00D"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("904CE6E7-ECDF-441D-9187-A6ED0158FD24"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28"), employeeId = new Guid("9F81D6B8-537E-4B81-9F21-A6ED0158F134"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+				empList.Add(new MissingSL() { companyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), employeeId = new Guid("DBB0C2B9-E8C5-41E4-AD8E-A6ED01576815"), missingVal = (decimal)24, missingUsed = (decimal)0 });
+
+				Console.WriteLine("Total Employees: " + empList.Count);
+				var payChecks = 0;
+				var empsprocessed = 0;
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					empList.ForEach(e =>
+					{
+						var empChecks = _readerService.GetPayChecks(companyId: e.companyId, employeeId: e.employeeId, isvoid: 0).OrderBy(p=>p.PayDay);
+						empChecks.ToList().ForEach(pc =>
+						{
+							var sickLeave = pc.Accumulations.FirstOrDefault(pt => pt.PayType.PayType.Id == 6);
+							if (sickLeave != null)
+							{
+								sickLeave.YTDFiscal += e.missingVal;
+								sickLeave.YTDUsed += e.missingUsed;
+								_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+								var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, "System", "Sick Leave Imported", Guid.Empty);
+								_mementoService.AddMementoData(memento);
+								payChecks++;
+							}
+						});
+						empsprocessed++;
+
+					});
+					Console.WriteLine("Checks Updated: " + payChecks);
+					Console.WriteLine("Employees Processed: " + empsprocessed);
+					Console.Write("Commit? ");
+					var commit = Convert.ToInt32(Console.ReadLine());
+					if (commit == 1)
+					{
+						txn.Complete();
+					}
+					
+
+					
+				}
+
+			}
+		}
+
+		public class MissingSL
+		{
+			public Guid companyId { get; set; }
+			public Guid employeeId { get; set; }
+			public decimal missingVal { get; set; }
+			public decimal missingUsed { get; set; }
 		}
 	}
 }

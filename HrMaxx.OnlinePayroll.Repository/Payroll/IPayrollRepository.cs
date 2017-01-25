@@ -24,7 +24,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void DeletePayrollInvoice(Guid invoiceId);
 		List<PayrollInvoice> ClaimDelivery(List<Guid> invoices, string user);
 		void SaveInvoiceDeliveryClaim(InvoiceDeliveryClaim invoiceDeliveryClaim);
-		
-		
+
+
+		void UpdatePayCheckSickLeaveAccumulation(PayCheck pc);
 	}
 }

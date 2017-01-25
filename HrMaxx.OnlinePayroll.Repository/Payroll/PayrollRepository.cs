@@ -240,6 +240,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			_dbContext.SaveChanges();
 		}
 
+		public void UpdatePayCheckSickLeaveAccumulation(PayCheck pc)
+		{
+			var dbCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == pc.Id);
+			if (dbCheck != null)
+			{
+				dbCheck.Accumulations = JsonConvert.SerializeObject(pc.Accumulations);
+				_dbContext.SaveChanges();
+			}
+		}
+
 		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
 		{
 			var dbClaims = _dbContext.InvoiceDeliveryClaims.ToList();
