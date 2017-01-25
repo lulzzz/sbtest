@@ -544,6 +544,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.VendorAccumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
 				.ForMember(dest => dest.Accounts, opt => opt.Ignore())
+				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src=>new List<PayCheck>()))
+				.ForMember(dest => dest.CredChecks, opt => opt.MapFrom(src => new List<PayCheck>()))
 				.ForMember(dest => dest.Companies, opt => opt.MapFrom(src => src.Companies));
 
 			

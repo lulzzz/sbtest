@@ -105,7 +105,7 @@
 					</Cell>
 
 				</Row>
-				<xsl:apply-templates select="Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >
+				<xsl:apply-templates select="Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" >
 
 				</xsl:apply-templates>
 			</Table>

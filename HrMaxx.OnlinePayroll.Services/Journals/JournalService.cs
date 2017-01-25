@@ -552,31 +552,33 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 								v => (masterExtract.IsFederal && v.Name.Contains("941") || (!masterExtract.IsFederal && v.Name.Contains("CA")))),
 							extract.Report.Description, extract.Report.DepositDate.Value);
 						journals.Add(journal.Id);
-						payCheckIds.AddRange(host.Companies.SelectMany(c => c.PayChecks.Select(pc => pc.Id).ToList()).ToList());
-						voidedCheckIds.AddRange(host.Companies.SelectMany(c => c.VoidedPayChecks.Select(pc => pc.Id).ToList()).ToList());
+						payCheckIds.AddRange(host.PayChecks.Select(pc=>pc.Id));
+						voidedCheckIds.AddRange(host.CredChecks.Select(pc=>pc.Id));
 					}
 					masterExtract.Journals = journals;
-					var file = (FileDto)null;
-					if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
-					{
+					//var file = (FileDto)null;
+					//if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
+					//{
 
-						file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
-						masterExtract.Extract.File.Data = null;
+					//	file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
+					//	masterExtract.Extract.File.Data = null;
 
-					}
-					else
-					{
-						Log.Info("Extract Id " + masterExtract.Id + " missing file");
-					}
+					//}
+					//else
+					//{
+					//	Log.Info("Extract Id " + masterExtract.Id + " missing file");
+					//}
+
+					//masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
+					//if (file != null)
+					//{
+					//	file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
+					//			masterExtract.Id);
+					//	file.DocumentExtension = "txt";
+					//	var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
+					//}
 
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
-					if (file != null)
-					{
-						file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
-								masterExtract.Id);
-						file.DocumentExtension = "txt";
-						var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
-					}
 					return masterExtract;
 				
 			}
@@ -604,7 +606,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						foreach (var garnishmentAgency in host.Accumulation.GarnishmentAgencies)
 						{
 							var gaPayChescks =
-								host.Accumulation.PayChecks.Where(pc => garnishmentAgency.PayCheckIds.Any(gapc => gapc == pc.Id)).ToList();
+								host.PayChecks.Where(pc => garnishmentAgency.PayCheckIds.Any(gapc => gapc == pc.Id)).ToList();
 							var empGroup = gaPayChescks.GroupBy(pc => pc.Employee.Id).ToList();
 							foreach (var emp in empGroup)
 							{
@@ -628,28 +630,28 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						
 					}
 					masterExtract.Journals = journals;
-					var file = (FileDto)null;
-					if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
-					{
+					//var file = (FileDto)null;
+					//if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
+					//{
 						
-						file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
-						masterExtract.Extract.File.Data = null;
+					//	file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
+					//	masterExtract.Extract.File.Data = null;
 
-					}
-					else
-					{
-						Log.Info("Extract Id " + masterExtract.Id + " missing file");
-					}
+					//}
+					//else
+					//{
+					//	Log.Info("Extract Id " + masterExtract.Id + " missing file");
+					//}
 					
+					//masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
+					//if (file != null)
+					//{
+					//	file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
+					//			masterExtract.Id);
+					//	file.DocumentExtension = "txt";
+					//	var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
+					//}
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
-					if (file != null)
-					{
-						file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
-								masterExtract.Id);
-						file.DocumentExtension = "txt";
-						var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
-					}
-					
 					return masterExtract;
 				
 			}
@@ -719,7 +721,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				Id = 0,
 				CompanyId = companyId,
 				Amount = Math.Round(amount, 2, MidpointRounding.AwayFromZero),
-				CheckNumber = -1,
+				CheckNumber = 101,
 				EntityType = EntityTypeEnum.Vendor,
 				PayeeId = vendor.Id,
 				IsDebit = true,
@@ -727,7 +729,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				LastModified = DateTime.Now,
 				LastModifiedBy = userName,
 				Memo = string.Format("{1}, Account No:{2}. Deduction Payment for {0}", report, employee, account),
-				PaymentMethod = EmployeePaymentMethod.DirectDebit,
+				PaymentMethod = EmployeePaymentMethod.Check,
 				PayrollPayCheckId = null,
 				TransactionDate = date,
 				TransactionType = TransactionType.DeductionPayment,

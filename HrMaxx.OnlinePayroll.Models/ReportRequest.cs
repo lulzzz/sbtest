@@ -28,9 +28,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get
 			{
-				if (ReportName.Equals("Federal940"))
+				if (ReportName.Equals("Federal940") || ReportName.Equals("Paperless940"))
 					return ExtractType.Federal940;
-				if (ReportName.Equals("Federal941"))
+				if (ReportName.Equals("Federal941") || ReportName.Equals("Paperless941"))
 					return ExtractType.Federal941;
 				if (ReportName.Equals("StateCAPIT"))
 					return ExtractType.CAPITSDI;

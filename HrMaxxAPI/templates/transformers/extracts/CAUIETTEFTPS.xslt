@@ -15,7 +15,7 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >	
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" >	
 </xsl:apply-templates>
     
   </xsl:template>

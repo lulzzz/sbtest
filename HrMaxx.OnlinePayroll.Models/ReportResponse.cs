@@ -20,7 +20,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyPayrollCube> Cubes { get; set; }
 		
 		 
-		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
+		public List<EmployeePayrollAccumulation> EmployeeAccumulations { get; set; }
 		public List<CompanyVendor> VendorList { get; set; } 
 		public List<PayCheck> PayChecks;
 		public List<CoaTypeBalanceDetail> AccountDetails { get; set; } 
@@ -30,6 +30,13 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public Employee Employee { get; set; }
 		public List<PayCheck> PayChecks { get; set; } 
+		public ExtractAccumulation Accumulation { get; set; }
+	}
+
+	public class EmployeePayrollAccumulation
+	{
+		public Employee Employee { get; set; }
+		public List<PayCheck> PayChecks { get; set; }
 		public PayrollAccumulation Accumulation { get; set; }
 	}
 

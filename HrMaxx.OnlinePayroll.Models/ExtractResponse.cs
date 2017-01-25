@@ -58,6 +58,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public ExtractAccumulation Accumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
+		public List<PayCheck> PayChecks { get; set; }
+		public List<PayCheck> CredChecks { get; set; } 
 		public List<Journal> Journals { get; set; }
 		public List<Account> Accounts { get; set; }
 		public List<ACHTransaction> ACHTransactions { get; set; } 
@@ -248,6 +250,8 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class ExtractPayCheck
 	{
 		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public Guid EmployeeId { get; set; }
 		public string Employee { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }

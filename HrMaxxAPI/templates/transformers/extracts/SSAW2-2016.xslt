@@ -26,7 +26,7 @@ $$spaces2$$$$spaces1$$5624252008$$spaces1$$S$$spaces10$$$$spaces2$$
 <xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost">		
 </xsl:apply-templates>
-RF$$spaces5$$<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/Accumulation/PayChecks/PayCheck[GrossWage>0])"/><xsl:with-param name="count" select="9"/></xsl:call-template>
+RF$$spaces5$$<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/PayChecks/PayCheck[GrossWage>0])"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="496"/></xsl:call-template>
 <xsl:text>$$n</xsl:text>
 

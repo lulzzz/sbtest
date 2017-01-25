@@ -110,6 +110,8 @@ namespace HrMaxxAPI.Controllers.Reports
 		[Route(ReportRoutes.DownloadReport)]
 		public HttpResponseMessage DownloadReport(FileDto document)
 		{
+			if(document.Data!=null)
+				return Printed(document);
 			var doc = _documentService.GetDocument(document.DocumentId);
 			return Printed(doc);
 		}
@@ -136,10 +138,14 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.FileTaxes)]
-		public MasterExtract FileTaxes(Extract extract)
+		public HttpStatusCode FileTaxes(Extract extract)
 		{
-			return MakeServiceCall(() => _journalService.FileTaxes(extract, CurrentUser.FullName), "File Taxes for " + extract.Report.Description, true);
-			
+			if (extract.File == null || extract.File.Data == null)
+			{
+				extract = _reportService.GetExtractTransformedWithFile(extract);
+			}
+			MakeServiceCall(() => _journalService.FileTaxes(extract, CurrentUser.FullName), "File Taxes for " + extract.Report.Description, true);
+			return HttpStatusCode.OK;
 		}
 		[HttpGet]
 		[Route(ReportRoutes.ExtractList)]

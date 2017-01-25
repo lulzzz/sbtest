@@ -40,7 +40,7 @@ namespace SiteInspectionStatus_Utility
 			builder.RegisterModule<ControllerModule>();
 			builder.RegisterModule<BusModule>();
 
-			builder.RegisterModule<SiteInspectionStatus_Utility.MappingModule>();
+			//builder.RegisterModule<SiteInspectionStatus_Utility.MappingModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.RepositoriesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.MappingModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.ServicesModule>();
@@ -694,25 +694,44 @@ namespace SiteInspectionStatus_Utility
 				var extracts = _readerService.GetExtracts();
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					extracts.ForEach(masterExtract =>
+					extracts.Where(e=>!e.ExtractName.Equals("ACH")).ToList().ForEach(m =>
 					{
-						if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data!=null)
+						var masterExtract = _readerService.GetExtract(m.Id);
+						masterExtract.Extract.Data.Hosts.ForEach(h =>
 						{
-							var file = masterExtract.Extract.File;
-							masterExtract.Extract.File.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int) EntityTypeEnum.Extract,
-								masterExtract.Id);
-							masterExtract.Extract.File.DocumentExtension = "txt";
-							var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
-							masterExtract.Extract.File.Data = null;
-							masterExtract = _journalRepository.FixMasterExtract(masterExtract);
-						}
-						else
-						{
-							Console.WriteLine("Extract Id " + masterExtract.Id + " missing file");
-						}
-						
-						
+							h.PayChecks = new List<PayCheck>();
+							h.CredChecks = new List<PayCheck>();
+							var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
+							var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
+							h.PayChecks.AddRange(payChecks);
+							h.CredChecks.AddRange(voidedPayChecks);
+							h.Accumulation.PayChecks = new List<PayCheck>();
+							h.Companies.ForEach(c =>
+							{
+								c.PayChecks = new List<PayCheck>();
+								c.VoidedPayChecks = new List<PayCheck>();
+								c.Accumulation.PayChecks = new List<PayCheck>();
+								if (c.EmployeeAccumulations!=null && c.EmployeeAccumulations.Any())
+									c.EmployeeAccumulations.ForEach(e =>
+									{
+										e.Accumulation.PayChecks = new List<PayCheck>();
+										e.PayChecks = new List<PayCheck>();
+									});
+							});
+							if (h.EmployeeAccumulations!=null && h.EmployeeAccumulations.Any())
+								h.EmployeeAccumulations.ForEach(e =>
+								{
+									e.Accumulation.PayChecks = new List<PayCheck>();
+									e.PayChecks = new List<PayCheck>();
+								});
+
+
+					
 					});
+					masterExtract.Extract.Data.History = new List<MasterExtract>();
+					_journalRepository.FixMasterExtract(masterExtract);
+				});
+
 					txn.Complete();
 				}
 				

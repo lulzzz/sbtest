@@ -48,7 +48,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				{
 					if (mapped.CheckNumber > 0 &&
 							_dbContext.Journals.Any(
-								j => j.CheckNumber == mapped.CheckNumber && j.TransactionType==(int)TransactionType.RegularCheck ))
+								j => j.CheckNumber == mapped.CheckNumber && (j.TransactionType==(int)TransactionType.RegularCheck || j.TransactionType==(int)TransactionType.DeductionPayment )))
 					{
 						mapped.CheckNumber = _dbContext.Journals.Where(j=>j.CompanyId==mapped.CompanyId).Max(j => j.CheckNumber) + 1;
 					}

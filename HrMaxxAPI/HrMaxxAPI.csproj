@@ -330,6 +330,8 @@
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />
     <Content Include="templates\transformers\extracts\InternalPositivePayReport.xslt" />
+    <Content Include="templates\transformers\extracts\Paperless940-2017.xslt" />
+    <Content Include="templates\transformers\extracts\Paperless941-2017.xslt" />
     <Content Include="templates\transformers\extracts\PositivePayReport.xslt" />
     <Content Include="templates\transformers\extracts\CAPITEFTPS.xslt" />
     <Content Include="templates\transformers\extracts\CAUIETTEFTPS.xslt" />
@@ -341,7 +343,9 @@
     <Content Include="templates\transformers\extracts\Paperless940-2016.xslt" />
     <Content Include="templates\transformers\extracts\Paperless941-2016.xslt" />
     <Content Include="templates\transformers\extracts\SSAW2-2016.xslt" />
-    <Content Include="templates\transformers\extracts\SSAW2-2017.xslt" />
+    <Content Include="templates\transformers\extracts\SSAW2-2017.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\other\monthlyquarterannualtaxsummary.xslt">
       <SubType>Designer</SubType>
     </Content>

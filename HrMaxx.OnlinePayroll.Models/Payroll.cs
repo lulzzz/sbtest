@@ -63,6 +63,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 	public class PayCheck : IOriginator<PayCheck>
 	{
+		public Guid CompanyId { get; set; }
 		public Guid PayrollId { get; set; }
 		public int Id { get; set; }
 		public Employee Employee { get; set; }

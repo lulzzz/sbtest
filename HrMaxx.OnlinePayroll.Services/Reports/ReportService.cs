@@ -396,7 +396,6 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
 				{
-
 					throw new Exception(NoPayrollData);
 				}
 				else
@@ -426,29 +425,27 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
 					h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
 					var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-					var voidedPayChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-					h.Accumulation.AddPayChecks(payChecks);
-					h.Accumulation.CreditPayChecks(voidedPayChecks);
-					h.Accumulation.SetQuarters();
-
+					var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
+					
+					h.Accumulation.Initialize(payChecks, voidedPayChecks, garnishmentAgencies, buildCounts, buildDaily, buildGarnishments, request.Year, request.Quarter);
+					
+					h.PayChecks.AddRange(payChecks);
+					h.CredChecks.AddRange(voidedPayChecks);
+					
 					if (buildEmployeeAccumulations)
 						h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
-					if (buildCounts)
-						h.Accumulation.SetCounts(request.Year, request.Quarter);
-					if (buildDaily)
-						h.Accumulation.BuildDailyAccumulations(request.Quarter);
-					if(buildGarnishments)
-						h.Accumulation.BuildGarnishmentAccumulations(garnishmentAgencies);
-
+					
 					h.Companies.ForEach(c =>
 					{
 						c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
-						c.Accumulation.AddPayChecks(c.PayChecks);
-						c.Accumulation.CreditPayChecks(c.VoidedPayChecks);
-						if (buildCompanyEmployeeAccumulation)
-							c.EmployeeAccumulations = getEmployeeAccumulations(c.Accumulation.PayChecks);
+						c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter );
 						
+						if (buildCompanyEmployeeAccumulation)
+							c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
+						c.PayChecks = new List<PayCheck>();
+						c.VoidedPayChecks = new List<PayCheck>();
 					});
+
 				}
 				else
 				{
@@ -463,6 +460,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}	
 			
 			});
+			if (buildGarnishments)
+			{
+				data.Hosts = data.Hosts.Where(h => h.Accumulation.GarnishmentAgencies.Any(ga=>ga.Total>0)).ToList();
+			}
 			
 			return data;
 		}
@@ -557,8 +558,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 		
 			argList.Add(new KeyValuePair<string, string>("reportConst", request.DepositSchedule == DepositSchedule941.SemiWeekly ? "01100" : request.DepositSchedule == DepositSchedule941.Monthly ? "01101" : "01104"));
-			argList.Add(new KeyValuePair<string, string>("enddate", request.EndDate.ToString("MM/dd/yyyy")));
-			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("enddate", request.EndDate.ToString("MM/dd/yy")));
+			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("MM/dd/yy")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
 
@@ -591,11 +592,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
+
+			var endQuarterMonth = (int) (request.EndDate.Month + 2/3)*3;
+
 			var argList = new List<KeyValuePair<string, string>>();
 
 			argList.Add(new KeyValuePair<string, string>("reportConst", "01300"));
-			argList.Add(new KeyValuePair<string, string>("enddate",  request.EndDate.ToString("MM/dd/yyyy")));
-			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("enddate", new DateTime(request.EndDate.Year, endQuarterMonth, DateTime.DaysInMonth(request.EndDate.Year,endQuarterMonth)).ToString("MM/dd/yy")));
+			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yy")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
 
@@ -610,11 +614,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
-
+			var endQuarterMonth = (int)(request.EndDate.Month + 2 / 3) * 3;
 			var argList = new List<KeyValuePair<string, string>>();
 
 			argList.Add(new KeyValuePair<string, string>("reportConst",  "01300"));
-			argList.Add(new KeyValuePair<string, string>("enddate",  request.EndDate.ToString("MM/dd/yyyy")));
+			argList.Add(new KeyValuePair<string, string>("enddate", new DateTime(request.EndDate.Year, endQuarterMonth, DateTime.DaysInMonth(request.EndDate.Year, endQuarterMonth)).ToString("MM/dd/yy")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
@@ -718,17 +722,20 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			return extract;
 		}
+
 		public Extract GetExtractTransformedWithFile(Extract extract)
 		{
 			//var xml = GetXml<ExtractResponse>(extract.Data);
+
 			var args = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList);
 			var argList = new XsltArgumentList();
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
+
 			var splits = extract.Template.Split('\\');
 			var templateName = splits[splits.Length - 1];
 
-			var transformed = XmlTransformNew<ExtractResponse>(extract.Data,
-				string.Format("{0}{1}", _templatePath, templateName), argList);
+			var transformed = XmlTransformNew<ExtractResponse>(extract.Data,string.Format("{0}{1}", _templatePath, templateName), argList);
+			//var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
 
 			if (extract.Extension.Equals("txt"))
 				transformed = Transform(transformed);
@@ -736,7 +743,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			extract.File = new FileDto{
 					Data = Encoding.UTF8.GetBytes(transformed),
 					DocumentExtension = extract.Extension,
-					Filename = extract.FileName,
+					Filename = extract.FileName + "." + extract.Extension,
 					MimeType = "application/octet-stream"
 				};
 			
@@ -808,6 +815,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					h.Accumulation.ExtractType = extracts.Extract.Report.ExtractType;
 					h.Companies.ForEach(c => c.Accumulation.ExtractType = extracts.Extract.Report.ExtractType);
 				});
+				
 				return extracts;
 				
 			}
@@ -1109,7 +1117,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false),
 				CompanyAccumulation = new PayrollAccumulation()
 			};
-			response.EmployeeAccumulations.Where(ea => ea.Accumulation.EmployeeWorkerCompensations > 0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
+			//response.EmployeeAccumulations.Where(ea => ea.Accumulation.EmployeeWorkerCompensations > 0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
 
 			return response;
 		}
@@ -1130,7 +1138,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 			var cubes = GetCompanyPayrollCubes(request);
 			response.CompanyAccumulation = cubes.First(c => ((request.Quarter > 0 && request.Quarter == c.Quarter) || (request.Quarter == 0 && !c.Quarter.HasValue))).Accumulation;
-			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
+			response.EmployeeAccumulations = getEmployeePayrollAccumulations(response.CompanyAccumulation.PayChecks);
 			response.Company = GetCompany(request.CompanyId);
 			return response;
 		}
@@ -1141,13 +1149,31 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var empchecks = paychecks.GroupBy(p => p.Employee.Id).ToList();
 			foreach (var group in empchecks)
 			{
+				var pc = group.ToList();
 				var ea = new EmployeeAccumulation
 				{
-					PayChecks = group.ToList(),
+					Accumulation = new ExtractAccumulation()
+				};
+				ea.Accumulation.AddPayChecks(pc);
+				ea.Employee = pc.OrderByDescending(p=>p.LastModified).First().Employee;
+				result.Add(ea);
+			}
+			return result;
+		}
+		private List<EmployeePayrollAccumulation> getEmployeePayrollAccumulations(List<PayCheck> paychecks)
+		{
+			var result = new List<EmployeePayrollAccumulation>();
+			var empchecks = paychecks.GroupBy(p => p.Employee.Id).ToList();
+			foreach (var group in empchecks)
+			{
+				var pc = group.ToList();
+				var ea = new EmployeePayrollAccumulation()
+				{
+					PayChecks = pc,
 					Accumulation = new PayrollAccumulation()
 				};
-				ea.Accumulation.AddPayChecks(ea.PayChecks);
-				ea.Employee = ea.PayChecks.OrderByDescending(p=>p.LastModified).First().Employee;
+				ea.Accumulation.AddPayChecks(pc);
+				ea.Employee = pc.OrderByDescending(p => p.LastModified).First().Employee;
 				result.Add(ea);
 			}
 			return result;
@@ -1241,7 +1267,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 			var cubes = GetCompanyPayrollCubes(request);
 			var yearCube = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
-			response.EmployeeAccumulations = getEmployeeAccumulations(yearCube.PayChecks);
+			response.EmployeeAccumulations = getEmployeePayrollAccumulations(yearCube.PayChecks);
 			response.Company = GetCompany(request.CompanyId);
 			
 
@@ -1369,7 +1395,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 			var cubes = GetCompanyPayrollCubes(request);
 			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
-			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
+			response.EmployeeAccumulations = getEmployeePayrollAccumulations(response.CompanyAccumulation.PayChecks);
 			response.Company = GetCompany(request.CompanyId); 
 			response.Host = GetHost(request.HostId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
@@ -1422,7 +1448,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 			var cubes = GetCompanyPayrollCubes(request);
 			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter == request.Quarter && !c.Month.HasValue).Accumulation;
-			response.EmployeeAccumulations = getEmployeeAccumulations(response.CompanyAccumulation.PayChecks);
+			response.EmployeeAccumulations = getEmployeePayrollAccumulations(response.CompanyAccumulation.PayChecks);
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);

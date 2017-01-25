@@ -23,6 +23,8 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.selectedCompanyFilings = [];
 					$scope.set = function(host) {
 						$scope.selectedHost = host;
+						$scope.selectedCompany = null;
+						$scope.selectedAgency = null;
 					}
 					$scope.setCompany = function(comp) {
 						$scope.selectedCompany = comp;

@@ -91,19 +91,38 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return ApplicableTaxes.Sum(t => t.Amount); }
 		}
+		public decimal EmployeeDeductions
+		{
+			get { return Math.Round(Deductions.Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero); }
+		}
 
-		
+		public decimal EmployeeWorkerCompensations
+		{
+			get { return WorkerCompensations != null ? Math.Round(WorkerCompensations.Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero) : 0; }
+		}
+		public void Initialize(IEnumerable<PayCheck> checks, IEnumerable<PayCheck> voidedchecks, List<VendorCustomer> vendors , bool buildCounts,
+			bool buildDaily, bool buildGarnishment, int year, int quarter)
+		{
+			var payChecks = checks as IList<PayCheck> ?? checks.ToList();
+			AddPayChecks(payChecks);
+			CreditPayChecks(voidedchecks);
+			SetQuarters(payChecks);
+			if(buildCounts) SetCounts(year, quarter, payChecks);
+			if(buildDaily) BuildDailyAccumulations(quarter, payChecks);
+			if(buildGarnishment) BuildGarnishmentAccumulations(vendors, payChecks);
+
+		}
 		public void AddPayChecks(IEnumerable<PayCheck> checks)
 		{
 			foreach (var add in checks)
 			{
 				AddPayCheck(add);
 			}
-
+			
 		}
-		public void AddPayCheck(PayCheck add)
+		private void AddPayCheck(PayCheck add)
 		{
-			if (PayChecks.All(pci => pci.Id != add.Id))
+			//if (PayChecks.All(pci => pci.Id != add.Id))
 			{
 				
 				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -112,12 +131,12 @@ namespace HrMaxx.OnlinePayroll.Models
 				AddCompensations(add.Compensations);
 				AddDeductions(add.Deductions);
 				AddTaxes(add.Taxes);
-				PayChecks.Add(add);
+				//PayChecks.Add(add);
 				if(add.WorkerCompensation!=null)
 					AddWorkerCompensation(add.WorkerCompensation);
 			}
 		}
-		public void CreditPayChecks(IEnumerable<PayCheck> checks)
+		private void CreditPayChecks(IEnumerable<PayCheck> checks)
 		{
 			foreach (var add in checks)
 			{
@@ -125,9 +144,9 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 
 		}
-		public void CreditPayCheck(PayCheck add)
+		private void CreditPayCheck(PayCheck add)
 		{
-			if (PayChecks.All(pci => pci.Id != add.Id))
+			//if (PayChecks.All(pci => pci.Id != add.Id))
 			{
 				
 				GrossWage -= Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -136,7 +155,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				CreditCompensations(add.Compensations);
 				CreditDeductions(add.Deductions);
 				CreditTaxes(add.Taxes);
-				CreditChecks.Add(add);
+				//CreditChecks.Add(add);
 				CreditWorkerCompensation(add.WorkerCompensation);
 			}
 		}
@@ -265,56 +284,56 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 		}
 
-		public void SetCounts(int year, int quarter)
+		private void SetCounts(int year, int quarter, IList<PayCheck> payChecks )
 		{
 			var q1date = new DateTime(year, quarter*3 - 2, 12).Date;
 			var q2date = new DateTime(year, quarter*3 - 1, 12).Date;
 			var q3date = new DateTime(year, quarter*3, 12).Date;
-			Count1 = PayChecks.Count(p => p.StartDate.Date <= q1date && p.EndDate >= q1date);
-			Count2 = PayChecks.Count(p => p.StartDate.Date <= q2date && p.EndDate >= q2date);
-			Count3 = PayChecks.Count(p => p.StartDate.Date <= q3date && p.EndDate >= q3date);
+			Count1 = payChecks.Count(p => p.StartDate.Date <= q1date && p.EndDate >= q1date);
+			Count2 = payChecks.Count(p => p.StartDate.Date <= q2date && p.EndDate >= q2date);
+			Count3 = payChecks.Count(p => p.StartDate.Date <= q3date && p.EndDate >= q3date);
 		}
 
-		public void SetQuarters()
+		private void SetQuarters(IList<PayCheck> payChecks )
 		{
 			Q1Wage =
-				PayChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
+				payChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q1Amount =
-				PayChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
+				payChecks.Where(p => p.PayDay.Month >= 1 && p.PayDay.Month <= 3)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 			Q2Wage =
-				PayChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
+				payChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q2Amount =
-				PayChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
+				payChecks.Where(p => p.PayDay.Month >= 4 && p.PayDay.Month <= 6)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 			Q3Wage =
-				PayChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
+				payChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q3Amount =
-				PayChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
+				payChecks.Where(p => p.PayDay.Month >= 7 && p.PayDay.Month <= 9)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 			Q4Wage =
-				PayChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
+				payChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.TaxableWage);
 			Q4Amount =
-				PayChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
+				payChecks.Where(p => p.PayDay.Month >= 10 && p.PayDay.Month <= 12)
 					.Select(p => p.Taxes.First(t => t.Tax.Code.Equals("FUTA")))
 					.Sum(t => t.Amount);
 		}
 
-		public void BuildDailyAccumulations(int quarter)
+		private void BuildDailyAccumulations(int quarter, IEnumerable<PayCheck> payChecks )
 		{
 			DailyAccumulations = new List<DailyAccumulation>();
-			var groups = PayChecks.GroupBy(p => p.PayDay);
+			var groups = payChecks.GroupBy(p => p.PayDay);
 			
 			foreach (var @group in groups)
 			{
@@ -328,10 +347,10 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 		}
 
-		public void BuildGarnishmentAccumulations(List<VendorCustomer> agencies )
+		private void BuildGarnishmentAccumulations(IEnumerable<VendorCustomer> agencies, IList<PayCheck> payChecks  )
 		{
 			GarnishmentAgencies = new List<GarnishmentAgency>();
-			var garnishments = PayChecks.SelectMany(pc => pc.Deductions.Where(d => d.Deduction.Type.Id == 3)).ToList();
+			var garnishments = payChecks.SelectMany(pc => pc.Deductions.Where(d => d.Deduction.Type.Id == 3)).ToList();
 
 			foreach (var @agency in agencies)
 			{
@@ -341,7 +360,7 @@ namespace HrMaxx.OnlinePayroll.Models
 					{
 						Agency = @agency,
 						Accounts = garnishments.Where(g => g.EmployeeDeduction.AgencyId == @agency.Id).Select(g => new GarnishmentAgencyAccount { Deduction = g.Deduction.DeductionName, AccountNo = g.EmployeeDeduction.AccountNo, Amount = g.Amount }).ToList(),
-						PayCheckIds = PayChecks.Where(pc => pc.Deductions.Any(d => d.Deduction.Type.Id == 3 && d.EmployeeDeduction.AgencyId == @agency.Id)).Select(pc => pc.Id).ToList()
+						PayCheckIds = payChecks.Where(pc => pc.Deductions.Any(d => d.Deduction.Type.Id == 3 && d.EmployeeDeduction.AgencyId == @agency.Id)).Select(pc => pc.Id).ToList()
 					};
 					GarnishmentAgencies.Add(ea);
 				}

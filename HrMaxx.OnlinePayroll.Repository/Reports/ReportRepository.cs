@@ -50,11 +50,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return _mapper.Map<List<PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
 		}
 
-		public List<EmployeeAccumulation> GetEmployeeGroupedChecks(ReportRequest request, bool includeVoids)
+		public List<EmployeePayrollAccumulation> GetEmployeeGroupedChecks(ReportRequest request, bool includeVoids)
 		{
 			var paychecks = GetPayChecksQueryable(request, includeVoids);
 			var paychecks1 = paychecks.GroupBy(p => p.EmployeeId).ToList();
-			var result = new List<EmployeeAccumulation>();
+			var result = new List<EmployeePayrollAccumulation>();
 			foreach (var group in paychecks1)
 			{
 				var ea = TransformPayChecksToAccumulation(group.ToList());
@@ -66,14 +66,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return result;
 		}
 
-		private EmployeeAccumulation TransformPayChecksToAccumulation(List<PayrollPayCheck> payChecks)
+		private EmployeePayrollAccumulation TransformPayChecksToAccumulation(List<PayrollPayCheck> payChecks)
 		{
-			var ea = new EmployeeAccumulation
+			var pcs = _mapper.Map<List<PayrollPayCheck>, List<Models.PayCheck>>(payChecks);
+			var ea = new EmployeePayrollAccumulation()
 			{
-				PayChecks = _mapper.Map<List<PayrollPayCheck>, List<Models.PayCheck>>(payChecks),
+				PayChecks = pcs,
 				Accumulation = new PayrollAccumulation()
 			};
-			ea.Accumulation.AddPayChecks(ea.PayChecks);
+			ea.Accumulation.AddPayChecks(pcs);
 			return ea;
 		}
 

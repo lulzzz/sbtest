@@ -36,7 +36,7 @@ common.factory('reportRepository', [
 			fileTaxes: function (extract) {
 				var deferred = $q.defer();
 				reportServer.all('FileTaxes').post(extract).then(function (result) {
-					deferred.resolve(result);
+					deferred.resolve();
 				}, function (error) {
 					deferred.reject(error);
 				});

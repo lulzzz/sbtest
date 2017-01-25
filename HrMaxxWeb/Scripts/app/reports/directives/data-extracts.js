@@ -668,19 +668,28 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 
 	$scope.fileTaxes = function () {
 		reportRepository.fileTaxes($scope.masterExtract.extract).then(function (result) {
-			$scope.masterExtract.id = result.id;
-			$scope.masterExtract.lastModified = result.lastModified;
-			$scope.masterExtract.lastModifiedBy = result.lastModifiedBy;
-			$scope.masterExtract.isFederal = result.isFederal;
-			$scope.masterExtract.journal = result.journals;
+			$scope.masterExtract.id = '12334';
+			
 			addAlert('successfully filed taxes for report: ' + $scope.masterExtract.extract.report.description, 'success');
 		}, function (erorr) {
 			addAlert(erorr.statusText, 'danger');
 		});
 		
 	};
+	$scope.regenerateFile = function() {
+		reportRepository.downloadExtractFile($scope.masterExtract.extract).then(function (data) {
+			var a = document.createElement('a');
+			a.href = data.file;
+			a.target = '_blank';
+			a.download = data.name;
+			document.body.appendChild(a);
+			a.click();
+		}, function (erorr) {
+			addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+		});
+	}
 	$scope.downloadFile = function () {
-		if (($scope.masterExtract.extract.report.allowExclude && !$scope.masterExtract.id) || !$scope.masterExtract.extract.file || $scope.masterExtract.extract.file.documentId === '00000000-0000-0000-0000-000000000000') {
+		if (($scope.masterExtract.extract.report.allowExclude && !$scope.masterExtract.id) || (!$scope.masterExtract.extract.file)) {
 			reportRepository.downloadExtractFile($scope.masterExtract.extract).then(function(data) {
 				
 				var a = document.createElement('a');

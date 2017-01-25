@@ -15,7 +15,7 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(Accumulation/PayChecks/PayCheck)>0]" >	
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" >	
 </xsl:apply-templates>
     
   </xsl:template>
@@ -36,8 +36,7 @@
 <xsl:value-of select="$enddate"/>,
 <xsl:value-of select="$settleDate"/>,
 <xsl:value-of select="$SDISumString"/>,
-<xsl:value-of select="$SITSumString"/>,
-0.00
+<xsl:value-of select="$SITSumString"/>
 <xsl:text>$$n</xsl:text>
 </xsl:when>
 </xsl:choose>
