@@ -562,7 +562,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtractDocument(request).then(function (extract) {
+						reportRepository.getExtractDocument(request).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
@@ -588,7 +588,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtractDocument(request).then(function(extract) {
+						reportRepository.getExtractDocument(request).then(function(data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
@@ -613,7 +613,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: null,
 							depositDate: null
 						}
-						reportRepository.getExtractDocument(request).then(function (extract) {
+						reportRepository.getExtractDocument(request).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
