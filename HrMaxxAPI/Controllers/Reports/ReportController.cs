@@ -12,6 +12,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Controllers.Journals;
 using HrMaxxAPI.Resources;
 using HrMaxxAPI.Resources.Journals;
@@ -40,6 +41,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		
 		[HttpPost]
 		[Route(ReportRoutes.Report)]
+		[DeflateCompression]
 		public ReportResponseResource GetReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
@@ -50,6 +52,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.ReportDocument)]
+		[DeflateCompression]
 		public HttpResponseMessage GetReportDocment(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
@@ -59,6 +62,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 		[HttpPost]
 		[Route(ReportRoutes.ExtractDocumentReport)]
+		[DeflateCompression]
 		public HttpResponseMessage GetExtractDocmentReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
@@ -69,6 +73,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.ExtractDocument)]
+		[DeflateCompression]
 		public Extract GetExtractDocment(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
@@ -78,6 +83,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.ACHReport)]
+		[DeflateCompression]
 		public ACHExtract GetACHReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
@@ -85,6 +91,7 @@ namespace HrMaxxAPI.Controllers.Reports
 			return MakeServiceCall(() => _reportService.GetACHReport(request), string.Format("getting ACH Report"));
 
 		}
+
 		[HttpPost]
 		[Route(ReportRoutes.ACHFileAndExtract)]
 		public HttpResponseMessage ACHFileAndExtract(ACHExtract data)
@@ -108,6 +115,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.DownloadReport)]
+		[DeflateCompression]
 		public HttpResponseMessage DownloadReport(FileDto document)
 		{
 			if(document.Data!=null)
@@ -118,6 +126,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.DownloadExtract)]
+		[DeflateCompression]
 		public HttpResponseMessage DownloadExtract(Extract extract)
 		{
 			var result = MakeServiceCall(() => _reportService.GetExtractTransformedWithFile(extract), string.Format("getting extract file"));
@@ -126,6 +135,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.GetDashBoardReport)]
+		[DeflateCompression]
 		public List<DashboardData> GetDashboardData(DashboardRequestResource request)
 		{
 			var dashboardRequest = Mapper.Map<DashboardRequestResource, DashboardRequest>(request);
@@ -138,6 +148,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpPost]
 		[Route(ReportRoutes.FileTaxes)]
+		[DeflateCompression]
 		public HttpStatusCode FileTaxes(Extract extract)
 		{
 			if (extract.File == null || extract.File.Data == null)
@@ -149,6 +160,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 		[HttpGet]
 		[Route(ReportRoutes.ExtractList)]
+		[DeflateCompression]
 		public List<MasterExtract> ExtractList(string report)
 		{
 			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for report " + report, true);
@@ -157,6 +169,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpGet]
 		[Route(ReportRoutes.Extract)]
+		[DeflateCompression]
 		public MasterExtract Extract(int id)
 		{
 			return MakeServiceCall(() => _reportService.GetExtract(id), "Extract with id " + id, true);
@@ -165,6 +178,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpGet]
 		[Route(ReportRoutes.ACHExtractList)]
+		[DeflateCompression]
 		public List<ACHMasterExtract> ACHExtractList()
 		{
 			return MakeServiceCall(() => _reportService.GetACHExtractList(), "ACH Extract list for report ", true);
@@ -173,6 +187,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpGet]
 		[Route(ReportRoutes.GetSearchResults)]
+		[DeflateCompression]
 		public List<SearchResult> GetSearchResults(string criteria)
 		{
 			return MakeServiceCall(() => _reportService.GetSearchResults(criteria, CurrentUser.Role, CurrentUser.Host, CurrentUser.Company), "Get search results", true);

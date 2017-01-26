@@ -267,14 +267,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetDailyDepositReport(ReportRequest request)
 		{
-			request.EndDate = request.StartDate.AddHours(24);
+			request.EndDate = request.StartDate.Date.AddHours(24);
 			var invoices = _readerService.GetPayrollInvoices(Guid.Empty);
 			var invoicePayments = invoices.SelectMany(i => i.InvoicePayments.Select(p => new ExtractInvoicePayment
 			{
 				CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
 			})).ToList();
 			var filtered =
-				invoicePayments.Where(p => p.PaymentDate >= request.StartDate && p.PaymentDate <= request.EndDate).ToList();
+				invoicePayments.Where(p => p.PaymentDate >= request.StartDate && p.PaymentDate < request.EndDate).ToList();
 			if (!filtered.Any())
 				throw new Exception(NoData);
 			var hosts = _hostService.GetHostList(Guid.Empty);
@@ -494,7 +494,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.ReportName = "Federal940";
 			request.Description = string.Format("Federal 940 EFTPS Excel for {0} (Schedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = false;
+			var tempDepositSchedule = request.DepositSchedule;
+			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
+			request.DepositSchedule = tempDepositSchedule;
 
 			var reportConst = _taxationService.PullReportConstant("Form940", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
@@ -743,7 +746,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			extract.File = new FileDto{
 					Data = Encoding.UTF8.GetBytes(transformed),
 					DocumentExtension = extract.Extension,
-					Filename = extract.FileName + "." + extract.Extension,
+					Filename = extract.FileName,
 					MimeType = "application/octet-stream"
 				};
 			

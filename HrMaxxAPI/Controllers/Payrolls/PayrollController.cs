@@ -15,6 +15,7 @@ using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Controllers.Companies;
 using HrMaxxAPI.Resources.OnlinePayroll;
@@ -106,6 +107,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.Print)]
+		[DeflateCompression]
 		public HttpResponseMessage GetDocument(PayrollPrintRequest request)
 		{
 			if (_documentService.DocumentExists(request.DocumentId))
@@ -130,6 +132,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.PrintPayrollReport)]
+		[DeflateCompression]
 		public HttpResponseMessage PrintPayrollReport(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
@@ -138,6 +141,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpPost]
 		[Route(PayrollRoutes.PrintPayrollTimesheet)]
+		[DeflateCompression]
 		public HttpResponseMessage PrintPayrollTimesheet(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
@@ -147,6 +151,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.PrintPayrollChecks)]
+		[DeflateCompression]
 		public HttpResponseMessage PrintPayrollChecks(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
@@ -176,6 +181,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.Payrolls)]
+		[DeflateCompression]
 		public List<PayrollResource> GetPayrolls(PayrollFilterResource filter)
 		{
 			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(filter.CompanyId, filter.StartDate, filter.EndDate, true), string.Format("get list of payrolls for company={0}", filter.CompanyId));
@@ -184,6 +190,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.UnPrintedPayrolls)]
+		[DeflateCompression]
 		public List<PayrollResource> GetUnPrintedPayrolls()
 		{
 			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, status:(int)PayrollStatus.Committed), string.Format("get list of un printed payrolls "));
@@ -192,6 +199,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.ProcessPayroll)]
+		[DeflateCompression]
 		public PayrollResource ProcessPayroll(PayrollResource resource)
 		{
 			resource.PayChecks.ForEach(p =>
@@ -208,6 +216,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.CommitPayroll)]
+		[DeflateCompression]
 		public PayrollResource CommitPayroll(PayrollResource resource)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
@@ -222,6 +231,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpPost]
 		[Route(PayrollRoutes.SaveProcessedPayroll)]
+		[DeflateCompression]
 		public PayrollResource SaveProcessedPayroll(PayrollResource resource)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
@@ -249,6 +259,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.VoidPayroll)]
+		[DeflateCompression]
 		public PayrollResource VoidPayroll(PayrollResource resource)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
@@ -258,6 +269,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.VoidPayCheck)]
+		[DeflateCompression]
 		public PayrollResource CommitPayroll(Guid payrollId, int payCheckId)
 		{
 			var voided = MakeServiceCall(() => _payrollService.VoidPayCheck(payrollId, payCheckId, CurrentUser.FullName, CurrentUser.UserId), string.Format("void paycheck in payroll={0} with id={1}",payrollId, payCheckId));
@@ -266,6 +278,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.PayCheck)]
+		[DeflateCompression]
 		public PayCheckResource GetPayCheck(int checkId)
 		{
 			var check = MakeServiceCall(() => _readerService.GetPaycheck(checkId), string.Format("get paycheck with id={0}", checkId));
@@ -275,6 +288,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		
 		[HttpGet]
 		[Route(PayrollRoutes.GetInvoicePayroll)]
+		[DeflateCompression]
 		public List<PayrollResource> GetInvoicePayroll(Guid invoiceId)
 		{
 			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, invoiceId:invoiceId), string.Format("get payrolls for invoice with id={0}", invoiceId));
@@ -282,6 +296,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpGet]
 		[Route(PayrollRoutes.PrintPayCheck)]
+		[DeflateCompression]
 		public FileDto PrintPayCheck(Guid payrollId, int checkId)
 		{
 			return MakeServiceCall(() => _payrollService.PrintPayCheck(checkId), string.Format("print paycheck with id={0}", checkId), true);
@@ -290,6 +305,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.CreatePayrollInvoice)]
+		[DeflateCompression]
 		public PayrollInvoiceResource CreatePayrollInvoice(PayrollResource payroll)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(payroll);
@@ -301,6 +317,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.PayrollInvoice)]
+		[DeflateCompression]
 		public PayrollInvoiceResource SavePayrollInvoice(PayrollInvoiceResource invoice)
 		{
 			var mappedResource = Mapper.Map<PayrollInvoiceResource, PayrollInvoice>(invoice);
@@ -321,6 +338,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.PayrollInvoices)]
+		[DeflateCompression]
 		public List<PayrollInvoiceResource> GetPayrollInvoices()
 		{
 			
@@ -342,6 +360,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.ApprovedInvoices)]
+		[DeflateCompression]
 		public List<PayrollInvoiceResource> GetApprovedInvoices()
 		{
 			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, status:InvoiceStatus.Submitted), string.Format("get invoices for host with id={0}", CurrentUser.Host));
@@ -367,6 +386,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpGet]
 		[Route(PayrollRoutes.RecreateInvoice)]
+		[DeflateCompression]
 		public PayrollInvoiceResource RecreateInvoice(Guid invoiceId)
 		{
 			var invoice = MakeServiceCall(() => _payrollService.RecreateInvoice(invoiceId, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("recreate invoice with id={0}", invoiceId));
@@ -375,6 +395,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.DelayTaxes)]
+		[DeflateCompression]
 		public PayrollInvoiceResource DelayTaxes(Guid invoiceId)
 		{
 			var invoice = MakeServiceCall(() => _payrollService.DelayTaxes(invoiceId, CurrentUser.FullName), string.Format("delay taxes on invoice with id={0}", invoiceId));
@@ -382,6 +403,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpPost]
 		[Route(PayrollRoutes.RedateInvoice)]
+		[DeflateCompression]
 		public PayrollInvoiceResource RedateInvoice(PayrollInvoiceResource resource)
 		{
 			var mapped = Mapper.Map<PayrollInvoiceResource, PayrollInvoice>(resource);
@@ -392,6 +414,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpPost]
 		[Route(PayrollRoutes.ClaimDelivery)]
+		[DeflateCompression]
 		public InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds)
 		{
 			return MakeServiceCall(() => _payrollService.ClaimDelivery(invoiceIds, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("claim delivery of invoices with ids={0}", invoiceIds));
@@ -400,6 +423,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.InvoiceDeliveryClaims)]
+		[DeflateCompression]
 		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
 		{
 			return MakeServiceCall(() => _payrollService.GetInvoiceDeliveryClaims(), "Get Invoice Delivery Claims");
@@ -407,6 +431,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.EmployeeChecks)]
+		[DeflateCompression]
 		public List<PayCheck> GetEmployeeChecks(Guid companyId, Guid employeeId)
 		{
 			return MakeServiceCall(() => _readerService.GetPayChecks(companyId:companyId, employeeId:employeeId, isvoid:0), "Get Pay Check for employee");
@@ -433,6 +458,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(PayrollRoutes.ImportTimesheets)]
+		[DeflateCompression]
 		public async Task<HttpResponseMessage> ImportTimesheets()
 		{
 			var filename = string.Empty;
@@ -489,6 +515,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(PayrollRoutes.ImportTimesheetsWithMap)]
+		[DeflateCompression]
 		public async Task<HttpResponseMessage> ImportTimesheetsWithMap()
 		{
 			var filename = string.Empty;

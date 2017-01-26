@@ -12,6 +12,7 @@ using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Tracing;
+using HrMaxxAPI.Code.Filters;
 using log4net;
 
 namespace HrMaxxAPI.Controllers
@@ -79,11 +80,11 @@ namespace HrMaxxAPI.Controllers
 			}
 			try
 			{
-				HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
-					(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName, Request.Headers.Host,
-					(Request.Headers.Referrer == null || string.IsNullOrWhiteSpace(Request.Headers.Referrer.AbsoluteUri))
-						? "Mobile"
-						: Request.Headers.Referrer.AbsoluteUri);
+				//HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
+				//	(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName, Request.Headers.Host,
+				//	(Request.Headers.Referrer == null || string.IsNullOrWhiteSpace(Request.Headers.Referrer.AbsoluteUri))
+				//		? "Mobile"
+				//		: Request.Headers.Referrer.AbsoluteUri);
 				if (!traceMessage.Equals(string.Empty))
 					HrMaxxTrace.PerfTrace(() => result = callToMake(), PerfTraceType.BusinessLayerCall, GetType(), traceMessage);
 
@@ -155,11 +156,11 @@ namespace HrMaxxAPI.Controllers
 			}
 			try
 			{
-				HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
-					(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName, Request.Headers.Host,
-					(Request.Headers.Referrer == null || string.IsNullOrWhiteSpace(Request.Headers.Referrer.AbsoluteUri))
-						? "Mobile"
-						: Request.Headers.Referrer.AbsoluteUri);
+				//HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
+				//	(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName, Request.Headers.Host,
+				//	(Request.Headers.Referrer == null || string.IsNullOrWhiteSpace(Request.Headers.Referrer.AbsoluteUri))
+				//		? "Mobile"
+				//		: Request.Headers.Referrer.AbsoluteUri);
 				if (!traceMessage.Equals(string.Empty))
 					HrMaxxTrace.PerfTrace(callToMake, PerfTraceType.BusinessLayerCall, GetType(), traceMessage);
 				else
