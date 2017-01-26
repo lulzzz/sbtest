@@ -19,10 +19,19 @@ namespace HrMaxxAPI.Code.Filters
 			var zlibbedContent = bytes == null ? new byte[0] :
 			CompressionHelper.DeflateByte(bytes);
 			actContext.Response.Content = new ByteArrayContent(zlibbedContent);
-			actContext.Response.Content.Headers.Remove("Content-Type");
+			
 			actContext.Response.Content.Headers.Add("Content-encoding", "deflate");
-			actContext.Response.Content.Headers.Add("Content-Type", "application/json");
-			if (contentDisposition != null)
+			if (content.Headers.ContentType == null)
+			{
+				actContext.Response.Content.Headers.Remove("Content-Type");
+				actContext.Response.Content.Headers.Add("Content-Type", "application/json");
+			}
+			else
+			{
+				actContext.Response.Content.Headers.ContentType = content.Headers.ContentType;
+			}
+			
+			if (content.Headers.ContentDisposition != null)
 				actContext.Response.Content.Headers.ContentDisposition = contentDisposition;
 			base.OnActionExecuted(actContext);
 		}
