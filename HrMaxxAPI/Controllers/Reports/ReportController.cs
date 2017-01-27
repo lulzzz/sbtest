@@ -45,7 +45,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public ReportResponseResource GetReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetReport(request), string.Format("getting report for request for company={0}", request.CompanyId));
+			var response = MakeServiceCall(() => _reportService.GetReport(request), string.Format("getting Report for request for company={0}", request.CompanyId));
 			return Mapper.Map<ReportResponse, ReportResponseResource>(response);
 
 		}
@@ -56,7 +56,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public HttpResponseMessage GetReportDocment(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetReportDocument(request), string.Format("getting report for request for company={0}", request.CompanyId));
+			var response = MakeServiceCall(() => _reportService.GetReportDocument(request), string.Format("getting Report for request for company={0}", request.CompanyId));
 			return Printed(response);
 
 		}
@@ -66,7 +66,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public HttpResponseMessage GetExtractDocmentReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting report for request for company={0}", request.CompanyId));
+			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting Report for request for company={0}", request.CompanyId));
 			return Printed(response.File);
 
 		}
@@ -149,21 +149,32 @@ namespace HrMaxxAPI.Controllers.Reports
 		[HttpPost]
 		[Route(ReportRoutes.FileTaxes)]
 		[DeflateCompression]
-		public HttpStatusCode FileTaxes(Extract extract)
+		public MasterExtract FileTaxes(Extract extract)
 		{
 			if (extract.File == null || extract.File.Data == null)
 			{
 				extract = _reportService.GetExtractTransformedWithFile(extract);
 			}
-			MakeServiceCall(() => _journalService.FileTaxes(extract, CurrentUser.FullName), "File Taxes for " + extract.Report.Description, true);
-			return HttpStatusCode.OK;
+			var returnExtract = MakeServiceCall(() => _journalService.FileTaxes(extract, CurrentUser.FullName), "File Taxes for " + extract.Report.Description, true);
+			returnExtract.Extract = null;
+			return returnExtract;
 		}
+
+		[HttpPost]
+		[Route(ReportRoutes.PrintChecks)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintExtractChecks(ExtractPrintResource resource)
+		{
+			var returnExtract = MakeServiceCall(() => _journalService.PrintChecks(resource.Journals, resource.Report), "Print Checks for extract" , true);
+			return Printed(returnExtract);
+		}
+
 		[HttpGet]
 		[Route(ReportRoutes.ExtractList)]
 		[DeflateCompression]
 		public List<MasterExtract> ExtractList(string report)
 		{
-			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for report " + report, true);
+			return MakeServiceCall(() => _reportService.GetExtractList(report), "Extract list for Report " + report, true);
 
 		}
 
@@ -181,7 +192,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		[DeflateCompression]
 		public List<ACHMasterExtract> ACHExtractList()
 		{
-			return MakeServiceCall(() => _reportService.GetACHExtractList(), "ACH Extract list for report ", true);
+			return MakeServiceCall(() => _reportService.GetACHExtractList(), "ACH Extract list for Report ", true);
 
 		}
 

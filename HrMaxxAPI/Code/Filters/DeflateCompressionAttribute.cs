@@ -13,6 +13,12 @@ namespace HrMaxxAPI.Code.Filters
 
 		public override void OnActionExecuted(HttpActionExecutedContext actContext)
 		{
+			if (!actContext.Response.IsSuccessStatusCode)
+			{
+				base.OnActionExecuted(actContext);
+				return;
+			}
+				
 			var content = actContext.Response.Content;
 			var contentDisposition = content.Headers.ContentDisposition;
 			var bytes = content == null ? null : content.ReadAsByteArrayAsync().Result;

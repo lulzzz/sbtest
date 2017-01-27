@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
@@ -195,6 +196,23 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, status:(int)PayrollStatus.Committed), string.Format("get list of un printed payrolls "));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.UpdatePayrollDates)]
+		[DeflateCompression]
+		public HttpStatusCode UpdatePayrollDates(PayrollResource resource)
+		{
+			resource.PayChecks.ForEach(p =>
+			{
+				p.StartDate = resource.StartDate;
+				p.EndDate = resource.EndDate;
+				p.PayDay = resource.PayDay;
+			});
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+
+			MakeServiceCall(() => _payrollService.UpdatePayrollDates(mappedResource), string.Format("update payroll dates for id={0}", resource.Id));
+			return HttpStatusCode.OK;
 		}
 
 		[HttpPost]

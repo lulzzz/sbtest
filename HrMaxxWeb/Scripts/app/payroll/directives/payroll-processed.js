@@ -19,6 +19,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					$scope.tableData = [];
+					$scope.showPayRates = true;
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
@@ -107,7 +108,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						return zionAPI.URL + 'Payroll/Print/'  + check.documentId + '/' + check.payrollId + '/' + check.id ;
 					};
 					$scope.save = function () {
-						$scope.item.payChecks = $filter('filter')($scope.item.payChecks, {included:true});
+						$scope.item.payChecks = $filter('filter')($scope.item.payChecks, { included: true });
+
 						payrollRepository.commitPayroll($scope.item).then(function (data) {
 							if (!$scope.mainData.selectedCompany.lastPayrollDate || moment($scope.mainData.selectedCompany.lastPayrollDate) < moment($scope.item.payDay))
 								$scope.mainData.selectedCompany.lastPayrollDate = moment($scope.item.payDay).toDate();
@@ -211,6 +213,17 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							return 3;
 						return 4;
 					}
+					$scope.updatePayrollDates = function() {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to change the payroll dates?', 'warning', function () {
+							$scope.item.startDate = moment($scope.item.startDate).format("MM/DD/YYYY");
+							$scope.item.endDate = moment($scope.item.endDate).format("MM/DD/YYYY");
+							payrollRepository.updatePayrollDates($scope.item).then(function () {
+								$scope.$parent.$parent.updateListAndItem($scope.item.id);
+							}, function (error) {
+								addAlert('error updating payroll dates', 'danger');
+							});
+						});
+					}
 					$scope.voidcheck = function (listitem) {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to mark this check Void?', 'info', function () {
 							var checkQuarter = getQuarter(moment(listitem.payDay).format("MM"));
@@ -267,6 +280,11 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							return true;
 					}
 					var init = function () {
+						if ($scope.item.status > 2 && $scope.item.status !== 6 && $scope.mainData.userRole === 'Master') {
+							$scope.item.startDate = moment($scope.item.startDate).toDate();
+							$scope.item.endDate = moment($scope.item.endDate).toDate();
+						}
+						
 						if($scope.item.status===2)
 							$scope.datasvc.isBodyOpen = false;
 						else

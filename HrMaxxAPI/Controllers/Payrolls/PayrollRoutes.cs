@@ -39,5 +39,6 @@
 		public const string EmployeeChecks = "Payroll/EmployeeChecks/{companyId:guid}/{employeeId:guid}";
 		public const string FixInvoices = "Payroll/FixInvoices";
 		public const string PayrollInvoices = "Payroll/PayrollInvoices";
+		public const string UpdatePayrollDates = "Payroll/UpdatePayrollDates";
 	}
 }

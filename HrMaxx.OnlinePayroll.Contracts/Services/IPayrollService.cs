@@ -44,11 +44,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Guid> FixInvoiceData();
 
 		Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid guid);
-		
-		
-		
-		
-		
-		
+
+
+		void UpdatePayrollDates(Payroll mappedResource);
 	}
 }

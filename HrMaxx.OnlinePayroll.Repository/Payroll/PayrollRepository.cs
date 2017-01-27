@@ -250,6 +250,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			}
 		}
 
+		public void UpdatePayrollDates(Models.Payroll mappedResource)
+		{
+			var dbPayrolls = _dbContext.Payrolls.First(p => p.Id == mappedResource.Id);
+			dbPayrolls.StartDate = mappedResource.StartDate;
+			dbPayrolls.EndDate = mappedResource.EndDate;
+			dbPayrolls.PayrollPayChecks.ToList().ForEach(pc =>
+			{
+				pc.StartDate = mappedResource.StartDate;
+				pc.EndDate = mappedResource.EndDate;
+			});
+			_dbContext.SaveChanges();
+		}
+
 		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
 		{
 			var dbClaims = _dbContext.InvoiceDeliveryClaims.ToList();

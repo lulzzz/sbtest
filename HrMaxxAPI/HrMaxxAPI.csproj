@@ -288,6 +288,7 @@
     <Compile Include="Resources\Common\NotificationsResource.cs" />
     <Compile Include="Resources\Common\ViewObjectResources.cs" />
     <Compile Include="Resources\EntityIDResource.cs" />
+    <Compile Include="Resources\Journals\ExtractPrintResource.cs" />
     <Compile Include="Resources\Journals\JournalListResource.cs" />
     <Compile Include="Resources\Journals\JournalResource.cs" />
     <Compile Include="Resources\OnlinePayroll\AccountResource.cs" />

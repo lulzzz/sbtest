@@ -1,22 +1,38 @@
 ﻿<div class="row table-responsive">
 	<div class="col-sm-12">
-		<div class="col-sm-1"><label>Pay Period</label></div>
-		<div class="col-sm-2 form-group">
-			<label class="control-label">Start Date: </label>{{item.startDate | date: 'MM/dd/yyyy'}}
+		<div class="col-sm-1">
+			<label>Pay Period</label>
+			<button class="btn btn-sm btn-success" ng-show="mainData.userRole==='Master' && item.status>2 && item.status!==6" ng-click="updatePayrollDates()"><i class="fa fa-save">update pay period</i></button>
+		</div>
+		<div class="col-sm-2 form-group" ng-if="mainData.userRole!=='Master' || item.status===2 || item.status===6">
+			<label class="control-label">Start Date: </label>
+			<span>{{item.startDate | date: 'MM/dd/yyyy'}}</span>
 			
 		</div>
-		<div class="col-sm-2">
-			<label class="control-label">End Date: </label>{{item.endDate | date: 'MM/dd/yyyy'}}
+		<div class="col-sm-2" ng-if="mainData.userRole!=='Master' || item.status===2 || item.status===6">
+			<label class="control-label" ng-show="mainData.userRole!=='Master' || item.status===2 || item.status===6" ">End Date: </label>
+			<span>{{item.endDate | date: 'MM/dd/yyyy'}}</span>
 			
+		</div>
+		<div class="col-sm-2 form-group" ng-if="mainData.userRole==='Master' && item.status>2 && item.status!==6">
+			<label class="control-label">Start Date <span class="text-danger">*</span></label>
+			<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false"  />
+		</div>
+		<div class="col-sm-2" ng-if="mainData.userRole==='Master' && item.status>2 && item.status!==6">
+			<label class="control-label" >End Date <span class="text-danger">*</span></label>
+			<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="!item.startDate" ng-if="item.startDate"  />
 		</div>
 		<div class="col-sm-2" ng-class="{'show-red':!canConfirm()}">
-			<label class="control-label">Check Date: </label>{{item.payDay | date: 'MM/dd/yyyy'}}
+			<label class="control-label">Check Date: </label>
+			<span>{{item.payDay | date: 'MM/dd/yyyy'}}</span>
 			
 		</div>
 		<div class="col-sm-2">
-			<label class="control-label">Starting Check Number: </label>{{item.startingCheckNumber}}
+			<label class="control-label">Starting Check Number: </label>
+			<span>{{item.startingCheckNumber}}</span>
 			
 		</div>
+		
 	</div>
 	<div class="col-sm-12" ng-if="item.notes">
 		<label>Notes: </label> {{item.notes}}
@@ -28,10 +44,11 @@
 		<b>{{company.payCheckStock===1? 'MICR' : company.payCheckStock===2 ? 'Laser Middle' : company.payCheckStock===3 ? 'Laser Top' : 'MICR QB'}}!</b>
 	</pre>
 	<div class="col-sm-12">
-		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager">
+		
+		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager" >
 
 			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2)}">
-				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " >
+				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' ">
 					{{listitem.companyEmployeeNo}}
 				</td>
 				<td data-title=" 'Check #' " filter="{ 'checkNumber': 'text' }" sortable=" 'checkNumber' ">
@@ -46,7 +63,7 @@
 				<td data-title=" 'Deductions' " sortable=" 'grossWage' " class="col-sm-1 text-right">
 					{{listitem.deductionAmount | currency:"$"}}
 				</td>
-				<td data-title=" 'Pay Rates' "  class="col-sm-3 text-right">
+				<td data-title=" 'Pay Rates' " class="col-sm-3 text-right" ng-show="showPayRates">
 					<div class="row" ng-if="listitem.employee.payType===2">
 						<div class="col-sm-6 text-left">Salary</div><div class="col-sm-6 text-right">{{listitem.salary | currency:'$'}}</div>
 					</div>
@@ -74,11 +91,11 @@
 
 					</div>
 				</td>
-				
+
 				<td data-title=" 'Net Pay' " sortable=" 'netWage' " class="col-sm-1 text-right">
 					{{listitem.netWage | currency:"$"}}
 				</td>
-			
+
 				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-2">
 					<div class="col-sm-4 text-left">{{listitem.paymentMethodText}}</div>
 					<div class="col-sm-8 text-right">
@@ -87,16 +104,16 @@
 						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-lg fa-print m-r-5"></i></button>
 					</div>
 				</td>
-				
+
 			</tr>
 			<tr>
 				<td colspan="3"># Checks {{tableData.length}}</td>
 				<td class="text-right">{{item.totalGrossWage | currency:'$'}}</td>
 				<td class="text-right">{{item.deductionAmount | currency:'$'}}</td>
-				<td></td>
+				<td ng-show="showPayRates"></td>
 				<td class="text-right">{{item.totalNetWage | currency:'$'}}</td>
 				<td></td>
-				
+
 			</tr>
 		</table>
 		

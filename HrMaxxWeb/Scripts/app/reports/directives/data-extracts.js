@@ -668,13 +668,27 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 
 	$scope.fileTaxes = function () {
 		reportRepository.fileTaxes($scope.masterExtract.extract).then(function (result) {
-			$scope.masterExtract.id = '12334';
+			$scope.masterExtract.id = result.id;
+			$scope.masterExtract.journals = result.journals;
 			
 			addAlert('successfully filed taxes for report: ' + $scope.masterExtract.extract.report.description, 'success');
 		}, function (erorr) {
 			addAlert(erorr.statusText, 'danger');
 		});
 		
+	};
+	$scope.printExtract = function () {
+		reportRepository.printExtract($scope.masterExtract.journals, $scope.masterExtract.extract.report).then(function (data) {
+			var a = document.createElement('a');
+			a.href = data.file;
+			a.target = '_blank';
+			a.download = data.name;
+			document.body.appendChild(a);
+			a.click();
+		}, function (erorr) {
+			addAlert(erorr.statusText, 'danger');
+		});
+
 	};
 	$scope.regenerateFile = function() {
 		reportRepository.downloadExtractFile($scope.masterExtract.extract).then(function (data) {

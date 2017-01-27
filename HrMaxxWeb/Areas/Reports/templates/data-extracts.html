@@ -537,6 +537,7 @@
 				<button class="btn btn-sm btn-info" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File Taxes</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
 				<button class="btn btn-sm btn-info pull-right" ng-show="false" ng-click="regenerateFile()">Regenerate File</button>
+				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0" ng-click="printExtract()">Print Checks</button>
 			</div>
 			<extract-view master-extract="masterExtract" />
 

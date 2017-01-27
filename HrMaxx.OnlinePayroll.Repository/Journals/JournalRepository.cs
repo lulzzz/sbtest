@@ -142,6 +142,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtracts);
 		}
 
+		public Models.Journal GetJournalById(int id)
+		{
+			var dbJournal = _dbContext.Journals.First(j => j.Id == id);
+			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(dbJournal);
+		}
+
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)
 		{
 			var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);

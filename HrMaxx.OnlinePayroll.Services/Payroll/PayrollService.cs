@@ -2228,6 +2228,24 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			
 		}
 
+		public void UpdatePayrollDates(Models.Payroll mappedResource)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_payrollRepository.UpdatePayrollDates(mappedResource);
+					txn.Complete();
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update payroll dates for id = " + mappedResource.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds, string fullName, Guid userId)
 		{
 			try
