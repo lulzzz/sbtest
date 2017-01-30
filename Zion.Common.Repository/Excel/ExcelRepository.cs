@@ -103,7 +103,8 @@ namespace HrMaxx.Common.Repository.Excel
 				var workSheet = xl.Worksheet;
 
 				var end = workSheet.Dimension.End;
-				for (int row = startingRow; row <=(importMap.RowCount.HasValue ? startingRow + importMap.RowCount.Value : end.Row); row++)
+				var lastRow = importMap.LastRow.HasValue ? importMap.LastRow.Value : (end.Row > 1000 ? 1000 : end.Row);
+				for (int row = startingRow; row <=lastRow; row++)
 				{ // Row by row...
 					var erow = new ExcelRead { Row = row, Values = new List<KeyValuePair<string, string>>() };
 					for (int col = 1; col <= end.Column; col++)

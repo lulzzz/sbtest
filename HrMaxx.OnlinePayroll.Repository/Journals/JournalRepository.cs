@@ -44,13 +44,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 						}
 					}
 				}
-				else if(journal.TransactionType == TransactionType.RegularCheck)
+				else if(journal.TransactionType == TransactionType.RegularCheck || journal.TransactionType==TransactionType.DeductionPayment)
 				{
 					if (mapped.CheckNumber > 0 &&
 							_dbContext.Journals.Any(
-								j => j.CheckNumber == mapped.CheckNumber && (j.TransactionType==(int)TransactionType.RegularCheck || j.TransactionType==(int)TransactionType.DeductionPayment )))
+								j => j.CompanyId==mapped.CompanyId && j.CheckNumber == mapped.CheckNumber && (j.TransactionType==(int)TransactionType.RegularCheck || j.TransactionType==(int)TransactionType.DeductionPayment )))
 					{
-						mapped.CheckNumber = _dbContext.Journals.Where(j=>j.CompanyId==mapped.CompanyId).Max(j => j.CheckNumber) + 1;
+						mapped.CheckNumber = _dbContext.Journals.Where(j => j.CompanyId == mapped.CompanyId && (j.TransactionType == (int)TransactionType.RegularCheck || j.TransactionType == (int)TransactionType.DeductionPayment)).Max(j => j.CheckNumber) + 1;
 					}
 				}
 				

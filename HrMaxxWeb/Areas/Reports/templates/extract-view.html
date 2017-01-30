@@ -198,9 +198,9 @@
 				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='GarnishmentReport'">
 					<thead>
 						<tr>
-							<th class="col-sm-4">Host Amounts</th>
+							<th class="col-sm-4">Company Amounts</th>
 							<th class="col-sm-4">Agency Amounts</th>
-							<th class="col-sm-4">Pay Checks</th>
+							<th class="col-sm-4">Employee</th>
 
 						</tr>
 					</thead>
@@ -234,8 +234,8 @@
 
 						</td>
 						<td class="col-sm-4" ng-show="selectedAgency">
-							<div class="row" ng-repeat="pc in selectedAgency.payChecks">
-								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}} - {{pc.companyName}}</u></i>
+							<div class="row" ng-repeat="pc in selectedAgency.payCheckIds">
+								<i><u>{{getGarnishmentCheckEmployeeName(pc)}}</u></i>
 							</div>
 						</td>
 

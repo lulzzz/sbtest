@@ -194,7 +194,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public List<PayrollResource> GetUnPrintedPayrolls()
 		{
-			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, status:(int)PayrollStatus.Committed), string.Format("get list of un printed payrolls "));
+			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, status:(int)PayrollStatus.Committed, excludeVoids:1), string.Format("get list of un printed payrolls "));
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 

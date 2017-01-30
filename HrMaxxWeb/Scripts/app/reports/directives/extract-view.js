@@ -74,6 +74,11 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.data.hosts.splice($scope.data.hosts.indexOf(host), 1);
 					}
 
+					$scope.getGarnishmentCheckEmployeeName  =function(checkId) {
+						var check = $filter('filter')($scope.selectedHost.payChecks, { id: checkId },  true)[0];
+						return check ? check.employee.firstName + ' ' + check.employee.lastName : '';
+					}
+
 					var handleUnlimitedTabsRender = function() {
 
 						// function handle tab overflow scroll width 

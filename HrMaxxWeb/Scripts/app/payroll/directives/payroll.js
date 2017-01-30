@@ -392,6 +392,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								},
 								map: function() {
 									return $scope.datasvc.importMap;
+								},
+								main: function() {
+									return $scope.$parent.$parent;
 								}
 							}
 						});
@@ -459,70 +462,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							addAlert('error getting timesheet import template', 'danger');
 						});
 					}
-					var uploadDocument = function () {
-						payrollRepository.importTimesheets($scope.files[0]).then(function (timesheets) {
-							var counter = 0;
-							$.each(timesheets, function (ind, t) {
-								var pc = null;
-								if (t.ssn)
-									pc = $filter('filter')($scope.list, { employee: { ssn: t.ssn } })[0];
-								else if (t.employeeNo) {
-									pc = $filter('filter')($scope.list, { employee: { companyEmployeeNo: t.employeeNo } })[0];
-								}
-								
-								if (pc) {
-									counter++;
-									if (pc.employee.payType === 2)
-										pc.salary = t.salary;
-									else if (pc.employee.payType === 1) {
-										$.each(t.payCodes, function(pcind, paycode) {
-											var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
-											if (ec) {
-												var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
-												if (exists.length > 0) {
-													exists[0].screenHours = paycode.screenHours;
-													exists[0].screenOvertime = paycode.screenOvertime;
-													exists[0].hours = paycode.hours;
-													exists[0].overtimeHours = paycode.overtimeHours;
-													if (paycode.payCode.id === 0 && paycode.payCode.hourlyRate) {
-														exists[0].payCode.hourlyRate = paycode.payCode.hourlyRate;
-													}
-												} else
-													pc.payCodes.push(paycode);
-											}
-										});
-									} else {
-										var pw = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
-										if (pw.length > 0 && pc.payCodes.length===1) {
-											pc.payCodes[0].pwAmount = pw[0].payCode.hourlyRate;
-											pc.payCodes[0].hours = pw[0].hours;
-											pc.payCodes[0].overtimeHours = pw[0].overtimeHours;
-										}
-									}
-									$.each(t.compensations, function (cind, comp) {
-											var exists = $filter('filter')(pc.compensations, { payType: { id: comp.payType.id } });
-											if (exists.length > 0)
-												exists[0].amount = comp.amount;
-											else
-												pc.compensations.push(comp);
-										});
-								}
-								
-							});
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-							
-							addAlert('successfully imported ' + counter + " rows from "+ timesheets.length + ' rows of timesheet', 'success');
-						}, function (error) {
-							addAlert('error in importing timesheets: ' + error, 'danger');
-
-						});
-
-
-					}
-
-
-
+					
 					var init = function () {
 						$scope.originals = angular.copy($scope.item.payChecks);
 						$scope.list = $scope.item.payChecks;
@@ -792,14 +732,15 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 
 });
 
-common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $filter, company, payChecks, payTypes, payrollRepository, $timeout, map) {
+common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $filter, company, payChecks, payTypes, payrollRepository, $timeout, map, main) {
 	$scope.company = company;
 	$scope.payChecks = angular.copy(payChecks);
 	$scope.payTypes = payTypes;
 	$scope.alerts = [];
 	$scope.messages = [];
 	if (map) {
-		$scope.importMap = map;
+		$scope.importMap = angular.copy(map);
+		$scope.importMap.lastRow = null;
 		if (!$scope.importMap.selfManagedPayTypes) {
 			$scope.importMap.selfManagedPayTypes = [];
 		}
@@ -808,7 +749,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		$scope.importMap = {
 			startingRow: 1,
 			columnCount: 1,
-			rowCount: null,
+			lastRow: null,
 			columnMap: [],
 			hasJobCost: false,
 			jobCostStartingColumn: 0,
@@ -863,6 +804,10 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 	};
 
 	$scope.uploadDocument = function () {
+		if (false === $('form[name="timesheetform"]').parsley().validate()) {
+			var errors = $('.parsley-error');
+			return false;
+		}
 		var importMap = angular.copy($scope.importMap);
 		importMap.columnMap = [];
 		$.each($scope.importMap.columnMap, function(i3, cm) {
@@ -875,123 +820,123 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 			payTypes: $scope.payTypes,
 			importMap: importMap
 		});
-		payrollRepository.importTimesheetsWithMap($scope.files[0]).then(function (timesheets) {
-			var counter = 0;
-			var messages = [];
-			$.each(timesheets, function (ind, t) {
-				var pc = null;
-				if (t.ssn)
-					pc = $filter('filter')($scope.payChecks, { employee: { ssn: t.ssn } })[0];
-				else if (t.employeeNo) {
-					pc = $filter('filter')($scope.payChecks, { employee: { companyEmployeeNo: parseInt(t.employeeNo) } }, true)[0];
-				}
-				else if (t.name) {
-					pc = $filter('filter')($scope.payChecks, { name: t.name })[0];
-				}
+		main.$parent.$parent.confirmDialog('this will try and import ' + ($scope.importMap.lastRow ? ($scope.importMap.lastRow - $scope.importMap.startingRow + 1) : 'maximum') + ' checks? do you want to proceed ?', 'warning', function () {
+			payrollRepository.importTimesheetsWithMap($scope.files[0]).then(function(timesheets) {
+				var counter = 0;
+				var messages = [];
+				$.each(timesheets, function(ind, t) {
+					var pc = null;
+					if (t.ssn)
+						pc = $filter('filter')($scope.payChecks, { employee: { ssn: t.ssn } })[0];
+					else if (t.employeeNo) {
+						pc = $filter('filter')($scope.payChecks, { employee: { companyEmployeeNo: parseInt(t.employeeNo) } }, true)[0];
+					} else if (t.name) {
+						pc = $filter('filter')($scope.payChecks, { name: t.name })[0];
+					}
 
-				if (pc) {
-					pc.included = true;
-					counter++;
-					if (pc.employee.payType === 2) {
-						pc.salary = t.gross ? t.gross : t.salary;
-					} else if (pc.employee.payType === 4) {
-						pc.salary = t.gross ? t.gross : t.salary;
-						pc.payCodes = [];
-						var basePC = $filter('filter')(t.payCodes, { payCode: { id: 0 } })[0];
-						if (basePC) {
-							if (t.salary) {
-								basePC.payCode.hourlyRate = t.salary;
+					if (pc) {
+						pc.included = true;
+						counter++;
+						if (pc.employee.payType === 2) {
+							pc.salary = t.gross ? t.gross : t.salary;
+						} else if (pc.employee.payType === 4) {
+							pc.salary = t.gross ? t.gross : t.salary;
+							pc.payCodes = [];
+							var basePC = $filter('filter')(t.payCodes, { payCode: { id: 0 } })[0];
+							if (basePC) {
+								if (t.salary) {
+									basePC.payCode.hourlyRate = t.salary;
+								}
+								pc.payCodes.push(basePC);
 							}
-							pc.payCodes.push(basePC);
-						}
-						$.each(t.jobCostCodes, function(pcind, paycode) {
-							var payc = {
-								payCode: paycode.payCode,
-								screenHours: paycode.hours ? paycode.hours : 0,
-								screenOvertime: 0,
-								hours: 0,
-								overtimeHours: 0,
-								amount: paycode.amount ? paycode.amount : 0
-							};
-							pc.payCodes.push(payc);
-						});
-					} else if (pc.employee.payType === 1) {
-						$.each(t.payCodes, function (pcind, paycode) {
-							if (paycode.payCode.id >= 0) {
-								var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
-								if (ec) {
-									var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
-									if (exists.length > 0) {
-										exists[0].screenHours = paycode.screenHours ? paycode.screenHours : 0;
-										exists[0].screenOvertime = paycode.screenOvertime ? paycode.screenOvertime : 0;
-										exists[0].hours = paycode.hours ? paycode.hours : 0;
-										exists[0].overtimeHours = paycode.overtimeHours ? paycode.hours : 0;
-										if (paycode.payCode.id === 0 && t.salary) {
-											exists[0].payCode.hourlyRate = t.salary;
-										}
-									} else
-										pc.payCodes.push(paycode);
+							$.each(t.jobCostCodes, function(pcind, paycode) {
+								var payc = {
+									payCode: paycode.payCode,
+									screenHours: paycode.hours ? paycode.hours : 0,
+									screenOvertime: 0,
+									hours: 0,
+									overtimeHours: 0,
+									amount: paycode.amount ? paycode.amount : 0
+								};
+								pc.payCodes.push(payc);
+							});
+						} else if (pc.employee.payType === 1) {
+							$.each(t.payCodes, function(pcind, paycode) {
+								if (paycode.payCode.id >= 0) {
+									var ec = $filter('filter')(pc.employee.payCodes, { id: paycode.payCode.id });
+									if (ec) {
+										var exists = $filter('filter')(pc.payCodes, { payCode: { id: paycode.payCode.id } });
+										if (exists.length > 0) {
+											exists[0].screenHours = paycode.screenHours ? paycode.screenHours : 0;
+											exists[0].screenOvertime = paycode.screenOvertime ? paycode.screenOvertime : 0;
+											exists[0].hours = paycode.hours ? paycode.hours : 0;
+											exists[0].overtimeHours = paycode.overtimeHours ? paycode.hours : 0;
+											if (paycode.payCode.id === 0 && t.salary) {
+												exists[0].payCode.hourlyRate = t.salary;
+											}
+										} else
+											pc.payCodes.push(paycode);
+									}
+								}
+							});
+						} else {
+							var pw = $filter('filter')(t.payCodes, { payCode: { id: -1 } });
+							var ppw = $filter('filter')(pc.payCodes, { payCode: { id: -1 } });
+							if (pw.length > 0 && ppw.length > 0) {
+
+								ppw[0].pwAmount = t.gross ? t.gross : pw[0].payCode.hourlyRate;
+								ppw[0].hours = pw[0].hours ? pw[0].hours : 0;
+								ppw[0].overtimeHours = pw[0].overtimeHours ? pw[0].overtimeHours : 0;
+								ppw[0].screenHours = pw[0].screenHours ? pw[0].screenHours : 0;
+								ppw[0].screenOvertime = pw[0].screenOvertime ? pw[0].screenOvertime : 0;
+								ppw[0].breakTime = t.prBreakTime ? t.prBreakTime : 0;
+								ppw[0].sickLeaveTime = t.sickLeaveTime ? t.sickLeaveTime : 0;
+							}
+							var br = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
+							var pbr = $filter('filter')(pc.payCodes, { payCode: { id: 0 } });
+							if (br.length > 0 && pbr.length > 0) {
+
+								pbr[0].hours = br[0].hours ? br[0].hours : 0;
+								pbr[0].overtimeHours = br[0].overtimeHours ? br[0].overtimeHours : 0;
+								pbr[0].screenHours = br[0].screenHours ? br[0].screenHours : 0;
+								pbr[0].screenOvertime = br[0].screenOvertime ? br[0].screenOvertime : 0;
+								pbr[0].breakTime = t.breakTime ? t.breakTime : 0;
+								if (pbr[0].payCode.id === 0 && t.salary) {
+									pbr[0].payCode.hourlyRate = t.salary;
 								}
 							}
+						}
+						pc.compensations = [];
+						$.each(t.compensations, function(cind, comp) {
+							pc.compensations.push(comp);
 						});
+						pc.notes = t.notes ? t.notes : '';
+						if (t.accumulations.length > 0)
+							pc.accumulations = t.accumulations;
 					} else {
-						var pw = $filter('filter')(t.payCodes, { payCode: { id: -1 } });
-						var ppw = $filter('filter')(pc.payCodes, { payCode: { id: -1 } });
-						if (pw.length > 0 && ppw.length>0) {
-
-							ppw[0].pwAmount = t.gross ? t.gross : pw[0].payCode.hourlyRate;
-							ppw[0].hours = pw[0].hours ? pw[0].hours : 0;
-							ppw[0].overtimeHours = pw[0].overtimeHours ? pw[0].overtimeHours : 0;
-							ppw[0].screenHours = pw[0].screenHours ? pw[0].screenHours : 0;
-							ppw[0].screenOvertime = pw[0].screenOvertime ? pw[0].screenOvertime : 0;
-							ppw[0].breakTime = t.prBreakTime ? t.prBreakTime : 0;
-							ppw[0].sickLeaveTime = t.sickLeaveTime ? t.sickLeaveTime : 0;
-						}
-						var br = $filter('filter')(t.payCodes, { payCode: { id: 0 } });
-						var pbr = $filter('filter')(pc.payCodes, { payCode: { id: 0 } });
-						if (br.length > 0 && pbr.length > 0) {
-
-							pbr[0].hours = br[0].hours ? br[0].hours : 0;
-							pbr[0].overtimeHours = br[0].overtimeHours ? br[0].overtimeHours : 0;
-							pbr[0].screenHours = br[0].screenHours ? br[0].screenHours : 0;
-							pbr[0].screenOvertime = br[0].screenOvertime ? br[0].screenOvertime : 0;
-							pbr[0].breakTime = t.breakTime ? t.breakTime : 0;
-							if (pbr[0].payCode.id === 0 && t.salary) {
-								pbr[0].payCode.hourlyRate = t.salary;
-							}
+						if (t.ssn)
+							messages.push(t.ssn);
+						else if (t.employeeNo) {
+							messages.push(t.employeeNo);
+						} else if (t.name) {
+							messages.push(t.name);
 						}
 					}
-					pc.compensations = [];
-					$.each(t.compensations, function(cind, comp) {
-						pc.compensations.push(comp);
-					});
-					pc.notes = t.notes ? t.notes : '';
-					if (t.accumulations.length > 0)
-						pc.accumulations = t.accumulations;
-				} else {
-					if (t.ssn)
-						messages.push(t.ssn);
-					else if (t.employeeNo) {
-						messages.push(t.employeeNo);
-					} else if (t.name) {
-						messages.push(t.name);
-					}
-				}
+
+				});
+				$scope.messages = messages;
+				$uibModalInstance.close($scope);
+
+
+			}, function(error) {
+				$scope.alerts.push({ message: error });
 
 			});
-			$scope.messages = messages;
-			$uibModalInstance.close($scope);
-
-			
-		}, function (error) {
-			$scope.alerts.push({ message: 'error in importing timesheets: ' + error });
-
 		});
-
 
 	}
 	$scope.cancel = function () {
-		$uibModalInstance.close($scope);
+		$uibModalInstance.dismiss();
 	};
 	$scope.showTable = function() {
 		return $scope.importMap.startingRow && $scope.importMap.columnCount;
@@ -1000,7 +945,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		
 		if (!$scope.showTable())
 			return false;
-		else if (!$scope.files && $scope.files.length!==1 && $scope.importMap.columnMap.length !== $scope.importMap.columnCount)
+		else if (!$scope.files || $scope.files.length!==1 || $scope.importMap.columnMap.length===0)
 			return false;
 		else {
 			return true;

@@ -442,7 +442,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					{
 						Path = _fileRepository.GetDocumentLocation(signature.Doc),
 						X = 375,
-						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 580 : 330,
+						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 560 : 330,
 						ScaleX = (float)0.7,
 						ScaleY = (float)0.7
 
@@ -628,9 +628,21 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					var journals = new List<int>();
 					var payCheckIds = new List<int>();
 					var voidedCheckIds = new List<int>();
+					var allCompanies = _readerService.GetCompanies(status: (int) StatusOption.Active);
 					foreach (var host in extract.Data.Hosts)
 					{
-						var accounts = _companyService.GetComanyAccounts(host.HostCompany.Id);
+						var accounts = new List<Account>();
+						var comp = allCompanies.First(c => c.Id == host.HostCompany.Id);
+						
+						if (comp.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck ||
+						    comp.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
+						{
+							comp = allCompanies.First(hc => hc.IsHostCompany && hc.HostId == comp.HostId);
+							accounts = _companyService.GetComanyAccounts(comp.Id);
+						}
+						else
+							accounts = _companyService.GetComanyAccounts(comp.Id);
+
 						if (!accounts.Any() || !accounts.Any(a => a.UseInPayroll))
 							throw new Exception("No Payroll Account");
 
@@ -649,7 +661,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 										.SelectMany(
 											pc => pc.Deductions.Where(d => d.Deduction.Type.Id==3 && d.EmployeeDeduction!=null && d.EmployeeDeduction.AgencyId == garnishmentAgency.Agency.Id).ToList())
 										.Sum(d => d.Amount);
-								var journal = CreateJournalEntryPD(accounts, fullName, host.HostCompany.Id, amount,
+								var journal = CreateJournalEntryPD(accounts, fullName, comp.Id, amount,
 										garnishmentAgency.Agency,
 										extract.Report.Description, extract.Report.DepositDate.Value, check.Employee.FullName, check.Deductions.First(d=>d.EmployeeDeduction.AgencyId==garnishmentAgency.Agency.Id).EmployeeDeduction.AccountNo );
 								journals.Add(journal.Id);

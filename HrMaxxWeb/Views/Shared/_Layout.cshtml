@@ -115,16 +115,16 @@
 				</div>
 				<div class="modal-body" >
 					<div class="alert alert-{{type}}">
-						{{message}}<i class="fa fa-lg fa-question-circle text-info"></i>
+						<pre class="alert alert-{{type}}">{{message}}</pre>
 					</div>					
 				</div>
 				<div class="modal-footer text-center">
 					<div class="row">
 						<button type="button" class="btn btn-sm btn-primary pull-center" data-ng-click="ok()">
-							<span class="glyphicon glyphicon-check"></span> Yes
+							<span class="glyphicon glyphicon-check"></span> Yes <i class="fa fa-lg fa-question-circle text-default"></i>
 						</button>
 						<button type="button" class="btn btn-sm btn-default pull-center" data-ng-click="cancel()">
-							<span class="glyphicon glyphicon-remove-circle"></span> No
+							<span class="glyphicon glyphicon-remove-circle"></span> No <i class="fa fa-lg fa-question-circle text-default"></i>
 						</button>
 					</div>
 					<div class="row alert alert-warning" ng-if="type==='danger'">

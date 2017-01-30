@@ -80,9 +80,9 @@
 						</tr>
 					</table>
 					<br/>
-					<table style="font-size:8pt; width:100%; border-collapse:collapse;" class="border" >
+					<table style="font-size:10pt; width:100%; border-collapse:collapse;" class="border" >
 						<thead>
-							<tr >
+							<tr style="height:25px">
 								<th colspan="2">
 									Payroll Before: <xsl:value-of select="msxsl:format-date($payroll/StartDate, 'MM/dd/yyyy')"/> - <xsl:value-of select="msxsl:format-date($payroll/EndDate, 'MM/dd/yyyy')"/>
 								</th>
@@ -96,7 +96,7 @@
 								<th >&#160;</th>
 								<th >&#160;</th>
 							</tr>
-							<tr>
+							<tr style="height:25px">
 								<th style="width:5%">Emp#</th>
 								<th style="width:15%">Name</th>
 								<th style="width:10%">Before</th>
@@ -129,7 +129,7 @@
 		</html>
 	</xsl:template>
 	<xsl:template match="PayCheck">
-		<tr>
+		<tr style="height:25px">
 			<td >
 				<xsl:value-of select="Employee/CompanyEmployeeNo"/>
 			</td>

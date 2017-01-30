@@ -142,7 +142,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-	  public List<Payroll> GetPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0)
+		public List<Payroll> GetPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids = 0)
 	  {
 			try
 			{
@@ -168,6 +168,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (status>0)
 				{
 					paramList.Add(new FilterParam { Key = "status", Value = status.ToString() });
+				}
+				if (excludeVoids > 0)
+				{
+					paramList.Add(new FilterParam { Key = "void", Value = excludeVoids.ToString() });
 				}
 				var payrolls = GetDataFromStoredProc<List<Payroll>, List<Models.JsonDataModel.PayrollJson>>(
 					"GetPayrolls", paramList, new XmlRootAttribute("PayrollList"));

@@ -1278,7 +1278,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						Y =
 							company1.PayCheckStock == PayCheckStock.LaserTop || company1.PayCheckStock == PayCheckStock.MICREncodedTop ||
 							company1.PayCheckStock == PayCheckStock.MICRQb
-								? 580
+								? 560
 								: 330,
 						ScaleX = (float)0.7,
 						ScaleY = (float)0.7

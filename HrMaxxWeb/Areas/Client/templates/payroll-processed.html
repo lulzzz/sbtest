@@ -106,12 +106,12 @@
 				</td>
 
 			</tr>
-			<tr>
-				<td colspan="3"># Checks {{tableData.length}}</td>
-				<td class="text-right">{{item.totalGrossWage | currency:'$'}}</td>
-				<td class="text-right">{{item.deductionAmount | currency:'$'}}</td>
+			<tr class="danger">
+				<td colspan="3" class="text-right"><strong><em><u># Checks = {{totalChecks}}</u></em></strong></td>
+				<td class="text-right"><strong><em><u>{{item.totalGrossWage | currency:'$'}}</u></em></strong></td>
+				<td class="text-right"><strong><em><u>{{item.deductionAmount | currency:'$'}}</u></em></strong></td>
 				<td ng-show="showPayRates"></td>
-				<td class="text-right">{{item.totalNetWage | currency:'$'}}</td>
+				<td class="text-right"><strong><em><u>{{item.totalNetWage | currency:'$'}}</u></em></strong></td>
 				<td></td>
 
 			</tr>
@@ -120,7 +120,7 @@
 		
 	</div>
 	<div class="col-sm-12">
-		<button class="btn btn-sm btn-primary pull-right" ng-if="item.status===2 || item.status===6" ng-disabled="!canConfirm()" ng-click="save()">confirm</button>
+		<button class="btn btn-sm btn-primary pull-right" ng-if="item.status===2 || item.status===6" ng-disabled="!canConfirm()" ng-click="save()">confirm <span class="badge">{{totalChecks}}</span></button>
 		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print timesheet</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print report</button>

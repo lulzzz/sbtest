@@ -24,7 +24,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		PayrollInvoice GetPayrollInvoice(Guid invoiceId);
 
 		//Payrolls
-		List<Payroll> GetPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0);
+		List<Payroll> GetPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids=0);
 		Payroll GetPayroll(Guid payrollId);
 
 		//Paychecks
