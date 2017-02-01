@@ -113,10 +113,10 @@
 					<td>
 						
 						<span e-ng-change="jd.checkNumber = $data" e-ng-show="jd.depositMethod.key===1" editable-number="jd.checkNumber" e-name="checknumber" e-form="rowform" e-ng-pattern="/^[1-9]+[0-9]?$/" e-step="1" e-style="width:10em;">
-							{{ jd.checkNumber }}
+							{{ jd.depositMethod.key===1 ? jd.checkNumber : '' }}
 						</span>
 					</td>
-					<td>
+					<td class="text-right">
 						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-convert-to-decimal>
 							{{ jd.amount | currency:'$'}}
 						</span>
@@ -137,14 +137,17 @@
 					<td style="white-space: nowrap" ng-show="showControls">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd">
-							<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
-								edit
+							<button title="edit" type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
+								<i class="fa fa-edit"></i>
 							</button>
-							<button type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
-								save
+							<button title="remove" type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="removejd(jd)">
+								<i class="fa fa-fire"></i>
 							</button>
-							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-default">
-								cancel
+							<button  title="save" type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
+								<i class="fa fa-save"></i>
+							</button>
+							<button title="cancel" type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-default">
+								<i class="fa fa-remove"></i>
 							</button>
 						</form>
 					</td>

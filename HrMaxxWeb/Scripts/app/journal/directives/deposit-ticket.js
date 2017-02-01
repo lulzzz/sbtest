@@ -94,6 +94,10 @@ common.directive('depositTicket', ['zionAPI','version',
 
 						updateItemAmount();
 					}
+					$scope.removejd = function(jd) {
+						$scope.item.journalDetails.splice($scope.item.journalDetails.indexOf(jd), 1);
+						updateItemAmount();
+					}
 					$scope.isJournalDetailValid = function(jd) {
 						if (!jd.accountId || !jd.accountName || !jd.amount || !jd.depositMethod || (!jd.payee && !jd.screenPayee))
 							return false;

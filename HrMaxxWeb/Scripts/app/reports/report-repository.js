@@ -43,6 +43,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			createDepositTickets: function (extract) {
+				var deferred = $q.defer();
+				reportServer.all('CreateDepositTickets').post(extract).then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getExtractList: function (report) {
 				var deferred = $q.defer();
 				reportServer.one('ExtractList').one(report).getList().then(function (data) {

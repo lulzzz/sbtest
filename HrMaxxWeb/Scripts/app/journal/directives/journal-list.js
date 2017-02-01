@@ -198,11 +198,12 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 								
 								var exists = $filter('filter')($scope.list, { id: data.id })[0];
 								if (exists) {
-									//$scope.list.splice($scope.list.indexOf(exists), 1);
-									exists = angular.copy(data);
-								} else {
-									$scope.list.push(data);
-								}
+									$scope.list.splice($scope.list.indexOf(exists), 1);
+									
+								} 
+
+								$scope.list.push(data);
+								
 								var jd = $filter('filter')(data.journalDetails, { accountId: dataSvc.selectedAccount.id })[0];
 								if (jd) {
 									dataSvc.selectedAccountBalance += dataSvc.selectedCheckBalance + (jd.isDebit ? jd.amount * -1 : jd.amount);

@@ -19,5 +19,6 @@
 		public const string Extract = "Reports/Extract/{id:int}";
 		public const string ExtractDocumentReport = "Reports/ExtractDocumentReport";
 		public const string PrintChecks = "Reports/PrintExtractChecks";
+		public const string CreateDepositTickets = "Reports/CreateDepositTickets";
 	}
 }

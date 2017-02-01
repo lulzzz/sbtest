@@ -63,6 +63,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				if (dbJournal != null)
 				{
 					dbJournal.Amount = mapped.Amount;
+					dbJournal.Memo = mapped.Memo;
 					dbJournal.TransactionDate = mapped.TransactionDate;
 					dbJournal.CheckNumber = mapped.CheckNumber;
 					dbJournal.IsVoid = mapped.IsVoid;

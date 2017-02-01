@@ -29,7 +29,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public Guid MementoId { get; set; }
 
 		public Guid PayeeId { get; set; }
-		[Required]
+		
 		public string PayeeName { get; set; }
 		[Required]
 		public decimal Amount { get; set; }

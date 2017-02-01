@@ -23,5 +23,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Journal> GetJournalListByDate(Guid? value, DateTime date, DateTime dateTime);
 		List<Journal> GetPayrollJournals(Guid payrollId, bool peoasoCoCheck);
 		FileDto PrintChecks(List<int> journalIds, ReportRequest report);
+		void CreateDepositTickets(Extract extract, string name, string fullName);
 	}
 }

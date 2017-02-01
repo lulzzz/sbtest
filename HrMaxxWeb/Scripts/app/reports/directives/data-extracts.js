@@ -576,6 +576,26 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 					}
 
+					$scope.createDepositTickets = function () {
+						var request = {
+							reportName: 'DailyDepositReport',
+							year: moment().year(),
+							quarter: 0,
+							month: 0,
+							startDate: moment(dataSvc.filterDD.startDate).format("MM/DD/YYYY"),
+							endDate: moment(dataSvc.filterDD.startDate).format("MM/DD/YYYY"),
+							depositSchedule: null,
+							depositDate: null
+						}
+						reportRepository.createDepositTickets(request).then(function () {
+							addAlert('successfully generated deposit ticket', 'success');
+
+						}, function (erorr) {
+							addAlert('Error generating Daily Deposit tickets: ' + erorr.statusText, 'danger');
+						});
+
+					}
+
 					$scope.getPositivePayReport = function() {
 						var request = {
 							reportName: 'PositivePayReport',

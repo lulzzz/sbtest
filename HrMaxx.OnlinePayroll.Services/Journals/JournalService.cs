@@ -292,8 +292,16 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), "Cash"));
 					else
 					{
-						var vc = _companyService.GetVendorCustomersById(jd.Payee.Id);
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), vc.Name));
+						if (jd.Payee != null)
+						{
+							var vc = _companyService.GetVendorCustomersById(jd.Payee.Id);
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), vc.Name));
+						}
+						else
+						{
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), string.Format("Check #{0}", jd.CheckNumber)));
+						}
+						
 					}
 				}
 				
@@ -480,6 +488,92 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
+		public void CreateDepositTickets(Extract extract, string fullName, string user)
+		{
+			try
+			{
+				var masterExtract = new MasterExtract
+				{
+					Id = 0,
+					Extract = extract,
+					LastModified = DateTime.Now,
+					LastModifiedBy = fullName,
+					IsFederal = !extract.Report.ReportName.Contains("State")
+				};
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					CreateDepositTickets(fullName, masterExtract, new Guid(user));
+					
+					txn.Complete();
+				}
+				
+			}
+			catch (Exception e)
+			{
+
+				throw;
+			}
+		}
+
+		private void CreateDepositTickets(string user, MasterExtract masterExtract, Guid userId)
+		{
+			masterExtract.Extract.Data.Hosts.Where(h=>h.Companies.Any(c=>c.Payments.Any())).ToList().ForEach(host =>
+			{
+				var coaList = _companyService.GetComanyAccounts(host.HostCompany.Id); 
+				var bankCOA = coaList.First(c => c.UseInPayroll);
+				var allpayments =
+					host.Companies.SelectMany(c => c.Payments.Where(p => p.Method != InvoicePaymentMethod.ACH).Select(p => p)).ToList();
+
+				var journal = new Journal
+				{
+					Id = 0,
+					CompanyId = host.HostCompany.Id,
+					Amount = Math.Round(allpayments.Sum(p=>p.Amount), 2, MidpointRounding.AwayFromZero),
+					CheckNumber = -1,
+					EntityType = EntityTypeEnum.Deposit,
+					PayeeId = Guid.Empty,
+
+					IsDebit = false,
+					IsVoid = false,
+					LastModified = DateTime.Now,
+					LastModifiedBy = user,
+					Memo = string.Format("Daily Deposits for {0} ", masterExtract.Extract.Report.StartDate.ToString("MM/dd/yyyy")),
+					PaymentMethod = EmployeePaymentMethod.Check,
+					PayrollPayCheckId = null,
+					TransactionDate = masterExtract.Extract.Report.StartDate,
+					TransactionType = TransactionType.Deposit,
+					PayeeName = string.Empty,
+					MainAccountId = bankCOA.Id,
+					JournalDetails = new List<JournalDetail>(),
+					DocumentId = CombGuid.Generate(),
+					PEOASOCoCheck = false
+				};
+				//bank account debit
+
+				var incomeCOA = coaList.First(co => co.Type == AccountType.Income && co.SubType == AccountSubType.RegularIncome);
+				//journal.JournalDetails.Add(new JournalDetail { AccountId = bankCOA.Id, AccountName = bankCOA.AccountName, IsDebit = false, Amount = journal.Amount, LastModfied = journal.LastModified, LastModifiedBy = user });
+
+				allpayments.Where(p => p.Method != InvoicePaymentMethod.ACH)
+					.OrderByDescending(p => p.Method)
+					.ThenBy(p=>p.CheckNumber)
+					.ToList()
+					.ForEach(p => journal.JournalDetails.Add(new JournalDetail
+					{
+						Memo = host.Companies.First(c => c.Company.Id == p.CompanyId).Company.Name,
+						AccountId = incomeCOA.Id,
+						AccountName = incomeCOA.AccountName,
+						IsDebit = false,
+						DepositMethod = p.Method == InvoicePaymentMethod.Check ? VendorDepositMethod.Check : VendorDepositMethod.Cash,
+						CheckNumber = p.Method == InvoicePaymentMethod.Check ? p.CheckNumber : 0,
+						Amount = p.Amount,
+						LastModfied = journal.LastModified,
+						LastModifiedBy = user
+					}));
+				SaveCheckbookEntry(journal, userId);
+
+
+			});		
+		}
 		public List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes)
 		{
 			try
