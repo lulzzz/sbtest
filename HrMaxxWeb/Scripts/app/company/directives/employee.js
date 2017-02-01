@@ -130,7 +130,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var validateStep1 = function () {
 						var c = $scope.selected;
-						if (!c.ssn || !c.hireDate || !c.statusId)
+						if (!c.ssn || !c.hireDate || !c.statusId || !c.sickLeaveHireDate)
 							return false;
 						else if (!c.contact.firstName || !c.contact.lastName || !c.contact.email)
 							return false;
@@ -258,9 +258,9 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							
 							if ($scope.selected.birthDate)
 								$scope.selected.birthDate = moment($scope.selected.birthDate).toDate();
-							if ($scope.selected.hireDate)
-								$scope.selected.hireDate = moment($scope.selected.hireDate).toDate();
+							$scope.selected.hireDate = moment($scope.selected.hireDate).toDate();
 
+							$scope.selected.sickLeaveHireDate = moment($scope.selected.sickLeaveHireDate).toDate();
 							$.each($scope.selected.payCodes, function (index, pc) {
 								if (pc.id > 0)
 									$scope.selectedPayCodes.push({ id: pc.id });

@@ -294,31 +294,54 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes)
 		{
 			var result = new List<PayTypeAccumulation>();
-			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.HireDate, paycheck.PayDay);
+			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay);
 			var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
 
 			//var employeeChecks = _payrollRepository.GetEmployeePayChecks(paycheck.Employee.Id, fiscalStartDate, fiscalEndDate);
-			var employeeChecks = _readerService.GetPayChecks(employeeId: paycheck.Employee.Id, startDate: fiscalStartDate, endDate: fiscalEndDate, isvoid: 0);
-			var fiscalYTDChecks = employeeChecks.Where(p => p.PayDay < paycheck.PayDay).ToList();
+			var employeeChecks = _readerService.GetPayChecks(employeeId: paycheck.Employee.Id, endDate: fiscalEndDate, isvoid: 0);
+			var fiscalYTDChecks = employeeChecks.Where(p => p.PayDay >= fiscalStartDate && p.PayDay <= paycheck.PayDay).ToList();
 			foreach (var payType in accumulatedPayTypes)	
 			{
 				if (!payType.CompanyManaged)
 				{
-					var ytdAccumulation =
-						fiscalYTDChecks.SelectMany(e => e.Accumulations)
-							.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
-							.Sum(a => a.AccumulatedValue);
+					//var ytdAccumulation =
+					//	fiscalYTDChecks.SelectMany(e => e.Accumulations)
+					//		.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
+					//		.Sum(a => a.AccumulatedValue);
 
-					var ytdUsed =
-						fiscalYTDChecks.SelectMany(e => e.Accumulations)
-							.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
-							.Sum(a => a.Used);
+					//var ytdUsed =
+					//	fiscalYTDChecks.SelectMany(e => e.Accumulations)
+					//		.Where(a => a.PayType.PayType.Id == payType.PayType.Id)
+					//		.Sum(a => a.Used);
+					var ytdAccumulation = (decimal) 0;
+					var ytdUsed = (decimal) 0;
 
-					var carryOver =
-						employeeChecks.Where(p => p.PayDay < fiscalStartDate)
-							.SelectMany(p => p.Accumulations)
-							.ToList()
-							.Sum(pc => (pc.AccumulatedValue - pc.Used));
+					var carryOver = (decimal)0;
+
+					if (fiscalYTDChecks.Any())
+					{
+						var previousCheck = fiscalYTDChecks.OrderBy(p => p.PayDay).Last();
+						if (previousCheck.Accumulations.Any(ac => ac.PayType.PayType.Id == payType.PayType.Id))
+						{
+							var accum = previousCheck.Accumulations.First(ac => ac.PayType.PayType.Id == payType.PayType.Id);
+							ytdAccumulation = accum.YTDFiscal;
+							ytdUsed = accum.YTDUsed;
+							carryOver = accum.CarryOver;
+						}
+					}
+					else if (employeeChecks.Any(p => p.PayDay < fiscalStartDate))
+					{
+						var lastoflastyear = employeeChecks.Where(p => p.PayDay < fiscalStartDate).OrderBy(p => p.PayDay).Last();
+						if (lastoflastyear.Accumulations.Any(ac => ac.PayType.PayType.Id == payType.PayType.Id))
+						{
+							var acc = lastoflastyear.Accumulations.First(ac => ac.PayType.PayType.Id == payType.PayType.Id);
+							carryOver = acc.Available;
+						}
+					}
+					else
+					{
+						carryOver = paycheck.Employee.CarryOver;
+					}
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
@@ -327,7 +350,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						: (decimal) 0;
 					var accumulationValue = (decimal) 0;
 					if ((ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
-						accumulationValue = payType.AnnualLimit - ytdAccumulation;
+						accumulationValue = Math.Max(payType.AnnualLimit - ytdAccumulation,0);
 					else
 					{
 						accumulationValue = thisCheckValue;
@@ -1278,7 +1301,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						Y =
 							company1.PayCheckStock == PayCheckStock.LaserTop || company1.PayCheckStock == PayCheckStock.MICREncodedTop ||
 							company1.PayCheckStock == PayCheckStock.MICRQb
-								? 560
+								? 587
 								: 330,
 						ScaleX = (float)0.7,
 						ScaleY = (float)0.7

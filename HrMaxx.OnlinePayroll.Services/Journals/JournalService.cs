@@ -442,7 +442,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					{
 						Path = _fileRepository.GetDocumentLocation(signature.Doc),
 						X = 375,
-						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 560 : 330,
+						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 587 : 330,
 						ScaleX = (float)0.7,
 						ScaleY = (float)0.7
 

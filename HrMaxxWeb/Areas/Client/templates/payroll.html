@@ -292,7 +292,7 @@
 		<div class="modal-header">
 			<h2 class="modal-title">Import Timesheet setup </h2>
 		</div>
-		<form name="timesheetform" data-parsley-validate="true">
+		
 			<div class="modal-body">
 
 				<div class="row alert alert-danger" ng-show="alerts.length>0" ng-bind-html="alerts[0].message">
@@ -364,33 +364,34 @@
 							</thead>
 							<tbody>
 								<tr ng-repeat="f in importMap.columnMap track by $index">
-									<td>
-										<!-- editable tesltra worktype (select-local) -->
-										<span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
-											{{ f.key }}
-										</span>
-									</td>
-									<td>
-										<span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">
-											{{ f.value }}
-										</span>
-									</td>
-									<td style="white-space: nowrap">
-										<!-- form -->
-										<form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
-											<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-												<i class="fa fa-edit m-r-5"></i>
-											</button>
-											<button type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="delete($index)">
-												<i class="fa fa-recycle m-r-5"></i>
-											</button>
-											<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success">
-												<i class="fa fa-save m-r-5"></i>
-											</button>
-											<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default">
-												<i class="fa fa-remove m-r-5"></i>
-											</button>
-										</form>
+									
+										<td>
+											<!-- editable tesltra worktype (select-local) -->
+											<span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
+												{{ f.key }}
+											</span>
+										</td>
+										<td>
+											<span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">
+												{{ f.value }}
+											</span>
+										</td>
+										<td style="white-space: nowrap">
+											<!-- form -->
+											<form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
+												<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
+													<i class="fa fa-edit m-r-5"></i>
+												</button>
+												<button type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="delete($index)">
+													<i class="fa fa-recycle m-r-5"></i>
+												</button>
+												<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success">
+													<i class="fa fa-save m-r-5"></i>
+												</button>
+												<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default">
+													<i class="fa fa-remove m-r-5"></i>
+												</button>
+											</form>
 									</td>
 
 								</tr>
@@ -398,7 +399,7 @@
 									<td colspan="3">
 										<span ng-show="importMap.columnMap.length===0">No mappings found</span>
 									</td>
-
+									
 								</tr>
 
 							</tbody>
@@ -470,7 +471,7 @@
 				</div>
 
 			</div>
-			</form>
+			
 	</script>
 </div>
 

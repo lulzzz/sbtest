@@ -382,7 +382,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.Department = me.Department;
 				dbEmployee.SSN = me.SSN;
 				dbEmployee.BirthDate = me.BirthDate;
-				dbEmployee.HireDate = me.HireDate;
+				dbEmployee.HireDate = me.HireDate; 
+				dbEmployee.SickLeaveHireDate = me.SickLeaveHireDate;
 				dbEmployee.Gender = me.Gender;
 				dbEmployee.EmployeeNo = me.EmployeeNo;
 				dbEmployee.Memo = me.Memo;
@@ -401,6 +402,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.Rate = me.Rate;
 				dbEmployee.CompanyEmployeeNo = me.CompanyEmployeeNo;
 				dbEmployee.Notes = me.Notes;
+				
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
 				{

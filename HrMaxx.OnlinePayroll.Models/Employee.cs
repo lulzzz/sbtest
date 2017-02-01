@@ -24,6 +24,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? BirthDate { get; set; }
 		//Employment
 		public DateTime HireDate { get; set; }
+		public DateTime SickLeaveHireDate { get; set; }
+		public decimal CarryOver { get; set; }
 		public string Department { get; set; }
 		public StatusOption StatusId { get; set; }
 		public string EmployeeNo { get; set; }

@@ -804,10 +804,10 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 	};
 
 	$scope.uploadDocument = function () {
-		if (false === $('form[name="timesheetform"]').parsley().validate()) {
-			var errors = $('.parsley-error');
-			return false;
-		}
+		//if (false === $('form[name="timesheetform"]').parsley().validate()) {
+		//	var errors = $('.parsley-error');
+		//	return false;
+		//}
 		var importMap = angular.copy($scope.importMap);
 		importMap.columnMap = [];
 		$.each($scope.importMap.columnMap, function(i3, cm) {

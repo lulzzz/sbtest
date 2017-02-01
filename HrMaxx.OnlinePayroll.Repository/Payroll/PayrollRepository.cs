@@ -243,9 +243,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		public void UpdatePayCheckSickLeaveAccumulation(PayCheck pc)
 		{
 			var dbCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == pc.Id);
+			var dbEmp = _dbContext.Employees.First(e => e.Id == pc.Employee.Id);
 			if (dbCheck != null)
 			{
 				dbCheck.Accumulations = JsonConvert.SerializeObject(pc.Accumulations);
+				dbCheck.Employee = JsonConvert.SerializeObject(pc.Employee);
+				dbEmp.CarryOver = pc.Employee.CarryOver;
 				_dbContext.SaveChanges();
 			}
 		}

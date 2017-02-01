@@ -268,6 +268,8 @@
           <Property Name="WorkerCompensationId" Type="int" />
           <Property Name="CompanyEmployeeNo" Type="int" />
           <Property Name="Notes" Type="varchar(max)" />
+          <Property Name="SickLeaveHireDate" Type="datetime" />
+          <Property Name="CarryOver" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -2077,6 +2079,8 @@
           <NavigationProperty Name="EmployeeBankAccounts" Relationship="HrMaxxModel.FK_EmployeeBankAccount_Employee" FromRole="Employee" ToRole="EmployeeBankAccount" />
           <Property Name="CompanyEmployeeNo" Type="Int32" />
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="SickLeaveHireDate" Type="DateTime" Precision="3" />
+          <Property Name="CarryOver" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -2987,6 +2991,8 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="CarryOver" ColumnName="CarryOver" />
+                <ScalarProperty Name="SickLeaveHireDate" ColumnName="SickLeaveHireDate" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="CompanyEmployeeNo" ColumnName="CompanyEmployeeNo" />
                 <ScalarProperty Name="LastPayrollDate" ColumnName="LastPayrollDate" />
