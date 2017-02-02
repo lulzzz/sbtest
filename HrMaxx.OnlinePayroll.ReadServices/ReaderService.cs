@@ -101,18 +101,34 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		//	}
 		//}
 
-		public List<PayrollInvoice> GetPayrollInvoices(Guid host, Guid? companyId = null, InvoiceStatus status = (InvoiceStatus) 0)
+		public List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id=null)
 	  {
 			try
 			{
-				var paramList = new List<FilterParam> { new FilterParam() { Key = "host", Value = host.ToString() } };
-				if ((int)status!=0)
+				var paramList = new List<FilterParam>();
+				if (host.HasValue && host != Guid.Empty)
 				{
-					paramList.Add(new FilterParam{Key="status", Value = ((int)status).ToString()});
+					paramList.Add(new FilterParam { Key = "host", Value = host.Value.ToString() });
+				}
+				if (status!=null)
+				{
+					paramList.Add(new FilterParam { Key = "status", Value = status.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
 				}
 				if (companyId.HasValue)
 				{
 					paramList.Add(new FilterParam { Key = "company", Value = companyId.Value.ToString() });
+				}
+				if (startDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "startdate", Value = startDate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (endDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (id.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "id", Value = id.Value.ToString() });
 				}
 				return GetDataFromStoredProc<List<PayrollInvoice>, List<Models.JsonDataModel.PayrollInvoiceJson>>(
 					"GetPayrollInvoicesXml", paramList, new XmlRootAttribute("PayrollInvoiceJsonList"));

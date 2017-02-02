@@ -168,9 +168,14 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			getInvoicesForHost: function () {
+			getInvoicesForHost: function (company, startdate, enddate, statuses) {
 				var deferred = $q.defer();
-				payrollServer.one('PayrollInvoices').getList().then(function (data) {
+				payrollServer.all('PayrollInvoices').post({
+					companyId: company,
+					startDate: startdate,
+					endDate: enddate,
+					status: statuses
+				}).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

@@ -15,10 +15,34 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					var dataSvc = {
 						
 						isBodyOpen: true,
-						
+						startDate: null,
+						endDate: null,
 					}
 					$scope.list = [];
-					
+					$scope.statuses = [
+					{ key: 1, value: 'Draft' }
+					, { key: 2, value: 'Approved' }
+					, { key: 3, value: 'Delivered' }
+					, { key: 4, value: 'Closed' }
+					, { key: 5, value: 'Taxes Delayed' }
+					, { key: 6, value: 'Bounced' }
+					, { key: 7, value: 'Partial Payment' }
+					, { key: 8, value: 'Deposited' }
+					, { key: 9, value: 'Not Deposited' }
+					, { key: 10, value: 'ACH Pending' }
+					];
+					$scope.selectedStatuses = [];
+					$scope.selectedStatus = [];
+					$scope.statusEvents = {
+						onItemSelect: function (item) {
+							$scope.selectedStatuses.push($filter('filter')($scope.statuses, { key: item.id })[0]);
+							
+						},
+						onItemDeselect: function (item) {
+							$scope.selectedStatuses.splice($scope.selectedStatuses.indexOf($filter('filter')($scope.statuses, { key: item.id })[0]), 1);
+							
+						}
+					};
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;
@@ -129,9 +153,16 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 					}
-					
+					$scope.updateData = function() {
+						
+						getInvoices();
+					}
 					var getInvoices = function (selectedInvoiceId) {
-						payrollRepository.getInvoicesForHost().then(function (data) {
+						$scope.selectedStatus = [];
+						$.each($scope.selectedStatuses, function (i, st) {
+							$scope.selectedStatus.push(st.id);
+						});
+						payrollRepository.getInvoicesForHost(null, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus).then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
@@ -160,6 +191,16 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							invoice = querystring.invoice;
 						else if (querystring.company)
 							$scope.tableParams.$params.filter.companyName = querystring.company;
+
+						if (!dataSvc.startDate)
+							dataSvc.startDate = moment().add(-1, 'week').toDate();
+						$scope.selectedStatuses.push({ id: 1 });
+						$scope.selectedStatuses.push({ id: 3 });
+						$scope.selectedStatuses.push({ id: 5 });
+						$scope.selectedStatuses.push({ id: 6 });
+						$scope.selectedStatuses.push({ id: 7 });
+						$scope.selectedStatuses.push({ id: 8 });
+						$scope.selectedStatuses.push({ id: 9 });
 						getInvoices(invoice);
 					}
 					init();

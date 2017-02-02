@@ -1,5 +1,28 @@
 ﻿<div class="row">
 	<!-- begin panel -->
+	<div class="panel panel-inverse">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-sm-1 form-group">
+					<label for="statuses">Status</label>
+					<div class="col-sm-12" ng-dropdown-multiselect="" options="statuses" extra-settings="{displayProp: 'value', idProp: 'key', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedStatuses" ></div>
+				</div>
+				<div class="col-sm-1 form-group">
+					<label class="control-label">Start Date </label>
+					<date-ctrl name="startdate" model="data.startDate" disabled="false" />
+				</div>
+				<div class="col-sm-1 form-group">
+					<label class="control-label">End Date </label>
+					<date-ctrl name="enddate" model="data.endDate" disabled="false" />
+				</div>
+				<div class="col-sm-1 form-group">
+					<label></label>
+					<button class="btn btn-sm btn-primary form-control" ng-click="updateData()">Filter</button>
+				</div>
+			</div>
+			
+		</div>
+	</div>
 	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Invoice List

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
@@ -81,6 +82,28 @@ namespace HrMaxxAPI.Controllers.Companies
 			var companies = MakeServiceCall(() => _readerService.GetCompanies(), "Get companies for hosts", true);
 			
 			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c => c.CompanyNumber).ToList());
+		}
+		[HttpGet]
+		[Route(CompanyRoutes.MinifiedCompanyList)]
+		public HttpResponseMessage GetAllCompaniesMinified()
+		{
+			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
+			var companies = MakeServiceCall(() => _readerService.GetCompanies(), "Get companies for hosts", true);
+
+			var returnString = new StringBuilder();
+			companies.ForEach(c => returnString.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", c.Id, c.CompanyNo, c.Name.Replace(",",""), c.FederalEIN,
+				c.FederalPin, c.States.First().StateEIN, c.States.First().StatePIN)));
+			var stream = new MemoryStream();
+			var writer = new StreamWriter(stream);
+			writer.Write(returnString.ToString());
+			writer.Flush();
+			stream.Position = 0;
+
+			var result = new HttpResponseMessage(HttpStatusCode.OK);
+			result.Content = new StreamContent(stream);
+			result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+			result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "CompaniesExport.csv" };
+			return result;
 		}
 
 		[HttpGet]

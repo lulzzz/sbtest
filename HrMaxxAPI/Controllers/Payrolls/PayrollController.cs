@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
+using System.Resources;
 using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -354,13 +356,13 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return returnInvocie;
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(PayrollRoutes.PayrollInvoices)]
 		[DeflateCompression]
-		public List<PayrollInvoiceResource> GetPayrollInvoices()
+		public List<PayrollInvoiceResource> GetPayrollInvoices(PayrollInvoiceFilterResource resource)
 		{
 			
-			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, companyId: resource.CompanyId, status: resource.Status, startDate: resource.StartDate, endDate: resource.EndDate), string.Format("get invoices for host with id={0}", CurrentUser.Host));
 			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
 			{
 				invoices = invoices.Where(i => !i.Company.IsHostCompany && i.Company.IsVisibleToHost).ToList();
@@ -381,7 +383,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public List<PayrollInvoiceResource> GetApprovedInvoices()
 		{
-			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, status:InvoiceStatus.Submitted), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, status: new List<InvoiceStatus>(){InvoiceStatus.Submitted}), string.Format("get invoices for host with id={0}", CurrentUser.Host));
 			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
 			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i => i.TaxPaneltyConfig = ic);

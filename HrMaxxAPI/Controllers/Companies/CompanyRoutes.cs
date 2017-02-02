@@ -37,5 +37,6 @@
 
 		public const string PEOCompanies = "Company/AllPEOCompanies";
 		public const string AllEmployees = "Company/EmployeeList";
+		public const string MinifiedCompanyList = "Company/CompanyListMinified";
 	}
 }

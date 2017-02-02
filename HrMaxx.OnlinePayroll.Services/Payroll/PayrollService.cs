@@ -1045,7 +1045,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 									dbmc.RecurringChargeId > 0 &&
 									invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId &&  mc.Amount!=dbmc.Amount))
 								.ToList();
-						var futureInvoices = _readerService.GetPayrollInvoices(Guid.Empty, invoice.CompanyId)
+						var futureInvoices = _readerService.GetPayrollInvoices(Guid.Empty, companyId: invoice.CompanyId)
 								.Where(ci => ci.InvoiceNumber > invoice.InvoiceNumber)
 								.ToList();
 						futureInvoices.ForEach(fi=>
