@@ -39,12 +39,14 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					};
 
 					$scope.host = $scope.$parent.$parent.mainData.selectedHost;
+					$scope.paytypes = [
+						{title:'All'},{ id: 1, title: 'Hourly' }, { id: 2, title: 'Salary' }, { id: 3, title: 'Piece-work' }
+					];
 					$scope.tableData = [];
+					var blank = '';
 					$scope.tableParams = new ngTableParams({
 						count: $scope.list ? $scope.list.length : 0,
-						filter: {
-							name: '',       // initial filter
-						},
+						
 						sorting: {
 							companyEmployeeNo: 'asc'     // initial sorting
 						}
@@ -61,21 +63,16 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
-							var filterbypaytype = params.$params.filter.paytype;
-							delete params.$params.filter.paytype;
+							
 							var orderedData = params.filter() ?
 																$filter('filter')($scope.list, params.filter()) :
 																$scope.list;
-							if (filterbypaytype) {
-								//dataSvc.payTypeFilter = filterbypaytype;
-								orderedData = $filter('filter')(orderedData, { employee: { payType: filterbypaytype } });
-							}
 							
 							orderedData = params.sorting() ?
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
-							params.$params.filter.paytype = filterbypaytype;
 							$scope.tableParams = params;
+							
 							//$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 							$scope.tableData = orderedData;
 

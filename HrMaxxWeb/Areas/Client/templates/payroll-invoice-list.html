@@ -5,7 +5,7 @@
 			<div class="row">
 				<div class="col-sm-1 form-group">
 					<label for="statuses">Status</label>
-					<div class="col-sm-12" ng-dropdown-multiselect="" options="statuses" extra-settings="{displayProp: 'value', idProp: 'key', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedStatuses" ></div>
+					<div class="col-sm-12" ng-dropdown-multiselect="" options="statuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedStatuses" ></div>
 				</div>
 				<div class="col-sm-1 form-group">
 					<label class="control-label">Start Date </label>
@@ -62,7 +62,7 @@
 						<td data-title=" 'Checks' " filter="{'checkNumbers':'text'}" sortable=" 'checkNumbers' " class="col-sm-1 text-center">
 							{{item.checkNumbers}}
 						</td>
-						<td data-title=" 'Status' " filter="{'status1':'status'}" sortable=" 'statusText' " class="col-sm-1 text-center">
+						<td data-title=" 'Status' " filter="{status:'select'}" filter-data="statuses" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
 						<td data-title=" 'Processed By' " sortable=" 'processedBy' " class="col-sm-1 text-center">
@@ -101,7 +101,7 @@
 						</li>
 					</ul>
 				</script>
-				<script type="text/ng-template" id="ng-table/filters/status.html">
+				<!--<script type="text/ng-template" id="ng-table/filters/status.html">
 					<select id="statuslist" class="form-control" ng-model="params.filter()[name]" name="filter-status1" convert-to-number>
 						<option value="0">All</option>
 						<option value="8">Deposited</option>
@@ -118,7 +118,7 @@
 						
 						
 					</select>
-				</script>
+				</script>-->
 			</div>
 
 			<!-- end panel -->

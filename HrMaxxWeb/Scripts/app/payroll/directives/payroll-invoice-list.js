@@ -20,16 +20,17 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					}
 					$scope.list = [];
 					$scope.statuses = [
-					{ key: 1, value: 'Draft' }
-					, { key: 2, value: 'Approved' }
-					, { key: 3, value: 'Delivered' }
-					, { key: 4, value: 'Closed' }
-					, { key: 5, value: 'Taxes Delayed' }
-					, { key: 6, value: 'Bounced' }
-					, { key: 7, value: 'Partial Payment' }
-					, { key: 8, value: 'Deposited' }
-					, { key: 9, value: 'Not Deposited' }
-					, { key: 10, value: 'ACH Pending' }
+					{title:'All'},
+					{ id: 1, title: 'Draft' }
+					, { id: 2, title: 'Approved' }
+					, { id: 3, title: 'Delivered' }
+					, { id: 4, title: 'Closed' }
+					, { id: 5, title: 'Taxes Delayed' }
+					, { id: 6, title: 'Bounced' }
+					, { id: 7, title: 'Partial Payment' }
+					, { id: 8, title: 'Deposited' }
+					, { id: 9, title: 'Not Deposited' }
+					, { id: 10, title: 'ACH Pending' }
 					];
 					$scope.selectedStatuses = [];
 					$scope.selectedStatus = [];
@@ -60,9 +61,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
-						filter: {
-							status1: 0,       // initial filter
-						},
+						
 						sorting: {
 							invoiceNumber: 'desc'     // initial sorting
 						}
@@ -79,19 +78,15 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
-							var filterbystatus = params.$params.filter.status1;
-							delete params.$params.filter.status1;
+							
 							var orderedData = params.filter() ?
 																$filter('filter')($scope.list, params.filter()) :
 																$scope.list;
-							if (filterbystatus) {
-								orderedData = $filter('filter')(orderedData, { status: filterbystatus });
-							}
+							
 							orderedData = params.sorting() ?
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
-							params.$params.filter.status1 = filterbystatus;
-
+							
 							$scope.tableParams = params;
 							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 
@@ -190,7 +185,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						if (querystring.invoice)
 							invoice = querystring.invoice;
 						else if (querystring.company)
-							$scope.tableParams.$params.filter.companyName = querystring.company;
+							$scope.tableParams.filter.companyName = querystring.company;
 
 						if (!dataSvc.startDate)
 							dataSvc.startDate = moment().add(-1, 'week').toDate();
