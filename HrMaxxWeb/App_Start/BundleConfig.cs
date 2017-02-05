@@ -89,7 +89,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular1.5/angular-local-storage/angular-local-storage.min.js",
 				"~/Scripts/angular1.5/angular-google-maps.js",
 				"~/Scripts/angular1.5/ng-google-chart.js",
-				"~/Scripts/angular1.5/ng-table.js",
+				"~/Scripts/ng-table.js",
 				"~/Scripts/angular1.5/angular-bootstrap-datepicker/angular-bootstrap-datepicker.js",
 				"~/Scripts/angular1.5/multipleDatePicker.min.js",
 				"~/Scripts/angular1.5/xeditable.js",

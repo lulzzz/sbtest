@@ -23,6 +23,8 @@ namespace HrMaxx.Infrastructure.Security
 
 		public static string Encrypt(string value)
 		{
+			if (string.IsNullOrWhiteSpace(value))
+				return string.Empty;
 			using (var cryptoProvider = new TripleDESCryptoServiceProvider())
 			using (var memoryStream = new MemoryStream())
 			using (var cryptoStream = new CryptoStream(memoryStream, cryptoProvider.CreateEncryptor(m_key,m_iv), CryptoStreamMode.Write))
@@ -38,13 +40,23 @@ namespace HrMaxx.Infrastructure.Security
 
 		public static string Decrypt(string value)
 		{
-			using (var cryptoProvider = new TripleDESCryptoServiceProvider())
-			using (var memoryStream = new MemoryStream(Convert.FromBase64String(value)))
-			using (var cryptoStream = new CryptoStream(memoryStream, cryptoProvider.CreateDecryptor(m_key, m_iv), CryptoStreamMode.Read))
-			using (var reader = new StreamReader(cryptoStream))
+			if (string.IsNullOrWhiteSpace(value))
+				return string.Empty;
+			try
 			{
-				return reader.ReadToEnd();
+				using (var cryptoProvider = new TripleDESCryptoServiceProvider())
+				using (var memoryStream = new MemoryStream(Convert.FromBase64String(value)))
+				using (var cryptoStream = new CryptoStream(memoryStream, cryptoProvider.CreateDecryptor(m_key, m_iv), CryptoStreamMode.Read))
+				using (var reader = new StreamReader(cryptoStream))
+				{
+					return reader.ReadToEnd();
+				}
 			}
+			catch (Exception)
+			{
+				return string.Empty;
+			}
+			
 		}
         
 

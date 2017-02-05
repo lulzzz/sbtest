@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.1.52');
+common.constant('version', '1.0.1.52.6');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -138,6 +138,7 @@ common.run([
 common.run(function (editableOptions) {
 	editableOptions.theme = 'bs3';
 });
+
 
 common.controller('documentModal', function ($scope, $modalInstance, doc, zionAPI) {
 	$scope.modaldoc = doc;

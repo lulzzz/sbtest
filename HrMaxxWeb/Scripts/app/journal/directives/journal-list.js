@@ -10,7 +10,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/journal-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'journalRepository', 'payrollRepository',
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'journalRepository', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, journalRepository, payrollRepository) {
 					var dataSvc = {
 						isBodyOpen: true,
@@ -66,9 +66,9 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 
@@ -310,6 +310,21 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						}, function (error) {
 							$scope.addAlert('error getting journal list', 'danger');
 						});
+					}
+					$scope.getJournalList = function () {
+						if (dataSvc.selectedAccount) {
+							var m = $scope.mainData;
+							journalRepository.getJournalList(m.selectedCompany.id, dataSvc.selectedAccount.id, m.reportFilter.filterStartDate, m.reportFilter.filterEndDate).then(function (data) {
+								dataSvc.selectedAccountBalance = data.accountBalance;
+								$scope.list = data.journals;
+								$scope.tableParams.reload();
+								$scope.fillTableData($scope.tableParams);
+
+							}, function (error) {
+								$scope.addAlert('error getting journal list', 'danger');
+							});
+						}
+						
 					}
 					var getMetaData = function (companyId) {
 						journalRepository.getJournalMetaData(companyId).then(function (data) {

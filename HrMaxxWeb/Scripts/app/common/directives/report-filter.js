@@ -30,8 +30,8 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.filterByDateRange = function () {
 						dataSvc.filter.quarter = 0;
 						dataSvc.filter.month = 0;
-						dataSvc.filterStartDate = dataSvc.filter.startDate ? dataSvc.filter.startDate : null;
-						dataSvc.filterEndDate = dataSvc.filter.endDate ? dataSvc.filter.endDate : null;
+						dataSvc.filterStartDate = dataSvc.filter.startDate ? moment(dataSvc.filter.startDate).format("MM/DD/YYYY") : null;
+						dataSvc.filterEndDate = dataSvc.filter.endDate ? moment(dataSvc.filter.endDate).format("MM/DD/YYYY") : null;
 						dataSvc.filter.filterByMonthYear = false;
 						dataSvc.filter.filterByPeriod = false;
 						_init();

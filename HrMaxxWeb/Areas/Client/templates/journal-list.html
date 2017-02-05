@@ -12,91 +12,10 @@
 				
 			</div>
 			<div class="row" ng-show="data.bankAccounts.length>0">
-				<div class="col-sm-12 p-5">
-					<table class="table table-condensed">
-						<thead>
-							<tr>
-								<th class="col-sm-4">
-									<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByDateRange, 'fa-minus-square':data.filter.filterByDateRange}" ng-click="data.filter.filterByDateRange=!data.filter.filterByDateRange"> Filter By Date Range</i>
-								</th>
-								<th class="col-sm-4">
-									<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByMonthYear, 'fa-minus-square':data.filter.filterByMonthYear}" ng-click="data.filter.filterByMonthYear=!data.filter.filterByMonthYear"> Filter By Month & Year</i>
-								</th>
-								<th class="col-sm-4">
-									
-									<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByPeriod, 'fa-minus-square':data.filter.filterByPeriod}" ng-click="data.filter.filterByPeriod=!data.filter.filterByPeriod"> Filter By Period</i>
-								</th>	
-							</tr>
-							
-						</thead>
-						<tbody>
-							<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
-								<td class="col-sm-4" >
-									<div class="row" ng-show="data.filter.filterByDateRange">
-										<div class="col-sm-12">
-											<div class="col-sm-2"><label>From: </label></div>
-											<date-ctrl name="startdate" required="true" model="data.filter.startDate" disabled="false" />
-											
-										</div>
-										<div class="col-sm-12">
-											<div class="col-sm-2"><label>To: </label></div>
-											<date-ctrl name="enddate" required="true" model="data.filter.endDate" min="data.filter.startDate" disabled="false" />
-											
-											
-										</div>
-										<div class="col-sm-12">
-											<button class="btn btn-xs btn-success pull-right" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button>
-										</div>
-									</div>
-									
-								</td>
-
-								<td class="col-sm-4" >
-									<div class="row" ng-show="data.filter.filterByMonthYear">
-										<div class="col-sm-5">
-											<select name="filtermonths" ng-model="data.filter.month" class="form-control" convert-to-number>
-												<option value="0">please select</option>
-												<option value="1">January</option>
-												<option value="2">February</option>
-												<option value="3">March</option>
-												<option value="4">April</option>
-												<option value="5">May</option>
-												<option value="6">June</option>
-												<option value="7">July</option>
-												<option value="8">August</option>
-												<option value="9">September</option>
-												<option value="10">October</option>
-												<option value="11">November</option>
-												<option value="12">December</option>
-											</select>
-										</div>
-										<div class="col-sm-5">
-											<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years"></select>
-										</div>
-										<div class="col-sm-2"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
-									</div>
-									
-								</td>
-							
-								<td class="col-sm-4" >
-									<div class="row" ng-show="data.filter.filterByPeriod">
-										<div class="col-sm-8">
-											<select name="filterperiod" ng-model="data.filter.period" class="form-control" convert-to-number>
-												<option value="1">All</option>
-												<option value="2">Last 3 months</option>
-												<option value="3">Last 6 months</option>
-												<option value="4">Last 12 months</option>
-											</select>
-										</div>
-										<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.period" ng-click="filterByPeriod()">Go</button></div>
-									</div>
-									
-								</td>
-
-							</tr>
-						</tbody>
-					</table>
+				<div class="row hidden-print">
+					<report-filter filter="mainData.reportFilter" callback="getJournalList()" show-dates="true" show-periods="true" />
 				</div>
+				
 				<div class="col-sm-12 p-5">
 					<div class="col-sm-4">
 						<div class="col-sm-2"><label for="bank">Account: </label> </div>

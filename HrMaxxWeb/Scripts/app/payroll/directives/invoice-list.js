@@ -10,7 +10,7 @@ common.directive('invoiceList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
@@ -73,9 +73,9 @@ common.directive('invoiceList', ['zionAPI', '$timeout', '$window','version',
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 

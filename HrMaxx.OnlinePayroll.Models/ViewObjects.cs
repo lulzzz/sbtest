@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -28,7 +29,11 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool FileUnderHost { get; set; }
 		public bool IsHostCompany { get; set; }
 		public string InvoiceSetup { get; set; }
+		public string CompanyAddress { get; set; }
+		public string FederalEIN { get; set; }
 		public StatusOption StatusId { get; set; }
+		public List<JsonDataModel.CompanyTaxState> CompanyTaxStates { get; set; }
+		public InsuranceGroup InsuranceGroup { get; set; }
 	}
 
 	public class HostAndCompanies

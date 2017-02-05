@@ -13,7 +13,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 					var dataSvc = {
 						payTypes: $scope.datasvc.payTypes,
@@ -50,9 +50,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 					if ($scope.tableParams.settings().$scope == null) {

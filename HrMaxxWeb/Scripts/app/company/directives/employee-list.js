@@ -11,7 +11,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
@@ -142,14 +142,72 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 					if ($scope.tableParams.settings().$scope == null) {
 						$scope.tableParams.settings().$scope = $scope;
 					}
+					$scope.showFilter = true;
+					$scope.cols = [
+						{ field: "companyEmployeeNo", title: "Company Emp#", show: true, filter: { companyEmployeeNo: "text" }, sortable:"companyEmployeeNo" },
+						{ field: "employeeNo", title: "No", show: true, filter: { employeeNo: "text" }, sortable: "employeeNo" },
+						{ field: "name", title: "Name", show: true, filter: { name: "text" }, sortable: "name" },
+						{ field: "ssnText", title: "SSN", show: true, filter: { ssnText: "text" }, sortable: "ssnText" },
+						{ field: "department", title: "Department", show: true, filter: { department: "text" }, sortable: "department" },
+						{ field: "hireDate", title: "Hire Date", show: true, isdate: true, sortable: "hireDate" },
+						{ field: "lastPayrollDate", title: "Last Payroll", show: false, isdate: true, sortable: "lastPayrollDate" },
+						{ field: "statusText", title: "Status", show: true, filter: { statusText: "text" }, sortable: "statusText" },
+						{ field: "rate", title: "Rate", show: false, filter: { rate: "number" }, sortable: "rate", ismoney: true },
+						{ field: "address", title: "Address", show: false },
+						{ field: "wcCode", title: "WC", show: true, filter: { wcCode: 'text' }, sortable: "wcCode" },
+						{ field: "payTypeText", title: "Pay Type", show: false, filter: { payTypeText: 'text' }, sortable: "payTypeText" },
+						{ field: "federalStatusText", title: "Federal Status", show: false, filter: { federalStatusText: 'text' }, sortable: "federalStatusText" },
+						{ field: "stateStatusText", title: "State Status", show: false, filter: { stateStatusText: 'text' }, sortable: "stateStatusText" },
+						{ field: "controls", title: "", show: true }
+					];
+					
+					$scope.selectedHeaders = [
+						{ id: 'companyEmployeeNo' },
+						{ id: 'employeeNo' },
+						{ id: 'name' },
+						{ id: 'ssnText' },
+						{ id: 'department' },
+						{ id: 'hireDate' },
+						{ id: 'wcCode' },
+						{ id: 'statusText' }
+					];
+					
+					$scope.refreshTable = function() {
+						$.each($scope.cols, function(ind, c) {
+							c.show = $filter('filter')($scope.selectedHeaders, { id: c.field }, true).length > 0 ? true : (c.field === 'controls' ? true : false);
+						});
+					}
+					$scope.print = function() {
+						$window.print();
+					}
+					
+
+					$scope.tableParamsNew = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						filter: {
+							name: '',       // initial filter
+						},
+						sorting: {
+							companyEmployeeNo: 'asc'     // initial sorting
+						}
+					}, {
+						total: $scope.list ? $scope.list.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableData(params);
+							return $scope.tableData;
+						}
+					});
+
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
@@ -231,6 +289,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						companyRepository.getEmployees(companyId).then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
+							$scope.tableParamsNew.reload();
 							$scope.fillTableData($scope.tableParams);
 							
 							if ($scope.mainData.fromSearch && $scope.mainData.showemployee) {

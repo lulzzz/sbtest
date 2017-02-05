@@ -1,50 +1,38 @@
 ﻿<div class="row" ng-show="mainData.selectedHost">
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
-		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Employees<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Employees<i class="pull-right glyphicon hidden-print" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
+			<div class="col-sm-12 visible-print" ><h6><u>Employee List</u></h6></div>
+			<div class="row hidden-print">
+				<div class="col-sm-4" ng-dropdown-multiselect="" options="cols" extra-settings="{displayProp: 'title', idProp: 'field', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedHeaders">
+					
+				</div>
+				<button class="btn btn-success btn-sm" ng-click="refreshTable()" ng-disabled="selectedHeaders.length===0">update view</button>
+				<button class="btn btn-success btn-sm" ng-click="print()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-print"></i>print</button>
+			</div>
 			<div ng-show="list.length===0 && !selectedContact" class="table table-bordered">
 				No Employees found
 			</div>
 			<div class="row" ng-show="list.length>0">
-				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id}">
-						<td data-title="'Company Emp#'" filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " class="col-sm-1">
-							{{item.companyEmployeeNo}}
+				<table ng-table-dynamic="tableParamsNew with cols"
+				       class="table" show-filter="showFilter" template-pagination="custom/pager">
+					<tr ng-repeat="row in $data" class="mouse-over-pointer" ng-click="set(row)" ng-class="{'success':selected.id===row.id}">
+						<td ng-repeat="col in $columns" class="text-center" ng-class="{'hidden-print' : col.field==='controls'}">
+							{{ col.field!=='controls' ? col.isdate? (row[col.field] | date:'MM/dd/yyyy') : col.ismoney ? (row[col.field] | currency:'$') : row[col.field] : ''}}
+							<button class="btn btn-xs btn-success" ng-click="viewPayCheckList(row, $event)" ng-show="row.lastPayrollDate && col.field==='controls'"><i class="fa fa-money"></i></button>
 						</td>
-						<td data-title="' No'" filter="{ 'employeeNo': 'text' }" sortable=" 'employeeNo' " class="col-sm-1">
-							{{item.employeeNo}}
+						<td title=" 'cheks' " class="hidden-print">
+							
 						</td>
-						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3">
-							{{item.name}}
-						</td>
-						<td data-title=" 'SSN' " filter="{ 'ssn': 'text' }" sortable=" 'ssn' " class="col-sm-2">
-							{{item.ssn.substr(0,3) +'-'+ item.ssn.substr(3,2) + '-' + item.ssn.substr(item.ssn.length-4)}}
-						</td>
-						<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-2">
-							{{item.department}}
-						</td>
-						<td data-title=" 'Hire Date' "  sortable=" 'hireDate' " class="col-sm-2">
-							{{item.hireDate | date:'MM/dd/yyyy'}}
-						</td>
-						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
-							{{item.lastPayrollDate | date:'MM/dd/yyyy'}}
-						</td>
-						<td data-title=" 'Status' " filter="{ 'statusText': 'text' }" sortable=" 'statusText' " class="col-sm-1">
-							{{item.statusText}}
-						</td>
-						<td data-title=" '' "  class="col-sm-1">
-							<button class="btn btn-xs btn-success" ng-click="viewPayCheckList(item, $event)" ng-show="item.lastPayrollDate">Pay Checks</button>
-						</td>
-						
 					</tr>
-
 				</table>
+				
 				<script type="text/ng-template" id="custom/pager">
-					<ul class="pager ng-cloak">
+					<ul class="pager ng-cloak hidden-print">
 						<li ng-repeat="page in pages"
 								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
 								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
@@ -57,12 +45,13 @@
 								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
 								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
 								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								<button type="button" ng-class="{'active':params.count() == params.total()}" ng-click="params.count(params.total())" class="btn btn-default btn-sm">All</button>
 							</div>
 						</li>
 					</ul>
 				</script>
 			</div>
-			<div class="row">
+			<div class="row hidden-print">
 				<button class="btn btn-sm btn-primary pull-left" ng-show="mainData.selectedCompany && !selected" ng-click="add()">Add</button>
 				
 				<button class="btn btn-sm btn-info attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
@@ -77,7 +66,7 @@
 		</div>
 	</div>
 
-	<div class="row" ng-if="selected">
+	<div class="row hidden-print" ng-if="selected">
 		<employee employee="selected" main-data="mainData" is-popup="false" show-controls="true" />
 	</div>
 	<script type="text/ng-template" id="popover/payCheckListView.html">

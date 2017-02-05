@@ -16,7 +16,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/user-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'ngTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'NgTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Contact;
 				$scope.list = [];
 
@@ -112,9 +112,9 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					}
 				}, {
 					total: $scope.list ? $scope.list.length : 0, // length of data
-					getData: function ($defer, params) {
+					getData: function(params) {
 						$scope.fillTableData(params);
-						$defer.resolve($scope.tableData);
+						return $scope.tableData;
 					}
 				});
 

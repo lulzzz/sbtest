@@ -1380,8 +1380,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2",
 					payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", company.CompanyAddress.AddressLine1));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", company.CompanyAddress.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", nameCompany.CompanyAddress.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", nameCompany.CompanyAddress.AddressLine2));
 
 				var sum2 = string.Format("Federal Status: {0}{1}Federal Exemptions: {2}{3}Additional Fed Withholding: {4}",
 					payCheck.Employee.FederalStatus.GetDbName(), "".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length),
@@ -1688,7 +1688,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Bank", bankcoa.BankAccount.BankName));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("BankfractionId", bankcoa.BankAccount.FractionId));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("comp", company1.Name + Environment.NewLine + company1.CompanyAddress.AddressLine1 + Environment.NewLine + company1.CompanyAddress.AddressLine2));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("comp", nameCompany.Name + Environment.NewLine + nameCompany.CompanyAddress.AddressLine1 + Environment.NewLine + company1.CompanyAddress.AddressLine2));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("ee", "Emp No" + Environment.NewLine + (payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty)));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("pp", "Period Begin                   Period End" + Environment.NewLine + payCheck.StartDate.ToString("MM/dd/yyyy") + "                     " + payCheck.EndDate.ToString("MM/dd/yyyy")));
 				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
@@ -1703,8 +1703,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo1-1", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", company.CompanyAddress.AddressLine1));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", company.CompanyAddress.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", nameCompany.CompanyAddress.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
 				
 				

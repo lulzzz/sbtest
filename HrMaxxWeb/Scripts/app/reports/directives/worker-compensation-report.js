@@ -10,7 +10,7 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/worker-compensation-report.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'ngTableParams',
+			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'NgTableParams',
 				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, ngTableParams) {
 					var dataSvc = {
 
@@ -82,9 +82,9 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 						
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return ($scope.tableData);
 						}
 					});
 

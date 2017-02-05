@@ -7,6 +7,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Enums;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxxAPI.Resources.Common;
@@ -33,7 +34,9 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<HostAndCompanies, HostAndCompaniesResource>();
 			CreateMap<HostListItem, HostListItemResource>();
 			CreateMap<CompanyListItem, CompanyListItemResource>()
-				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null));
+				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null))
+				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.CompanyAddress) ? JsonConvert.DeserializeObject<Address>(src.CompanyAddress) : null))
+				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)));
 
 			CreateMap<HostResource, Host>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))

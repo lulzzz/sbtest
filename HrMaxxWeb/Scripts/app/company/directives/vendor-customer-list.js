@@ -14,7 +14,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/vendor-customer-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
 					var dataSvc = {
 						sourceTypeId: $scope.isVendor ? EntityTypes.Vendor : EntityTypes.Customer,
@@ -90,9 +90,9 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 

@@ -15,7 +15,7 @@
 			<div class="col-sm-4">
 				<div class="form-group">
 					<div class="col-sm-6"><label class="control-label">Check No.<span class="text-danger">*</span></label></div>
-					<div class="col-sm-6"><label ng-show="item.paymentMethod">EFT</label><input type="number" ng-model="item.checkNumber" ng-show="!item.paymentMethod" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,5}$/" data-parsley-type="number" step="1" /></div>
+					<div class="col-sm-6"><label ng-show="item.paymentMethod">EFT</label><input type="number" ng-model="item.checkNumber" ng-disabled="item.id" ng-show="!item.paymentMethod" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,5}$/" data-parsley-type="number" step="1" /></div>
 
 				</div>
 
@@ -28,7 +28,7 @@
 				<div>
 					<div class="col-sm-6"><label class="control-label">Check Date:<span class="text-danger">*</span></label></div>
 					<div class="col-sm-6">
-						<date-ctrl name="startdate" required="true" model="item.transactionDate" disabled="false" />
+						<date-ctrl name="startdate" required="true" model="item.transactionDate" disabled="item.id" />
 					</div>
 				</div>
 			</div>
@@ -41,7 +41,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="col-sm-10 text-bold">
-						<input type="text" placeholder="Vendor/Customer Name" ng-blur="payeeSelected()" ng-model="data.selectedPayee" uib-typeahead="customer as customer.name for customer in data.allPayees | filter:$viewValue" class="form-control">
+						<input type="text" placeholder="Vendor/Customer Name" ng-blur="payeeSelected()" ng-disabled="item.id" ng-model="data.selectedPayee" uib-typeahead="customer as customer.name for customer in data.allPayees | filter:$viewValue" class="form-control">
 					</div>
 				</div>
 			</div>
@@ -95,12 +95,12 @@
 			<tbody>
 				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} track by $index" ng-class="{'success':!jd.isDebit, 'danger':jd.isDebit}">
 					<td>
-						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName" editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
+						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName"  editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
 							{{ jd.accountId? jd.accountName : '' }}
 						</span>
 					</td>
 					<td>
-						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
 							{{ jd.amount }}
 						</span>
 					</td>

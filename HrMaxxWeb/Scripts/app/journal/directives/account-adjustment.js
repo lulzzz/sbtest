@@ -13,8 +13,8 @@ common.directive('accountAdjustment', ['zionAPI','version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/account-adjustment.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'AccountType', 
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, AccountType) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes', 'AccountType', 
+				function ($scope, $element, $location, $filter, companyRepository, EntityTypes, AccountType) {
 					var dataSvc = {
 						companyAccounts: $scope.datasvc.companyAccounts
 					}

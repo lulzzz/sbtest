@@ -91,7 +91,7 @@
 														<label></label>
 														<div>
 															<label for="fileUnderHost" class="switch">
-																File Under Host?
+																Leasing?
 																<input id="fileUnderHost" type="checkbox" ng-model="selectedCompany.fileUnderHost" ng-disabled="isFileUnderHostDisabled()" /><i></i>
 															</label>
 														</div>
@@ -477,8 +477,8 @@
 													<div class="form-group">
 														<label>Invoice Type</label>
 														<select ng-model="selectedCompany.contract.invoiceSetup.invoiceType" name="invtype" class="form-control" convert-to-number>
-															<option value="1">PEO ASO Co Check</option>
-															<option value="2">PEO ASO Client Check</option>
+															<option value="1">Host's Checks</option>
+															<option value="2">Client Checks</option>
 															<option value="3">Conv Payroll</option>
 															<option value="4">Conv Payroll with WC</option>
 															<option value="5">WC Only</option>
@@ -585,7 +585,7 @@
 										</fieldset>
 									</div>
 								</div>
-								<div class="col-sm-2 col-sm-offset-4" ng-show="showControls">
+								<div class="col-sm-2 col-sm-offset-4" ng-show="showControls && mainData.userRole==='Master'">
 									<button class="btn btn-primary" ng-click="save()" ng-disabled="!validateCompany()"><i class="fa fa-save m-r-5"></i> Save</button>
 									<button class="btn btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 								</div>

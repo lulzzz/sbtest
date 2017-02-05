@@ -10,7 +10,7 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/payroll-register.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'ngTableParams', 'EntityTypes', 'commonRepository', 'reportRepository',
+			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'NgTableParams', 'EntityTypes', 'commonRepository', 'reportRepository',
 				function ($scope, $element, $location, $filter, payrollRepository, ngTableParams, EntityTypes, commonRepository, reportRepository) {
 					var dataSvc = {
 						
@@ -44,9 +44,9 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return ($scope.tableData);
 						}
 					});
 

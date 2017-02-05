@@ -5,15 +5,15 @@
 			<h4 class="panel-title">{{employee.name}} Paychecks<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 		</div>
-		<div class="panel-body" ng-show="data.isBodyOpen">
+		<div class="panel-body row" ng-show="data.isBodyOpen">
 			<div class="row alert alert-danger" ng-show="alerts.length>0">
 				{{alerts[0].message}}
 			</div>
 			<div ng-show="list.length===0" class="table table-bordered">
 				No pay checks found
 			</div>
-			<div class="row" ng-show="list.length>0">
-				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+			<div class="col-sm-12" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id, 'danger':selected.isVoid===1}">
 						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
 							{{item.payDay | date:'MM/dd/yyyy'}}
@@ -30,13 +30,13 @@
 						<td data-title=" 'Deductions' " sortable=" 'deductionAmount' " class="col-sm-1 text-center">
 							{{item.deductionAmount | currency:'$'}}
 						</td>
-						<td data-title=" 'Employee Taxes' " sortable=" 'employeeTaxes' " class="col-sm-1 text-center">
+						<td data-title=" 'Employee Taxes' " sortable=" 'employeeTaxes' " class="col-sm-1 text-center hidden-print">
 							{{item.employeeTaxes | currency:'$'}}
 						</td>
 						<td data-title=" 'Net Wage' " sortable=" 'netWage' " class="col-sm-1 text-center">
 							{{item.netWage | currency:'$'}}
 						</td>
-						<td data-title=" 'Employer Taxes' " sortable=" 'employerTaxes' " class="col-sm-1 text-center">
+						<td data-title=" 'Employer Taxes' " sortable=" 'employerTaxes' " class="col-sm-1 text-center hidden-print">
 							{{item.employerTaxes | currency:'$'}}
 						</td>
 						<td data-title=" 'Payment Method' " class="col-sm-1 text-center">
@@ -46,7 +46,7 @@
 
 				</table>
 				<script type="text/ng-template" id="custom/pager">
-					<ul class="pager ng-cloak">
+					<ul class="pager ng-cloak hidden-print">
 						<li ng-repeat="page in pages"
 								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
 								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">

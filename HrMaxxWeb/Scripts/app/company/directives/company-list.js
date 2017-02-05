@@ -11,13 +11,49 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes',
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes',
 				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
 					var dataSvc = {
 						isBodyOpen: true
 						
 					}
+					$scope.cols = [
+						{ field: "companyNumber", title: "No", show: true, filter: { companyNumber: "number" }, sortable: "companyNumber" },
+						{ field: "name", title: "Name", show: true, filter: { name: "text" }, sortable: "name" },
+						{ field: "companyNo", title: "Legacy No", show: true, filter: { companyNo: "text" }, sortable: "companyNo" },
+						{ field: "lastPayrollDate", title: "Last Payroll", show: true, isdate: true, sortable: "lastPayrollDate" },
+						{ field: "created", title: "Created", show: true, filter: { created: "text" }, sortable: "created", isdate:true },
+						{ field: "fileUnderHost", title: "Leasing?", show: true, sortable: "fileUnderHost", ismoney: false },
+						{ field: "contractType", title: "Contract Type", show: true },
+						{ field: "getTextForStatus", title: "Status", show: true, filter: { getTextForStatus: 'text' }, sortable: "getTextForStatus" },
+						{ field: "address", title: "Address", show: false },
+						{ field: "ein", title: "EIN", show: false },
+						{ field: "insuranceInfo", title: "Insurance", show: false },
+						{ field: "stateEIN", title: "State EIN", show: false },
+						{ field: "controls", title: "", show: true }
 
+					];
+
+					$scope.selectedHeaders = [
+						{ id: 'companyNumber' },
+						{ id: 'name' },
+						{ id: 'companyNo' },
+						{ id: 'lastPayrollDate' },
+						{ id: 'created' },
+						{ id: 'fileUnderHost' },
+						{ id: 'contractType' },
+						{ id: 'getTextForStatus' }
+					];
+
+					$scope.refreshTable = function () {
+						$.each($scope.cols, function (ind, c) {
+							
+							c.show = $filter('filter')($scope.selectedHeaders, { id: c.field }, true).length > 0 ? true : (c.field==='controls'? true : false);
+						});
+					}
+					$scope.print = function () {
+						$window.print();
+					}
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = false;
@@ -90,14 +126,14 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
-					if ($scope.tableParams.settings().$scope == null) {
-						$scope.tableParams.settings().$scope = $scope;
-					}
+					//if ($scope.tableParams.settings().$scope == null) {
+					//	$scope.tableParams.settings().$scope = $scope;
+					//}
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
@@ -160,7 +196,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						 	if (newValue !== oldValue) {
 						 		$scope.list = $scope.mainData.hostCompanies;
 						 		$scope.tableParams.reload();
-						 		$scope.tableParams.$params.page = 1;
+						 		//$scope.tableParams.page = 1;
 								$scope.fillTableData($scope.tableParams);
 						 	}
 

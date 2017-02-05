@@ -11,7 +11,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'hostRepository', 'ngTableParams', 'EntityTypes',
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'hostRepository', 'NgTableParams', 'EntityTypes',
 				function ($scope, $rootScope, $element, $location, $filter, hostRepository, ngTableParams, EntityTypes) {
 				$scope.sourceTypeId = EntityTypes.Host;
 				var addAlert = function (error, type) {
@@ -47,9 +47,9 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					}
 				}, {
 					total: $scope.list ? $scope.list.length : 0, // length of data
-					getData: function ($defer, params) {
+					getData: function (params) {
 						$scope.fillTableData(params);
-						$defer.resolve($scope.tableData);
+						return $scope.tableData;
 					}
 				});
 				if ($scope.tableParams.settings().$scope == null) {

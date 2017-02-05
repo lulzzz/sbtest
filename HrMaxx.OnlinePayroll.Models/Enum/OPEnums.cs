@@ -201,9 +201,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum EmployeeType
 	{
+		[HrMaxxSecurity(DbName = "Hourly")]
 		Hourly=1,
+		[HrMaxxSecurity(DbName = "Salary")]
 		Salary=2,
+		[HrMaxxSecurity(DbName = "PieceWork")]
 		PieceWork=3,
+		[HrMaxxSecurity(DbName = "JobCost")]
 		JobCost=4
 	}
 
@@ -410,9 +414,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum CompanyInvoiceType
 	{
-		[HrMaxxSecurity(DbName = "PEO ASO Co Chk")]
+		[HrMaxxSecurity(DbName = "Host's Checks")]
 		PEOASOCoCheck = 1,
-		[HrMaxxSecurity(DbName = "PEO ASO Client Chk")]
+		[HrMaxxSecurity(DbName = "Client Checks")]
 		PEOASOClientCheck = 2,
 		[HrMaxxSecurity(DbName = "Straight and Conventional Payroll")]
 		ConventionalPayroll = 3,

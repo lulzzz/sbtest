@@ -11,8 +11,8 @@ common.directive('paycheck', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/paycheck.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes', 'payrollRepository',
+				function ($scope, $element, $location, $filter, companyRepository, EntityTypes, payrollRepository) {
 
 					$scope.showNonTaxable = function () {
 						if ($scope.check) {

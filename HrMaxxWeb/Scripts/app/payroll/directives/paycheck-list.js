@@ -11,7 +11,7 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/paycheck-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ngTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', 'anchorSmoothScroll',
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', 'anchorSmoothScroll',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, anchorSmoothScroll) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
@@ -37,15 +37,17 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
-
+						filter: {
+							id:0
+						},
 						sorting: {
 							payDay: 'desc'     // initial sorting
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 

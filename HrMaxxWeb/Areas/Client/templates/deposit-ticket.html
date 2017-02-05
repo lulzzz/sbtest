@@ -59,7 +59,7 @@
 					<label>Date: </label>
 				</div>
 				<div class="col-sm-4">
-					<date-ctrl name="startdate" required="true" model="item.transactionDate"disabled="false" />
+					<date-ctrl name="startdate" required="true" model="item.transactionDate" disabled="item.id" />
 					
 				</div>
 			</div>
@@ -106,7 +106,7 @@
 						</span>
 					</td>
 					<td>
-						<span e-ng-change="jd.depositMethod=$data; jd.checkNumber = 0" editable-select="jd.depositMethod" e-name="dm" e-form="rowform" e-ng-options="a.value for a in data.depositMethods track by a.key">
+						<span e-ng-change="jd.depositMethod=$data; jd.checkNumber = 0" e-ng-disabled="item.id" editable-select="jd.depositMethod" e-name="dm" e-form="rowform" e-ng-options="a.value for a in data.depositMethods track by a.key">
 							{{ jd.depositMethod? jd.depositMethod.value : '' }}
 						</span>
 					</td>
@@ -117,7 +117,7 @@
 						</span>
 					</td>
 					<td class="text-right">
-						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-convert-to-decimal>
+						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-convert-to-decimal>
 							{{ jd.amount | currency:'$'}}
 						</span>
 					</td>

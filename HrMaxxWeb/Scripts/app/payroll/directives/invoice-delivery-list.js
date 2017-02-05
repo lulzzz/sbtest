@@ -10,7 +10,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/invoice-delivery-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'ngTableParams', 'payrollRepository',
+			controller: ['$scope', '$element', '$location', '$filter', 'NgTableParams', 'payrollRepository',
 				function ($scope, $element, $location, $filter, ngTableParams, payrollRepository) {
 					var dataSvc = {
 						isBodyOpen: true,
@@ -45,9 +45,9 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 					if ($scope.tableParams.settings().$scope == null) {

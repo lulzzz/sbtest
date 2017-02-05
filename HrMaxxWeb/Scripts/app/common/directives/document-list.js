@@ -12,7 +12,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/document-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', 'ngTableParams', '$filter', 'commonRepository', 'EntityTypes',
+			controller: ['$scope', '$element', '$location', 'NgTableParams', '$filter', 'commonRepository', 'EntityTypes',
 				function ($scope, $element, $location, ngTableParams, $filter, commonRepository, EntityTypes) {
 					$scope.targetTypeId = EntityTypes.Document;
 					$scope.list = [];
@@ -46,9 +46,9 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableData(params);
-							$defer.resolve($scope.tableData);
+							return $scope.tableData;
 						}
 					});
 

@@ -135,18 +135,20 @@
 			</script>
 @if (User.Identity.IsAuthenticated)
 {
-	<div class="panel panel-inverse  hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
+	<div class="col-sm-12 visible-print" ng-show="data.selectedCompany && data.selectedCompany.id && data.showCompanies"><h5><em><u>{{data.selectedCompany.name}}</u></em></h5></div>
+	<div class="panel panel-inverse hidden-print " ng-show="data.showFilterPanel" ng-if="data.isReady">
 		<div class="panel-body">
 			<div class="row form-group">
-				<div class="col-sm-4">
+				
+				<div class="col-sm-4 hidden-print">
 					<select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
 						<option value="">Select Host</option>
 					</select>
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-4 hidden-print">
 					<input type="text" placeholder="Type Company Name" ng-show="data.showCompanies" ng-disabled="data.hostCompanies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null" ng-mouseleave="data.selectedCompany1=data.selectedCompany" typeahead-show-hint="true" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.hostCompanies | filter:{name:$viewValue}" class="form-control">
 				</div>
-				<div class="col-sm-4" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
+				<div class="col-sm-4 hidden-print" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
 
 			</div>
 		</div>

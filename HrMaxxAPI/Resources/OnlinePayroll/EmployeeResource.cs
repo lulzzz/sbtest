@@ -73,9 +73,37 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public DateTime? LastPayrollDate { get; set; }
 
+		public string WcCode
+		{
+			get { return WorkerCompensation != null ? WorkerCompensation.Code.ToString() : string.Empty; }
+		}
+
+		public string Address
+		{
+			get { return Contact.Address.AddressLine2; }
+		}
+
+		public string PayTypeText
+		{
+			get { return PayType.GetDbName(); }
+		}
+		public string FederalStatusText
+		{
+			get { return FederalStatus.GetDbName(); }
+		}
+		public string StateStatusText
+		{
+			get { return State.TaxStatus.GetDbName(); }
+		}
+
 		public string StatusText
 		{
 			get { return StatusId.GetDbName(); }
+		}
+
+		public string SSNText
+		{
+			get { return string.Format("{0}-{1}-{2}", SSN.Substring(0, 3), SSN.Substring(3, 2), SSN.Substring(5, 4)); }
 		}
 
 		public string Name
