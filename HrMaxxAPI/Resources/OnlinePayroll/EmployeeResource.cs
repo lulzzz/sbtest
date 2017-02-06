@@ -80,7 +80,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public string Address
 		{
-			get { return Contact.Address.AddressLine2; }
+			get { return string.Format("{0}, {1}",Contact.Address.AddressLine1, Contact.Address.AddressLine2); }
 		}
 
 		public string PayTypeText

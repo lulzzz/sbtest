@@ -165,7 +165,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						{ field: "wcCode", title: "WC", show: true, filter: { wcCode: 'text' }, sortable: "wcCode" },
 						{ field: "payTypeText", title: "Pay Type", show: false, filter: { payTypeText: 'text' }, sortable: "payTypeText" },
 						{ field: "federalStatusText", title: "Federal Status", show: false, filter: { federalStatusText: 'text' }, sortable: "federalStatusText" },
-						{ field: "stateStatusText", title: "State Status", show: false, filter: { stateStatusText: 'text' }, sortable: "stateStatusText" },
+						{ field: "federalExemptions", title: "Federal Exemptions", show: false, filter: { federalExemptions: 'text' }, sortable: "federalExemptions" },
 						{ field: "controls", title: "", show: true }
 					];
 					

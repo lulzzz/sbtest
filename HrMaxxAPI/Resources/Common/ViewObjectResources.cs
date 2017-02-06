@@ -50,7 +50,7 @@ namespace HrMaxxAPI.Resources.Common
 		}
 		public string Address
 		{
-			get { return CompanyAddress.AddressLine2; }
+			get { return string.Format("{0}, {1}", CompanyAddress.AddressLine1, CompanyAddress.AddressLine2); }
 		}
 		public string EIN
 		{

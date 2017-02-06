@@ -1122,7 +1122,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								else
 								{
 									invoice.Status = InvoiceStatus.Delivered;
-									
 								}
 							}
 						}
