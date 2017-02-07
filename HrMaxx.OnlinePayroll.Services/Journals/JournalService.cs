@@ -515,6 +515,19 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
+		public List<Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate)
+		{
+			try
+			{
+				return _journalRepository.GetJournalListForPositivePay(companyId, startDate, endDate);
+			}
+			catch (Exception e)
+			{
+				
+				throw;
+			}
+		}
+
 		private void CreateDepositTickets(string user, MasterExtract masterExtract, Guid userId)
 		{
 			masterExtract.Extract.Data.Hosts.Where(h=>h.Companies.Any(c=>c.Payments.Any())).ToList().ForEach(host =>
@@ -808,7 +821,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " journal list by company and date");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " journal list by company and startDate");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

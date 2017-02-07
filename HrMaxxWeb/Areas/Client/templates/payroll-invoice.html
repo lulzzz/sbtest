@@ -94,7 +94,7 @@
 					
 				</div>
 				<div class="col-sm-2 form-group" ng-show="!mainData.userCompany && invoice.status===5">
-					<date-ctrl name="redate" model="data.reDate" disabled="false" />
+					<date-ctrl name="redate" model="data.reDate" min="invoice.payrollPayDay" disabled="false" />
 				</div>
 				<div class="col-sm-2 show-red" ng-if="unsavedPayments">changes will apply when you save</div>
 				<div class="col-sm-10">

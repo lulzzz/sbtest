@@ -155,7 +155,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					var getInvoices = function (selectedInvoiceId) {
 						$scope.selectedStatus = [];
 						$.each($scope.selectedStatuses, function (i, st) {
-							$scope.selectedStatus.push(st.id);
+							if(st.id)
+								$scope.selectedStatus.push(st.id);
 						});
 						payrollRepository.getInvoicesForHost(null, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus).then(function (data) {
 							$scope.list = data;

@@ -381,6 +381,7 @@
           <Property Name="JournalDetails" Type="varchar(max)" Nullable="false" />
           <Property Name="DocumentId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
+          <Property Name="OriginalDate" Type="datetime" />
         </EntityType>
         <EntityType Name="MasterExtracts">
           <Key>
@@ -2209,6 +2210,7 @@
           <Property Name="DocumentId" Type="Guid" Nullable="false" />
           <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="PayrollPayCheck" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="Journal" ToRole="PayrollPayCheck" />
+          <Property Name="OriginalDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Journal_EntityType">
           <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
@@ -3068,6 +3070,7 @@
           <EntitySetMapping Name="Journals">
             <EntityTypeMapping TypeName="HrMaxxModel.Journal">
               <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="OriginalDate" ColumnName="OriginalDate" />
                 <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
                 <ScalarProperty Name="MainAccountId" ColumnName="MainAccountId" />

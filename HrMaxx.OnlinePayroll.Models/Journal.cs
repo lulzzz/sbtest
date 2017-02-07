@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Amount { get; set; }
 		public int MainAccountId { get; set; }
 		public DateTime TransactionDate { get; set; }
+		public DateTime? OriginalDate { get; set; }
 		public string Memo { get; set; }
 		public bool IsDebit { get; set; }
 		public bool IsVoid { get; set; }

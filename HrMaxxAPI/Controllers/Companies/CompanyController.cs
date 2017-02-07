@@ -107,6 +107,34 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 
 		[HttpGet]
+		[Route(CompanyRoutes.MinifiedEmployeeList)]
+		public HttpResponseMessage GetAllCompaniesAndEmployeesMinified()
+		{
+			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
+			var employees = MakeServiceCall(() => _readerService.GetEmployees(), "Get all employees", true);
+			var companies = MakeServiceCall(() => _readerService.GetCompanies(), "Get companies for hosts", true);
+			var returnString = new StringBuilder();
+			employees.ForEach(e =>
+			{
+				var company = companies.First(c => c.Id == e.CompanyId);
+				returnString.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}", company.CompanyNo, company.Id,
+					company.Name.Replace(",", ""), string.Format("{0}-{1}", company.Id, e.SSN), e.Id,
+					e.CompanyEmployeeNo, e.EmployeeNo, e.FullName, e.SSN, e.CarryOver));
+			});
+			var stream = new MemoryStream();
+			var writer = new StreamWriter(stream);
+			writer.Write(returnString.ToString());
+			writer.Flush();
+			stream.Position = 0;
+
+			var result = new HttpResponseMessage(HttpStatusCode.OK);
+			result.Content = new StreamContent(stream);
+			result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+			result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "EmployeeExport.csv" };
+			return result;
+		}
+
+		[HttpGet]
 		[Route(CompanyRoutes.Companies)]
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{

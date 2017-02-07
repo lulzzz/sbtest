@@ -206,13 +206,22 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		public void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date)
 		{
 			var dbPayroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == payrollId);
+			
 			if (dbPayroll != null)
 			{
+				var originalDate = dbPayroll.PayDay;
 				dbPayroll.PayDay = date.Date;
 				var dbPayChecks = dbPayroll.PayrollPayChecks.Where(pc => payChecks.Contains(pc.Id)).ToList();
 				dbPayChecks.ForEach(pc=>pc.PayDay=date.Date);
 				var dbJournals = _dbContext.Journals.Where(j => payChecks.Contains(j.PayrollPayCheckId.Value)).ToList();
-				dbJournals.ForEach(j=>j.TransactionDate = date.Date);
+				dbJournals.ForEach(j =>
+				{
+					j.TransactionDate = date.Date;
+					if (!j.OriginalDate.HasValue && DateTime.Today > originalDate)
+					{
+						j.OriginalDate = originalDate;
+					}
+				});
 				_dbContext.SaveChanges();
 			}
 

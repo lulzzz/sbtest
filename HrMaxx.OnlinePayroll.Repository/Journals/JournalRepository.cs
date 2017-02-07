@@ -149,6 +149,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(dbJournal);
 		}
 
+		public List<Models.Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate)
+		{
+			var journals = _dbContext.Journals.AsQueryable();
+			if (companyId.HasValue)
+				journals = journals.Where(j => j.CompanyId == companyId.Value);
+
+			journals = journals.Where(j => (!j.OriginalDate.HasValue && j.TransactionDate >= startDate && j.TransactionDate <= endDate) || (j.OriginalDate.HasValue && j.OriginalDate >= startDate && j.OriginalDate <= endDate));
+			
+			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals.ToList());
+		}
+
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)
 		{
 			var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);

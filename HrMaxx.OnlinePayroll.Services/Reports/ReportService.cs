@@ -355,15 +355,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var host = _hostService.GetHost(request.HostId);
 			var accounts = _companyRepository.GetCompanyAccounts(host.Company.Id);
-			var journals = _journalService.GetJournalListByDate(host.CompanyId, request.StartDate.Date,
+			var journals = _journalService.GetJournalListForPositivePay(host.CompanyId, request.StartDate.Date,
 				request.EndDate.Date);
 			journals =
 				journals.Where(
-					j =>
-						(j.TransactionType == TransactionType.PayCheck || j.TransactionType == TransactionType.RegularCheck) &&
-						j.PaymentMethod == EmployeePaymentMethod.Check).ToList();
+					j => (j.TransactionType == TransactionType.PayCheck || j.TransactionType == TransactionType.RegularCheck) && j.PaymentMethod==EmployeePaymentMethod.Check).ToList();
 			if(!journals.Any())
 				throw  new Exception(NoData);
+			journals.Where(j=>j.OriginalDate.HasValue).ToList().ForEach(j=>j.TransactionDate = j.OriginalDate.Value);
 			var data = new ExtractResponse()
 			{
 				Hosts = new List<ExtractHost>()
