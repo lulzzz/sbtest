@@ -37,6 +37,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public int MainAccountId { get; set; }
 		[Required]
 		public DateTime TransactionDate { get; set; }
+		public DateTime? OriginalDate { get; set; }
 		public string Memo { get; set; }
 		[Required]
 		public bool IsDebit { get; set; }
