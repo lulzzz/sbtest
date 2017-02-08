@@ -72,6 +72,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				var exists = _companyRepository.CompanyExists(company.Id, company.FederalEIN);
+				var comp = _readerService.GetCompany(company.Id);
 				var notificationText = !exists ? "A new Company {0} has been created" : "{0} has been updated";
 				var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 				using (var txn = TransactionScopeHelper.Transaction())
@@ -119,15 +120,19 @@ namespace HrMaxx.OnlinePayroll.Services
 
 						});
 					}
-					var employees = _readerService.GetEmployees(company:savedcompany.Id);
-					employees.Where(e=>e.PayType!=EmployeeType.Salary && (e.Rate<savedcompany.MinWage || e.PayCodes.Any(pc=>pc.Id==0 && pc.HourlyRate<savedcompany.MinWage)))
-						.ToList()
-						.ForEach(e =>
-						{
-							e.Rate = e.Rate < savedcompany.MinWage ? savedcompany.MinWage : e.Rate;
-							e.PayCodes.Where(pc=>pc.Id==0 && pc.HourlyRate<savedcompany.MinWage).ToList().ForEach(pc=>pc.HourlyRate=savedcompany.MinWage);
-							SaveEmployee(e);
-						});
+					if (comp != null && savedcompany.MinWage > comp.MinWage)
+					{
+						var employees = _readerService.GetEmployees(company: savedcompany.Id);
+						employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < savedcompany.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < savedcompany.MinWage)))
+							.ToList()
+							.ForEach(e =>
+							{
+								e.Rate = e.Rate < savedcompany.MinWage ? savedcompany.MinWage : e.Rate;
+								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < savedcompany.MinWage).ToList().ForEach(pc => pc.HourlyRate = savedcompany.MinWage);
+								SaveEmployee(e);
+							});
+					}
+					
 					
 					txn.Complete();
 

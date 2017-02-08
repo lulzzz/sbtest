@@ -24,7 +24,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string SSN { get; set; }
 		public DateTime? BirthDate { get; set; }
 		public DateTime HireDate { get; set; }
-		public DateTime SickLeaveHireDate { get; set; }
+		public DateTime? SickLeaveHireDate { get; set; }
 		public decimal CarryOver { get; set; }
 		public string Department { get; set; }
 		public string EmployeeNo { get; set; }

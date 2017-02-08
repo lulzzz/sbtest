@@ -37,9 +37,6 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
-						filter: {
-							id:0
-						},
 						sorting: {
 							payDay: 'desc'     // initial sorting
 						}
