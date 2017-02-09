@@ -189,33 +189,35 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 					if (journal.TransactionType == TransactionType.RegularCheck  && journal.PayeeId == Guid.Empty)
 					{
-						if (journal.EntityType == EntityTypeEnum.Vendor || journal.EntityType == EntityTypeEnum.Customer)
+						if (journal.EntityType == EntityTypeEnum.Vendor)
 						{
 							var vc = new VendorCustomer();
 							vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, journal.PayeeName,
 								journal.EntityType == EntityTypeEnum.Vendor, journal.LastModifiedBy);
 							var savedVC = _companyService.SaveVendorCustomers(vc);
 							journal.PayeeId = savedVC.Id;
+							journal.PayeeName = savedVC.Name;
 						}
 					}
 					else if (journal.TransactionType == TransactionType.Deposit && journal.JournalDetails.Any(jd=>jd.Payee!=null && jd.Payee.Id==Guid.Empty))
 					{
-						var newVendors = new List<VendorCustomer>();
+						var newVendors = new List<JournalPayee>();
 						var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();
 						jds.ForEach(p=>
 						{
-							if (newVendors.Any(v => v.Name.Equals(p.Payee.Name)))
+							if (newVendors.Any(v => v.PayeeName.Equals(p.Payee.PayeeName)))
 							{
-								p.Payee = newVendors.First(v => v.Name.Equals(p.Payee.Name));
+								p.Payee = newVendors.First(v => v.PayeeName.Equals(p.Payee.PayeeName));
 							}
 							else
 							{
 								var vc = new VendorCustomer();
-								vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, p.Payee.Name,
-									p.Payee.IsVendor, journal.LastModifiedBy);
+								vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, p.Payee.PayeeName,
+									true, journal.LastModifiedBy);
 								var savedVC = _companyService.SaveVendorCustomers(vc);
-								p.Payee = savedVC;
-								newVendors.Add(savedVC);
+								p.Payee.Id = savedVC.Id;
+								p.Payee.PayeeType = EntityTypeEnum.Vendor;
+								newVendors.Add(p.Payee);
 							}
 							
 							
@@ -292,16 +294,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), "Cash"));
 					else
 					{
-						if (jd.Payee != null)
-						{
-							var vc = _companyService.GetVendorCustomersById(jd.Payee.Id);
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), vc.Name));
-						}
-						else
-						{
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), string.Format("Check #{0}", jd.CheckNumber)));
-						}
-						
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo1." + counter.ToString(), string.Format("Check #{0}", jd.CheckNumber)));
 					}
 				}
 				
@@ -343,7 +336,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			var enumerable = coas as Account[] ?? coas.ToArray();
 			var bankcoa = enumerable.First(c => c.Id == journal.MainAccountId);
-			var vc = _companyService.GetVendorCustomersById(journal.PayeeId);
+			var vc = _readerService.GetPayee(company.Id, journal.PayeeId, (int)journal.EntityType);
 			var pdf = new PDFModel
 			{
 				Name = string.Format("Check_{1}_{2} {0}.pdf", journal.TransactionDate.ToString("MMddyyyy"), journal.CompanyId, journal.Id),
@@ -378,12 +371,12 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", company.CompanyAddress.AddressLine1));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", company.CompanyAddress.AddressLine2));
 
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", vc.Name));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", vc.PayeeName));
 			if (vc.Contact != null && vc.Contact.Address != null)
 			{
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text1", vc.Contact.Address.AddressLine1));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text3", vc.Contact.Address.AddressLine2));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text3", vc.Contact.Address.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text1", vc.Address.AddressLine1));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text3", vc.Address.AddressLine2));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text3", vc.Address.AddressLine2));
 			}
 
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date", journal.TransactionDate.ToString("MM/dd/yyyy")));
@@ -414,7 +407,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", journal.Memo));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", "Check Date: " + journal.TransactionDate.ToString("MM/dd/yyyy")));
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", string.Format("Payee : {0}{1} Amount: {2}", vc.Name, "".PadRight(160 - vc.Name.Length - journal.Amount.ToString("c").Length), journal.Amount.ToString("c"))));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", string.Format("Payee : {0}{1} Amount: {2}", vc.PayeeName, "".PadRight(160 - vc.PayeeName.Length - journal.Amount.ToString("c").Length), journal.Amount.ToString("c"))));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2", "Memo on Check:    " + journal.Memo));
 
 			var counter = 1;
@@ -533,13 +526,16 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			masterExtract.Extract.Data.Hosts.Where(h=>h.Companies.Any(c=>c.Payments.Any())).ToList().ForEach(host =>
 			{
 				var coaList = _companyService.GetComanyAccounts(host.HostCompany.Id); 
-				var bankCOA = coaList.First(c => c.UseInPayroll);
+				var bankCOA = coaList.FirstOrDefault(c => c.UsedInInvoiceDeposit);
+				if(bankCOA==null)
+					throw new Exception("No Bank Account set up for Invoice Deposit");
 				var allpayments =
 					host.Companies.SelectMany(c => c.Payments.Where(p => p.Method != InvoicePaymentMethod.ACH).Select(p => p)).ToList();
-
+				var invoiceDeposits = _journalRepository.GetCompanyJournals(host.HostCompany.Id,
+					masterExtract.Extract.Report.StartDate, masterExtract.Extract.Report.StartDate);
 				var journal = new Journal
 				{
-					Id = 0,
+					Id = invoiceDeposits.Any(j=>j.TransactionType==TransactionType.InvoiceDeposit) ? invoiceDeposits.First(j=>j.TransactionType==TransactionType.InvoiceDeposit).Id : 0,
 					CompanyId = host.HostCompany.Id,
 					Amount = Math.Round(allpayments.Sum(p=>p.Amount), 2, MidpointRounding.AwayFromZero),
 					CheckNumber = -1,
@@ -554,7 +550,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					PaymentMethod = EmployeePaymentMethod.Check,
 					PayrollPayCheckId = null,
 					TransactionDate = masterExtract.Extract.Report.StartDate,
-					TransactionType = TransactionType.Deposit,
+					TransactionType = TransactionType.InvoiceDeposit,
 					PayeeName = string.Empty,
 					MainAccountId = bankCOA.Id,
 					JournalDetails = new List<JournalDetail>(),
@@ -580,7 +576,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						CheckNumber = p.Method == InvoicePaymentMethod.Check ? p.CheckNumber : 0,
 						Amount = p.Amount,
 						LastModfied = journal.LastModified,
-						LastModifiedBy = user
+						LastModifiedBy = user,
+						Payee = new JournalPayee() { Id = p.CompanyId, PayeeName=host.Companies.First(c=>c.Company.Id==p.CompanyId).Company.Name, PayeeType=EntityTypeEnum.Company }
 					}));
 				SaveCheckbookEntry(journal, userId);
 
@@ -919,7 +916,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					return "RegCheck.pdf";
 
 			}
-			else if (transactionType == TransactionType.Deposit)
+			else if (transactionType == TransactionType.Deposit || transactionType == TransactionType.InvoiceDeposit)
 			{
 				return "DepositTicket.pdf";
 

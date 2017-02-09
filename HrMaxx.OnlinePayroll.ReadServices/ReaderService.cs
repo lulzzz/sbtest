@@ -13,6 +13,7 @@ using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxx.OnlinePayroll.ReadRepository;
 using Newtonsoft.Json;
 
@@ -469,6 +470,44 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 		  }
+	  }
+
+	  public List<JournalPayee> GetJournalPayees(Guid company)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				
+				paramList.Add(new FilterParam { Key = "company", Value = company.ToString() });
+				
+				return GetDataFromStoredProc<List<JournalPayee>, List<JournalPayeeJson>>("GetJournalPayees", paramList, new XmlRootAttribute("JournalPayeeList"));
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Company List through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
+	  public JournalPayee GetPayee(Guid company, Guid id, int payeeType)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "company", Value = company.ToString() });
+				paramList.Add(new FilterParam { Key = "payeeId", Value = id.ToString() });
+				paramList.Add(new FilterParam { Key = "payeeType", Value = payeeType.ToString() });
+
+				var payees = GetDataFromStoredProc<List<JournalPayee>, List<JournalPayeeJson>>("GetJournalPayees", paramList, new XmlRootAttribute("JournalPayeeList"));
+				return payees.FirstOrDefault();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Company List through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 	  }
   }
 }

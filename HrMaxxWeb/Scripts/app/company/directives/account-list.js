@@ -60,6 +60,7 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 							templateId: null,
 							bankAccount: null,
 							useInPayroll: false,
+							usedInInvoiceDeposit: false,
 							isBank: function() {
 								if (type === 1 && subType === 2)
 									return true;
@@ -313,9 +314,9 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}, {
 						total: $scope.selected && $scope.selected.journals.length > 0 ? $scope.selected.journals.length : 0, // length of data
-						getData: function ($defer, params) {
+						getData: function (params) {
 							$scope.fillTableDataRegister(params);
-							$defer.resolve($scope.tableDataRegister);
+							return $scope.tableDataRegister;
 						}
 					});
 					$scope.fillTableDataRegister = function (params) {

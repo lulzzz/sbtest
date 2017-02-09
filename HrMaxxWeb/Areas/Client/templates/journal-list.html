@@ -139,7 +139,7 @@
 				</div>
 
 			</div>
-			<div class="panel panel-info" ng-if="selected && selected.transactionType===3">
+			<div class="panel panel-info" ng-if="selected && (selected.transactionType===3 || selected.transactionType===7)">
 				<div class="panel-body tab-content">
 					<deposit-ticket item="selected" datasvc="data" company="mainData.selectedCompany" show-controls="true" />
 				</div>

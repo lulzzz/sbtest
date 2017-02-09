@@ -41,7 +41,7 @@
 				</div>
 				<div class="col-sm-6">
 					<div class="col-sm-10 text-bold">
-						<input type="text" placeholder="Vendor/Customer Name" ng-blur="payeeSelected()" ng-disabled="item.id" ng-model="data.selectedPayee" uib-typeahead="customer as customer.name for customer in data.allPayees | filter:$viewValue" class="form-control">
+						<input type="text" placeholder="Payee Name" ng-blur="payeeSelected()" ng-disabled="item.id" ng-model="data.selectedPayee" uib-typeahead="customer as customer.displayName for customer in data.payees | filter:$viewValue" class="form-control">
 					</div>
 				</div>
 			</div>

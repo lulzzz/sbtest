@@ -320,6 +320,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbAccount.Name = mapped.Name;
 					dbAccount.OpeningBalance = mapped.OpeningBalance;
 					dbAccount.UsedInPayroll = mapped.UsedInPayroll;
+					dbAccount.UsedInInvoiceDeposit = mapped.UsedInInvoiceDeposit;
 				}
 			}
 			_dbContext.SaveChanges();

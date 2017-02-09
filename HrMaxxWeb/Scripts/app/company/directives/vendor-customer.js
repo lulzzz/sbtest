@@ -69,7 +69,16 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					var init = function () {
+						if (!$scope.selected.contact) {
+							$scope.selected.contact = {
+								address: {}
+							};
+						}
+						else if (!$scope.selected.contact.address) {
+							$scope.selected.contact.address = {
 
+							};
+						}
 					}
 					init();
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
@@ -200,6 +201,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 			CreateMap<Models.JsonDataModel.MasterExtractJson, Models.MasterExtract>()
 				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src =>!string.IsNullOrWhiteSpace(src.Extract) ? JsonConvert.DeserializeObject<Extract>(src.Extract) : null))
 				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<int>>(src.Journals)));
+
+			CreateMap<Models.JsonDataModel.JournalPayeeJson, Models.JournalPayee>()
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
+				.ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.PayeeType == EntityTypeEnum.Company ? JsonConvert.DeserializeObject<Address>(src.Address) : !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact).Address : new Contact().Address));
 		}
 	}
 }

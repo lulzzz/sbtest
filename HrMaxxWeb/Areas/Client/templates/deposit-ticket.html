@@ -117,15 +117,15 @@
 						</span>
 					</td>
 					<td class="text-right">
-						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-convert-to-decimal>
+						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id && jd.depositMethod.key===1" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{0,2})?$/" e-step="0.01" e-style="width:10em;">
 							{{ jd.amount | currency:'$'}}
 						</span>
 					</td>
 					<td>
 						
-						<input ng-show="rowform.$visible" type="text" ng-model="jd.screenPayee" uib-typeahead="a as a.name for a in data.allPayees | filter:$viewValue" class="form-control">
+						<input ng-show="rowform.$visible" type="text" ng-model="jd.screenPayee" uib-typeahead="a as a.displayName for a in data.payees | filter:$viewValue" class="form-control">
 						<span ng-show="!rowform.$visible">
-							{{ jd.payee? jd.payee.name : '' }}
+							{{ jd.payee? jd.payee.payeeName : '' }}
 						</span>
 					</td>
 					<td>
@@ -137,10 +137,10 @@
 					<td style="white-space: nowrap" ng-show="showControls">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveJournalDetail(jd)" class="form-buttons form-inline" shown="selectedjd===jd">
-							<button title="edit" type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
+							<button title="edit" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
 								<i class="fa fa-edit"></i>
 							</button>
-							<button title="remove" type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="removejd(jd)">
+							<button title="remove" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-danger" ng-click="removejd(jd)">
 								<i class="fa fa-fire"></i>
 							</button>
 							<button  title="save" type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">

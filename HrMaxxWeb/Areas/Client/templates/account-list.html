@@ -212,6 +212,17 @@
 									</div>
 								</div>
 							</div>
+							<div class="row" ng-if="isBank()">
+								<div class="form-group">
+									<label></label>
+									<div>
+										<label for="useininvoicedeposit" class="switch">
+											Use In Invoice Deposit?
+											<input id="useininvoicedeposit" type="checkbox" ng-model="selected.usedInInvoiceDeposit" /><i></i>
+										</label>
+									</div>
+								</div>
+							</div>
 						</div>
 						
 						<div class="col-sm-6" ng-if="isBank()">

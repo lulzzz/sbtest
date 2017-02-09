@@ -120,6 +120,7 @@
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="UsedInPayroll" Type="bit" Nullable="false" />
+          <Property Name="UsedInInvoiceDeposit" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccumlatedPayType">
           <Key>
@@ -1981,6 +1982,7 @@
           <Property Name="OpeningDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UsedInPayroll" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_CompanyAccount" FromRole="CompanyAccount" ToRole="Journal" />
+          <Property Name="UsedInInvoiceDeposit" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -2966,6 +2968,7 @@
           <EntitySetMapping Name="CompanyAccounts">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyAccount">
               <MappingFragment StoreEntitySet="CompanyAccount">
+                <ScalarProperty Name="UsedInInvoiceDeposit" ColumnName="UsedInInvoiceDeposit" />
                 <ScalarProperty Name="UsedInPayroll" ColumnName="UsedInPayroll" />
                 <ScalarProperty Name="OpeningDate" ColumnName="OpeningDate" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />

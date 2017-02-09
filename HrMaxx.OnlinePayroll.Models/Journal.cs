@@ -44,7 +44,8 @@ namespace HrMaxx.OnlinePayroll.Models
 						? (int)EntityTypeEnum.PayCheck
 						: TransactionType == TransactionType.Deposit
 							? (int)EntityTypeEnum.Deposit
-							: TransactionType == TransactionType.Adjustment ? (int)EntityTypeEnum.Adjustment : (int)EntityTypeEnum.TaxPayment;
+							: TransactionType == TransactionType.Adjustment ? (int)EntityTypeEnum.Adjustment 
+							: TransactionType == TransactionType.TaxPayment ? (int)EntityTypeEnum.TaxPayment : (int)EntityTypeEnum.InvoiceDeposit;
 			}
 		}
 		public Guid MementoId
@@ -70,7 +71,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Amount { get; set; }
 		public string Memo { get; set; }
 		public VendorDepositMethod DepositMethod { get; set; }
-		public VendorCustomer Payee { get; set; }
+		public JournalPayee Payee { get; set; }
 		public int CheckNumber { get; set; }
 		public DateTime LastModfied { get; set; }
 		public string LastModifiedBy { get; set; }

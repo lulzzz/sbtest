@@ -17,9 +17,7 @@ common.directive('depositTicket', ['zionAPI','version',
 				function ($scope, $element, $location, $filter, companyRepository, EntityTypes, AccountType) {
 					var dataSvc = {
 						companyAccounts: $scope.datasvc.companyAccounts,
-						vendors: $scope.datasvc.vendors? $scope.datasvc.vendors : [],
-						customers: $scope.datasvc.customers ? $scope.datasvc.customers : [],
-						allPayees: [],
+						payees: $scope.datasvc.payees? $scope.datasvc.payees : [],
 						selectedPayee: null,
 						depositMethods:[{key:1, value: 'Check'}, {key:2, value: 'Cash'}]
 
@@ -42,8 +40,8 @@ common.directive('depositTicket', ['zionAPI','version',
 						if (dataSvc.selectedPayee) {
 							if (dataSvc.selectedPayee.id) {
 								$scope.item.payeeId = dataSvc.selectedPayee.id;
-								$scope.item.payeeName = dataSvc.selectedPayee.name;
-								$scope.item.entityType = dataSvc.selectedPayee.isVendor ? EntityTypes.Vendor : EntityTypes.Customer;
+								$scope.item.payeeName = dataSvc.selectedPayee.payeeName;
+								$scope.item.entityType = dataSvc.selectedPayee.payeeType;
 							} else {
 								$scope.item.payeeId = '00000000-0000-0000-0000-000000000000';
 								$scope.item.payeeName = dataSvc.selectedPayee;
@@ -76,16 +74,17 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.item.journalDetails.push(newJD);
 						$scope.selectedjd = $scope.item.journalDetails[currentLength];
 					}
-
+					
 					$scope.saveJournalDetail = function (jd) {
 						if (jd.screenPayee) {
 							if (!jd.screenPayee.id) {
 								jd.payee = {
 									id : '00000000-0000-0000-0000-000000000000',
-									name: jd.screenPayee,
-									isVendor: true
+									payeeName: jd.screenPayee,
+									payeeType: EntityTypes.Vendor,
+									displayName: 'Vendor: ' + jd.screenPayee
 								};
-								dataSvc.allPayees.push(jd.payee);
+								dataSvc.payees.push(jd.payee);
 							} else {
 								jd.payee = jd.screenPayee;
 							}
@@ -202,14 +201,7 @@ common.directive('depositTicket', ['zionAPI','version',
 						
 						
 						$scope.minPayDate = new Date();
-						dataSvc.allPayees = dataSvc.vendors.concat(dataSvc.customers);
-						if ($scope.item && $scope.item.payeeId != '00000000-0000-0000-0000-000000000000') {
-							var exists = $filter('filter')(dataSvc.allPayees, { id: $scope.item.payeeId })[0];
-							if (exists) {
-								dataSvc.selectedPayee = exists;
-							}
-						}
-
+						
 						$.each($scope.item.journalDetails, function (index, jd) {
 							jd.screenPayee = angular.copy(jd.payee);
 							if (!jd.accountId!==$scope.datasvc.selectedAccount.id) {

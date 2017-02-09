@@ -18,8 +18,7 @@ common.directive('regularCheck', ['zionAPI','version',
 					var dataSvc = {
 						
 						companyAccounts: $scope.datasvc.companyAccounts,
-						vendors: $scope.datasvc.vendors? $scope.datasvc.vendors : [],
-						customers: $scope.datasvc.customers ? $scope.datasvc.customers : [],
+						payees: $scope.datasvc.payees? $scope.datasvc.payees : [],
 						allPayees: [],
 						selectedPayee: null
 
@@ -41,8 +40,8 @@ common.directive('regularCheck', ['zionAPI','version',
 						if (dataSvc.selectedPayee) {
 							if (dataSvc.selectedPayee.id) {
 								$scope.item.payeeId = dataSvc.selectedPayee.id;
-								$scope.item.payeeName = dataSvc.selectedPayee.name;
-								$scope.item.entityType = dataSvc.selectedPayee.isVendor ? EntityTypes.Vendor : EntityTypes.Customer;
+								$scope.item.payeeName = dataSvc.selectedPayee.payeeName;
+								$scope.item.entityType = dataSvc.selectedPayee.payeeType;
 							} else {
 								$scope.item.payeeId = '00000000-0000-0000-0000-000000000000';
 								$scope.item.payeeName = dataSvc.selectedPayee;
@@ -142,9 +141,8 @@ common.directive('regularCheck', ['zionAPI','version',
 					}
 					var init = function () {
 						
-						dataSvc.allPayees = dataSvc.vendors.concat(dataSvc.customers);
 						if ($scope.item.payeeId && $scope.item.payeeId != '00000000-0000-0000-0000-000000000000') {
-							var exists = $filter('filter')(dataSvc.allPayees, { id: $scope.item.payeeId })[0];
+							var exists = $filter('filter')(dataSvc.payees, { id: $scope.item.payeeId })[0];
 							if (exists) {
 								dataSvc.selectedPayee = exists;
 							}

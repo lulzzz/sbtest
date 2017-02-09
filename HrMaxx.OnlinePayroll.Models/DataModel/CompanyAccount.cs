@@ -33,6 +33,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
         public System.DateTime OpeningDate { get; set; }
         public bool UsedInPayroll { get; set; }
+        public bool UsedInInvoiceDeposit { get; set; }
     
         public virtual AccountTemplate AccountTemplate { get; set; }
         public virtual BankAccount BankAccount { get; set; }

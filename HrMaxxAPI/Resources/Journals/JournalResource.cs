@@ -63,12 +63,12 @@ namespace HrMaxxAPI.Resources.Journals
 
 		public string PaymentMethodText
 		{
-			get { return TransactionType==TransactionType.Deposit ? string.Empty : PaymentMethod.GetDbName(); }
+			get { return TransactionType==TransactionType.Deposit || TransactionType==TransactionType.InvoiceDeposit ? string.Empty : PaymentMethod.GetDbName(); }
 		}
 
 		public string CheckNumberText
 		{
-			get { return TransactionType == TransactionType.Deposit ? string.Empty : PaymentMethod == EmployeePaymentMethod.Check ? CheckNumber.ToString() : "EFT"; }
+			get { return TransactionType == TransactionType.Deposit || TransactionType == TransactionType.InvoiceDeposit ? string.Empty : PaymentMethod == EmployeePaymentMethod.Check ? CheckNumber.ToString() : "EFT"; }
 		}
 
 		public string StatusText
@@ -89,7 +89,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public decimal Amount { get; set; }
 		public string Memo { get; set; }
 		public VendorDepositMethod DepositMethod { get; set; }
-		public VendorCustomer Payee { get; set; }
+		public JournalPayee Payee { get; set; }
 		public int CheckNumber { get; set; }
 		public DateTime LastModfied { get; set; }
 		public string LastModifiedBy { get; set; }

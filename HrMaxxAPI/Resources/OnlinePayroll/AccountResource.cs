@@ -23,6 +23,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DateTime LastModified { get; set; }
 		public string LastModifiedBy { get; set; }
 		public bool UseInPayroll { get; set; }
+		public bool UsedInInvoiceDeposit { get; set; }
 
 		public string TypeText { get { return Type.GetDbName(); } }
 		public string SubTypeText { get { return SubType.GetDbName(); } }

@@ -242,8 +242,10 @@
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="HostHomePageDocument.cs" />
+    <Compile Include="JournalPayee.cs" />
     <Compile Include="JsonDataModel\Company.cs" />
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
+    <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\MasterExtractJson.cs" />
     <Compile Include="JsonDataModel\Payroll.cs" />
     <Compile Include="JsonDataModel\PayrollInvoice.cs" />

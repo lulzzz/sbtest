@@ -17,8 +17,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						
 						companyAccounts: [],
 						bankAccounts: [],
-						vendors: [],
-						customers: [],
+						payees: [],
 						startingCheckNumber: 0,
 						startingAdjustmentNumber: 0,
 						selectedAccount: null,
@@ -219,32 +218,38 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							});
 						}
 					}
+					var translatePayeeType = function(type) {
+						if (type === EntityTypes.Company)
+							return 'Company';
+						else if (type === EntityTypes.Employee)
+							return 'Employee';
+						else if (type === EntityTypes.Vendor)
+							return 'Vendor';
+						else if (type === EntityTypes.Customer)
+							return 'Customer';
+						else {
+							return '';
+						}
+					}
 					var addPayeeToVendorCustomers = function (j) {
 						if (j.transactionType === 2) {
 							var payee = {
 								id: j.payeeId,
-								name: j.payeeName,
-								isVendor: j.entityType === EntityTypes.Vendor
+								payeeName: j.payeeName,
+								payeeType: j.entityType,
+								dispalyName: translatePayeeType(j.entityType) + ': ' + j.payeeName
 							};
-							if (j.entityType === EntityTypes.Vendor) {
-								var exists = $filter('filter')(dataSvc.vendors, { id: payee.id })[0];
-								if (!exists) {
-									dataSvc.vendors.push(payee);
-								}
-							}
-							if (j.entityType === EntityTypes.Customer) {
-								var exists1 = $filter('filter')(dataSvc.customers, { id: payee.id })[0];
-								if (!exists1) {
-									dataSvc.customers.push(payee);
-								}
+							var exists = $filter('filter')(dataSvc.payees, { id: payee.id })[0];
+							if (!exists) {
+								dataSvc.payees.push(payee);
 							}
 						}
 						else if (j.transactionType === 3) {
 							$.each(j.journalDetails, function (i, jd) {
 								if (jd.payee && jd.payee.id) {
-									var exists = $filter('filter')(dataSvc.vendors, { id: jd.payee.id })[0];
+									var exists = $filter('filter')(dataSvc.payees, { id: jd.payee.id })[0];
 									if (!exists) {
-										dataSvc.vendors.push(payee);
+										dataSvc.payees.push(payee);
 									}
 								}
 							});
@@ -308,7 +313,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							$scope.fillTableData($scope.tableParams);
 							
 						}, function (error) {
-							$scope.addAlert('error getting journal list', 'danger');
+							addAlert('error getting journal list', 'danger');
 						});
 					}
 					$scope.getJournalList = function () {
@@ -321,7 +326,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 								$scope.fillTableData($scope.tableParams);
 
 							}, function (error) {
-								$scope.addAlert('error getting journal list', 'danger');
+								addAlert('error getting journal list', 'danger');
 							});
 						}
 						
@@ -331,8 +336,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							dataSvc.companyAccounts = data.accounts;
 							var bankAccounts = $filter('filter')(dataSvc.companyAccounts, { isBank: true });
 							dataSvc.bankAccounts = $filter('orderBy')(bankAccounts, 'userInPayroll', true );
-							dataSvc.vendors = data.vendors;
-							dataSvc.customers = data.customers;
+							dataSvc.payees = data.payees;
 							dataSvc.startingCheckNumber = data.startingCheckNumber;
 							dataSvc.startingAdjustmentNumber = data.startingAdjustmentNumber;
 							if (dataSvc.bankAccounts.length > 0) {
@@ -340,7 +344,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 								$scope.accountSelected();
 							}
 						}, function (erorr) {
-							$scope.addAlert('error getting journal meta data', 'danger');
+							addAlert('error getting journal meta data ' + erorr, 'danger');
 						});
 					}
 

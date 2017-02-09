@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime LastModified { get; set; }
 		public string LastModifiedBy { get; set; }
 		public bool UseInPayroll { get; set; }
+		public bool UsedInInvoiceDeposit { get; set; }
 
 		public string AccountName
 		{

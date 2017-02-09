@@ -46,5 +46,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		//ExtractData
 		ExtractResponse GetExtractResponse(ReportRequest request);
 
+		//Companies
+		List<JournalPayee> GetJournalPayees(Guid companyId);
+		JournalPayee GetPayee(Guid company, Guid id, int payeeType);
+
 	}
 }

@@ -41,14 +41,14 @@ namespace HrMaxx.OnlinePayroll.Models
 					{
 						TransactionDate = journal.TransactionDate,
 						TransactionType = journal.TransactionType,
-						CheckNumber = journal.TransactionType == TransactionType.Deposit? detail.CheckNumber : journal.CheckNumber,
-						DepositMethod = journal.TransactionType == TransactionType.Deposit?detail.DepositMethod:VendorDepositMethod.Check,
-						FromAccount = (Id == journal.MainAccountId) ? (journal.TransactionType == TransactionType.Deposit ? string.Empty : accounts.First(a => a.Id == journal.MainAccountId).AccountName) : accounts.First(a => a.Id == journal.MainAccountId).AccountName,
-						ToAccount = (Id == journal.MainAccountId) ? (journal.TransactionType == TransactionType.Deposit ? accounts.First(a => a.Id == journal.MainAccountId).AccountName : string.Empty) : AccountName,
+						CheckNumber = journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit ? detail.CheckNumber : journal.CheckNumber,
+						DepositMethod = journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit ? detail.DepositMethod : VendorDepositMethod.Check,
+						FromAccount = (Id == journal.MainAccountId) ? (journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit ? string.Empty : accounts.First(a => a.Id == journal.MainAccountId).AccountName) : accounts.First(a => a.Id == journal.MainAccountId).AccountName,
+						ToAccount = (Id == journal.MainAccountId) ? (journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit ? accounts.First(a => a.Id == journal.MainAccountId).AccountName : string.Empty) : AccountName,
 						Amount = detail.Amount,
 						Memo = detail.Memo,
 						IsDebit = detail.IsDebit,
-						Payee = journal.TransactionType == TransactionType.Deposit ? (detail.Payee!=null? detail.Payee.Name: string.Empty) : journal.PayeeName,
+						Payee = journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit ? (detail.Payee != null ? detail.Payee.PayeeName : string.Empty) : journal.PayeeName,
 						IsVoid = journal.IsVoid
 					});
 				}
@@ -112,7 +112,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string CheckNumberText
 		{
-			get { return TransactionType == TransactionType.Deposit ? string.Empty : CheckNumber>0 ? CheckNumber.ToString() : "EFT"; }
+			get { return TransactionType == TransactionType.Deposit || TransactionType == TransactionType.InvoiceDeposit ? string.Empty : CheckNumber > 0 ? CheckNumber.ToString() : "EFT"; }
 		}
 
 		public string StatusText
