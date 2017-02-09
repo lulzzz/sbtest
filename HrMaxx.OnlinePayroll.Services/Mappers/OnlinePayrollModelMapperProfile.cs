@@ -315,6 +315,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.UsedInPayroll, opt => opt.Ignore())
+				.ForMember(dest => dest.UsedInInvoiceDeposit, opt => opt.Ignore())
 				.ForMember(dest => dest.AccountTemplate, opt => opt.Ignore())
 				.ForMember(dest => dest.BankAccount, opt => opt.Ignore())
 				.ForMember(dest => dest.BankAccountId, opt => opt.Ignore())
