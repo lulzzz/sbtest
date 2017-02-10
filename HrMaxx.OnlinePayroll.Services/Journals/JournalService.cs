@@ -118,6 +118,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				var coa = _companyService.GetComanyAccounts(companyId).First(c=>c.Id==accountId);
 				var journals = _journalRepository.GetJournalList(companyId, accountId, startDate, endDate);
+				var alljournals = _journalRepository.GetJournalList(companyId, accountId, null, DateTime.Today.Date);
 				var openingBalance = (decimal)0;
 				if (!startDate.HasValue && !endDate.HasValue)
 					openingBalance = coa.OpeningBalance;
@@ -127,7 +128,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				{
 					openingBalance = coa.OpeningBalance;
 				}
-				var journalDetails = journals.Where(j=>!j.IsVoid).SelectMany(j=>j.JournalDetails.Where(jd=>jd.AccountId==accountId)).ToList();
+				var journalDetails = alljournals.Where(j=>!j.IsVoid).SelectMany(j=>j.JournalDetails.Where(jd=>jd.AccountId==accountId)).ToList();
 				var credits = journalDetails.Where(jd => !jd.IsDebit).Sum(jd => jd.Amount);
 				var debits = journalDetails.Where(jd => jd.IsDebit).Sum(jd => jd.Amount);
 				
