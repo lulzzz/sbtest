@@ -9,7 +9,8 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 				filter: "=filter",
 				callback: "&",
 				showDates: "=?showDates",
-				showPeriods: "=?showPeriods"
+				showPeriods: "=?showPeriods",
+				defaultsProvided: "=?defaultsProvided"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/report-filter.html?v=' + version,
 
@@ -92,8 +93,11 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 					var _init = function() {
 						$scope.callback();
 					}
-					dataSvc.filterStartDate = moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-					dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
+					if (!$scope.defaultsProvided) {
+						dataSvc.filterStartDate = moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
+						dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
+					}
+					
 					_init();
 				}]
 		}

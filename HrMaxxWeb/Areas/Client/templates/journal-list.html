@@ -13,7 +13,7 @@
 			</div>
 			<div class="row" ng-show="data.bankAccounts.length>0">
 				<div class="row hidden-print">
-					<report-filter filter="mainData.reportFilter" callback="getJournalList()" show-dates="true" show-periods="true" />
+					<report-filter filter="data.reportFilter" callback="getJournalList()" show-dates="true" show-periods="true" defaults-provided="true" />
 				</div>
 				
 				<div class="col-sm-12 p-5">
@@ -48,7 +48,7 @@
 						No checks found
 					</div>
 					<div ng-show="list.length>0" class="row text-center p-5">
-						<strong><em>Account Register <span ng-show="data.filterStartDate || data.filterEndDate"> ({{data.filterEndDate ? '' : 'From'}} {{data.filterStartDate? (data.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.filterEndDate? ' - ' + (data.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+						<strong><em>Account Register <span ng-show="data.reportFilter.filterStartDate || data.reportFilter.filterEndDate"> ({{data.reportFilter.filterEndDate ? '' : 'From'}} {{data.reportFilter.filterStartDate? (data.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.reportFilter.filterEndDate? ' - ' + (data.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
 					</div>
 					<div class="row" ng-show="list.length>0">
 						<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">

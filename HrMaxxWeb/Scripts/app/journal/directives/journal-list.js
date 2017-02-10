@@ -24,22 +24,21 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						selectedTransactionType: 0,
 						selectedAccountBalance: 0,
 						selectedCheckBalance: 0,
-						filterStartDate: null,
-						filterEndDate: null,
-						filter: {
-							years: [],
-							month: 0,
-							year: 0,
-							startDate: null,
-							endDate: null
+						reportFilter: {
+							filterStartDate: moment().add(-2, 'week').toDate(),
+							filterEndDate: null,
+							filter: {
+								startDate: moment().add(-2, 'week').toDate(),
+								endDate: null,
+								years: [],
+								month: 0,
+								year: 0,
+								quarter: 0
+							}
 						}
 
 					}
-					var currentYear = new Date().getFullYear();
-					dataSvc.filter.year = currentYear;
-					for (var i = currentYear-4; i <= currentYear+4; i++) {
-						dataSvc.filter.years.push(i);
-					}
+					
 					$scope.list = [];
 					$scope.newItem = null;
 					$scope.dt = new Date();
@@ -258,53 +257,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						
 						
 					}
-					$scope.filterByDateRange = function() {
-						dataSvc.filterStartDate = dataSvc.filter.startDate? dataSvc.filter.startDate : null;
-						dataSvc.filterEndDate = dataSvc.filter.endDate ? dataSvc.filter.endDate : null;
-						dataSvc.filter.filterByMonthYear = false;
-						dataSvc.filter.filterByPeriod = false;
-
-						getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, dataSvc.filterStartDate, dataSvc.filterEndDate);
-					}
-					$scope.filterByMonthYear = function () {
-						if (!dataSvc.filter.month) {
-							dataSvc.filterStartDate = moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-							dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
-						} else {
-							dataSvc.filterStartDate = moment(dataSvc.filter.month + '/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-							var test1 = moment(dataSvc.filterStartDate).endOf('month');
-							var test = moment(dataSvc.filterStartDate).endOf('month').date();
-							dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('month').format('MM/DD/YYYY');
-						}
-						
-						dataSvc.filter.filterByDateRange = false;
-						dataSvc.filter.filterByPeriod = false;
-
-						getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, dataSvc.filterStartDate, dataSvc.filterEndDate);
-					}
-					$scope.filterByPeriod = function () {
-						if (dataSvc.filter.period === 1) {
-							dataSvc.filterStartDate = null;
-							dataSvc.filterEndDate = null;
-						}
-						else if (dataSvc.filter.period === 2) {
-							dataSvc.filterEndDate = new Date();
-							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-3, 'months').format('MM/DD/YYYY');
-						}
-						else if (dataSvc.filter.period === 3) {
-							dataSvc.filterEndDate = new Date();
-							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-6, 'months').format('MM/DD/YYYY');
-						}
-						else if (dataSvc.filter.period === 4) {
-							dataSvc.filterEndDate = new Date();
-							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-1, 'years').format('MM/DD/YYYY');
-						}
-						
-						dataSvc.filter.filterByMonthYear = false;
-						dataSvc.filter.filterByDateRange = false;
-
-						getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, dataSvc.filterStartDate, dataSvc.filterEndDate);
-					}
+					
 					var getJournals = function (companyId, accountId, startDate, endDate) {
 						journalRepository.getJournalList(companyId, accountId, startDate, endDate).then(function (data) {
 							dataSvc.selectedAccountBalance = data.accountBalance;
@@ -319,7 +272,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					$scope.getJournalList = function () {
 						if (dataSvc.selectedAccount) {
 							var m = $scope.mainData;
-							journalRepository.getJournalList(m.selectedCompany.id, dataSvc.selectedAccount.id, m.reportFilter.filterStartDate, m.reportFilter.filterEndDate).then(function (data) {
+							journalRepository.getJournalList(m.selectedCompany.id, dataSvc.selectedAccount.id, dataSvc.reportFilter.filterStartDate, dataSvc.reportFilter.filterEndDate).then(function (data) {
 								dataSvc.selectedAccountBalance = data.accountBalance;
 								$scope.list = data.journals;
 								$scope.tableParams.reload();
@@ -349,7 +302,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					}
 
 					$scope.accountSelected = function() {
-						getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, null, null);
+						//getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, null, null);
+						$scope.getJournalList();
 					}
 
 					$scope.$watch('mainData.selectedCompany',
@@ -392,7 +346,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						dataSvc.isBodyOpen = false;
 					}
 					$scope.refresh = function() {
-						getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, null, null);
+						//getJournals($scope.mainData.selectedCompany.id, dataSvc.selectedAccount.id, null, null);
+						$scope.getJournalList();
 						dataSvc.isBodyOpen = !dataSvc.isBodyOpen;
 					}
 					var init = function () {

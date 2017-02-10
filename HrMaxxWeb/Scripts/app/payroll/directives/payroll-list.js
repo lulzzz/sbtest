@@ -22,7 +22,19 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						employees: [],
 						agencies:[],
 						startingCheckNumber: 0,
-						importMap: null
+						importMap: null,
+						reportFilter: {
+							filterStartDate: moment().add(-2, 'week').toDate(),
+							filterEndDate: null,
+							filter: {
+								startDate: moment().add(-2, 'week').toDate(),
+								endDate: null,
+								years: [],
+								month: 0,
+								year: 0,
+								quarter: 0
+							}
+						}
 					}
 					$scope.list = [];
 					
@@ -286,7 +298,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.data.isBodyOpen = true;
 					}
 					$scope.updateListAndItem = function (selectedItemId) {
-						getPayrolls($scope.mainData.selectedCompany.id, null, null, selectedItemId);
+						//getPayrolls($scope.mainData.selectedCompany.id, null, null, selectedItemId);
+						$scope.getPayrollList();
 						getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 					}
 					$scope.updateStatus = function(checkid, status, statusText) {
@@ -396,6 +409,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error getting payrolls', 'danger');
 						});
 					}
+					$scope.getPayrollList = function() {
+						getPayrolls($scope.mainData.selectedCompany.id,dataSvc.reportFilter.filterStartDate? moment(dataSvc.reportFilter.filterStartDate).format('MM/DD/YYYY') : null, dataSvc.reportFilter.filterEndDate? moment(dataSvc.reportFilter.filterEndDate).format('MM/DD/YYYY'):null);
+					}
 					$scope.deletePayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.$parent.$parent.confirmDialog('Are you sure you want to delete this Draft Payroll?', 'danger', function() {
@@ -443,7 +459,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						 	if (newValue !== oldValue && $scope.mainData.selectedCompany) {
 						 		getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 						 		getEmployees($scope.mainData.selectedCompany.id);
-						 		getPayrolls($scope.mainData.selectedCompany.id);
+						 		//getPayrolls($scope.mainData.selectedCompany.id);
+								 $scope.getPayrollList();
 								 data.isBodyOpen = true;
 							 }
 
@@ -527,7 +544,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 							
 							getEmployees($scope.mainData.selectedCompany.id);
-							getPayrolls($scope.mainData.selectedCompany.id, null, null);
+							//getPayrolls($scope.mainData.selectedCompany.id, null, null);
 							$scope.minPayDate = moment().startOf('day');
 							if ($scope.mainData.selectedCompany.payrollDaysInPast > 0) {
 								$scope.minPayDate = moment().add($scope.mainData.selectedCompany.payrollDaysInPast * -1, 'day').startOf('day').toDate();
