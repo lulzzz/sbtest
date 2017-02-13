@@ -233,7 +233,26 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error saving employee', 'danger');
 						});
 					}
-					
+					$scope.calculateAvailableWage = function (paytype) {
+						if (paytype) {
+							
+								var accumulated = 0;
+								var hrs = paytype.available;
+								if ($scope.selected.payType === 1 || $scope.selected.payType === 3) {
+									return hrs * $scope.selected.rate;
+								}
+								else if ($scope.selected.payType === 2) {
+									var rate = $scope.selected.rate;
+									var schedule = $scope.selected.payrollSchedule;
+									var quotient = schedule === 1 ? 52 : schedule === 2 ? 26 : schedule === 3 ? 24 : 12;
+									return hrs * rate * (quotient / (40 * 52));
+								}
+								
+							
+						}
+
+
+					}
 
 					var init = function () {
 						companyRepository.getEmployeeMetaData().then(function (data) {

@@ -509,21 +509,19 @@
 						</tr>
 						<tr>
 							<th class="text-center">Types</th>
-							<th class="text-center">Hours Used</th>
 							<th class="text-center">YTD Used</th>
-							<th class="text-center">Current</th>
 							<th class="text-center">YTD Accumulation</th>
 							<th class="text-center">Carry Over</th>
 							<th class="text-center">Available</th>
+							<th class="text-center">Available $</th>
 						</tr>
 						<tr ng-repeat="pt in selected.accumulations">
 							<td>{{pt.payType.payType.description}} ({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})</td>
-							<td class="text-right">{{pt.used}}</td>
 							<td class="text-right">{{pt.ytdUsed}}</td>
-							<td class="text-right">{{pt.accumulatedValue}}</td>
 							<td class="text-right">{{pt.ytdFiscal}}</td>
 							<td class="text-right">{{pt.carryOver}}</td>
 							<td class="text-right">{{pt.available}}</td>
+							<td class="text-right">{{calculateAvailableWage(pt) | currency:'$'}}</td>
 						</tr>
 
 					</table>
