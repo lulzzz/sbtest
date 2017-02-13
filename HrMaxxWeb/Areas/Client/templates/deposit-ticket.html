@@ -106,7 +106,7 @@
 						</span>
 					</td>
 					<td>
-						<span e-ng-change="jd.depositMethod=$data; jd.checkNumber = 0" e-ng-disabled="item.id" editable-select="jd.depositMethod" e-name="dm" e-form="rowform" e-ng-options="a.value for a in data.depositMethods track by a.key">
+						<span e-ng-change="jd.depositMethod=$data; jd.checkNumber = 0" e-ng-disabled="item.id && !jd.isNew" editable-select="jd.depositMethod" e-name="dm" e-form="rowform" e-ng-options="a.value for a in data.depositMethods track by a.key">
 							{{ jd.depositMethod? jd.depositMethod.value : '' }}
 						</span>
 					</td>
@@ -117,7 +117,7 @@
 						</span>
 					</td>
 					<td class="text-right">
-						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id && jd.depositMethod.key===1" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{0,2})?$/" e-step="0.01" e-style="width:10em;">
+						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id && jd.depositMethod.key===1 && !jd.isNew" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{0,2})?$/" e-step="0.01" e-style="width:10em;">
 							{{ jd.amount | currency:'$'}}
 						</span>
 					</td>

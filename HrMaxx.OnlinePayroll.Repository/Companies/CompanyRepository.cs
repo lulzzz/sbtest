@@ -500,7 +500,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 		}
 
-		public void UpdateLastPayrollDateEmployee(Guid id)
+		public void UpdateLastPayrollDateAndPayRateEmployee(Guid id, decimal rate)
 		{
 			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
 			if (dbEmployee != null)
@@ -514,7 +514,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				{
 					dbEmployee.LastPayrollDate = default(DateTime?);
 				}
-				
+				if (dbEmployee.Rate != rate)
+				{
+					dbEmployee.Rate = rate;
+					if (dbEmployee.PayType == (int) EmployeeType.Hourly)
+					{
+						var pcodes = JsonConvert.DeserializeObject<List<CompanyPayCode>>(dbEmployee.PayCodes);
+						var def = pcodes.FirstOrDefault(pc => pc.Id == 0);
+						if (def != null)
+							def.HourlyRate = rate;
+						dbEmployee.PayCodes = JsonConvert.SerializeObject(pcodes);
+					}
+				}
 				_dbContext.SaveChanges();
 			}
 		}

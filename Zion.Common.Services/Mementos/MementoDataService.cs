@@ -155,7 +155,7 @@ namespace HrMaxx.Common.Services.Mementos
 					mems.ForEach(m => ms.Add(Memento<PayrollInvoice>.Create(m.MementoId, m.Version, m.DateCreated, m.Memento, m.CreatedBy, (EntityTypeEnum)m.SourceTypeId, m.Comments, m.UserId)));
 					ms.ForEach(m => result.Add(new { Version = m.Version, DateCreated = m.DateCreated, Object = m.Object, CreatedBy = m.CreatedBy, Comments = m.Comments }));
 				}
-				else if (sourceTypeId == EntityTypeEnum.RegularCheck || sourceTypeId == EntityTypeEnum.Deposit || sourceTypeId == EntityTypeEnum.Adjustment || sourceTypeId == EntityTypeEnum.TaxPayment)
+				else if (sourceTypeId == EntityTypeEnum.RegularCheck || sourceTypeId == EntityTypeEnum.Deposit || sourceTypeId == EntityTypeEnum.InvoiceDeposit || sourceTypeId == EntityTypeEnum.Adjustment || sourceTypeId == EntityTypeEnum.TaxPayment)
 				{
 					mems = _repository.GetMementos<Journal>((int)sourceTypeId, sourceId).ToList();
 					var ms = new List<Memento<Journal>>();

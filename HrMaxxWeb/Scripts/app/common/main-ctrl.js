@@ -277,7 +277,7 @@
 			var result = args.result;
 			if (result.sourceTypeId === 2) {
 				dataSvc.fromSearch = true;
-				$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Company/" + +(new Date().getTime()));
+				$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Payrolls/" + +(new Date().getTime()));
 			}
 			else if (result.sourceTypeId === 3) {
 				dataSvc.fromSearch = true;

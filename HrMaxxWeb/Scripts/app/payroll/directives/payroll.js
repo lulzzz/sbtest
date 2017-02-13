@@ -245,7 +245,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
-							size: 'md',
+							size: 'lg',
+							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
 									return listitem;
@@ -511,6 +512,29 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 		$scope.original.included = true;
 		$uibModalInstance.close($scope);
 	};
+	$scope.calculateWage = function (paytype) {
+		if (paytype) {
+			var accPayType = $filter('filter')($scope.original.employee.accumulations, { payType: { payType: { id: paytype.id } } });
+			if (accPayType.length === 0)
+				return '';
+			else {
+				var accumulated = 0;
+				var hrs = accPayType[0].available;
+				if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3) {
+					accumulated = hrs * $scope.original.employee.rate;
+				}
+				else if ($scope.original.employee.payType === 2) {
+					var rate = $scope.original.employee.rate;
+					var schedule = $scope.original.employee.payrollSchedule;
+					var quotient = schedule === 1 ? 52 : schedule === 2 ? 26 : schedule === 3 ? 24 : 12;
+					accumulated = hrs * rate * (quotient / (40 * 52));
+				}
+				return 'Available: ' + hrs + 'hrs (' + $filter('currency')(accumulated, '$') + ')';
+			}
+		}
+		
+		
+	}
 	$scope.addPayType = function() {
 		$scope.newPayTypes.push({
 			payType: null,

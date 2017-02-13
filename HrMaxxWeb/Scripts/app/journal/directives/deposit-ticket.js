@@ -68,7 +68,8 @@ common.directive('depositTicket', ['zionAPI','version',
 							accountId: defaultCompanyAccount.id,
 							accountName: defaultCompanyAccount.accountName,
 							memo: '',
-							amount:0
+							amount: 0,
+							isNew:true
 						};
 						var currentLength = $scope.item.journalDetails.length;
 						$scope.item.journalDetails.push(newJD);

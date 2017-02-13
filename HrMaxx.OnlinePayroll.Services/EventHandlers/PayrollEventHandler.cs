@@ -45,7 +45,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				foreach (var paycheck in event1.SavedObject.PayChecks)
 				{
 					if (!paycheck.Employee.LastPayrollDate.HasValue || paycheck.Employee.LastPayrollDate < event1.SavedObject.PayDay)
-						_companyRepository.UpdateLastPayrollDateEmployee(paycheck.Employee.Id);
+						_companyRepository.UpdateLastPayrollDateAndPayRateEmployee(paycheck.Employee.Id, paycheck.Employee.Rate);
 				}
 				if (!event1.SavedObject.Company.LastPayrollDate.HasValue ||
 						event1.SavedObject.Company.LastPayrollDate < event1.SavedObject.PayDay)
@@ -83,7 +83,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				var memento = Memento<PayCheck>.Create(event1.SavedObject, EntityTypeEnum.PayCheck, event1.UserName, "PayCheck voided",event1.UserId);
 				_mementoDataService.AddMementoData(memento);
 				if (!event1.SavedObject.Employee.LastPayrollDate.HasValue || event1.SavedObject.Employee.LastPayrollDate == event1.SavedObject.PayDay)
-					_companyRepository.UpdateLastPayrollDateEmployee(event1.SavedObject.Employee.Id);
+					_companyRepository.UpdateLastPayrollDateAndPayRateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.Employee.Rate);
 				foreach (var pc in event1.AffectedChecks)
 				{
 					var mem = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName, string.Format("YTD affected because of voiding of Check {0}", event1.SavedObject.CheckNumber), event1.UserId);

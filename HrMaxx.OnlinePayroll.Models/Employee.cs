@@ -50,7 +50,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeeState State { get; set; }
 		public List<EmployeeDeduction> Deductions { get; set; }
 		public CompanyWorkerCompensation WorkerCompensation { get; set; }
-
+		public List<PayTypeAccumulation> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 
 		public string GetSearchText

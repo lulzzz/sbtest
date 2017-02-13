@@ -86,7 +86,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						if (paycheck.Employee.PayType == EmployeeType.Hourly)
 						{
 							paycheck.Salary = 0;
-							
+							var defPayCode = paycheck.PayCodes.FirstOrDefault(pc => pc.PayCode.Id == 0);
+							if (defPayCode != null)
+							{
+								paycheck.Employee.Rate = defPayCode.PayCode.HourlyRate;
+								var empDefCode = paycheck.Employee.PayCodes.FirstOrDefault(pc => pc.Id == 0);
+								if(empDefCode==null)
+									paycheck.Employee.PayCodes.Add(defPayCode.PayCode);
+								else
+								{
+									empDefCode.HourlyRate = defPayCode.PayCode.HourlyRate;
+								}
+							}
 						}
 						else if (paycheck.Employee.PayType == EmployeeType.Salary)
 						{
@@ -389,11 +400,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if (employee.PayrollSchedule == PayrollSchedule.Weekly)
 					quotient = employee.Rate/(40);
 				else if (employee.PayrollSchedule == PayrollSchedule.BiWeekly)
-					quotient = employee.Rate/(40*52/26);
+					quotient = (employee.Rate*26)/(40*52);
 				else if (employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
-					quotient = employee.Rate/(40*52/24);
+					quotient = (employee.Rate*24)/(40*52);
 				else if (employee.PayrollSchedule == PayrollSchedule.Monthly)
-					quotient = employee.Rate/(40*52/12);
+					quotient = (employee.Rate*12)/(40*52);
 			}
 			else if (employee.PayType == EmployeeType.PieceWork)
 			{

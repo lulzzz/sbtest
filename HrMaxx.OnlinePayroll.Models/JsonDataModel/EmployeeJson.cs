@@ -53,6 +53,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<EmployeeDeduction> EmployeeDeductions { get; set; }
 		public CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
 		public List<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
+		public string Accumulations { get; set; }
 	}
 	 public class EmployeeDeduction
     {

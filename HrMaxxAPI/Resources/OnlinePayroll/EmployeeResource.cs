@@ -70,7 +70,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public EmployeeStateResource State { get; set; }
 		public List<EmployeeDeductionResource> Deductions { get; set; }
 		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
-
+		public List<PayTypeAccumulation> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 
 		public string WcCode
