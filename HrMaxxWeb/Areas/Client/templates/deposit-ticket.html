@@ -99,7 +99,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} track by $index" ng-class="{'success':jd.isDebit===false, 'danger':jd.isDebit}">
+				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} | orderBy:'payee.payeeName'  track by $index" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)), 'danger':(item.transactionType!==7 && jd.isDebit)}">
 					<td>
 						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName" editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
 							{{ jd.accountId? jd.accountName : '' }}
@@ -111,18 +111,18 @@
 						</span>
 					</td>
 					<td>
-						
+
 						<span e-ng-change="jd.checkNumber = $data" e-ng-show="jd.depositMethod.key===1" editable-number="jd.checkNumber" e-name="checknumber" e-form="rowform" e-ng-pattern="/^[1-9]+[0-9]?$/" e-step="1" e-style="width:10em;">
 							{{ jd.depositMethod.key===1 ? jd.checkNumber : '' }}
 						</span>
 					</td>
 					<td class="text-right">
-						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-ng-disabled="item.id && jd.depositMethod.key===1 && !jd.isNew" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{0,2})?$/" e-step="0.01" e-style="width:10em;">
+						<span e-ng-change="jd.amount = $data" editable-number="jd.amount" e-name="amount" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{0,2})?$/" e-step="0.01" e-style="width:10em;">
 							{{ jd.amount | currency:'$'}}
 						</span>
 					</td>
 					<td>
-						
+
 						<input ng-show="rowform.$visible" type="text" ng-model="jd.screenPayee" uib-typeahead="a as a.displayName for a in data.payees | filter:$viewValue" class="form-control">
 						<span ng-show="!rowform.$visible">
 							{{ jd.payee? jd.payee.payeeName : '' }}
@@ -140,10 +140,13 @@
 							<button title="edit" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-primary" ng-click="rowform.$show();setselectedjd(jd)">
 								<i class="fa fa-edit"></i>
 							</button>
+							<button title="deposit" type="button" ng-show="!rowform.$visible && item.transactionType===7 && !jd.deposited && jd.depositMethod.key===1" ng-disabled="selectedjd" class="btn btn-success" ng-click="jd.deposited=true">
+								<i class="fa fa-dollar"></i>
+							</button>
 							<button title="remove" type="button" ng-show="!rowform.$visible" ng-disabled="selectedjd" class="btn btn-danger" ng-click="removejd(jd)">
 								<i class="fa fa-fire"></i>
 							</button>
-							<button  title="save" type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
+							<button title="save" type="submit" ng-disabled="rowform.$waiting || !isJournalDetailValid(jd)" ng-show="rowform.$visible" class="btn btn-success">
 								<i class="fa fa-save"></i>
 							</button>
 							<button title="cancel" type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();canceljd($index)" class="btn btn-default">

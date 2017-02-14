@@ -93,5 +93,8 @@ namespace HrMaxxAPI.Resources.Journals
 		public int CheckNumber { get; set; }
 		public DateTime LastModfied { get; set; }
 		public string LastModifiedBy { get; set; }
+		public bool Deposited { get; set; }
+		public Guid? InvoiceId { get; set; }
+		public int PaymentId { get; set; }
 	}
 }

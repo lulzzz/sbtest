@@ -271,7 +271,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var invoices = _readerService.GetPayrollInvoices(Guid.Empty);
 			var invoicePayments = invoices.SelectMany(i => i.InvoicePayments.Select(p => new ExtractInvoicePayment
 			{
-				CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
+				PaymentId	= p.Id, InvoiceId = i.Id, CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
 			})).ToList();
 			var filtered =
 				invoicePayments.Where(p => p.PaymentDate >= request.StartDate && p.PaymentDate < request.EndDate).ToList();

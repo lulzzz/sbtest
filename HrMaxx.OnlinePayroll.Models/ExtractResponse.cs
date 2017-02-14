@@ -280,5 +280,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public PaymentStatus Status { get; set; }
 		public int CheckNumber { get; set; }
 		public decimal Amount { get; set; }
+		public Guid? InvoiceId { get; set; }
+		public int PaymentId { get; set; }
 	}
 }

@@ -11,6 +11,7 @@ using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using MassTransit;
@@ -18,7 +19,7 @@ using Notification = HrMaxx.Common.Contracts.Messages.Events.Notification;
 
 namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 {
-	public class PayrollEventHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<InvoiceCreatedEvent>.All
+	public class PayrollEventHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<InvoiceCreatedEvent>.All, Consumes<InvoiceDepositUpdateEvent>.All
 	{
 		public IBus Bus { get; set; }
 		
@@ -27,16 +28,18 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		private readonly IPayrollService _payrollService;
 		private readonly IUserService _userService;
 		private readonly IMementoDataService _mementoDataService;
+		private readonly IReaderService _readerService; 
 		
 
-		public PayrollEventHandler(IPayrollRepository payrollRepository, ICompanyRepository companyRepository, IPayrollService payrollService, IUserService userService, IMementoDataService mementoDataService)
+		public PayrollEventHandler(IPayrollRepository payrollRepository, ICompanyRepository companyRepository, IPayrollService payrollService, IUserService userService, IMementoDataService mementoDataService, IReaderService readerService)
 		{
 			_payrollRepository = payrollRepository;
 			_companyRepository = companyRepository;
 			_payrollService = payrollService;
 			_userService = userService;
 			_mementoDataService = mementoDataService;
-			
+			_readerService = readerService;
+
 		}
 		public void Consume(PayrollSavedEvent event1)
 		{
@@ -129,6 +132,36 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				throw new HrMaxxApplicationException(message1, e);
 			}
 			
+
+		}
+		public void Consume(InvoiceDepositUpdateEvent event1)
+		{
+			try
+			{
+				event1.Journal.JournalDetails.Where(jd=>jd.Deposited && jd.InvoiceId.HasValue).ToList().ForEach(jd =>
+				{
+					var invoice = _readerService.GetPayrollInvoice(jd.InvoiceId.Value);
+					var payment = invoice.InvoicePayments.First(p => p.Id == jd.PaymentId);
+					if (payment.Status != PaymentStatus.Deposited)
+					{
+						payment.Status = PaymentStatus.Deposited;
+						payment.CheckNumber = jd.CheckNumber;
+						payment.Amount = jd.Amount;
+						payment.HasChanged = true;
+						invoice.UserId = event1.UserId;
+						invoice.UserName = event1.UserName;
+						invoice.LastModified = event1.TimeStamp;
+						_payrollService.SavePayrollInvoice(invoice);
+					}
+				});
+			}
+			catch (Exception e)
+			{
+				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Invoice Created Event PayrollEventHandler", event1.Journal.Id);
+				Log.Error(message1, e);
+				throw new HrMaxxApplicationException(message1, e);
+			}
+
 
 		}
 	}

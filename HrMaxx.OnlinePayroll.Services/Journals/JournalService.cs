@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Markup;
 using System.Xml;
+using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
@@ -15,6 +16,7 @@ using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
+using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
@@ -36,6 +38,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private readonly IFileRepository _fileRepository;
 		private readonly IReaderService _readerService;
 		private readonly IDocumentService _documentService;
+		public IBus Bus { get; set; }
 
 		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository, IReaderService readerService, IDocumentService documentService)
 		{
@@ -226,6 +229,13 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						
 					}
 					var saved =  _journalRepository.SaveJournal(journal);
+					if (journal.TransactionType == TransactionType.InvoiceDeposit)
+					{
+						Bus.Publish<InvoiceDepositUpdateEvent>(new InvoiceDepositUpdateEvent()
+						{
+							Journal = saved, UserId = userId, UserName = saved.LastModifiedBy, TimeStamp = DateTime.Now
+						});
+					}
 					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
@@ -578,7 +588,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						Amount = p.Amount,
 						LastModfied = journal.LastModified,
 						LastModifiedBy = user,
-						Payee = new JournalPayee() { Id = p.CompanyId, PayeeName=host.Companies.First(c=>c.Company.Id==p.CompanyId).Company.Name, PayeeType=EntityTypeEnum.Company }
+						Payee = new JournalPayee() { Id = p.CompanyId, PayeeName=host.Companies.First(c=>c.Company.Id==p.CompanyId).Company.Name, PayeeType=EntityTypeEnum.Company },
+						InvoiceId = p.InvoiceId,
+						Deposited = p.Status==PaymentStatus.Deposited,
+						PaymentId = p.PaymentId
+
 					}));
 				SaveCheckbookEntry(journal, userId);
 
