@@ -299,7 +299,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.updateListAndItem = function (selectedItemId) {
 						//getPayrolls($scope.mainData.selectedCompany.id, null, null, selectedItemId);
-						$scope.getPayrollList();
+						$scope.getPayrollList(selectedItemId);
 						getCompanyPayrollMetaData($scope.mainData.selectedCompany.id);
 					}
 					$scope.updateStatus = function(checkid, status, statusText) {
@@ -409,8 +409,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error getting payrolls', 'danger');
 						});
 					}
-					$scope.getPayrollList = function() {
-						getPayrolls($scope.mainData.selectedCompany.id,dataSvc.reportFilter.filterStartDate? moment(dataSvc.reportFilter.filterStartDate).format('MM/DD/YYYY') : null, dataSvc.reportFilter.filterEndDate? moment(dataSvc.reportFilter.filterEndDate).format('MM/DD/YYYY'):null);
+					$scope.getPayrollList = function (selectedItemId) {
+						getPayrolls($scope.mainData.selectedCompany.id, dataSvc.reportFilter.filterStartDate ? moment(dataSvc.reportFilter.filterStartDate).format('MM/DD/YYYY') : null, dataSvc.reportFilter.filterEndDate ? moment(dataSvc.reportFilter.filterEndDate).format('MM/DD/YYYY') : null, selectedItemId);
 					}
 					$scope.deletePayroll = function (event, payroll) {
 						event.stopPropagation();

@@ -135,10 +135,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					
 					
 					$scope.process = function () {
-						if (false === $('form[name="payrollstep1"]').parsley().validate()) {
-							var errors = $('.parsley-error');
-							return false;
-						}
+						
 						var payroll = angular.copy($scope.item);
 						payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
 						payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");

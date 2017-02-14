@@ -579,7 +579,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					.ToList()
 					.ForEach(p => journal.JournalDetails.Add(new JournalDetail
 					{
-						Memo = host.Companies.First(c => c.Company.Id == p.CompanyId).Company.Name,
+						Memo = string.Empty,
 						AccountId = incomeCOA.Id,
 						AccountName = incomeCOA.AccountName,
 						IsDebit = false,

@@ -20,7 +20,16 @@ namespace HrMaxx.Infrastructure
 
 			if (!cache.ContainsKey(key))
 			{
-				cache.Add(key, new XmlSerializer(type, root));
+				try
+				{
+					cache.Add(key, new XmlSerializer(type, root));
+				}
+				catch (ArgumentException e)
+				{
+					if (e.Message.Contains("already been added"))
+						return cache[key];
+				}
+				
 			}
 
 			return cache[key];

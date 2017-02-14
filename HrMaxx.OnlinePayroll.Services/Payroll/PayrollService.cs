@@ -542,11 +542,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
 				if (draftPayroll != null)
 				{
-					var p = draftPayroll.Deserialize();
-					if (p.Payroll.Id == payroll.Id)
-					{
-						_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
-					}
+					_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
 				}
 				Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
 				{
