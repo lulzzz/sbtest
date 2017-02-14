@@ -17,12 +17,11 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MasterExtract()
         {
-            this.PayCheckExtracts = new HashSet<PayCheckExtract>();
             this.ACHTransactionExtracts = new HashSet<ACHTransactionExtract>();
+            this.PayCheckExtracts = new HashSet<PayCheckExtract>();
         }
     
         public int Id { get; set; }
-        public string Extract { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public string ExtractName { get; set; }
@@ -33,8 +32,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PayCheckExtract> PayCheckExtracts { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ACHTransactionExtract> ACHTransactionExtracts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PayCheckExtract> PayCheckExtracts { get; set; }
     }
 }

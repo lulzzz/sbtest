@@ -197,6 +197,14 @@ namespace HrMaxxAPI.Controllers.Reports
 			return MakeServiceCall(() => _reportService.GetExtract(id), "Extract with id " + id, true);
 
 		}
+		[HttpGet]
+		[Route(ReportRoutes.ACHExtract)]
+		[DeflateCompression]
+		public ACHMasterExtract ACHExtract(int id)
+		{
+			return MakeServiceCall(() => _reportService.GetAchReportExtract(id), "Extract with id " + id, true);
+
+		}
 
 		[HttpGet]
 		[Route(ReportRoutes.ACHExtractList)]

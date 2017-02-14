@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using Autofac;
 using HrMaxx.Infrastructure.Extensions;
 using HrMaxx.OnlinePayroll.Models.DataModel;
@@ -21,6 +22,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 		{
 			string _connectionString =
 				ConfigurationManager.ConnectionStrings["HrMaxx"].ConnectionString.ConvertToTestConnectionStringAsRequired();
+			string _connectionStringArchive =
+				ConfigurationManager.ConnectionStrings["Archive"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 
 			string _onlinePayrollConnectionString =
 				ConfigurationManager.ConnectionStrings["OnlinePayrollEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
@@ -39,6 +42,14 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 			namedParameters.Add(new NamedParameter("domain", ConfigurationManager.AppSettings["Domain"]));
 
 			var sqlCon = new NamedParameter("sqlCon", _connectionString);
+
+			builder.Register(cont =>
+			{
+				var archiveConnection = new SqlConnection(_connectionStringArchive);
+				return archiveConnection;
+			})
+				.Named<SqlConnection>("archiveConnection")
+				.InstancePerLifetimeScope();
 
 			builder.RegisterType<HostRepository>()
 				.WithParameters(namedParameters)
@@ -73,6 +84,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<JournalRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
 				.As<IJournalRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
@@ -84,6 +97,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<ReportRepository>()
 				.WithParameter(sqlCon)
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
 				.As<IReportRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

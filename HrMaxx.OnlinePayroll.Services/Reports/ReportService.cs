@@ -830,6 +830,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		public ACHMasterExtract GetAchReportExtract(int id)
+		{
+			return _readerService.GetACHExtract(id);
+		}
+
 		public List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company)
 		{
 			try

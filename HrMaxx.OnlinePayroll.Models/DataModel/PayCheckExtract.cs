@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Extract { get; set; }
         public int Type { get; set; }
     
-        public virtual MasterExtract MasterExtract { get; set; }
         public virtual PayrollPayCheck PayrollPayCheck { get; set; }
+        public virtual MasterExtract MasterExtract { get; set; }
     }
 }

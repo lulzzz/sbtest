@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.SqlClient;
 using System.IO;
@@ -8,10 +9,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Serialization;
+using Dapper;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
+using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using Newtonsoft.Json;
@@ -20,19 +24,19 @@ using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
 
 namespace HrMaxx.OnlinePayroll.Repository.Reports
 {
-	public class ReportRepository : IReportRepository
+	public class ReportRepository : BaseDapperRepository, IReportRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		private string _sqlCon;
 
-		public ReportRepository(IMapper mapper, OnlinePayrollEntities dbContext, string sqlCon)
+		public ReportRepository(IMapper mapper, OnlinePayrollEntities dbContext, string sqlCon, DbConnection connection):base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
 			_sqlCon = sqlCon;
 		}
-
+		
 		private IQueryable<PayrollPayCheck> GetPayChecksQueryable(ReportRequest request, bool includeVoids)
 		{
 			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.PayDay >= request.StartDate && pc.PayDay <= request.EndDate).AsQueryable();
@@ -209,7 +213,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			{
 				DepositDate = extract.Report.DepositDate.Value,
 				EndDate = extract.Report.EndDate,
-				Extract = JsonConvert.SerializeObject(extract),
+				//Extract = JsonConvert.SerializeObject(extract),
 				ExtractName = "ACH",
 				Id = 0,
 				IsFederal = false,
@@ -221,6 +225,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			};
 			_dbContext.MasterExtracts.Add(dbExtract);
 			_dbContext.SaveChanges();
+			SaveExtractDetails(dbExtract.Id, JsonConvert.SerializeObject(extract));
 			transactions.ForEach(t => _dbContext.ACHTransactionExtracts.Add(new ACHTransactionExtract
 			{
 				Id = 0,
@@ -231,6 +236,25 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 
 		}
 
+		private void SaveExtractDetails(int extractId, string extract)
+		{
+			const string selectSql =
+				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
+			dynamic exists =
+					Connection.Query(selectSql, new { extractId }).FirstOrDefault();
+			if (exists != null)
+			{
+				Connection.Execute("delete from MasterExtract where MasterExtractId=@extractId", new { extractId });
+			}
+			const string sql =
+				@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
+			Connection.Execute(sql, new
+			{
+				extractId,
+				extract
+			});
+
+		}
 		public List<ACHMasterExtract> GetACHExtractList()
 		{
 			var list = 

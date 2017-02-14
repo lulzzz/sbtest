@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using Dapper;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -11,12 +14,12 @@ using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
 
 namespace HrMaxx.OnlinePayroll.Repository.Journals
 {
-	public class JournalRepository : IJournalRepository
+	public class JournalRepository : BaseDapperRepository, IJournalRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 
-		public JournalRepository(IMapper mapper, OnlinePayrollEntities dbContext)
+		public JournalRepository(IMapper mapper, OnlinePayrollEntities dbContext, DbConnection connection):base(connection)
 		{
 			_dbContext = dbContext;
 			_dbContext.Database.CommandTimeout = 180;
@@ -138,11 +141,30 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			//var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
 			//_dbContext.MasterExtracts.Add(mapped);
 			var dbExtracts = _dbContext.MasterExtracts.First(e => e.Id == masterExtract.Id);
-			dbExtracts.Extract = JsonConvert.SerializeObject(masterExtract.Extract);
-			_dbContext.SaveChanges();
+			//dbExtracts.Extract = JsonConvert.SerializeObject(masterExtract.Extract);
+			//_dbContext.SaveChanges();
+			SaveExtractDetails(masterExtract.Id, JsonConvert.SerializeObject(masterExtract.Extract));
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtracts);
 		}
+		private void SaveExtractDetails(int extractId, string extract)
+		{
+			const string selectSql =
+				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
+			dynamic exists =
+					Connection.Query(selectSql, new { extractId }).FirstOrDefault();
+			if (exists != null)
+			{
+				Connection.Execute("delete from MasterExtract where MasterExtractId=@extractId", new {extractId});
+			}
+			const string sql =
+				@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
+			Connection.Execute(sql, new
+			{
+				extractId,
+				extract
+			});
 
+		}
 		public Models.Journal GetJournalById(int id)
 		{
 			var dbJournal = _dbContext.Journals.First(j => j.Id == id);
@@ -165,24 +187,47 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
 			_dbContext.MasterExtracts.Add(mapped);
 			_dbContext.SaveChanges();
-			var payChecks = _dbContext.PayrollPayChecks.Where(pc => payCheckIds.Any(pc1 => pc1 == pc.Id)).ToList();
-			payChecks.ForEach(pc => pc.PayCheckExtracts.Add(new PayCheckExtract
+			var pces = new List<PayCheckExtract>();
+			payCheckIds.ForEach(pc => pces.Add(new PayCheckExtract
 			{
-				PayrollPayCheckId = pc.Id,
+				PayrollPayCheckId = pc,
 				Extract = masterExtract.Extract.Report.ReportName,
-				Type=1,
+				Type = 1,
 				MasterExtractId = mapped.Id
 			}));
-
-			var creditChecks = _dbContext.PayrollPayChecks.Where(pc => voidedCheckIds.Any(pc1 => pc1 == pc.Id)).ToList();
-			creditChecks.ForEach(pc => pc.PayCheckExtracts.Add(new PayCheckExtract
+			_dbContext.PayCheckExtracts.AddRange(pces);
+			//var payChecks = _dbContext.PayrollPayChecks.ToList();
+			//payChecks.ForEach(pc =>
+			//{
+			//	if (payCheckIds.Any(pc1 => pc1 == pc.Id))
+			//	{
+			//		pc.PayCheckExtracts.Add(new PayCheckExtract
+			//		{
+			//			PayrollPayCheckId = pc.Id,
+			//			Extract = masterExtract.Extract.Report.ReportName,
+			//			Type = 1,
+			//			MasterExtractId = mapped.Id
+			//		});
+			//	}
+			//});
+			voidedCheckIds.ForEach(vc => _dbContext.PayCheckExtracts.Add(new PayCheckExtract
 			{
-				Type=2,
+				Type = 2,
 				MasterExtractId = mapped.Id,
 				Extract = masterExtract.Extract.Report.ReportName,
-				PayrollPayCheckId=pc.Id
-			}));
+				PayrollPayCheckId = vc
+			}));	
+
+			//var creditChecks = _dbContext.PayrollPayChecks.Where(pc => voidedCheckIds.Any(pc1 => pc1 == pc.Id)).ToList();
+			//creditChecks.ForEach(pc => pc.PayCheckExtracts.Add(new PayCheckExtract
+			//{
+			//	Type=2,
+			//	MasterExtractId = mapped.Id,
+			//	Extract = masterExtract.Extract.Report.ReportName,
+			//	PayrollPayCheckId=pc.Id
+			//}));
 			_dbContext.SaveChanges();
+			SaveExtractDetails(mapped.Id, JsonConvert.SerializeObject(masterExtract.Extract));
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(mapped);
 		}
 

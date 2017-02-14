@@ -151,9 +151,9 @@
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007a InvoiceSetup.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007b User Roles Setup.sql">
+    <Content Include="Scripts\Maintenance\SchemaChanges\007b User Roles Setup.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </Content>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\007c payroll invoice changes.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

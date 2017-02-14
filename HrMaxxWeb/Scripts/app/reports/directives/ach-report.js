@@ -64,13 +64,20 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 						$scope.selected = null;
 						dataSvc.extract = null;
 						$scope.selected = item;
-						showReview(item.extract.report, item.extract, true);
+						getExtract(item);
 
 
 					}
-
+					var getExtract = function (ext) {
+						reportRepository.getACHExtractById(ext.id).then(function (data) {
+							data.extract.data.history = [];
+							showReview(data.extract.report, data.extract);
+						}, function (error) {
+							addAlert('error getting extract details', 'danger');
+						});
+					}
 					var getExtracts = function () {
-						reportRepository.getACHExtractList().then(function (data) {
+						reportRepository.getExtractList("ACH").then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);

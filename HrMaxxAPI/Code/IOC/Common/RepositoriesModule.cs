@@ -20,6 +20,8 @@ namespace HrMaxxAPI.Code.IOC.Common
 		{
 			string _connectionString =
 				ConfigurationManager.ConnectionStrings["HrMaxx"].ConnectionString.ConvertToTestConnectionStringAsRequired();
+			string _connectionStringArchive =
+				ConfigurationManager.ConnectionStrings["Archive"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 			string _commonConnectionString =
 				ConfigurationManager.ConnectionStrings["CommonEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 			string _userConnectionString =
@@ -47,17 +49,25 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.Named<SqlConnection>("readConnection")
 				.InstancePerLifetimeScope();
 
+			builder.Register(cont =>
+			{
+				var archiveConnection = new SqlConnection(_connectionStringArchive);
+				return archiveConnection;
+			})
+				.Named<SqlConnection>("archiveConnection")
+				.InstancePerLifetimeScope();
+
 			builder.RegisterType<StagingDataRepository>()
 				.As<IStagingDataRepository>()
 				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("readConnection"))
+					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
 			builder.RegisterType<MementoDataRepository>()
 				.As<IMementoDataRepository>()
 				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("readConnection"))
+					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 

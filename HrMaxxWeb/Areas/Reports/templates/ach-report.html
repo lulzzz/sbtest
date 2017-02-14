@@ -35,7 +35,7 @@
 				<div class="col-sm-6">
 					<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
 						<div class="panel-heading" >
-							<h4 class="panel-title">ACH History  <button class="btn btn-sm btn-success" ng-click="refesh($event)"><i class="fa fa-refresh"></i></button><i class="pull-right glyphicon" ng-click="data.isBodyOpen=!data.isBodyOpen" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+							<h4 class="panel-title">ACH History  <button class="btn btn-sm btn-success" ng-click="refresh($event)"><i class="fa fa-refresh"></i></button><i class="pull-right glyphicon" ng-click="data.isBodyOpen=!data.isBodyOpen" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 						</div>
 						<div class="panel-body" ng-show="data.isBodyOpen">
@@ -49,13 +49,13 @@
 											{{item.lastModified | date:'MM/dd/yyyy'}}
 										</td>
 										<td data-title=" 'Period Start' " sortable=" 'extract.report.startDate' " class="col-sm-2">
-											{{item.extract.report.startDate | date:'MM/dd/yyyy'}}
+											{{item.startDate | date:'MM/dd/yyyy'}}
 										</td>
 										<td data-title=" 'Period End' " sortable=" 'extract.report.endDate' " class="col-sm-2">
-											{{item.extract.report.endDate | date:'MM/dd/yyyy'}}
+											{{item.endDate | date:'MM/dd/yyyy'}}
 										</td>
 										<td data-title=" 'Posting Date' " sortable=" 'extract.report.depositDate' " class="col-sm-2">
-											{{item.extract.report.depositDate | date:'MM/dd/yyyy'}}
+											{{item.depositDate | date:'MM/dd/yyyy'}}
 										</td>
 										<td data-title=" 'Run By' " class="col-sm-1">
 											{{item.lastModifiedBy}}
@@ -99,7 +99,7 @@
 						</div>
 					</div>
 					<div class="col-sm-2 pull-right">
-						<button class="btn btn-success btn-sm pull-right" ng-hide="data.extractFiled" ng-click="getACHDocumentAndFile()"><i class="fa fa-upload"></i>File & Extract</button>
+						<button class="btn btn-success btn-sm pull-right" ng-hide="selected.id || data.extractFiled" ng-click="getACHDocumentAndFile()"><i class="fa fa-upload"></i>File & Extract</button>
 						<button class="btn btn-success btn-sm pull-right" ng-show="selected" ng-click="downloadFile()"><i class="fa fa-download"></i>View File</button>
 						<button class="btn btn-default btn-sm pull-right" ng-click="data.extract=null"><i class="fa fa-remove"></i>cancel</button>
 					</div>

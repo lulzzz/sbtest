@@ -389,7 +389,6 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Extract" Type="varchar(max)" Nullable="false" />
           <Property Name="StartDate" Type="datetime" Nullable="false" />
           <Property Name="EndDate" Type="datetime" Nullable="false" />
           <Property Name="ExtractName" Type="varchar(max)" Nullable="false" />
@@ -1471,12 +1470,7 @@
             <End Role="Status" EntitySet="Status" />
             <End Role="VendorCustomer" EntitySet="VendorCustomers" />
           </AssociationSet>
-          <EntitySet Name="MasterExtracts" EntityType="HrMaxxModel.MasterExtract" />
           <EntitySet Name="PayCheckExtracts" EntityType="HrMaxxModel.PayCheckExtract" />
-          <AssociationSet Name="FK_PayCheckExtract_MasterExtracts" Association="HrMaxxModel.FK_PayCheckExtract_MasterExtracts">
-            <End Role="MasterExtract" EntitySet="MasterExtracts" />
-            <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
-          </AssociationSet>
           <EntitySet Name="InsuranceGroups" EntityType="HrMaxxModel.InsuranceGroup" />
           <AssociationSet Name="FK_Company_InsuranceGroup" Association="HrMaxxModel.FK_Company_InsuranceGroup">
             <End Role="InsuranceGroup" EntitySet="InsuranceGroups" />
@@ -1531,13 +1525,18 @@
             <End Role="ACHTransaction" EntitySet="ACHTransactions" />
             <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtracts" />
           </AssociationSet>
+          <AssociationSet Name="FK_Company_Company" Association="HrMaxxModel.FK_Company_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="Company1" EntitySet="Companies" />
+          </AssociationSet>
+          <EntitySet Name="MasterExtracts" EntityType="HrMaxxModel.MasterExtract" />
           <AssociationSet Name="FK_ACHTransactionExtract_MasterExtracts" Association="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts">
             <End Role="MasterExtract" EntitySet="MasterExtracts" />
             <End Role="ACHTransactionExtract" EntitySet="ACHTransactionExtracts" />
           </AssociationSet>
-          <AssociationSet Name="FK_Company_Company" Association="HrMaxxModel.FK_Company_Company">
-            <End Role="Company" EntitySet="Companies" />
-            <End Role="Company1" EntitySet="Companies" />
+          <AssociationSet Name="FK_PayCheckExtract_MasterExtracts" Association="HrMaxxModel.FK_PayCheckExtract_MasterExtracts">
+            <End Role="MasterExtract" EntitySet="MasterExtracts" />
+            <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
@@ -2339,23 +2338,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="MasterExtract">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Extract" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="ExtractName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="IsFederal" Type="Boolean" Nullable="false" />
-          <Property Name="DepositDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Journals" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="MasterExtract" ToRole="PayCheckExtract" />
-          <NavigationProperty Name="ACHTransactionExtracts" Relationship="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts" FromRole="MasterExtract" ToRole="ACHTransactionExtract" />
-        </EntityType>
         <EntityType Name="PayCheckExtract">
           <Key>
             <PropertyRef Name="PayrollPayCheckId" />
@@ -2366,21 +2348,9 @@
           <Property Name="MasterExtractId" Type="Int32" Nullable="false" />
           <Property Name="Extract" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Type" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="MasterExtract" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="PayCheckExtract" ToRole="MasterExtract" />
           <NavigationProperty Name="PayrollPayCheck" Relationship="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" FromRole="PayCheckExtract" ToRole="PayrollPayCheck" />
+          <NavigationProperty Name="MasterExtract" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="PayCheckExtract" ToRole="MasterExtract" />
         </EntityType>
-        <Association Name="FK_PayCheckExtract_MasterExtracts">
-          <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
-          <End Type="HrMaxxModel.PayCheckExtract" Role="PayCheckExtract" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MasterExtract">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="PayCheckExtract">
-              <PropertyRef Name="MasterExtractId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="InsuranceGroup">
           <Key>
             <PropertyRef Name="Id" />
@@ -2701,6 +2671,34 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Company_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
+          <End Type="HrMaxxModel.Company" Role="Company1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Company1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MasterExtract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ExtractName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsFederal" Type="Boolean" Nullable="false" />
+          <Property Name="DepositDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Journals" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ACHTransactionExtracts" Relationship="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts" FromRole="MasterExtract" ToRole="ACHTransactionExtract" />
+          <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="MasterExtract" ToRole="PayCheckExtract" />
+        </EntityType>
         <Association Name="FK_ACHTransactionExtract_MasterExtracts">
           <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
           <End Type="HrMaxxModel.ACHTransactionExtract" Role="ACHTransactionExtract" Multiplicity="*" />
@@ -2713,15 +2711,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Company_Company">
-          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
-          <End Type="HrMaxxModel.Company" Role="Company1" Multiplicity="*" />
+        <Association Name="FK_PayCheckExtract_MasterExtracts">
+          <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
+          <End Type="HrMaxxModel.PayCheckExtract" Role="PayCheckExtract" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Company">
+            <Principal Role="MasterExtract">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Company1">
-              <PropertyRef Name="ParentId" />
+            <Dependent Role="PayCheckExtract">
+              <PropertyRef Name="MasterExtractId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3152,22 +3150,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="MasterExtracts">
-            <EntityTypeMapping TypeName="HrMaxxModel.MasterExtract">
-              <MappingFragment StoreEntitySet="MasterExtracts">
-                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
-                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
-                <ScalarProperty Name="Journals" ColumnName="Journals" />
-                <ScalarProperty Name="DepositDate" ColumnName="DepositDate" />
-                <ScalarProperty Name="IsFederal" ColumnName="IsFederal" />
-                <ScalarProperty Name="ExtractName" ColumnName="ExtractName" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="Extract" ColumnName="Extract" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="PayCheckExtracts">
             <EntityTypeMapping TypeName="HrMaxxModel.PayCheckExtract">
               <MappingFragment StoreEntitySet="PayCheckExtract">
@@ -3357,6 +3339,21 @@
               <MappingFragment StoreEntitySet="ACHTransactionExtract">
                 <ScalarProperty Name="MasterExtractId" ColumnName="MasterExtractId" />
                 <ScalarProperty Name="ACHTransactionId" ColumnName="ACHTransactionId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MasterExtracts">
+            <EntityTypeMapping TypeName="HrMaxxModel.MasterExtract">
+              <MappingFragment StoreEntitySet="MasterExtracts">
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Journals" ColumnName="Journals" />
+                <ScalarProperty Name="DepositDate" ColumnName="DepositDate" />
+                <ScalarProperty Name="IsFederal" ColumnName="IsFederal" />
+                <ScalarProperty Name="ExtractName" ColumnName="ExtractName" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

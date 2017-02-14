@@ -509,5 +509,22 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 	  }
+
+	  public ACHMasterExtract GetACHExtract(int id)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam> { new FilterParam() { Key = "id", Value = id.ToString() } };
+				var result = GetDataFromStoredProc<List<ACHMasterExtract>, List<Models.JsonDataModel.MasterExtractJson>>(
+					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList"));
+				return result.FirstOrDefault();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Extract by id ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
   }
 }

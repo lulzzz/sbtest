@@ -73,6 +73,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getACHExtractById: function (report) {
+				var deferred = $q.defer();
+				reportServer.one('ACHExtract/' + report).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getACHExtractList: function () {
 				var deferred = $q.defer();
 				reportServer.one('ACHExtractList').getList().then(function (data) {

@@ -51,7 +51,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<ApplicationConfiguration> ApplicationConfigurations { get; set; }
         public virtual DbSet<ReportConstant> ReportConstants { get; set; }
         public virtual DbSet<VendorCustomer> VendorCustomers { get; set; }
-        public virtual DbSet<MasterExtract> MasterExtracts { get; set; }
         public virtual DbSet<PayCheckExtract> PayCheckExtracts { get; set; }
         public virtual DbSet<InsuranceGroup> InsuranceGroups { get; set; }
         public virtual DbSet<SearchTable> SearchTables { get; set; }
@@ -63,5 +62,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<PayrollPayCheck> PayrollPayChecks { get; set; }
         public virtual DbSet<ACHTransaction> ACHTransactions { get; set; }
         public virtual DbSet<ACHTransactionExtract> ACHTransactionExtracts { get; set; }
+        public virtual DbSet<MasterExtract> MasterExtracts { get; set; }
     }
 }

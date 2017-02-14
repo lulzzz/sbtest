@@ -658,7 +658,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.DocumentId, opt => opt.Ignore());
 
 			CreateMap<Models.MasterExtract, Models.DataModel.MasterExtract>()
-				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Extract)))
+				//.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Extract)))
 				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Journals)))
 				.ForMember(dest => dest.ExtractName, opt => opt.MapFrom(src=>src.Extract.Report.ReportName))
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src=>src.Extract.Report.StartDate))
@@ -669,11 +669,11 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.IsFederal, opt => opt.MapFrom(src=>src.IsFederal));
 
 			CreateMap<Models.DataModel.MasterExtract, Models.MasterExtract>()
-				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Extract>(src.Extract)))
+				.ForMember(dest => dest.Extract, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<int>>(src.Journals)));
 
 			CreateMap<Models.DataModel.MasterExtract, Models.ACHMasterExtract>()
-				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<ACHExtract>(src.Extract)));
+				.ForMember(dest => dest.Extract, opt => opt.Ignore());
 
 			CreateMap<Models.MasterExtractDB, Models.MasterExtract>()
 				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Extract>(src.Extract)))

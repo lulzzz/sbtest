@@ -50,5 +50,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<JournalPayee> GetJournalPayees(Guid companyId);
 		JournalPayee GetPayee(Guid company, Guid id, int payeeType);
 
+		ACHMasterExtract GetACHExtract(int id);
 	}
 }
