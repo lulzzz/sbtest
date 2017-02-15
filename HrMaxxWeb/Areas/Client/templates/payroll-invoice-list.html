@@ -27,7 +27,8 @@
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Invoice List
 				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>	
-			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+				<span class="badge" ng-if="tableData.length>0">{{tableParams.total()}}</span>
+				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
@@ -65,7 +66,7 @@
 						<td data-title=" 'Status' " filter="{status:'select'}" filter-data="statuses" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
-						<td data-title=" 'Processed By' " sortable=" 'processedBy' " class="col-sm-1 text-center">
+						<td data-title=" 'Processed By' " filter="{processedBy:'text'}" sortable=" 'processedBy' " class="col-sm-1 text-center">
 							{{item.processedBy}}
 						</td>
 						<td data-title=" 'Processed On' " sortable=" 'processedOn' " class="col-sm-1 text-center">
@@ -97,6 +98,7 @@
 								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
 								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
 								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(params.total())" class="btn btn-default btn-sm">All</button>
 							</div>
 						</li>
 					</ul>

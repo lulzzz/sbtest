@@ -16,8 +16,10 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						
 						isBodyOpen: true,
 						startDate: null,
-						endDate: null,
+						endDate: null
+						
 					}
+					
 					$scope.list = [];
 					$scope.statuses = [
 					{title:'All'},
@@ -160,9 +162,11 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						});
 						payrollRepository.getInvoicesForHost(null, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus).then(function (data) {
 							$scope.list = data;
+							//$scope.processors = $filter('unique')($scope.list, 'processedBy');
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 							$scope.selectedInvoice = null;
+							
 							if (selectedInvoiceId) {
 								var match = $filter('filter')($scope.list, { id: selectedInvoiceId })[0];
 								if (match)

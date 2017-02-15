@@ -247,6 +247,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						});
 						modalInstance.result.then(function (scope) {
 							if (scope) {
+								$scope.$parent.$parent.refreshHostAndCompanies();
 								addAlert('successfully copied company to the new host: ' + scope.selectedHost.firmName, 'success');
 							}
 						}, function () {

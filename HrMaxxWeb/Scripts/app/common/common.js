@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.1.63');
+common.constant('version', '1.0.1.64');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -191,6 +191,44 @@ common.filter('tel', function () {
 		number = number.slice(0, 3) + '-' + number.slice(3);
 
 		return (country + " (" + city + ") " + number).trim();
+	};
+});
+common.filter('unique', function () {
+
+	return function (items, filterOn) {
+
+		if (filterOn === false) {
+			return items;
+		}
+
+		if ((filterOn || angular.isUndefined(filterOn)) && angular.isArray(items)) {
+			var hashCheck = {}, newItems = [];
+
+			var extractValueToCompare = function (item) {
+				if (angular.isObject(item) && angular.isString(filterOn)) {
+					return item[filterOn];
+				} else {
+					return item;
+				}
+			};
+
+			angular.forEach(items, function (item) {
+				var valueToCheck, isDuplicate = false;
+
+				for (var i = 0; i < newItems.length; i++) {
+					if (angular.equals(newItems[i].title, extractValueToCompare(item))) {
+						isDuplicate = true;
+						break;
+					}
+				}
+				if (!isDuplicate) {
+					newItems.push({ title: extractValueToCompare(item), id: extractValueToCompare(item) });
+				}
+
+			});
+			items = newItems;
+		}
+		return items;
 	};
 });
 

@@ -23,7 +23,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						tabindex: 1,
 						showingErrors: false,
 						showingWarnings: false,
-						showingSelected: false
+						showingSelected: false,
+						showWCWarnings: false,
 					}
 					
 					$scope.list = [];
@@ -40,7 +41,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 
 					$scope.host = $scope.$parent.$parent.mainData.selectedHost;
 					$scope.paytypes = [
-						{title:'All'},{ id: 1, title: 'Hourly' }, { id: 2, title: 'Salary' }, { id: 3, title: 'Piece-work' }
+						{ id: 1, title: 'Hourly' }, { id: 2, title: 'Salary' }, { id: 3, title: 'Piece-work' }
 					];
 					$scope.tableData = [];
 					var blank = '';
@@ -63,9 +64,22 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
-							
-							var orderedData = params.filter() ?
-																$filter('filter')($scope.list, params.filter()) :
+							var fil = params.filter();
+							if (params.filter.hasWCWarning)
+								fil.hasWCWarning = true;
+							else
+								delete fil.hasWCWarning;
+							if (params.filter.hasError)
+								fil.hasError = true;
+							else
+								delete fil.hasError;
+							if (params.filter.hasWarning)
+								fil.hasWarning = true;
+							else
+								delete fil.hasWarning;
+
+							var orderedData = fil ?
+																$filter('filter')($scope.list, fil) :
 																$scope.list;
 							
 							orderedData = params.sorting() ?
@@ -81,20 +95,29 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					};
 					$scope.showErrors =function() {
 						if (dataSvc.showingErrors) {
-							delete $scope.tableParams.$params.filter.hasError;
+							delete $scope.tableParams.filter.hasError;
 						} else {
-							$scope.tableParams.$params.filter.hasError = true;
+							$scope.tableParams.filter.hasError = true;
 						}
 						dataSvc.showingErrors = !dataSvc.showingErrors;
 						$scope.fillTableData($scope.tableParams);
 					}
 					$scope.showWarnings = function () {
 						if (dataSvc.showingWarnings) {
-							delete $scope.tableParams.$params.filter.hasWarning;
+							delete $scope.tableParams.filter.hasWarning;
 						} else {
-							$scope.tableParams.$params.filter.hasWarning = true;
+							$scope.tableParams.filter.hasWarning = true;
 						}
 						dataSvc.showingWarnings = !dataSvc.showingWarnings;
+						$scope.fillTableData($scope.tableParams);
+					}
+					$scope.showWCWarnings = function () {
+						if (dataSvc.showingWCWarnings) {
+							delete $scope.tableParams.filter.hasWCWarning;
+						} else {
+							$scope.tableParams.filter.hasWCWarning = true;
+						}
+						dataSvc.showingWCWarnings = !dataSvc.showingWCWarnings;
 						$scope.fillTableData($scope.tableParams);
 					}
 					$scope.erroneousChecks = function() {
@@ -105,6 +128,11 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var checks = $filter('filter')($scope.list, { included: true, hasWarning: true });
 						return checks.length;
 					}
+					$scope.wcWarningChecks = function () {
+						var checks = $filter('filter')($scope.list, { included: true, hasWCWarning: true });
+						return checks.length;
+					}
+					
 					$scope.correctChecks = function () {
 						var checks = $filter('filter')($scope.list, { included: true });
 						return checks.length;

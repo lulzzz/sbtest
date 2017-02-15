@@ -65,6 +65,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								employeeNo: employee.employeeNo ? parseInt(employee.employeeNo) : employee.employeeNo,
 								companyEmployeeNo: employee.companyEmployeeNo,
 								name: employee.name,
+								payType: employee.payType,
 								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
@@ -77,7 +78,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								notes:'',
 								included: false,
 								hasError: false,
-								hasWarning:false,
+								hasWarning: false,
+								hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
 								paymentMethod: employee.paymentMethod
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
@@ -180,6 +182,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								employeeNo: employee.employeeNo,
 								companyEmployeeNo: employee.companyEmployeeNo,
 								name: employee.name,
+								payType: employee.payType,
 								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
@@ -193,6 +196,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								included: matching ? matching.included : false,
 								hasError: false,
 								hasWarning: false,
+								hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
 								paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
 							};
 							$.each(employee.payCodes, function (index1, paycode) {
