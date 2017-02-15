@@ -222,6 +222,13 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							if (matching) {
 								paycheck.compensations = angular.copy(matching.compensations);
 								paycheck.deductions = angular.copy(matching.deductions);
+								$.each(paycheck.deductions, function(id, d) {
+									d.accountNo = d.employeeDeduction.accountNo;
+									d.agencyId = d.employeeDeduction.agencyId;
+									d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
+									d.priority = d.employeeDeduction.priority;
+									d.limit = d.employeeDeduction.limit;
+								});
 							} else {
 								$.each(employee.compensations, function (index2, comp) {
 									var pt = {

@@ -135,7 +135,7 @@
 				<td class="text-right">{{tax.amount | currency:'$'}}</td>
 				<td class="text-right">{{tax.ytdTax | currency: '$'}}</td>
 			</tr>
-			<tr ng-repeat="ded in check.deductions | orderBy:'sort'">
+			<tr ng-repeat="ded in check.deductions | orderBy:'wage':true">
 				<td>{{ded.deduction.description}}</td>
 				<td class="text-right">{{ded.wage | currency:'$'}}</td>
 				<td class="text-right">{{ded.amount | currency:'$'}}</td>

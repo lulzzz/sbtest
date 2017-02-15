@@ -2243,6 +2243,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = fullName
 					});
 					txn.Complete();
+					Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
+					{
+						SavedObject = saved,
+						UserId = userId,
+						TimeStamp = DateTime.Now,
+						NotificationText = string.Format("{0} by {1}", string.Format("Company {0} has been copied", saved.Name), fullName),
+						EventType = NotificationTypeEnum.Created
+					});
 				}
 				return company;
 			}
