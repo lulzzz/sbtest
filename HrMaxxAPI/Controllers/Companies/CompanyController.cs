@@ -40,6 +40,33 @@ namespace HrMaxxAPI.Controllers.Companies
 	  }
 
 	  [HttpGet]
+	  [Route(CompanyRoutes.FixEmployeePayCodes)]
+	  public HttpStatusCode FixEmployeePayCodes(Guid companyId)
+	  {
+			var employees = _readerService.GetEmployees(company: companyId);
+			employees.ForEach(e =>
+			{
+				if (e.PayCodes.Any(p => p.Id > 0))
+				{
+					e.PayCodes.Where(p => p.Id > 0).ToList().ForEach(pc =>
+					{
+						pc.CompanyId = companyId;
+					});
+					_companyService.SaveEmployee(e, false);
+				}
+			});
+		  return HttpStatusCode.OK;
+	  }
+
+		[HttpGet]
+		[Route(CompanyRoutes.CopyEmployees)]
+		public HttpStatusCode CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId)
+		{
+			MakeServiceCall(() => _companyService.CopyEmployees(sourceCompanyId, targetCompanyId, CurrentUser.FullName), "Copy employees from one company to another");
+			return HttpStatusCode.OK;
+		}
+
+	  [HttpGet]
 	  [Route(CompanyRoutes.MetaData)]
 	  public object GetMetaData()
 	  {

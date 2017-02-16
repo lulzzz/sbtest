@@ -326,7 +326,39 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 
 					}
 					init();
-
+					$scope.copyemployees = function (event) {
+						event.stopPropagation();
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/copyemployees.html',
+							controller: 'copyEmployeesCtrl',
+							size: 'md',
+							windowClass: 'my-modal-popup',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							resolve: {
+								company: function () {
+									return $scope.mainData.selectedCompany;
+								},
+								mainData: function () {
+									return $scope.mainData;
+								},
+								companyRepository: function () {
+									return companyRepository;
+								},
+								main: function() {
+									return $scope.$parent.$parent;
+								}
+							}
+						});
+						modalInstance.result.then(function (scope) {
+							if (scope) {
+								addAlert('successfully copied employees to the new company: ' + scope.selectedCompany.name, 'success');
+							}
+						}, function () {
+							return false;
+						});
+					}
 
 				}]
 		}
@@ -339,6 +371,31 @@ common.controller('payCheckListViewCtrl', function ($scope, $uibModalInstance, e
 
 	$scope.cancel = function () {
 		$uibModalInstance.close($scope);
+	};
+	
+
+});
+
+common.controller('copyEmployeesCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, main) {
+	$scope.original = company;
+	$scope.selectedCompany = null;
+	$scope.mainData = mainData;
+	
+	$scope.error = null;
+	$scope.cancel = function () {
+		$uibModalInstance.dismiss();
+	};
+	$scope.save = function () {
+		$scope.error = null;
+		main.confirmDialog('Are you sure you want to Copy employees? this action is not reversible', 'danger', function() {
+			companyRepository.copyEmployees($scope.original.id, $scope.selectedCompany.id).then(function(result) {
+				$uibModalInstance.close($scope);
+
+
+			}, function(error) {
+				$scope.error = error.statusText;
+			});
+		});
 	};
 	
 

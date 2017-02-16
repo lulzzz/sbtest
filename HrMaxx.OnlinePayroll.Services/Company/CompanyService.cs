@@ -664,5 +664,33 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, string fullName)
+		{
+			try
+			{
+				_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, fullName);
+				var company = _readerService.GetCompany(targetCompanyId);
+				var employees = _readerService.GetEmployees(company:targetCompanyId);
+				employees.ForEach(e =>
+				{
+					if (e.PayCodes.Any(p => p.Id > 0))
+					{
+						e.PayCodes.Where(p => p.Id > 0).ToList().ForEach(pc =>
+						{
+							pc.Id = company.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
+							pc.CompanyId = company.Id;
+						});
+						SaveEmployee(e, false);
+					}
+				});
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "company employees from " + sourceCompanyId + " to "+ targetCompanyId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

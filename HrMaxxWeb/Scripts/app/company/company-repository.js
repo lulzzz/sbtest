@@ -103,6 +103,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			copyEmployees: function (sourceCompanyId, targetCompanyId) {
+				var deferred = $q.defer();
+				companyServer.one('CopyEmployees').one(sourceCompanyId, targetCompanyId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveCompanyDeduction: function (deduction) {
 				var deferred = $q.defer();
 				companyServer.all('Deduction').post(deduction).then(function (data) {

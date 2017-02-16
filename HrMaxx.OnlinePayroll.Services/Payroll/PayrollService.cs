@@ -2219,6 +2219,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								e.PayCodes.Where(p => p.Id > 0).ToList().ForEach(pc =>
 								{
 									pc.Id = saved.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
+									pc.CompanyId = saved.Id;
 								});
 								_companyService.SaveEmployee(e, false);
 							}

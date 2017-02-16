@@ -58,8 +58,10 @@
 					<i class="fa fa-upload"></i>Import Employees
 				</button>
 				&nbsp;
-				<button class="btn btn-sm btn-success pull-right" ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template</button>
-				
+				<button class="btn btn-sm btn-primary pull-right" ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template</button>
+				&nbsp;
+				<button class="btn btn-sm btn-success pull-right" ng-if="mainData.userRole==='Master'" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
+				&nbsp;
 			</div>
 
 			<!-- end panel -->
@@ -77,6 +79,42 @@
 		<div class="modal-body">
 			<pay-check-list employee="employee" main-data="mainData" />
 		</div>
+	</script>
+	<script type="text/ng-template" id="popover/copyemployees.html">
+
+		<div class="modal-header">
+			<h2 class="modal-title">Copy Employees from {{original.name}}<i class="fa fa-plus-circle fa-lg"></i></h2>
+		</div>
+		<div class="modal-body">
+
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="form-group">
+						<label>Target Company</label>
+						<select id="host" class="form-control" ng-model="selectedCompany" ng-options="(comp.name + (comp.companyNo? ('(' + comp.companyNo + ')') : '')) for comp in mainData.companies | filter:{ id:'!' + original.id} | orderBy:'name' track by comp.id">
+							<option value="">Select Company</option>
+						</select>
+					</div>
+
+
+
+				</div>
+
+			</div>
+
+
+		</div>
+		<div class="modal-footer">
+			<div class="col-sm-12">
+				<div class="alert alert-danger" ng-if="error">
+					{{error}}
+				</div>
+				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!selectedCompany"><i class="fa fa-save m-r-5"></i> Save</button>
+			</div>
+
+		</div>
+
 	</script>
 </div>
 

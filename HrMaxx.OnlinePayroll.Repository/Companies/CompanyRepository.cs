@@ -636,5 +636,27 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			
 			_dbContext.SaveChanges();
 		}
+
+		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, string user)
+		{
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand("CopyEmployees"))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@oldCompanyId", sourceCompanyId);
+					cmd.Parameters.AddWithValue("@CompanyId", targetCompanyId);
+					cmd.Parameters.AddWithValue("@LastModifiedBy", user);
+				
+					cmd.Connection = con;
+					con.Open();
+
+
+					var data = string.Empty;
+					cmd.ExecuteNonQuery();
+					con.Close();
+				}
+			}
+		}
 	}
 }

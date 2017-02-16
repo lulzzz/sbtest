@@ -40,5 +40,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void SaveTSImportMap(Guid id, ImportMap importMap);
 		Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid);
 		void RaiseMinWage(decimal minWage);
+		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, string fullName);
 	}
 }

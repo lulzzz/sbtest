@@ -1,4 +1,6 @@
-﻿namespace HrMaxxAPI.Controllers.Companies
+﻿using System.Web.UI;
+
+namespace HrMaxxAPI.Controllers.Companies
 {
 	public class CompanyRoutes
 	{
@@ -39,5 +41,7 @@
 		public const string AllEmployees = "Company/EmployeeList";
 		public const string MinifiedCompanyList = "Company/CompanyListMinified";
 		public const string MinifiedEmployeeList = "Company/EmployeeListMinified";
+		public const string FixEmployeePayCodes = "Company/FixEmployeePayCodes/{companyId:guid}";
+		public const string CopyEmployees = "Company/CopyEmployees/{sourceCompanyId:guid}/{targetCompanyId:guid}";
 	}
 }
