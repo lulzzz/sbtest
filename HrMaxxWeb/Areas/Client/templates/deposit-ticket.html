@@ -99,7 +99,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} | orderBy:'payee.payeeName'  track by $index" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)), 'danger':(item.transactionType!==7 && jd.isDebit)}">
+				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} | orderBy:'payee.payeeName'  track by $index" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)) && isJournalDetailValid(jd), 'danger':!isJournalDetailValid(jd)}">
 					<td>
 						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName" editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
 							{{ jd.accountId? jd.accountName : '' }}
@@ -112,7 +112,7 @@
 					</td>
 					<td>
 
-						<span e-ng-change="jd.checkNumber = $data" e-ng-show="jd.depositMethod.key===1" editable-number="jd.checkNumber" e-name="checknumber" e-form="rowform" e-ng-pattern="/^[1-9]+[0-9]?$/" e-step="1" e-style="width:10em;">
+						<span e-ng-change="jd.checkNumber = $data" e-ng-show="jd.depositMethod.key===1" editable-number="jd.checkNumber" e-name="checknumber" e-form="rowform" e-ng-pattern="/^[1-9]+([0-9]{0,8})?$/" e-ng-required="jd.depositMethod.key===1" e-step="1" e-style="width:10em;">
 							{{ jd.depositMethod.key===1 ? jd.checkNumber : '' }}
 						</span>
 					</td>

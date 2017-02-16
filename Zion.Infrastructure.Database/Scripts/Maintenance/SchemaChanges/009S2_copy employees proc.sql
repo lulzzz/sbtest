@@ -1,12 +1,12 @@
-﻿/****** Object:  StoredProcedure [dbo].[CopyEmployees]    Script Date: 16/02/2017 10:58:50 AM ******/
+﻿/****** Object:  StoredProcedure [dbo].[CopyEmployees]    Script Date: 16/02/2017 7:00:13 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[CopyEmployees]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[CopyEmployees]
 GO
-/****** Object:  StoredProcedure [dbo].[CopyCompany]    Script Date: 16/02/2017 10:58:50 AM ******/
+/****** Object:  StoredProcedure [dbo].[CopyCompany]    Script Date: 16/02/2017 7:00:13 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[CopyCompany]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[CopyCompany]
 GO
-/****** Object:  StoredProcedure [dbo].[CopyCompany]    Script Date: 16/02/2017 10:58:50 AM ******/
+/****** Object:  StoredProcedure [dbo].[CopyCompany]    Script Date: 16/02/2017 7:00:13 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -40,10 +40,10 @@ declare @isPEOHost bit
 select @isPEOHost = IsPeoHost from Host where Id=@newHost
 if @isPEOHost=1
 	update #tempcomp set FileUnderHost=1, ManageEFileForms=1, ManageTaxPayment=1;
-Set Identity_Insert [Company] On
-insert into Company([Id], [CompanyName],[CompanyNo],[HostId],[StatusId],[IsVisibleToHost],[FileUnderHost],[DirectDebitPayer],[PayrollDaysInPast],[InsuranceGroupNo],[TaxFilingName],[CompanyAddress],[BusinessAddress],[IsAddressSame],[ManageTaxPayment],[ManageEFileForms],[FederalEIN],[FederalPin],[DepositSchedule941],[PayrollSchedule],[PayCheckStock],[IsFiler944],[LastModifiedBy],[LastModified],[MinWage],[IsHostCompany],[Memo],[ClientNo],[Created],[ParentId],[CompanyNumber],[Notes])
-select [Id], [CompanyName],[CompanyNo],[HostId],[StatusId],[IsVisibleToHost],[FileUnderHost],[DirectDebitPayer],[PayrollDaysInPast],[InsuranceGroupNo],[TaxFilingName],[CompanyAddress],[BusinessAddress],[IsAddressSame],[ManageTaxPayment],[ManageEFileForms],[FederalEIN],[FederalPin],[DepositSchedule941],[PayrollSchedule],[PayCheckStock],[IsFiler944],[LastModifiedBy],[LastModified],[MinWage],[IsHostCompany],[Memo],[ClientNo],[Created],[ParentId],[CompanyNumber],[Notes] from #tempcomp;
-Set Identity_Insert [Company] Off
+
+insert into Company([Id], [CompanyName],[CompanyNo],[HostId],[StatusId],[IsVisibleToHost],[FileUnderHost],[DirectDebitPayer],[PayrollDaysInPast],[InsuranceGroupNo],[TaxFilingName],[CompanyAddress],[BusinessAddress],[IsAddressSame],[ManageTaxPayment],[ManageEFileForms],[FederalEIN],[FederalPin],[DepositSchedule941],[PayrollSchedule],[PayCheckStock],[IsFiler944],[LastModifiedBy],[LastModified],[MinWage],[IsHostCompany],[Memo],[ClientNo],[Created],[ParentId],[Notes])
+select [Id], [CompanyName],[CompanyNo],[HostId],[StatusId],[IsVisibleToHost],[FileUnderHost],[DirectDebitPayer],[PayrollDaysInPast],[InsuranceGroupNo],[TaxFilingName],[CompanyAddress],[BusinessAddress],[IsAddressSame],[ManageTaxPayment],[ManageEFileForms],[FederalEIN],[FederalPin],[DepositSchedule941],[PayrollSchedule],[PayCheckStock],[IsFiler944],[LastModifiedBy],[LastModified],[MinWage],[IsHostCompany],[Memo],[ClientNo],[Created],[ParentId],[Notes] from #tempcomp;
+
 --contract
 insert into CompanyContract(CompanyId, Type, PrePaidSubscriptionType, BillingType, CardDetails, BankDetails, InvoiceRate, Method, InvoiceSetup)
 select @CompanyId, Type, PrePaidSubscriptionType, BillingType, CardDetails, BankDetails, InvoiceRate, Method, InvoiceSetup from CompanyContract where CompanyId=@oldCompanyId;
@@ -131,7 +131,7 @@ begin
 		(select top(1) newwcid from #wcTable where oldwcid=WorkerCompensationId)
 		else
 			null
-		end, ((select max(em.CompanyEmployeeNo) from Employee em where em.CompanyId=@CompanyID)+1) CompanyEmployeeNo, Notes, SickLeaveHireDate, CarryOver
+		end, CompanyEmployeeNo, Notes, SickLeaveHireDate, CarryOver
 	from Employee Where CompanyId=@oldCompanyId;
 
 
@@ -141,19 +141,20 @@ begin
 	where a.SSN=b.SSN;
 
 	insert into EmployeeDeduction(EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId)
-	select (select newempid from #empTable where oldempid=EmployeeId), Method, Rate, AnnualMax, 
-		(select newdedid from #dedTable where olddedid=CompanyDeductionId)
-	from EmployeeDeduction where employeeid in (select id from employee where CompanyId=@oldCompanyId);
+	select (select newempid from #empTable where oldempid=ed.EmployeeId), Method, Rate, AnnualMax, 
+		(select newdedid from #dedTable where olddedid=ed.CompanyDeductionId)
+	from EmployeeDeduction ed where ed.employeeid in (select id from employee e2 where e2.CompanyId=@oldCompanyId);
 
 	insert into BankAccount(EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId)
-	select EntityTypeId, (select newempid from #empTable where oldempid=EntityId), AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId
+	select EntityTypeId, (select newempid from #empTable where oldempid=EntityId), 
+	AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId
 	from BankAccount
 	Where EntityTypeId=3
 	and EntityId in (select Id from Employee where CompanyId=@oldCompanyId)
 
 	insert into EmployeeBankAccount(EmployeeId, BankAccountId, Percentage)
 	select (select newempid from #empTable where oldempid=EmployeeId), 
-	(select Id from BankAccount where EntityTypeId=3 and EntityId=(select newempid from #empTable where oldempid=EmployeeId) and AccountType=BankAccount.AccountType and BankName=BankAccount.BankName and AccountNumber=BankAccount.AccountNumber and RoutingNumber=BankAccount.RoutingNumber),
+	(select Id from BankAccount ba where ba.EntityTypeId=3 and ba.EntityId=(select newempid from #empTable where oldempid=EmployeeId) and ba.AccountType=BankAccount.AccountType and ba.BankName=BankAccount.BankName and ba.AccountNumber=BankAccount.AccountNumber and ba.RoutingNumber=BankAccount.RoutingNumber),
 	Percentage
 	from EmployeeBankAccount, BankAccount
 	where 
@@ -166,7 +167,7 @@ begin
 	insert into EntityRelation(SourceEntityTypeId, TargetEntityTypeId, SourceEntityId, TargetEntityId, TargetObject) select SourceEntityTypeId, TargetEntityTypeId, SourceEntityId, TargetEntityId, TargetObject from #tmperee;
 end
 GO
-/****** Object:  StoredProcedure [dbo].[CopyEmployees]    Script Date: 16/02/2017 10:58:50 AM ******/
+/****** Object:  StoredProcedure [dbo].[CopyEmployees]    Script Date: 16/02/2017 7:00:13 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -204,8 +205,19 @@ declare @tmpEmployees table (
 	where b.id<>''
 
 
+if not exists(select 'x' from Employee Where CompanyId=@oldCompanyId
+	and ((@employeeIds is null) or (@employeeIds is not null and exists(select 'x' from @tmpEmployees where id=Employee.Id)))
+	and not exists(select 'x' from Employee e1 where e1.CompanyId=@CompanyID and e1.SSN=Employee.SSN)
+	)
+	begin
+		RAISERROR('All Employees already exist in the target company',16,1);
+		return;
+	end
+
 insert into CompanyDeduction(CompanyId, TypeId, Name, Description, AnnualMax)
-select @CompanyID, TypeId, Name, Description, AnnualMax from CompanyDeduction where CompanyId=@oldCompanyId;
+select @CompanyID, TypeId, Name, Description, AnnualMax from CompanyDeduction 
+where CompanyId=@oldCompanyId 
+and not exists(select 'x' from CompanyDeduction cd where cd.CompanyId=@CompanyID and cd.TypeId=TypeId and cd.Name=Name);
 
 select a.Id as olddedid, b.Id as newdedid into #dedTable from
 (select * from CompanyDeduction where companyid=@oldcompanyid)a,
@@ -213,7 +225,9 @@ select a.Id as olddedid, b.Id as newdedid into #dedTable from
 where a.TypeId = b.TypeId and a.Name=b.Name;
 
 insert into CompanyWorkerCompensation(CompanyId, Code, Description, Rate, MinGrossWage)
-select @CompanyId, Code, Description, Rate, MinGrossWage from CompanyWorkerCompensation where CompanyId=@oldCompanyId;
+select @CompanyId, Code, Description, Rate, MinGrossWage from CompanyWorkerCompensation 
+where CompanyId=@oldCompanyId
+and not exists(select 'x' from CompanyWorkerCompensation cw where cw.CompanyId=@CompanyID and cw.Code=Code);
 
 select a.Id as oldwcid, b.Id as newwcid into #wcTable from
 (select * from CompanyWorkerCompensation where companyid=@oldcompanyid)a,
@@ -231,7 +245,7 @@ where a.Code = b.Code;
 		(select top(1) newwcid from #wcTable where oldwcid=WorkerCompensationId)
 		else
 			null
-		end, ((select max(em.CompanyEmployeeNo) from Employee em where em.CompanyId=@CompanyID)+1) CompanyEmployeeNo, Notes, SickLeaveHireDate, CarryOver
+		end, (isnull((select max(em.CompanyEmployeeNo) from Employee em where em.CompanyId=@CompanyID),0)+ROW_NUMBER() OVER(ORDER BY FirstName ASC)) CompanyEmployeeNo, Notes, SickLeaveHireDate, CarryOver
 	from Employee Where CompanyId=@oldCompanyId
 	and ((@employeeIds is null) or (@employeeIds is not null and exists(select 'x' from @tmpEmployees where id=Employee.Id)))
 	and not exists(select 'x' from Employee e1 where e1.CompanyId=@CompanyID and e1.SSN=Employee.SSN)
@@ -239,31 +253,40 @@ where a.Code = b.Code;
 
 	select a.Id as oldempid, b.Id as newempid into #empTable from
 	(select * from Employee where companyid=@oldcompanyid)a,
-	(select * from Employee where companyid=@companyid)b 
+	(select * from Employee where companyid=@CompanyID)b 
 	where a.SSN=b.SSN;
 
 	insert into EmployeeDeduction(EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId)
-	select (select newempid from #empTable where oldempid=EmployeeId), Method, Rate, AnnualMax, 
-		(select newdedid from #dedTable where olddedid=CompanyDeductionId)
-	from EmployeeDeduction where employeeid in (select id from employee where CompanyId=@oldCompanyId);
+	select (select newempid from #empTable where oldempid=ed.EmployeeId), Method, Rate, AnnualMax, 
+		(select newdedid from #dedTable where olddedid=ed.CompanyDeductionId)
+	from EmployeeDeduction ed where ed.employeeid in (select oldempid from #empTable)
+	and not exists(select 'x' from EmployeeDeduction ed2 where ed2.EmployeeId=(select newempid from #empTable where oldempid=ed.EmployeeId) and ed2.CompanyDeductionId=(select newdedid from #dedTable where olddedid=ed.CompanyDeductionId));
 
 	insert into BankAccount(EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId)
-	select EntityTypeId, (select newempid from #empTable where oldempid=EntityId), AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId
+	select EntityTypeId, (select newempid from #empTable where oldempid=EntityId), 
+	AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId
 	from BankAccount
 	Where EntityTypeId=3
-	and EntityId in (select Id from Employee where CompanyId=@oldCompanyId)
+	and EntityId in (select oldempid from #empTable)
+	and not exists(select 'x' from BankAccount ba2 where ba2.EntityTypeId=3 and ba2.EntityId=(select newempid from #empTable where oldempid=BankAccount.EntityId) and ba2.AccountType=AccountType 
+	and ba2.BankName=BankName and ba2.AccountNumber=AccountNumber and ba2.RoutingNumber=RoutingNumber);
 
 	insert into EmployeeBankAccount(EmployeeId, BankAccountId, Percentage)
 	select (select newempid from #empTable where oldempid=EmployeeId), 
-	(select Id from BankAccount where EntityTypeId=3 and EntityId=(select newempid from #empTable where oldempid=EmployeeId) and AccountType=BankAccount.AccountType and BankName=BankAccount.BankName and AccountNumber=BankAccount.AccountNumber and RoutingNumber=BankAccount.RoutingNumber),
+	(select Id from BankAccount ba where ba.EntityTypeId=3 and ba.EntityId=(select newempid from #empTable where oldempid=EmployeeId) and ba.AccountType=BankAccount.AccountType and ba.BankName=BankAccount.BankName and ba.AccountNumber=BankAccount.AccountNumber and ba.RoutingNumber=BankAccount.RoutingNumber),
 	Percentage
 	from EmployeeBankAccount, BankAccount
 	where 
 	EmployeeBankAccount.BankAccountId = BankAccount.Id
-	and EmployeeId in (select Id from Employee where CompanyId=@oldCompanyId)
+	and EmployeeId in (select oldempid from #empTable)
+	and not exists(select 'x' from EmployeeBankAccount eba2 where eba2.EmployeeId=(select newempid from #empTable where oldempid=EmployeeBankAccount.EmployeeId)
+		and eba2.BankAccountId=(select Id from BankAccount ba2 where ba2.EntityTypeId=3 and ba2.EntityId=(select newempid from #empTable where oldempid=EmployeeBankAccount.EmployeeId) 
+				and ba2.AccountType=BankAccount.AccountType 
+				and ba2.BankName=BankAccount.BankName and ba2.AccountNumber=BankAccount.AccountNumber and ba2.RoutingNumber=BankAccount.RoutingNumber)
+	);
 
 	--entity relations
-	select * into #tmperee  from EntityRelation where SourceEntityTypeId=3 and SourceEntityId in (select id from employee where CompanyId=@oldCompanyId);
+	select * into #tmperee  from EntityRelation where SourceEntityTypeId=3 and SourceEntityId in (select oldempid from #empTable);
 	update #tmperee set sourceentityid=(select newempid from #empTable where oldempid=SourceEntityId);
 	insert into EntityRelation(SourceEntityTypeId, TargetEntityTypeId, SourceEntityId, TargetEntityId, TargetObject) select SourceEntityTypeId, TargetEntityTypeId, SourceEntityId, TargetEntityId, TargetObject from #tmperee;
 GO

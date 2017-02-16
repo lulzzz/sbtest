@@ -203,7 +203,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							journal.PayeeName = savedVC.Name;
 						}
 					}
-					else if (journal.TransactionType == TransactionType.Deposit && journal.JournalDetails.Any(jd=>jd.Payee!=null && jd.Payee.Id==Guid.Empty))
+					else if ((journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit) && journal.JournalDetails.Any(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty))
 					{
 						var newVendors = new List<JournalPayee>();
 						var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();

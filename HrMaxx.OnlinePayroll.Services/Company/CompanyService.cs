@@ -669,26 +669,31 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, employeeIds, fullName);
-				var company = _readerService.GetCompany(targetCompanyId);
-				var employees = _readerService.GetEmployees(company:targetCompanyId);
-				employees.Where(e => e.PayCodes.Any()).ToList().ForEach(e =>
+				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					e.PayCodes.ForEach(pc =>
+					_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, employeeIds, fullName);
+					var company = _readerService.GetCompany(targetCompanyId);
+					var employees = _readerService.GetEmployees(company: targetCompanyId);
+					employees.Where(e => e.PayCodes.Any()).ToList().ForEach(e =>
 					{
-						if (pc.Id > 0)
-							pc.Id = company.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
-						pc.CompanyId = company.Id;
-					});
-					SaveEmployee(e, false);
+						e.PayCodes.ForEach(pc =>
+						{
+							if (pc.Id > 0)
+								pc.Id = company.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
+							pc.CompanyId = company.Id;
+						});
+						SaveEmployee(e, true);
 
-				});
+					});
+					txn.Complete();
+				}
+				
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "company employees from " + sourceCompanyId + " to "+ targetCompanyId);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "company employees from " + sourceCompanyId + " to "+ targetCompanyId + ". "+e.Message);
 				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
+				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
 			}
 		}
 	}

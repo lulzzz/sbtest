@@ -350,7 +350,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 									return $scope.$parent.$parent;
 								},
 								employees: function() {
-									return $scope.list;
+									return $filter('orderBy')($filter('filter')($scope.list, {statusId:1}), 'name');
 								}
 							}
 						});

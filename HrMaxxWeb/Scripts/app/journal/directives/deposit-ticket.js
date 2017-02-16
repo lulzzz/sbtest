@@ -98,7 +98,9 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.item.journalDetails.splice($scope.item.journalDetails.indexOf(jd), 1);
 						updateItemAmount();
 					}
-					$scope.isJournalDetailValid = function(jd) {
+					$scope.isJournalDetailValid = function (jd) {
+						if (jd.account.isBank)
+							return true;
 						if (!jd.accountId || !jd.accountName || !jd.amount || !jd.depositMethod || (!jd.payee && !jd.screenPayee))
 							return false;
 						else if (jd.depositMethod && jd.depositMethod.key === 1 && !jd.checkNumber)
@@ -107,7 +109,7 @@ common.directive('depositTicket', ['zionAPI','version',
 							return true;
 					}
 					$scope.canceljd = function($index) {
-						if (!$scope.item.id || $scope.selectedjd.amount===0) {
+						if ($scope.item.selectedjd.isNew) {
 							$scope.item.journalDetails.splice($index, 1);
 						}
 						$scope.selectedjd = null;
@@ -152,11 +154,19 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.checkAmount = checkAmount;
 						$scope.cashAmount = cashAmount;
 					}
-					$scope.isCheckInValid = function() {
-						if ($scope.item.amount && $scope.item.transactionDate && $scope.item.journalDetails.length>0)
-							return false;
-						else
-							return true;
+					$scope.isCheckInValid = function () {
+						var returnVal = false;
+						if (!$scope.item.amount || !$scope.item.transactionDate || $scope.item.journalDetails.length === 0)
+							returnVal = true;
+						else {
+							$.each($scope.item.journalDetails, function(id, jd1) {
+								if (!$scope.isJournalDetailValid(jd1)) {
+									returnVal = true;
+									return;
+								}
+							});
+						};
+						return returnVal;
 					}
 
 					$scope.save = function () {
