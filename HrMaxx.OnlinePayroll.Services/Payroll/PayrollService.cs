@@ -2212,17 +2212,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					if (copyEmployees)
 					{
 						var employees = _readerService.GetEmployees(company:company.Id);
-						employees.ForEach(e =>
+						employees.Where(e=>e.PayCodes.Any()).ToList().ForEach(e =>
 						{
-							if (e.PayCodes.Any(p => p.Id > 0))
+							e.PayCodes.ForEach(pc =>
 							{
-								e.PayCodes.Where(p => p.Id > 0).ToList().ForEach(pc =>
-								{
+								if(pc.Id>0)
 									pc.Id = saved.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
-									pc.CompanyId = saved.Id;
-								});
-								_companyService.SaveEmployee(e, false);
-							}
+								pc.CompanyId = saved.Id;
+							});
+							_companyService.SaveEmployee(e, false);
+							
 						});
 						if (copyPayrolls)
 							MigratePayrolls(companyId, saved, employees, startDate, endDate, userId);

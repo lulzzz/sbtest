@@ -637,7 +637,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			_dbContext.SaveChanges();
 		}
 
-		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, string user)
+		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string user)
 		{
 			using (var con = new SqlConnection(_sqlCon))
 			{
@@ -646,6 +646,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Parameters.AddWithValue("@oldCompanyId", sourceCompanyId);
 					cmd.Parameters.AddWithValue("@CompanyId", targetCompanyId);
+					if(employeeIds.Any())
+						cmd.Parameters.AddWithValue("@employeeIds", employeeIds.Aggregate(string.Empty, (current, m) => current + m + ", "));
 					cmd.Parameters.AddWithValue("@LastModifiedBy", user);
 				
 					cmd.Connection = con;

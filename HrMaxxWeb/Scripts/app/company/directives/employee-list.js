@@ -348,6 +348,9 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 								},
 								main: function() {
 									return $scope.$parent.$parent;
+								},
+								employees: function() {
+									return $scope.list;
 								}
 							}
 						});
@@ -376,19 +379,25 @@ common.controller('payCheckListViewCtrl', function ($scope, $uibModalInstance, e
 
 });
 
-common.controller('copyEmployeesCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, main) {
+common.controller('copyEmployeesCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, main, employees) {
 	$scope.original = company;
 	$scope.selectedCompany = null;
 	$scope.mainData = mainData;
-	
+	$scope.selectedEmployees = [];
+	$scope.employeeList = angular.copy(employees);
 	$scope.error = null;
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();
 	};
 	$scope.save = function () {
 		$scope.error = null;
-		main.confirmDialog('Are you sure you want to Copy employees? this action is not reversible', 'danger', function() {
-			companyRepository.copyEmployees($scope.original.id, $scope.selectedCompany.id).then(function(result) {
+		main.confirmDialog('Are you sure you want to Copy employees? this action is not reversible', 'danger', function () {
+			var selected = [];
+			$.each($scope.selectedEmployees, function (i, st) {
+				if (st.id)
+					selected.push(st.id);
+			});
+			companyRepository.copyEmployees($scope.original.id, $scope.selectedCompany.id, selected).then(function(result) {
 				$uibModalInstance.close($scope);
 
 

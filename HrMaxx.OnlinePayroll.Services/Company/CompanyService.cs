@@ -665,24 +665,23 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, string fullName)
+		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName)
 		{
 			try
 			{
-				_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, fullName);
+				_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, employeeIds, fullName);
 				var company = _readerService.GetCompany(targetCompanyId);
 				var employees = _readerService.GetEmployees(company:targetCompanyId);
-				employees.ForEach(e =>
+				employees.Where(e => e.PayCodes.Any()).ToList().ForEach(e =>
 				{
-					if (e.PayCodes.Any(p => p.Id > 0))
+					e.PayCodes.ForEach(pc =>
 					{
-						e.PayCodes.Where(p => p.Id > 0).ToList().ForEach(pc =>
-						{
+						if (pc.Id > 0)
 							pc.Id = company.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
-							pc.CompanyId = company.Id;
-						});
-						SaveEmployee(e, false);
-					}
+						pc.CompanyId = company.Id;
+					});
+					SaveEmployee(e, false);
+
 				});
 			}
 			catch (Exception e)

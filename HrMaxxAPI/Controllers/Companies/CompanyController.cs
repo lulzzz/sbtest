@@ -58,11 +58,11 @@ namespace HrMaxxAPI.Controllers.Companies
 		  return HttpStatusCode.OK;
 	  }
 
-		[HttpGet]
+		[HttpPost]
 		[Route(CompanyRoutes.CopyEmployees)]
-		public HttpStatusCode CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId)
+		public HttpStatusCode CopyEmployees(CopyEmployeeResource resource)
 		{
-			MakeServiceCall(() => _companyService.CopyEmployees(sourceCompanyId, targetCompanyId, CurrentUser.FullName), "Copy employees from one company to another");
+			MakeServiceCall(() => _companyService.CopyEmployees(resource.SourceCompanyId, resource.TargetCompanyId, resource.EmployeeIds, CurrentUser.FullName), "Copy employees from one company to another");
 			return HttpStatusCode.OK;
 		}
 

@@ -83,24 +83,23 @@
 	<script type="text/ng-template" id="popover/copyemployees.html">
 
 		<div class="modal-header">
-			<h2 class="modal-title">Copy Employees from {{original.name}}<i class="fa fa-plus-circle fa-lg"></i></h2>
+			<h4 class="modal-title">Copy Employees from {{original.name}}<i class="fa fa-plus-circle fa-lg"></i></h4>
 		</div>
 		<div class="modal-body">
 
-			<div class="row">
-				<div class="col-sm-12">
-					<div class="form-group">
-						<label>Target Company</label>
-						<select id="host" class="form-control" ng-model="selectedCompany" ng-options="(comp.name + (comp.companyNo? ('(' + comp.companyNo + ')') : '')) for comp in mainData.companies | filter:{ id:'!' + original.id} | orderBy:'name' track by comp.id">
-							<option value="">Select Company</option>
-						</select>
-					</div>
-
-
-
+			<div class="col-sm-12">
+				<label>Employees</label><br/>
+				<div class="col-sm-4" ng-dropdown-multiselect="" options="employeeList" extra-settings="{displayProp: 'name', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, enableSearch: true,buttonDefaultText:'select employees'}" selected-model="selectedEmployees">
 				</div>
-
+			<div class="form-group col-sm-12">				
+					<label>Target Company</label>
+					<select id="host" class="form-control" ng-model="selectedCompany" ng-options="(comp.name + (comp.companyNo? ('(' + comp.companyNo + ')') : '')) for comp in mainData.companies | filter:{ id:'!' + original.id} | orderBy:'name' track by comp.id">
+						<option value="">Select Company</option>
+					</select>
+				
 			</div>
+
+			
 
 
 		</div>
@@ -110,7 +109,7 @@
 					{{error}}
 				</div>
 				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!selectedCompany"><i class="fa fa-save m-r-5"></i> Save</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!selectedCompany || selectedEmployees.length===0"><i class="fa fa-save m-r-5"></i> Save</button>
 			</div>
 
 		</div>
