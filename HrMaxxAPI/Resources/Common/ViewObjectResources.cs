@@ -20,6 +20,8 @@ namespace HrMaxxAPI.Resources.Common
 		public string Url { get; set; }
 		public DateTime EffectiveDate { get; set; }
 		public Guid? CompanyId { get; set; }
+		public HostHomePage HomePage { get; set; }
+		public Contact Contact { get; set; } 
 	}
 
 	public class CompanyListItemResource
@@ -39,6 +41,7 @@ namespace HrMaxxAPI.Resources.Common
 		public StatusOption StatusId { get; set; }
 		public List<CompanyTaxState> CompanyTaxStates { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
+		public Contact Contact { get; set; } 
 
 		public string ContractType
 		{

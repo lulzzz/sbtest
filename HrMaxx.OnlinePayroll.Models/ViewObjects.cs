@@ -15,6 +15,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Url { get; set; }
 		public DateTime EffectiveDate { get; set; }
 		public Guid? CompanyId { get; set; }
+		public string HomePage { get; set; }
+		public string Contact { get; set; }
 	}
 
 	public class CompanyListItem
@@ -34,6 +36,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public StatusOption StatusId { get; set; }
 		public List<JsonDataModel.CompanyTaxState> CompanyTaxStates { get; set; }
 		public InsuranceGroup InsuranceGroup { get; set; }
+		public string Contact { get; set; }
 	}
 
 	public class HostAndCompanies

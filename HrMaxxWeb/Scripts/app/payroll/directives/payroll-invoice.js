@@ -346,32 +346,30 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							return 'danger';
 					}
 					var getHostContact = function() {
-						commonRepository.getRelatedEntities(EntityTypes.Host, EntityTypes.Contact, $scope.invoice.company.hostId).then(function (data) {
-							var primary = $filter('filter')(data, { isPrimary: true })[0];
-							if (primary)
-								dataSvc.hostContact = primary;
-							else if (data.length > 0)
-								dataSvc.hostContact = data[0];
-						}, function (error) {
+						//commonRepository.getRelatedEntities(EntityTypes.Host, EntityTypes.Contact, $scope.invoice.company.hostId).then(function (data) {
+						//	var primary = $filter('filter')(data, { isPrimary: true })[0];
+						//	if (primary)
+						//		dataSvc.hostContact = primary;
+						//	else if (data.length > 0)
+						//		dataSvc.hostContact = data[0];
+						//}, function (error) {
 							
-						});
-						hostRepository.getHomePage($scope.invoice.company.hostId).then(function (data) {
-							dataSvc.hostHomePage = data;
-						}, function (error) {
-
-						});
+						//});
+						dataSvc.hostContact = $scope.mainData.selectedHost.contact;
+						dataSvc.hostHomePage = $scope.mainData.selectedHost.homePage;
 					}
 					var getCompanyContact = function () {
-						commonRepository.getRelatedEntities(EntityTypes.Company, EntityTypes.Contact, $scope.invoice.company.id).then(function (data) {
+						//commonRepository.getRelatedEntities(EntityTypes.Company, EntityTypes.Contact, $scope.invoice.company.id).then(function (data) {
 
-							var primary = $filter('filter')(data, { isPrimary: true })[0];
-							if (primary)
-								dataSvc.companyContact = primary;
-							else if (data.length > 0)
-								dataSvc.companyContact = data[0];
-						}, function (error) {
+						//	var primary = $filter('filter')(data, { isPrimary: true })[0];
+						//	if (primary)
+						//		dataSvc.companyContact = primary;
+						//	else if (data.length > 0)
+						//		dataSvc.companyContact = data[0];
+						//}, function (error) {
 
-						});
+						//});
+						dataSvc.companyContact = $scope.mainData.selectedCompany.contact;
 					}
 					$scope.getContactPhone = function(c) {
 						var p = '';
@@ -441,12 +439,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							fixDates();
 							getHostContact();
 							getCompanyContact();
-							commonRepository.getConfigData().then(function (result) {
-								dataSvc.config = angular.copy(result);
-
-							}, function (error) {
-								
-							});
+							dataSvc.config = $scope.mainData.config;
 							$scope.original = angular.copy($scope.invoice);
 						}
 					}

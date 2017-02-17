@@ -68,6 +68,7 @@
 			hostCompanies: [],
 			selectedHost: null,
 			selectedCompany: null,
+			config: null,
 			isFilterOpen: true,
 			showFilterPanel: true,
 			showCompanies: true,
@@ -131,6 +132,12 @@
 				dataSvc.isReady = true;
 
 			}
+			commonRepository.getConfigData().then(function (result) {
+				dataSvc.config = angular.copy(result);
+
+			}, function (error) {
+
+			});
 		};
 		
 		$scope.setHostandCompany = function (hostId, companyId, url) {
@@ -140,20 +147,22 @@
 				dataSvc.selectedCompany = null;
 				dataSvc.selectedCompany1 = null;
 
-				hostRepository.getHost(hostId).then(function (data) {
-					dataSvc.selectedHost = angular.copy(data);
-					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
-					$scope.getCompanies(null);
-					dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
-					if (dataSvc.selectedCompany1) {
-						$scope.companySelected();
-						if (url)
-							$window.location.href = url;
-					}
-					$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
-				}, function (erorr) {
-					addAlert('error getting host details', 'danger');
-				});
+				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
+				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+				$scope.getCompanies(null);
+				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
+				if (dataSvc.selectedCompany1) {
+					$scope.companySelected();
+					if (url)
+						$window.location.href = url;
+				}
+				//hostRepository.getHost(hostId).then(function (data) {
+				//	dataSvc.selectedHost = angular.copy(data);
+					
+				//	$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
+				//}, function (erorr) {
+				//	addAlert('error getting host details', 'danger');
+				//});
 				
 			} else if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
 				dataSvc.selectedCompany = null;
@@ -175,8 +184,11 @@
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
 				$scope.hostSelected();
 			}
-			dataSvc.selectedCompany1 = company;
-			dataSvc.selectedCompany = angular.copy(company);
+			if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== company.id)) {
+				dataSvc.selectedCompany1 = company;
+				dataSvc.selectedCompany = angular.copy(company);
+			}
+			
 		}
 
 		$scope.getCompanies = function (sel) {
@@ -201,11 +213,11 @@
 			dataSvc.selectedCompany = null;
 			dataSvc.selectedCompany1 = null;
 			if (dataSvc.selectedHost) {
-				//var match = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
+				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
 				//dataSvc.selectedHost = angular.copy(match);
-				if (!dataSvc.selectedHost.company) {
-					getHostDetails();
-				}
+				//if (!dataSvc.selectedHost.company) {
+				//	getHostDetails();
+				//}
 				$scope.getCompanies(null);
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 			}

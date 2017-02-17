@@ -168,7 +168,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.MapFrom(src => src.CompanyWorkerCompensations))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))
-				.ForMember(dest => dest.InsuranceGroup, opt => opt.MapFrom(src => src.InsuranceGroup));
+				.ForMember(dest => dest.InsuranceGroup, opt => opt.MapFrom(src => src.InsuranceGroup))
+				.ForMember(dest=>dest.Contact, opt=>opt.MapFrom(src=> !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null));
 
 			CreateMap<Models.JsonDataModel.EmployeeJson, Models.Employee>()
 				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.HostId))

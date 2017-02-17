@@ -32,11 +32,14 @@ namespace HrMaxxAPI.Code.Mappers
 			base.Configure();
 
 			CreateMap<HostAndCompanies, HostAndCompaniesResource>();
-			CreateMap<HostListItem, HostListItemResource>();
+			CreateMap<HostListItem, HostListItemResource>()
+				.ForMember(dest => dest.HomePage, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<HostHomePage>(src.HomePage)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null));
 			CreateMap<CompanyListItem, CompanyListItemResource>()
 				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.InvoiceSetup) ? JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup) : null))
 				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.CompanyAddress) ? JsonConvert.DeserializeObject<Address>(src.CompanyAddress) : null))
-				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)));
+				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null));
 
 			CreateMap<HostResource, Host>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))

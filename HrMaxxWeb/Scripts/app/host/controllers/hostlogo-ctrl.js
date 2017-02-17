@@ -13,12 +13,13 @@
 		};
 		$scope.$on('hostChanged', function(event, args) {
 			var host = args.host;
-			hostRepository.getHomePage(host.id).then(function(homepage) {
-					$scope.logo = homepage.logo;
-				},
-				function(error) {
+			$scope.logo = host.homePage.logo;
+			//hostRepository.getHomePage(host.id).then(function(homepage) {
+			//		$scope.logo = homepage.logo;
+			//	},
+			//	function(error) {
 
-				});
+			//	});
 		});
 		function _init() {
 			var homepage = localStorageService.get('hostlogo');

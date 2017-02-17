@@ -46,6 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
+		public Contact Contact { get; set; }
 
 		public List<CompanyTaxState> States { get; set; }
 		public List<AccumulatedPayType> AccumulatedPayTypes { get; set; }

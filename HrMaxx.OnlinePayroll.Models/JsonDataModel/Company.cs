@@ -46,7 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? ParentId { get; set; }
 		public int CompanyNumber { get; set; }
 		public string Notes { get; set; }
-
+		public string Contact { get; set; }
 
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 

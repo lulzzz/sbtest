@@ -10,14 +10,13 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll','anchorSmoothScroll',
+			controller: ['$scope', '$element', '$location', '$filter', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll','anchorSmoothScroll', 
 				function ($scope, $element, $location, $filter, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, anchorSmoothScroll) {
 					var dataSvc = {
 						
 						isBodyOpen: true,
 						startDate: null,
 						endDate: null
-						
 					}
 					
 					$scope.list = [];
@@ -202,6 +201,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						$scope.selectedStatuses.push({ id: 8 });
 						$scope.selectedStatuses.push({ id: 9 });
 						getInvoices(invoice);
+						
 					}
 					init();
 
