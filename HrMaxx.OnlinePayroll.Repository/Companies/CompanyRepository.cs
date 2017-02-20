@@ -82,6 +82,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.Memo = dbMappedCompany.Memo;
 				dbCompany.ClientNo = dbMappedCompany.ClientNo;
 				dbCompany.Notes = dbMappedCompany.Notes;
+				dbCompany.PayrollMessage = dbMappedCompany.PayrollMessage;
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);

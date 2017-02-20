@@ -34,6 +34,9 @@
 	<div ng-show="list.length===0" class="table table-bordered">
 		No employees found
 	</div>
+	<pre class="col-sm-12 alert alert-warning text-center" ng-if="showList() && company.payrollMessage">
+		<strong>{{company.payrollMessage}}</strong>
+	</pre>
 	<pre class="col-sm-12 alert alert-info text-center" ng-if="showList() && company.contract.invoiceSetup.invoiceType===1">
 		<b>These checks will be issued under and paid from {{host.firmName}}'s bank account!</b>
 	</pre>

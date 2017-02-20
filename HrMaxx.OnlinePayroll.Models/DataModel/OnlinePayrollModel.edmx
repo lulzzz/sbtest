@@ -102,6 +102,7 @@
           <Property Name="ParentId" Type="uniqueidentifier" />
           <Property Name="CompanyNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Notes" Type="varchar(max)" />
+          <Property Name="PayrollMessage" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1629,6 +1630,7 @@
           <NavigationProperty Name="Parent" Relationship="HrMaxxModel.FK_Company_Company" FromRole="Company1" ToRole="Company" />
           <Property Name="CompanyNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PayrollMessage" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2761,6 +2763,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="PayrollMessage" ColumnName="PayrollMessage" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="CompanyNumber" ColumnName="CompanyNumber" />
                 <ScalarProperty Name="ParentId" ColumnName="ParentId" />

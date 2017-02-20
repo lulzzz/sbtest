@@ -130,14 +130,14 @@
 				dataSvc.showFilterPanel = !dataSvc.userHost || (dataSvc.userHost && !dataSvc.userCompany);
 				dataSvc.showCompanies = !dataSvc.userCompany;
 				dataSvc.isReady = true;
+				commonRepository.getConfigData().then(function (result) {
+					dataSvc.config = angular.copy(result);
 
+				}, function (error) {
+
+				});
 			}
-			commonRepository.getConfigData().then(function (result) {
-				dataSvc.config = angular.copy(result);
-
-			}, function (error) {
-
-			});
+			
 		};
 		
 		$scope.setHostandCompany = function (hostId, companyId, url) {
@@ -250,7 +250,7 @@
 			
 				updateInList(dataSvc.companies, company);
 			
-				if (dataSvc.selectedHost && dataSvc.selectedHost.company.id === company.id) {
+				if (dataSvc.selectedHost && dataSvc.selectedHost.company && dataSvc.selectedHost.company.id === company.id) {
 					dataSvc.selectedHost.company = company;
 				}
 				if (dataSvc.selectedCompany && dataSvc.selectedCompany.id === company.id) {
