@@ -460,7 +460,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var getEmployees = function (companyId) {
 						companyRepository.getEmployees(companyId).then(function (data) {
-							dataSvc.employees = data;
+							dataSvc.employees = $filter('filter')(data, {statusId:'!'+3});
 						}, function (erorr) {
 							$scope.addAlert('error getting employee list', 'danger');
 						});

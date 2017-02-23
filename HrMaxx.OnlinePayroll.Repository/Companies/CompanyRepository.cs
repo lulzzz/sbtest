@@ -404,7 +404,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.Rate = me.Rate;
 				dbEmployee.CompanyEmployeeNo = me.CompanyEmployeeNo;
 				dbEmployee.Notes = me.Notes;
-				
+				dbEmployee.StatusId = me.StatusId;
+
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
 				{
