@@ -21,7 +21,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						companiesWithoutPayroll: [],
 						filterApproachingPayroll: '',
 						myNews: [],
-						reportData:[]
+						reportData: [],
+						tab:1
 					}
 
 					$scope.zionAPI = zionAPI; 
@@ -43,18 +44,37 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						reportRepository.getDashboardData('GetUserDashboard', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
 							dataSvc.reportData = data;
 							$scope.chartData = [];
-							$scope.drawPayrollChart();
-							$scope.drawInvoiceChart();
 							$scope.drawPayrollWithoutInvoiceChart();
 							$scope.drawCompaniesWithApproachingPayrolls();
 							$scope.drawCompaniesWithoutPayrollChart();
-
+							$scope.drawPayrollChart();
+							$scope.drawInvoiceChart();
+							
 						}, function (error) {
 							console.log(error);
 						});
 						
 						
 					};
+					var drawARCharts = function() {
+						reportRepository.getDashboardData('GetInvoiceStatusChartData', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+							dataSvc.reportData = data;
+							$scope.chartData = [];
+							$scope.drawInvoiceStatusChart();
+
+
+						}, function (error) {
+							console.log(error);
+						});
+					}
+					$scope.tabChanged = function (tab) {
+						dataSvc.tab = tab;
+						if (tab === 1) {
+							$scope.drawCharts();
+						} else {
+							drawARCharts();
+						}
+					}
 					var mapListToDataTable = function (input) {
 						return new google.visualization.arrayToDataTable(input.data);
 					};
@@ -68,7 +88,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 									var col = selection[0].column;
 									var key = options.chartKey;
 									var ctx = $filter('filter')($scope.chartData, { chartName: key }, true);
-									var url = "#!/Admin/Invoices?company=" + ctx[0].chartData[0][col];
+									$scope.mainData.invoiceCompany = ctx[0].chartData[0][col];
+									var url = "#!/Admin/Invoices#invoice";
 									$window.location.href = url;
 								});
 							}
@@ -133,6 +154,116 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 						}
 						
+
+					};
+					$scope.drawInvoiceStatusChart = function () {
+						var data = $filter('filter')(dataSvc.reportData, { result: 'GetInvoiceStatusChartData' }, true)[0];
+						if (data) {
+							var ws_data = null;
+							ws_data = mapListToDataTable(data);
+							clearIfExists('InvoiceStatusChartData', data.data, 'Invoices by Statuses');
+
+							var options = {
+								title: 'Invoices by Status',
+								vAxis: {
+									title: "No. of Invoices"
+								},
+								hAxis: {
+									title: "Status"
+								},
+								seriesType: "bars",
+								isStacked: false,
+								'width': '100%',
+								'height': 400,
+								'chartKey': 'InvoiceStatusChartData'
+							};
+
+							var chart = new google.visualization.ComboChart($element.find('#invoiceststusChart')[0]);
+							var element = angular.element(document.querySelector('#invoiceststusChart'));
+							chart.draw(ws_data, options);
+							google.visualization.events.addListener(chart, 'select', function () {
+								var selection = chart.getSelection();
+								var col = selection[0].column;
+								var key = options.chartKey;
+								var ctx = $filter('filter')($scope.chartData, { chartName: key }, true);
+								var criteria = ctx[0].chartData[0][col];
+								$scope.drawInvoiceStatusPastDueChart(criteria);
+								$scope.drawInvoiceStatusDetailedChart(criteria);
+							});
+						}
+
+
+					};
+					$scope.drawInvoiceStatusDetailedChart = function (status) {
+						reportRepository.getDashboardData('GetInvoiceStatusDetailedChartData', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+							var data = data1[0];
+							if (data1.length>0) {
+								var ws_data = null;
+								ws_data = mapListToDataTable(data);
+								clearIfExists('InvoiceStatusDetailedChartData', data.data, 'OS Invoice / Days to Next Payroll: Status = ' + status);
+
+								var options = {
+									title: 'OS Invoice / Days to Next Payroll: Status = ' + status,
+									vAxis: {
+										title: "No. of Invoices"
+									},
+									hAxis: {
+										title: "Status"
+									},
+									seriesType: "bars",
+									isStacked: false,
+									'width': '100%',
+									'height': 400,
+									'chartKey': 'InvoiceStatusDetailedChartData'
+								};
+
+								var chart = new google.visualization.ComboChart($element.find('#invoicestatusdetailedChart')[0]);
+								var element = angular.element(document.querySelector('#invoicestatusdetailedChart'));
+								handleChart(chart, element, ws_data, data, options, true);
+
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+						
+
+
+					};
+					$scope.drawInvoiceStatusPastDueChart = function (status) {
+						reportRepository.getDashboardData('GetInvoiceStatusPastDueChartData', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								var ws_data = null;
+								ws_data = mapListToDataTable(data);
+								clearIfExists('InvoiceStatusPastDueChartData', data.data, 'OS Invoice by Age: Status = ' + status);
+
+								var options = {
+									title: 'OS Invoice by Age: Status = ' + status,
+									vAxis: {
+										title: "No. of Invoices"
+									},
+									hAxis: {
+										title: "Age"
+									},
+									seriesType: "bars",
+									isStacked: false,
+									'width': '100%',
+									'height': 400,
+									'chartKey': 'InvoiceStatusPastDueChartData'
+								};
+
+								var chart = new google.visualization.ComboChart($element.find('#invoicestatuspastdueChart')[0]);
+								var element = angular.element(document.querySelector('#invoicestatuspastdueChart'));
+								handleChart(chart, element, ws_data, data, options, true);
+
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+						
+
 
 					};
 

@@ -3,6 +3,12 @@
 	<div class="panel panel-inverse hidden-print">
 		<div class="panel-body">
 			<div class="row">
+				<div class="col-sm-4 hidden-print form-group">
+					<label class="control-label">Company</label>
+					<select id="comp" class="form-control" ng-model="data.selectedCompany" ng-options="comp.name for comp in mainData.companies track by comp.id">
+						<option value="">All</option>
+					</select>
+				</div>
 				<div class="col-sm-1 form-group">
 					<label for="statuses">Status</label>
 					<div class="col-sm-12" ng-dropdown-multiselect="" options="statuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedStatuses" ></div>

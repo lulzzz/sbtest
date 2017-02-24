@@ -16,7 +16,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						
 						isBodyOpen: true,
 						startDate: null,
-						endDate: null
+						endDate: null,
+						selectedCompany: null
 					}
 					
 					$scope.list = [];
@@ -159,7 +160,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							if(st.id)
 								$scope.selectedStatus.push(st.id);
 						});
-						payrollRepository.getInvoicesForHost(null, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus).then(function (data) {
+						var comp = dataSvc.selectedCompany ? dataSvc.selectedCompany.id : null;
+						payrollRepository.getInvoicesForHost(comp, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus).then(function (data) {
 							$scope.list = data;
 							//$scope.processors = $filter('unique')($scope.list, 'processedBy');
 							$scope.tableParams.reload();
@@ -188,18 +190,27 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						var querystring = $location.search();
 						if (querystring.invoice)
 							invoice = querystring.invoice;
-						else if (querystring.company)
-							$scope.tableParams.filter.companyName = querystring.company;
+						else if ($scope.mainData.invoiceCompany) {
+							//$scope.tableParams.filter.companyName = querystring.company;
+							dataSvc.selectedCompany = $filter('filter')($scope.mainData.companies, { name: $scope.mainData.invoiceCompany }, true)[0];
+							$scope.selectedStatuses = [];
+							dataSvc.startDate = null;
+							dataSvc.endDate = null;
+							$scope.mainData.invoiceCompany = null;
+						} else {
+							if (!dataSvc.startDate)
+								dataSvc.startDate = moment().add(-1, 'week').toDate();
+							$scope.selectedStatuses.push({ id: 1 });
+							$scope.selectedStatuses.push({ id: 3 });
+							$scope.selectedStatuses.push({ id: 5 });
+							$scope.selectedStatuses.push({ id: 6 });
+							$scope.selectedStatuses.push({ id: 7 });
+							$scope.selectedStatuses.push({ id: 8 });
+							$scope.selectedStatuses.push({ id: 9 });
+						}
+							
 
-						if (!dataSvc.startDate)
-							dataSvc.startDate = moment().add(-1, 'week').toDate();
-						$scope.selectedStatuses.push({ id: 1 });
-						$scope.selectedStatuses.push({ id: 3 });
-						$scope.selectedStatuses.push({ id: 5 });
-						$scope.selectedStatuses.push({ id: 6 });
-						$scope.selectedStatuses.push({ id: 7 });
-						$scope.selectedStatuses.push({ id: 8 });
-						$scope.selectedStatuses.push({ id: 9 });
+						
 						getInvoices(invoice);
 						
 					}

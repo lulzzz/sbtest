@@ -78,6 +78,7 @@
 			myName: '',
 			isReady: false,
 			fromSearch: false,
+			invoiceCompany: null,
 			reportFilter: {
 				filterStartDate: null,
 				filterEndDate: null,
