@@ -21,4 +21,12 @@ namespace HrMaxxAPI.Resources.Reports
 		public DateTime? DepositDate { get; set; }
 		
 	}
+
+	public class CommissionsReportRequestResource
+	{
+		public string ReportName { get; set; }
+		public Guid? UserId { get; set; }
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+	}
 }

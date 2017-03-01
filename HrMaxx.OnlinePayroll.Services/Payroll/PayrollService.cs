@@ -2163,7 +2163,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var affectedChecks = new List<PayCheck>();
 					foreach (var payCheck in payroll.PayChecks)
 					{
-						var employeeInBetweenChecks = companyPayChecks.Where(p => p.Employee.Id == payCheck.Employee.Id && p.PayDay>payCheck.PayDay && p.PayDay<=invoice.InvoiceDate).ToList();
+						var employeeInBetweenChecks = companyPayChecks.Where(p => p.Employee.Id == payCheck.Employee.Id 
+							&& p.PayDay>payCheck.PayDay && p.PayDay<=invoice.InvoiceDate).ToList();
 						foreach (var pc1 in employeeInBetweenChecks)
 						{
 							pc1.SubtractFromYTD(payCheck);

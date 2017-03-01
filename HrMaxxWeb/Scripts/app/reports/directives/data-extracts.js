@@ -21,6 +21,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						minYear: 2016,
 						hosts: [],
 						selectedHost: null,
+						selectedSalesRep: null,
 						filterPP: {
 							payDay: moment().startOf('day').toDate()
 						},
@@ -93,6 +94,10 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						filterDE6Q: {
 							year: 0,
 							quarter: 0
+						},
+						filterCommissions: {
+							startDate: null,
+							endDate: null
 						}
 					}
 					$scope.is941Valid = function() {
@@ -647,6 +652,23 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 					}
 
+					$scope.getCommissionsReport = function () {
+						var request = {
+							reportName: 'CommissionsReport',
+							salesRep: dataSvc.selectedSalesRep ? dataSvc.selectedSalesRep.userId : null,
+							startDate: dataSvc.filterCommissions.startDate ? moment(dataSvc.filterCommissions.startDate).format("MM/DD/YYYY") : moment("01-01-2017", "MM-DD-YYYY").format("MM/DD/YYYY"),
+							endDate: dataSvc.filterCommissions.endDate ? moment(dataSvc.filterCommissions.endDate).format("MM/DD/YYYY") : moment().format("MM/DD/YYYY")
+						}
+						reportRepository.getCommissionsReport(request).then(function (extract) {
+							showReview(request, extract);
+
+
+						}, function (erorr) {
+							addAlert('Error generating commissions report: ' + erorr.statusText, 'danger');
+						});
+						
+					}
+
 					var _init = function () {
 						$scope.minDepositDate = moment().startOf('day').toDate();
 						var currentYear = new Date().getFullYear();
@@ -696,6 +718,16 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 			addAlert(erorr.statusText, 'danger');
 		});
 		
+	};
+	$scope.payCommissions = function () {
+		reportRepository.payCommissions($scope.masterExtract.extract).then(function (result) {
+			$scope.masterExtract.id = result.id;
+			
+			addAlert('successfully marked invoices as commissions paid: ' + $scope.masterExtract.extract.report.description, 'success');
+		}, function (erorr) {
+			addAlert(erorr.statusText, 'danger');
+		});
+
 	};
 	$scope.printExtract = function () {
 		reportRepository.printExtract($scope.masterExtract.journals, $scope.masterExtract.extract.report).then(function (data) {

@@ -239,6 +239,10 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 
 
 					};
+					$scope.getSalesRepName = function () {
+						var u = $filter('filter')($scope.mainData.users, { userId: $scope.invoice.salesRep })[0];
+						return u.firstName + ' ' + u.lastName;
+					}
 					var saveInvoice = function () {
 						var inv = angular.copy($scope.invoice);
 

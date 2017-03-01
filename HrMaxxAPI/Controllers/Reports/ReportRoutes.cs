@@ -18,8 +18,11 @@
 		public const string GetSearchResults = "Reports/SearchResults/{criteria}";
 		public const string DownloadExtract = "Reports/DownloadExtract";
 		public const string Extract = "Reports/Extract/{id:int}";
+		public const string CommissionExtract = "Reports/CommissionExtract/{id:int}";
 		public const string ExtractDocumentReport = "Reports/ExtractDocumentReport";
 		public const string PrintChecks = "Reports/PrintExtractChecks";
 		public const string CreateDepositTickets = "Reports/CreateDepositTickets";
+		public const string CommissionsReport = "Reports/CommissionsReport";
+		public const string PayCommissions = "Reports/PayCommissions";
 	}
 }

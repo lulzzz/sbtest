@@ -122,7 +122,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<RecurringCharge, RecurringChargeResource>();
 			CreateMap<RecurringChargeResource, RecurringCharge>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : 0)); ;
-
+			CreateMap<SalesRepResource, SalesRep>();
+			CreateMap<SalesRep, SalesRepResource>();
 
 			CreateMap<CreditCardResource, CreditCard>();
 			CreateMap<CreditCard, CreditCardResource>();
@@ -277,6 +278,10 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 			CreateMap<HrMaxx.OnlinePayroll.Models.JsonDataModel.InsuranceGroup, HrMaxx.Common.Models.InsuranceGroupDto>();
+
+			CreateMap<CommissionsReportRequestResource, CommissionsReportRequest>()
+				.ForMember(dest => dest.AllowFiling, opt => opt.Ignore())
+				.ForMember(dest => dest.Description, opt => opt.Ignore());
 		}
 	}
 }

@@ -207,6 +207,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 			CreateMap<Models.JsonDataModel.MasterExtractJson, Models.ACHMasterExtract>()
 				.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Extract) ? JsonConvert.DeserializeObject<ACHExtract>(src.Extract) : null));
 
+			
 			CreateMap<Models.JsonDataModel.JournalPayeeJson, Models.JournalPayee>()
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact) : null))
 				.ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.PayeeType == EntityTypeEnum.Company ? JsonConvert.DeserializeObject<Address>(src.Address) : !string.IsNullOrWhiteSpace(src.Contact) ? JsonConvert.DeserializeObject<Contact>(src.Contact).Address : new Contact().Address));

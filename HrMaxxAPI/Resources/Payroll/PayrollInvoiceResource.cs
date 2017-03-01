@@ -60,6 +60,10 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal DDPay { get; set; }
 		public decimal NetPay { get; set; }
 
+		public Guid? SalesRep { get; set; }
+		public decimal Commission { get; set; }
+		public bool CommissionClaimed { get; set; }
+
 		public string DeliveryClaimedBy { get; set; }
 		public DateTime DeliveryClaimedOn { get; set; }
 

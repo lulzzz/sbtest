@@ -227,6 +227,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetInternalPositivePayReport(request);
 				else if (request.ReportName.Equals("GarnishmentReport"))
 					return GetGarnishmentReport(request);
+				
 				else
 				{
 					throw new Exception(ReportNotAvailable);
@@ -349,6 +350,43 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/GarnishmentReport.xslt", "xls", request.Description + ".xls");
+		}
+		public CommissionsExtract GetCommissionsReport(CommissionsReportRequest request)
+		{
+			var data = _readerService.GetCommissionsExtractResponse(request);
+			if (!data.SalesReps.Any(s => s.Commissions.Any()))
+			{
+				throw new Exception(NoData);
+			}
+			data.SalesReps = data.SalesReps.Where(h => h.Commissions.Any()).ToList();
+			request.Description = string.Format("Commissions Report {0} - {1}", request.StartDate.HasValue ? request.StartDate.Value.ToString("MMddyyyy") : string.Empty, request.EndDate.HasValue ? request.EndDate.Value.ToString("MMddyyyy") : string.Empty);
+			request.AllowFiling = true;
+			return new CommissionsExtract{Report = request, Data = data};
+		}
+
+		public Models.MasterExtract PayCommissions(CommissionsExtract extract, string fullName)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var me = _reportRepository.SaveCommissionExtract(extract, fullName);	
+					txn.Complete();
+					return me;
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CommissionsExtract GetCommissionsExtract(int id)
+		{
+			return _readerService.GetCommissionsExtract(id);
 		}
 
 		public Extract GetPositivePayReport(ReportRequest request)

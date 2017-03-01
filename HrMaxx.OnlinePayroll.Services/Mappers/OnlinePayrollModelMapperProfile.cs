@@ -513,7 +513,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.DeliveryClaimedBy, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollPayChecks, opt => opt.Ignore())
 				.ForMember(dest => dest.InvoicePayments, opt => opt.MapFrom(src=>src.InvoicePayments))
-				.ForMember(dest => dest.Payroll, opt => opt.Ignore());
+				.ForMember(dest => dest.Payroll, opt => opt.Ignore())
+				.ForMember(dest => dest.CommissionExtracts, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>()
 				.ForMember(dest => dest.EmployerTaxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployerTaxes)))
@@ -528,6 +529,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.PayChecks) ? JsonConvert.DeserializeObject<List<int>>(src.PayChecks) : new List<int>()))
 				.ForMember(dest => dest.VoidedCreditedChecks, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.VoidedCreditChecks) ? JsonConvert.DeserializeObject<List<int>>(src.VoidedCreditChecks) : new List<int>()))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.CommissionClaimed, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollPayDay, opt => opt.MapFrom(src=>src.Payroll.PayDay));
 
 			CreateMap<Models.InvoicePayment, Models.DataModel.InvoicePayment>()
@@ -624,6 +626,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(dest => dest.Notes, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollMessage, opt => opt.Ignore())
 				.ForMember(dest => dest.Contact, opt => opt.Ignore());
 
 			CreateMap<Models.ExtractDBCompany, Common.Models.InsuranceGroupDto>()
@@ -668,6 +671,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.DepositDate, opt => opt.MapFrom(src=>src.Extract.Report.DepositDate.Value))
 				.ForMember(dest=>dest.PayCheckExtracts, opt=>opt.Ignore())
 				.ForMember(dest => dest.ACHTransactionExtracts, opt => opt.Ignore())
+				.ForMember(dest => dest.CommissionExtracts, opt => opt.Ignore())
 				.ForMember(dest => dest.IsFederal, opt => opt.MapFrom(src=>src.IsFederal));
 
 			CreateMap<Models.DataModel.MasterExtract, Models.MasterExtract>()

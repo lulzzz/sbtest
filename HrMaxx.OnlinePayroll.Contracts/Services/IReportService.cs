@@ -28,5 +28,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Extract GetExtractTransformedWithFile(Extract extract);
 		MasterExtract GetExtract(int id);
 		ACHMasterExtract GetAchReportExtract(int id);
+		CommissionsExtract GetCommissionsReport(CommissionsReportRequest request);
+		MasterExtract PayCommissions(CommissionsExtract extract, string fullName);
+		CommissionsExtract GetCommissionsExtract(int id);
 	}
 }

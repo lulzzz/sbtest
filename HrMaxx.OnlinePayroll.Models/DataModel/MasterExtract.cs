@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         {
             this.ACHTransactionExtracts = new HashSet<ACHTransactionExtract>();
             this.PayCheckExtracts = new HashSet<PayCheckExtract>();
+            this.CommissionExtracts = new HashSet<CommissionExtract>();
         }
     
         public int Id { get; set; }
@@ -35,5 +36,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<ACHTransactionExtract> ACHTransactionExtracts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayCheckExtract> PayCheckExtracts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CommissionExtract> CommissionExtracts { get; set; }
     }
 }

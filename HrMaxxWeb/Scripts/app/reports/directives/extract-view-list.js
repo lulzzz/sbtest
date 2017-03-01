@@ -34,6 +34,10 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 						{
 							name: 'GarnishmentReport',
 							desc: 'Wage Garnishment'
+						},
+						{
+							name: 'Commissions',
+							desc: 'Sales Commissions'
 						}],
 						isBodyOpen: true
 					}
@@ -126,34 +130,64 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 
 
 					}
-					var getExtract = function(ext) {
-						reportRepository.getMasterExtract(ext.id).then(function (data) {
-							data.extract.data.history = [];
-							//$scope.selected = angular.copy(item);
-							var modalInstance = $modal.open({
-								templateUrl: 'popover/extractView.html',
-								controller: 'extractViewCtrl',
-								size: 'lg',
-								windowClass: 'my-modal-popup',
-								backdrop: true,
-								keyboard: true,
-								backdropClick: true,
-								resolve: {
-									extract: function () {
-										return data.extract;
-									},
-									item: function () {
-										return data;
-									},
-									reportRepository: function () {
-										return reportRepository;
+					var getExtract = function (ext) {
+						if (ext.extractName !== 'Commissions') {
+							reportRepository.getMasterExtract(ext.id).then(function(data) {
+								data.extract.data.history = [];
+								//$scope.selected = angular.copy(item);
+								var modalInstance = $modal.open({
+									templateUrl: 'popover/extractView.html',
+									controller: 'extractViewCtrl',
+									size: 'lg',
+									windowClass: 'my-modal-popup',
+									backdrop: true,
+									keyboard: true,
+									backdropClick: true,
+									resolve: {
+										extract: function() {
+											return data.extract;
+										},
+										item: function() {
+											return data;
+										},
+										reportRepository: function() {
+											return reportRepository;
+										}
 									}
-								}
-							});
+								});
 
-						}, function (error) {
-							addAlert('error getting extract details', 'danger');
-						});
+							}, function(error) {
+								addAlert('error getting extract details', 'danger');
+							});
+						} else {
+							reportRepository.getCommissionsExtract(ext.id).then(function (data) {
+								data.data.history = [];
+								ext.extract = data;
+								var modalInstance = $modal.open({
+									templateUrl: 'popover/extractView.html',
+									controller: 'extractViewCtrl',
+									size: 'lg',
+									windowClass: 'my-modal-popup',
+									backdrop: true,
+									keyboard: true,
+									backdropClick: true,
+									resolve: {
+										extract: function () {
+											return data;
+										},
+										item: function () {
+											return ext;
+										},
+										reportRepository: function () {
+											return reportRepository;
+										}
+									}
+								});
+
+							}, function (error) {
+								addAlert('error getting extract details', 'danger');
+							});
+						}
 					}
 				
 					var getExtracts = function (report) {

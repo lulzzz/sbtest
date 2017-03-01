@@ -16,11 +16,10 @@ namespace HrMaxx.Common.Services.Security
 	public class UserService : BaseService, IUserService
 	{
 		private readonly IUserRepository _repository;
-		private readonly ICommonService _commonService;
-		public UserService(IUserRepository repository, ICommonService commonService)
+		
+		public UserService(IUserRepository repository)
 		{
 			_repository = repository;
-			_commonService = commonService;
 		}
 
 		public UserProfile GetUserProfile(Guid userId)
@@ -47,7 +46,6 @@ namespace HrMaxx.Common.Services.Security
 			try
 			{
 				_repository.SaveUserProfile(user);
-				//_commonService.SaveEntityRelation<Address>(EntityTypeEnum.User, EntityTypeEnum.Address, user.UserId, user.Address);
 			}
 			catch (Exception e)
 			{

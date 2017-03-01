@@ -28,5 +28,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		void UpdatePayCheckSickLeaveAccumulation(PayCheck pc);
 		void UpdatePayrollDates(Models.Payroll mappedResource);
+		void SavePayrollInvoiceCommission(PayrollInvoice payrollInvoice);
 	}
 }

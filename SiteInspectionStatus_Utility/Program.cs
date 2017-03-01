@@ -10,6 +10,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Transactions;
@@ -64,7 +65,7 @@ namespace SiteInspectionStatus_Utility
 			//FixMasterExtracts(container);
 			//FixAccumulatedSickLeaveValue(container);
 			//FixAccumulatedSickLeaveValueGeneral(container);
-			Console.WriteLine("Utility run started. Enter 1 for SL general, 2 for SL specific ");
+			Console.WriteLine("Utility run started. Enter 1 for SL general, 2 for SL specific 3 for Assign SalesPerson ");
 			var command = Convert.ToInt32(Console.ReadLine());
 			switch (command)
 			{
@@ -73,6 +74,12 @@ namespace SiteInspectionStatus_Utility
 					break;
 				case 2:
 					FixAccumulatedSickLeaveValue(container);
+					break;
+				case 3:
+					AssignSalesPerson(container);
+					break;
+				case 4:
+					FixSickLeaveYTDValues(container);
 					break;
 				default:
 					break;
@@ -5991,6 +5998,535 @@ namespace SiteInspectionStatus_Utility
 			}
 		}
 
+		private static void FixSickLeaveYTDValues(IContainer container)
+		{
+			Console.WriteLine("Starting Sick Leave YTD Fix---Updating Checks");
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var _mementoService = scope.Resolve<IMementoDataService>();
+				var empList = new List<MissingSL>();
+				var empNoChecks = new List<Guid>();
+
+				var allemployees = _readerService.GetEmployees();
+				var allPayChecks = _readerService.GetPayChecks(isvoid: 0).Where(p => p.CompanyId != new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD")).ToList();
+				var employeeChecks = allPayChecks.GroupBy(p => p.Employee.Id);
+				Console.WriteLine("Total Checks: " + allPayChecks.Count);
+				Console.WriteLine("Total Employees with Checks: " + employeeChecks.ToList().Count);
+				
+				var payChecks = 0;
+				var empsprocessed = 0;
+				var empList1 = new List<Guid>();
+				Console.WriteLine("EmployeeId, Name, PayDay, Id, YTD, Should Be, fiscalstart, sickleavehiredate");
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					employeeChecks.ToList().ForEach(e =>
+					{
+						
+						var employee = e.Key;
+						var emp1 = allemployees.First(e2 => e2.Id == e.Key);
+						var checks = e.OrderBy(p=>p.PayDay).ThenBy(p=>p.Id).ToList();
+						foreach (var check in checks.Where(p=>p.Accumulations.Any()))
+						{
+							var needsupdating = false;
+							
+							var sl = check.Accumulations.First(a => a.PayType.PayType.Id == 6);
+							var checkfiscaldate = sl.FiscalStart;
+							
+							var original = sl.YTDFiscal;
+							var newval = sl.YTDFiscal;
+							var fiscalYTDChecks = checks.Where(p => p.PayDay >= sl.FiscalStart && p.Id != check.Id && (p.PayDay < check.PayDay || (p.PayDay==check.PayDay && p.Id<check.Id))).ToList();
+							if (fiscalYTDChecks.Any())
+							{
+								var ytd =
+									fiscalYTDChecks.SelectMany(p => p.Accumulations.Where(a => a.PayType.PayType.Id == 6))
+										.Sum(a => a.AccumulatedValue);
+								var shouldbe = Math.Round(ytd + sl.AccumulatedValue, 2, MidpointRounding.AwayFromZero);
+
+								if (shouldbe != sl.YTDFiscal)
+								{
+									sl.YTDFiscal = shouldbe;
+									newval = shouldbe;
+									needsupdating = true;
+								}
+							}
+							if (needsupdating)
+							{
+								Console.WriteLine(string.Format("{0},{4},{5},{1},{2},{3},{6},{7}", check.Employee.Id, check.Id, original, newval, check.Employee.FullName, check.PayDay.ToString("MM/dd/yyyy"), checkfiscaldate.ToString("MM/dd/yyyy"), emp1.SickLeaveHireDate.ToString("MM/dd/yyyy")));
+								payChecks++;
+								_payrollRepository.UpdatePayCheckSickLeaveAccumulation(check);
+								if (empList1.All(e1 => e1 != employee))
+									empList1.Add(employee);
+							}
+						}
+						empsprocessed++;
+
+					});
+					
+
+					Console.WriteLine("Checks with issues: " + payChecks);
+					Console.WriteLine("Employees Processed: " + empsprocessed);
+					Console.WriteLine("Employees with issue: " + empList1.Count);
+					Console.Write("Commit? ");
+					var commit = Convert.ToInt32(Console.ReadLine());
+					if (commit == 1)
+					{
+						txn.Complete();
+					}
+
+
+
+				}
+
+			}
+		}
+
+		private static void AssignSalesPerson(IContainer container)
+		{
+			Console.WriteLine("Starting Assigning Sales Person");
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _companyRepository = scope.Resolve<ICompanyRepository>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var _mementoDataService = scope.Resolve<IMementoDataService>();
+				var _userRepository = scope.Resolve<IUserRepository>();
+				var bus = scope.Resolve<IBus>();
+				var companies = new List<SalesPersonCompany>();
+
+				#region "comapnies"
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4AC86B1B-5F60-4B05-A885-A6ED014B563C"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1235AAE6-F718-49BA-B229-A6ED014B6CCE"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("593054C2-B35C-4F3F-9DB9-A6ED014B7F6D"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0B78BBA5-C9A5-4857-A80E-A6ED014B9724"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7D1235D5-504C-4D5E-8B12-A6ED014D9C62"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("BCCE2512-6D74-4A41-BA4D-A6ED014E764C"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("8BA61E78-FEE2-4283-8D98-A6ED01507D51"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("64358B0A-BFC7-49E2-86F5-A6ED01509298"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B3A6646F-4EB2-4186-BFB9-A6ED0150B1E2"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CAE0BAF4-8838-45B7-9AE7-A6ED0150DCA8"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B8CCFA13-D565-4703-8EA6-A6ED0150E5A1"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9BF93CCF-854A-4108-B61B-A6ED01510971"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("914E3ABD-1972-4CE2-A39B-A6ED01511715"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B817F4B1-DB0E-4D2D-82B5-A6ED0151EB1A"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("22A4EB2B-3262-41F6-BB08-A6ED015208CA"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7DC8D8ED-786C-4E2B-9FE8-A6ED0152C99F"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7DC8D8ED-786C-4E2B-9FE8-A6ED0152C99F"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("835E186E-A4D0-467D-9058-A6ED0152E89F"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("36B9CC9A-8C60-43B4-B038-A6ED0153EC22"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2B726455-5FC5-48E6-98F8-A6ED015544E7"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FEBB177D-24EB-4D44-9521-A6ED01555656"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AB444797-9F73-4C8E-9670-A6ED0155F14F"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D46E8613-5C1A-4B36-A59C-A6ED0155F447"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B88F87E4-4948-4964-915B-A6ED0156499B"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FDAAD6EB-0999-4978-AF1C-A6ED0157D097"), UserId = new Guid("59bf286e-5a15-4a49-9509-d32f549ff4a9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("69CF42F7-4555-43A1-89A3-A6ED014B636E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A1EDDC7E-5B0B-484F-84B0-A6ED014B65F0"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D2C6D0B4-ED71-4CD5-878C-A6ED014B6A84"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E1484309-3135-4E3B-B395-A6ED014B6B73"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1C68425C-4432-44B5-954A-A6ED014B8B12"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("47B8CB98-6E92-4713-868A-A6ED014B8F49"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("05587E99-463C-4F3F-82F9-A6ED014B9392"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E7402459-83A7-43EC-8EB9-A6ED014B954B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2A65E78C-5D0C-403D-9AE4-A6ED014B9F2E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C340532A-3BEE-4656-8FCC-A6ED014BAE7A"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("444D1058-462D-46E9-9E4B-A6ED014BB0A8"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("21F57749-B8B8-41E8-91C4-A6ED014BE75D"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5939F0B7-91A3-4D9D-A341-A6ED014BE961"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2C71808E-E20D-4A7F-9990-A6ED014BECFC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3C9D587E-A9DC-4D32-97A4-A6ED014BF218"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("98D90E9D-2D99-4BEB-A847-A6ED014BF9A3"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B310783F-FED3-4527-9C90-A6ED014C0015"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6D4B6869-EDF9-4C6D-B3A0-A6ED014C053B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A305B4A3-D43E-40EC-8D28-A6ED014C26CD"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("35D18934-06A5-447D-93C4-A6ED014C2CEB"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("274728E2-B44C-4B8D-BB6D-A6ED014C329D"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0D649311-2907-47E9-9991-A6ED014C37D0"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6A142D27-097C-47FB-8283-A6ED014C3DDB"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1055128A-9F23-4E9F-8D42-A6ED014C4A4E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6BB04A80-9E67-4C6B-9825-A6ED014C8ABA"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E8D87BBF-32E3-4E3E-980F-A6ED014C9DF4"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("636343B4-0753-4169-B684-A6ED014CA393"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FB67ABEA-3714-456A-B668-A6ED014CC4A5"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("48641EF1-E7C9-4D39-B0DC-A6ED014CCBCD"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("11B2EADD-3D7B-4329-9033-A6ED0159D468"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7FBDFCED-8E5E-4A2C-BF75-A6ED014CD06F"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FA290648-1C13-49DA-A4E8-A6ED014CDBBB"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7EAD8020-8B20-48C3-A8D4-A6ED014CE415"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("27878FB2-1E24-44E0-A451-A6ED014CE875"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6C69404F-0FF1-4A75-9E0D-A6ED014CFCC3"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("19A3C9F5-CD66-4D1C-A79E-A6ED014D5DD9"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("52B37821-A660-424D-A63F-A6ED014D61A3"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("14C92933-60B9-48B9-A62B-A6ED014D64EA"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A4C89924-71CF-490C-B1AF-A6ED0159CD8A"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("92364618-C025-4359-A9B5-A6ED014D6F27"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FD962B12-764A-4738-B078-A6ED014D7766"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A76AFEAB-9E16-4CF7-91D3-A6ED014D8E78"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0A69CF06-4A21-409E-ACD6-A6ED014DA3FC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AA3DF2B5-FF70-4CDF-AEF8-A6ED014DC385"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3B75B8F6-C443-4D61-BDDD-A6ED014DF5E9"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("243AE326-ECE1-419D-A3B2-A6ED014E076F"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F380B0B2-04F1-42FE-B214-A6ED014E1A10"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C2B5C3AC-6098-474B-B565-A6ED014E2A7D"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("071EA18E-34A1-410F-9347-A6ED014E5FB3"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E9FB11AE-11DF-4B65-B423-A6ED014E66DC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("50EBDE30-A033-4455-AE66-A6ED014E8A20"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5C5ABCEB-10CB-49CA-A36F-A6ED014EB840"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1A766846-A6AE-445F-AB49-A6ED015076F6"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F1A63A22-04EC-4A10-AF33-A6ED01507B6E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("264A410C-F5C7-48B2-98D4-A6ED01507F00"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0B56007A-D1CC-4A87-A490-A6ED0150807C"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FDCA9DA4-C8BC-4EF3-9F91-A6ED0150891B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1C18E218-24E6-4359-8C5F-A6ED01508A7B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6489FEB6-2611-4FFB-8D4D-A6ED01508CDC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7EFD1997-0F1B-409A-AA3A-A6ED01509133"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B176D125-A67E-4B5C-83C2-A6ED01509594"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("77FC3BD2-3ACA-4A5D-AA7C-A6ED0150A362"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("278EFAE6-A6F1-4018-AE17-A6ED0150A963"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9AC507E9-6D2E-4D49-B418-A6ED0150ABC0"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2BC54D6E-13E1-4B8D-BD47-A6ED0150AE7F"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("01AD3405-D9F9-4BB1-A430-A6ED0150B4FB"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("26F6888C-C161-4464-8A1E-A6ED0150BA9E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1F18D17B-C35D-4193-9120-A6ED0150BDC5"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("890DED7C-7D68-4750-8817-A6ED0150C7EA"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("01B11ED4-9F91-4A7C-9218-A6ED0150D07B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7D10B674-79B9-48CA-BEB0-A6ED0150FFDA"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7208205F-F040-4B2C-A61C-A6ED015113B2"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E1B8C699-AEFB-4659-B979-A6ED01511D20"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("DA45E5D9-0146-4542-8E9A-A6ED01512BD4"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7D45B8E4-6D57-400C-8798-A6ED01514EA8"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("DD899B3B-3C4F-49B1-A2EC-A6ED015156ED"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C52B0E0D-1458-4C9C-A0AB-A6ED01515E94"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("8CA56FE1-A8CE-4583-90C8-A6F200D69DDC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0C0539B9-1249-4C4C-BB18-A6ED0151ADAC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("77F09215-F055-44A6-A27C-A6ED0151C9E8"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("88D60F5D-E59E-4769-8A2D-A6ED01521B15"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5E325316-14FE-4FEE-9703-A6ED01522ECE"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("22BC00A3-CAC7-4210-A2C6-A6ED01523447"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D34C9769-BA82-4465-928F-A6ED015249EC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4C2A8E7E-5B52-4790-9BEB-A6ED01528C56"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0BC4878E-1518-4476-80E3-A6ED0152A6CB"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D8610357-F925-48C7-97EE-A6ED0159DC76"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C3233D9B-BA4B-45B4-B37C-A6ED0152ADC5"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("17488422-F487-40DB-945C-A6ED0152B29B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CB14E593-C68E-4CC1-8EC0-A6ED0152B6C7"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4626951C-7D2F-4AB9-BC3D-A6ED0152D0ED"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("59B288C0-20EA-4D67-9535-A6ED015308B7"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5BFA5C60-EE2E-4E63-8CD9-A6ED015327B0"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0A183E8D-3146-415B-BBFB-A6ED01534788"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D9434F77-EAD0-4728-B020-A6ED0153C7A0"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AF34C21F-7472-414F-8DC7-A6ED0153D3FC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9535380F-E1A9-46B8-A49D-A6ED0153DE9A"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9B0CCD76-4420-4FC8-9A4A-A6ED01540382"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B5006ECF-3B66-402D-A62E-A6ED01542A28"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1AB97FC4-8B4D-4C99-9EA8-A6ED01544482"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AF410E6A-0C1F-404C-8B85-A6ED0155760C"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("15117093-7251-404A-B207-A6ED01561A6B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2D5B5687-C81A-44E8-B537-A6ED01561C65"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("BBC67BF1-6CE7-4A01-A55F-A6ED01562005"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("875D2809-201B-4408-9597-A6ED015621D1"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E3E40F27-026E-4921-968B-A6ED015644AE"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B88F87E4-4948-4964-915B-A6ED0156499B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("04CCD387-7771-4C81-9DD5-A6ED01564CEB"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("49B0CFED-6149-4D5C-A26A-A6ED01566240"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2B2D50AD-806D-4F77-A2AA-A6ED01567128"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4AEFF38D-F9AA-4268-A76D-A6ED01567C9E"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1B3B8903-9F05-46EC-8E08-A6ED0159E265"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AC7C05C0-1109-40F7-931D-A6ED01568B03"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F287A6BD-5CB6-4D91-A4E2-A6ED01568D9C"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D98A8FB7-B731-47FB-9DCB-A6ED0156AB6C"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("527ACC99-3D39-498C-B28F-A6ED0156B06C"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("8402533D-6245-4465-8B72-A6ED0156C9AC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A2B7E595-4B6E-46CF-BFD7-A6ED0156D72F"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A037CA89-FA7B-494B-A824-A6ED0156DA96"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3E327573-9C96-41E1-8562-A6ED0156E242"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7D5E5C3A-7198-43CE-B9CA-A6ED0156EE3B"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E693F6DA-7088-49D1-8660-A6ED015722AC"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4F20357B-A4BA-4E4F-A8BC-A6ED015728F0"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A334108C-ECAF-47FF-AAE1-A6ED015749DA"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("11DCC63D-30CA-4854-9225-A6ED01578108"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6A25DFAD-2C8B-41DE-9DB5-A6ED015790C2"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3387DFEE-4576-4B42-89FA-A6ED0157B21A"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("98991AAF-1714-4C0A-8DD5-A6ED0157B7A7"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CD97AC2B-6566-4857-AB0F-A6ED0157C287"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1D6CFD7B-4936-45E5-92C5-A6ED01589A11"), UserId = new Guid("ef1746c1-e485-417b-b9e1-6b8e5c858b81"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C635BFEB-8619-466E-B5FD-A6ED014B56A8"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C635BFEB-8619-466E-B5FD-A6ED014B56A8"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6CD53C4B-C476-4963-8B5E-A6ED014B59CF"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("66B045E7-5FB6-4287-A8B3-A6ED014B5CC8"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FD0BE40D-53FF-496A-BE40-A6ED014B5FD7"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("37FD0AD1-0BF5-4A78-8527-A6ED014B647E"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("593ACBCD-DDF3-49A9-A958-A6ED014B6726"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("85B64F5F-A2CE-4428-89BB-A6ED014B689D"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("47A92B0C-5C17-4966-BACE-A6ED014B6F21"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6C2DF39C-F474-443B-A1F8-A6ED014B7297"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FA6E773F-238F-4D87-9814-A6ED014B744B"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("79951BA7-D871-469F-9990-A6ED014B7A98"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3A9AC4A6-E25E-436D-B4FD-A6ED014B7DB5"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4861E16B-BDF5-4BE5-AC1C-A6ED014B8735"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6224F0E8-F3CA-4F5A-91B7-A6ED014B9197"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D55BB677-9B61-45FF-AB92-A6ED014BB6FE"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FF4AFAA9-E36D-4CCA-9747-A6ED014BBFD6"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("09A01474-F9B4-404B-8D61-A6ED014BC41A"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("83A70984-6929-44B1-BE34-A6ED014BC7ED"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("43A59565-EC8D-4A3E-A7E1-A6ED014BCF04"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6350CDCA-391C-4722-8F17-A6ED014BD466"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("55750C0A-AA10-4537-82C8-A6ED014BDD33"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6C180954-DCAD-4792-A90D-A6ED014BE3BD"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FEF2F167-7B16-454F-93BC-A6ED014BF7A9"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E00D5EF4-4D4D-4466-AD40-A6ED014C026D"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1138AD89-3A23-4B22-94CB-A6ED014C0D5C"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("307CFF5E-8BF6-47F7-AD03-A6ED014C1126"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A6406550-6357-40BA-B32E-A6ED014C1BE7"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CE2D568F-DC1E-4369-AC5C-A6ED014C2959"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("702D6DD6-4AFE-45FA-8B47-A6ED014C3061"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7FA9D277-FA08-425B-85A7-A6ED014C63B4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1B9EF7A7-9BFA-4E7C-B8A6-A6ED014C7C0F"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F065050F-0E67-4939-96A0-A6ED014C90EA"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9FE90875-F489-4497-B58F-A6ED014CAAF9"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C644F32B-CEEE-4BA0-B189-A6ED014CB1A3"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4B8128C4-0DB8-4BEB-88CA-A6ED014CECA6"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6DD51A54-5C23-45E3-B9C4-A6ED014CF0DD"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1FAF5FC8-826B-4C6A-A520-A6ED014D063B"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("24FA4533-3606-4EFF-A370-A6ED014D1336"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1704AF8A-5614-4F69-8FC8-A6ED014D226D"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F8ED58E3-FF26-489B-AC03-A6ED014D44B4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A7987791-25BB-417A-A2E9-A6ED014D4C3A"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CA59DED8-6FC6-49E7-AB53-A6ED014D7A7E"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("BBD6F522-92C1-4FA1-8A33-A6ED014D8393"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C05DD4F1-5BF7-4CE4-86C5-A6ED014D9678"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("93A257D9-6D6A-4C70-A907-A6ED014DA8A7"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3086DA8A-A430-41EB-8B9F-A6ED014DDBD2"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0DE41760-788D-4D18-8CB9-A6ED014DEFFB"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("66CC6354-2E88-426C-B4BC-A6ED014DFB01"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4A780597-9EB7-42A8-A79C-A6ED014E3185"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D896D5CD-BD2B-4C94-9507-A6ED014E4F59"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2BF1F64F-2B58-4B50-B599-A6ED014E9A84"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D3FAD747-F13B-4DD4-B3F2-A6ED014ED946"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F9DB0AEE-28C1-43DE-9A2A-A6ED014EE2D9"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4D0BAC84-825C-4E50-98BC-A6ED014F0586"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F09A8AD5-9162-4BC4-9DCA-A6ED01507973"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1E253A9B-3FB3-4AC1-8ACA-A6ED0150863B"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("53BD010D-C245-4CCD-A461-A6ED01508E7E"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9FD34CD7-040C-4CA9-9DE9-A6ED01509C92"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("310546A4-ECF9-49AD-8EFB-A6ED0150A537"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C9BCB69B-ED98-41D0-8420-A6ED0151209F"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C9AF10DA-9F10-46B9-A8BC-A6ED01512EFA"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AC7183A2-14E3-40E2-AFD9-A6ED0151A035"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B4FC2939-6014-4DDE-A2CF-A6ED0151A6C5"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3912F06A-D07B-4363-9308-A6ED0151BEBD"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9E22A22C-F75A-4A4B-976B-A6ED0151DFE6"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3E25A24D-16EF-4882-903A-A6ED01520D4C"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4A66FB7E-3C46-4B9A-A0D9-A6ED0152124B"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A9591563-E7A2-43C9-B0EF-A6ED01523A81"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6B2F3E12-9FDA-405A-91AE-A6ED015240E0"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("48FCF902-0EFA-45C4-81E3-A6ED015255F4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("344A808E-8F79-480A-84AF-A6ED0152A0BC"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("50D2E198-DFD8-41DD-9BF7-A6ED0152C556"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1228F0B5-3E17-4501-B820-A6ED0153034C"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C0F19BB9-E867-46E8-BFD2-A6ED01533D92"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D67BBBA7-A984-4C53-90AC-A6ED01535D07"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C75A6363-8CAE-43F3-AF6D-A6ED01539479"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("42AB5F36-5414-4D40-998C-A6ED0153CDD0"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D4EC0542-DA67-4E62-B853-A6ED0153D845"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0CAF2316-F9A9-4157-8770-A6ED015450AB"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A220068A-829B-4729-8C15-A6ED015458C7"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("595B7A91-1358-448A-8418-A6ED01546028"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("17F99D67-7E7A-4F04-9CEB-A6ED01546F44"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F4D8AA1E-D57E-47E8-9E4A-A6ED01547D5D"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D324D004-28A2-419D-8724-A6ED01549351"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("946F55CC-80E5-4724-B730-A6ED01555B4C"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("827813EC-8F6B-438F-B86F-A6ED0155F666"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0BC87768-C9F3-44D5-8AAB-A6ED015A00D4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("556E329A-0643-48A2-B0C5-A6ED0155F8E4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("8EC913D4-32F1-4036-B420-A6ED01561825"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9CA32409-AC69-40D9-B54B-A6ED015627BB"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("18C7C228-C64C-4C94-87B9-A6ED01563B5C"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("EB3E501E-0DF0-484E-A9E1-A6ED015A16DF"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("BA737F4F-C0F3-4DE9-B103-A6ED01565BD7"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("6E8B3A32-413F-4CFF-A2FE-A6ED01566B47"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9EB98DD9-8489-4570-B47B-A6ED015683DA"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("03B086C2-446E-448D-BDEC-A6ED01569F8A"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("88CB4C36-ED35-4A09-9859-A6ED0156BF66"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B1FA45D0-40A7-4EE8-9AA1-A6ED0156C665"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1E8F7F77-6E83-4F25-8626-A6ED0156E69D"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F50F0A57-763C-42A3-BFCB-A6ED0156FE7E"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2F409EFE-9429-48F9-B660-A6ED015712E9"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F3D06B22-829F-4109-8641-A6ED01571D87"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3AD02145-8713-49B9-B948-A6ED015A26C4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("76BFC20D-302D-49C3-AB79-A6ED0157BAC4"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("63E58438-AEBB-4EED-BE26-A6ED0157EFBE"), UserId = new Guid("d5b83dbf-731d-43ca-8582-bfbfd54c9ec9"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("EDB58282-3DFF-4105-BB92-A6ED0150F55C"), UserId = new Guid("1a7f274f-bcf9-4e1c-9b54-7960a68f40ef"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("563366DF-45C6-4F5B-9CAB-A6ED0151B24E"), UserId = new Guid("1a7f274f-bcf9-4e1c-9b54-7960a68f40ef"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1799AF6C-FB99-475B-A163-A6ED015389DF"), UserId = new Guid("1a7f274f-bcf9-4e1c-9b54-7960a68f40ef"), Percentage = (decimal)20 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AEC3DF2F-75C0-4D7B-9594-A6ED014B536F"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F1AF9C36-629C-4090-B603-A6ED014B55C2"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A6E2C38D-EC04-4E6B-9368-A6ED014B625E"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CF05AC76-A150-4237-A1B3-A6ED014B7832"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C203286D-B1E8-48A9-8396-A6ED014B8171"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3E3AAAA9-43A2-4ED1-A8EC-A6ED014B894C"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F395ADD9-F729-46AF-82E9-A6ED014B98E1"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B1F7D210-DFA7-4AED-A3C1-A6ED014B9B0F"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B2D997E1-263D-4580-B797-A6ED014BABA7"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("674C1432-978A-4D2A-84FC-A6ED014BB278"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("EB9C86A4-9498-4298-BD90-A6ED014BB508"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3896F712-CA23-4359-99AA-A6ED014BBB0E"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E326F687-EF6E-49CE-BEF5-A6ED014BBD3C"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("383A75BE-12D8-4749-B5BC-A6ED014BD849"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("51CE2187-0CBC-40E4-9602-A6ED014CBC05"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0648461A-4C9B-4218-AA25-A6ED014CC730"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C857D387-85BA-4325-A206-A6ED014D2CB7"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("67ABEC0B-0A69-4B05-AD22-A6ED014D8A00"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("20F08BE1-5FFD-480C-ACB6-A6ED014DD5B4"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9D96FC1E-960F-4A62-AE3A-A6ED014E15AE"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("847024AC-2366-411F-B89A-A6ED014E3C65"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("BF359AF2-DF65-41EE-B952-A6ED014E4177"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1BD10BBA-3FBE-4FA9-A319-A6ED014E478C"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("EBB8CF48-EA49-4D80-B752-A6ED014E5713"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D34ABDE9-8BE2-4C2C-8A29-A6ED014E9043"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CD6D360D-B521-4AE3-BD32-A6ED014EAE29"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A6C68E4F-308A-4690-995F-A6ED014F168C"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B8AFA92B-26C1-4914-9929-A6ED015072BB"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("DD747A5E-3CC5-448F-8457-A6ED015075EB"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("11359E03-15B3-43BD-88AE-A6ED01507851"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("096E6D9C-5D00-45E0-B959-A6ED015082C1"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F30219CE-9B2E-419D-A075-A6ED0150840E"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("27F82565-7AEB-457E-A63C-A6ED01509967"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5E07AEF3-AA65-4E2B-A388-A6ED01509F10"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4C08DFDB-7BB2-49BF-9A62-A6ED0150A184"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("9E474171-BAFE-42A8-9562-A6ED0150CEB0"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("77EFAA44-B59E-4933-A5A2-A6ED0150D9F7"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("946D247C-1237-4E1D-85F3-A6ED0151A97F"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0A491F5B-D510-494D-9081-A6ED0151E57B"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2E50F30B-5C40-49A1-BD3C-A6ED0151F188"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("37ABEB0A-9766-40A2-AD68-A6ED0151F840"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F330B0FE-6DBC-44E7-9DB1-A6ED0151FB22"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("62052E58-6B02-493A-92C4-A6ED0152036D"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1448E169-24ED-4742-B7A4-A6ED015215D9"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("31AA4663-4B4C-473C-9D8A-A6ED0152C1AD"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C53FA1EA-C5D0-462B-817E-A6ED0152D484"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("3EE96C87-2225-4507-8923-A6ED0152E325"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("78D9CCC2-9FE4-4248-B3AA-A6ED0152F752"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FE726D68-2F64-421A-BF2D-A6ED0152FE76"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("EE387EF6-2D5E-4E0D-AC96-A6ED01530F12"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B8C237D8-901B-47E3-AB9E-A6ED01531455"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E2D68197-40C5-4196-B2F2-A6ED01532DF3"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("21869425-3EE0-4B39-A516-A6ED0153582D"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1478E9B1-41CA-4481-91DA-A6ED0153665E"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F0111EE3-9E4E-47D6-81C7-A6ED01537101"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("AAA01DDE-A384-4EAE-BC4B-A6ED015381CC"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0D5EA02A-07C5-43A7-A0B8-A6ED01539BB7"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("75D49940-2ED6-4074-BFE7-A6ED0153ABAE"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("10866246-021E-432C-83DE-A6ED0153B089"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0AAFA378-F6A7-4017-A7E1-A6ED0153BD39"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B0903977-5324-490C-8ABD-A6ED0153F52B"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("51A5DAF0-7D8C-403B-B8CD-A6ED01540DD6"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7C1D74E3-AEA1-4A28-849E-A6ED015414EC"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0EE6D793-356B-4D4A-A78C-A6ED015439B8"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("F1D560DD-0C38-40F1-AA8B-A6ED015469A5"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B169264F-46C4-4757-BE70-A6ED01556C24"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("8E645524-05E7-4378-8E81-A6ED015623C6"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0B067B58-20ED-4A58-A0B6-A6ED01562ABC"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("0CFCBDFE-20B1-445C-BF8F-A6ED015633C2"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("86539360-ED06-4E5B-9FBA-A6ED015635F0"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1D4F70DE-64CE-48DD-A1EF-A6ED01563F05"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("67DF07C5-2822-4681-9230-A6ED015652D5"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5B4FB975-B2EC-438F-888B-A6ED0156652E"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("62B20C3A-5E1E-4EA0-865A-A6ED0156677D"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("29CB862D-F7EF-4D69-AE5B-A6ED0156816A"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2170F536-B331-4125-98FC-A6ED015691CE"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E8C3C806-BD21-447A-A03D-A6ED0156A451"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5C47C182-21D6-49FF-A52C-A6ED0156A8EF"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("818FBECC-F74A-4339-8F5B-A6ED0150DFFE"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7DCEC1B4-D04F-4FA0-8100-A6ED0156BC82"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("FECF87C2-F950-477B-A59B-A6ED0156D1A3"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("746D02E8-B122-40A3-B554-A6ED0156F68C"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CD8DA311-0636-470D-830B-A6ED015736D9"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("29D60B07-ED4C-4CC5-A920-A6ED01573A7D"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D5427A17-7C67-419E-ACE9-A6ED01573CD1"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2936D785-EB53-44E8-A5B2-A6ED01573FA2"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("D6BB63AA-851E-4EF0-BF68-A6ED015743B8"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CA2B6124-701D-4990-BDA4-A6ED01577C80"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1D6E0C35-7867-4849-A837-A6ED015789E5"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("785D87BB-FD29-4DBF-9ED2-A6ED0157AD6A"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2AF5BE88-17D9-40A5-851A-A6ED0157DA27"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("DD4516FF-6543-4849-A782-A6ED0157DFD9"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C0DB2F55-828B-40EF-8FAB-A6F300A9FD79"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("21CA1362-0F71-4F97-9CB6-A6F300AA182B"), UserId = new Guid("344bda5f-51a4-485a-9af3-169d86f66d91"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("5626D5A5-69ED-4C13-91D3-A6ED014B5914"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E118A087-5F0C-41F8-B6D0-A6ED014CC03B"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("4605EBD8-E393-48C2-BC98-A6ED014CD625"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7E2AD2E3-8B08-4E04-968C-A6ED014D7392"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("55DBC934-3B74-4479-96B8-A6ED014E0152"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7B2E0CA5-CD53-4B6D-BAF4-A6ED014EA4C9"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E3BB46C8-B4A8-4987-A402-A6ED01524F9E"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("2381774E-AE8D-4820-A344-A6ED01527219"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("45C0FBDE-FF79-44A3-8B1E-A6ED0153FCD2"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("47B22D0F-2B37-49D9-9B08-A6ED01542057"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("251F6949-5243-4EBA-A898-A6ED015432E8"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("80A576C3-E6E0-4FC9-A1DC-A6ED0155EDA6"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("55F38C95-1509-4920-AAEA-A6ED01561407"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("13B2E891-34F4-48CD-84B7-A6ED015656A9"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("7792AD26-E346-4264-873D-A6ED01566EAF"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("960E8183-412A-4B20-8C80-A6ED0159F444"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("E46B1A2A-0BB6-4F4C-987D-A6ED0156F2AA"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("B8D53461-CBA4-4D4C-A5B0-A6ED0157A4AE"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("CF41D5E4-8F08-4557-BEBB-A6ED0157A95A"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("C58F1F94-D484-41C7-ACF2-A6ED0158BAE2"), UserId = new Guid("88a2f733-6c73-4f69-ac21-a51d2955aced"), Percentage = (decimal)25 });
+				companies.Add(new SalesPersonCompany { CompanyId = new Guid("1B70E7D1-6ECE-478E-8831-A6ED01565EEB"), UserId = new Guid("dcdb4068-6e29-406a-b7cc-b675265f49e1"), Percentage = (decimal)25 });
+
+				#endregion
+
+				Console.WriteLine("Total Companies: " + companies.Count);
+				var payChecks = 0;
+				var compProcessed = 0;
+				var compList = _readerService.GetCompanies();
+				var users = _userRepository.GetUsers(null, null);
+				var missing = new List<MissingSL>();
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					companies.ForEach(c =>
+					{
+						var match = compList.FirstOrDefault(c1 => c1.Id == c.CompanyId);
+						if (match != null)
+						{
+							var user = users.FirstOrDefault(u => u.UserId == c.UserId);
+							match.Contract.InvoiceSetup.SalesRep = new SalesRep(){Method=DeductionMethod.Percentage, Rate = c.Percentage, User = user};
+							var savedcompany = _companyRepository.SaveCompanyContract(match, match.Contract);
+							var invoices = _readerService.GetPayrollInvoices(companyId: match.Id);
+							invoices.Where(i => i.SalesRep == null || i.SalesRep == Guid.Empty).ToList().ForEach(i =>
+							{
+								i.UserId = c.UserId;
+								i.CompanyInvoiceSetup.SalesRep = match.Contract.InvoiceSetup.SalesRep;
+								i.CalculateCommission();
+								_payrollRepository.SavePayrollInvoiceCommission(i);
+								
+							});
+						}
+						compProcessed++;
+						Console.WriteLine(string.Format("Company # {0}--{1}", compProcessed, c.CompanyId));
+					});
+				
+					
+					Console.Write("Commit? ");
+					var commit = Convert.ToInt32(Console.ReadLine());
+					if (commit == 1)
+					{
+						txn.Complete();
+					}
+
+
+
+				}
+
+			}
+		}
+
 		public class MissingSL
 		{
 			public Guid companyId { get; set; }
@@ -5999,6 +6535,13 @@ namespace SiteInspectionStatus_Utility
 			public decimal missingVal { get; set; }
 			public decimal missingUsed { get; set; }
 			public decimal carryover { get; set; }
+		}
+
+		public class SalesPersonCompany
+		{
+			public Guid CompanyId { get; set; }
+			public decimal Percentage { get; set; }
+			public Guid UserId { get; set; }
 		}
 	}
 }

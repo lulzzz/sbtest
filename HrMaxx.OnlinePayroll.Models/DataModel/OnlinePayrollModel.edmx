@@ -65,6 +65,14 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="FractionId" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="CommissionExtract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayrollInvoiceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="MasterExtractId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Company">
           <Key>
             <PropertyRef Name="Id" />
@@ -472,6 +480,8 @@
           <Property Name="CheckPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="DDPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="InvoiceNumber" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SalesRep" Type="uniqueidentifier" />
+          <Property Name="Commission" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -632,6 +642,30 @@
             </Principal>
             <Dependent Role="BankAccount">
               <PropertyRef Name="EntityTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionExtract_MasterExtracts">
+          <End Role="MasterExtracts" Type="Self.MasterExtracts" Multiplicity="1" />
+          <End Role="CommissionExtract" Type="Self.CommissionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterExtracts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionExtract">
+              <PropertyRef Name="MasterExtractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionExtract_PayrollInvoice">
+          <End Role="PayrollInvoice" Type="Self.PayrollInvoice" Multiplicity="1" />
+          <End Role="CommissionExtract" Type="Self.CommissionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionExtract">
+              <PropertyRef Name="PayrollInvoiceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1111,6 +1145,7 @@
           <EntitySet Name="ACHTransactionExtract" EntityType="Self.ACHTransactionExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApplicationConfiguration" EntityType="Self.ApplicationConfiguration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BankAccount" EntityType="Self.BankAccount" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CommissionExtract" EntityType="Self.CommissionExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyAccount" EntityType="Self.CompanyAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyAccumlatedPayType" EntityType="Self.CompanyAccumlatedPayType" Schema="dbo" store:Type="Tables" />
@@ -1155,6 +1190,14 @@
           <AssociationSet Name="FK_BankAccount_EntityType" Association="Self.FK_BankAccount_EntityType">
             <End Role="EntityType" EntitySet="EntityType" />
             <End Role="BankAccount" EntitySet="BankAccount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionExtract_MasterExtracts" Association="Self.FK_CommissionExtract_MasterExtracts">
+            <End Role="MasterExtracts" EntitySet="MasterExtracts" />
+            <End Role="CommissionExtract" EntitySet="CommissionExtract" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionExtract_PayrollInvoice" Association="Self.FK_CommissionExtract_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoice" />
+            <End Role="CommissionExtract" EntitySet="CommissionExtract" />
           </AssociationSet>
           <AssociationSet Name="FK_Company_Company" Association="Self.FK_Company_Company">
             <End Role="Company" EntitySet="Company" />
@@ -1538,6 +1581,15 @@
           <AssociationSet Name="FK_PayCheckExtract_MasterExtracts" Association="HrMaxxModel.FK_PayCheckExtract_MasterExtracts">
             <End Role="MasterExtract" EntitySet="MasterExtracts" />
             <End Role="PayCheckExtract" EntitySet="PayCheckExtracts" />
+          </AssociationSet>
+          <EntitySet Name="CommissionExtracts" EntityType="HrMaxxModel.CommissionExtract" />
+          <AssociationSet Name="FK_CommissionExtract_MasterExtracts" Association="HrMaxxModel.FK_CommissionExtract_MasterExtracts">
+            <End Role="MasterExtract" EntitySet="MasterExtracts" />
+            <End Role="CommissionExtract" EntitySet="CommissionExtracts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CommissionExtract_PayrollInvoice" Association="HrMaxxModel.FK_CommissionExtract_PayrollInvoice">
+            <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
+            <End Role="CommissionExtract" EntitySet="CommissionExtracts" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
@@ -2501,6 +2553,9 @@
           <NavigationProperty Name="InvoicePayments" Relationship="HrMaxxModel.FK_InvoicePayment_PayrollInvoice" FromRole="PayrollInvoice" ToRole="InvoicePayment" />
           <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="PayrollInvoice" ToRole="Payroll" />
           <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollInvoice" ToRole="PayrollPayCheck" />
+          <Property Name="SalesRep" Type="Guid" />
+          <Property Name="Commission" Type="Decimal" Precision="18" Scale="2" />
+          <NavigationProperty Name="CommissionExtracts" Relationship="HrMaxxModel.FK_CommissionExtract_PayrollInvoice" FromRole="PayrollInvoice" ToRole="CommissionExtract" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2700,6 +2755,7 @@
           <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="ACHTransactionExtracts" Relationship="HrMaxxModel.FK_ACHTransactionExtract_MasterExtracts" FromRole="MasterExtract" ToRole="ACHTransactionExtract" />
           <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_MasterExtracts" FromRole="MasterExtract" ToRole="PayCheckExtract" />
+          <NavigationProperty Name="CommissionExtracts" Relationship="HrMaxxModel.FK_CommissionExtract_MasterExtracts" FromRole="MasterExtract" ToRole="CommissionExtract" />
         </EntityType>
         <Association Name="FK_ACHTransactionExtract_MasterExtracts">
           <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
@@ -2722,6 +2778,40 @@
             </Principal>
             <Dependent Role="PayCheckExtract">
               <PropertyRef Name="MasterExtractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CommissionExtract">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollInvoiceId" Type="Guid" Nullable="false" />
+          <Property Name="MasterExtractId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MasterExtract" Relationship="HrMaxxModel.FK_CommissionExtract_MasterExtracts" FromRole="CommissionExtract" ToRole="MasterExtract" />
+          <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_CommissionExtract_PayrollInvoice" FromRole="CommissionExtract" ToRole="PayrollInvoice" />
+        </EntityType>
+        <Association Name="FK_CommissionExtract_MasterExtracts">
+          <End Type="HrMaxxModel.MasterExtract" Role="MasterExtract" Multiplicity="1" />
+          <End Type="HrMaxxModel.CommissionExtract" Role="CommissionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MasterExtract">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionExtract">
+              <PropertyRef Name="MasterExtractId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CommissionExtract_PayrollInvoice">
+          <End Type="HrMaxxModel.PayrollInvoice" Role="PayrollInvoice" Multiplicity="1" />
+          <End Type="HrMaxxModel.CommissionExtract" Role="CommissionExtract" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PayrollInvoice">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CommissionExtract">
+              <PropertyRef Name="PayrollInvoiceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3232,6 +3322,8 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="Commission" ColumnName="Commission" />
+                <ScalarProperty Name="SalesRep" ColumnName="SalesRep" />
                 <ScalarProperty Name="DDPay" ColumnName="DDPay" />
                 <ScalarProperty Name="CheckPay" ColumnName="CheckPay" />
                 <ScalarProperty Name="NetPay" ColumnName="NetPay" />
@@ -3357,6 +3449,15 @@
                 <ScalarProperty Name="ExtractName" ColumnName="ExtractName" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CommissionExtracts">
+            <EntityTypeMapping TypeName="HrMaxxModel.CommissionExtract">
+              <MappingFragment StoreEntitySet="CommissionExtract">
+                <ScalarProperty Name="MasterExtractId" ColumnName="MasterExtractId" />
+                <ScalarProperty Name="PayrollInvoiceId" ColumnName="PayrollInvoiceId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

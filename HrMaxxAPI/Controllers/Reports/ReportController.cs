@@ -159,6 +159,14 @@ namespace HrMaxxAPI.Controllers.Reports
 			returnExtract.Extract = null;
 			return returnExtract;
 		}
+		[HttpPost]
+		[Route(ReportRoutes.PayCommissions)]
+		[DeflateCompression]
+		public MasterExtract PayCommissions(CommissionsExtract extract)
+		{
+			var returnExtract = MakeServiceCall(() => _reportService.PayCommissions(extract, CurrentUser.FullName), extract.Report.Description, true);
+			return returnExtract;
+		}
 
 		[HttpPost]
 		[Route(ReportRoutes.CreateDepositTickets)]
@@ -198,6 +206,14 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		}
 		[HttpGet]
+		[Route(ReportRoutes.CommissionExtract)]
+		[DeflateCompression]
+		public CommissionsExtract CommissionsExtract(int id)
+		{
+			var extr = MakeServiceCall(() => _reportService.GetCommissionsExtract(id), "Commissions Extract with id " + id, true);
+			return extr;
+		}
+		[HttpGet]
 		[Route(ReportRoutes.ACHExtract)]
 		[DeflateCompression]
 		public ACHMasterExtract ACHExtract(int id)
@@ -221,6 +237,16 @@ namespace HrMaxxAPI.Controllers.Reports
 		public List<SearchResult> GetSearchResults(string criteria)
 		{
 			return MakeServiceCall(() => _reportService.GetSearchResults(criteria, CurrentUser.Role, CurrentUser.Host, CurrentUser.Company), "Get search results", true);
+
+		}
+
+		[HttpPost]
+		[Route(ReportRoutes.CommissionsReport)]
+		[DeflateCompression]
+		public CommissionsExtract GetCommissionsReport(CommissionsReportRequestResource resource)
+		{
+			var request = Mapper.Map<CommissionsReportRequestResource, CommissionsReportRequest>(resource);
+			return MakeServiceCall(() => _reportService.GetCommissionsReport(request), string.Format("getting commissions report for request"));
 
 		}
 	}

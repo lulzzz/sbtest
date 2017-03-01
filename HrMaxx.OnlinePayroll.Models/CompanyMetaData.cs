@@ -15,7 +15,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public IList<TaxByYear> Taxes { get; set; }
 		public IList<DeductionType> DeductionTypes { get; set; }
 		public IList<PayType> PayTypes { get; set; }
-		public IList<InsuranceGroupDto> InsuranceGroups { get; set; } 
+		public IList<InsuranceGroupDto> InsuranceGroups { get; set; }
+		public IList<UserModel> Users { get; set; } 
 	}
 
 	public class AccountsMetaData

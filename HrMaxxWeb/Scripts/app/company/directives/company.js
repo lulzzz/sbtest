@@ -407,8 +407,18 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 
 						$scope.tab = 1;
 					}
+					
+					$scope.addSalesRep = function () {
+
+						$scope.selectedCompany.contract.invoiceSetup.salesRep = {
+							user: null,
+							method: 1,
+							rate: 25
+						};
+					}
+					
 					var init = function () {
-						$scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold = 35;
+						$scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold = $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold ? $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold : 35;
 						$scope.original = angular.copy($scope.selectedCompany);
 						companyRepository.getCompanyMetaData().then(function (data) {
 							dataSvc.companyMetaData = data;

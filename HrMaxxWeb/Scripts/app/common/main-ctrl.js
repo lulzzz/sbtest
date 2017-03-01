@@ -79,6 +79,7 @@
 			isReady: false,
 			fromSearch: false,
 			invoiceCompany: null,
+			users: [],
 			reportFilter: {
 				filterStartDate: null,
 				filterEndDate: null,
@@ -133,6 +134,12 @@
 				dataSvc.isReady = true;
 				commonRepository.getConfigData().then(function (result) {
 					dataSvc.config = angular.copy(result);
+
+				}, function (error) {
+
+				});
+				commonRepository.getUsers(null, null).then(function (result) {
+					dataSvc.users = angular.copy(result);
 
 				}, function (error) {
 

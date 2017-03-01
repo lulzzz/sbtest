@@ -1,13 +1,13 @@
 ﻿<div class="row table-responsive">
-	<div class="panel panel-inverse panel-with-tabs" data-sortable-id="ui-unlimited-tabs-1">
+	<div class="panel panel-inverse panel-with-tabs" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'">
 		<div class="panel-heading p-5">
 			<!-- begin nav-tabs -->
 			<div class="tab-overflow">
 				<ul class="nav nav-tabs nav-tabs-inverse">
 					<li class="prev-button"><a href="javascript:;" data-click="prev-tab" class="text-success"><i class="fa fa-arrow-left"></i></a></li>
-					
-					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}"  ng-click="set(host)" ng-repeat="host in data.hosts | orderBy:'hostCompany.name' track by $index" ><a data-toggle="tab">{{host.hostCompany.name}} <button class="btn btn-xs btn-danger" ng-if="report.allowExclude && !masterExtract.id" ng-click="exclude($event, host)"><i class="fa fa-lg fa-times-circle-o"></i></button></a></li>
-					
+
+					<li ng-class="{'active':selectedHost.hostCompany.id===host.hostCompany.id}" ng-click="set(host)" ng-repeat="host in data.hosts | orderBy:'hostCompany.name' track by $index"><a data-toggle="tab">{{host.hostCompany.name}} <button class="btn btn-xs btn-danger" ng-if="report.allowExclude && !masterExtract.id" ng-click="exclude($event, host)"><i class="fa fa-lg fa-times-circle-o"></i></button></a></li>
+
 					<li class="next-button"><a href="javascript:;" data-click="next-tab" class="text-success"><i class="fa fa-arrow-right"></i></a></li>
 				</ul>
 			</div>
@@ -21,7 +21,7 @@
 							<th class="col-sm-3">PayChecks</th>
 							<th class="col-sm-2">Companies</th>
 							<th class="col-sm-3">Company Amounts</th>
-							
+
 						</tr>
 					</thead>
 					<tr>
@@ -124,7 +124,7 @@
 
 							</div>
 						</td>
-						
+
 					</tr>
 				</table>
 				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='Report1099' && masterExtract.extract.report.reportName!=='GarnishmentReport'">
@@ -211,7 +211,7 @@
 									<button class="btn btn-xs col-sm-8" ng-class="{'btn-info' : selectedAgency.agency.id===agency.agency.id}" ng-click="setAgency(agency)">{{agency.agency.name}} </button>
 									<span class="pull-right col-sm-4">{{agency.total | currency:'$'}}</span>
 								</div>
-								
+
 							</div>
 
 						</td>
@@ -242,8 +242,65 @@
 					</tr>
 				</table>
 			</div>
-			
+
 		</div>
 	</div>
-	
+	<div class="panel panel-inverse panel-with-tabs" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'">
+		<div class="panel-heading p-5">
+			<!-- begin nav-tabs -->
+			<div class="tab-overflow">
+				<ul class="nav nav-tabs nav-tabs-inverse">
+					<li class="prev-button"><a href="javascript:;" data-click="prev-tab" class="text-success"><i class="fa fa-arrow-left"></i></a></li>
+
+					<li ng-class="{'active':selectedRep.userId===rep.userId}" ng-click="setRep(host)" ng-repeat="rep in data.salesReps | orderBy:'name' track by $index"><a data-toggle="tab">{{rep.name}} <button class="btn btn-xs btn-danger" ng-if="!masterExtract.id" ng-click="excludeRep($event, rep)"><i class="fa fa-lg fa-times-circle-o"></i></button></a></li>
+
+					<li class="next-button"><a href="javascript:;" data-click="next-tab" class="text-success"><i class="fa fa-arrow-right"></i></a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="tab-content">
+			<div class="tab-pane fade in" ng-if="selectedRep" ng-class="{'active':selectedRep}">
+				<table class="table table-bordered table-condensed">
+					<thead>
+						<tr>
+							<th class="col-sm-4">Amounts</th>
+							<th class="col-sm-8">Invoices</th>
+
+						</tr>
+					</thead>
+					<tr>
+						<td class="col-sm-3">
+							<div class="row">
+								<div class="col-sm-6"><strong>Total Commission</strong></div>
+								<div class="col-sm-6 text-right">{{selectedRep.commission | currency:'$'}}</div>
+							</div>
+
+						</td>
+						<td class="col-sm-9" ng-show="selectedRep">
+							<table class="table table-bordered table-condensed">
+								<thead>
+									<tr>
+										<th class="col-sm-4">Company</th>
+										<th class="col-sm-2">Invoice #</th>
+										<th class="col-sm-4">Invoice Date</th>
+										<th class="col-sm-2">Commission</th>
+
+									</tr>
+								</thead>
+								<tr ng-repeat="invoice in selectedRep.commissions | orderBy:'companyName'">
+									<td>{{invoice.companyName}}</td>
+									<td>{{invoice.invoiceNumber}}</td>
+									<td>{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</td>
+									<td>{{invoice.commission | currency:'$'}}</td>
+								</tr>
+							</table>
+						</td>
+
+					</tr>
+				</table>
+
+			</div>
+
+		</div>
+	</div>
 </div>

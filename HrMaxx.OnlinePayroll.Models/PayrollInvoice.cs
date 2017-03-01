@@ -59,6 +59,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal DDPay { get; set; }
 		public decimal NetPay { get; set; }
 
+		public Guid? SalesRep { get; set; }
+		public decimal Commission { get; set; }
+		public bool CommissionClaimed { get; set; }
+
 		public decimal PaidAmount
 		{
 			get { return Math.Round(InvoicePayments!=null ? InvoicePayments.Where(p => p.Status == PaymentStatus.Paid).Sum(p => p.Amount) : 0, 2, MidpointRounding.AwayFromZero); }
@@ -122,6 +126,25 @@ namespace HrMaxx.OnlinePayroll.Models
 			if (prevInvoices.Any(i => i.Status==InvoiceStatus.Delivered))
 			{
 				Notes += string.Format("Alert: Previous Invoices still only Deliverd #{0}; ", prevInvoices.Where(i => i.Status==InvoiceStatus.Delivered).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
+			}
+			CalculateCommission();
+		}
+
+		public void CalculateCommission()
+		{
+			SalesRep = CompanyInvoiceSetup.SalesRep != null ? CompanyInvoiceSetup.SalesRep.User.UserId : default(Guid?);
+			if (CompanyInvoiceSetup.SalesRep != null)
+			{
+				if (CompanyInvoiceSetup.SalesRep.Method == DeductionMethod.Amount)
+					Commission = CompanyInvoiceSetup.SalesRep.Rate;
+				else
+				{
+					Commission = Math.Round(AdminFee * CompanyInvoiceSetup.SalesRep.Rate / 100, 2, MidpointRounding.AwayFromZero);
+				}
+			}
+			else
+			{
+				Commission = 0;
 			}
 		}
 

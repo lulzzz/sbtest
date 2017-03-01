@@ -227,6 +227,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool ApplyWCCharge { get; set; }
 		public bool PrintClientName { get; set; }
 		public List<RecurringChargeResource> RecurringCharges { get; set; }
+		public SalesRepResource SalesRep { get; set; } 
 	}
 
 	public class RecurringChargeResource
@@ -239,4 +240,14 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public string Description { get; set; }
 	}
+	public class SalesRepResource
+	{
+		[Required]
+		public UserModel User { get; set; }
+		[Required]
+		public DeductionMethod Method { get; set; }
+		[Required]
+		public decimal Rate { get; set; }
+	}
+
 }

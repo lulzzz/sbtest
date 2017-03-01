@@ -19,7 +19,7 @@ using Notification = HrMaxx.Common.Contracts.Messages.Events.Notification;
 
 namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 {
-	public class PayrollEventHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<InvoiceCreatedEvent>.All, Consumes<InvoiceDepositUpdateEvent>.All
+	public class PayrollEventHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<InvoiceCreatedEvent>.All, Consumes<InvoiceDepositUpdateEvent>.All, Consumes<CompanySalesRepChangeEvent>.All
 	{
 		public IBus Bus { get; set; }
 		
@@ -163,6 +163,20 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			}
 
 
+		}
+
+		public void Consume(CompanySalesRepChangeEvent event1)
+		{
+			var invoices = _readerService.GetPayrollInvoices(companyId: event1.SavedObject.Id);
+			invoices.Where(i=>i.SalesRep==null || i.SalesRep==Guid.Empty).ToList().ForEach(i =>
+			{
+				i.UserId = event1.UserId;
+				i.CompanyInvoiceSetup.SalesRep = event1.SavedObject.Contract.InvoiceSetup.SalesRep;
+				i.CalculateCommission();
+				_payrollRepository.SavePayrollInvoice(i);
+				var memento = Memento<PayrollInvoice>.Create(i, EntityTypeEnum.Invoice, event1.UserName, string.Format("Invoice Commission updated through company commission set up change"), i.UserId);
+				_mementoDataService.AddMementoData(memento);
+			});
 		}
 	}
 }

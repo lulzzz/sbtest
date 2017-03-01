@@ -513,6 +513,32 @@
 
 				</div>
 				
+				<div class="row">
+					<h4><u>Commissions Extract</u></h4>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-2 form-group">
+						<label>Sales Rep</label>
+						<select id="rep" class="form-control" ng-model="data.selectedSalesRep" ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users track by u.userId">
+							<option value="">Select Sales Rep</option>
+						</select>
+					</div>
+					<div class="col-sm-2 form-group">
+						<label>Start Date</label>
+						<date-ctrl model="data.filterCommissions.startDate" disabled="false" />
+					</div>
+					<div class="col-sm-2 form-group">
+						<label>End Date</label>
+						<date-ctrl model="data.filterCommissions.endDate" disabled="false" min="data.filterCommissions.startDate" />
+					</div>
+					<div class="col-sm-3 form-group">
+						<label></label><br />
+						<button class="btn btn-sm btn-primary" ng-click="getCommissionsReport()">Review</button>
+
+					</div>
+
+				</div>
+				
 			</div>
 
 
@@ -531,15 +557,17 @@
 				{{alerts[0].message}}
 			</div>
 		</div>
-		<div class="modal-body">
-			<div class="row m-b-5 p-b-5">
+		<div class="modal-body" ng-if="masterExtract">
+			<div class=" row m-b-5 p-b-5">
 				<span ng-show="masterExtract.extract.report.allowFiling && masterExtract.extract.report.depositDate"><u><i><strong>Deposit Date: {{masterExtract.extract.report.depositDate | date:'MM/dd/yyyy'}}</strong></i></u></span>
-				<button class="btn btn-sm btn-info" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File Taxes</button>
+				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File Taxes</button>
+				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.salesReps.length>0" ng-click="payCommissions()">Pay Commissions</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
 				<button class="btn btn-sm btn-info pull-right" ng-show="false" ng-click="regenerateFile()">Regenerate File</button>
 				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0" ng-click="printExtract()">Print Checks</button>
 			</div>
-			<extract-view master-extract="masterExtract" />
+			<extract-view master-extract="masterExtract"  />
+								
 
 		</div>
 	</script>

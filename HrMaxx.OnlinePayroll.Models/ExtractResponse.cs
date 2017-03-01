@@ -283,4 +283,33 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? InvoiceId { get; set; }
 		public int PaymentId { get; set; }
 	}
+
+	public class CommissionsExtract
+	{
+		public CommissionsReportRequest Report { get; set; }
+		public CommissionsResponse Data { get; set; }
+		public FileDto File { get; set; }
+	}
+	public class CommissionsResponse
+	{
+		public List<ExtractSalesRep> SalesReps { get; set; }
+	}
+
+	public class ExtractSalesRep
+	{
+		public Guid UserId { get; set; }
+		public string Name { get; set; }
+		public List<InvoiceCommission> Commissions { get; set; }
+
+		public decimal Commission { get { return Commissions.Sum(c => c.Commission); } }
+	}
+
+	public class InvoiceCommission
+	{
+		public Guid InvoiceId { get; set; }
+		public decimal Commission { get; set; }
+		public DateTime InvoiceDate { get; set; }
+		public string CompanyName { get; set; }
+		public int InvoiceNumber { get; set; }
+	}
 }

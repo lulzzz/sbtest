@@ -134,7 +134,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				dbPayrollInvoice.NetPay = mapped.NetPay;
 				dbPayrollInvoice.DDPay = mapped.DDPay;
 				dbPayrollInvoice.CheckPay = mapped.CheckPay;
-
+				dbPayrollInvoice.SalesRep = mapped.SalesRep;
+				dbPayrollInvoice.Commission = mapped.Commission;
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbPayrollInvoice.InvoicePayments.Count; removeCounter++)
 				{
@@ -252,12 +253,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		public void UpdatePayCheckSickLeaveAccumulation(PayCheck pc)
 		{
 			var dbCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == pc.Id);
-			var dbEmp = _dbContext.Employees.First(e => e.Id == pc.Employee.Id);
+			//var dbEmp = _dbContext.Employees.First(e => e.Id == pc.Employee.Id);
 			if (dbCheck != null)
 			{
 				dbCheck.Accumulations = JsonConvert.SerializeObject(pc.Accumulations);
-				dbCheck.Employee = JsonConvert.SerializeObject(pc.Employee);
-				dbEmp.CarryOver = pc.Employee.CarryOver;
+				//dbCheck.Employee = JsonConvert.SerializeObject(pc.Employee);
+				//dbEmp.CarryOver = pc.Employee.CarryOver;
 				_dbContext.SaveChanges();
 			}
 		}
@@ -272,6 +273,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				pc.StartDate = mappedResource.StartDate;
 				pc.EndDate = mappedResource.EndDate;
 			});
+			_dbContext.SaveChanges();
+		}
+
+		public void SavePayrollInvoiceCommission(PayrollInvoice payrollInvoice)
+		{
+			var dbi = _dbContext.PayrollInvoices.First(i => i.Id == payrollInvoice.Id);
+			dbi.SalesRep = payrollInvoice.SalesRep;
+			dbi.Commission = payrollInvoice.Commission;
 			_dbContext.SaveChanges();
 		}
 

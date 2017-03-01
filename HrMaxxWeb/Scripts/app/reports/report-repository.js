@@ -43,6 +43,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			payCommissions: function (extract) {
+				var deferred = $q.defer();
+				reportServer.all('PayCommissions').post(extract).then(function (result) {
+					deferred.resolve(result);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			createDepositTickets: function (extract) {
 				var deferred = $q.defer();
 				reportServer.all('CreateDepositTickets').post(extract).then(function () {
@@ -66,6 +76,16 @@ common.factory('reportRepository', [
 			getMasterExtract: function (report) {
 				var deferred = $q.defer();
 				reportServer.one('Extract/' + report).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getCommissionsExtract: function (report) {
+				var deferred = $q.defer();
+				reportServer.one('CommissionExtract/' + report).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);
@@ -148,6 +168,16 @@ common.factory('reportRepository', [
 			getExtract: function (request) {
 				var deferred = $q.defer();
 				reportServer.all('ExtractDocument').post(request).then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getCommissionsReport: function (request) {
+				var deferred = $q.defer();
+				reportServer.all('CommissionsReport').post(request).then(function (response) {
 					deferred.resolve(response);
 				}, function (error) {
 					deferred.reject(error);

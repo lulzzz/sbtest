@@ -585,7 +585,42 @@
 													</div>
 												</div>
 											</div>
+											
+											<div class="row" ng-if="selectedCompany.contract.billingOption===3">
+												<div class="col-sm-4"></div>
+												<div class="col-sm-8">
+													<div class="row"><h5>Sales Representative(s) <i class="fa fa-lg fa-plus-circle" ng-show="!selectedCompany.contract.invoiceSetup.salesRep" ng-click="addSalesRep()"></i></h5></div>
+													<div class="row" ng-show="!selectedCompany.contract.invoiceSetup.salesRep">No sales rep have been setup</div>
+													<div class="row" ng-show="selectedCompany.contract.invoiceSetup.salesRep">
+														<table class="table table-bordered table-condensed">
+															<thead>
+																<tr>
+																	<th class="col-sm-2">User</th>
+																	<th class="col-sm-3">Method</th>
+																	<th class="col-sm-2">Rate</th>
+																</tr>
+																<tr >
+																	<td>
+																		<select ng-model="selectedCompany.contract.invoiceSetup.salesRep.user" name="user" class="form-control" data-parsley-group="wizard-step-4" required ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users track by u.userId">
+																			<option value="">Select User</option>
 
+																		</select>
+																	</td>
+																	<td>
+																		<select ng-model="selectedCompany.contract.invoiceSetup.salesRep.method" name="methoid" class="form-control" data-parsley-group="wizard-step-4" required convert-to-number>
+																			<option value="1">Percentage</option>
+																			<option value="2">Fixed Amount (per invoice)</option>
+
+																		</select>
+																	</td>
+																	<td><input data-parsely-type="number" ng-model="selectedCompany.contract.invoiceSetup.salesRep.rate" class="form-control" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01"></td>
+																	
+																</tr>
+															</thead>
+														</table>
+													</div>
+												</div>
+											</div>
 										</fieldset>
 									</div>
 								</div>

@@ -264,6 +264,36 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.ACHMasterExtract>>(list);
 		}
 
+		public Models.MasterExtract SaveCommissionExtract(CommissionsExtract extract, string fullName)
+		{
+			var invoices = extract.Data.SalesReps.SelectMany(h => h.Commissions).ToList();
+			var dbExtract = new Models.DataModel.MasterExtract
+			{
+				DepositDate = DateTime.Today,
+				EndDate = extract.Report.EndDate.HasValue ? extract.Report.EndDate.Value : DateTime.Today,
+				//Extract = JsonConvert.SerializeObject(extract),
+				ExtractName = "Commissions",
+				Id = 0,
+				IsFederal = false,
+				Journals = JsonConvert.SerializeObject(new List<int>()),
+				LastModified = DateTime.Now,
+				LastModifiedBy = fullName,
+				StartDate = extract.Report.StartDate.HasValue ? extract.Report.StartDate.Value : new DateTime(2017,1,1).Date,
+
+			};
+			_dbContext.MasterExtracts.Add(dbExtract);
+			_dbContext.SaveChanges();
+			SaveExtractDetails(dbExtract.Id, JsonConvert.SerializeObject(extract));
+			invoices.ForEach(t => _dbContext.CommissionExtracts.Add(new CommissionExtract
+			{
+				Id = 0,
+				MasterExtractId = dbExtract.Id,
+				PayrollInvoiceId = t.InvoiceId
+			}));
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtract);
+		}
+
 		public List<MasterExtract> GetExtractList(string report)
 		{
 			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();

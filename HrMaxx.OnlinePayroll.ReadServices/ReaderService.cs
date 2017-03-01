@@ -526,5 +526,48 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 	  }
+
+		public CommissionsExtract GetCommissionsExtract(int id)
+		{
+			try
+			{
+				var paramList = new List<FilterParam> { new FilterParam() { Key = "id", Value = id.ToString() } };
+				var result = GetDataFromStoredProc<List<MasterExtractJson>, List<MasterExtractJson>>(
+					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList"));
+				var me = result.FirstOrDefault();
+				if (me != null)
+					return JsonConvert.DeserializeObject<CommissionsExtract>(me.Extract);
+				return null;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Extract by id ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				if(request.UserId.HasValue)
+					paramList.Add(new FilterParam { Key = "userId", Value = request.UserId.ToString() });
+				if(request.StartDate.HasValue)
+					paramList.Add(new FilterParam { Key = "startdate", Value = request.StartDate.Value.ToString("MM/dd/yyyy") });
+				if (request.EndDate.HasValue)
+					paramList.Add(new FilterParam { Key = "enddate", Value = request.EndDate.Value.ToString("MM/dd/yyyy") });
+
+				return GetDataFromStoredProc<CommissionsResponse>(
+					"GetCommissionsReport", paramList);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Extract by id ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
   }
 }

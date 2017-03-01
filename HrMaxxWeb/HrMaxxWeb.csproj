@@ -274,6 +274,7 @@
     <Content Include="Areas\Client\templates\vendor-customer.html" />
     <Content Include="Areas\Reports\templates\ach-report.html" />
     <Content Include="Areas\Reports\templates\ACH.html" />
+    <Content Include="Areas\Reports\templates\commissions-view.html" />
     <Content Include="Areas\Reports\templates\Dashboard.html" />
     <Content Include="Areas\Reports\templates\data-extracts.html" />
     <Content Include="Areas\Reports\templates\extract-view-list.html" />
@@ -1355,6 +1356,7 @@
     <Content Include="Scripts\app\payroll\payroll-repository.js" />
     <Content Include="Scripts\app\reports\directives\ach-report.js" />
     <Content Include="Scripts\app\reports\directives\balance-sheet.js" />
+    <Content Include="Scripts\app\reports\directives\commissions-view.js" />
     <Content Include="Scripts\app\reports\directives\deposit-coupons.js" />
     <Content Include="Scripts\app\reports\directives\employer-forms.js" />
     <Content Include="Scripts\app\reports\directives\blank-forms.js" />

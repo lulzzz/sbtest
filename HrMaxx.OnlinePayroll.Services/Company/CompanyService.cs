@@ -136,10 +136,20 @@ namespace HrMaxx.OnlinePayroll.Services
 					
 					txn.Complete();
 
+					if (comp != null && savedcompany.Contract.InvoiceSetup.SalesRep != null)
+					{
+						Bus.Publish<CompanySalesRepChangeEvent>(new CompanySalesRepChangeEvent
+						{
+							SavedObject = savedcompany,
+							UserId = company.UserId,
+							UserName = company.UserName
+						});			
+					}
+
 					Bus.Publish<CompanyUpdatedEvent>(new CompanyUpdatedEvent
 					{
 						SavedObject = savedcompany,
-						UserId = savedcompany.UserId,
+						UserId = company.UserId,
 						TimeStamp = DateTime.Now,
 						NotificationText = string.Format("{0} by {1}", string.Format(notificationText, savedcompany.Name), savedcompany.UserName),
 						EventType = eventType

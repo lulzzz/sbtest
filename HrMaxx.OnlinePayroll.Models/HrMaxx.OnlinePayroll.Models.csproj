@@ -81,6 +81,9 @@
     <Compile Include="DataModel\BankAccount.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CommissionExtract.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Company.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>

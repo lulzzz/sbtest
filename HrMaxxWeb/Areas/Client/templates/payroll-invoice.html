@@ -349,6 +349,15 @@
 							</td>
 							
 						</tr>
+						<tr class="warning hidden-print" ng-show="mainData.userRole==='Master'">
+							<td colspan="2" class="text-left"><h5><b><em><u>Commission</u></em></b></h5></td>
+							<td>
+								<select ng-model="invoice.salesRep" ng-disabled="invoice.commissionClaimed" name="user" class="form-control" ng-options="u.userId as (u.firstName + ' ' + u.lastName) for u in mainData.users">
+									<option value="">Select User</option>
+								</select>
+							</td>
+							<td class="text-right"><input name="com" ng-model="invoice.commission" ng-disabled="invoice.commissionClaimed" step="0.01" class="form-control" convert-to-decimal /></td>
+						</tr>
 
 					</tbody>
 				</table>

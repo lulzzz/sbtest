@@ -25,6 +25,8 @@ namespace HrMaxx.OnlinePayroll.Services
 		private readonly IHostService _hostService;
 		private readonly IMetaDataRepository _metaDataRepository;
 		private readonly IReaderService _readerService;
+		
+
 		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IHostService hostService, IReaderService readerService)
 		{
 			_metaDataRepository = metaDataRepository;
@@ -32,6 +34,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			_companyService = companyService;
 			_hostService = hostService;
 			_readerService = readerService;
+			
 		}
 
 		public object GetCompanyMetaData()
@@ -43,6 +46,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				var deductiontypes = _metaDataRepository.GetDeductionTypes();
 				var paytypes = _metaDataRepository.GetAccumulablePayTypes();
 				var insurancegroups = _commonService.GetInsuranceGroups();
+				
 				return new CompanyMetaData(){Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups};
 			}
 			catch (Exception e)

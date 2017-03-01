@@ -63,5 +63,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<ACHTransaction> ACHTransactions { get; set; }
         public virtual DbSet<ACHTransactionExtract> ACHTransactionExtracts { get; set; }
         public virtual DbSet<MasterExtract> MasterExtracts { get; set; }
+        public virtual DbSet<CommissionExtract> CommissionExtracts { get; set; }
     }
 }

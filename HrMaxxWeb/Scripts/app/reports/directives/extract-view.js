@@ -20,6 +20,7 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.selectedAgency = null;
 					$scope.showPayChecks = false;
 					$scope.showVoidedChecks = false;
+					$scope.selectedRep = null;
 					$scope.selectedCompanyFilings = [];
 					$scope.set = function(host) {
 						$scope.selectedHost = host;
@@ -208,15 +209,40 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 
 						handlePageLoadTabFocus();
 					};
-					var _init = function() {
-						if ($scope.data && $scope.data.hosts.length > 0) {
-							$timeout(function () {
-								handleUnlimitedTabsRender();
-							}, 1);
-							$scope.set($scope.data.hosts[0]);
+					var _init = function () {
+						if ($scope.masterExtract.extract.report.reportName !== 'CommissionsReport') {
+							if ($scope.data && $scope.data.hosts.length > 0) {
+								$timeout(function() {
+									handleUnlimitedTabsRender();
+								}, 1);
+								$scope.set($scope.data.hosts[0]);
+							}
+						} else {
+							if ($scope.data && $scope.data.salesReps.length > 0) {
+								$timeout(function () {
+									handleUnlimitedTabsRender();
+								}, 1);
+								$scope.setRep($scope.data.salesReps[0]);
+							}
 						}
 							
 					}
+
+					$scope.setRep = function (rep) {
+						$scope.selectedRep = rep;
+
+					}
+
+					$scope.excludeRep = function (event, rep) {
+						event.stopPropagation();
+						if ($scope.selectedRep && rep.id === $scope.selectedRep.id) {
+							$scope.selectedRep = null;
+
+						}
+						$scope.data.salesReps.splice($scope.data.salesReps.indexOf(rep), 1);
+					}
+
+
 					_init();
 
 				}
