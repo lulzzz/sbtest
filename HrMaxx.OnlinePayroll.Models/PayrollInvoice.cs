@@ -125,7 +125,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			if (prevInvoices.Any(i => i.Status==InvoiceStatus.Delivered))
 			{
-				Notes += string.Format("Alert: Previous Invoices still only Deliverd #{0}; ", prevInvoices.Where(i => i.Status==InvoiceStatus.Delivered).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
+				Notes += string.Format("Alert: Previous Invoices still only Delivered #{0}; ", prevInvoices.Where(i => i.Status==InvoiceStatus.Delivered).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
 			}
 			CalculateCommission();
 		}
