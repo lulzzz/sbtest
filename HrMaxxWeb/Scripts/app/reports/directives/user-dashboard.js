@@ -121,7 +121,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 										title: "Months"
 									},
 									curveType: 'function',
-									legend: { position: 'right' },
+									legend: { position: 'none' },
 									'width': '90%',
 									'height': 500,
 									'chartKey': 'CommissionPerformanceChartData'
@@ -154,7 +154,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 										title: "Months"
 									},
 									curveType: 'function',
-									legend: { position: 'right' },
+									legend: { position: 'none' },
 									'width': '90%',
 									'height': 500,
 									'chartKey': 'PayrollProcessingPerformanceChartData'
