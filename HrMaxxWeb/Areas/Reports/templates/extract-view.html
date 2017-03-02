@@ -252,7 +252,7 @@
 				<ul class="nav nav-tabs nav-tabs-inverse">
 					<li class="prev-button"><a href="javascript:;" data-click="prev-tab" class="text-success"><i class="fa fa-arrow-left"></i></a></li>
 
-					<li ng-class="{'active':selectedRep.userId===rep.userId}" ng-click="setRep(host)" ng-repeat="rep in data.salesReps | orderBy:'name' track by $index"><a data-toggle="tab">{{rep.name}} <button class="btn btn-xs btn-danger" ng-if="!masterExtract.id" ng-click="excludeRep($event, rep)"><i class="fa fa-lg fa-times-circle-o"></i></button></a></li>
+					<li ng-class="{'active':selectedRep.userId===rep.userId}" ng-click="setRep(rep)" ng-repeat="rep in data.salesReps | orderBy:'name' track by $index"><a data-toggle="tab">{{rep.name}} <button class="btn btn-xs btn-danger" ng-if="!masterExtract.id" ng-click="excludeRep($event, rep)"><i class="fa fa-lg fa-times-circle-o"></i></button></a></li>
 
 					<li class="next-button"><a href="javascript:;" data-click="next-tab" class="text-success"><i class="fa fa-arrow-right"></i></a></li>
 				</ul>

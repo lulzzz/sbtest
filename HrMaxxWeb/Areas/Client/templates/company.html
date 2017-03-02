@@ -601,7 +601,7 @@
 																</tr>
 																<tr >
 																	<td>
-																		<select ng-model="selectedCompany.contract.invoiceSetup.salesRep.user" name="user" class="form-control" data-parsley-group="wizard-step-4" required ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users track by u.userId">
+																		<select ng-model="selectedCompany.contract.invoiceSetup.salesRep.user" name="user" class="form-control" data-parsley-group="wizard-step-4" required ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users | orderBy:'firstName' track by u.userId">
 																			<option value="">Select User</option>
 
 																		</select>

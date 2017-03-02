@@ -139,7 +139,7 @@
 
 				});
 				commonRepository.getUsers(null, null).then(function (result) {
-					dataSvc.users = angular.copy(result);
+					dataSvc.users = angular.copy($filter('filter')(result, {active:true}));
 
 				}, function (error) {
 

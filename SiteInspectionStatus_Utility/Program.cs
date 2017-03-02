@@ -6005,11 +6005,9 @@ namespace SiteInspectionStatus_Utility
 			{
 				var _readerService = scope.Resolve<IReaderService>();
 				var _payrollRepository = scope.Resolve<IPayrollRepository>();
-				var _mementoService = scope.Resolve<IMementoDataService>();
-				var empList = new List<MissingSL>();
-				var empNoChecks = new List<Guid>();
+				
 
-				var allemployees = _readerService.GetEmployees();
+				//var allemployees = _readerService.GetEmployees();
 				var allPayChecks = _readerService.GetPayChecks(isvoid: 0).Where(p => p.CompanyId != new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD")).ToList();
 				var employeeChecks = allPayChecks.GroupBy(p => p.Employee.Id);
 				Console.WriteLine("Total Checks: " + allPayChecks.Count);
@@ -6025,16 +6023,23 @@ namespace SiteInspectionStatus_Utility
 					{
 						
 						var employee = e.Key;
-						var emp1 = allemployees.First(e2 => e2.Id == e.Key);
+						//var emp1 = allemployees.First(e2 => e2.Id == e.Key);
+						
 						var checks = e.OrderBy(p=>p.PayDay).ThenBy(p=>p.Id).ToList();
+						var original = checks.First().Accumulations.First().FiscalStart;
 						foreach (var check in checks.Where(p=>p.Accumulations.Any()))
 						{
 							var needsupdating = false;
 							
 							var sl = check.Accumulations.First(a => a.PayType.PayType.Id == 6);
 							var checkfiscaldate = sl.FiscalStart;
+							//if (sl.FiscalStart != original)
+							//{
+							//	sl.FiscalStart = original;
+							//	sl.FiscalEnd = sl.FiscalStart.AddYears(1).AddDays(-1);
+							//	needsupdating = true;
+							//}
 							
-							var original = sl.YTDFiscal;
 							var newval = sl.YTDFiscal;
 							var fiscalYTDChecks = checks.Where(p => p.PayDay >= sl.FiscalStart && p.Id != check.Id && (p.PayDay < check.PayDay || (p.PayDay==check.PayDay && p.Id<check.Id))).ToList();
 							if (fiscalYTDChecks.Any())
@@ -6053,7 +6058,7 @@ namespace SiteInspectionStatus_Utility
 							}
 							if (needsupdating)
 							{
-								Console.WriteLine(string.Format("{0},{4},{5},{1},{2},{3},{6},{7}", check.Employee.Id, check.Id, original, newval, check.Employee.FullName, check.PayDay.ToString("MM/dd/yyyy"), checkfiscaldate.ToString("MM/dd/yyyy"), emp1.SickLeaveHireDate.ToString("MM/dd/yyyy")));
+								Console.WriteLine(string.Format("{0},{4},{5},{1},{2},{3},{6},{7}", check.Employee.Id, check.Id, original, newval, check.Employee.FullName, check.PayDay.ToString("MM/dd/yyyy"), checkfiscaldate.ToString("MM/dd/yyyy"), check.Employee.SickLeaveHireDate.ToString("MM/dd/yyyy")));
 								payChecks++;
 								_payrollRepository.UpdatePayCheckSickLeaveAccumulation(check);
 								if (empList1.All(e1 => e1 != employee))

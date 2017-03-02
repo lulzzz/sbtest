@@ -47,8 +47,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.drawPayrollWithoutInvoiceChart();
 							$scope.drawCompaniesWithApproachingPayrolls();
 							$scope.drawCompaniesWithoutPayrollChart();
-							$scope.drawPayrollChart();
-							$scope.drawInvoiceChart();
+							
 							
 						}, function (error) {
 							console.log(error);
@@ -67,12 +66,19 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							console.log(error);
 						});
 					}
+					var drawPerformanceCharts = function () {
+						$scope.drawCommissionPerformanceChart();
+						$scope.drawProcessingPerformanceChart();
+					}
 					$scope.tabChanged = function (tab) {
 						dataSvc.tab = tab;
 						if (tab === 1) {
 							$scope.drawCharts();
-						} else {
+						} else if (tab === 2) {
 							drawARCharts();
+						}
+						else if (tab === 3) {
+							drawPerformanceCharts();
 						}
 					}
 					var mapListToDataTable = function (input) {
@@ -97,6 +103,73 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							element.html("<b>" + options.title + "</b><br/>No Data");
 						}
 					}
+
+					$scope.drawCommissionPerformanceChart = function () {
+						reportRepository.getDashboardData('GetCommissionPerformanceChart', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+							var data = data1[0];
+							if (data1.length > 0) {
+								var ws_data = null;
+								ws_data = mapListToDataTable(data);
+								clearIfExists('CommissionPerformanceChartData', data.data, 'Commissions of Sales Reps by Month');
+
+								var options = {
+									title: 'Commissions of Sales Reps by Month',
+									vAxis: {
+										title: "Commission"
+									},
+									hAxis: {
+										title: "Months"
+									},
+									curveType: 'function',
+									legend: { position: 'right' },
+									'width': '90%',
+									'height': 500,
+									'chartKey': 'CommissionPerformanceChartData'
+								};
+
+								var chart = new google.visualization.ComboChart($element.find('#commissionPerformanceChart')[0]);
+								var element = angular.element(document.querySelector('#commissionPerformanceChart'));
+								handleChart(chart, element, ws_data, data, options, false);
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+						
+					};
+					$scope.drawProcessingPerformanceChart = function () {
+						reportRepository.getDashboardData('GetPayrollProcessingPerformanceChart', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+							var data = data1[0];
+							if (data1.length > 0) {
+								var ws_data = null;
+								ws_data = mapListToDataTable(data);
+								clearIfExists('PayrollProcessingPerformanceChartData', data.data, 'Payroll Processing of Users by Month');
+
+								var options = {
+									title: 'Payroll Processing of Users by Month',
+									vAxis: {
+										title: "No. of Payrolls"
+									},
+									hAxis: {
+										title: "Months"
+									},
+									curveType: 'function',
+									legend: { position: 'right' },
+									'width': '90%',
+									'height': 500,
+									'chartKey': 'PayrollProcessingPerformanceChartData'
+								};
+								var chart = new google.visualization.ComboChart($element.find('#processingPerformanceChart')[0]);
+								var element = angular.element(document.querySelector('#processingPerformanceChart'));
+								handleChart(chart, element, ws_data, data, options, false);
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+						
+
+					};
 
 					$scope.drawInvoiceChart = function () {
 						var data = $filter('filter')(dataSvc.reportData, { result: 'GetInvoiceChartData' }, true)[0];

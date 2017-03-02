@@ -519,7 +519,7 @@
 				<div class="col-sm-12">
 					<div class="col-sm-2 form-group">
 						<label>Sales Rep</label>
-						<select id="rep" class="form-control" ng-model="data.selectedSalesRep" ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users track by u.userId">
+						<select id="rep" class="form-control" ng-model="data.selectedSalesRep" ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users  | orderBy:'firstName' track by u.userId">
 							<option value="">Select Sales Rep</option>
 						</select>
 					</div>
