@@ -591,7 +591,7 @@
 												<div class="col-sm-8">
 													<div class="row"><h5>Sales Representative(s) <i class="fa fa-lg fa-plus-circle" ng-show="!selectedCompany.contract.invoiceSetup.salesRep" ng-click="addSalesRep()"></i></h5></div>
 													<div class="row" ng-show="!selectedCompany.contract.invoiceSetup.salesRep">No sales rep have been setup</div>
-													<div class="row" ng-show="selectedCompany.contract.invoiceSetup.salesRep">
+													<div class="row" ng-if="selectedCompany.contract.invoiceSetup.salesRep">
 														<table class="table table-bordered table-condensed">
 															<thead>
 																<tr>

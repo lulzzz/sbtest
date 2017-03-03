@@ -292,8 +292,11 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					$scope.save = function () {
-						if (false === $('form[name="form-wizard"]').parsley().validate())
+						if (false === $('form[name="form-wizard"]').parsley().validate()) {
+							var errors = $('.parsley-error');
 							return false;
+						}
+							
 						if ($scope.selectedCompany.contract.billingOption !== 3)
 							$scope.selectedCompany.contract.invoiceSetup = null;
 						if ($scope.selectedCompany.contract.billingOption === 0 || $scope.selectedCompany.contract.billingOption === 3) {

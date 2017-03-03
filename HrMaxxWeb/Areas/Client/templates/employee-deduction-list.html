@@ -14,7 +14,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="item in list track by $index">
+			<tr ng-repeat="item in list track by $index" ng-class="{'warning' : item.limit===0 || item.ceilingPerCheck===0}">
 				<td>
 					<!-- editable tesltra worktype (select-local) -->
 					<span e-ng-change="item.deduction = $data;" editable-select="item.deduction" e-name="deduction" e-form="rowform" e-ng-options="ded.description for ded in availableCompanyDeductions($index) track by ded.id">
@@ -27,8 +27,8 @@
 							</div>
 							<div class="col-sm-6">
 								<span editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck ? (item.ceilingPerCheck | currency:'$') : 'none'  }}</span>
-									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck ? ((item.ceilingPerCheck | currency:'') + '%') : 'none'  }}</span>
+									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? (item.ceilingPerCheck | currency:'$') : 'no deduction') : 'none'  }}</span>
+									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? ((item.ceilingPerCheck | currency:'') + '%') : 'no deduction') : 'none'  }}</span>
 								</span>
 								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="type" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
 
@@ -45,8 +45,8 @@
 							</div>
 							<div class="col-sm-6">
 								<span editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck ? (item.ceilingPerCheck | currency:'$') : 'none'  }}</span>
-									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck ? ((item.ceilingPerCheck | currency:'') + '%') : 'none'  }}</span>
+									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? (item.ceilingPerCheck | currency:'$') : 'no deduction' ): 'none'  }}</span>
+									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? ((item.ceilingPerCheck | currency:'') + '%') : 'no deduction'): 'none'  }}</span>
 								</span>
 								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="type" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
 									
@@ -61,7 +61,7 @@
 							</div>
 							<div class="col-sm-6 pull-left">
 								<span editable-number="item.limit" e-name="limit" e-form="rowform" e-ng-change="item.limit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-									{{ item.limit ? (item.limit | currency:'$') : 'none'}}
+									{{ item.limit!==null ? (item.limit!==0 ? (item.limit | currency:'$') : 'no deduction') : 'none'}}
 								</span>
 							</div>
 							
@@ -71,7 +71,7 @@
 							<div class="col-sm-6 text-right"><label>Priority</label></div>
 							<div class="col-sm-6 pull-left">
 								<span ng-show="item.deduction.type.id===3" editable-number="item.priority" e-name="ceiling" e-form="rowform" e-ng-change="item.priority = $data" e-ng-pattern="/^[0-9]?$/" e-step="0.01" e-style="width:10em;">
-									{{ item.priority ? item.priority : 'none'  }}
+									{{ item.priority!==null ? item.priority : 'none'  }}
 								</span>
 							</div>
 							
@@ -139,6 +139,7 @@
 						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
 							<i class="fa fa-remove m-r-5"></i> cancel
 						</button>
+						<h3 ng-if="item.limit===0 || item.ceilingPerCheck===0">This Deduction will not be applied</h3>
 					</form>
 				</td>
 				

@@ -220,6 +220,7 @@
 		$scope.hostSelected = function () {
 			dataSvc.selectedCompany = null;
 			dataSvc.selectedCompany1 = null;
+			dataSvc.fromSearch = null;
 			if (dataSvc.selectedHost) {
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
 				//dataSvc.selectedHost = angular.copy(match);

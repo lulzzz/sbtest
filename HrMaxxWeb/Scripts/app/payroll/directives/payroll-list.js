@@ -404,6 +404,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					var getPayrolls = function (companyId, startDate, endDate, selectedItemId) {
+						$scope.list = [];
+						$scope.tableData = [];
+						$scope.selected = null;
+						$scope.committed = null;
 						payrollRepository.getPayrollList(companyId, startDate, endDate).then(function (data) {
 							$scope.list = data;
 							$scope.tableParams.reload();
