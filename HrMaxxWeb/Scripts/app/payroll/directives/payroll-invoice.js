@@ -14,8 +14,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
-				function ($scope, $element, $location, $filter, EntityTypes, payrollRepository, commonRepository, hostRepository) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
+				function ($scope, $rootScope, $element, $location, $filter, EntityTypes, payrollRepository, commonRepository, hostRepository) {
 					var dataSvc = {
 						hostContact: null,
 						companyContact: null,
@@ -148,6 +148,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.unsavedPayments = false;
 					$scope.deletelineitem = function (index, lineitem) {
+						var payrollId = $scope.invoice.payrollId;
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete this line item?', 'warning', function () {
 							if (lineitem.payCheckId) {
 								$scope.invoice.voidedCreditedChecks.splice($scope.invoice.voidedCreditedChecks.indexOf(lineitem.payCheckId), 1);
@@ -156,6 +157,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							$scope.invoice.miscFees -= +lineitem.amount.toFixed(2);
 							$scope.invoice.total = $scope.getTotal();
 							$scope.invoice.deleted = true;
+							
 						});
 						
 						

@@ -6026,13 +6026,14 @@ namespace SiteInspectionStatus_Utility
 						//var emp1 = allemployees.First(e2 => e2.Id == e.Key);
 						
 						var checks = e.OrderBy(p=>p.PayDay).ThenBy(p=>p.Id).ToList();
-						var original = checks.First().Accumulations.First().FiscalStart;
+						
 						foreach (var check in checks.Where(p=>p.Accumulations.Any()))
 						{
 							var needsupdating = false;
 							
 							var sl = check.Accumulations.First(a => a.PayType.PayType.Id == 6);
 							var checkfiscaldate = sl.FiscalStart;
+							var original = checkfiscaldate;
 							//if (sl.FiscalStart != original)
 							//{
 							//	sl.FiscalStart = original;

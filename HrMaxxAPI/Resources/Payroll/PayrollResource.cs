@@ -25,7 +25,10 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<PayCheckResource> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
-		public PayrollInvoiceResource Invoice { get; set; }
+		public Guid? InvoiceId { get; set; }
+		public decimal Total { get; set; }
+		public int InvoiceNumber { get; set; }
+		public InvoiceStatus InvoiceStatus { get; set; }
 		public PayrollStatus Status { get; set; }
 		public DateTime LastModified { get; set; }
 
@@ -42,12 +45,16 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get { return Status.GetDbName(); }
 		}
+		public string InvoiceStatusText
+		{
+			get { return InvoiceStatus.GetDbName(); }
+		}
 
 		public string CompanyName
 		{
 			get { return Company.Name; }
 		}
-		public Guid? InvoiceId { get; set; }
+		
 	}
 	public class PayCheckResource
 	{

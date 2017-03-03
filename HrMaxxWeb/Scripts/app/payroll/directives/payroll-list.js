@@ -496,11 +496,15 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.viewInvoice = function($event, payroll) {
 						$event.stopPropagation();
 						$scope.selectedInvoice = null;
-						$timeout(function () {
-							$scope.selectedInvoice = payroll.invoice;
+						payrollRepository.getInvoiceById(payroll.invoiceId).then(function (invoice) {
+							$scope.selectedInvoice = invoice;
 							$location.hash("invoice");
 							anchorSmoothScroll.scrollTo('invoice');
-						}, 1);
+						}, function (error) {
+							$scope.addAlert('error getting invoices', 'danger');
+
+						});
+						
 					}
 					$scope.updateSelectedInvoice = function (invoice) {
 						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
@@ -512,9 +516,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						
 					}
 					$scope.deleteInvoice = function (invoice) {
-						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
+						var match = $filter('filter')($scope.list, { invoiceId: invoice.id  })[0];
 						if (match) {
-							match.invoice = null;
+							match.invoiceId = null;
+							match.invoiceNumber = null;
+							match.invoiceStatusText = '';
+							match.total = 0;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 						}
@@ -525,7 +532,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						var match = $filter('filter')($scope.list, { id: payroll.id })[0];
 						match.company = $scope.mainData.selectedCompany;
 						payrollRepository.createPayrollInvoice(match, $scope.mainData.selectedCompany).then(function (data) {
-							payroll.invoice = data;
+							payroll.invoiceId = data.id;
+							payroll.invoiceNumber = data.invoiceNumber;
+							payroll.invoiceStatusText = data.statusText;
+							payroll.total = data.total;
+							
 							$scope.addAlert('successfully created invoice', 'success');
 						}, function (error) {
 							$scope.addAlert('error generating invoice', 'danger');
@@ -571,6 +582,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						
 
 					}
+					
 					init();
 
 

@@ -525,7 +525,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
-						savedPayroll.Invoice = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
+						var inv = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
+						savedPayroll.InvoiceId = inv.Id;
+						savedPayroll.InvoiceNumber = inv.InvoiceNumber;
+						savedPayroll.InvoiceStatus = inv.Status;
+						savedPayroll.Total = inv.Total;
 					}
 					txn.Complete();
 				}
@@ -699,9 +703,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var payroll = _readerService.GetPayroll(payroll1.Id);
 					//var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(payroll1.Company.Id, payroll1.PayDay);
 					var companyPayChecks = _readerService.GetPayChecks(companyId: payroll1.Company.Id, startDate: payroll1.PayDay, year: payroll1.PayDay.Year, isvoid:0);
-					var payrollInvoice = _readerService.GetPayrollInvoice(payroll.Invoice.Id);
-					if(payrollInvoice.Status==InvoiceStatus.Draft)
-						DeletePayrollInvoice(payroll.Invoice.Id);
+					if (payroll.InvoiceId.HasValue)
+					{
+						DeletePayrollInvoice(payroll.InvoiceId.Value);
+					}
+					
+						
 					payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(paycheck =>
 					{
 						var journal = _journalService.GetPayCheckJournal(paycheck.Id, paycheck.PEOASOCoCheck);

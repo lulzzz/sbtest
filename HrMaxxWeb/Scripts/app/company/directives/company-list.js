@@ -30,6 +30,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						{ field: "ein", title: "EIN", show: false },
 						{ field: "insuranceInfo", title: "Insurance", show: false },
 						{ field: "stateEIN", title: "State EIN", show: false },
+						{ field: "salesRep", title: "Sales Rep", show: true, sortable: "salesRep", filter: { salesRep: "text" } },
+						{ field: "commission", title: "Commission", show: true, sortable: "commission" },
 						{ field: "controls", title: "", show: true }
 
 					];
@@ -42,7 +44,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						{ id: 'created' },
 						{ id: 'fileUnderHost' },
 						{ id: 'contractType' },
-						{ id: 'getTextForStatus' }
+						{ id: 'getTextForStatus' },
+						{ id: 'salesRep' },
+						{ id: 'commission' }
 					];
 
 					$scope.refreshTable = function () {

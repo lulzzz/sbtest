@@ -21,10 +21,15 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime LastModified { get; set; }
 		public string LastModifiedBy { get; set; }
 		public int Status { get; set; }
-		public Guid? InvoiceId { get; set; }
+		//public Guid? InvoiceId { get; set; }
 		public bool PEOASOCoCheck { get; set; }
 		public string Notes { get; set; }
-		public PayrollInvoiceJson PayrollInvoice { get; set; }
+		//public PayrollInvoiceJson PayrollInvoice { get; set; }
 		public List<PayrollPayCheckJson> PayrollPayChecks { get; set; }
+
+		public Guid? InvoiceId { get; set; }
+		public decimal Total { get; set; }
+		public int InvoiceNumber { get; set; }
+		public int InvoiceStatus { get; set; }
 	}
 }

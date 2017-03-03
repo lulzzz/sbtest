@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.OnlinePayroll;
 
@@ -70,7 +71,27 @@ namespace HrMaxxAPI.Resources.Common
 			get { return string.Format("{0} - {1}", InsuranceGroup.GroupNo, InsuranceGroup.GroupName); }
 
 		}
+		public string SalesRep
+		{
+			get
+			{
+				return InvoiceSetup.SalesRep != null
+					? string.Format("{0} {1}", InvoiceSetup.SalesRep.User.FirstName,
+						InvoiceSetup.SalesRep.User.LastName)
+					: string.Empty;
+			}
 		}
+
+		public string Commission
+		{
+			get
+			{
+				return InvoiceSetup.SalesRep != null ?
+					string.Format("{0}{1}{2}", InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "$" : "", InvoiceSetup.SalesRep.Rate, InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "" : "%") :
+					string.Empty;
+			}
+		}
+	}
 	
 
 	public class HostAndCompaniesResource

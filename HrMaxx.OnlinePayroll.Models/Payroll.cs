@@ -22,7 +22,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
 		public PayrollStatus Status { get; set; }
-		public PayrollInvoice Invoice { get; set; }
+		//public PayrollInvoice Invoice { get; set; }
+
+		public Guid? InvoiceId { get; set; }
+		public decimal Total { get; set; }
+		public int InvoiceNumber { get; set; }
+		public InvoiceStatus InvoiceStatus { get; set; }
+
 		public bool PEOASOCoCheck { get; set; }
 		public decimal TotalGrossWage
 		{
