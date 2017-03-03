@@ -188,7 +188,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			_dbContext.MasterExtracts.Add(mapped);
 			_dbContext.SaveChanges();
 			var pces = new List<PayCheckExtract>();
-			payCheckIds.ForEach(pc => pces.Add(new PayCheckExtract
+			payCheckIds.Distinct().ToList().ForEach(pc => pces.Add(new PayCheckExtract
 			{
 				PayrollPayCheckId = pc,
 				Extract = masterExtract.Extract.Report.ReportName,
@@ -210,7 +210,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			//		});
 			//	}
 			//});
-			voidedCheckIds.ForEach(vc => _dbContext.PayCheckExtracts.Add(new PayCheckExtract
+			voidedCheckIds.Distinct().ToList().ForEach(vc => _dbContext.PayCheckExtracts.Add(new PayCheckExtract
 			{
 				Type = 2,
 				MasterExtractId = mapped.Id,
