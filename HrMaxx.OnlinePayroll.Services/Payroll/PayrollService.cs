@@ -241,7 +241,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						
 						var grossWage = GetGrossWage(paycheck);
 						paycheck.Compensations = ProcessCompensations(paycheck.Compensations, employeePayChecks);
-						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll.Company.AccumulatedPayTypes);
+						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll.Company.AccumulatedPayTypes, employeePayChecks);
 						grossWage = Math.Round(grossWage + paycheck.CompensationTaxableAmount, 2, MidpointRounding.AwayFromZero);
 
 						var host = _hostService.GetHost(payroll.Company.HostId);
@@ -301,15 +301,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		
-		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes)
+
+		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes, List<PayCheck> employeeChecks)
 		{
 			var result = new List<PayTypeAccumulation>();
 			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay);
 			var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
 
 			//var employeeChecks = _payrollRepository.GetEmployeePayChecks(paycheck.Employee.Id, fiscalStartDate, fiscalEndDate);
-			var employeeChecks = _readerService.GetPayChecks(employeeId: paycheck.Employee.Id, endDate: fiscalEndDate, isvoid: 0);
+			//var employeeChecks = _readerService.GetPayChecks(employeeId: paycheck.Employee.Id, endDate: fiscalEndDate, isvoid: 0);
 			var fiscalYTDChecks = employeeChecks.Where(p => p.PayDay >= fiscalStartDate && p.PayDay <= paycheck.PayDay).ToList();
 			foreach (var payType in accumulatedPayTypes)	
 			{
@@ -965,11 +965,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				var company = fetchCompany ? _readerService.GetCompany(payroll.Company.Id) : payroll.Company;
-				var previousInvoices = _readerService.GetPayrollInvoices(payroll.Company.HostId);
+				var previousInvoices = _readerService.GetPayrollInvoices(companyId:payroll.Company.Id);
 				//var voidedPayChecks = _payrollRepository.GetUnclaimedVoidedchecks(payroll.Company.Id);
 				var voidedPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, isvoid: 1);
 				
-				payrollInvoice.Initialize(payroll, previousInvoices.Where(p=>p.CompanyId==payroll.Company.Id).ToList(), _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
+				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 
 				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
 				if (savedInvoice.Company == null)

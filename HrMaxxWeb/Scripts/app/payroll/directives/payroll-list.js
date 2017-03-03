@@ -114,6 +114,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 									amount: 0,
 									ytd: 0,
 									ceilingPerCheck: ded.ceilingPerCheck,
+									ceilingMethod: ded.ceilingMethod,
 									accountNo: ded.accountNo,
 									agencyId: ded.agencyId,
 									limit: ded.limit,
@@ -230,6 +231,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 									d.accountNo = d.employeeDeduction.accountNo;
 									d.agencyId = d.employeeDeduction.agencyId;
 									d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
+									d.ceilingMethod = d.employeeDeduction.ceilingMethod;
 									d.priority = d.employeeDeduction.priority;
 									d.limit = d.employeeDeduction.limit;
 								});
@@ -253,6 +255,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 										amount: 0,
 										ytd: 0,
 										ceilingPerCheck: ded.ceilingPerCheck,
+										ceilingMethod: ded.ceilingMethod,
 										accountNo: ded.accountNo,
 										agencyId: ded.agencyId,
 										limit: ded.limit,
