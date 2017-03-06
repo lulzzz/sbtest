@@ -90,16 +90,16 @@
 			<thead>
 				<tr>
 					<th class="col-sm-2">Account</th>
-					<th class="col-sm-1">Type</th>
-					<th class="col-sm-1">Number</th>
-					<th class="col-sm-1">Amount</th>
-					<th class="col-sm-2">From</th>
+					<th class="col-sm-1" ng-click="sort('depositMethod.value')">Type <i class="fa" ng-class="{'fa-arrow-down': data.sortMethod===1, 'fa-arrow-up':data.sortMethod===2}" ng-if="data.sortedBy==='depositMethod.value'"></i></th>
+					<th class="col-sm-1" ng-click="sort('checkNumber')">Number <i class="fa" ng-class="{'fa-arrow-down': data.sortMethod===1, 'fa-arrow-up':data.sortMethod===2}" ng-if="data.sortedBy==='checkNumber'"></i></th>
+					<th class="col-sm-1" ng-click="sort('amount')">Amount <i class="fa" ng-class="{'fa-arrow-down': data.sortMethod===1, 'fa-arrow-up':data.sortMethod===2}" ng-if="data.sortedBy==='amount'"></i></th>
+					<th class="col-sm-2" ng-click="sort('payee.payeeName')">From <i class="fa" ng-class="{'fa-arrow-down': data.sortMethod===1, 'fa-arrow-up':data.sortMethod===2}" ng-if="data.sortedBy==='payee.payeeName'"></i></th>
 					<th class="col-sm-2">Memo</th>
 					<th class="col-sm-1" ng-show="showControls"></th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId} | orderBy:'payee.payeeName'  track by $index" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)) && isJournalDetailValid(jd), 'danger':!isJournalDetailValid(jd)}">
+				<tr ng-repeat="jd in item.journalDetails | filter:{accountId:'!'+item.mainAccountId}" ng-class="{'success':((item.transactionType===7 && jd.deposited===true) || (item.transactionType!==7 && jd.isDebit===false)) && isJournalDetailValid(jd), 'danger':!isJournalDetailValid(jd)}">
 					<td>
 						<span e-ng-change="jd.account=$data; jd.accountId = $data.id; jd.accountName = $data.accountName" editable-select="jd.account" e-name="account" e-form="rowform" e-ng-options="a.accountName for a in data.companyAccounts track by a.id">
 							{{ jd.accountId? jd.accountName : '' }}

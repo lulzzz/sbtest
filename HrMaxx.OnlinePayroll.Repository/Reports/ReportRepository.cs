@@ -37,70 +37,25 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			_sqlCon = sqlCon;
 		}
 		
-		private IQueryable<PayrollPayCheck> GetPayChecksQueryable(ReportRequest request, bool includeVoids)
-		{
-			var paychecks = _dbContext.PayrollPayChecks.Where(pc => pc.PayDay >= request.StartDate && pc.PayDay <= request.EndDate).AsQueryable();
-			if (request.CompanyId != Guid.Empty)
-				paychecks = paychecks.Where(pc => pc.CompanyId == request.CompanyId);
-
-			if (!includeVoids)
-				paychecks = paychecks.Where(pc => !pc.IsVoid);
-			return paychecks;
-		} 
-
-		public List<PayCheck> GetReportPayChecks(ReportRequest request, bool includeVoids)
-		{
-			var paychecks = GetPayChecksQueryable(request, includeVoids);
-			return _mapper.Map<List<PayrollPayCheck>, List<PayCheck>>(paychecks.ToList());
-		}
-
-		public List<EmployeePayrollAccumulation> GetEmployeeGroupedChecks(ReportRequest request, bool includeVoids)
-		{
-			var paychecks = GetPayChecksQueryable(request, includeVoids);
-			var paychecks1 = paychecks.GroupBy(p => p.EmployeeId).ToList();
-			var result = new List<EmployeePayrollAccumulation>();
-			foreach (var group in paychecks1)
-			{
-				var ea = TransformPayChecksToAccumulation(group.ToList());
-				var emp = _dbContext.Employees.First(e => e.Id == group.Key);
-				ea.Employee = _mapper.Map<Models.DataModel.Employee, Models.Employee>(emp);
-				result.Add(ea);
-			}
-
-			return result;
-		}
-
-		private EmployeePayrollAccumulation TransformPayChecksToAccumulation(List<PayrollPayCheck> payChecks)
-		{
-			var pcs = _mapper.Map<List<PayrollPayCheck>, List<Models.PayCheck>>(payChecks);
-			var ea = new EmployeePayrollAccumulation()
-			{
-				PayChecks = pcs,
-				Accumulation = new PayrollAccumulation()
-			};
-			ea.Accumulation.AddPayChecks(pcs);
-			return ea;
-		}
-
 		public PayrollAccumulation GetCompanyPayrollCube(ReportRequest request)
 		{
-			var dbval =
-				_dbContext.CompanyPayrollCubes.Where(cpc => cpc.CompanyId == request.CompanyId && cpc.Year == request.Year)
-					.AsQueryable();
+			const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
+			var dbval = Connection.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { request.CompanyId, request.Year }).AsQueryable();
 			if (request.Quarter > 0)
 				dbval = dbval.Where(cpc => cpc.Quarter == request.Quarter);
 			else if (request.Month > 0)
 				dbval = dbval.Where(cpc => cpc.Month == request.Month);
 			var result = dbval.ToList();
 			if(result.Any())
-				return _mapper.Map<Models.DataModel.CompanyPayrollCube, CompanyPayrollCube>(result.First()).Accumulation;
+				return _mapper.Map<Models.JsonDataModel.CompanyPayrollCube, CompanyPayrollCube>(result.First()).Accumulation;
 			return null;
 		}
 
 		public List<Models.CompanyPayrollCube> GetCompanyCubesForYear(Guid companyId, int year)
 		{
-			var cubes = _dbContext.CompanyPayrollCubes.Where(c => c.CompanyId == companyId && c.Year == year).ToList();
-			return _mapper.Map<List<Models.DataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes);
+			const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
+			var cubes = Connection.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { companyId, year });
+			return _mapper.Map<List<Models.JsonDataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes.ToList());
 		}
 
 		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
@@ -240,6 +195,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		{
 			const string selectSql =
 				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
+			OpenConnection();
 			dynamic exists =
 					Connection.Query(selectSql, new { extractId }).FirstOrDefault();
 			if (exists != null)

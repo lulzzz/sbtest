@@ -14,6 +14,11 @@
 			<div ng-show="list.length>0" class="row text-center p-5">
 				<strong><em>Payroll Register <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
 			</div>
+			<script type="text/ng-template" id="voids.html">
+				<label class="checkbox-inline" style="color:white">
+					<input type="checkbox" ng-disabled="$filterRow.disabled" ng-model="params.filter()[name]" /> include voids
+				</label>
+			</script>
 			<div class="row" ng-show="list.length>0">
 				<table class="table table-condensed">
 					<thead>
@@ -35,11 +40,11 @@
 				</table>
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index"  ng-class="{'danger':item.isVoid}">
-						<td data-title="' Name'" filter="{ 'name': 'text' }" sortable="'employee.name'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
-							{{item.employee.name}}
+						<td data-title="' Name'" filter="{'employeeName': 'text'}" sortable="'employeeName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
+							{{item.employeeName}}
 						</td>
-						<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'employee.department' " class="col-sm-1 text-center">
-							{{item.employee.department}}
+						<td data-title=" 'Department' " filter="{'department': 'text'}" sortable=" 'department' " class="col-sm-1 text-center">
+							{{item.department}}
 						</td>
 						
 						<td data-title=" 'Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
@@ -52,27 +57,24 @@
 						<td data-title=" 'Net Pay' " sortable=" 'netWage' " class="col-sm-1 text-center">
 							{{item.netWage | currency:'$'}}
 						</td>
-						<td data-title=" 'Total Taxes' "  class="col-sm-3 text-center">
+						<td data-title=" 'Deductions' " class="col-sm-1 text-center">
+							{{item.deductionAmount | currency:'$'}}
+						</td>
+						<td data-title=" 'Total Taxes' "  class="col-sm-1 text-center">
 							{{item.employeeTaxes + item.employerTaxes | currency:'$'}}
 						</td>
 						<td data-title=" 'Check No' " sortable=" 'checkNo' " class="col-sm-1 text-center">
 							{{item.paymentMethod===1? item.checkNumber : 'EFT'}}
 						</td>
-						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+						<td data-title=" 'Status' " filter="{ isVoid: 'voids'}" sortable=" 'statusText' " class="col-sm-1 text-center">
 							{{item.statusText}}
 						</td>
 						
 					</tr>
 
 				</table>
-				<script type="text/ng-template" id="ng-table/filters/name.html">
-					<input type="text" id="name" class="form-control" ng-model="params.filter()[name]" name="filter-name" >
-					
-				</script>
-				<script type="text/ng-template" id="ng-table/filters/department.html">
-					<input type="text" id="department" class="form-control" ng-model="params.filter()[department]" name="filter-department">
-
-				</script>
+				
+				
 				<script type="text/ng-template" id="custom/pager">
 					<ul class="pager ng-cloak">
 						<li ng-repeat="page in pages"

@@ -1156,10 +1156,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private ReportResponse GetWorkerCompensationReport(ReportRequest request)
 		{
+			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
+				isvoid: 0);
 			var response = new ReportResponse
 			{
 				Company = _readerService.GetCompany(request.CompanyId),
-				EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false),
+				EmployeeAccumulations = getEmployeePayrollAccumulations(paychecks),// _reportRepository.GetEmployeeGroupedChecks(request, false),
 				CompanyAccumulation = new PayrollAccumulation()
 			};
 			//response.EmployeeAccumulations.Where(ea => ea.Accumulation.EmployeeWorkerCompensations > 0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
@@ -1171,7 +1173,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = _readerService.GetCompany(request.CompanyId);
-			response.EmployeeAccumulations = _reportRepository.GetEmployeeGroupedChecks(request, false);
+			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
+				isvoid: 0);
+			response.EmployeeAccumulations = getEmployeePayrollAccumulations(paychecks);// _reportRepository.GetEmployeeGroupedChecks(request, false);
 			response.CompanyAccumulation = new PayrollAccumulation();
 			response.EmployeeAccumulations.Where(ea=>ea.Accumulation.EmployeeDeductions>0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
 			
@@ -1227,7 +1231,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportResponse GetPayrollRegisterReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			response.PayChecks = _reportRepository.GetReportPayChecks(request, true);
+			//response.PayChecks = _reportRepository.GetReportPayChecks(request, true);
+			response.PayChecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate,
+				endDate: request.EndDate);
 			return response;
 
 		}
@@ -1366,7 +1372,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			var paychecks = _reportRepository.GetReportPayChecks(request, false);
+			//var paychecks = _reportRepository.GetReportPayChecks(request, false);
+			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
+				isvoid: 0);
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
 				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("FUTA"))).Sum(t => t.Amount)
@@ -1536,7 +1544,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			var paychecks = _reportRepository.GetReportPayChecks(request, false);
+			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
+				isvoid: 0);
 			response.PayChecks = paychecks;
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1

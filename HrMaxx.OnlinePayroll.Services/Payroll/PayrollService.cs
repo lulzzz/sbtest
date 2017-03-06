@@ -2359,6 +2359,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					_stagingDataService.DeleteStagingData<PayrollStaging>(payroll.Company.Id);
+					txn.Complete();
 				}
 				return payroll;
 			}

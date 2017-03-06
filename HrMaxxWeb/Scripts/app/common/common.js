@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.1.73');
+common.constant('version', '1.0.1.74');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -139,7 +139,26 @@ common.run(function (editableOptions) {
 	editableOptions.theme = 'bs3';
 });
 
+common.config(setConfigPhaseSettings);
 
+setConfigPhaseSettings.$inject = ["ngTableFilterConfigProvider"];
+
+function setConfigPhaseSettings(ngTableFilterConfigProvider) {
+	var filterAliasUrls = {
+		"voids": "voids.html",
+		
+	};
+	ngTableFilterConfigProvider.setConfig({
+		aliasUrls: filterAliasUrls
+	});
+
+	// optionally set a default url to resolve alias names that have not been explicitly registered
+	// if you don't set one, then 'ng-table/filters/' will be used by default
+	ngTableFilterConfigProvider.setConfig({
+		defaultBaseUrl: "ng-table/filters/"
+	});
+
+}
 common.controller('documentModal', function ($scope, $modalInstance, doc, zionAPI) {
 	$scope.modaldoc = doc;
 

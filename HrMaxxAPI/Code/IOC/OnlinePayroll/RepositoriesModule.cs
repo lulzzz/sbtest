@@ -91,6 +91,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<DashboardRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
 				.As<IDashboardRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

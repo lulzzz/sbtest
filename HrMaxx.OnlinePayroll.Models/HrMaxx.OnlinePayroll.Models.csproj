@@ -102,9 +102,6 @@
     <Compile Include="DataModel\CompanyPayCode.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="DataModel\CompanyPayrollCube.cs">
-      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="DataModel\CompanyTaxRate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -247,6 +244,7 @@
     <Compile Include="HostHomePageDocument.cs" />
     <Compile Include="JournalPayee.cs" />
     <Compile Include="JsonDataModel\Company.cs" />
+    <Compile Include="JsonDataModel\CompanyPayrollCube.cs" />
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\MasterExtractJson.cs" />

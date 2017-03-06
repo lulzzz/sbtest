@@ -19,7 +19,9 @@ common.directive('depositTicket', ['zionAPI','version',
 						companyAccounts: $scope.datasvc.companyAccounts,
 						payees: $scope.datasvc.payees? $scope.datasvc.payees : [],
 						selectedPayee: null,
-						depositMethods:[{key:1, value: 'Check'}, {key:2, value: 'Cash'}]
+						depositMethods: [{ key: 1, value: 'Check' }, { key: 2, value: 'Cash' }],
+						sortedBy: null,
+						sortMethod: null
 
 					}
 
@@ -226,6 +228,12 @@ common.directive('depositTicket', ['zionAPI','version',
 							$scope.item.transactionDate = moment($scope.item.transactionDate).toDate();
 						updateItemAmount();
 						dataSvc.original = angular.copy($scope.item);
+						$scope.sort('payee.payeeName');
+					}
+					$scope.sort = function(col) {
+						dataSvc.sortedBy = col;
+						dataSvc.sortMethod = !dataSvc.sortMethod || dataSvc.sortMethod===2 ? 1 : 2;
+						$scope.item.journalDetails = $filter('orderBy')($scope.item.journalDetails, col, dataSvc.sortMethod === 1);
 					}
 					init();
 

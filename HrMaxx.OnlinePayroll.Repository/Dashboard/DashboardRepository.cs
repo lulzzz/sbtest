@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Transactions;
+using Dapper;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -12,14 +16,14 @@ using Journal = HrMaxx.OnlinePayroll.Models.DataModel.Journal;
 
 namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 {
-	public class DashboardRepository : IDashboardRepository
+	public class DashboardRepository : BaseDapperRepository, IDashboardRepository
 	{
-		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 
-		public DashboardRepository(IMapper mapper, OnlinePayrollEntities dbContext)
+		public DashboardRepository(IMapper mapper, DbConnection connection)
+			: base(connection)
 		{
-			_dbContext = dbContext;
+			
 			_mapper = mapper;
 		}
 
@@ -37,11 +41,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 
 		public void UpdateCube(CompanyPayrollCube cube, CubeType cubeType, bool isAdd)
 		{
-			var dbCubes = _dbContext.CompanyPayrollCubes.Where(cpc => cpc.CompanyId == cube.CompanyId
-			                                                          && cpc.Year == cube.Year
+			var m = _mapper.Map<Models.CompanyPayrollCube, Models.JsonDataModel.CompanyPayrollCube>(cube);
+			const string sql =
+				@"SELECT * FROM CompanyPayrollCube WHERE CompanyId = @CompanyId AND Year = @Year";
+			OpenConnection();
+			var dbCubes =
+					Connection.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { CompanyId = cube.CompanyId, Year = cube.Year }).AsQueryable<Models.JsonDataModel.CompanyPayrollCube>();
 
-				).AsQueryable();
-			Models.DataModel.CompanyPayrollCube dbCube;
+			Models.JsonDataModel.CompanyPayrollCube dbCube;
 			if (cubeType == CubeType.Yearly)
 			{
 				dbCube = dbCubes.FirstOrDefault(cpc=>!cpc.Quarter.HasValue && !cpc.Month.HasValue);
@@ -58,8 +65,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 			{
 				if (isAdd)
 				{
-					var m = _mapper.Map<Models.CompanyPayrollCube, Models.DataModel.CompanyPayrollCube>(cube);
-					_dbContext.CompanyPayrollCubes.Add(m);
+					const string insertSql =
+				@"INSERT INTO CompanyPayrollCube(CompanyId, Year, Quarter, Month, Accumulation) VALUES (@CompanyId, @Year, @Quarter, @Month, @Accumulation)";
+					Connection.Execute(insertSql, new
+					{
+						m.CompanyId,
+						m.Year,
+						m.Quarter,
+						m.Month,
+						m.Accumulation
+					});
 				}
 				
 			}
@@ -72,16 +87,20 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 				{
 					dbc.Remove(cube.Accumulation);
 				}
-				dbCube.Accumulation = JsonConvert.SerializeObject(dbc);
+				const string updateSql =
+				@"update CompanyPayrollCube set Accumulation=@Accumulation Where Id=@Id";
+				Connection.ExecuteScalar(updateSql, new {Accumulation = JsonConvert.SerializeObject(dbc), Id = dbCube.Id});
+				
 			}
-			_dbContext.SaveChanges();
+			
 		}
 
 		public void DeleteCubesForCompanyAndYear(Guid companyId, int year)
 		{
-			var _dbCubes = _dbContext.CompanyPayrollCubes.Where(c => c.CompanyId == companyId && c.Year == year);
-			_dbContext.CompanyPayrollCubes.RemoveRange(_dbCubes);
-			_dbContext.SaveChanges();
+			const string sql = @"DELETE FROM CompanyPayrollCube WHERE CompanyId = @CompanyId and Year=@Year";
+			OpenConnection();
+			Connection.Execute(sql, new { CompanyId = companyId, Year = year });
+			
 		}
 	}
 }

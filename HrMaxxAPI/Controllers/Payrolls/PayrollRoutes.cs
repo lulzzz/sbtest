@@ -40,5 +40,6 @@
 		public const string FixInvoices = "Payroll/FixInvoices";
 		public const string PayrollInvoices = "Payroll/PayrollInvoices";
 		public const string UpdatePayrollDates = "Payroll/UpdatePayrollDates";
+		public const string FixCubesByCompany = "Payroll/FixCubesByCompany/{companyId:guid}/{year:int}";
 	}
 }

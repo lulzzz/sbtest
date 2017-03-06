@@ -72,6 +72,29 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				return HttpStatusCode.ExpectationFailed;
 			}
 		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.FixCubesByCompany)]
+		public HttpStatusCode FixCompanyCubes(Guid companyId, int year)
+		{
+			try
+			{
+				var company = _readerService.GetCompany(companyId); //_companyService.GetAllCompanies();
+				var payrolls = _readerService.GetPayrolls(company.Id, new DateTime(year, 1, 1).Date,
+					new DateTime(year, 12, 31));
+				if (payrolls.Any())
+				{
+					_dashboardService.FixCompanyCubes(payrolls, company.Id, year);
+				}
+				return HttpStatusCode.OK;
+			}
+			catch (Exception)
+			{
+
+				return HttpStatusCode.ExpectationFailed;
+			}
+		}
+
 		[HttpGet]
 		[Route(PayrollRoutes.FixInvoices)]
 		public List<Guid> FixInvoiceData()

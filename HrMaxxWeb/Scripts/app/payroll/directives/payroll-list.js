@@ -49,6 +49,15 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					};
 					
 					$scope.selected = null;
+					var inLastPayroll = function(employeeId) {
+						if ($scope.list.length === 0)
+							return false;
+						else {
+							return $filter('filter')($scope.list[0].payChecks, { employee: { id: employeeId } }).length > 0;
+						}
+
+					}
+
 					var addNew = function() {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
@@ -69,16 +78,17 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
-								salary: employee.payType===2 || employee.payType===4 ? employee.rate : 0,
+								salary: employee.payType === 2 || employee.payType === 4 ? employee.rate : 0,
 								compensations: [],
 								deductions: [],
 								isVoid: false,
 								status: 1,
 								memo: '',
-								notes:'',
+								notes: '',
 								included: false,
 								hasError: false,
 								hasWarning: false,
+								inLastPayroll: inLastPayroll(employee.id),
 								hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
 								paymentMethod: employee.paymentMethod
 							};
@@ -197,6 +207,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								included: matching ? matching.included : false,
 								hasError: false,
 								hasWarning: false,
+								inLastPayroll: inLastPayroll(employee.id),
 								hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
 								paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
 							};

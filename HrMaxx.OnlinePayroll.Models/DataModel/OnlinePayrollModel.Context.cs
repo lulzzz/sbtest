@@ -47,7 +47,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<EmployeeDeduction> EmployeeDeductions { get; set; }
         public virtual DbSet<Payroll> Payrolls { get; set; }
         public virtual DbSet<Journal> Journals { get; set; }
-        public virtual DbSet<CompanyPayrollCube> CompanyPayrollCubes { get; set; }
         public virtual DbSet<ApplicationConfiguration> ApplicationConfigurations { get; set; }
         public virtual DbSet<ReportConstant> ReportConstants { get; set; }
         public virtual DbSet<VendorCustomer> VendorCustomers { get; set; }

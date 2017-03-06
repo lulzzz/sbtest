@@ -179,17 +179,6 @@
           <Property Name="Description" Type="varchar(max)" Nullable="false" />
           <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
-        <EntityType Name="CompanyPayrollCube">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Year" Type="int" Nullable="false" />
-          <Property Name="Quarter" Type="int" />
-          <Property Name="Month" Type="int" />
-          <Property Name="Accumulation" Type="varchar(max)" Nullable="false" />
-        </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
             <PropertyRef Name="Id" />
@@ -1152,7 +1141,6 @@
           <EntitySet Name="CompanyContract" EntityType="Self.CompanyContract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyDeduction" EntityType="Self.CompanyDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyPayCode" EntityType="Self.CompanyPayCode" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CompanyPayrollCube" EntityType="Self.CompanyPayrollCube" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxRate" EntityType="Self.CompanyTaxRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxState" EntityType="Self.CompanyTaxState" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTSImportMap" EntityType="Self.CompanyTSImportMap" Schema="dbo" store:Type="Tables" />
@@ -1498,7 +1486,6 @@
             <End Role="CompanyAccount" EntitySet="CompanyAccounts" />
             <End Role="Journal" EntitySet="Journals" />
           </AssociationSet>
-          <EntitySet Name="CompanyPayrollCubes" EntityType="HrMaxxModel.CompanyPayrollCube" />
           <AssociationSet Name="FK_Host_Company" Association="HrMaxxModel.FK_Host_Company">
             <End Role="Company" EntitySet="Companies" />
             <End Role="Host" EntitySet="Hosts" />
@@ -2303,17 +2290,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="CompanyPayrollCube">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CompanyId" Type="Guid" Nullable="false" />
-          <Property Name="Year" Type="Int32" Nullable="false" />
-          <Property Name="Quarter" Type="Int32" />
-          <Property Name="Month" Type="Int32" />
-          <Property Name="Accumulation" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-        </EntityType>
         <Association Name="FK_Host_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
           <End Type="HrMaxxModel.Host" Role="Host" Multiplicity="*" />
@@ -3184,18 +3160,6 @@
                 <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
                 <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
                 <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CompanyPayrollCubes">
-            <EntityTypeMapping TypeName="HrMaxxModel.CompanyPayrollCube">
-              <MappingFragment StoreEntitySet="CompanyPayrollCube">
-                <ScalarProperty Name="Accumulation" ColumnName="Accumulation" />
-                <ScalarProperty Name="Month" ColumnName="Month" />
-                <ScalarProperty Name="Quarter" ColumnName="Quarter" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

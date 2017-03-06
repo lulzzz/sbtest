@@ -125,6 +125,9 @@ namespace HrMaxxAPI.Resources.Payroll
 			get { return Status.GetDbName(); }
 		}
 		public Guid DocumentId { get; set; }
+
+		public string EmployeeName { get { return Employee.Name; } }
+		public string Department { get { return Employee.Department; } }
 	}
 
 	public class PayrollWorkerCompensationResource

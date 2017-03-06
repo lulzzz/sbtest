@@ -24,8 +24,7 @@ namespace HrMaxx.Common.Repository.Mementos
 			const string versionSql =
 				@"SELECT MAX(version) as version FROM Common.Memento WHERE originatortype = @OriginatorType AND mementoid = @MementoId";
 
-			using (TransactionScope txn = TransactionScopeHelper.Transaction())
-			{
+			OpenConnection();
 				dynamic currentVersion =
 					Connection.Query(versionSql, new {memento.OriginatorType, memento.MementoId}).FirstOrDefault();
 				var nextVersion = (decimal)1;
@@ -62,8 +61,7 @@ namespace HrMaxx.Common.Repository.Mementos
 					memento.UserId
 				});
 
-				txn.Complete();
-			}
+				
 		}
 
 		public IEnumerable<MementoPersistenceDto> GetMementoData<T>(Guid mementoId)
@@ -81,12 +79,9 @@ namespace HrMaxx.Common.Repository.Mementos
 		public void DeleteMementoData<T>(Guid mementoId)
 		{
 			const string sql = @"DELETE FROM Common.Memento WHERE MementoId = @MementoId";
-
-			using (TransactionScope txn = TransactionScopeHelper.Transaction())
-			{
-				Connection.Execute(sql, new {MementoId = mementoId});
-				txn.Complete();
-			}
+			OpenConnection();
+			Connection.Execute(sql, new {MementoId = mementoId});
+		
 		}
 
 		public MementoPersistenceDto GetMostRecentMemento<T>(Guid mementoId)
@@ -95,7 +90,7 @@ namespace HrMaxx.Common.Repository.Mementos
 				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
 
 			string originatorType = typeof (T).FullName;
-
+			OpenConnection();
 			MementoPersistenceDto dto =
 				Connection.Query<MementoPersistenceDto>(sql, new {OriginatorType = originatorType, MementoId = mementoId})
 					.SingleOrDefault();
@@ -109,7 +104,7 @@ namespace HrMaxx.Common.Repository.Mementos
 				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
 
 			string originatorType = typeof (T).FullName;
-
+			OpenConnection();
 			IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
 				new {OriginatorType = originatorType});
 			return results;
@@ -121,7 +116,7 @@ namespace HrMaxx.Common.Repository.Mementos
 				@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
 
 			string originatorType = typeof(T).FullName;
-
+			OpenConnection();
 			IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
 				new { SourceTypeId = sourceTypeId, SourceId=sourceId });
 			return results;

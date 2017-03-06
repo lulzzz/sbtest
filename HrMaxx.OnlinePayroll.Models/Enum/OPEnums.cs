@@ -365,6 +365,8 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum InvoiceStatus
 	{
+		[HrMaxxSecurity(DbName = "NA")]
+		NA = 0,
 		[HrMaxxSecurity(DbName = "Draft")]
 		Draft=1,
 		[HrMaxxSecurity(DbName = "Approved")]

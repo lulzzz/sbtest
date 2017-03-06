@@ -53,7 +53,6 @@
         <AssociationConnector Association="HrMaxxModel.FK_Journal_EntityType" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_Company" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_CompanyAccount" />
-        <EntityTypeShape EntityType="HrMaxxModel.CompanyPayrollCube" Width="1.5" PointX="10.375" PointY="4" />
         <AssociationConnector Association="HrMaxxModel.FK_Host_Company" />
         <EntityTypeShape EntityType="HrMaxxModel.ApplicationConfiguration" Width="1.5" PointX="0.75" PointY="12.75" />
         <EntityTypeShape EntityType="HrMaxxModel.ReportConstant" Width="1.5" PointX="0.75" PointY="15.75" />

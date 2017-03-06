@@ -493,12 +493,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.DataModel.Journal, Models.Journal>()
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
 
-			CreateMap<Models.CompanyPayrollCube, Models.DataModel.CompanyPayrollCube>()
-				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Accumulation)));
-
-			CreateMap<Models.DataModel.CompanyPayrollCube, Models.CompanyPayrollCube>()
-				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<PayrollAccumulation>(src.Accumulation)));
-
 			
 			CreateMap<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>()
 				.ForMember(dest => dest.InvoiceSetup, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.CompanyInvoiceSetup)))

@@ -60,6 +60,7 @@
 				<td data-title="'No'" filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " class="col-sm-1">
 					<label class="checkbox-inline">
 						<input name="inc{{$index}}" type="checkbox" ng-model="listitem.included" ng-change="itemIncluded(listitem)">{{listitem.companyEmployeeNo}}
+						<i class="fa fa-check-circle-o" ng-if="listitem.inLastPayroll" style="color:green"></i>
 					</label>
 
 				</td>

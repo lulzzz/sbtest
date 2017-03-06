@@ -7,18 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HrMaxx.OnlinePayroll.Models.DataModel
+namespace HrMaxx.Common.Models.DataModel
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class CompanyPayrollCube
+    public partial class SearchTable
     {
         public int Id { get; set; }
+        public int SourceTypeId { get; set; }
+        public System.Guid SourceId { get; set; }
+        public System.Guid HostId { get; set; }
         public System.Guid CompanyId { get; set; }
-        public int Year { get; set; }
-        public Nullable<int> Quarter { get; set; }
-        public Nullable<int> Month { get; set; }
-        public string Accumulation { get; set; }
+        public string SearchText { get; set; }
     }
 }

@@ -13,12 +13,12 @@ namespace HrMaxx.Infrastructure.Repository
 		protected BaseDapperRepository(DbConnection connection)
 		{
 			Connection = new ProfiledDbConnection(connection, StackExchange.Profiling.MiniProfiler.Current);
-			OpenConnection();
+			//OpenConnection();
 		}
 
 		public IMapper Mapper { get; set; }
 
-		protected void OpenConnection()
+		public void OpenConnection()
 		{
 			if (Connection == null) throw new InvalidOperationException("Connection can not be null");
 
