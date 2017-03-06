@@ -101,27 +101,16 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
 					$scope.fillTableData = function (params) {
 						// use build-in angular filter
 						if ($scope.list && $scope.list.length > 0) {
-							var filterbyname = params.$params.filter.name;
-							var filterbydepartment = params.$params.filter.department;
-							delete params.$params.filter.name;
-							delete params.$params.filter.department;
+							
 							var orderedData = params.filter() ?
 																$filter('filter')($scope.list, params.filter()) :
 																$scope.list;
-							if (filterbyname) {
-
-								orderedData = $filter('employeename')(orderedData, filterbyname);
-							}
-							if (filterbydepartment) {
-
-								orderedData = $filter('department')(orderedData, filterbydepartment);
-							}
+							
 							orderedData = params.sorting() ?
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
 							
-							params.$params.filter.name = filterbyname;
-							params.$params.filter.department = filterbydepartment;
+							
 							$scope.tableParams = params;
 							$scope.tableData = orderedData;
 

@@ -37,10 +37,10 @@
 					</div>
 					<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
 						<tr ng-repeat="item in tableData track by $index" ng-click="viewDetails(item)" ng-class="{'success': (selectedemployee && item.employee.id===selectedemployee.employee.id)}">
-							<td data-title="' Name'" filter="{ 'name': 'text' }" sortable="'employee.name'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
+							<td data-title="' Name'" filter="{ 'employee.fullName': 'text' }" sortable="'employee.fullName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
 								{{item.employee.fullName}}
 							</td>
-							<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'employee.department' " class="col-sm-1 text-center">
+							<td data-title=" 'Department' " filter="{ 'employee.department': 'text' }" sortable=" 'employee.department' " class="col-sm-1 text-center">
 								{{item.employee.department}}
 							</td>
 							<td data-title=" 'SSN' "  class="col-sm-1 text-center">
