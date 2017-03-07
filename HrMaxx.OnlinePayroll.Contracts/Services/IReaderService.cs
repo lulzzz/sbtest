@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using HrMaxx.Common.Models;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -20,6 +21,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//Invoices
 		//List<PayrollInvoice> GetPayrollInvoices(Guid host);
+		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null);
 		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null);
 		PayrollInvoice GetPayrollInvoice(Guid invoiceId);
 

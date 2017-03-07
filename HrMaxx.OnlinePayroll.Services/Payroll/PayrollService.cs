@@ -531,6 +531,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						savedPayroll.InvoiceStatus = inv.Status;
 						savedPayroll.Total = inv.Total;
 					}
+					var draftPayroll =
+							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
+					if (draftPayroll != null)
+					{
+						_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
+					}
 					txn.Complete();
 				}
 			}
@@ -540,14 +546,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
-			try
-			{
-				var draftPayroll =
-							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
-				if (draftPayroll != null)
-				{
-					_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
-				}
+			
+				
 				Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
 				{
 					SavedObject = savedPayroll,
@@ -559,12 +559,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				});
 
 				
-			}
-			catch (Exception e1)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " deleting draft and publishing event");
-				Log.Error(message, e1);
-			}
+		
 			return savedPayroll;
 			
 				

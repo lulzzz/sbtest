@@ -15,12 +15,13 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid CompanyId { get; set; }
 		public Guid PayrollId { get; set; }
 		public int InvoiceNumber { get; set; }
+		public DateTime InvoiceDate { get; set; }
 		public DateTime PeriodStart { get; set; }
 		public DateTime PeriodEnd { get; set; }
 		public string InvoiceSetup { get; set; }
 		public decimal GrossWages { get; set; }
 		public string EmployerTaxes { get; set; }
-		public DateTime InvoiceDate { get; set; }
+		
 		public int NoOfChecks { get; set; }
 		public string Deductions { get; set; }
 		public string WorkerCompensations { get; set; }

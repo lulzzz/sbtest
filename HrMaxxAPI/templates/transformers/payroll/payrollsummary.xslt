@@ -61,11 +61,11 @@
 								Pay Date: <xsl:value-of select="msxsl:format-date($payroll/PayDay, 'MM/dd/yyyy')"/>
 							</td>
 						</tr>
-						<xsl:if test="$payroll/Invoice">
+						<xsl:if test="$payroll/InvoiceId">
 							<tr>
 								<td></td>
 								<td>
-									Invoice #: <xsl:value-of select="$payroll/Invoice/InvoiceNumber"/>
+									Invoice #: <xsl:value-of select="$payroll/InvoiceNumber"/>
 								</td>
 
 							</tr>

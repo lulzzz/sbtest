@@ -18,6 +18,7 @@ using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Controllers.Companies;
@@ -382,20 +383,20 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[HttpPost]
 		[Route(PayrollRoutes.PayrollInvoices)]
 		[DeflateCompression]
-		public List<PayrollInvoiceResource> GetPayrollInvoices(PayrollInvoiceFilterResource resource)
+		public List<PayrollInvoiceListItemResource> GetPayrollInvoices(PayrollInvoiceFilterResource resource)
 		{
 			
-			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, companyId: resource.CompanyId, status: resource.Status, startDate: resource.StartDate, endDate: resource.EndDate), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoiceList(CurrentUser.Host, companyId: resource.CompanyId, status: resource.Status, startDate: resource.StartDate, endDate: resource.EndDate), string.Format("get invoices for host with id={0}", CurrentUser.Host));
 			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
 			{
-				invoices = invoices.Where(i => !i.Company.IsHostCompany && i.Company.IsVisibleToHost).ToList();
+				invoices = invoices.Where(i => !i.IsHostCompany && i.IsVisibleToHost).ToList();
 			}
 			var appConfig = _taxationService.GetApplicationConfig();
 			if (CurrentUser.Role == RoleTypeEnum.CorpStaff.GetDbName() && appConfig.RootHostId.HasValue)
 			{
-				invoices = invoices.Where(i => !(i.Company.HostId == appConfig.RootHostId && i.Company.IsHostCompany)).ToList();
+				invoices = invoices.Where(i => !(i.HostId == appConfig.RootHostId && i.IsHostCompany)).ToList();
 			}
-			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+			var result = Mapper.Map<List<PayrollInvoiceListItem>, List<PayrollInvoiceListItemResource>>(invoices);
 			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i => i.TaxPaneltyConfig = ic);
 			return result;

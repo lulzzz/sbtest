@@ -10,6 +10,7 @@ using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.Journals;
 using HrMaxxAPI.Resources.OnlinePayroll;
@@ -17,6 +18,14 @@ using HrMaxxAPI.Resources.Payroll;
 using HrMaxxAPI.Resources.Reports;
 using Magnum;
 using Newtonsoft.Json;
+using BankAccount = HrMaxx.OnlinePayroll.Models.BankAccount;
+using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
+using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
+using CompanyTaxRate = HrMaxx.OnlinePayroll.Models.CompanyTaxRate;
+using CompanyTaxState = HrMaxx.OnlinePayroll.Models.CompanyTaxState;
+using CompanyWorkerCompensation = HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation;
+using EmployeeBankAccount = HrMaxx.OnlinePayroll.Models.EmployeeBankAccount;
+using EmployeeDeduction = HrMaxx.OnlinePayroll.Models.EmployeeDeduction;
 
 namespace HrMaxxAPI.Code.Mappers
 {
@@ -282,6 +291,11 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<CommissionsReportRequestResource, CommissionsReportRequest>()
 				.ForMember(dest => dest.AllowFiling, opt => opt.Ignore())
 				.ForMember(dest => dest.Description, opt => opt.Ignore());
+
+			CreateMap<PayrollInvoiceListItem, PayrollInvoiceListItemResource>()
+				.ForMember(dest => dest.TaxPaneltyConfig, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeTaxes, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployeeTaxes)))
+				.ForMember(dest => dest.EmployerTaxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployerTaxes)));
 		}
 	}
 }

@@ -97,6 +97,13 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					};
 					$scope.updateSelectedInvoice = function (invoice) {
 						//getInvoices(invoice.id);
+						//var updatedItem = {
+						//	id: invoice.id, companyId: invoice.company.id, companyName: invoice.company.name, isHostCompany: invoice.company.isHostCompany,
+						//	isVisibleToHost: invoice.company.isVisibleToHost, hostId: invoice.company.hostId, invoiceNumber: invoice.invoiceNumber, invoiceDate: invoice.invoiceDate,
+						//	total: invoice.total, balance: invoice.balance, status: invoice.status, processedOn: invoice.processedOn, processedBy: invoice.processedBy,
+						//	deliveredOn: invoice.deliveredOn, courier: invoice.courier, checkNumbers: invoice.checkNumbers, employeeTaxes: invoice.employeeTaxes, employerTaxes: invoice.employerTaxes,
+						//	lastPayment: invoice.lastPayment, taxPenaltyConfig: invoice.taxPenaltyConfig, statusText: invoice.statusText, daysOverdue: invoice.daysOverdue, lateTaxPenalty: invoice.lateTaxPenalty
+						//};
 						var match = $filter('filter')($scope.list, { id: invoice.id })[0];
 						if (match) {
 							$scope.list.splice($scope.list.indexOf(match), 1);
@@ -123,19 +130,16 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 
 					$scope.set = function (item) {
 						$scope.selectedInvoice = null;
+						payrollRepository.getInvoiceById(item.id).then(function (invoice) {
+							$scope.selectedInvoice = invoice;
+							$scope.$parent.$parent.setHostandCompanyFromInvoice(invoice.company.hostId, invoice.company);
+							$location.hash("invoice");
+							anchorSmoothScroll.scrollTo('invoice');
+						}, function (error) {
+							$scope.addAlert('error getting invoices', 'danger');
+
+						});
 						
-						if(item){
-							$timeout(function () {
-								
-								$scope.selectedInvoice = angular.copy(item);
-								$scope.$parent.$parent.setHostandCompanyFromInvoice(item.company.hostId, item.company);
-								$location.hash('invoice');
-
-								// call $anchorScroll()
-								anchorSmoothScroll.scrollTo('invoice');
-							}, 1);
-						}
-
 					}
 					
 					$scope.save = function () {
