@@ -15,7 +15,7 @@
 		public const string FileTaxes = "Reports/FileTaxes";
 		public const string ExtractList = "Reports/ExtractList/{Report}";
 		public const string ACHExtractList = "Reports/ACHExtractList";
-		public const string GetSearchResults = "Reports/SearchResults/{criteria}";
+		public const string GetSearchResults = "Reports/SearchResults";
 		public const string DownloadExtract = "Reports/DownloadExtract";
 		public const string Extract = "Reports/Extract/{id:int}";
 		public const string CommissionExtract = "Reports/CommissionExtract/{id:int}";

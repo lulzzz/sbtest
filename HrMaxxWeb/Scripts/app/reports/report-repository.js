@@ -25,7 +25,8 @@ common.factory('reportRepository', [
 			
 			getSearchResults: function (search) {
 				var deferred = $q.defer();
-				reportServer.one('SearchResults/' + search).getList().then(function (response) {
+				
+				reportServer.all('SearchResults').post({criteria: search}).then(function (response) {
 					deferred.resolve(response);
 				}, function (error) {
 					deferred.reject(error);

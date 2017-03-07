@@ -27,5 +27,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? LastPayment { get; set; }
 		public string EmployeeTaxes { get; set; }
 		public string EmployerTaxes { get; set; }
+		public string DeliveryClaimedBy { get; set; }
+		public DateTime? DeliveryClaimedOn { get; set; }
+		public string BusinessAddress { get; set; }
 	}
 }

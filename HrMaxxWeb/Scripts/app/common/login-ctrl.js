@@ -41,6 +41,9 @@ common.controller('loginCtrl', [
 				if ($scope.rememberMe) {
 					localStorageService.set('username', $scope.username);
 					localStorageService.set('password', $scope.password);
+				} else {
+					localStorageService.remove('username', $scope.username);
+					localStorageService.remove('password', $scope.password);
 				}
 			}, function (error) {
 				if (error) {

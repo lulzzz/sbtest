@@ -29,4 +29,9 @@ namespace HrMaxxAPI.Resources.Reports
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 	}
+
+	public class SearchRequest
+	{
+		public string Criteria { get; set; }
+	}
 }

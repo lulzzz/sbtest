@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -30,9 +31,16 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<InvoiceLateFeeConfig> TaxPaneltyConfig { get; set; }
 		public List<PayrollTax> EmployeeTaxes { get; set; }
 		public List<PayrollTax> EmployerTaxes { get; set; }
+		public string DeliveryClaimedBy { get; set; }
+		public DateTime? DeliveryClaimedOn { get; set; }
+		public Address BusinessAddress { get; set; }
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }
+		}
+		public string City
+		{
+			get { return BusinessAddress.City; }
 		}
 		public int DaysOverdue
 		{

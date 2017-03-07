@@ -208,7 +208,8 @@ common.directive('depositTicket', ['zionAPI','version',
 						$scope.$parent.$parent.void();
 					}
 					$scope.hasChanged = function () {
-						return !angular.equals($scope.item, dataSvc.original);
+						var changed = !angular.equals($scope.item, dataSvc.original);
+						return changed;
 					}
 					var init = function () {
 						
@@ -234,6 +235,7 @@ common.directive('depositTicket', ['zionAPI','version',
 						dataSvc.sortedBy = col;
 						dataSvc.sortMethod = !dataSvc.sortMethod || dataSvc.sortMethod===2 ? 1 : 2;
 						$scope.item.journalDetails = $filter('orderBy')($scope.item.journalDetails, col, dataSvc.sortMethod === 1);
+						dataSvc.original.journalDetails = $filter('orderBy')(dataSvc.original.journalDetails, col, dataSvc.sortMethod === 1);
 					}
 					init();
 

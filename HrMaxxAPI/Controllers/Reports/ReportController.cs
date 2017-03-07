@@ -231,12 +231,12 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(ReportRoutes.GetSearchResults)]
 		[DeflateCompression]
-		public List<SearchResult> GetSearchResults(string criteria)
+		public List<SearchResult> GetSearchResults(SearchRequest request)
 		{
-			return MakeServiceCall(() => _reportService.GetSearchResults(criteria, CurrentUser.Role, CurrentUser.Host, CurrentUser.Company), "Get search results", true);
+			return MakeServiceCall(() => _reportService.GetSearchResults(request.Criteria, CurrentUser.Role, CurrentUser.Host, CurrentUser.Company), "Get search results", true);
 
 		}
 

@@ -130,16 +130,17 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 
 					$scope.set = function (item) {
 						$scope.selectedInvoice = null;
-						payrollRepository.getInvoiceById(item.id).then(function (invoice) {
-							$scope.selectedInvoice = invoice;
-							$scope.$parent.$parent.setHostandCompanyFromInvoice(invoice.company.hostId, invoice.company);
-							$location.hash("invoice");
-							anchorSmoothScroll.scrollTo('invoice');
-						}, function (error) {
-							$scope.addAlert('error getting invoices', 'danger');
+						if (item && item.id) {
+							payrollRepository.getInvoiceById(item.id).then(function (invoice) {
+								$scope.selectedInvoice = invoice;
+								$scope.$parent.$parent.setHostandCompanyFromInvoice(invoice.company.hostId, invoice.company);
+								$location.hash("invoice");
+								anchorSmoothScroll.scrollTo('invoice');
+							}, function (error) {
+								$scope.addAlert('error getting invoices', 'danger');
 
-						});
-						
+							});
+						}
 					}
 					
 					$scope.save = function () {

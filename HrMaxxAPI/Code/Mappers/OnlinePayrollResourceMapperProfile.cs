@@ -294,6 +294,7 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<PayrollInvoiceListItem, PayrollInvoiceListItemResource>()
 				.ForMember(dest => dest.TaxPaneltyConfig, opt => opt.Ignore())
+				.ForMember(dest => dest.BusinessAddress, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<Address>(src.BusinessAddress)))
 				.ForMember(dest => dest.EmployeeTaxes, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployeeTaxes)))
 				.ForMember(dest => dest.EmployerTaxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployerTaxes)));
 		}

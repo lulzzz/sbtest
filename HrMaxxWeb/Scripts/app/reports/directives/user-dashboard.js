@@ -105,7 +105,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					$scope.drawCommissionPerformanceChart = function () {
-						reportRepository.getDashboardData('GetCommissionPerformanceChart', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+						reportRepository.getDashboardData('GetCommissionPerformanceChart', null, null, null).then(function (data1) {
 							var data = data1[0];
 							if (data1.length > 0) {
 								var ws_data = null;
@@ -138,7 +138,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						
 					};
 					$scope.drawProcessingPerformanceChart = function () {
-						reportRepository.getDashboardData('GetPayrollProcessingPerformanceChart', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+						reportRepository.getDashboardData('GetPayrollProcessingPerformanceChart', null, null, null).then(function (data1) {
 							var data = data1[0];
 							if (data1.length > 0) {
 								var ws_data = null;

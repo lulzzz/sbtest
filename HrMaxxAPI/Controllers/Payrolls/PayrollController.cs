@@ -405,10 +405,10 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[HttpGet]
 		[Route(PayrollRoutes.ApprovedInvoices)]
 		[DeflateCompression]
-		public List<PayrollInvoiceResource> GetApprovedInvoices()
+		public List<PayrollInvoiceListItemResource> GetApprovedInvoices()
 		{
-			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoices(CurrentUser.Host, status: new List<InvoiceStatus>(){InvoiceStatus.Submitted}), string.Format("get invoices for host with id={0}", CurrentUser.Host));
-			var result = Mapper.Map<List<PayrollInvoice>, List<PayrollInvoiceResource>>(invoices);
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoiceList(CurrentUser.Host, status: new List<InvoiceStatus>(){InvoiceStatus.Submitted}), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var result = Mapper.Map<List<PayrollInvoiceListItem>, List<PayrollInvoiceListItemResource>>(invoices);
 			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i => i.TaxPaneltyConfig = ic);
 			return result;
