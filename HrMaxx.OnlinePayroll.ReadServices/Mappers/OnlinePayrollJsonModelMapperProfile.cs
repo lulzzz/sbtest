@@ -62,6 +62,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 
 			CreateMap<Models.JsonDataModel.CompanyTaxState, State>()
 				.ForMember(dest => dest.Abbreviation, opt => opt.MapFrom(src => src.StateCode))
+				.ForMember(dest => dest.TaxesEnabled, opt => opt.Ignore())
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 
