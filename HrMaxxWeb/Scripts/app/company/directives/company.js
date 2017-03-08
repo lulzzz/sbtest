@@ -68,10 +68,13 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						var states = [];
 						if (dataSvc.companyMetaData) {
 							$.each(dataSvc.companyMetaData.countries[0].states, function (index, state1) {
-								var statematch = $filter('filter')($scope.selectedCompany.states, { state: { stateId: state1.stateId } });
-								if (statematch.length === 0) {
-									states.push(state1);
+								if (state1.taxesEnabled) {
+									var statematch = $filter('filter')($scope.selectedCompany.states, { state: { stateId: state1.stateId } });
+									if (statematch.length === 0) {
+										states.push(state1);
+									}
 								}
+								
 							});
 						}
 

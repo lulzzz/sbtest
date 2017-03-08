@@ -11,17 +11,20 @@ common.directive('address', ['zionAPI','localStorageService','version',
 				sourceId: "=sourceId",
 				type: "=type",
 				showDisabled: "=?showDisabled",
-				valGroup: "=?valGroup"
+				valGroup: "=?valGroup",
+				showTaxable: "=?showTaxable"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/address.html?v=' + version,
 
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, EntityTypes) {
 				$scope.targetTypeId = EntityTypes.Address;
 				$scope.countries = localStorageService.get('countries');
+				$scope.availableStates = [];
 				if (!$scope.valGroup)
 					$scope.valGroup = "address";
 				if (!$scope.showDisabled)
 					$scope.showDisabled = false;
+				
 				//$scope.data = angular.copy($scope.data1);
 				var localAddress = null;
 				$scope.addAlert = function (error, type) {
@@ -37,13 +40,17 @@ common.directive('address', ['zionAPI','localStorageService','version',
 
 				$scope.countrySelected = function() {
 					$scope.data.countryId = $scope.data.selectedCountry.countryId;
+					$scope.availableStates = angular.copy($scope.data.selectedCountry.states);
+					if ($scope.showTaxable) {
+						$scope.availableStates = $filter('filter')($scope.availableState, { taxesEnabled: true });
+					} 
 					if ($scope.data.stateId) {
 						$scope.data.selectedState = $filter('filter')($scope.data.selectedCountry.states, { stateId: $scope.data.stateId })[0];
 					} else {
-						if ($scope.data.selectedCountry.states.length === 1) {
+						
 							$scope.data.selectedState = $scope.data.selectedCountry.states[0];
 							$scope.stateSelected();
-						}
+						
 					}
 					
 				}

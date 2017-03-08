@@ -21,7 +21,7 @@
 			</div>
 			<div class="form-group  col-sm-6">
 				<label for="state">State</label>
-				<select id="state" class="form-control" name="state" placeholder="state" required ng-model="data.selectedState" ng-change="stateSelected()" ng-disabled="showDisabled" ng-options="state.stateName for state in data.selectedCountry.states track by state.stateId" data-parsley-group="{{valGroup}}">
+				<select id="state" class="form-control" name="state" placeholder="state" required ng-model="data.selectedState" ng-change="stateSelected()" ng-disabled="showDisabled" ng-options="state.stateName for state in availableStates track by state.stateId" data-parsley-group="{{valGroup}}">
 					<option value="">Please select...</option>
 				</select>
 			</div>
