@@ -275,7 +275,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 				EmployerTaxes.Where(t => t.Tax.StateId == 1).ToList().ForEach(t =>
 				{
-					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? GrossWages : t.TaxableWage;
+					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : GrossWages;
 					var rate = t.Tax.Rate;
 					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
 					{
@@ -290,7 +290,21 @@ namespace HrMaxx.OnlinePayroll.Models
 					t.TaxableWage = taxableWage;
 					
 				});
+				EmployerTaxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Code.Equals("FUTA")).ToList().ForEach(t =>
+				{
+					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : GrossWages;
+					var rate = t.Tax.Rate;
+					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
+					{
+						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
+					}
+					
+					t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
+					t.TaxableWage = taxableWage;
+
+				});
 			}
+
 		}
 
 		private void AddTaxes(IEnumerable<PayrollTax> taxes)
