@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -47,5 +48,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 
 		void UpdatePayrollDates(Payroll mappedResource);
+		void SavePayCheckPayTypeAccumulations(List<PayCheckPayTypeAccumulation> ptaccums);
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
@@ -29,5 +30,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void UpdatePayCheckSickLeaveAccumulation(PayCheck pc);
 		void UpdatePayrollDates(Models.Payroll mappedResource);
 		void SavePayrollInvoiceCommission(PayrollInvoice payrollInvoice);
+		void SavePayCheckPayTypeAccumulations(List<PayCheckPayTypeAccumulation> ptaccums);
 	}
 }

@@ -516,7 +516,7 @@
 							<th class="text-center">Available $</th>
 						</tr>
 						<tr ng-repeat="pt in selected.accumulations">
-							<td>{{pt.payType.payType.description}} ({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})</td>
+							<td>{{pt.payTypeName}} ({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})</td>
 							<td class="text-right">{{pt.ytdUsed}}</td>
 							<td class="text-right">{{pt.ytdFiscal}}</td>
 							<td class="text-right">{{pt.carryOver}}</td>

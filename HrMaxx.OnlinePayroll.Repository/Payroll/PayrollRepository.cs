@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using Dapper;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
 using InvoiceDeliveryClaim = HrMaxx.OnlinePayroll.Models.InvoiceDeliveryClaim;
@@ -15,12 +19,12 @@ using PayrollInvoice = HrMaxx.OnlinePayroll.Models.PayrollInvoice;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
-	public class PayrollRepository : IPayrollRepository
+	public class PayrollRepository : BaseDapperRepository, IPayrollRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		
-		public PayrollRepository(IMapper mapper, OnlinePayrollEntities dbContext)
+		public PayrollRepository(IMapper mapper, OnlinePayrollEntities dbContext, DbConnection connection):base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
@@ -283,11 +287,23 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			dbi.Commission = payrollInvoice.Commission;
 			_dbContext.SaveChanges();
 		}
-
+		
 		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
 		{
 			var dbClaims = _dbContext.InvoiceDeliveryClaims.ToList();
 			return _mapper.Map<List<Models.DataModel.InvoiceDeliveryClaim>, List<Models.InvoiceDeliveryClaim>>(dbClaims);
+		}
+
+		public void SavePayCheckPayTypeAccumulations(List<PayCheckPayTypeAccumulation> ptaccums)
+		{
+			const string deletesql = @"DELETE FROM PayCheckPayTypeAccumulation WHERE PayCheckId = @PayCheckId and PayTypeId=@PayTypeId";
+			const string insertsql = @"insert into PayCheckPayTypeAccumulation (PayCheckId, PayTypeId, FiscalStart, FiscalEnd, AccumulatedValue, Used, CarryOver) values(@PayCheckId, @PayTypeId, @FiscalStart, @FiscalEnd, @AccumulatedValue, @Used, @CarryOver);";
+			OpenConnection();
+			ptaccums.ForEach(pta =>
+			{
+				Connection.Execute(deletesql, new { pta.PayCheckId, pta.PayTypeId });
+				Connection.Execute(insertsql, new { pta.PayCheckId, pta.PayTypeId, pta.FiscalStart, pta.FiscalEnd, pta.AccumulatedValue, pta.Used, pta.CarryOver });
+			});
 		}
 
 	}

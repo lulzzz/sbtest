@@ -47,7 +47,38 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			_excelService = excelService;
 			_readerService = readerService;
 		}
-		
+
+		[HttpGet]
+		[Route(PayrollRoutes.FillPayCheckNormalized)]
+		public HttpStatusCode FillPayCheckNormalized()
+		{
+			try
+			{
+				var payChecks = _readerService.GetPayChecks();
+				var ptaccums = new List<PayCheckPayTypeAccumulation>();
+				payChecks.ForEach(pc => pc.Accumulations.ForEach(a =>
+				{
+					var ptaccum = new PayCheckPayTypeAccumulation
+					{
+						PayCheckId = pc.Id,
+						PayTypeId = a.PayType.PayType.Id,
+						FiscalEnd = a.FiscalEnd,
+						FiscalStart = a.FiscalStart,
+						AccumulatedValue = a.AccumulatedValue,
+						Used = a.Used,
+						CarryOver = a.CarryOver
+					};
+					ptaccums.Add(ptaccum);
+				}));
+				_payrollService.SavePayCheckPayTypeAccumulations(ptaccums);
+				return HttpStatusCode.OK;
+			}
+			catch (Exception)
+			{
+
+				return HttpStatusCode.ExpectationFailed;
+			}
+		}
 
 		[HttpGet]
 		[Route(PayrollRoutes.FixCompanyCubes)]

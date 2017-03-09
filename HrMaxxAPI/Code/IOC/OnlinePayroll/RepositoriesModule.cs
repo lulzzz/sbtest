@@ -51,6 +51,14 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.Named<SqlConnection>("archiveConnection")
 				.InstancePerLifetimeScope();
 
+			builder.Register(cont =>
+			{
+				var connection = new SqlConnection(_connectionString);
+				return connection;
+			})
+				.Named<SqlConnection>("connection")
+				.InstancePerLifetimeScope();
+
 			builder.RegisterType<HostRepository>()
 				.WithParameters(namedParameters)
 				.As<IHostRepository>()
@@ -79,6 +87,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<PayrollRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IPayrollRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

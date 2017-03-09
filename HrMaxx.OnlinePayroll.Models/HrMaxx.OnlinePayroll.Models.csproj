@@ -248,6 +248,7 @@
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\MasterExtractJson.cs" />
+    <Compile Include="JsonDataModel\PayCheckNormalized.cs" />
     <Compile Include="JsonDataModel\Payroll.cs" />
     <Compile Include="JsonDataModel\PayrollInvoice.cs" />
     <Compile Include="JsonDataModel\PayrollInvoiceListItem.cs" />

@@ -18,12 +18,14 @@ using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using Magnum;
 using Magnum.Extensions;
 using Newtonsoft.Json;
+using CompanyTaxRate = HrMaxx.OnlinePayroll.Models.CompanyTaxRate;
 
 namespace HrMaxx.OnlinePayroll.Services.Payroll
 {
@@ -487,14 +489,31 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
 					savedPayroll = _payrollRepository.SavePayroll(payroll);
+					var ptaccums = new List<PayCheckPayTypeAccumulation>();
 					savedPayroll.PayChecks.ForEach(pc =>
 					{
+						
+						pc.Accumulations.ForEach(a =>
+						{
+							var ptaccum = new PayCheckPayTypeAccumulation
+							{
+								PayCheckId = pc.Id,
+								PayTypeId = a.PayType.PayType.Id,
+								FiscalEnd = a.FiscalEnd,
+								FiscalStart = a.FiscalStart,
+								AccumulatedValue = a.AccumulatedValue,
+								Used = a.Used,
+								CarryOver = a.CarryOver
+							};
+							ptaccums.Add(ptaccum);
+						});
+				
 						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
 						pc.DocumentId = j.DocumentId;
 						pc.CheckNumber = j.CheckNumber;
 
 					});
-
+					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
 					//PEO/ASO Co Check
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 					    payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
@@ -700,7 +719,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var companyPayChecks = _readerService.GetPayChecks(companyId: payroll1.Company.Id, startDate: payroll1.PayDay, year: payroll1.PayDay.Year, isvoid:0);
 					if (payroll.InvoiceId.HasValue)
 					{
-						DeletePayrollInvoice(payroll.InvoiceId.Value);
+						var invoice = _readerService.GetPayrollInvoice(payroll.InvoiceId.Value);
+						if(invoice.Status==InvoiceStatus.Draft || invoice.Status==InvoiceStatus.Submitted)
+							DeletePayrollInvoice(payroll.InvoiceId.Value);
 					}
 					
 						
@@ -2281,6 +2302,25 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update payroll dates for id = " + mappedResource.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void SavePayCheckPayTypeAccumulations(List<PayCheckPayTypeAccumulation> ptaccums)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
+					txn.Complete();
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update pay check normalized accumulations");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

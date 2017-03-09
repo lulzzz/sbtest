@@ -9,11 +9,12 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
-using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxxAPI.Resources.Common;
 using Microsoft.Ajax.Utilities;
 using EmployeePayType = HrMaxx.OnlinePayroll.Models.EmployeePayType;
+using PayType = HrMaxx.OnlinePayroll.Models.PayType;
 
 namespace HrMaxxAPI.Resources.OnlinePayroll
 {
@@ -70,7 +71,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public EmployeeStateResource State { get; set; }
 		public List<EmployeeDeductionResource> Deductions { get; set; }
 		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
-		public List<PayTypeAccumulation> Accumulations { get; set; } 
+		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 
 		public string WcCode
@@ -333,6 +334,32 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			return HrMaaxxSecurity.GetEnumFromDbName<States>(state) != null
 				? HrMaaxxSecurity.GetEnumFromDbName<States>(state).GetValueOrDefault().GetDbId().Value
 				: HrMaaxxSecurity.GetEnumFromHrMaxxName<States>(state).GetValueOrDefault().GetDbId().Value;
+		}
+
+		public string SLDates { 
+			get{
+			return Accumulations.Any()
+				? string.Format("{0} ({1} - {2})", Accumulations.First().PayTypeName, Accumulations.First().FiscalStart.ToString("MM/dd/yyyy"),
+					Accumulations.First().FiscalEnd.ToString("MM/dd/yyyy"))
+				: string.Empty;
+			} 
+		}
+
+		public decimal SLUsed
+		{
+			get { return Accumulations.Any() ? Accumulations.First().YTDUsed : 0; }
+		}
+		public decimal SLAccumulated
+		{
+			get { return Accumulations.Any() ? Accumulations.First().YTDFiscal : 0; }
+		}
+		public decimal SLCarryOver
+		{
+			get { return Accumulations.Any() ? Accumulations.First().CarryOver : 0; }
+		}
+		public decimal SLAvailable
+		{
+			get { return Accumulations.Any() ? Accumulations.First().Available : 0; }
 		}
 	}
 	public class EmployeePayTypeResource

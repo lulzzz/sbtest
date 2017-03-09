@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -50,7 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeeState State { get; set; }
 		public List<EmployeeDeduction> Deductions { get; set; }
 		public CompanyWorkerCompensation WorkerCompensation { get; set; }
-		public List<PayTypeAccumulation> Accumulations { get; set; } 
+		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 
 		public string GetSearchText

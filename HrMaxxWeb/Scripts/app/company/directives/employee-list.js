@@ -166,6 +166,12 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						{ field: "payTypeText", title: "Pay Type", show: false, filter: { payTypeText: 'text' }, sortable: "payTypeText" },
 						{ field: "federalStatusText", title: "Federal Status", show: false, filter: { federalStatusText: 'text' }, sortable: "federalStatusText" },
 						{ field: "federalExemptions", title: "Federal Exemptions", show: false, filter: { federalExemptions: 'text' }, sortable: "federalExemptions" },
+
+						{ field: "slDates", title: "SL Period", show: false, sortable: "slDates" },
+						{ field: "slUsed", title: "SL Used", show: false, sortable: "slUsed" },
+						{ field: "slAccumulated", title: "SL YTD", show: false, sortable: "slAccumulated" },
+						{ field: "slCarryOver", title: "SL Carry over", show: false, sortable: "slCarryOver" },
+						{ field: "slAvailable", title: "SL Available", show: false, sortable: "slAvailable" },
 						{ field: "controls", title: "", show: true }
 					];
 					
