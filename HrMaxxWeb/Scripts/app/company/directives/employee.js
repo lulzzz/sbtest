@@ -91,8 +91,11 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selected.state.state = $scope.selectedState.state;
 					}
 					$scope.payTypeChanged = function() {
-						if ($scope.selected.payType === 1)
+						if ($scope.selected.payType === 1) {
 							$scope.selected.rate = 0;
+							$scope.selected.payCodes = [];
+							$scope.selectedPayCodes = [];
+						}
 						else if ($scope.selected.payType == 3) {
 							$scope.selected.payCodes = [];
 							$scope.selectedPayCodes = [];
