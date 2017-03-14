@@ -27,10 +27,10 @@
 	<xsl:template match="Company">
 		
 		<xsl:variable name="fein1" select="/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN"/>
-		<xsl:variable name="sit1" select="sum(../PayChecks/PayCheck/Taxes/PayrollTax[Tax/Id = 7]/Amount)"/>
-		<xsl:variable name="sdi1" select="sum(../PayChecks/PayCheck/Taxes/PayrollTax[Tax/Id = 8]/Amount)"/>
-		<xsl:variable name="ett1" select="sum(../PayChecks/PayCheck/Taxes/PayrollTax[Tax/Id = 9]/Amount)"/>
-		<xsl:variable name="ui1" select="sum(../PayChecks/PayCheck/Taxes/PayrollTax[Tax/Id = 10]/Amount)"/>
+		<xsl:variable name="sit1" select="sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code = 'SIT']/YTD)"/>
+		<xsl:variable name="sdi1" select="sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code = 'SDI']/YTD)"/>
+		<xsl:variable name="ett1" select="sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code = 'ETT']/YTD)"/>
+		<xsl:variable name="ui1" select="sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code = 'SUI']/YTD)"/>
 		
 		<xsl:variable name="sit" select="translate(format-number($sit1,'0000000.00'),'.','')"/>
 		<xsl:variable name="sdi" select="translate(format-number($sdi1,'0000000.00'),'.','')"/>

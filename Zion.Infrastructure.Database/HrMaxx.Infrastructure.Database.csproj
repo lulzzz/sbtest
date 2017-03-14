@@ -72,6 +72,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\Maintenance\SchemaChanges\009R2_Separations of archive and real.sql" />
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\009Z6_YTD and Accumulation.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\009Z5_leave accumulation normalization.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -584,7 +584,39 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 		}
 
-		public CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request)
+		public List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee, AccumulationMode mode= AccumulationMode.All)
+	  {
+			try
+			{
+				var proc = type == AccumulationType.Employee ? "GetEmployeesYTD" : "GetCompanyAccumulation";
+				var paramList = new List<FilterParam>();
+				if (company.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "company", Value = company.ToString() });
+				}
+				if (startdate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "startdate", Value = startdate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (enddate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "enddate", Value = enddate.Value.ToString("MM/dd/yyyy") });
+				}
+				paramList.Add(new FilterParam { Key = "mode", Value = ((int)mode).ToString() });
+				
+				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
+					proc, paramList, new XmlRootAttribute("AccumulationList"));
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Company List through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
+	  public CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request)
 	  {
 			try
 			{

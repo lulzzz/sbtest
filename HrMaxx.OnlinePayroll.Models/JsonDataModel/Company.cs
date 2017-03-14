@@ -117,6 +117,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string InvoiceSetup { get; set; }
 
 	}
+	
 	public class CompanyDeduction
 	{
 		public int Id { get; set; }
@@ -130,6 +131,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DeductionType DeductionType { get; set; }
 		
 	}
+	
 	public class DeductionType
 	{
 		public int Id { get; set; }
@@ -141,6 +143,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 
 		
 	}
+	
 	public class CompanyWorkerCompensation
 	{
 		
@@ -165,6 +168,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		
 		public PayType PayType { get; set; }
 	}
+	
 	public class PayType
 	{
 		
@@ -185,6 +189,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		
 	}
 
+	
 	public class CompanyPayCode
 	{
 		public int Id { get; set; }

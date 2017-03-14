@@ -62,7 +62,7 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
 						$scope.selectedemployee = null;
 						$scope.employeepaychecks = [];
 						$scope.selected = ded;
-						$scope.list = $filter('deduction')(dataSvc.response.employeeAccumulations, ded.deduction.id);
+						$scope.list = $filter('deduction')(dataSvc.response.employeeAccumulationList, ded.companyDeductionId);
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 					}

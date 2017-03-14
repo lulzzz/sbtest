@@ -8,21 +8,21 @@
 	<xsl:param name="endQuarterMonth"/>
   <xsl:param name="quarter"/>
   <xsl:param name="todaydate"/>
-  
+ 
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 
 	<xsl:variable name="fein1" select="translate(/ReportResponse/Company/FederalEIN,'-','')"/>
-	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
-	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
-	<xsl:variable name="totalTips" select="/ReportResponse/CompanyAccumulation/Compensations[PayType/Id=3]/Amount"/>
-	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
-	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
+	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
+	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
+	<xsl:variable name="totalTips" select="sum(/ReportResponse/CompanyAccumulations/Compensations/PayCheckCompensation[PayTypeId=3]/YTD)"/>
+	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FIT']/YTDWage"/>
+	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage"/>
 
-	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
-	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
-	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount)"/>
-	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount)"/>
+	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage"/>
+	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FIT']/YTD"/>
+	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTD + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTD)"/>
+	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTD + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTD)"/>
 
 	<xsl:variable name="line5d" select="format-number($totalSSWages*$ssConst,'######0.00') + format-number($totalTips*$ssConst,'######0.00') + format-number($totalMDWages*$mdConst,'######0.00')"/>
 	<xsl:variable name="line6" select="format-number($totalFITTax + $line5d,'######0.00')"/>
@@ -46,7 +46,7 @@
 				<Fields>
 					<xsl:call-template name="CheckTemplate"><xsl:with-param name="name1" select="concat('c1-',$quarter)"/><xsl:with-param name="val1" select="'On'"/></xsl:call-template>
 					<xsl:apply-templates select="Company"/>
-					<xsl:apply-templates select="CompanyAccumulation"/>
+					<xsl:apply-templates select="CompanyAccumulations"/>
 					<xsl:apply-templates select="Company/BusinessAddress"/>
 				</Fields>
 
@@ -116,7 +116,7 @@
 	
 </xsl:template>
 
-<xsl:template match="CompanyAccumulation">
+<xsl:template match="CompanyAccumulations">
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1-17'"/>
 		<xsl:with-param name="field2" select="'f1-18'"/>
@@ -278,9 +278,9 @@
 				<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-10b'"/><xsl:with-param name="val1" select="substring($selectedYear,2,1)"/></xsl:call-template>				
 				<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-10c'"/><xsl:with-param name="val1" select="substring($selectedYear,3,1)"/></xsl:call-template>				
 				<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-10d'"/><xsl:with-param name="val1" select="substring($selectedYear,4,1)"/></xsl:call-template>				
-				<xsl:call-template name="dailyTemplate"><xsl:with-param name="month" select="1"/><xsl:with-param name="day" select="31"/><xsl:with-param name="daysinmonth" select="31"/></xsl:call-template>
-				<xsl:call-template name="dailyTemplate"><xsl:with-param name="month" select="2"/><xsl:with-param name="day" select="31"/><xsl:with-param name="daysinmonth" select="31"/></xsl:call-template>
-				<xsl:call-template name="dailyTemplate"><xsl:with-param name="month" select="3"/><xsl:with-param name="day" select="31"/><xsl:with-param name="daysinmonth" select="31"/></xsl:call-template>
+				<xsl:call-template name="dailyTemplate"><xsl:with-param name="fieldmonth" select="1"/><xsl:with-param name="month" select="($endQuarterMonth - 2)"/><xsl:with-param name="day" select="31"/><xsl:with-param name="daysinmonth" select="31"/></xsl:call-template>
+				<xsl:call-template name="dailyTemplate"><xsl:with-param name="fieldmonth" select="2"/><xsl:with-param name="month" select="($endQuarterMonth - 1)"/><xsl:with-param name="day" select="31"/><xsl:with-param name="daysinmonth" select="31"/></xsl:call-template>
+				<xsl:call-template name="dailyTemplate"><xsl:with-param name="fieldmonth" select="3"/><xsl:with-param name="month" select="($endQuarterMonth)"/><xsl:with-param name="day" select="31"/><xsl:with-param name="daysinmonth" select="31"/></xsl:call-template>
 				<xsl:call-template name="DecimalFieldTemplate">
 					<xsl:with-param name="field1" select="'f1-203'"/>
 					<xsl:with-param name="field2" select="'f1-204'"/>

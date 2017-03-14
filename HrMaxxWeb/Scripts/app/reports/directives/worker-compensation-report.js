@@ -62,7 +62,7 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 						$scope.selected = wc;
 						$scope.selectedemployee = null;
 						$scope.employeepaychecks = [];
-						$scope.list = $filter('workercompensation')(dataSvc.response.employeeAccumulations, wc.workerCompensation.id);
+						$scope.list = $filter('workercompensation')(dataSvc.response.employeeAccumulationList, wc.workerCompensationId);
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 					}
@@ -100,8 +100,7 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 														$filter('orderBy')(orderedData, params.orderBy()) :
 														orderedData;
 							
-							params.$params.filter.name = filterbyname;
-							params.$params.filter.department = filterbydepartment;
+							
 							$scope.tableParams = params;
 							$scope.tableData = orderedData;
 

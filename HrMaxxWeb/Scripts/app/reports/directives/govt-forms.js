@@ -53,7 +53,8 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var currentYear = new Date().getFullYear();
 					for (var i = currentYear - 4; i <= currentYear; i++) {
-						dataSvc.filter.years.push(i);
+						if(i>=2017)
+							dataSvc.filter.years.push(i);
 					}
 					
 

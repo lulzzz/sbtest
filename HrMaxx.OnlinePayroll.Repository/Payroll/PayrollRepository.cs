@@ -306,5 +306,64 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			});
 		}
 
+		public void SavePayCheckTaxes(List<PayCheckTax> pttaxes)
+		{
+			const string deletesql = @"DELETE FROM PayCheckTax WHERE PayCheckId = @PayCheckId and TaxId=@TaxId;";
+			const string insertsql = @"insert into PayCheckTax (PayCheckId, TaxId, TaxableWage, Amount) values(@PayCheckId, @TaxId, @TaxableWage, @Amount);";
+			OpenConnection();
+			pttaxes.ForEach(pta =>
+			{
+				Connection.Execute(deletesql, new { pta.PayCheckId, pta.TaxId });
+				Connection.Execute(insertsql, new { pta.PayCheckId, pta.TaxId, pta.TaxableWage, pta.Amount });
+			});
+		}
+
+		public void SavePayCheckCompensations(List<PayCheckCompensation> ptcomps)
+		{
+			const string deletesql = @"DELETE FROM PayCheckCompensation WHERE PayCheckId = @PayCheckId and PayTypeId=@PayTypeId;";
+			const string insertsql = @"insert into PayCheckCompensation (PayCheckId, PayTypeId, Amount) values(@PayCheckId, @PayTypeId, @Amount);";
+			OpenConnection();
+			ptcomps.ForEach(pta =>
+			{
+				Connection.Execute(deletesql, new { pta.PayCheckId, pta.PayTypeId });
+				Connection.Execute(insertsql, new { pta.PayCheckId, pta.PayTypeId,  pta.Amount });
+			});
+		}
+
+		public void SavePayCheckDeductions(List<PayCheckDeduction> ptdeds)
+		{
+			const string deletesql = @"DELETE FROM PayCheckDeduction WHERE PayCheckId = @PayCheckId and EmployeeDeductionId=@EmployeeDeductionId and CompanyDeductionId=@CompanyDeductionId;";
+			const string insertsql = @"insert into PayCheckDeduction (PayCheckId, EmployeeDeductionId, CompanyDeductionId, EmployeeDeductionFlat, Method, Rate, AnnualMax, Wage, Amount) values(@PayCheckId, @EmployeeDeductionId, @CompanyDeductionId, @EmployeeDeductionFlat, @Method, @Rate, @AnnualMax, @Wage, @Amount);";
+			OpenConnection();
+			ptdeds.ForEach(pta =>
+			{
+				Connection.Execute(deletesql, new { pta.PayCheckId, pta.EmployeeDeductionId, pta.CompanyDeductionId });
+				Connection.Execute(insertsql, new { pta.PayCheckId, pta.EmployeeDeductionId, pta.CompanyDeductionId, pta.EmployeeDeductionFlat, pta.Method, pta.Rate, pta.AnnualMax, pta.Wage, pta.Amount });
+			});
+		}
+
+		public void SavePayCheckPayCodes(List<PayCheckPayCode> ptcodes)
+		{
+			const string deletesql = @"DELETE FROM PayCheckPayCode WHERE PayCheckId = @PayCheckId and PayCodeId=@PayCodeId;";
+			const string insertsql = @"insert into PayCheckPayCode (PayCheckId, PayCodeId, PayCodeFlat, Amount, Overtime) values(@PayCheckId, @PayCodeId, @PayCodeFlat, @Amount, @Overtime);";
+			OpenConnection();
+			ptcodes.ForEach(pta =>
+			{
+				Connection.Execute(deletesql, new { pta.PayCheckId, pta.PayCodeId });
+				Connection.Execute(insertsql, new { pta.PayCheckId, pta.PayCodeId, pta.PayCodeFlat, pta.Amount, pta.Overtime });
+			});
+		}
+
+		public void SavePayCheckWorkerCompensations(List<PayCheckWorkerCompensation> ptwcs)
+		{
+			const string deletesql = @"DELETE FROM PayCheckWorkerCompensation WHERE PayCheckId = @PayCheckId;";
+			const string insertsql = @"insert into PayCheckWorkerCompensation (PayCheckId, WorkerCompensationId, WorkerCompensationFlat, Wage, Amount) values(@PayCheckId, @WorkerCompensationId, @WorkerCompensationFlat, @Wage, @Amount);";
+			OpenConnection();
+			ptwcs.ForEach(pta =>
+			{
+				Connection.Execute(deletesql, new { pta.PayCheckId });
+				Connection.Execute(insertsql, new { pta.PayCheckId, pta.WorkerCompensationId, pta.WorkerCompensationFlat, pta.Wage, pta.Amount });
+			});
+		}
 	}
 }

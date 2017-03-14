@@ -33,6 +33,7 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					var currentYear = new Date().getFullYear();
 					for (var i = currentYear - 4; i <= currentYear; i++) {
+						if(i>=2017)
 						dataSvc.filter.years.push(i);
 					}
 					

@@ -27,6 +27,7 @@ using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxx.OnlinePayroll.Repository.Reports;
 using Magnum.Collections;
 using Magnum.Serialization;
+using MassTransit.NewIdProviders;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Services.Reports
@@ -585,7 +586,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
-			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)(request.EndDate.Month+2 / 3)*3).ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month+2) / 3)*3).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPSExcel.xslt", "xls", string.Format("Federal {2} 941 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -673,7 +674,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			var argList = new List<KeyValuePair<string, string>>();
 
-			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)(request.EndDate.Month+2 / 3)*3).ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month+2) / 3)*3).ToString()));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 
@@ -1156,39 +1157,35 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private ReportResponse GetWorkerCompensationReport(ReportRequest request)
 		{
-			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
-				isvoid: 0);
-			var response = new ReportResponse
-			{
-				Company = _readerService.GetCompany(request.CompanyId),
-				EmployeeAccumulations = getEmployeePayrollAccumulations(paychecks),// _reportRepository.GetEmployeeGroupedChecks(request, false),
-				CompanyAccumulation = new PayrollAccumulation()
-			};
-			//response.EmployeeAccumulations.Where(ea => ea.Accumulation.EmployeeWorkerCompensations > 0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
+			var response = new ReportResponse();
 
+			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e => e.PayCheckWages.GrossWage > 0 && e.WorkerCompensationAmount>0).ToList();
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.WorkerCompensation).First();
+			
 			return response;
 		}
 
 		private ReportResponse GetDeductionsReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			response.Company = _readerService.GetCompany(request.CompanyId);
-			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
-				isvoid: 0);
-			response.EmployeeAccumulations = getEmployeePayrollAccumulations(paychecks);// _reportRepository.GetEmployeeGroupedChecks(request, false);
-			response.CompanyAccumulation = new PayrollAccumulation();
-			response.EmployeeAccumulations.Where(ea=>ea.Accumulation.EmployeeDeductions>0).ToList().ForEach(ea => response.CompanyAccumulation.Add(ea.Accumulation));
 			
+			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e => e.PayCheckWages.GrossWage > 0 && e.EmployeeDeductions>0).ToList();
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode: AccumulationMode.Deductions).First();
 			return response;
 		}
 
 		private ReportResponse GetPayrollSummaryReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => ((request.Quarter > 0 && request.Quarter == c.Quarter) || (request.Quarter == 0 && !c.Quarter.HasValue))).Accumulation;
-			response.EmployeeAccumulations = getEmployeePayrollAccumulations(response.CompanyAccumulation.PayChecks);
-			response.Company = GetCompany(request.CompanyId);
+			
+			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e=>e.PayCheckWages.GrossWage>0).ToList();
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company).First();
 			return response;
 		}
 
@@ -1241,8 +1238,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetFederal940(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company:request.CompanyId, startdate: request.StartDate, enddate:request.EndDate, type: AccumulationType.Company,mode:AccumulationMode.TaxesDeductions).First();
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
@@ -1251,33 +1248,31 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("firstQuarter", "", cubes.Any(c=>c.Quarter==1) ? cubes.First(c=>c.Quarter==1).Accumulation.Taxes.Where(t=>t.Tax.Code.Equals("FUTA")).Sum(t=>t.Amount) : 0);
-			argList.AddParam("secondQuarter", "", cubes.Any(c => c.Quarter == 2) ? cubes.First(c => c.Quarter == 2).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("thirdQuarter", "", cubes.Any(c => c.Quarter == 3) ? cubes.First(c => c.Quarter == 3).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("fourthQuarter", "", cubes.Any(c => c.Quarter == 4) ? cubes.First(c => c.Quarter == 4).Accumulation.Taxes.Where(t => t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("immigrantsIncluded", "", response.CompanyAccumulation.PayChecks.Any(pc => pc.Employee.TaxCategory == EmployeeTaxCategory.NonImmigrantAlien && pc.GrossWage > 0));
+			argList.AddParam("firstQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter1FUTA);
+			argList.AddParam("secondQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter2FUTA);
+			argList.AddParam("thirdQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter3FUTA);
+			argList.AddParam("fourthQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter4FUTA);
+			argList.AddParam("immigrantsIncluded", "", response.CompanyAccumulations.PayCheckWages.Immigrants>0);
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/940/Fed940-" + request.Year + ".xslt");
 			
 		}
 		private FileDto GetFederal941(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
-			response.CompanyAccumulation.BuildDailyAccumulations(request.Quarter);
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.TaxesDeductionsCompensationsDailyMonthly).First();
+			
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
-			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
 
 			var argList = new XsltArgumentList();
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("endQuarterMonth", "", (int)(request.EndDate.Month+2/3)*3);
+			argList.AddParam("endQuarterMonth", "", (int)((request.EndDate.Month+2)/3)*3);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("month1", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 2)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 2)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month2", "", cubes.Any(c => c.Month == (request.Quarter * 3 - 1)) ? cubes.First(c => c.Month == (request.Quarter * 3 - 1)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month3", "", cubes.Any(c => c.Month == (request.Quarter * 3)) ? cubes.First(c => c.Month == (request.Quarter * 3)).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			
 
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/941/Fed941-" + request.Year + ".xslt");
 
@@ -1286,29 +1281,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetFederal944(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
-			response.CompanyAccumulation.BuildDailyAccumulations(0);
+
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.TaxesDeductionsCompensationsDailyMonthly).First();
+
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
-			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
 
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("month1", "", cubes.Any(c => c.Month == 1) ? cubes.First(c => c.Month == 1).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month2", "", cubes.Any(c => c.Month == 2) ? cubes.First(c => c.Month == 2).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month3", "", cubes.Any(c => c.Month == 3) ? cubes.First(c => c.Month == 3).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month4", "", cubes.Any(c => c.Month == 4) ? cubes.First(c => c.Month == 4).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month5", "", cubes.Any(c => c.Month == 5) ? cubes.First(c => c.Month == 5).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month6", "", cubes.Any(c => c.Month == 6) ? cubes.First(c => c.Month == 6).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month7", "", cubes.Any(c => c.Month == 7) ? cubes.First(c => c.Month == 7).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month8", "", cubes.Any(c => c.Month == 8) ? cubes.First(c => c.Month == 8).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month9", "", cubes.Any(c => c.Month == 9) ? cubes.First(c => c.Month == 9).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month10", "", cubes.Any(c => c.Month == 10) ? cubes.First(c => c.Month == 10).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month11", "", cubes.Any(c => c.Month == 11) ? cubes.First(c => c.Month == 11).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
-			argList.AddParam("month12", "", cubes.Any(c => c.Month == 12) ? cubes.First(c => c.Month == 12).Accumulation.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount) : 0);
+			
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/944/Fed944-" + request.Year + ".xslt");
 
 		}
@@ -1316,9 +1300,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetW2Report(ReportRequest request, bool isEmployee)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			var yearCube = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
-			response.EmployeeAccumulations = getEmployeePayrollAccumulations(yearCube.PayChecks);
+			
+			response.EmployeeAccumulationList = _readerService.GetAccumulations(company:request.CompanyId, startdate:request.StartDate, enddate:request.EndDate, type: AccumulationType.Employee).Where(e=>e.PayCheckWages.GrossWage>0).ToList();
 			response.Company = GetCompany(request.CompanyId);
 			
 
@@ -1332,15 +1315,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetW3Report(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode: AccumulationMode.TaxesDeductionsCompensations).First();
 			response.Company = GetCompany(request.CompanyId);
 
 
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("c", "", response.CompanyAccumulation.PayChecks.Select(p=>p.Employee.Id).Distinct().Count());
+			
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W3/W3-" + request.Year + ".xslt");
 
 		}
@@ -1372,18 +1355,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			//var paychecks = _reportRepository.GetReportPayChecks(request, false);
-			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
-				isvoid: 0);
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+			
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
-				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("FUTA"))).Sum(t => t.Amount)
-				: paychecks.SelectMany(p => p.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA"))).Sum(t => t.Amount);
-			var totalstr = total.ToString("000000000.00").Replace(".", string.Empty);
+				? response.CompanyAccumulations.IRS940
+				: response.CompanyAccumulations.IRS941;
+			
 			var argList = new XsltArgumentList();
 			argList.AddParam("type", "", type);
 			argList.AddParam("month", "", request.EndDate.Month);
-			argList.AddParam("total", "", totalstr);
+			
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/depositcoupons/Fed8109B.xslt");
 
 		}
@@ -1432,9 +1414,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE7(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
 			response.Company = GetCompany(request.CompanyId);
+			response.Host = GetHost(request.HostId);
 			var argList = new XsltArgumentList();
 			
 			argList.AddParam("selectedYear", "", request.Year);
@@ -1446,16 +1429,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE6(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
-			response.EmployeeAccumulations = getEmployeePayrollAccumulations(response.CompanyAccumulation.PayChecks);
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e=>e.PayCheckWages.GrossWage>0).ToList();
 			response.Company = GetCompany(request.CompanyId); 
 			response.Host = GetHost(request.HostId);
-			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 
-			var twelve1 = new DateTime(request.Year, request.Quarter*3 - 2, 12);
-			var twelve2 = new DateTime(request.Year, request.Quarter * 3 - 1, 12);
-			var twelve3 = new DateTime(request.Year, request.Quarter * 3 , 12);
 			var quarterEndDate = new DateTime(request.Year, request.Quarter*3,
 				DateTime.DaysInMonth(request.Year, request.Quarter*3));
 			var dueDate = quarterEndDate.AddDays(1);
@@ -1466,20 +1446,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
 			argList.AddParam("dueDate", "", dueDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("count1", "", response.CompanyAccumulation.PayChecks.Where(pc=>pc.StartDate<=twelve1 && pc.EndDate>=twelve1).Select(pc=>pc.Employee.Id).Distinct().Count());
-			argList.AddParam("count2", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve2 && pc.EndDate >= twelve2).Select(pc => pc.Employee.Id).Distinct().Count());
-			argList.AddParam("count3", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve3 && pc.EndDate >= twelve3).Select(pc => pc.Employee.Id).Distinct().Count());
-
+			
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE6.xslt");
 
 		}
 		private FileDto GetCaliforniaDE9(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter==request.Quarter && !c.Month.HasValue).Accumulation;
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
 			response.Company = GetCompany(request.CompanyId);
-
+			response.Host = GetHost(request.HostId);
 			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
 				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
 			var dueDate = quarterEndDate.AddDays(1);
@@ -1499,16 +1476,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE9C(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => c.Quarter.HasValue && c.Quarter == request.Quarter && !c.Month.HasValue).Accumulation;
-			response.EmployeeAccumulations = getEmployeePayrollAccumulations(response.CompanyAccumulation.PayChecks);
+			
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
-			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 
-			var twelve1 = new DateTime(request.Year, request.Quarter * 3 - 2, 12);
-			var twelve2 = new DateTime(request.Year, request.Quarter * 3 - 1, 12);
-			var twelve3 = new DateTime(request.Year, request.Quarter * 3, 12);
+			
 			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
 				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
 			var dueDate = quarterEndDate.AddDays(1);
@@ -1519,10 +1494,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
 			argList.AddParam("dueDate", "", dueDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("count1", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve1 && pc.EndDate >= twelve1).Select(pc => pc.Employee.Id).Distinct().Count());
-			argList.AddParam("count2", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve2 && pc.EndDate >= twelve2).Select(pc => pc.Employee.Id).Distinct().Count());
-			argList.AddParam("count3", "", response.CompanyAccumulation.PayChecks.Where(pc => pc.StartDate <= twelve3 && pc.EndDate >= twelve3).Select(pc => pc.Employee.Id).Distinct().Count());
-
+			
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE9C.xslt");
 
 		}
@@ -1531,6 +1503,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
+			
 			var emps = _readerService.GetEmployees(company:request.CompanyId);
 			response.Employees = emps.Where(e=>e.StatusId==StatusOption.Active && e.HireDate>=request.StartDate ).ToList();
 			if(!response.Employees.Any())
@@ -1544,15 +1517,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			var paychecks = _readerService.GetPayChecks(request.CompanyId, startDate: request.StartDate, endDate: request.EndDate,
-				isvoid: 0);
-			response.PayChecks = paychecks;
+			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
-				? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.StateId.HasValue)).Sum(t => t.Amount)
+				? response.CompanyAccumulations.CaliforniaTaxes
 				: type == 2
-					? paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI"))).Sum(t => t.Amount)
-					: paychecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI"))).Sum(t => t.Amount);
+					? response.CompanyAccumulations.CaliforniaEmployerTaxes
+					: response.CompanyAccumulations.CaliforniaEmployeeTaxes;
 			var totalstr = Math.Round(total,2, MidpointRounding.AwayFromZero).ToString("00000000.00").Replace(".", string.Empty);
 			var argList = new XsltArgumentList();
 			argList.AddParam("type", "", type);
@@ -1567,9 +1538,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetQuarterAnnualReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
-			response.Cubes = cubes.Where(c => c.Quarter.HasValue || c.Month.HasValue).ToList();
+			response.EmployeeAccumulationList = new List<Accumulation>();
+			for (var q = 1; q <= 4; q++)
+			{
+				var qAcc =
+				_readerService.GetAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, q * 3 - 2, 1), enddate: new DateTime(request.Year, q * 3, DateTime.DaysInMonth(request.Year, q * 3)),
+					type: AccumulationType.Company, mode: AccumulationMode.TaxesCompensationsMonthly).First();
+				qAcc.Quarter = q;
+				response.EmployeeAccumulationList.Add(qAcc);
+			}
+			
+			
+
 			response.Company = GetCompany(request.CompanyId);
 
 			var argList = new XsltArgumentList();
@@ -1583,9 +1563,25 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetMonthlyQuarterAnnualReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			var cubes = GetCompanyPayrollCubes(request);
-			response.CompanyAccumulation = cubes.First(c => !c.Quarter.HasValue && !c.Month.HasValue).Accumulation;
-			response.Cubes = cubes.Where(c => c.Quarter.HasValue || c.Month.HasValue).ToList();
+
+			response.EmployeeAccumulationList = new List<Accumulation>();
+			for (var m = 1; m <= 12; m++)
+			{
+				var mAcc =
+				_readerService.GetAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, m, 1), enddate: new DateTime(request.Year, m, DateTime.DaysInMonth(request.Year, m)),
+					type: AccumulationType.Company, mode: AccumulationMode.TaxesCompensationsMonthly).First();
+				mAcc.Month = m;
+				response.EmployeeAccumulationList.Add(mAcc);
+			}
+			for (var q = 1; q <= 4; q++)
+			{
+				var qAcc =
+				_readerService.GetAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, q*3-2, 1), enddate: new DateTime(request.Year, q*3, DateTime.DaysInMonth(request.Year, q*3)),
+					type: AccumulationType.Company).First();
+				qAcc.Quarter = q;
+				response.EmployeeAccumulationList.Add(qAcc);
+			}
+			
 			response.Company = GetCompany(request.CompanyId);
 
 			var argList = new XsltArgumentList();
@@ -1636,30 +1632,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				return contact;
 			}
 		}
-		private List<CompanyPayrollCube> GetCompanyPayrollCubes(ReportRequest request)
-		{
-			var cubes = _reportRepository.GetCompanyCubesForYear(request.CompanyId, request.Year);
-			if (cubes == null || !cubes.Any() )
-			{
-				throw new Exception(NoPayrollData);
-			}
-			var relevantCube = cubes.FirstOrDefault(c => ((request.Quarter>0 && request.Quarter==c.Quarter) || (request.Quarter==0 && !c.Quarter.HasValue)));
-			if (relevantCube==null || relevantCube.Accumulation.GrossWage <= 0)
-				throw new Exception(NoPayrollData);
-			for (var i = 1; i < 5; i++)
-			{
-				if(!cubes.Any(c=>c.Quarter==i))
-					cubes.Add(new CompanyPayrollCube { CompanyId = request.CompanyId, Accumulation = new PayrollAccumulation(), Quarter = i, Year = request.Year });
-			}
-			for (var i = 1; i < 13; i++)
-			{
-				if (!cubes.Any(c => c.Month == i))
-					cubes.Add(new CompanyPayrollCube { CompanyId = request.CompanyId, Accumulation = new PayrollAccumulation(), Month = i, Year = request.Year });
-			}
-				
-			return cubes;
-
-		} 
+		
 		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response, XsltArgumentList argList, string template)
 		{
 			var xml = GetXml<ReportResponse>(response);

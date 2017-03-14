@@ -7,11 +7,13 @@ using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using HrMaxx.OnlinePayroll.Models.USTaxModels;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Taxation;
 using Newtonsoft.Json;
+using Tax = HrMaxx.OnlinePayroll.Models.Tax;
 
 namespace HrMaxx.OnlinePayroll.Services.USTax
 {
@@ -46,21 +48,17 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		}
 
 		
-		public List<PayrollTax> ProcessTaxes(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, Company hostCompany)
+		public List<PayrollTax> ProcessTaxes(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, Company hostCompany, Accumulation employeeAccumulation)
 		{
 			try
 			{
-				var returnList = new List<PayrollTax>();
 				var applicableTaxes = TaxTables.Taxes.Where(t => t.TaxYear == payDay.Year
 																								&& (!t.Tax.StateId.HasValue
 																										|| (t.Tax.StateId.Value==payCheck.Employee.State.State.StateId)
 																										)
 																							).OrderBy(t=>t.Id).ToList();
-				foreach (var tax in applicableTaxes)
-				{
-					returnList.Add(CalculateTax(company, payCheck, payDay, grossWage, employeePayChecks, tax, hostCompany));
-				}
-				return returnList;
+				employeeAccumulation.Taxes = employeeAccumulation.Taxes ?? new List<PayCheckTax>();
+				return applicableTaxes.Select(tax => CalculateTax(company, payCheck, payDay, grossWage, tax, hostCompany, employeeAccumulation)).ToList();
 			}
 			catch (Exception e)
 			{
@@ -126,39 +124,39 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
-		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, TaxByYear tax, Company hostCompany)
+		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, TaxByYear tax, Company hostCompany, Accumulation employeeAccumulation)
 		{
 			if (!tax.Tax.StateId.HasValue)
 			{
 				if (tax.Tax.Code.Equals("FIT"))
-					return GetFIT(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return GetFIT(payCheck, grossWage, payDay, tax, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("MD_Employee"))
-					return GetMDEE(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return GetMDEE(payCheck, grossWage, payDay, tax, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("MD_Employer"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("SS_Employee"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("SS_Employer"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("FUTA"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 			}
 			else
 			{
 				if (tax.Tax.Code.Equals("SIT"))
-					return GetCASIT(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+					return GetCASIT(payCheck, grossWage, payDay, tax, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("SDI"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("ETT"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 				else if (tax.Tax.Code.Equals("SUI"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, employeePayChecks, payDay, tax, hostCompany);
+					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 			}
 			return new PayrollTax();
 
 		}
 
-		private PayrollTax GetFIT(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
+		private PayrollTax GetFIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
 		{
 			if(!TaxTables.FITTaxTable.Any(t=>t.Year==payDay.Year))
 				throw new Exception("Taxes Not Available");
@@ -167,7 +165,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				                           i => i.Year == payDay.Year && i.PayrollSchedule == payCheck.Employee.PayrollSchedule)
 				                           .AmoutForOneWithholdingAllowance * payCheck.Employee.FederalExemptions;
 
-			var taxableWage = GetTaxExemptedDeductionAmount(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+			var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			withholdingAllowance -= taxableWage;
 			var withholdingAllowanceTest = withholdingAllowance < 0 ? 0 : withholdingAllowance;
 			taxableWage = grossWage - taxableWage;
@@ -194,14 +192,14 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
 				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
-				YTDTax = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount) + taxAmount, 2, MidpointRounding.AwayFromZero),
-				YTDWage = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
+				YTDTax = Math.Round(employeeAccumulation.Taxes.Where(t=>t.Tax.Code==tax.Tax.Code).Sum(t=>t.YTD) + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.TaxableWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
-		private PayrollTax GetMDEE(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
+		private PayrollTax GetMDEE(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
 		{
-			var ytdTax = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount);
-			var ytdWage = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage);
+			var ytdTax = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD);
+			var ytdWage = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage);
 			if (payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
 			{
 				return new PayrollTax
@@ -214,7 +212,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				};
 			}
 			var taxRate = tax.Rate;
-			var taxExemptedDeductions = GetTaxExemptedDeductionAmount(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+			var taxExemptedDeductions = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			
 			var taxableWage = grossWage - taxExemptedDeductions;
 			
@@ -239,10 +237,10 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			};
 		}
 		
-		private PayrollTax SimpleTaxCalculator(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax, Company hostCompany)
+		private PayrollTax SimpleTaxCalculator(Company company, PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Company hostCompany, Accumulation employeeAccumulation)
 		{
-			var ytdTax = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount);
-			var ytdWage = employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage);
+			var ytdTax = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD);
+			var ytdWage = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage);
 			if (payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
 			{
 				return new PayrollTax
@@ -256,7 +254,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 
 
-			var taxExemptedDeductions = GetTaxExemptedDeductionAmount(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+			var taxExemptedDeductions = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			
 			
 			var taxAmount = (decimal)0;
@@ -314,10 +312,10 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			};
 		}
 
-		private PayrollTax GetCASIT(Company company, PayCheck payCheck, decimal grossWage, List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
+		private PayrollTax GetCASIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
 		{
 
-			var taxExemptedDeductiosn = GetTaxExemptedDeductionAmount(company, payCheck, grossWage, employeePayChecks, payDay, tax);
+			var taxExemptedDeductiosn = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			var taxableWage = grossWage - taxExemptedDeductiosn;
 			var caSITLowIncomeTaxStatus = CAStateLowIncomeFilingStatus.Single;
 			if (payCheck.Employee.State.TaxStatus == EmployeeTaxStatus.Married)
@@ -395,15 +393,14 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
 				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
-				YTDTax = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.Amount) + taxAmount, 2, MidpointRounding.AwayFromZero),
-				YTDWage = Math.Round(employeePayChecks.SelectMany(p => p.Taxes.Where(t => t.Tax.Code == tax.Tax.Code)).Sum(t => t.TaxableWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
+				YTDTax = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD) + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
 
 		
 
-		private decimal GetTaxExemptedDeductionAmount(Company company, PayCheck payCheck, decimal grossWage,
-			List<PayCheck> employeePayChecks, DateTime payDay, TaxByYear tax)
+		private decimal GetTaxExemptedDeductionAmount(PayCheck payCheck, decimal grossWage, TaxByYear tax)
 		{
 			var exempt =
 				payCheck.Deductions.Where(

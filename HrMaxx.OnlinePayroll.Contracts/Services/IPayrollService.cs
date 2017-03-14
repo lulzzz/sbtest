@@ -49,5 +49,10 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		void UpdatePayrollDates(Payroll mappedResource);
 		void SavePayCheckPayTypeAccumulations(List<PayCheckPayTypeAccumulation> ptaccums);
+		void SavePayCheckTaxes(List<PayCheckTax> pttaxes);
+		void SavePayCheckCompensations(List<PayCheckCompensation> ptcomps);
+		void SavePayCheckDeductions(List<PayCheckDeduction> ptdeds);
+		void SavePayCheckPayCodes(List<PayCheckPayCode> ptcodes);
+		void SavePayCheckWorkerCompensation(List<PayCheckWorkerCompensation> ptwcs);
 	}
 }

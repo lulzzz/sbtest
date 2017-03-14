@@ -9,6 +9,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxxAPI.Resources.Common;

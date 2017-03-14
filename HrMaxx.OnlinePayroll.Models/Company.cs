@@ -132,6 +132,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int Id { get; set; }
 		public Guid CompanyId { get; set; }
 		public DeductionType Type { get; set; }
+		public DeductionType DeductionType { get; set; }
 		public decimal? FloorPerCheck { get; set; }
 		public string DeductionName { get; set; }
 		public string Description { get; set; }

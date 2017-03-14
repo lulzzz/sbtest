@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using HrMaxx.OnlinePayroll.Models.Enum;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
@@ -22,5 +25,96 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		{
 			get { return CarryOver + YTDFiscal - YTDUsed; }
 		}
+	}
+	
+	public class PayCheckTax
+	{
+		public int PayCheckId { get; set; }
+		public int TaxId { get; set; }
+		public Models.Tax Tax { get; set; }
+		public decimal TaxableWage { get; set; }
+		public decimal Amount { get; set; }
+		public decimal YTDWage { get; set; }
+		public decimal YTD { get; set; }
+
+		public bool IsEmployeeTax { get { return Tax.IsEmployeeTax; } }
+	}
+	
+	public class PayCheckCompensation
+	{
+		public int PayCheckId { get; set; }
+		public int PayTypeId { get; set; }
+		public string PayTypeName { get; set; }
+		public Models.PayType PayType { get; set; }
+		public decimal Amount { get; set; }
+		public decimal YTD { get; set; }
+	}
+
+	
+	public class PayCheckDeduction
+	{
+		public int PayCheckId { get; set; }
+		public int EmployeeDeductionId { get; set; }
+		public int CompanyDeductionId { get; set; }
+		public string EmployeeDeductionFlat { get; set; }
+		public DeductionMethod Method { get; set; }
+		public decimal Rate { get; set; }
+		public decimal? AnnualMax { get; set; }
+		public decimal Wage { get; set; }
+		public decimal Amount { get; set; }
+		public decimal YTD { get; set; }
+		public decimal YTDWage { get; set; }
+		public Models.CompanyDeduction CompanyDeduction { get; set; }
+		public Models.EmployeeDeduction EmployeeDeduction
+		{
+			get { return !string.IsNullOrWhiteSpace(EmployeeDeductionFlat) ? JsonConvert.DeserializeObject<Models.EmployeeDeduction>(EmployeeDeductionFlat) : default(Models.EmployeeDeduction); }
+		}
+	}
+	
+	public class PayCheckPayCode
+	{
+		public int PayCheckId { get; set; }
+		public int PayCodeId { get; set; }
+		public string PayCodeFlat { get; set; }
+		public decimal Amount { get; set; }
+		public decimal Overtime { get; set; }
+		public decimal YTDAmount { get; set; }
+		public decimal YTDOvertime { get; set; }
+		public Models.CompanyPayCode PayCode { get { return !string.IsNullOrWhiteSpace(PayCodeFlat) ? JsonConvert.DeserializeObject<Models.CompanyPayCode>(PayCodeFlat) : default(Models.CompanyPayCode); } }
+	}
+	
+	public class PayCheckWorkerCompensation
+	{
+		public int PayCheckId { get; set; }
+		public int WorkerCompensationId { get; set; }
+		public Models.CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
+		public string WorkerCompensationFlat { get; set; }
+		public decimal Wage { get; set; }
+		public decimal Amount { get; set; }
+		public decimal YTD { get; set; }
+
+		public Models.CompanyWorkerCompensation WorkerCompensation
+		{
+			get { return !string.IsNullOrWhiteSpace(WorkerCompensationFlat) ? JsonConvert.DeserializeObject<Models.CompanyWorkerCompensation>(WorkerCompensationFlat) : default(Models.CompanyWorkerCompensation); }
+		}
+	}
+
+	public class PayCheckWages
+	{
+		public decimal GrossWage { get; set; }
+		public decimal Salary { get; set; }
+		public decimal NetWage { get; set; }
+		public decimal CheckPay { get; set; }
+		public decimal DDPay { get; set; }
+		public decimal Quarter1FUTA { get; set; }
+		public decimal Quarter2FUTA { get; set; }
+		public decimal Quarter3FUTA { get; set; }
+		public decimal Quarter4FUTA { get; set; }
+		
+		public int Immigrants { get; set; }
+
+		public int Twelve1 { get; set; }
+		public int Twelve2 { get; set; }
+		public int Twelve3 { get; set; }
 	}
 }

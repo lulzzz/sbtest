@@ -39,7 +39,7 @@ common.filter('deduction', function ($filter) {
 		var filtered = [];
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var exists = $filter('filter')(item.accumulation.deductions, { deduction: { id: input } });
+			var exists = $filter('filter')(item.deductions, { companyDeductionId: input });
 			if(exists.length>0)
 				filtered.push(item);
 		}
@@ -51,7 +51,7 @@ common.filter('workercompensation', function ($filter) {
 		var filtered = [];
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			var exists = $filter('filter')(item.accumulation.workerCompensations, { workerCompensation: { id: input } });
+			var exists = $filter('filter')(item.workerCompensations, { workerCompensationId: input });
 			if (exists.length > 0)
 				filtered.push(item);
 		}

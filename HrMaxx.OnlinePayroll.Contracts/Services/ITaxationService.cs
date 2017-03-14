@@ -11,7 +11,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
 	public interface ITaxationService
 	{
-		List<PayrollTax> ProcessTaxes(Company company, PayCheck employee, DateTime payDay, decimal grossWage, List<PayCheck> employeePayChecks, Company company1);
+		List<PayrollTax> ProcessTaxes(Company company, PayCheck employee, DateTime payDay, decimal grossWage, Company company1, Accumulation employeeAccumulation);
 		ApplicationConfig GetApplicationConfig();
 		ApplicationConfig SaveApplicationConfiguration(ApplicationConfig configs);
 		int PullReportConstant(string form940, int quarterly);

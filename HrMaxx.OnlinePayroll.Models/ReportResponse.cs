@@ -16,11 +16,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<Employee> Employees { get; set; } 
 		public Contact Contact { get; set; }
 		public Contact CompanyContact { get; set; }
-		public PayrollAccumulation CompanyAccumulation { get; set; }
-		public List<CompanyPayrollCube> Cubes { get; set; }
 		
-		 
-		public List<EmployeePayrollAccumulation> EmployeeAccumulations { get; set; }
+		public List<CompanyPayrollCube> Cubes { get; set; }
+
+		public Accumulation CompanyAccumulations { get; set; } 
+		public List<Accumulation> EmployeeAccumulationList { get; set; } 
+		
 		public List<CompanyVendor> VendorList { get; set; } 
 		public List<PayCheck> PayChecks;
 		public List<CoaTypeBalanceDetail> AccountDetails { get; set; } 
@@ -51,6 +52,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int Month { get; set; }
 		public int Day { get; set; }
 		public decimal Value { get; set; }
+	}
+	public class MonthlyAccumulation
+	{
+		public int Month { get; set; }
+		public decimal IRS941 { get; set; }
+		public decimal IRS940 { get; set; }
+		public decimal EDD { get; set; }
+		
 	}
 
 	public class GarnishmentAgency

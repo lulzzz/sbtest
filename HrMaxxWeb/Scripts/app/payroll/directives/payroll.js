@@ -539,7 +539,7 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 	};
 	$scope.calculateWage = function (paytype) {
 		if (paytype) {
-			var accPayType = $filter('filter')($scope.original.employee.accumulations, { payType: { payType: { id: paytype.id } } });
+			var accPayType = $filter('filter')($scope.original.employee.accumulations, { payTypeId: paytype.id });
 			if (accPayType.length === 0)
 				return '';
 			else {

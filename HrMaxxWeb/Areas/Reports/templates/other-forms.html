@@ -110,9 +110,9 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr ng-repeat-start="ea in data.responseEmployeeTaxJournal.employeeAccumulations">
-									<td class="text-center">{{ea.employee.ssn}}</td>
-									<td class="text-center">{{ea.employee.fullName}}</td>
+								<tr ng-repeat-start="ea in data.responseEmployeeTaxJournal.employeeAccumulationList">
+									<td class="text-center">{{ea.ssnVal}}</td>
+									<td class="text-center">{{ea.fullName}}</td>
 									<td colspan="9"></td>
 									
 								</tr>

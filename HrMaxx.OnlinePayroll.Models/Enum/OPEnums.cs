@@ -7,6 +7,26 @@ using HrMaxx.Infrastructure.Attributes;
 
 namespace HrMaxx.OnlinePayroll.Models.Enum
 {
+	public enum AccumulationType
+	{
+		Company=1,
+		Employee=2
+	}
+	public enum AccumulationMode
+	{
+		All=0,
+		Taxes = 1,
+		Deductions = 2,
+		Compensations=3,
+		WorkerCompensation=4,
+		PayTypes=5,
+		TaxesDeductionsCompensations=6,
+		TaxesDeductionsCompensationsDailyMonthly=7,
+		PayCodes=8,
+		TaxesDailyMonthly=9,
+		TaxesDeductions = 10,
+		TaxesCompensationsMonthly=11
+	}
 	public enum DeductionCategory
 	{
 		[HrMaxxSecurity(DbId = 4, DbName = "Post Tax Deduction")]
@@ -273,6 +293,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum DeductionMethod
 	{
+		NA=0,
 		Percentage=1,
 		Amount=2
 	}

@@ -13,16 +13,16 @@
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
 	<xsl:variable name="fein1" select="translate(/ReportResponse/Company/FederalEIN,'-','')"/>
-	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
-	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
-	<xsl:variable name="totalTips" select="/ReportResponse/CompanyAccumulation/Compensations[PayType/Id=3]/Amount"/>
-	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FIT']/TaxableWage"/>
-	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage"/>
+	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
+	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
+	<xsl:variable name="totalTips" select="sum(/ReportResponse/CompanyAccumulations/Compensations/PayCheckCompensation[PayTypeId=3]/YTD)"/>
+	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FIT']/YTDWage"/>
+	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage"/>
 
-	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
-	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
-	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount)"/>
-	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + /ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount)"/>
+	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage"/>
+	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FIT']/YTD"/>
+	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTD + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTD)"/>
+	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTD + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTD)"/>
 
 	<xsl:variable name="line4a" select="format-number($totalSSWages * $ssConst,'###0.00')"/>
 	<xsl:variable name="line4b" select="format-number($totalTips * $ssConst,'###0.00')"/>
@@ -59,7 +59,7 @@
 				<Template>f944-<xsl:value-of select="$selectedYear"/>-part1.pdf</Template>
 				<Fields>
 					<xsl:apply-templates select="Company"/>
-					<xsl:apply-templates select="CompanyAccumulation"/>
+					<xsl:apply-templates select="CompanyAccumulations"/>
 					<xsl:apply-templates select="Company/BusinessAddress"/>
 				</Fields>
 			</Report>
@@ -216,7 +216,7 @@
 			<xsl:with-param name="val1" select="PTIN"/>
 		</xsl:call-template>
 	</xsl:template>
-<xsl:template match="CompanyAccumulation">
+<xsl:template match="CompanyAccumulations">
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1_17'"/>
 		<xsl:with-param name="field2" select="'f1_18'"/>

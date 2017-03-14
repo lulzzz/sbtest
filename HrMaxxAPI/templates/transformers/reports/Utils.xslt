@@ -65,10 +65,11 @@
   </xsl:template>
   
   <xsl:template name="dailyTemplate">
-	<xsl:param name="month"/>
+		<xsl:param name="fieldmonth"/>
+		<xsl:param name="month"/>
 	<xsl:param name="day"/>
 	<xsl:param name="daysinmonth"/>
-	<xsl:variable name="fieldConst" select="((64*($month - 1))+9)+$day*2"/>
+	<xsl:variable name="fieldConst" select="((64*($fieldmonth - 1))+9)+$day*2"/>
 	<xsl:call-template name="dailyTemplate2">
 		<xsl:with-param name="month" select="$month"/>
 		<xsl:with-param name="day" select="$day"/>
@@ -78,6 +79,7 @@
 	<xsl:choose>
 		<xsl:when test="$day > 1">
 			<xsl:call-template name="dailyTemplate">
+				<xsl:with-param name="fieldmonth" select="$fieldmonth"/>
 				<xsl:with-param name="month" select="$month"/>
 				<xsl:with-param name="day" select="$day - 1"/>
 			</xsl:call-template>
@@ -88,7 +90,7 @@
 			<xsl:call-template name="DecimalFieldTemplate">
 				<xsl:with-param name="field1" select="concat('f1-',$fieldConst + 2)"/>
 				<xsl:with-param name="field2" select="concat('f1-',$fieldConst + 3)"/>
-				<xsl:with-param name="val" select="sum(/ReportResponse/CompanyAccumulation/DailyAccumulations/DailyAccumulation[Month=$month]/Value)"/>
+				<xsl:with-param name="val" select="sum(/ReportResponse/CompanyAccumulations/DailyAccumulations/DailyAccumulation[Month=$month]/Value)"/>
 			</xsl:call-template>
 		</xsl:when>
 	</xsl:choose>
@@ -99,11 +101,11 @@
 	<xsl:param name="fieldPrefix"/>
 	<xsl:param name="fieldConst"/>
 	<xsl:choose>
-		<xsl:when test="/ReportResponse/CompanyAccumulation/DailyAccumulations/DailyAccumulation[Month=$month and Day=$day]">
+		<xsl:when test="/ReportResponse/CompanyAccumulations/DailyAccumulations/DailyAccumulation[Month=$month and Day=$day]">
 			<xsl:call-template name="DecimalFieldTemplate">
 				<xsl:with-param name="field1" select="concat($fieldPrefix,$fieldConst)"/>
 				<xsl:with-param name="field2" select="concat($fieldPrefix,$fieldConst+1)"/>
-				<xsl:with-param name="val" select="/ReportResponse/CompanyAccumulation/DailyAccumulations/DailyAccumulation[Month=$month and Day=$day]/Value"/>
+				<xsl:with-param name="val" select="/ReportResponse/CompanyAccumulations/DailyAccumulations/DailyAccumulation[Month=$month and Day=$day]/Value"/>
 			</xsl:call-template>
 		</xsl:when>
 		<xsl:otherwise>
@@ -147,7 +149,7 @@
 		<xsl:when test="$day=$daysinmonth">
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="concat($fieldPrefix,$fieldConst + 2)"/>
-				<xsl:with-param name="val1" select="format-number(sum(/ReportResponse/CompanyAccumulation/DailyAccumulations/DailyAccumulation[Month=$month]/Value),'#####0.00')"/>
+				<xsl:with-param name="val1" select="format-number(sum(/ReportResponse/CompanyAccumulations/DailyAccumulations/DailyAccumulation[Month=$month]/Value),'#####0.00')"/>
 			</xsl:call-template>				
 		</xsl:when>
 	</xsl:choose>

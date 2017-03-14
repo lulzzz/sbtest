@@ -55,5 +55,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ACHMasterExtract GetACHExtract(int id);
 		CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request);
 		CommissionsExtract GetCommissionsExtract(int id);
+		List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee, AccumulationMode mode= AccumulationMode.All);
 	}
 }

@@ -6,7 +6,7 @@
 <xsl:import href="../reports/Utils.xslt" />
   <xsl:param name="type"/>
 	<xsl:param name="month"/>
-	<xsl:param name="total"/>
+	
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
@@ -25,8 +25,16 @@
 
 <xsl:template match="Company">
 	<xsl:variable name="fein1" select="FederalEIN"/>
-	<xsl:variable name="f940" select="sum(../PayChecks/PayCheck/Taxes/PayrollTax[Tax/Id = 6]/Amount)"/>
-	<xsl:variable name="f941" select="sum(../PayChecks/PayCheck/Taxes/PayrollTax[Tax/Id &lt; 6]/Amount)"/>
+	<xsl:variable name="total">
+		<xsl:choose>
+			<xsl:when test="$type=1">
+				<xsl:value-of select="translate(format-number(/ReportResponse/CompanyAccumulations/IRS940,'000000000.00'),'.','')"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="translate(format-number(/ReportResponse/CompanyAccumulations/IRS941,'000000000.00'),'.','')"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
 	<Report>
 		<TemplatePath>GovtForms\DepositCoupons\</TemplatePath>
 		<Template>f8109.pdf</Template>

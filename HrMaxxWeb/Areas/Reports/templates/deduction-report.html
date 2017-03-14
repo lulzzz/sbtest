@@ -8,13 +8,13 @@
 			<div class="row">
 				<report-filter filter="mainData.reportFilter" callback="getReport()" />	
 			</div>
-			<div ng-show="!data.response.companyAccumulation || data.response.companyAccumulation.deductions.length===0" class="table table-bordered">
+			<div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.deductions.length===0" class="table table-bordered">
 				No deductions found
 			</div>
-			<div ng-show="data.response.companyAccumulation && data.response.companyAccumulation.deductions.length>0" class="row text-center p-5">
+			<div ng-show="data.response.companyAccumulation && data.response.companyAccumulations.deductions.length>0" class="row text-center p-5">
 				<strong><em>Deductions Report <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
 			</div>
-			<div class="col-sm-8 col-sm-offset-2" ng-show="data.response.companyAccumulation && data.response.companyAccumulation.deductions.length>0">
+			<div class="col-sm-8 col-sm-offset-2" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.deductions.length>0">
 				<table class="table table-condensed">
 					<thead>
 						<tr>
@@ -24,10 +24,10 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="ded in data.response.companyAccumulation.deductions" ng-class="{'success' : (selected && ded.deduction.id===selected.deduction.id)}">
-							<td>{{ded.deduction.type.name}}</td>
-							<td>{{ded.deduction.description}}</td>
-							<td><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.amount | currency:'$'}}</a></td>
+						<tr ng-repeat="ded in data.response.companyAccumulations.deductions" ng-class="{'success' : (selected && ded.deduction.id===selected.deduction.id)}">
+							<td>{{ded.companyDeduction.deductionType.name}}</td>
+							<td>{{ded.companyDeduction.description}}</td>
+							<td><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.ytd | currency:'$'}}</a></td>
 						</tr>
 					</tbody>
 				</table>
@@ -36,21 +36,21 @@
 						<strong><em>Details By Empployee for {{selected.deduction.type.name + ' ' + selected.deduction.description}}</em></strong>
 					</div>
 					<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
-						<tr ng-repeat="item in tableData track by $index" ng-click="viewDetails(item)" ng-class="{'success': (selectedemployee && item.employee.id===selectedemployee.employee.id)}">
-							<td data-title="' Name'" filter="{ 'employee.fullName': 'text' }" sortable="'employee.fullName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
-								{{item.employee.fullName}}
+						<tr ng-repeat="item in tableData track by $index"  ng-class="{'success': (selectedemployee && item.employeeId===selectedemployee.employeeId)}">
+							<td data-title="' Name'" filter="{ 'fullName': 'text' }" sortable="'fullName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
+								{{item.fullName}}
 							</td>
-							<td data-title=" 'Department' " filter="{ 'employee.department': 'text' }" sortable=" 'employee.department' " class="col-sm-1 text-center">
-								{{item.employee.department}}
+							<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-1 text-center">
+								{{item.department}}
 							</td>
 							<td data-title=" 'SSN' "  class="col-sm-1 text-center">
-								{{item.employee.ssn.substr(0,3) +'-'+ item.employee.ssn.substr(3,2) + '-' + item.employee.ssn.substr(item.employee.ssn.length-4)}}
+								{{item.ssnVal.substr(0,3) +'-'+ item.ssnVal.substr(3,2) + '-' + item.ssnVal.substr(item.employee.ssn.length-4)}}
 							</td>
 							<td data-title=" 'Hire Date' " class="col-sm-1 text-center">
-								{{item.employee.hireDate | date:'MM/dd/yyyy'}}
+								{{item.hireDate | date:'MM/dd/yyyy'}}
 							</td>
-							<td data-title=" 'Total Withheld' " sortable=" 'accumulation.employeeDeductions' " class="col-sm-1 text-center">
-								{{item.accumulation.employeeDeductions | currency:'$'}}
+							<td data-title=" 'Total Withheld' " sortable=" 'employeeDeductions' " class="col-sm-1 text-center">
+								{{item.employeeDeductions | currency:'$'}}
 							</td>
 						</tr>
 
@@ -73,7 +73,7 @@
 						<thead>
 							<tr>
 								<th colspan="7" class="text-center text-bold">
-									Pay Checks Details for {{selectedemployee.employee.fullName}} with {{selected.deduction.type.name + ' ' + selected.deduction.description}}
+									Pay Checks Details for {{selectedemployee.fullName}} with {{selected.deduction.type.name + ' ' + selected.deduction.description}}
 								</th>
 							</tr>
 							<tr>

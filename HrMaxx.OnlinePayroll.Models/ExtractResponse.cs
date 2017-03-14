@@ -8,6 +8,7 @@ using System.Xml.Xsl;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
@@ -119,6 +120,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string StateName { get; set; }
 		public string EIN { get; set; }
 		public string Pin { get; set; }
+
+		public string StateEIN { get { return Crypto.Decrypt(EIN); } }
+		public string StatePIN { get { return Crypto.Decrypt(Pin); } }
 	}
 	public class ExtractCompany
 	{

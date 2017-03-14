@@ -24,6 +24,7 @@ namespace HrMaxx.Common.Models.Dtos
 				return string.Format("{0}, {1} {2}{3}", City, "CA", Zip,
 					!string.IsNullOrWhiteSpace(ZipExtension) ? "-" + ZipExtension : string.Empty);
 			}
+			set { }
 		}
 	}
 

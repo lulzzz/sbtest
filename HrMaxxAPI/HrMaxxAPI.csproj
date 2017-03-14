@@ -367,13 +367,18 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\reports\1099\F1099.xslt" />
+    <Content Include="templates\transformers\reports\940\Fed940-2017.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\940\Fed940-2016.xslt">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\reports\940\Fed940-2015.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\reports\941\Fed941-2017.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2016.xslt" />
+    <Content Include="templates\transformers\reports\944\Fed944-2017.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944-2016.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944-2015.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE6.xslt" />
@@ -381,10 +386,13 @@
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-2017.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-2015.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-Employer-2017.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2015.xslt" />
+    <Content Include="templates\transformers\reports\W3\W3-2017.xslt" />
     <Content Include="templates\transformers\reports\W3\W3-2016.xslt" />
     <Content Include="templates\transformers\reports\W3\W3-2015.xslt" />
     <Content Include="Web.config">
@@ -473,6 +481,16 @@
     <Content Include="templates\JobCost.pdf" />
     <Content Include="templates\JobCostPage.pdf" />
     <Content Include="HrMaxxAPI.nuspec" />
+    <Content Include="templates\GovtForms\940\f940-2017.pdf" />
+    <Content Include="templates\GovtForms\940\f940sa-2017.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2017-part1.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2017-part2.pdf" />
+    <Content Include="templates\GovtForms\941\f941sb-2017.pdf" />
+    <Content Include="templates\GovtForms\944\f944-2017-part1.pdf" />
+    <Content Include="templates\GovtForms\944\f944-2017-part2.pdf" />
+    <Content Include="templates\GovtForms\W2\W2-2017-Employer.pdf" />
+    <Content Include="templates\GovtForms\W2\W2-2017.pdf" />
+    <Content Include="templates\GovtForms\W3\W3-2017.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
