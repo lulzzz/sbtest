@@ -2055,11 +2055,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pc.OvertimeAmount = Math.Round(pc.OvertimeHours*pc.PayCode.HourlyRate*overtimequotiant, 2,
 						MidpointRounding.AwayFromZero);
 					pc.YTD =
-						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.Amount) + pc.Amount, 2,
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
 							MidpointRounding.AwayFromZero);
 					pc.YTDOvertime =
 						Math.Round(
-							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.Overtime) + pc.OvertimeAmount,
+							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
 							2, MidpointRounding.AwayFromZero);
 				});
 			}
@@ -2077,11 +2077,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.PayCode.HourlyRate * overtimequotiantForPieceWork, 2,
 						MidpointRounding.AwayFromZero);
 					pc.YTD =
-						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.Amount) + pc.Amount, 2,
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
 							MidpointRounding.AwayFromZero);
 					pc.YTDOvertime =
 						Math.Round(
-							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.Overtime) + pc.OvertimeAmount,
+							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
 							2, MidpointRounding.AwayFromZero);
 				});
 			}
@@ -2089,8 +2089,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				payCodes.ForEach(pc =>
 				{
-					pc.YTD = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.Amount) + pc.Amount, 2, MidpointRounding.AwayFromZero);
-					pc.YTDOvertime = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.Overtime) + pc.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
+					pc.YTD = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2, MidpointRounding.AwayFromZero);
+					pc.YTDOvertime = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				});
 			}
 			
