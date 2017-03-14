@@ -1,61 +1,80 @@
-﻿/****** Object:  StoredProcedure [dbo].[GetEmployeesYTD]    Script Date: 14/03/2017 3:58:23 PM ******/
+﻿/****** Object:  StoredProcedure [dbo].[GetEmployeesYTD]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetEmployeesYTD]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetEmployeesYTD]
 GO
-/****** Object:  StoredProcedure [dbo].[GetEmployees]    Script Date: 14/03/2017 3:58:23 PM ******/
-DROP PROCEDURE [dbo].[GetEmployees]
-GO
-/****** Object:  StoredProcedure [dbo].[GetCompanyAccumulation]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetCompanyAccumulation]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyAccumulation]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetCompanyAccumulation]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckWorkerCompensation_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckWorkerCompensation]'))
 ALTER TABLE [dbo].[PayCheckWorkerCompensation] DROP CONSTRAINT [FK_PayCheckWorkerCompensation_PayrollPayCheck]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckTax_TaxYearRate]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckTax]'))
 ALTER TABLE [dbo].[PayCheckTax] DROP CONSTRAINT [FK_PayCheckTax_TaxYearRate]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckTax_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckTax]'))
 ALTER TABLE [dbo].[PayCheckTax] DROP CONSTRAINT [FK_PayCheckTax_PayrollPayCheck]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckPayCode_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]'))
 ALTER TABLE [dbo].[PayCheckPayCode] DROP CONSTRAINT [FK_PayCheckPayCode_PayrollPayCheck]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
 ALTER TABLE [dbo].[PayCheckExtract] DROP CONSTRAINT [FK_PayCheckExtract_PayrollPayCheck]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
 ALTER TABLE [dbo].[PayCheckExtract] DROP CONSTRAINT [FK_PayCheckExtract_MasterExtracts]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction] DROP CONSTRAINT [FK_PayCheckDeduction_PayrollPayCheck]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_CompanyDeduction]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction] DROP CONSTRAINT [FK_PayCheckDeduction_CompanyDeduction]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckCompensation_PayType]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]'))
 ALTER TABLE [dbo].[PayCheckCompensation] DROP CONSTRAINT [FK_PayCheckCompensation_PayType]
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckCompensation_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]'))
 ALTER TABLE [dbo].[PayCheckCompensation] DROP CONSTRAINT [FK_PayCheckCompensation_PayrollPayCheck]
 GO
-/****** Object:  Index [IX_PayCheckPayCode]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Index [IX_PayCheckPayCode]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]') AND name = N'IX_PayCheckPayCode')
 DROP INDEX [IX_PayCheckPayCode] ON [dbo].[PayCheckPayCode]
 GO
-/****** Object:  Index [IX_PayCheckDeduction]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Index [IX_PayCheckDeduction]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]') AND name = N'IX_PayCheckDeduction')
 DROP INDEX [IX_PayCheckDeduction] ON [dbo].[PayCheckDeduction]
 GO
-/****** Object:  Table [dbo].[PayCheckWorkerCompensation]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckWorkerCompensation]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckWorkerCompensation]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckWorkerCompensation]
 GO
-/****** Object:  Table [dbo].[PayCheckTax]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckTax]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckTax]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckTax]
 GO
-/****** Object:  Table [dbo].[PayCheckPayCode]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckPayCode]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckPayCode]
 GO
-/****** Object:  Table [dbo].[PayCheckExtract]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckExtract]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckExtract]
 GO
-/****** Object:  Table [dbo].[PayCheckDeduction]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckDeduction]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckDeduction]
 GO
-/****** Object:  Table [dbo].[PayCheckCompensation]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckCompensation]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckCompensation]
 GO
-/****** Object:  Table [dbo].[PayCheckCompensation]    Script Date: 14/03/2017 3:58:23 PM ******/
+/****** Object:  Table [dbo].[PayCheckCompensation]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [dbo].[PayCheckCompensation](
 	[PayCheckId] [int] NOT NULL,
 	[PayTypeId] [int] NOT NULL,
@@ -66,13 +85,15 @@ CREATE TABLE [dbo].[PayCheckCompensation](
 	[PayTypeId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-
+END
 GO
-/****** Object:  Table [dbo].[PayCheckDeduction]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Table [dbo].[PayCheckDeduction]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [dbo].[PayCheckDeduction](
 	[PayCheckId] [int] NOT NULL,
 	[EmployeeDeductionId] [int] NOT NULL,
@@ -89,13 +110,15 @@ CREATE TABLE [dbo].[PayCheckDeduction](
 	[EmployeeDeductionId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
+END
 GO
-/****** Object:  Table [dbo].[PayCheckExtract]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Table [dbo].[PayCheckExtract]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [dbo].[PayCheckExtract](
 	[PayrollPayCheckId] [int] NOT NULL,
 	[MasterExtractId] [int] NOT NULL,
@@ -108,13 +131,15 @@ CREATE TABLE [dbo].[PayCheckExtract](
 	[Type] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-
+END
 GO
-/****** Object:  Table [dbo].[PayCheckPayCode]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Table [dbo].[PayCheckPayCode]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [dbo].[PayCheckPayCode](
 	[PayCheckId] [int] NOT NULL,
 	[PayCodeId] [int] NOT NULL,
@@ -127,13 +152,15 @@ CREATE TABLE [dbo].[PayCheckPayCode](
 	[PayCodeId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
+END
 GO
-/****** Object:  Table [dbo].[PayCheckTax]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Table [dbo].[PayCheckTax]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckTax]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [dbo].[PayCheckTax](
 	[PayCheckId] [int] NOT NULL,
 	[TaxId] [int] NOT NULL,
@@ -145,13 +172,15 @@ CREATE TABLE [dbo].[PayCheckTax](
 	[TaxId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-
+END
 GO
-/****** Object:  Table [dbo].[PayCheckWorkerCompensation]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Table [dbo].[PayCheckWorkerCompensation]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckWorkerCompensation]') AND type in (N'U'))
+BEGIN
 CREATE TABLE [dbo].[PayCheckWorkerCompensation](
 	[PayCheckId] [int] NOT NULL,
 	[WorkerCompensationId] [int] NOT NULL,
@@ -164,76 +193,103 @@ CREATE TABLE [dbo].[PayCheckWorkerCompensation](
 	[WorkerCompensationId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
+END
 GO
-/****** Object:  Index [IX_PayCheckDeduction]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Index [IX_PayCheckDeduction]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]') AND name = N'IX_PayCheckDeduction')
 CREATE NONCLUSTERED INDEX [IX_PayCheckDeduction] ON [dbo].[PayCheckDeduction]
 (
 	[CompanyDeductionId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
-/****** Object:  Index [IX_PayCheckPayCode]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  Index [IX_PayCheckPayCode]    Script Date: 14/03/2017 7:04:06 PM ******/
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]') AND name = N'IX_PayCheckPayCode')
 CREATE NONCLUSTERED INDEX [IX_PayCheckPayCode] ON [dbo].[PayCheckPayCode]
 (
 	[PayCodeId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckCompensation_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]'))
 ALTER TABLE [dbo].[PayCheckCompensation]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckCompensation_PayrollPayCheck] FOREIGN KEY([PayCheckId])
 REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckCompensation_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]'))
 ALTER TABLE [dbo].[PayCheckCompensation] CHECK CONSTRAINT [FK_PayCheckCompensation_PayrollPayCheck]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckCompensation_PayType]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]'))
 ALTER TABLE [dbo].[PayCheckCompensation]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckCompensation_PayType] FOREIGN KEY([PayTypeId])
 REFERENCES [dbo].[PayType] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckCompensation_PayType]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckCompensation]'))
 ALTER TABLE [dbo].[PayCheckCompensation] CHECK CONSTRAINT [FK_PayCheckCompensation_PayType]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_CompanyDeduction]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckDeduction_CompanyDeduction] FOREIGN KEY([CompanyDeductionId])
 REFERENCES [dbo].[CompanyDeduction] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_CompanyDeduction]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction] CHECK CONSTRAINT [FK_PayCheckDeduction_CompanyDeduction]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckDeduction_PayrollPayCheck] FOREIGN KEY([PayCheckId])
 REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction] CHECK CONSTRAINT [FK_PayCheckDeduction_PayrollPayCheck]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
 ALTER TABLE [dbo].[PayCheckExtract]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckExtract_MasterExtracts] FOREIGN KEY([MasterExtractId])
 REFERENCES [dbo].[MasterExtracts] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
 ALTER TABLE [dbo].[PayCheckExtract] CHECK CONSTRAINT [FK_PayCheckExtract_MasterExtracts]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
 ALTER TABLE [dbo].[PayCheckExtract]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckExtract_PayrollPayCheck] FOREIGN KEY([PayrollPayCheckId])
 REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
 ALTER TABLE [dbo].[PayCheckExtract] CHECK CONSTRAINT [FK_PayCheckExtract_PayrollPayCheck]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckPayCode_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]'))
 ALTER TABLE [dbo].[PayCheckPayCode]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckPayCode_PayrollPayCheck] FOREIGN KEY([PayCheckId])
 REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckPayCode_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]'))
 ALTER TABLE [dbo].[PayCheckPayCode] CHECK CONSTRAINT [FK_PayCheckPayCode_PayrollPayCheck]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckTax_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckTax]'))
 ALTER TABLE [dbo].[PayCheckTax]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckTax_PayrollPayCheck] FOREIGN KEY([PayCheckId])
 REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckTax_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckTax]'))
 ALTER TABLE [dbo].[PayCheckTax] CHECK CONSTRAINT [FK_PayCheckTax_PayrollPayCheck]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckTax_TaxYearRate]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckTax]'))
 ALTER TABLE [dbo].[PayCheckTax]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckTax_TaxYearRate] FOREIGN KEY([TaxId])
 REFERENCES [dbo].[TaxYearRate] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckTax_TaxYearRate]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckTax]'))
 ALTER TABLE [dbo].[PayCheckTax] CHECK CONSTRAINT [FK_PayCheckTax_TaxYearRate]
 GO
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckWorkerCompensation_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckWorkerCompensation]'))
 ALTER TABLE [dbo].[PayCheckWorkerCompensation]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckWorkerCompensation_PayrollPayCheck] FOREIGN KEY([PayCheckId])
 REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckWorkerCompensation_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckWorkerCompensation]'))
 ALTER TABLE [dbo].[PayCheckWorkerCompensation] CHECK CONSTRAINT [FK_PayCheckWorkerCompensation_PayrollPayCheck]
 GO
-/****** Object:  StoredProcedure [dbo].[GetCompanyAccumulation]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetCompanyAccumulation]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[GetCompanyAccumulation]
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyAccumulation]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetCompanyAccumulation] AS' 
+END
+GO
+ALTER PROCEDURE [dbo].[GetCompanyAccumulation]
 	@host uniqueidentifier = null,
 	@company uniqueidentifier = null,
 	@startdate smalldatetime,
@@ -396,57 +452,17 @@ BEGIN
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GetEmployees]    Script Date: 14/03/2017 3:58:24 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetEmployeesYTD]    Script Date: 14/03/2017 7:04:06 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[GetEmployees]
-	@host uniqueidentifier = null,
-	@company uniqueidentifier = null,
-	@role varchar(max) = null,
-	@status varchar(max) = null,
-	@id uniqueidentifier=null
-AS
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetEmployeesYTD]') AND type in (N'P', N'PC'))
 BEGIN
-	select 
-		EmployeeJson.*, 
-		Company.HostId HostId, 
-		(
-			select 
-				pt.Id PayTypeId, pt.Name PayTypeName, pta.CarryOver, pta.FiscalStart, pta.FiscalEnd, sum(pta.accumulatedValue) YTDFiscal, sum(pta.used) YTDUsed
-			from PayrollPayCheck pc, PayCheckPayTypeAccumulation pta, PayType pt
-			where pc.EmployeeId=EmployeeJson.Id and pc.IsVoid=0 and pc.Id=pta.PayCheckId
-			and pta.PayTypeId = pt.Id
-			and getdate() between pta.FiscalStart and pta.FiscalEnd
-			and pt.Id=6--sick leave
-			group by pt.id, pt.Name, pta.carryover, pta.fiscalstart, pta.fiscalend
-			for Xml path('PayCheckPayTypeAccumulation') , elements, type
-		) Accumulations,
-		(select *, (select *, (select * from DeductionType where Id=CompanyDeduction.TypeId for Xml path('DeductionType'), elements, type) from CompanyDeduction where Id=EmployeeDeduction.CompanyDeductionId for Xml path('CompanyDeduction'), elements, type) from EmployeeDeduction Where EmployeeId=EmployeeJson.Id for xml auto, elements, type) EmployeeDeductions,
-		(select *, (select * from BankAccount where Id=EmployeeBankAccount.BankAccountId for Xml path('BankAccount'), elements, type) from EmployeeBankAccount Where EmployeeId=EmployeeJson.Id for xml auto, elements, type) EmployeeBankAccounts,
-		(select * from CompanyWorkerCompensation where Id=EmployeeJson.WorkerCompensationId for Xml path('CompanyWorkerCompensation'), elements, type)
-		
-		From Employee EmployeeJson, Company
-		Where
-		EmployeeJson.CompanyId = Company.Id
-		and ((@id is not null and EmployeeJson.Id=@id) or (@id is null))
-		and ((@host is not null and Company.HostId=@host) or (@host is null))
-		and ((@company is not null and EmployeeJson.CompanyId=@company) or (@company is null))
-		and ((@status is not null and EmployeeJson.StatusId=cast(@status as int)) or (@status is null))
-		
-		for Xml path('EmployeeJson'), root('EmployeeList') , elements, type
-		
-	
-
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetEmployeesYTD] AS' 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GetEmployeesYTD]    Script Date: 14/03/2017 3:58:24 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE PROCEDURE [dbo].[GetEmployeesYTD]
+ALTER PROCEDURE [dbo].[GetEmployeesYTD]
 	@host uniqueidentifier = null,
 	@company uniqueidentifier = null,
 	@id uniqueidentifier=null,
