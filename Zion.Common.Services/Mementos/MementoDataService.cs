@@ -39,17 +39,10 @@ namespace HrMaxx.Common.Services.Mementos
 
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.WriteRepositoryCall, GetType(), "{0} ({1})",
-					"AddMementoData", dto.OriginatorType);
-
-				using (TransactionScope txn = TransactionScopeHelper.Transaction())
-				{
+				
 					_repository.SaveMemento(dto, isSubVersion);
 
-					txn.Complete();
-				}
-
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				
 			}
 			catch (Exception e)
 			{
@@ -62,10 +55,9 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>({2})",
-					"GetMostRecentMementoData", typeof (T).FullName, "GetMostRecentMementoData", mementoId.ToString());
+				
 				MementoPersistenceDto memento = _repository.GetMostRecentMemento<T>(mementoId);
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				
 
 				return Memento<T>.Create(mementoId, memento.Memento);
 			}
@@ -80,10 +72,9 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>({2})",
-					"GetMementoData", typeof (T).FullName, "GetMementoData", mementoId.ToString());
+				
 				List<MementoPersistenceDto> memento = _repository.GetMementoData<T>(mementoId).ToList();
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				
 
 				if ((memento == null) || memento.Count == 0)
 					return null;
@@ -109,10 +100,9 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>",
-					"GetMementoData", typeof (T).FullName, "GetMementoData");
+				
 				List<MementoPersistenceDto> memento = _repository.GetMementoData<T>().ToList();
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				
 
 				if ((memento == null) || memento.Count == 0)
 					return null;
@@ -183,17 +173,9 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0} ({1})",
-					"Delete Mementos", mementoId.ToString());
-
-				using (TransactionScope txn = TransactionScopeHelper.Transaction())
-				{
+				
 					_repository.DeleteMementoData<T>(mementoId);
 
-					txn.Complete();
-				}
-
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
 			}
 			catch (Exception e)
 			{

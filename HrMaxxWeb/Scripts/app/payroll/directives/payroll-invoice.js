@@ -383,7 +383,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							p = c.phone ? c.phone : (c.mobile ? c.mobile : '');
 						}
 						if (p)
-							return 'Ph: (' + p.substring(0, 3) + ') ' + p.substring(3, 7) + '-' + p.substring(7, 12);
+							return 'Ph: (' + p.substring(0, 3) + ') ' + p.substring(3, 6) + '-' + p.substring(6, 12);
 						else {
 							return '';
 						}
@@ -394,7 +394,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							p = c.fax ? c.fax : '';
 						}
 						if (p)
-							return 'Fax: (' + p.substring(0, 3) + ') ' + p.substring(3, 7) + '-' + p.substring(7, 12);
+							return 'Fax: (' + p.substring(0, 3) + ') ' + p.substring(3, 6) + '-' + p.substring(6, 12);
 						else {
 							return '';
 						}

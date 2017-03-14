@@ -11,6 +11,7 @@
 	<xsl:param name="reportConst"/>
 	<xsl:param name="enddate"/>
 	<xsl:param name="settleDate"/>
+	<xsl:param name="endQuarterMonth"/>
 
 	<xsl:template match="/">
 		<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -129,8 +130,8 @@
 						</Data>
 					</Cell>
 					<Cell>
-						<Data ss:Type="String">
-							
+						<Data ss:Type="Number">
+							<xsl:value-of select="$endQuarterMonth"/>
 						</Data>
 					</Cell>
 					<Cell>

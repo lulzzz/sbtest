@@ -92,6 +92,9 @@
 						<div class="row" ng-if="sourceTypeId===7">
 							<paycheck check="memento.object" />
 						</div>
+					<div class="row" ng-if="sourceTypeId===11">
+						<payroll-invoice invoice="memento.object" datasvc="dataSvc" host="mainData.selectedHost" main-data="mainData" show-controls="false" />
+					</div>
 					
 				</div>
 			</script>

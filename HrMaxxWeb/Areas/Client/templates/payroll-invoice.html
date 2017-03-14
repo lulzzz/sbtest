@@ -132,7 +132,7 @@
 						<td class="col-sm-7">
 							<img ng-src="{{getHostLogo()}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:200px;height:40px" /><br />
 							<span class="printspan">
-								<h5>{{invoice.company.name}}<i class="fa fa-lg fa-info-circle hidden-print" ng-click="showcompany()"></i></h5>
+								<h5>{{invoice.company.name}}<i class="fa fa-lg fa-info-circle hidden-print" ng-show="showControls" ng-click="showcompany()"></i></h5>
 							</span>
 							{{invoice.company.companyAddress.addressLine1}}<br />
 							{{invoice.company.companyAddress.city}}, CA {{invoice.company.companyAddress.zip}}{{invoice.company.companyAddress.zipExtension? ' - ' + invoice.company.companyAddress.zipExtension : ''}}<br />
@@ -395,7 +395,7 @@
 			</div>
 
 		</div>
-		<div class="col-sm-4  hidden-print" ng-show="!mainData.userCompany && showControls">
+		<div class="col-sm-4  hidden-print" ng-if="!mainData.userCompany && showControls">
 			<div class="col-sm-12 m-l-20" ng-if="invoice.id">
 				<comment-list source-type-id="2" source-id="invoice.companyId" list="invoice.comments" heading="'Internal Notes'" />
 			</div>

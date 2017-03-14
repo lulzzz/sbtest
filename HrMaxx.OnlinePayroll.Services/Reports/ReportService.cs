@@ -546,6 +546,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("today", DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth", ((int)((request.EndDate.Month + 2) / 3)).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPSExcel.xslt", "xls", string.Format("Federal {2} 940 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));
 		}
@@ -586,7 +587,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
-			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month+2) / 3)*3).ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month+2) / 3)).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPSExcel.xslt", "xls", string.Format("Federal {2} 941 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -619,7 +620,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("enddate",  request.EndDate.ToString("MM/dd/yyyy")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
-
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth", ((int)((request.EndDate.Month + 2) / 3)).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPSExcel.xslt", "xls", string.Format("California State {2} PIT & DI Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -662,6 +663,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("enddate", new DateTime(request.EndDate.Year, endQuarterMonth, DateTime.DaysInMonth(request.EndDate.Year, endQuarterMonth)).ToString("MM/dd/yy")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("MM/dd/yyyy")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth", ((int)((request.EndDate.Month + 2) / 3)).ToString()));
 
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAUIETTEFTPSExcel.xslt", "xls", string.Format("California State {2} UI & ETT Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));

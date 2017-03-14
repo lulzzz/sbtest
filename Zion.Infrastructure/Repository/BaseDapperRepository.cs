@@ -12,7 +12,7 @@ namespace HrMaxx.Infrastructure.Repository
 
 		protected BaseDapperRepository(DbConnection connection)
 		{
-			Connection = new ProfiledDbConnection(connection, StackExchange.Profiling.MiniProfiler.Current);
+			Connection = connection;
 			//OpenConnection();
 		}
 

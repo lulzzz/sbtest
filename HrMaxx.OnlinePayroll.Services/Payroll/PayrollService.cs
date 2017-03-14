@@ -1505,7 +1505,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2-1", payCheck.Employee.FullName));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", journal.Memo));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", payroll.Company.Memo));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", company.Name));
 				if (payCheck.Employee.PayType == EmployeeType.Salary || payCheck.Employee.PayType == EmployeeType.JobCost)
@@ -1671,7 +1671,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 			}
 
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", journal.Memo));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
 			var compCounter = 1;
 			foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
 			{
