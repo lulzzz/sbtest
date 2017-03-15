@@ -304,6 +304,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				Connection.Execute(deletesql, new { pta.PayCheckId, pta.PayTypeId });
 				Connection.Execute(insertsql, new { pta.PayCheckId, pta.PayTypeId, pta.FiscalStart, pta.FiscalEnd, pta.AccumulatedValue, pta.Used, pta.CarryOver });
 			});
+			Connection.Close();
+			
 		}
 
 		public void SavePayCheckTaxes(List<PayCheckTax> pttaxes)
@@ -316,6 +318,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				Connection.Execute(deletesql, new { pta.PayCheckId, pta.TaxId });
 				Connection.Execute(insertsql, new { pta.PayCheckId, pta.TaxId, pta.TaxableWage, pta.Amount });
 			});
+			Connection.Close();
 		}
 
 		public void SavePayCheckCompensations(List<PayCheckCompensation> ptcomps)
@@ -328,6 +331,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				Connection.Execute(deletesql, new { pta.PayCheckId, pta.PayTypeId });
 				Connection.Execute(insertsql, new { pta.PayCheckId, pta.PayTypeId,  pta.Amount });
 			});
+			Connection.Close();
 		}
 
 		public void SavePayCheckDeductions(List<PayCheckDeduction> ptdeds)
@@ -340,6 +344,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				Connection.Execute(deletesql, new { pta.PayCheckId, pta.EmployeeDeductionId, pta.CompanyDeductionId });
 				Connection.Execute(insertsql, new { pta.PayCheckId, pta.EmployeeDeductionId, pta.CompanyDeductionId, pta.EmployeeDeductionFlat, pta.Method, pta.Rate, pta.AnnualMax, pta.Wage, pta.Amount });
 			});
+			Connection.Close();
 		}
 
 		public void SavePayCheckPayCodes(List<PayCheckPayCode> ptcodes)
@@ -352,6 +357,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				Connection.Execute(deletesql, new { pta.PayCheckId, pta.PayCodeId });
 				Connection.Execute(insertsql, new { pta.PayCheckId, pta.PayCodeId, pta.PayCodeFlat, pta.Amount, pta.Overtime });
 			});
+			Connection.Close();
 		}
 
 		public void SavePayCheckWorkerCompensations(List<PayCheckWorkerCompensation> ptwcs)
@@ -364,6 +370,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				Connection.Execute(deletesql, new { pta.PayCheckId });
 				Connection.Execute(insertsql, new { pta.PayCheckId, pta.WorkerCompensationId, pta.WorkerCompensationFlat, pta.Wage, pta.Amount });
 			});
+			Connection.Close();
 		}
+
 	}
 }

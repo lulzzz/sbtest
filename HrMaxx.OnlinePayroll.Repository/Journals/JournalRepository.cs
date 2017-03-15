@@ -150,6 +150,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		{
 			const string selectSql =
 				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
+			OpenConnection();
 			dynamic exists =
 					Connection.Query(selectSql, new { extractId }).FirstOrDefault();
 			if (exists != null)
@@ -163,6 +164,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				extractId,
 				extract
 			});
+			Connection.Close();
 
 		}
 		public Models.Journal GetJournalById(int id)

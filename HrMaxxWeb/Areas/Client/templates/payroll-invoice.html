@@ -85,7 +85,7 @@
 	</div>
 	
 	<div class="col-sm-12">
-		<div class="col-sm-8 invoice" id="print">
+		<div class="col-sm-8" id="print">
 			<div class="col-sm-12 hidden-print" ng-show="showControls">
 				<div class="col-sm-2 form-group" ng-show="!mainData.userCompany && invoice.status===2">
 					<select name="courier" ng-model="invoice.courier" class="form-control pull-right" ng-options="ctx for ctx in data.config.couriers">
@@ -282,7 +282,7 @@
 							<td class="text-left">{{wc.amount | currency:'$'}}</td>
 						</tr>
 						<tr class="info">
-							<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ></i></strong></td>
+							<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle" ng-click="addLineItem()" ></i></strong><button class="btn btn-xs btn-danger" ng-click="removeAllVoidedCredits()" ng-show="invoice.hasVoidedCredits"><i class="fa fa-remove"></i> remove all voided credits</button></td>
 							<td class="text-right"><em><u>{{getLineItemTotal() | currency:'$'}}</u></em></td>
 						</tr>
 
@@ -403,7 +403,7 @@
 				<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="invoice.id" heading="'Invoice Versions'" />
 			</div>
 		</div>
-
+		
 	</div>
 	
 </div>

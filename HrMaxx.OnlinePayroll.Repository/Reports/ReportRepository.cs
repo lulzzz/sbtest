@@ -209,7 +209,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 				extractId,
 				extract
 			});
-
+			Connection.Close();
 		}
 		public List<ACHMasterExtract> GetACHExtractList()
 		{

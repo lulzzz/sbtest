@@ -11,6 +11,7 @@ Website: http://www.seantheme.com/color-admin-v2.0/admin/html/
     .page-header-fixed {
         padding: 0 !important;
         margin: 0 !important;
+				height: 99%; 
     }
 		.sidebar,
     .header,

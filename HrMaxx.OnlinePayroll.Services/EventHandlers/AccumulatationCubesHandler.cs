@@ -11,7 +11,7 @@ using MassTransit;
 
 namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 {
-	public class AccumulationCubesHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<PayrollRedateEvent>.All
+	public class AccumulationCubesHandler : BaseService
 	{
 		private readonly IPayrollService _payrollService;
 		private readonly IReaderService _readerService;

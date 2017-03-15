@@ -2371,7 +2371,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				using (var txn = TransactionScopeHelper.Transaction())
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
 					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
 					txn.Complete();
@@ -2390,7 +2390,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				using (var txn = TransactionScopeHelper.Transaction())
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
 					_payrollRepository.SavePayCheckTaxes(pttaxes);
 					txn.Complete();
@@ -2447,7 +2447,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				using (var txn = TransactionScopeHelper.Transaction())
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
 					_payrollRepository.SavePayCheckPayCodes(ptcodes);
 					txn.Complete();

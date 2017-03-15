@@ -148,7 +148,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.unsavedPayments = false;
 					$scope.deletelineitem = function (index, lineitem) {
-						var payrollId = $scope.invoice.payrollId;
+						
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete this line item?', 'warning', function () {
 							if (lineitem.payCheckId) {
 								$scope.invoice.voidedCreditedChecks.splice($scope.invoice.voidedCreditedChecks.indexOf(lineitem.payCheckId), 1);
@@ -161,6 +161,26 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						});
 						
 						
+					}
+					$scope.removeAllVoidedCredits = function () {
+						
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete all voided credits? this action can only be reversed through Refresh', 'danger', function () {
+							for (var i = 0; i < $scope.invoice.miscCharges.length; i++) {
+								var mc = $scope.invoice.miscCharges[i];
+								if (mc.payCheckId>0) {
+									$scope.invoice.voidedCreditedChecks.splice(i, 1);
+									$scope.invoice.miscFees -= +mc.amount.toFixed(2);
+									$scope.invoice.miscCharges.splice(i, 1);
+									i--;
+								}
+							}
+							
+							$scope.invoice.total = $scope.getTotal();
+							$scope.invoice.deleted = true;
+							$scope.invoice.hasVoidedCredits = false;
+						});
+
+
 					}
 					$scope.deletepayment = function (index) {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to delete this payment?', 'warning', function () {

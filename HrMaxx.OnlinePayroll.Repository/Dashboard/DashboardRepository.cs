@@ -92,6 +92,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 				Connection.ExecuteScalar(updateSql, new {Accumulation = JsonConvert.SerializeObject(dbc), Id = dbCube.Id});
 				
 			}
+			Connection.Close();
 			
 		}
 
@@ -100,7 +101,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 			const string sql = @"DELETE FROM CompanyPayrollCube WHERE CompanyId = @CompanyId and Year=@Year";
 			OpenConnection();
 			Connection.Execute(sql, new { CompanyId = companyId, Year = year });
-			
+			Connection.Close();
 		}
 	}
 }
