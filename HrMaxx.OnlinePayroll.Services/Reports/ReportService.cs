@@ -565,7 +565,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
-			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)(request.EndDate.Month +2/ 3)*3).ToString()));
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month +2)/ 3)*3).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
@@ -635,7 +635,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
 
-			var endQuarterMonth = (int) (request.EndDate.Month + 2/3)*3;
+			var endQuarterMonth = (int) ((request.EndDate.Month + 2)/3)*3;
 
 			var argList = new List<KeyValuePair<string, string>>();
 
@@ -656,7 +656,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.DepositSchedule = null;
 			var data = GetExtractResponse(request);
 			request.DepositSchedule = tempDepositSchedule;
-			var endQuarterMonth = (int)(request.EndDate.Month + 2 / 3) * 3;
+			var endQuarterMonth = (int)((request.EndDate.Month + 2) / 3) * 3;
 			var argList = new List<KeyValuePair<string, string>>();
 
 			argList.Add(new KeyValuePair<string, string>("reportConst",  "01300"));
