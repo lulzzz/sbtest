@@ -18,5 +18,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		MasterExtract FixMasterExtract(MasterExtract masterExtract);
 		Models.Journal GetJournalById(int id);
 		List<Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate);
+		void FixMasterExtractPayCheckMapping(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
 	}
 }

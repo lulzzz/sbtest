@@ -138,11 +138,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		}
 		public MasterExtract FixMasterExtract(MasterExtract masterExtract)
 		{
-			//var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
-			//_dbContext.MasterExtracts.Add(mapped);
+			
 			var dbExtracts = _dbContext.MasterExtracts.First(e => e.Id == masterExtract.Id);
-			//dbExtracts.Extract = JsonConvert.SerializeObject(masterExtract.Extract);
-			//_dbContext.SaveChanges();
+			
 			SaveExtractDetails(masterExtract.Id, JsonConvert.SerializeObject(masterExtract.Extract));
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtracts);
 		}
@@ -182,6 +180,31 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			journals = journals.Where(j => (!j.OriginalDate.HasValue && j.TransactionDate >= startDate && j.TransactionDate <= endDate) || (j.OriginalDate.HasValue && j.OriginalDate >= startDate && j.OriginalDate <= endDate));
 			
 			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals.ToList());
+		}
+
+		public void FixMasterExtractPayCheckMapping(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)
+		{
+			if (!_dbContext.PayCheckExtracts.Any(pce => pce.MasterExtractId == masterExtract.Id))
+			{
+				var pces = new List<PayCheckExtract>();
+				payCheckIds.Distinct().ToList().ForEach(pc => pces.Add(new PayCheckExtract
+				{
+					PayrollPayCheckId = pc,
+					Extract = masterExtract.Extract.Report.ReportName,
+					Type = 1,
+					MasterExtractId = masterExtract.Id
+				}));
+				_dbContext.PayCheckExtracts.AddRange(pces);
+				voidedCheckIds.Distinct().ToList().ForEach(vc => _dbContext.PayCheckExtracts.Add(new PayCheckExtract
+				{
+					Type = 2,
+					MasterExtractId = masterExtract.Id,
+					Extract = masterExtract.Extract.Report.ReportName,
+					PayrollPayCheckId = vc
+				}));
+				_dbContext.SaveChanges();
+			}
+			
 		}
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)

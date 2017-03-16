@@ -74,6 +74,9 @@ namespace SiteInspectionStatus_Utility
 				case 5:
 					FixSickLeaveYTDValuesAndDates(container);
 					break;
+				case 6:
+					FixMasterExtractsPayCheckMapping(container);
+					break;
 				default:
 					break;
 			}
@@ -2146,6 +2149,37 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 					txn.Complete();
 				}
 				
+			}
+		}
+
+		private static void FixMasterExtractsPayCheckMapping(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _journalRepository = scope.Resolve<IJournalRepository>();
+				var _documentService = scope.Resolve<IDocumentService>();
+				var extracts = _readerService.GetExtracts();
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					extracts.Where(e => !e.ExtractName.Equals("ACH")).ToList().ForEach(m =>
+					{
+						var masterExtract = _readerService.GetExtract(m.Id);
+						var payCheckIds = new List<int>();
+						var voidedCheckIds = new List<int>();
+						foreach (var host in masterExtract.Extract.Data.Hosts)
+						{
+							payCheckIds.AddRange(host.PayChecks.Select(pc => pc.Id));
+							voidedCheckIds.AddRange(host.CredChecks.Select(pc => pc.Id));
+						}
+						
+						
+						_journalRepository.FixMasterExtractPayCheckMapping(masterExtract, payCheckIds, voidedCheckIds);
+					});
+
+					txn.Complete();
+				}
+
 			}
 		}
 
