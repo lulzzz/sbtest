@@ -146,23 +146,27 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		}
 		private void SaveExtractDetails(int extractId, string extract)
 		{
-			const string selectSql =
+			using (var conn = GetConnection())
+			{
+				const string selectSql =
 				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
-			OpenConnection();
-			dynamic exists =
-					Connection.Query(selectSql, new { extractId }).FirstOrDefault();
-			if (exists != null)
-			{
-				Connection.Execute("delete from MasterExtract where MasterExtractId=@extractId", new {extractId});
+				
+				dynamic exists =
+						conn.Query(selectSql, new { extractId }).FirstOrDefault();
+				if (exists != null)
+				{
+					conn.Execute("delete from MasterExtract where MasterExtractId=@extractId", new { extractId });
+				}
+				const string sql =
+					@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
+				conn.Execute(sql, new
+				{
+					extractId,
+					extract
+				});
+				
 			}
-			const string sql =
-				@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
-			Connection.Execute(sql, new
-			{
-				extractId,
-				extract
-			});
-			Connection.Close();
+			
 
 		}
 		public Models.Journal GetJournalById(int id)
@@ -207,53 +211,68 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			
 		}
 
-		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds)
+		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)
 		{
-			var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
-			_dbContext.MasterExtracts.Add(mapped);
-			_dbContext.SaveChanges();
-			var pces = new List<PayCheckExtract>();
-			payCheckIds.Distinct().ToList().ForEach(pc => pces.Add(new PayCheckExtract
-			{
-				PayrollPayCheckId = pc,
-				Extract = masterExtract.Extract.Report.ReportName,
-				Type = 1,
-				MasterExtractId = mapped.Id
-			}));
-			_dbContext.PayCheckExtracts.AddRange(pces);
-			//var payChecks = _dbContext.PayrollPayChecks.ToList();
-			//payChecks.ForEach(pc =>
-			//{
-			//	if (payCheckIds.Any(pc1 => pc1 == pc.Id))
-			//	{
-			//		pc.PayCheckExtracts.Add(new PayCheckExtract
-			//		{
-			//			PayrollPayCheckId = pc.Id,
-			//			Extract = masterExtract.Extract.Report.ReportName,
-			//			Type = 1,
-			//			MasterExtractId = mapped.Id
-			//		});
-			//	}
-			//});
-			voidedCheckIds.Distinct().ToList().ForEach(vc => _dbContext.PayCheckExtracts.Add(new PayCheckExtract
-			{
-				Type = 2,
-				MasterExtractId = mapped.Id,
-				Extract = masterExtract.Extract.Report.ReportName,
-				PayrollPayCheckId = vc
-			}));	
+			
+			var mappedJournals = _mapper.Map<List<Models.Journal>, List<Journal>>(journalList);
+			
+			const string selectExtractSql =
+				@"SELECT MasterExtractId FROM PaxolArchive.dbo.MasterExtract WHERE MasterExtractId=@ExtractId";
+			const string insertExtract = @"insert into MasterExtracts(StartDate, EndDate, ExtractName, IsFederal, DepositDate, Journals, LastModified, LastModifiedBy) values(@StartDate, @EndDate, @ExtractName, @IsFederal, @DepositDate, @Journals, @LastModified, @LastModifiedBy); select cast(scope_identity() as int)";
+			const string insertPayCheckExtract =
+				"insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type) values(@PayrollPayCheckId, @MasterExtractId, @Extract, @Type);";
+			const string insertJournals = "insert into Journal( CompanyId, TransactionType, PaymentMethod, CheckNumber, PayrollPayCheckId, EntityType, PayeeId, PayeeName, Amount, Memo, IsDebit, IsVoid, MainAccountId, TransactionDate, LastModified, LastModifiedBy, JournalDetails, DocumentId, PEOASOCoCheck, OriginalDate) " +
+			                              "select @CompanyId, @TransactionType, @PaymentMethod, " +
+			                              "case when @TransactionType in (2,6) and exists(select 'x' from Journal where CompanyId=@CompanyId and TransactionType in (2,6)) then (select max(CheckNumber)+1 from Journal where CompanyId=@CompanyId and TransactionType in (2,6))" +
+			                              " else @CheckNumber end, @PayrollPayCheckId, @EntityType, @PayeeId, @PayeeName, @Amount, @Memo, @IsDebit, @IsVoid, @MainAccountId, @TransactionDate, @LastModified, @LastModifiedBy, @JournalDetails, @DocumentId, @PEOASOCoCheck, @OriginalDate;select cast(scope_identity() as int)";
 
-			//var creditChecks = _dbContext.PayrollPayChecks.Where(pc => voidedCheckIds.Any(pc1 => pc1 == pc.Id)).ToList();
-			//creditChecks.ForEach(pc => pc.PayCheckExtracts.Add(new PayCheckExtract
-			//{
-			//	Type=2,
-			//	MasterExtractId = mapped.Id,
-			//	Extract = masterExtract.Extract.Report.ReportName,
-			//	PayrollPayCheckId=pc.Id
-			//}));
-			_dbContext.SaveChanges();
-			SaveExtractDetails(mapped.Id, JsonConvert.SerializeObject(masterExtract.Extract));
-			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(mapped);
+			using (var conn = GetConnection())
+			{
+				//OpenConnection();
+				var journalIds = new List<int>();
+				mappedJournals.ForEach(j => journalIds.Add(conn.Query<int>(insertJournals, j).Single()));
+
+				masterExtract.Journals = journalIds;
+				var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
+
+				mapped.Id = conn.Query<int>(insertExtract, mapped).Single();
+				var pces = new List<PayCheckExtract>();
+				var vces = new List<PayCheckExtract>();
+				payCheckIds.Distinct().ToList().ForEach(pc => pces.Add(new PayCheckExtract
+				{
+					PayrollPayCheckId = pc,
+					Extract = masterExtract.Extract.Report.ReportName,
+					Type = 1,
+					MasterExtractId = mapped.Id
+				}));
+
+
+				voidedCheckIds.Distinct().ToList().ForEach(vc => vces.Add(new PayCheckExtract
+				{
+					Type = 2,
+					MasterExtractId = mapped.Id,
+					Extract = masterExtract.Extract.Report.ReportName,
+					PayrollPayCheckId = vc
+				}));
+				conn.Execute(insertPayCheckExtract, pces);
+				conn.Execute(insertPayCheckExtract, vces);
+				dynamic exists =
+						conn.Query(selectExtractSql, new { ExtractId = mapped.Id }).SingleOrDefault();
+				if (exists != null)
+				{
+					conn.Execute("delete from PaxolArchive.dbo.MasterExtract where MasterExtractId=@ExtractId", new { ExtractId = mapped.Id });
+				}
+				const string sql =
+					@"INSERT INTO PaxolArchive.dbo.MasterExtract(MasterExtractId, Extract) VALUES (@ExtractId, @Extract)";
+				conn.Execute(sql, new
+				{
+					ExtractId = mapped.Id,
+					Extract = JsonConvert.SerializeObject(masterExtract.Extract)
+				});
+				
+				return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(mapped);
+			}
+			
 		}
 
 		

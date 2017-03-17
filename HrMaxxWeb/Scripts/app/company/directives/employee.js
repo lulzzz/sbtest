@@ -209,7 +209,9 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selected.payCodes = [];
 						}
 					};
-					
+					$scope.updateDeductionList = function(list) {
+						$scope.$parent.$parent.updateDeductionList(list);
+					}
 					$scope.save = function () {
 						if (false === $('form[name="employee"]').parsley().validate())
 							return false;

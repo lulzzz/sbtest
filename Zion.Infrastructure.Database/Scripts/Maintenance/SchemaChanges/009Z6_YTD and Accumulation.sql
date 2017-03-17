@@ -18,12 +18,7 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckPayCode_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]'))
 ALTER TABLE [dbo].[PayCheckPayCode] DROP CONSTRAINT [FK_PayCheckPayCode_PayrollPayCheck]
 GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
-ALTER TABLE [dbo].[PayCheckExtract] DROP CONSTRAINT [FK_PayCheckExtract_PayrollPayCheck]
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
-ALTER TABLE [dbo].[PayCheckExtract] DROP CONSTRAINT [FK_PayCheckExtract_MasterExtracts]
-GO
+
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction] DROP CONSTRAINT [FK_PayCheckDeduction_PayrollPayCheck]
 GO
@@ -56,10 +51,7 @@ GO
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckPayCode]
 GO
-/****** Object:  Table [dbo].[PayCheckExtract]    Script Date: 14/03/2017 7:04:06 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]') AND type in (N'U'))
-DROP TABLE [dbo].[PayCheckExtract]
-GO
+
 /****** Object:  Table [dbo].[PayCheckDeduction]    Script Date: 14/03/2017 7:04:06 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]') AND type in (N'U'))
 DROP TABLE [dbo].[PayCheckDeduction]
@@ -112,32 +104,12 @@ CREATE TABLE [dbo].[PayCheckDeduction](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 END
 GO
-/****** Object:  Table [dbo].[PayCheckExtract]    Script Date: 14/03/2017 7:04:06 PM ******/
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]') AND type in (N'U'))
-BEGIN
-CREATE TABLE [dbo].[PayCheckExtract](
-	[PayrollPayCheckId] [int] NOT NULL,
-	[MasterExtractId] [int] NOT NULL,
-	[Extract] [varchar](50) NOT NULL,
-	[Type] [int] NOT NULL,
- CONSTRAINT [PK_PayCheckExtract_1] PRIMARY KEY CLUSTERED 
-(
-	[PayrollPayCheckId] ASC,
-	[Extract] ASC,
-	[Type] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-END
-GO
-/****** Object:  Table [dbo].[PayCheckPayCode]    Script Date: 14/03/2017 7:04:06 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]') AND type in (N'U'))
 BEGIN
 CREATE TABLE [dbo].[PayCheckPayCode](
@@ -236,20 +208,6 @@ REFERENCES [dbo].[PayrollPayCheck] ([Id])
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckDeduction_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckDeduction]'))
 ALTER TABLE [dbo].[PayCheckDeduction] CHECK CONSTRAINT [FK_PayCheckDeduction_PayrollPayCheck]
-GO
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
-ALTER TABLE [dbo].[PayCheckExtract]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckExtract_MasterExtracts] FOREIGN KEY([MasterExtractId])
-REFERENCES [dbo].[MasterExtracts] ([Id])
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
-ALTER TABLE [dbo].[PayCheckExtract] CHECK CONSTRAINT [FK_PayCheckExtract_MasterExtracts]
-GO
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
-ALTER TABLE [dbo].[PayCheckExtract]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckExtract_PayrollPayCheck] FOREIGN KEY([PayrollPayCheckId])
-REFERENCES [dbo].[PayrollPayCheck] ([Id])
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckExtract_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckExtract]'))
-ALTER TABLE [dbo].[PayCheckExtract] CHECK CONSTRAINT [FK_PayCheckExtract_PayrollPayCheck]
 GO
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PayCheckPayCode_PayrollPayCheck]') AND parent_object_id = OBJECT_ID(N'[dbo].[PayCheckPayCode]'))
 ALTER TABLE [dbo].[PayCheckPayCode]  WITH CHECK ADD  CONSTRAINT [FK_PayCheckPayCode_PayrollPayCheck] FOREIGN KEY([PayCheckId])

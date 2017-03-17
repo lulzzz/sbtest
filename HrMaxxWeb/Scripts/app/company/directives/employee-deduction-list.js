@@ -72,6 +72,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						companyRepository.saveEmployeeDeduction(item).then(function(deduction) {
 							item.id = deduction.id;
 							$scope.selected = null;
+							$scope.$parent.$parent.updateDeductionList($scope.list);
 							addAlert('successfully saved employee deduction', 'success');
 						}, function(error) {
 							addAlert('error in saving deduction', 'danger');
@@ -86,6 +87,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					if ($scope.saveToServer) {
 						companyRepository.deleteEmployeeDeduction(item.id).then(function(deduction) {
 							$scope.list.splice(index, 1);
+							$scope.$parent.$parent.updateDeductionList($scope.list);
 						}, function(error) {
 							addAlert('error in saving deduction', 'danger');
 						});

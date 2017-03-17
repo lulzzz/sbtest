@@ -13,7 +13,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		List<Journal> GetJournalList(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);
 		List<Journal> GetCompanyJournals(Guid? companyId, DateTime? startDate, DateTime? endDate);
 
-		MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
+		MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Journal> journalList);
 		List<Journal> GetPayrollJournals(Guid payrollId, bool peoasoCoCheck);
 		MasterExtract FixMasterExtract(MasterExtract masterExtract);
 		Models.Journal GetJournalById(int id);

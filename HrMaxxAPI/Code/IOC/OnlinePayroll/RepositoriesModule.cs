@@ -95,7 +95,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<JournalRepository>()
 				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IJournalRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

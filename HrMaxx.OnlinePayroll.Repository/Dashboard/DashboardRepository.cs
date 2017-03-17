@@ -41,67 +41,75 @@ namespace HrMaxx.OnlinePayroll.Repository.Dashboard
 
 		public void UpdateCube(CompanyPayrollCube cube, CubeType cubeType, bool isAdd)
 		{
-			var m = _mapper.Map<Models.CompanyPayrollCube, Models.JsonDataModel.CompanyPayrollCube>(cube);
-			const string sql =
-				@"SELECT * FROM CompanyPayrollCube WHERE CompanyId = @CompanyId AND Year = @Year";
-			OpenConnection();
-			var dbCubes =
-					Connection.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { CompanyId = cube.CompanyId, Year = cube.Year }).AsQueryable<Models.JsonDataModel.CompanyPayrollCube>();
+			using (var conn = GetConnection())
+			{
+				var m = _mapper.Map<Models.CompanyPayrollCube, Models.JsonDataModel.CompanyPayrollCube>(cube);
+				const string sql =
+					@"SELECT * FROM CompanyPayrollCube WHERE CompanyId = @CompanyId AND Year = @Year";
 
-			Models.JsonDataModel.CompanyPayrollCube dbCube;
-			if (cubeType == CubeType.Yearly)
-			{
-				dbCube = dbCubes.FirstOrDefault(cpc=>!cpc.Quarter.HasValue && !cpc.Month.HasValue);
-			}
-			else if (cubeType == CubeType.Quarterly)
-			{
-				dbCube = dbCubes.FirstOrDefault(cpc => cpc.Quarter == cube.Quarter);
-			}
-			else
-			{
-				dbCube = dbCubes.FirstOrDefault(cpc => cpc.Month == cube.Month);
-			}
-			if (dbCube == null)
-			{
-				if (isAdd)
+				var dbCubes =
+						conn.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { CompanyId = cube.CompanyId, Year = cube.Year }).AsQueryable<Models.JsonDataModel.CompanyPayrollCube>();
+
+				Models.JsonDataModel.CompanyPayrollCube dbCube;
+				if (cubeType == CubeType.Yearly)
 				{
-					const string insertSql =
-				@"INSERT INTO CompanyPayrollCube(CompanyId, Year, Quarter, Month, Accumulation) VALUES (@CompanyId, @Year, @Quarter, @Month, @Accumulation)";
-					Connection.Execute(insertSql, new
-					{
-						m.CompanyId,
-						m.Year,
-						m.Quarter,
-						m.Month,
-						m.Accumulation
-					});
+					dbCube = dbCubes.FirstOrDefault(cpc => !cpc.Quarter.HasValue && !cpc.Month.HasValue);
 				}
-				
-			}
-			else
-			{
-				var dbc = JsonConvert.DeserializeObject<PayrollAccumulation>(dbCube.Accumulation);
-				if(isAdd)
-					dbc.Add(cube.Accumulation);
+				else if (cubeType == CubeType.Quarterly)
+				{
+					dbCube = dbCubes.FirstOrDefault(cpc => cpc.Quarter == cube.Quarter);
+				}
 				else
 				{
-					dbc.Remove(cube.Accumulation);
+					dbCube = dbCubes.FirstOrDefault(cpc => cpc.Month == cube.Month);
 				}
-				const string updateSql =
-				@"update CompanyPayrollCube set Accumulation=@Accumulation Where Id=@Id";
-				Connection.ExecuteScalar(updateSql, new {Accumulation = JsonConvert.SerializeObject(dbc), Id = dbCube.Id});
+				if (dbCube == null)
+				{
+					if (isAdd)
+					{
+						const string insertSql =
+					@"INSERT INTO CompanyPayrollCube(CompanyId, Year, Quarter, Month, Accumulation) VALUES (@CompanyId, @Year, @Quarter, @Month, @Accumulation)";
+						conn.Execute(insertSql, new
+						{
+							m.CompanyId,
+							m.Year,
+							m.Quarter,
+							m.Month,
+							m.Accumulation
+						});
+					}
+
+				}
+				else
+				{
+					var dbc = JsonConvert.DeserializeObject<PayrollAccumulation>(dbCube.Accumulation);
+					if (isAdd)
+						dbc.Add(cube.Accumulation);
+					else
+					{
+						dbc.Remove(cube.Accumulation);
+					}
+					const string updateSql =
+					@"update CompanyPayrollCube set Accumulation=@Accumulation Where Id=@Id";
+					conn.ExecuteScalar(updateSql, new { Accumulation = JsonConvert.SerializeObject(dbc), Id = dbCube.Id });
+
+				}
 				
 			}
-			Connection.Close();
+			
 			
 		}
 
 		public void DeleteCubesForCompanyAndYear(Guid companyId, int year)
 		{
-			const string sql = @"DELETE FROM CompanyPayrollCube WHERE CompanyId = @CompanyId and Year=@Year";
-			OpenConnection();
-			Connection.Execute(sql, new { CompanyId = companyId, Year = year });
-			Connection.Close();
+			using (var conn = GetConnection())
+			{
+				const string sql = @"DELETE FROM CompanyPayrollCube WHERE CompanyId = @CompanyId and Year=@Year";
+				
+				conn.Execute(sql, new { CompanyId = companyId, Year = year });
+				
+			}
+			
 		}
 	}
 }

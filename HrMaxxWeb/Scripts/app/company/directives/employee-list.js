@@ -235,7 +235,18 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						$scope.selected = null;
 						$scope.data.isBodyOpen = true;
 					}
-
+					$scope.updateDeductionList = function (list) {
+						
+						if ($scope.selected) {
+							
+							var exists = $filter('filter')($scope.list, { id: $scope.selected.id });
+							exists[0].deductions = list;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							
+						}
+						
+					};
 					$scope.set = function (item) {
 						$scope.selected = null;
 						$scope.selectedPayCodes = [];

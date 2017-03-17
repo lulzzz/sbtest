@@ -2162,7 +2162,7 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 				var extracts = _readerService.GetExtracts();
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					extracts.Where(e => !e.ExtractName.Equals("ACH")).ToList().ForEach(m =>
+					extracts.Where(e => !e.ExtractName.Equals("ACH") && e.Id<169).ToList().ForEach(m =>
 					{
 						var masterExtract = _readerService.GetExtract(m.Id);
 						var payCheckIds = new List<int>();

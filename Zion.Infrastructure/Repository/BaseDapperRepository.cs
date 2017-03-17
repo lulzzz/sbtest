@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using HrMaxx.Infrastructure.Mapping;
 using StackExchange.Profiling.Data;
 
@@ -8,11 +9,13 @@ namespace HrMaxx.Infrastructure.Repository
 {
 	public class BaseDapperRepository
 	{
-		protected DbConnection Connection;
+		private DbConnection Connection;
+		protected string _connectionString;
 
 		protected BaseDapperRepository(DbConnection connection)
 		{
 			Connection = connection;
+			_connectionString = connection.ConnectionString;
 			//OpenConnection();
 		}
 
@@ -24,6 +27,11 @@ namespace HrMaxx.Infrastructure.Repository
 
 			if (Connection.State == ConnectionState.Closed)
 				Connection.Open();
+		}
+
+		public IDbConnection GetConnection()
+		{
+			return new SqlConnection(_connectionString);
 		}
 	}
 }

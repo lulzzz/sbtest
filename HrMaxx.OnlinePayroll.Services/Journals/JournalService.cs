@@ -685,6 +685,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					var globalVendors = _companyService.GetVendorCustomers(null, true);
 					globalVendors = globalVendors.Where(v => v.IsTaxDepartment).ToList();
 
+				var journalList = new List<Journal>();
 					var journals = new List<int>();
 					var payCheckIds = new List<int>();
 					var voidedCheckIds = new List<int>();
@@ -701,34 +702,14 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							globalVendors.First(
 								v => (masterExtract.IsFederal && v.Name.Contains("941") || (!masterExtract.IsFederal && v.Name.Contains("CA")))),
 							extract.Report.Description, extract.Report.DepositDate.Value);
+						journalList.Add(journal);
 						journals.Add(journal.Id);
 						payCheckIds.AddRange(host.PayChecks.Select(pc=>pc.Id));
 						voidedCheckIds.AddRange(host.CredChecks.Select(pc=>pc.Id));
 					}
-					masterExtract.Journals = journals;
-					//var file = (FileDto)null;
-					//if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
-					//{
+					
 
-					//	file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
-					//	masterExtract.Extract.File.Data = null;
-
-					//}
-					//else
-					//{
-					//	Log.Info("Extract Id " + masterExtract.Id + " missing file");
-					//}
-
-					//masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
-					//if (file != null)
-					//{
-					//	file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
-					//			masterExtract.Id);
-					//	file.DocumentExtension = "txt";
-					//	var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
-					//}
-
-					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
+					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds, journalList);
 					return masterExtract;
 				
 			}
@@ -743,7 +724,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				
+
+				var journalList = new List<Journal>();
 					var journals = new List<int>();
 					var payCheckIds = new List<int>();
 					var voidedCheckIds = new List<int>();
@@ -784,6 +766,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 										garnishmentAgency.Agency,
 										extract.Report.Description, extract.Report.DepositDate.Value, check.Employee.FullName, check.Deductions.First(d=>d.EmployeeDeduction.AgencyId==garnishmentAgency.Agency.Id).EmployeeDeduction.AccountNo );
 								journals.Add(journal.Id);
+								journalList.Add(journal);
 								payCheckIds.AddRange(garnishmentAgency.PayCheckIds);
 							}
 							
@@ -791,29 +774,9 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						}
 						
 					}
-					masterExtract.Journals = journals;
-					//var file = (FileDto)null;
-					//if (masterExtract.Extract.File != null && masterExtract.Extract.File.Data != null)
-					//{
-						
-					//	file = JsonConvert.DeserializeObject<FileDto>(JsonConvert.SerializeObject(masterExtract.Extract.File));
-					//	masterExtract.Extract.File.Data = null;
-
-					//}
-					//else
-					//{
-					//	Log.Info("Extract Id " + masterExtract.Id + " missing file");
-					//}
+					//masterExtract.Journals = journals;
 					
-					//masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
-					//if (file != null)
-					//{
-					//	file.DocumentId = Utilities.GetGuidFromEntityTypeAndId((int)EntityTypeEnum.Extract,
-					//			masterExtract.Id);
-					//	file.DocumentExtension = "txt";
-					//	var doc = _documentService.SaveEntityDocument(EntityTypeEnum.Extract, file);
-					//}
-					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds);
+					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds, journalList);
 					return masterExtract;
 				
 			}
@@ -873,7 +836,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			journal.JournalDetails.Add(new JournalDetail { AccountId = bankCOA.Id, AccountName = bankCOA.AccountName, IsDebit = true, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			
-			return _journalRepository.SaveJournal(journal);
+			return journal;
 		}
 		private Journal CreateJournalEntryPD(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date, string employee, string account)
 		{
@@ -907,7 +870,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			journal.JournalDetails.Add(new JournalDetail { AccountId = bankCOA.Id, AccountName = bankCOA.AccountName, IsDebit = true, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = amount, LastModfied = journal.LastModified, LastModifiedBy = userName });
 
-			return _journalRepository.SaveJournal(journal);
+			return journal;
 		}
 		private decimal CalculateTaxAmount(ReportRequest report, ExtractHost host)
 		{

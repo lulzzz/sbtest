@@ -39,23 +39,31 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		
 		public PayrollAccumulation GetCompanyPayrollCube(ReportRequest request)
 		{
-			const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
-			var dbval = Connection.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { request.CompanyId, request.Year }).AsQueryable();
-			if (request.Quarter > 0)
-				dbval = dbval.Where(cpc => cpc.Quarter == request.Quarter);
-			else if (request.Month > 0)
-				dbval = dbval.Where(cpc => cpc.Month == request.Month);
-			var result = dbval.ToList();
-			if(result.Any())
-				return _mapper.Map<Models.JsonDataModel.CompanyPayrollCube, CompanyPayrollCube>(result.First()).Accumulation;
-			return null;
+			using (var conn = GetConnection())
+			{
+				const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
+				var dbval = conn.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { request.CompanyId, request.Year }).AsQueryable();
+				if (request.Quarter > 0)
+					dbval = dbval.Where(cpc => cpc.Quarter == request.Quarter);
+				else if (request.Month > 0)
+					dbval = dbval.Where(cpc => cpc.Month == request.Month);
+				var result = dbval.ToList();
+				if (result.Any())
+					return _mapper.Map<Models.JsonDataModel.CompanyPayrollCube, CompanyPayrollCube>(result.First()).Accumulation;
+				return null;
+			}
+			
 		}
 
 		public List<Models.CompanyPayrollCube> GetCompanyCubesForYear(Guid companyId, int year)
 		{
-			const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
-			var cubes = Connection.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { companyId, year });
-			return _mapper.Map<List<Models.JsonDataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes.ToList());
+			using (var conn = GetConnection())
+			{
+				const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
+				var cubes = conn.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { companyId, year });
+				return _mapper.Map<List<Models.JsonDataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes.ToList());
+			}
+			
 		}
 
 		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
@@ -193,23 +201,27 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 
 		private void SaveExtractDetails(int extractId, string extract)
 		{
-			const string selectSql =
+			using (var conn = GetConnection())
+			{
+				const string selectSql =
 				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
-			OpenConnection();
-			dynamic exists =
-					Connection.Query(selectSql, new { extractId }).FirstOrDefault();
-			if (exists != null)
-			{
-				Connection.Execute("delete from MasterExtract where MasterExtractId=@extractId", new { extractId });
+				
+				dynamic exists =
+						conn.Query(selectSql, new { extractId }).FirstOrDefault();
+				if (exists != null)
+				{
+					conn.Execute("delete from MasterExtract where MasterExtractId=@extractId", new { extractId });
+				}
+				const string sql =
+					@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
+				conn.Execute(sql, new
+				{
+					extractId,
+					extract
+				});
+				
 			}
-			const string sql =
-				@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
-			Connection.Execute(sql, new
-			{
-				extractId,
-				extract
-			});
-			Connection.Close();
+			
 		}
 		public List<ACHMasterExtract> GetACHExtractList()
 		{

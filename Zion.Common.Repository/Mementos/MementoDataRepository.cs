@@ -25,32 +25,33 @@ namespace HrMaxx.Common.Repository.Mementos
 				const string versionSql =
 					@"SELECT MAX(version) as version FROM Common.Memento WHERE originatortype = @OriginatorType AND mementoid = @MementoId";
 
-				OpenConnection();
+			using (var connection = GetConnection())
+			{
 				dynamic currentVersion =
-					Connection.Query(versionSql, new {memento.OriginatorType, memento.MementoId}).FirstOrDefault();
-				var nextVersion = (decimal) 1;
+					connection.Query(versionSql, new { memento.OriginatorType, memento.MementoId }).FirstOrDefault();
+				var nextVersion = (decimal)1;
 				if (currentVersion.version != null)
 				{
 					if (isSubVersion)
 					{
 						var nextBigVersion = currentVersion.version + 1;
-						if ((currentVersion.version + (decimal) 0.1) == nextBigVersion)
+						if ((currentVersion.version + (decimal)0.1) == nextBigVersion)
 						{
-							nextVersion = nextBigVersion + (decimal) 0.1;
+							nextVersion = nextBigVersion + (decimal)0.1;
 						}
 						else
 						{
-							nextVersion = currentVersion.version + (decimal) 0.1;
+							nextVersion = currentVersion.version + (decimal)0.1;
 						}
 					}
 					else
 					{
-						nextVersion = Math.Floor(currentVersion.version) + (decimal) 1;
+						nextVersion = Math.Floor(currentVersion.version) + (decimal)1;
 					}
 				}
 
 
-				Connection.Execute(sql, new
+				connection.Execute(sql, new
 				{
 					memento.Memento,
 					memento.OriginatorType,
@@ -61,7 +62,9 @@ namespace HrMaxx.Common.Repository.Mementos
 					memento.Comments,
 					memento.UserId
 				});
-				Connection.Close();
+			}
+				
+				
 			
 		}
 
@@ -70,71 +73,78 @@ namespace HrMaxx.Common.Repository.Mementos
 			
 				const string sql =
 					@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version ASC";
+			using (var conn = GetConnection())
+			{
+				string originatorType = typeof(T).FullName;
 
-				string originatorType = typeof (T).FullName;
-
-				IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
-					new {OriginatorType = originatorType, MementoId = mementoId});
-			Connection.Close();
+				IEnumerable<MementoPersistenceDto> results = conn.Query<MementoPersistenceDto>(sql,
+					new { OriginatorType = originatorType, MementoId = mementoId });
+				
 				return results;
+			}
+				
 			
 		}
 
 		public void DeleteMementoData<T>(Guid mementoId)
 		{
-		
-				const string sql = @"DELETE FROM Common.Memento WHERE MementoId = @MementoId";
-				OpenConnection();
-				Connection.Execute(sql, new {MementoId = mementoId});
-				Connection.Close();
-			
+			const string sql = @"DELETE FROM Common.Memento WHERE MementoId = @MementoId";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new { MementoId = mementoId });
+			}
+				
 		}
 
 		public MementoPersistenceDto GetMostRecentMemento<T>(Guid mementoId)
 		{
-			
-			
+
+			using (var conn = GetConnection())
+			{
 				const string sql =
 				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
 
 				string originatorType = typeof(T).FullName;
-				OpenConnection();
+				
 				MementoPersistenceDto dto =
-					Connection.Query<MementoPersistenceDto>(sql, new { OriginatorType = originatorType, MementoId = mementoId })
+					conn.Query<MementoPersistenceDto>(sql, new { OriginatorType = originatorType, MementoId = mementoId })
 						.SingleOrDefault();
-				Connection.Close();
+				
 				return dto;
-			
-			
+			}
 		}
 
 		public IEnumerable<MementoPersistenceDto> GetMementoData<T>()
 		{
-			
+			using (var conn = GetConnection())
+			{
 				const string sql =
 					@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
 
-				string originatorType = typeof (T).FullName;
-				OpenConnection();
-				IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
-					new {OriginatorType = originatorType});
-				Connection.Close();
+				string originatorType = typeof(T).FullName;
+				
+				IEnumerable<MementoPersistenceDto> results = conn.Query<MementoPersistenceDto>(sql,
+					new { OriginatorType = originatorType });
+				
 				return results;
-			
+			}
 		}
 
 		public IEnumerable<MementoPersistenceDto> GetMementos<T>(int sourceTypeId, Guid sourceId)
 		{
-			
+			using (var conn = GetConnection())
+			{
 				const string sql =
-					@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
+									@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
 
-				string originatorType = typeof (T).FullName;
-				OpenConnection();
-				IEnumerable<MementoPersistenceDto> results = Connection.Query<MementoPersistenceDto>(sql,
-					new {SourceTypeId = sourceTypeId, SourceId = sourceId});
-			Connection.Close();
+				string originatorType = typeof(T).FullName;
+				
+				IEnumerable<MementoPersistenceDto> results = conn.Query<MementoPersistenceDto>(sql,
+					new { SourceTypeId = sourceTypeId, SourceId = sourceId });
+				
 				return results;
+			}
+				
 			
 		}
 	}

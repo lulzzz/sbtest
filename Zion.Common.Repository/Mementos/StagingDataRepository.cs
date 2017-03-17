@@ -19,63 +19,73 @@ namespace HrMaxx.Common.Repository.Mementos
 
 		public void SaveMemento(StagingDataDto memento)
 		{
-			
+			using (var conn = GetConnection())
+			{
 				const string sql =
 					@"INSERT INTO Common.StagingData(MementoId, OriginatorType, Memento) VALUES (@MementoId, @OriginatorType, @Memento)";
 
-				OpenConnection();
-				Connection.Execute(sql, new
+				
+				conn.Execute(sql, new
 				{
 					memento.MementoId,
 					memento.OriginatorType,
 					memento.Memento,
 				});
-			Connection.Close();
-
+				
+			}
 
 		}
 
 		public List<StagingDataDto> GetStagingData<T>(Guid mementoId)
 		{
-			
+			using (var conn = GetConnection())
+			{
 				const string sql =
 					@"SELECT Id, MementoId, Memento, OriginatorType, DateCreated FROM Common.StagingData WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId";
 
-				string originatorType = typeof (T).FullName;
-				OpenConnection();
+				string originatorType = typeof(T).FullName;
+				
 				List<StagingDataDto> dto =
-					Connection.Query<StagingDataDto>(sql, new { OriginatorType = originatorType, MementoId = mementoId }).ToList();
-				Connection.Close();
+					conn.Query<StagingDataDto>(sql, new { OriginatorType = originatorType, MementoId = mementoId }).ToList();
+				
 				return dto;
+			}
+				
 			
 		}
 
 		public void DeleteStagingData<T>(Guid mementoId)
 		{
-			
-				string originatorType = typeof (T).FullName;
+			using (var conn = GetConnection())
+			{
+				string originatorType = typeof(T).FullName;
 
 				const string sql =
 					@"DELETE FROM Common.StagingData WHERE MementoId = @MementoId AND OriginatorType = @OriginatorType";
-				OpenConnection();
+				
 
-				Connection.Execute(sql, new { MementoId = mementoId, OriginatorType = originatorType });
-				Connection.Close();
+				conn.Execute(sql, new { MementoId = mementoId, OriginatorType = originatorType });
+				
+			}
+				
 		}
 
 		public StagingDataDto GetMostRecentMemento<T>(Guid mementoId)
 		{
-			
+			using (var conn = GetConnection())
+			{
 				const string sql =
-					@"SELECT TOP 1 Id, Memento, OriginatorType, MementoId, DateCreated FROM Common.StagingData WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY DateCreated DESC";
+									@"SELECT TOP 1 Id, Memento, OriginatorType, MementoId, DateCreated FROM Common.StagingData WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY DateCreated DESC";
 
-				string originatorType = typeof (T).FullName;
-				OpenConnection();
+				string originatorType = typeof(T).FullName;
+				
 				StagingDataDto dto =
-					Connection.Query<StagingDataDto>(sql, new {OriginatorType = originatorType, MementoId = mementoId})
+					conn.Query<StagingDataDto>(sql, new { OriginatorType = originatorType, MementoId = mementoId })
 						.SingleOrDefault();
-				Connection.Close();
+				
 				return dto;
+			}
+				
 			
 		}
 	}
