@@ -270,40 +270,39 @@ namespace HrMaxx.OnlinePayroll.Models
 		}
 		private void CalculateCASUTA(Company company, int year)
 		{
-			if (CompanyInvoiceSetup.SUIManagement > 0)
-			{
+			
 				
-				EmployerTaxes.Where(t => t.Tax.StateId == 1).ToList().ForEach(t =>
+			EmployerTaxes.Where(t => t.Tax.StateId == 1).ToList().ForEach(t =>
+			{
+				var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : GrossWages;
+				var rate = t.Tax.Rate;
+				if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
 				{
-					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : GrossWages;
-					var rate = t.Tax.Rate;
-					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
-					{
-						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
-					}
-					if (!t.Tax.Code.Equals("ETT"))
-					{
-						rate = rate + CompanyInvoiceSetup.SUIManagement;
-					}
-
-					t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
-					t.TaxableWage = taxableWage;
-					
-				});
-				EmployerTaxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Code.Equals("FUTA")).ToList().ForEach(t =>
+					rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
+				}
+				if (!t.Tax.Code.Equals("ETT"))
 				{
-					var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : GrossWages;
-					var rate = t.Tax.Rate;
-					if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
-					{
-						rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
-					}
-					
-					t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
-					t.TaxableWage = taxableWage;
+					rate = rate + CompanyInvoiceSetup.SUIManagement;
+				}
 
-				});
-			}
+				t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
+				t.TaxableWage = taxableWage;
+					
+			});
+			EmployerTaxes.Where(t => !t.Tax.StateId.HasValue && t.Tax.Code.Equals("FUTA")).ToList().ForEach(t =>
+			{
+				var taxableWage = CompanyInvoiceSetup.ApplyStatuaryLimits ? t.TaxableWage : GrossWages;
+				var rate = t.Tax.Rate;
+				if (t.Tax.IsCompanySpecific && company.CompanyTaxRates.Any(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)))
+				{
+					rate = company.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxCode.Equals(t.Tax.Code)).Rate;
+				}
+					
+				t.Amount = Math.Round((decimal)(taxableWage * rate / 100), 2, MidpointRounding.AwayFromZero);
+				t.TaxableWage = taxableWage;
+
+			});
+			
 
 		}
 
