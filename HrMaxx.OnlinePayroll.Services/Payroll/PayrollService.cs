@@ -74,7 +74,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					//var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(payroll.Company.Id, payroll.PayDay);
-					
+					payroll.TaxPayDay = payroll.PayDay;
 					var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
 					
@@ -86,6 +86,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included).OrderBy(pc=>pc.Employee.CompanyEmployeeNo))
 					{
+						paycheck.TaxPayDay = payroll.TaxPayDay;
 						var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == paycheck.Employee.Id);
 						employeeAccumulation.PayCodes = employeeAccumulation.PayCodes ?? new List<PayCheckPayCode>();
 						if (paycheck.Employee.PayType == EmployeeType.Hourly)
@@ -471,6 +472,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					payroll.TaxPayDay = payroll.PayDay;
 					payroll.Status = PayrollStatus.Committed;
 					payroll.PayChecks.ForEach(pc => pc.Status = PaycheckStatus.Saved);
 					var companyIdForPayrollAccount = payroll.Company.Id;
@@ -2240,36 +2242,27 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = invoice.UserName,
 						TimeStamp = DateTime.Now
 					});
-					var payroll = _readerService.GetPayroll(invoice.PayrollId);
-					//var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(invoice.CompanyId, invoice.InvoiceDate);
-					var companyPayChecks = _readerService.GetPayChecks(companyId: invoice.CompanyId, endDate: invoice.InvoiceDate, isvoid:0);
-					var affectedChecks = new List<PayCheck>();
-					foreach (var payCheck in payroll.PayChecks)
-					{
-						var employeeInBetweenChecks = companyPayChecks.Where(p => p.Employee.Id == payCheck.Employee.Id 
-							&& p.PayDay>payCheck.PayDay && p.PayDay<=invoice.InvoiceDate).ToList();
-						foreach (var pc1 in employeeInBetweenChecks)
-						{
-							pc1.SubtractFromYTD(payCheck);
-							payCheck.AddToYTD(pc1);
-							_payrollRepository.UpdatePayCheckYTD(payCheck);
-							_payrollRepository.UpdatePayCheckYTD(pc1);
-							affectedChecks.Add(pc1);
-							affectedChecks.Add(payCheck);
-						}
-					}
+					//var payroll = _readerService.GetPayroll(invoice.PayrollId);
+					////var companyPayChecks = _payrollRepository.GetPayChecksTillPayDay(invoice.CompanyId, invoice.InvoiceDate);
+					//var companyPayChecks = _readerService.GetPayChecks(companyId: invoice.CompanyId, endDate: invoice.InvoiceDate, isvoid:0);
+					//var affectedChecks = new List<PayCheck>();
+					//foreach (var payCheck in payroll.PayChecks)
+					//{
+					//	var employeeInBetweenChecks = companyPayChecks.Where(p => p.Employee.Id == payCheck.Employee.Id 
+					//		&& p.PayDay>payCheck.PayDay && p.PayDay<=invoice.InvoiceDate).ToList();
+					//	foreach (var pc1 in employeeInBetweenChecks)
+					//	{
+					//		pc1.SubtractFromYTD(payCheck);
+					//		payCheck.AddToYTD(pc1);
+					//		_payrollRepository.UpdatePayCheckYTD(payCheck);
+					//		_payrollRepository.UpdatePayCheckYTD(pc1);
+					//		affectedChecks.Add(pc1);
+					//		affectedChecks.Add(payCheck);
+					//	}
+					//}
 					_payrollRepository.UpdatePayrollPayDay(invoice.PayrollId, invoice.PayChecks, invoice.InvoiceDate);
 					txn.Complete();
-					Bus.Publish<PayrollRedateEvent>(new PayrollRedateEvent()
-					{
-						CompanyId = invoice.CompanyId,
-						Year = invoice.InvoiceDate.Year,
-						TimeStamp = DateTime.Now,
-						AffectedPayChecks = affectedChecks,
-						UserName = invoice.UserName,
-						UserId = invoice.UserId,
-						InvoiceNumber = invoice.InvoiceNumber
-					});
+					
 					return saved;
 				}
 				

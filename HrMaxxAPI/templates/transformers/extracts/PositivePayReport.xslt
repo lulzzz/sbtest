@@ -17,7 +17,9 @@
   </xsl:template>
 <xsl:template match="ExtractHost">
 <xsl:variable name="total" select="translate(format-number(sum(Journals/Journal/Amount), '0000000000.00'),'.','')"/>
-<xsl:apply-templates select="Journals/Journal" />
+<xsl:apply-templates select="Journals/Journal">
+	<xsl:sort select="CheckNumber" data-type="number"/>
+</xsl:apply-templates>
 T<xsl:value-of select="$total"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(Journals/Journal)"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 </xsl:template>  
 <xsl:template match="Journal">

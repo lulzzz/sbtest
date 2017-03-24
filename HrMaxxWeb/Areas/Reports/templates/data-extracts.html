@@ -563,7 +563,7 @@
 				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File & Save</button>
 				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.salesReps.length>0" ng-click="payCommissions()">Pay & Save</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
-				<button class="btn btn-sm btn-info pull-right" ng-show="false" ng-click="regenerateFile()">Regenerate File</button>
+				<button class="btn btn-sm btn-info pull-right" ng-show="true" ng-click="regenerateFile()">Regenerate File</button>
 				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0" ng-click="printExtract()">Print Checks</button>
 			</div>
 			<extract-view master-extract="masterExtract"  />

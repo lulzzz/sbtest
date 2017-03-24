@@ -21,8 +21,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//Invoices
 		//List<PayrollInvoice> GetPayrollInvoices(Guid host);
-		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null);
-		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null);
+		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null);
+		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null  );
 		PayrollInvoice GetPayrollInvoice(Guid invoiceId);
 
 		//Payrolls
@@ -48,6 +48,11 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		//ExtractData
 		ExtractResponse GetExtractResponse(ReportRequest request);
 
+		ExtractResponse GetExtractAccumulation(string report, DateTime startDate, DateTime endDate, Guid? host = null, 
+			DepositSchedule941? depositSchedule941 = null,  bool includeVoids = false, bool includeTaxes = false,
+			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false);
+
 		//Companies
 		List<JournalPayee> GetJournalPayees(Guid companyId);
 		JournalPayee GetPayee(Guid company, Guid id, int payeeType);
@@ -55,6 +60,11 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ACHMasterExtract GetACHExtract(int id);
 		CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request);
 		CommissionsExtract GetCommissionsExtract(int id);
-		List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee, AccumulationMode mode= AccumulationMode.All);
+		List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null);
+
+		List<Accumulation> GetTaxAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
+			bool includeVoids = false, bool includeTaxes = true,
+			bool includedDeductions = true, bool includedCompensations = true, bool includeWorkerCompensations = true,
+			bool includePayCodes = true, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true, string report = null);
 	}
 }

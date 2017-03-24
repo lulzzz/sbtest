@@ -122,19 +122,19 @@
 					</Cell>
 
 				</Row>
-				<xsl:apply-templates select="Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" >
-
+				<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" >
+					<xsl:sort select="HostCompany/TaxFilingName"/>
 				</xsl:apply-templates>
 			</Table>
 		</Worksheet>
 	</xsl:template>
 
 	<xsl:template match="ExtractHost">
-		<xsl:variable name="totalSSWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/TaxableWage - sum(Accumulation/Compensations[PayType/Id=3]/Amount)"/>
-		<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
-		<xsl:variable name="totalFITTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FIT']/Amount"/>
-		<xsl:variable name="totalSSTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='SS_Employer']/Amount"/>
-		<xsl:variable name="totalMDTax" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/Amount + Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employer']/Amount"/>
+		<xsl:variable name="totalSSWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage - sum(PayCheckAccumulation/Compensations[PayCheckCompensation/PayTypeId=3]/YTD)"/>
+		<xsl:variable name="totalMDWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage"/>
+		<xsl:variable name="totalFITTax" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTD"/>
+		<xsl:variable name="totalSSTax" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee' or Tax/Code='SS_Employer']/YTD)"/>
+		<xsl:variable name="totalMDTax" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee' or Tax/Code='MD_Employer']/YTD)"/>
 		<xsl:variable name="line11" select="format-number(($totalFITTax + $totalSSTax + $totalMDTax),'000000000000.00')"/>
 		<xsl:variable name="SSSum" select="format-number($totalSSTax,'000000000000.00')"/>
 		<xsl:variable name="MDSum" select="format-number($totalMDTax,'000000000000.00')"/>

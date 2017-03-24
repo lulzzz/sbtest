@@ -348,9 +348,6 @@
     <Content Include="templates\transformers\extracts\Federal941EFTPS.xslt" />
     <Content Include="templates\transformers\extracts\Federal940EFTPS.xslt" />
     <Content Include="templates\transformers\extracts\HostWCReport.xslt" />
-    <Content Include="templates\transformers\extracts\Paperless940-2016.xslt" />
-    <Content Include="templates\transformers\extracts\Paperless941-2016.xslt" />
-    <Content Include="templates\transformers\extracts\SSAW2-2016.xslt" />
     <Content Include="templates\transformers\extracts\SSAW2-2017.xslt">
       <SubType>Designer</SubType>
     </Content>

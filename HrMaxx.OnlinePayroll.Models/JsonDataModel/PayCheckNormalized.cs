@@ -110,11 +110,31 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Quarter2FUTA { get; set; }
 		public decimal Quarter3FUTA { get; set; }
 		public decimal Quarter4FUTA { get; set; }
+		public decimal Quarter1FUTAWage { get; set; }
+		public decimal Quarter2FUTAWage { get; set; }
+		public decimal Quarter3FUTAWage { get; set; }
+		public decimal Quarter4FUTAWage { get; set; }
 		
 		public int Immigrants { get; set; }
 
 		public int Twelve1 { get; set; }
 		public int Twelve2 { get; set; }
 		public int Twelve3 { get; set; }
+	}
+
+	public class PayCheckSummary
+	{
+		public int Id { get; set; }
+		public int CheckNumber { get; set; }
+		public int PaymentMethod { get; set; }
+		public DateTime PayDay { get; set; }
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+		public decimal GrossWage { get; set; }
+		public string FullName { get { return string.Format("{0} {1}", FirstName, LastName); } }
+		public bool PEOASOCoCheck { get; set; }
+		public decimal NetWage { get; set; }
+		public bool IsVoid { get; set; }
+		public Guid CompanyId { get; set; }
 	}
 }

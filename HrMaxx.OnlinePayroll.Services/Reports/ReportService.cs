@@ -21,6 +21,7 @@ using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
@@ -257,7 +258,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetHostWCReport(ReportRequest request)
 		{
-			var data = GetExtractResponse(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
+			var data = GetExtractResponseGarnishment(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
 
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = false;
@@ -328,7 +329,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract GetInternalPositivePayReport(ReportRequest request)
 		{
 			request.IncludeVoids = true;
-			var data = GetExtractResponse(request);
+			var data = GetExtractResponse(request, includeTaxes:false);
 
 			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
 			request.AllowFiling = false;
@@ -339,7 +340,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetGarnishmentReport(ReportRequest request)
 		{
-			var data = GetExtractResponse(request, buildGarnishments:true);
+			var data = GetExtractResponseGarnishment(request, buildGarnishments:true);
 			if (!data.Hosts.Any(h => h.Accumulation.GarnishmentAgencies.Any()))
 			{
 				throw new Exception(NoData);
@@ -424,10 +425,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/PositivePayReport.xslt", "txt", request.Description + ".txt");
 		}
-
-		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
+		private ExtractResponse GetExtractResponseGarnishment(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily = false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
 		{
-			//var data = _reportRepository.GetExtractReport(request);
 			var data = _readerService.GetExtractResponse(request);
 
 			if (request.ReportName.Contains("1099"))
@@ -440,9 +439,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				{
 					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.Vendors.Any(v => v.Amount > 0))).ToList();
 				}
-				
+
 			}
-			else 
+			else
 			{
 				if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
 				{
@@ -464,25 +463,113 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
 					var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
 					var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
-					
+
 					h.Accumulation.Initialize(payChecks, voidedPayChecks, garnishmentAgencies, buildCounts, buildDaily, buildGarnishments, request.Year, request.Quarter);
-					
+
 					h.PayChecks.AddRange(payChecks);
 					h.CredChecks.AddRange(voidedPayChecks);
-					
+
 					if (buildEmployeeAccumulations)
 						h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
-					
+
 					h.Companies.ForEach(c =>
 					{
 						c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
-						c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter );
-						
+						c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter);
+
 						if (buildCompanyEmployeeAccumulation)
 							c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
 						c.PayChecks = new List<PayCheck>();
 						c.VoidedPayChecks = new List<PayCheck>();
 					});
+
+				}
+				else
+				{
+					h.Companies = h.Companies.Where(c => c.Vendors.Any(v => v.Amount > 0)).ToList();
+					h.Companies.ForEach(c =>
+					{
+						c.VendorAccumulation = new VendorAccumulation();
+						c.VendorAccumulation.Add(c.Vendors);
+					});
+					h.VendorAccumulation = new VendorAccumulation();
+					h.VendorAccumulation.Add(h.Companies.SelectMany(c => c.Vendors).ToList());
+				}
+
+			});
+			if (buildGarnishments)
+			{
+				data.Hosts = data.Hosts.Where(h => h.Accumulation.GarnishmentAgencies.Any(ga => ga.Total > 0)).ToList();
+			}
+
+			return data;
+		}
+		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false, bool includeTaxes = true, bool includeCompensaitons = false, bool includeDeductions=false, bool includeWorkerCompensations = false, bool includePayCodes= false)
+		{
+			//var data = _reportRepository.GetExtractReport(request);
+			//var data = _readerService.GetExtractResponse(request);
+			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
+				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes);
+			if (request.ReportName.Contains("1099"))
+			{
+				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
+				{
+					throw new Exception(NoPayrollData);
+				}
+				else
+				{
+					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.Vendors.Any(v => v.Amount > 0))).ToList();
+				}
+				
+			}
+			else 
+			{
+				if (data.Hosts.All(h => h.Companies.All(c => c.PayCheckAccumulation==null || c.PayCheckAccumulation.PayCheckWages==null || c.PayCheckAccumulation.PayCheckWages.GrossWage==0)))
+				{
+					throw new Exception(NoPayrollData);
+				}
+				else
+				{
+					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayCheckAccumulation!=null && c.PayCheckAccumulation.PayCheckWages!=null && c.PayCheckAccumulation.PayCheckWages.GrossWage>0)).ToList();
+				}
+			}
+			var garnishmentAgencies = new List<VendorCustomer>();
+			if (buildGarnishments)
+				garnishmentAgencies = _metaDataRepository.GetGarnishmentAgencies();
+			data.Hosts.ForEach(h =>
+			{
+				if (!request.ReportName.Contains("1099"))
+				{
+					h.Companies = h.Companies.Where(c => c.PayCheckAccumulation != null && c.PayCheckAccumulation.PayCheckWages != null && c.PayCheckAccumulation.PayCheckWages.GrossWage > 0).ToList();
+					h.PayCheckAccumulation = new Accumulation(){ExtractType = request.ExtractType, Year=request.Year, Quarter=request.Quarter,PayCheckWages=new PayCheckWages(), PayCheckList=new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes=new List<PayCheckTax>(), Deductions=new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(),WorkerCompensations=new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>()};
+					h.EmployeeAccumulationList = new List<Accumulation>();
+					h.Companies.ForEach(c =>
+					{
+						c.PayCheckAccumulation.ExtractType = request.ExtractType;
+						c.PayCheckAccumulation.Year = request.Year;
+						c.PayCheckAccumulation.Quarter = request.Quarter;
+						h.PayCheckAccumulation.AddAccumulation(c.PayCheckAccumulation);
+
+						if (c.VoidedAccumulation != null)
+						{
+							c.PayCheckAccumulation.SubtractAccumulation(c.VoidedAccumulation);
+							h.PayCheckAccumulation.SubtractAccumulation(c.VoidedAccumulation);
+						}
+							
+						c.PayCheckAccumulation.PayCheckList = new List<PayCheckSummary>();
+						
+						if (buildEmployeeAccumulations)
+						{
+							
+							var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: request.StartDate,
+								enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes:false, includeWorkerCompensations:includeWorkerCompensations, includePayTypeAccumulation:false, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, report: request.ReportName);
+							if (buildCompanyEmployeeAccumulation)
+								c.EmployeeAccumulationList = ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+							h.EmployeeAccumulationList.AddRange(ea.Where(ea1=>ea1.PayCheckWages!=null && ea1.PayCheckWages.GrossWage>0));
+						}
+					});
+
+				
 
 				}
 				else
@@ -554,7 +641,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Federal 941 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
-			var data = GetExtractResponse(request);
+			var data = GetExtractResponse(request, includeCompensaitons:true);
 			
 			var reportConst = _taxationService.PullReportConstant("Form941", (int)request.DepositSchedule.Value);
 			var config = _taxationService.GetApplicationConfig();
@@ -671,8 +758,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract StateCADE6(ReportRequest request)
 		{
 			request.Description = string.Format("California State DE6 for {0} (Quarter={1})", request.Year, request.Quarter);
-			request.AllowFiling = true;
-			var data = GetExtractResponse(request, true);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request, true, includeDeductions:true, includeCompensaitons:false);
 			
 			var argList = new List<KeyValuePair<string, string>>();
 
@@ -703,7 +790,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Paperless 940 for {0}", request.Year);
 			request.AllowFiling = false;
-			var data = GetExtractResponse(request);
+			var data = GetExtractResponse(request, includeDeductions:true);
 			
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("quarter",  request.Quarter.ToString()));
@@ -720,7 +807,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Paperless 941 for {0} (Quarter={1})", request.Year, request.Quarter);
 			request.AllowFiling = false;
-			var data = GetExtractResponse(request, buildCounts:true, buildDaily:true);
+			var data = GetExtractResponse(request, buildCounts:true, buildDaily:true, includeCompensaitons:true);
 			
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("quarter",  request.Quarter.ToString()));
@@ -738,7 +825,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("SSA W2 Megnatic for {0} ", request.Year);
 			request.AllowFiling = false;
-			var data = GetExtractResponse(request, buildEmployeeAccumulations:true);
+			var data = GetExtractResponse(request, buildEmployeeAccumulations:true, includeCompensaitons:true, includeDeductions:true, includePayCodes: true);
 			
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new List<KeyValuePair<string, string>>();
@@ -768,7 +855,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public Extract GetExtractTransformedWithFile(Extract extract)
 		{
-			//var xml = GetXml<ExtractResponse>(extract.Data);
+			var xml = GetXml<ExtractResponse>(extract.Data);
 
 			var args = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList);
 			var argList = new XsltArgumentList();
@@ -777,8 +864,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var splits = extract.Template.Split('\\');
 			var templateName = splits[splits.Length - 1];
 
-			var transformed = XmlTransformNew<ExtractResponse>(extract.Data,string.Format("{0}{1}", _templatePath, templateName), argList);
-			//var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
+			//var transformed = XmlTransformNew<ExtractResponse>(extract.Data,string.Format("{0}{1}", _templatePath, templateName), argList);
+			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
 
 			if (extract.Extension.Equals("txt"))
 				transformed = Transform(transformed);
@@ -855,8 +942,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				var extracts = _readerService.GetExtract(id);
 				extracts.Extract.Data.Hosts.ForEach(h =>
 				{
-					h.Accumulation.ExtractType = extracts.Extract.Report.ExtractType;
-					h.Companies.ForEach(c => c.Accumulation.ExtractType = extracts.Extract.Report.ExtractType);
+					if(h.Accumulation!=null)
+						h.Accumulation.ExtractType = extracts.Extract.Report.ExtractType;
+					if (h.PayCheckAccumulation != null)
+						h.PayCheckAccumulation.ExtractType = extracts.Extract.Report.ExtractType;
+					h.Companies.ForEach(c =>
+					{
+						if (c.Accumulation != null)
+							c.Accumulation.ExtractType = extracts.Extract.Report.ExtractType;
+						if (c.PayCheckAccumulation != null)
+							c.PayCheckAccumulation.ExtractType = extracts.Extract.Report.ExtractType;
+					});
 				});
 				
 				return extracts;
@@ -1161,10 +1257,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e => e.PayCheckWages.GrossWage > 0 && e.WorkerCompensationAmount>0).ToList();
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.WorkerCompensation).First();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes:false, includePayTypeAccumulation:false, includePayCodes:false, includedCompensations:false, includedDeductions:false, includeWorkerCompensations:true).Where(e => e.PayCheckWages.GrossWage > 0 && e.WorkerCompensationAmount>0).ToList();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes:false, includeTaxes:false, includePayTypeAccumulation:false, includedDeductions:false, includedCompensations:false, includeWorkerCompensations:true).First();
 			
 			return response;
 		}
@@ -1172,22 +1268,22 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportResponse GetDeductionsReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e => e.PayCheckWages.GrossWage > 0 && e.EmployeeDeductions>0).ToList();
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode: AccumulationMode.Deductions).First();
+
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeTaxes: false, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: false, includeWorkerCompensations: false).Where(e => e.PayCheckWages.GrossWage > 0 && e.EmployeeDeductions > 0).ToList();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: false, includePayTypeAccumulation: false, includeWorkerCompensations: false, includedCompensations: false).First();
 			return response;
 		}
 
 		private ReportResponse GetPayrollSummaryReport(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e=>e.PayCheckWages.GrossWage>0).ToList();
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company).First();
+
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: true, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayTypeAccumulation:false).First();
 			return response;
 		}
 
@@ -1240,8 +1336,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetFederal940(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company:request.CompanyId, startdate: request.StartDate, enddate:request.EndDate, type: AccumulationType.Company,mode:AccumulationMode.TaxesDeductions).First();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: false, includeWorkerCompensations: false).First();
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
@@ -1261,8 +1357,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetFederal941(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.TaxesDeductionsCompensationsDailyMonthly).First();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: false, includeDailyAccumulation: true, includeMonthlyAccumulation: true).First();
 			
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
@@ -1284,7 +1380,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.TaxesDeductionsCompensationsDailyMonthly).First();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: false, includeMonthlyAccumulation: true, includeDailyAccumulation: true).First();
 
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);
@@ -1302,8 +1398,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetW2Report(ReportRequest request, bool isEmployee)
 		{
 			var response = new ReportResponse();
-			
-			response.EmployeeAccumulationList = _readerService.GetAccumulations(company:request.CompanyId, startdate:request.StartDate, enddate:request.EndDate, type: AccumulationType.Employee).Where(e=>e.PayCheckWages.GrossWage>0).ToList();
+
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.Company = GetCompany(request.CompanyId);
 			
 
@@ -1317,8 +1413,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetW3Report(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode: AccumulationMode.TaxesDeductionsCompensations).First();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: false).First();
 			response.Company = GetCompany(request.CompanyId);
 
 
@@ -1357,7 +1453,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).First();
 			
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
@@ -1416,8 +1512,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE7(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).First();
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
 			var argList = new XsltArgumentList();
@@ -1431,9 +1527,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE6(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
-			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e=>e.PayCheckWages.GrossWage>0).ToList();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).First();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.Company = GetCompany(request.CompanyId); 
 			response.Host = GetHost(request.HostId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
@@ -1455,8 +1551,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE9(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).First();
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
 			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
@@ -1478,9 +1574,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetCaliforniaDE9C(ReportRequest request)
 		{
 			var response = new ReportResponse();
-			
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
-			response.EmployeeAccumulationList = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).First();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
@@ -1519,7 +1615,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 			response.Company = GetCompany(request.CompanyId);
-			response.CompanyAccumulations = _readerService.GetAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, mode:AccumulationMode.Taxes).First();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false).First();
 			var type = Convert.ToInt32(request.ReportName.Split('_')[1]);
 			var total = type == 1
 				? response.CompanyAccumulations.CaliforniaTaxes
@@ -1544,8 +1640,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			for (var q = 1; q <= 4; q++)
 			{
 				var qAcc =
-				_readerService.GetAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, q * 3 - 2, 1), enddate: new DateTime(request.Year, q * 3, DateTime.DaysInMonth(request.Year, q * 3)),
-					type: AccumulationType.Company, mode: AccumulationMode.TaxesCompensationsMonthly).First();
+				_readerService.GetTaxAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, q * 3 - 2, 1), enddate: new DateTime(request.Year, q * 3, DateTime.DaysInMonth(request.Year, q * 3)),
+					type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: true, includeWorkerCompensations: false, includeMonthlyAccumulation:true).First();
 				qAcc.Quarter = q;
 				response.EmployeeAccumulationList.Add(qAcc);
 			}
@@ -1570,16 +1666,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			for (var m = 1; m <= 12; m++)
 			{
 				var mAcc =
-				_readerService.GetAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, m, 1), enddate: new DateTime(request.Year, m, DateTime.DaysInMonth(request.Year, m)),
-					type: AccumulationType.Company, mode: AccumulationMode.TaxesCompensationsMonthly).First();
+				_readerService.GetTaxAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, m, 1), enddate: new DateTime(request.Year, m, DateTime.DaysInMonth(request.Year, m)),
+					type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: true, includeWorkerCompensations: false, includeMonthlyAccumulation:true).First();
 				mAcc.Month = m;
 				response.EmployeeAccumulationList.Add(mAcc);
 			}
 			for (var q = 1; q <= 4; q++)
 			{
 				var qAcc =
-				_readerService.GetAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, q*3-2, 1), enddate: new DateTime(request.Year, q*3, DateTime.DaysInMonth(request.Year, q*3)),
-					type: AccumulationType.Company).First();
+				_readerService.GetTaxAccumulations(company: request.CompanyId, startdate: new DateTime(request.Year, q * 3 - 2, 1), enddate: new DateTime(request.Year, q * 3, DateTime.DaysInMonth(request.Year, q * 3)),
+					type: AccumulationType.Company, includePayCodes: false, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: true, includeWorkerCompensations: false).First();
 				qAcc.Quarter = q;
 				response.EmployeeAccumulationList.Add(qAcc);
 			}
@@ -1685,7 +1781,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			string strOutput = null;
 			var sb = new System.Text.StringBuilder();
-			
+			//source.Save("C:\\Dev\\EDPI\\docs\\rptresp.xml");
 			using (TextWriter xtw = new StringWriter(sb))
 			{
 				var xslt = new XslCompiledTransform();// Mvp.Xml.Exslt.ExsltTransform();

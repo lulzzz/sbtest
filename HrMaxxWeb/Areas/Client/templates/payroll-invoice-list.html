@@ -22,6 +22,14 @@
 					<date-ctrl name="enddate" model="data.endDate" disabled="false" />
 				</div>
 				<div class="col-sm-1 form-group">
+					<label for="statuses">Payment Status</label>
+					<div class="col-sm-12" ng-dropdown-multiselect="" options="paymentstatuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentStatuses"></div>
+				</div>
+				<div class="col-sm-1 form-group">
+					<label for="statuses">Payment Method</label>
+					<div class="col-sm-12" ng-dropdown-multiselect="" options="paymentmethods" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentMethods"></div>
+				</div>
+				<div class="col-sm-1 form-group">
 					<label></label>
 					<button class="btn btn-sm btn-primary form-control" ng-click="updateData()">Filter</button>
 				</div>

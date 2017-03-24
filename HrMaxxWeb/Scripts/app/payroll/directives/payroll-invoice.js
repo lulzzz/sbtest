@@ -332,7 +332,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						
 					};
 					$scope.reDateInvoicePayroll = function () {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you re-date the invoice? this will re-date the payroll and paychecks as well', 'danger', function () {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you re-date the invoice? this will re-date the Tax Pay Date for the pay checks.', 'danger', function () {
 							
 							payrollRepository.redateInvoiceAndPayroll($scope.invoice, moment(dataSvc.reDate).format("MM/DD/YYYY")).then(function (data) {
 								$scope.invoice = null;
@@ -467,6 +467,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 							getCompanyContact();
 							dataSvc.config = $scope.mainData.config;
 							$scope.original = angular.copy($scope.invoice);
+							$scope.maxReDate = moment($scope.invoice.payrollPayDay).endOf('year').toDate();
 						}
 					}
 					

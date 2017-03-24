@@ -704,8 +704,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							extract.Report.Description, extract.Report.DepositDate.Value);
 						journalList.Add(journal);
 						journals.Add(journal.Id);
-						payCheckIds.AddRange(host.PayChecks.Select(pc=>pc.Id));
-						voidedCheckIds.AddRange(host.CredChecks.Select(pc=>pc.Id));
+						payCheckIds.AddRange(host.PayCheckAccumulation.PayCheckList.Select(pc=>pc.Id));
+						voidedCheckIds.AddRange(host.PayCheckAccumulation.VoidedPayCheckList.Select(pc=>pc.Id));
 					}
 					
 
@@ -875,7 +875,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private decimal CalculateTaxAmount(ReportRequest report, ExtractHost host)
 		{
 			if (report.ExtractType != ExtractType.NA)
-				return host.Accumulation.ApplicableAmounts;
+				return host.PayCheckAccumulation.ApplicableAmounts;
 			
 			throw new Exception("no Taxes to be files on this report");
 		}

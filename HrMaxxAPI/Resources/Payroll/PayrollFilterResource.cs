@@ -26,6 +26,8 @@ namespace HrMaxxAPI.Resources.Payroll
 	{
 		public Guid? CompanyId { get; set; }
 		public List<InvoiceStatus> Status { get; set; }
+		public List<PaymentStatus> PaymentStatus { get; set; }
+		public List<InvoicePaymentMethod> PaymentMethod { get; set; } 
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 	}

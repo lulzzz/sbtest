@@ -32,6 +32,11 @@
 			<span>{{item.startingCheckNumber}}</span>
 			
 		</div>
+		<div class="col-sm-2" ng-class="{'show-red':!canConfirm()}">
+			<label class="control-label">Tax Pay Date: </label>
+			<span>{{item.taxPayDay | date: 'MM/dd/yyyy'}}</span>
+
+		</div>
 		
 	</div>
 	<div class="col-sm-12" ng-if="item.notes">

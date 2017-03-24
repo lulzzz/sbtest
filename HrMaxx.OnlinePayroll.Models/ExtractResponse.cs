@@ -56,6 +56,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Contact Contact { get; set; }
 		public List<ExtractCompany> Companies { get; set; }
 
+		public Accumulation PayCheckAccumulation { get; set; }
+		public List<Accumulation> EmployeeAccumulationList { get; set; }
 		public ExtractAccumulation Accumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public VendorAccumulation VendorAccumulation { get; set; }
@@ -131,9 +133,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheck> VoidedPayChecks { get; set; }
 		public List<CompanyVendor> Vendors { get; set; }
 		public ExtractAccumulation Accumulation { get; set; }
+		public List<Accumulation> EmployeeAccumulationList { get; set; } 
 		public VendorAccumulation VendorAccumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
-		public List<ExtractInvoicePayment> Payments { get; set; } 
+		public List<ExtractInvoicePayment> Payments { get; set; }
+
+		public Accumulation PayCheckAccumulation { get; set; }
+		public Accumulation VoidedAccumulation { get; set; }
 	}
 
 	public class VendorAccumulation
@@ -225,6 +231,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? ParentId { get; set; }
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }
+		public List<Accumulation> Accumulations { get; set; }
+		public List<Accumulation> VoidedAccumulations { get; set; } 
 		public List<ExtractVendor> Vendors { get; set; } 
 	}
 
@@ -260,6 +268,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
+		public DateTime TaxPayDay { get; set; }
 
 		public string Compensations { get; set; }
 		public string Deductions { get; set; }

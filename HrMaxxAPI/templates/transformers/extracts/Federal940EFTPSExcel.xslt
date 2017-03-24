@@ -101,15 +101,15 @@
 					</Cell>
 					
 				</Row>
-				<xsl:apply-templates select="Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" >
-
+				<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" >
+					<xsl:sort select="HostCompany/TaxFilingName"/>
 				</xsl:apply-templates>
 			</Table>
 		</Worksheet>
 	</xsl:template>
 
 	<xsl:template match="ExtractHost">
-		<xsl:variable name="totalFUTATax" select="Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount"/>
+		<xsl:variable name="totalFUTATax" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD"/>
 		<xsl:variable name="FUTASum" select="format-number($totalFUTATax,'000000000000.00')"/>
 
 		<xsl:choose>

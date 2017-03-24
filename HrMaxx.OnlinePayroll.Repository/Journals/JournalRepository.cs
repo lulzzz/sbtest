@@ -149,16 +149,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			using (var conn = GetConnection())
 			{
 				const string selectSql =
-				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
+				@"SELECT MasterExtractId FROM PaxolArchive.dbo.MasterExtract WHERE MasterExtractId=@extractId";
 				
 				dynamic exists =
 						conn.Query(selectSql, new { extractId }).FirstOrDefault();
 				if (exists != null)
 				{
-					conn.Execute("delete from MasterExtract where MasterExtractId=@extractId", new { extractId });
+					conn.Execute("delete from PaxolArchive.dbo.MasterExtract where MasterExtractId=@extractId", new { extractId });
 				}
 				const string sql =
-					@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
+					@"INSERT INTO PaxolArchive.dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
 				conn.Execute(sql, new
 				{
 					extractId,

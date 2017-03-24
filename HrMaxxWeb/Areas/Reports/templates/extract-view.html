@@ -28,60 +28,54 @@
 						<td class="col-sm-4">
 							<div class="row">
 								<div class="col-sm-6"><strong>Gross Wage</strong></div>
-								<div class="col-sm-6 text-right">{{selectedHost.accumulation.grossWage | currency:'$'}}</div>
+								<div class="col-sm-6 text-right">{{selectedHost.payCheckAccumulation.payCheckWages.grossWage | currency:'$'}}</div>
 							</div>
-							<div class="row" ng-show="selectedHost.accumulation.compensations && selectedHost.accumulation.compensations.length>0">
+							<div class="row" ng-show="selectedHost.payCheckAccumulation.compensations && selectedHost.payCheckAccumulation.compensations.length>0">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Wages</div>
 							</div>
-							<div class="row" ng-repeat="comp in selectedHost.accumulation.compensations">
-								<div class="col-sm-6"><strong>{{comp.payType.name}}</strong></div>
-								<div class="col-sm-6 text-right">{{comp.amount | currency:'$'}}</div>
+							<div class="row" ng-repeat="comp in selectedHost.payCheckAccumulation.compensations">
+								<div class="col-sm-6"><strong>{{comp.payTypeName}}</strong></div>
+								<div class="col-sm-6 text-right">{{comp.ytd | currency:'$'}}</div>
 
 							</div>
 							<div class="row">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Taxes</div>
 							</div>
-							<div class="row" ng-repeat="tax in selectedHost.accumulation.applicableTaxes">
+							<div class="row" ng-repeat="tax in selectedHost.payCheckAccumulation.applicableTaxes">
 								<div class="col-sm-4"><strong>{{tax.tax.code}}</strong></div>
-								<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
-								<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{tax.ytdWage | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{tax.ytd | currency:'$'}}</div>
 							</div>
 							<div class="row">
 								<div class="col-sm-4"><strong>Total</strong></div>
 								<div class="col-sm-4 text-right"></div>
-								<div class="col-sm-4 text-right">{{selectedHost.accumulation.applicableAmounts | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{selectedHost.payCheckAccumulation.applicableAmounts | currency:'$'}}</div>
 							</div>
 
-							<div class="row" ng-show="selectedHost.accumulation.deductions && selectedHost.accumulation.deductions.length>0">
+							<div class="row" ng-show="selectedHost.payCheckAccumulation.deductions && selectedHost.payCheckAccumulation.deductions.length>0">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Deductions</div>
 							</div>
-							<div class="row" ng-repeat="ded in selectedHost.accumulation.deductions">
-								<div class="col-sm-8"><strong>{{ded.deduction.deductionName}} ({{ded.deduction.type.name}})</strong></div>
-								<div class="col-sm-4 text-right">{{ded.amount | currency:'$'}}</div>
+							<div class="row" ng-repeat="ded in selectedHost.payCheckAccumulation.deductions">
+								<div class="col-sm-8"><strong>{{ded.companyDeduction.deductionName}} ({{ded.companyDeduction.deductionType.name}})</strong></div>
+								<div class="col-sm-4 text-right">{{ded.ytd | currency:'$'}}</div>
 
 							</div>
 						</td>
 						<td class="col-sm-3" ng-show="selectedHost">
-							<div class="row m-b-2 m-t-2" ng-show="selectedCompany && selectedCompanyFilings.length>0">
-								<button class="btn btn-info btn-sm" ng-click="showHistory=!showHistory"><i class="fa" ng-class="{'fa-plus-circle': !showHistory, 'fa-minus-circle': showHistory}"></i> Previous Filings <span class="badge">{{selectedCompanyFilings.length}}</span></button>
+							
+							<div class="row  m-b-2 m-t-2" ng-show="selectedHost.payCheckAccumulation.payCheckList.length>0">
+								<button class="btn btn-info btn-sm" ng-click="showPayChecks=!showPayChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Pay Checks <span class="badge">{{selectedHost.payCheckAccumulation.payCheckList.length}}</span></button>
 
 							</div>
-							<div class="row  m-b-1 m-t-1" ng-repeat="f in selectedCompanyFilings" ng-show="selectedCompany && showHistory">
-								<i><u>{{f.depositDate | date:'MM/dd/yyyy'}} (Wages: {{f.grossWage | currency:'$'}} - Taxes: {{f.taxes | currency:'$'}} )</u></i>
+							<div class="row m-b-1 m-t-1" ng-repeat="pc in selectedHost.payCheckAccumulation.payCheckList" ng-show="showPayChecks">
+								<i><u>{{pc.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
 							</div>
-							<div class="row  m-b-2 m-t-2" ng-show="selectedHost.payChecks.length>0">
-								<button class="btn btn-info btn-sm" ng-click="showPayChecks=!showPayChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Pay Checks <span class="badge">{{selectedCompany.payChecks.length}}</span></button>
+							<div class="row  m-b-2 m-t-2" ng-show="selectedHost.payCheckAccumulation.voidedPayCheckList.length>0">
+								<button class="btn btn-info btn-sm" ng-click="showVoidedChecks=!showVoidedChecks"><i class="fa" ng-class="{'fa-plus-circle': !showVoidedChecks, 'fa-minus-circle': showVoidedChecks}"></i> Voided Checks <span class="badge">{{selectedHost.payCheckAccumulation.voidedPayCheckList.length}}</span></button>
 
 							</div>
-							<div class="row m-b-1 m-t-1" ng-repeat="pc in selectedHost.payChecks" ng-show="showPayChecks">
-								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
-							</div>
-							<div class="row  m-b-2 m-t-2" ng-show="selectedHost.creditChecks.length>0">
-								<button class="btn btn-info btn-sm" ng-click="showVoidedChecks=!showVoidedChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Voided Checks <span class="badge">{{selectedCompany.showVoidedChecks.length}}</span></button>
-
-							</div>
-							<div class="row m-b-1 m-t-1" ng-repeat="pc in selectedHost.creditPayChecks" ng-show="showVoidedChecks">
-								<i><u>{{pc.employee.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
+							<div class="row m-b-1 m-t-1" ng-repeat="pc in selectedHost.payCheckAccumulation.voidedPayCheckList" ng-show="showVoidedChecks">
+								<i><u>{{pc.fullName}} -- {{pc.payDay | date:'MM/dd/yyyy'}} - {{pc.paymentMethod===1? pc.checkNumber : 'EFT'}}</u></i>
 							</div>
 						</td>
 						<td class="col-sm-2">
@@ -92,35 +86,35 @@
 						<td class="col-sm-3" ng-show="selectedCompany">
 							<div class="row">
 								<div class="col-sm-6"><strong>Gross Wage</strong></div>
-								<div class="col-sm-6 text-right">{{selectedCompany.accumulation.grossWage | currency:'$'}}</div>
+								<div class="col-sm-6 text-right">{{selectedCompany.payCheckAccumulation.payCheckWages.grossWage | currency:'$'}}</div>
 							</div>
-							<div class="row" ng-show="selectedCompany.accumulation.compensations && selectedCompany.accumulation.compensations.length>0">
+							<div class="row" ng-show="selectedCompany.payCheckAccumulation.compensations && selectedCompany.payCheckAccumulation.compensations.length>0">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Wages</div>
 							</div>
-							<div class="row" ng-repeat="comp in selectedCompany.accumulation.compensations">
-								<div class="col-sm-6"><strong>{{comp.payType.name}}</strong></div>
-								<div class="col-sm-6 text-right">{{comp.amount | currency:'$'}}</div>
+							<div class="row" ng-repeat="comp in selectedCompany.payCheckAccumulation.compensations">
+								<div class="col-sm-6"><strong>{{comp.payTypeName}}</strong></div>
+								<div class="col-sm-6 text-right">{{comp.ytd | currency:'$'}}</div>
 
 							</div>
 							<div class="row">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Taxes</div>
 							</div>
-							<div class="row" ng-repeat="tax in selectedCompany.accumulation.applicableTaxes">
+							<div class="row" ng-repeat="tax in selectedCompany.payCheckAccumulation.applicableTaxes">
 								<div class="col-sm-4"><strong>{{tax.tax.code}}</strong></div>
-								<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
-								<div class="col-sm-4 text-right">{{tax.amount | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{tax.ytdWage | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{tax.ytd | currency:'$'}}</div>
 							</div>
 							<div class="row">
 								<div class="col-sm-4"><strong>Total</strong></div>
 								<div class="col-sm-4 text-right"></div>
-								<div class="col-sm-4 text-right">{{selectedCompany.accumulation.applicableAmounts | currency:'$'}}</div>
+								<div class="col-sm-4 text-right">{{selectedCompany.payCheckAccumulation.applicableAmounts | currency:'$'}}</div>
 							</div>
-							<div class="row" ng-show="selectedCompany.accumulation.deductions  && selectedCompany.accumulation.deductions.length>0">
+							<div class="row" ng-show="selectedCompany.payCheckAccumulation.deductions  && selectedCompany.payCheckAccumulation.deductions.length>0">
 								<div class="col-sm-10 col-sm-offset-1 alert-info">Deductions</div>
 							</div>
-							<div class="row" ng-repeat="ded in selectedCompany.accumulation.deductions">
-								<div class="col-sm-8"><strong>{{ded.deduction.deductionName}} ({{ded.deduction.type.name}})</strong></div>
-								<div class="col-sm-4 text-right">{{ded.amount | currency:'$'}}</div>
+							<div class="row" ng-repeat="ded in selectedCompany.payCheckAccumulation.deductions">
+								<div class="col-sm-8"><strong>{{ded.companyDeduction.deductionName}} ({{ded.companyDeduction.deductionType.name}})</strong></div>
+								<div class="col-sm-4 text-right">{{ded.ytd | currency:'$'}}</div>
 
 							</div>
 						</td>

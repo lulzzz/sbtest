@@ -543,7 +543,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Contact, opt => opt.Ignore())
 				.ForMember(dest => dest.HostCompany, opt => opt.MapFrom(src=>src.HostCompany))
 				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
+				.ForMember(dest => dest.PayCheckAccumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.EmployeeAccumulations, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeAccumulationList, opt => opt.Ignore())
 				.ForMember(dest => dest.VendorAccumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
 				.ForMember(dest => dest.Accounts, opt => opt.Ignore())
@@ -559,6 +561,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.VoidedPayChecks, opt => opt.MapFrom(src=>src.VoidedPayChecks))
 				.ForMember(dest => dest.VendorAccumulation, opt => opt.Ignore())
 				.ForMember(dest => dest.EmployeeAccumulations, opt => opt.Ignore())
+				.ForMember(dest => dest.EmployeeAccumulationList, opt => opt.Ignore())
+				.ForMember(dest => dest.PayCheckAccumulation, opt => opt.MapFrom(src=>src.Accumulations.Any() ? src.Accumulations.First() : default(Accumulation)))
+				.ForMember(dest => dest.VoidedAccumulation, opt => opt.MapFrom(src => src.VoidedAccumulations.Any() ? src.VoidedAccumulations.First() : default(Accumulation)))
 				.ForMember(dest => dest.Payments, opt => opt.Ignore())
 				.ForMember(dest => dest.Vendors, opt => opt.MapFrom(src => src.Vendors.Where(v=>v.Amount>0).ToList()));
 

@@ -19,7 +19,7 @@
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
 						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
-							{{item.payDay | date:'MM/dd/yyyy'}}
+							{{item.payDay | date:'MM/dd/yyyy'}} ({{item.taxPayDay | date:'MM/dd/yyyy'}})
 						</td>
 						<td data-title=" 'Start Date' " sortable=" 'startDate' " class="col-sm-1 text-center">
 							{{item.startDate | date:'MM/dd/yyyy'}}

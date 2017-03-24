@@ -94,7 +94,7 @@
 					
 				</div>
 				<div class="col-sm-2 form-group" ng-show="!mainData.userCompany && invoice.status===5">
-					<date-ctrl name="redate" model="data.reDate" min="invoice.payrollPayDay" disabled="false" />
+					<date-ctrl name="redate" model="data.reDate" min="invoice.payrollPayDay" max="maxReDate" disabled="false" />
 				</div>
 				<div class="col-sm-2 show-red" ng-if="unsavedPayments">changes will apply when you save</div>
 				<div class="col-sm-10">
@@ -148,6 +148,9 @@
 							</div>
 							<div class="invoice-detail">
 								Payroll Pay Day: {{invoice.payrollPayDay | date:'MM/dd/yyyy'}}
+							</div>
+							<div class="invoice-detail">
+								Tax Pay Day: {{invoice.taxPayDay | date:'MM/dd/yyyy'}}
 							</div>
 							<div class="invoice-detail">
 								Payroll Pay Period: {{invoice.periodStart | date:'MM/dd/yyyy'}} - {{invoice.periodEnd | date:'MM/dd/yyyy'}}

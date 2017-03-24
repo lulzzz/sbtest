@@ -168,7 +168,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
 						payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
 						payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
-
+						payroll.taxPayDay = payroll.payDay;
 						payrollRepository.processPayroll(payroll).then(function (data) {
 							$timeout(function () {
 								$scope.cancel();

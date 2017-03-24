@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
+		public DateTime TaxPayDay { get; set; }
 		public List<PayCheck> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
@@ -93,6 +94,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
+		public DateTime TaxPayDay { get; set; }
 
 		public decimal YTDSalary { get; set; }
 		public decimal YTDGrossWage { get; set; }

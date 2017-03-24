@@ -582,7 +582,9 @@
 					<Cell ss:StyleID="s97" />
 				</Row>
 				<Row></Row>
-				<xsl:apply-templates select="Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" mode="CompanyInfo"/>
+				<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" mode="CompanyInfo">
+					<xsl:sort select="HostCompany/TaxFilingName"/>
+				</xsl:apply-templates>
 				
 			</Table>
 			<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1781,7 +1783,9 @@
 					<Cell ss:StyleID="s103" />
 				</Row>
 				<Row></Row>
-				<xsl:apply-templates select="Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" mode="i940"/>
+				<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" mode="i940">
+					<xsl:sort select="HostCompany/TaxFilingName"/>
+				</xsl:apply-templates>
 				
 			</Table>
 			<WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1888,24 +1892,24 @@
 		
 		
 			<xsl:variable name="fein1" select="translate(HostCompany/FederalEIN,'-','')" />
-			<xsl:variable name="totalGrossWages" select="Accumulation/GrossWage" />
-			<xsl:variable name="totalMDWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage" />
-			<xsl:variable name="totalFUTAWages" select="Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/TaxableWage" />
+			<xsl:variable name="totalGrossWages" select="PayCheckAccumulation/PayCheckWages/GrossWage" />
+			<xsl:variable name="totalMDWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage" />
+			<xsl:variable name="totalFUTAWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTDWage" />
 			<xsl:variable name="line3" select="$totalGrossWages" />
 			<xsl:variable name="line4" select="$totalGrossWages - $totalMDWages" />
 			<xsl:variable name="line5" select="$totalGrossWages - $line4 - $totalFUTAWages" />
 			<xsl:variable name="line6" select="$line4 + $line5" />
-			<xsl:variable name="line7b" select="sum(Accumulation/Q1Wage) + sum(Accumulation/Q2Wage)" />
+			<xsl:variable name="line7b" select="sum(PayCheckAccumulation/PayCheckWages/Quarter1FUTAWage) + sum(PayCheckAccumulation/PayCheckWages/Quarter2FUTAWage)" />
 			<xsl:variable name="line7c" select="$line7b*0.008" />
-			<xsl:variable name="line7d" select="sum(Accumulation/Q3Wage) + sum(Accumulation/Q4Wage)" />
+			<xsl:variable name="line7d" select="sum(PayCheckAccumulation/PayCheckWages/Quarter3FUTAWage) + sum(PayCheckAccumulation/PayCheckWages/Quarter4FUTAWage)" />
 			<xsl:variable name="line7e" select="$line7d*0.006" />
 			<xsl:variable name="line7" select="$totalGrossWages - $line6" />
 			<xsl:variable name="line8" select="format-number($line7c+$line7e,'######.00')" />
 			<xsl:variable name="line11" select="format-number($line7*0.003,'######.00')" />
 			<xsl:variable name="line12" select="$line8 + $line11" />
 			<xsl:variable name="line12a" select="format-number($line7*0.008,'####.00')" />
-			<xsl:variable name="line13" select="format-number(Accumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount,'####.00')" />
-			<xsl:variable name="lineI" select="sum(Accumulation/Taxes/PayrollTax[Tax/Code='SUI']/Amount)" />
+			<xsl:variable name="line13" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD,'####.00')" />
+			<xsl:variable name="lineI" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD)" />
 			<Row>
 				<Cell>
 					<Data ss:Type="Number">
@@ -1953,7 +1957,7 @@
 				<Cell>
 					<Data ss:Type="String">
 						<xsl:choose>
-							<xsl:when test="sum(Accumulation/Deductions/PayrollDeduction[Deduction/R940_R='4a']/Amount)>0">Y</xsl:when>
+							<xsl:when test="sum(PayCheckAccumulation/Deductions/PayCheckDeduction[CompanyDeduction/R940_R='4a']/YTD)>0">Y</xsl:when>
 							<xsl:otherwise>N</xsl:otherwise>
 						</xsl:choose>
 					</Data>
@@ -1961,7 +1965,7 @@
 				<Cell>
 					<Data ss:Type="String">
 						<xsl:choose>
-							<xsl:when test="sum(Accumulation/Deductions/PayrollDeduction[Deduction/R940_R='4b']/Amount)>0">Y</xsl:when>
+							<xsl:when test="sum(PayCheckAccumulation/Deductions/PayCheckDeduction[CompanyDeduction/R940_R='4b']/YTD)>0">Y</xsl:when>
 							<xsl:otherwise>N</xsl:otherwise>
 						</xsl:choose>
 					</Data>
@@ -1969,7 +1973,7 @@
 				<Cell>
 					<Data ss:Type="String">
 						<xsl:choose>
-							<xsl:when test="sum(Accumulation/Deductions/PayrollDeduction[Deduction/R940_R='4c']/Amount)>0">Y</xsl:when>
+							<xsl:when test="sum(PayCheckAccumulation/Deductions/PayCheckDeduction[CompanyDeduction/R940_R='4c']/YTD)>0">Y</xsl:when>
 							<xsl:otherwise>N</xsl:otherwise>
 						</xsl:choose>
 					</Data>
@@ -1977,7 +1981,7 @@
 				<Cell>
 					<Data ss:Type="String">
 						<xsl:choose>
-							<xsl:when test="sum(Accumulation/Deductions/PayrollDeduction[Deduction/R940_R='4d']/Amount)>0">Y</xsl:when>
+							<xsl:when test="sum(PayCheckAccumulation/Deductions/PayCheckDeduction[CompanyDeduction/R940_R='4d']/YTD)>0">Y</xsl:when>
 							<xsl:otherwise>N</xsl:otherwise>
 						</xsl:choose>
 					</Data>
@@ -1985,7 +1989,7 @@
 				<Cell>
 					<Data ss:Type="String">
 						<xsl:choose>
-							<xsl:when test="count(PayChecks/PayCheck[Employee/TaxCategory='NonImmigrantAlien' and GrossWage>0])>0">Y</xsl:when>
+							<xsl:when test="PayCheckAccumulation/PayCheckWages/Immigrants>0">Y</xsl:when>
 							<xsl:otherwise>N</xsl:otherwise>
 						</xsl:choose>
 					</Data>
@@ -2016,22 +2020,22 @@
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(Accumulation/Q1Amount)" />
+						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter1FUTA)" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(Accumulation/Q2Amount)" />
+						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter2FUTA)" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(Accumulation/Q3Amount)" />
+						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter3FUTA)" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(Accumulation/Q4Amount)" />
+						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter4FUTA)" />
 					</Data>
 				</Cell>
 				<Cell>

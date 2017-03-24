@@ -55,6 +55,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? SalesRep { get; set; }
 		public decimal Commission { get; set; }
 		public DateTime PayrollPayDay { get; set; }
+		public DateTime PayrollTaxPayDay { get; set; }
 		public CompanyJson Company { get; set; }
 		public List<InvoicePaymentJson> InvoicePayments { get; set; }
 		public bool CommissionClaimed { get; set; }

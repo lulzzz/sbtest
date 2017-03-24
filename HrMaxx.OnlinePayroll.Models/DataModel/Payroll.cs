@@ -34,6 +34,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.Guid> InvoiceId { get; set; }
         public bool PEOASOCoCheck { get; set; }
         public string Notes { get; set; }
+        public System.DateTime TaxPayDay { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }

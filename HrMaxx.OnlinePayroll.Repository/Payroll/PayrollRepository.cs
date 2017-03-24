@@ -215,18 +215,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			if (dbPayroll != null)
 			{
 				var originalDate = dbPayroll.PayDay;
-				dbPayroll.PayDay = date.Date;
+				dbPayroll.TaxPayDay = date.Date;
 				var dbPayChecks = dbPayroll.PayrollPayChecks.Where(pc => payChecks.Contains(pc.Id)).ToList();
-				dbPayChecks.ForEach(pc=>pc.PayDay=date.Date);
-				var dbJournals = _dbContext.Journals.Where(j => payChecks.Contains(j.PayrollPayCheckId.Value)).ToList();
-				dbJournals.ForEach(j =>
-				{
-					j.TransactionDate = date.Date;
-					if (!j.OriginalDate.HasValue && DateTime.Today > originalDate)
-					{
-						j.OriginalDate = originalDate;
-					}
-				});
+				dbPayChecks.ForEach(pc => pc.TaxPayDay = date.Date);
+				//var dbJournals = _dbContext.Journals.Where(j => payChecks.Contains(j.PayrollPayCheckId.Value)).ToList();
+				//dbJournals.ForEach(j =>
+				//{
+				//	j.TransactionDate = date.Date;
+				//	if (!j.OriginalDate.HasValue && DateTime.Today > originalDate)
+				//	{
+				//		j.OriginalDate = originalDate;
+				//	}
+				//});
 				_dbContext.SaveChanges();
 			}
 

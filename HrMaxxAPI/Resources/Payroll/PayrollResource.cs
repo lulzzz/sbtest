@@ -22,6 +22,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		[Required]
 		public DateTime PayDay { get; set; }
 		[Required]
+		public DateTime TaxPayDay { get; set; }
+		[Required]
 		public List<PayCheckResource> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
@@ -103,6 +105,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 		public DateTime? PayDay { get; set; }
+		public DateTime? TaxPayDay { get; set; }
 
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }

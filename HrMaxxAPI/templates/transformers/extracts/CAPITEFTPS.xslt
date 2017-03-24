@@ -15,14 +15,15 @@
   
   
   <xsl:template match="/">
-<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(PayChecks/PayCheck)>0]" >	
+<xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" >
+	<xsl:sort select="HostCompany/TaxFilingName"/>
 </xsl:apply-templates>
     
   </xsl:template>
   
   <xsl:template match="ExtractHost">
-		<xsl:variable name="SDISum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SDI']/Amount"/>
-		<xsl:variable name="SITSum" select="Accumulation/Taxes/PayrollTax[Tax/Code='SIT']/Amount"/>
+		<xsl:variable name="SDISum" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTD"/>
+		<xsl:variable name="SITSum" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT']/YTD"/>
 		<xsl:variable name="totalTax" select="$SDISum + $SITSum"/>
 		<xsl:variable name="SDISumString" select="format-number($SDISum,'##########.00')"/>
 		<xsl:variable name="SITSumString" select="format-number($SITSum,'##########.00')"/>

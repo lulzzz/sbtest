@@ -11,6 +11,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Security;
+using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Transactions;
@@ -18,6 +19,8 @@ using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
+using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
@@ -25,7 +28,9 @@ using HrMaxxAPI.Code.IOC;
 using LinqToExcel;
 using Magnum;
 using Newtonsoft.Json;
-
+using BankAccount = HrMaxx.OnlinePayroll.Models.BankAccount;
+using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
+using CompanyTaxState = HrMaxx.OnlinePayroll.Models.CompanyTaxState;
 
 
 namespace SiteInspectionStatus_Utility
@@ -76,6 +81,9 @@ namespace SiteInspectionStatus_Utility
 					break;
 				case 6:
 					FixMasterExtractsPayCheckMapping(container);
+					break;
+				case 7:
+					FixMasterExtractsPayCheckAccumulation(container);
 					break;
 				default:
 					break;
@@ -2175,6 +2183,278 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 						
 						
 						_journalRepository.FixMasterExtractPayCheckMapping(masterExtract, payCheckIds, voidedCheckIds);
+					});
+
+					txn.Complete();
+				}
+
+			}
+		}
+
+		private static void FixMasterExtractsPayCheckAccumulation(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _journalRepository = scope.Resolve<IJournalRepository>();
+				var _metaDataRepository = scope.Resolve<IMetaDataRepository>();
+				var taxesByYear = _metaDataRepository.GetAllTaxes();
+				var extracts = _readerService.GetExtracts();
+
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					extracts.Where(e => !e.ExtractName.Equals("ACH") && !e.ExtractName.Equals("GarnishmentReport") && e.Id<184).ToList().ForEach(m =>
+					{
+						var masterExtract = _readerService.GetExtract(m.Id);
+						masterExtract.Extract.Data.Hosts.ForEach(h =>
+						{
+							h.PayCheckAccumulation = new Accumulation() { ExtractType = h.Accumulation.ExtractType, Year = masterExtract.Extract.Report.Year, Quarter = masterExtract.Extract.Report.Quarter, PayCheckWages = new PayCheckWages(), PayCheckList = new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes = new List<PayCheckTax>(), Deductions = new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(), WorkerCompensations = new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>() };
+							h.PayCheckAccumulation.VoidedPayCheckList = new List<PayCheckSummary>();
+							h.EmployeeAccumulationList = new List<Accumulation>();
+							h.Companies.ForEach(c =>
+							{
+								c.PayCheckAccumulation = new Accumulation() { ExtractType = h.Accumulation.ExtractType, Year = masterExtract.Extract.Report.Year, Quarter = masterExtract.Extract.Report.Quarter, PayCheckWages = new PayCheckWages(), PayCheckList = new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes = new List<PayCheckTax>(), Deductions = new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(), WorkerCompensations = new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>() };
+								c.VoidedAccumulation = new Accumulation() { ExtractType = h.Accumulation.ExtractType, Year = masterExtract.Extract.Report.Year, Quarter = masterExtract.Extract.Report.Quarter, PayCheckWages = new PayCheckWages(), PayCheckList = new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes = new List<PayCheckTax>(), Deductions = new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(), WorkerCompensations = new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>() };
+								
+
+								//c.PayCheckAccumulation.PayCheckWages = new PayCheckWages()
+								//{
+								//	GrossWage = c.Accumulation.GrossWage,
+								//	NetWage = c.Accumulation.NetWage,
+								//	Twelve1 = c.Accumulation.Count1,
+								//	Twelve2 = c.Accumulation.Count2,
+								//	Twelve3 = c.Accumulation.Count3,
+								//	Quarter1FUTA = c.Accumulation.Q1Amount,
+								//	Quarter1FUTAWage = c.Accumulation.Q1Wage,
+								//	Quarter2FUTA = c.Accumulation.Q2Amount,
+								//	Quarter2FUTAWage = c.Accumulation.Q2Wage,
+								//	Quarter3FUTA = c.Accumulation.Q3Amount,
+								//	Quarter3FUTAWage = c.Accumulation.Q3Wage,
+								//	Quarter4FUTA = c.Accumulation.Q4Amount,
+								//	Quarter4FUTAWage = c.Accumulation.Q4Wage,
+								//	CheckPay =
+								//		h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PaymentMethod == EmployeePaymentMethod.Check)
+								//			.Sum(pc => pc.NetWage),
+								//	DDPay =
+								//		h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+								//			.Sum(pc => pc.NetWage)
+								//};
+								//c.Accumulation.Taxes.ForEach(t =>
+								//{
+								//	var t1 = taxesByYear.First(t2 => t2.Id == t.Tax.Id);
+								//	c.PayCheckAccumulation.Taxes.Add(new PayCheckTax(){TaxId = t.Tax.Id, YTD=t.Amount, YTDWage = t.TaxableWage, Tax=new HrMaxx.OnlinePayroll.Models.Tax(){ AnnualMax = t1.AnnualMaxPerEmployee, Code = t1.Tax.Code, Name = t1.Tax.Name, CountryId = t1.Tax.CountryId, DefaultRate = t1.Tax.DefaultRate, Id = t1.Id, IsEmployeeTax = t.IsEmployeeTax, IsCompanySpecific = t1.Tax.IsCompanySpecific, Rate = t.Tax.Rate, StateId = t1.Tax.StateId}});
+								//});
+
+								//if (masterExtract.Extract.Report.ReportName.Equals("Federal941"))
+								//{
+								//	c.Accumulation.Compensations.ForEach(cc => c.PayCheckAccumulation.Compensations.Add(new PayCheckCompensation(){PayTypeId = cc.PayType.Id, PayTypeName = cc.PayType.Name, YTD = cc.Amount}));
+								//}
+								h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id).ToList().ForEach(pc => c.PayCheckAccumulation.PayCheckList.Add(new PayCheckSummary()
+								{
+									CheckNumber = pc.CheckNumber.Value,
+									CompanyId = pc.Employee.CompanyId,
+									FirstName = pc.Employee.FirstName,
+									LastName = pc.Employee.LastName,
+									GrossWage = pc.GrossWage,
+									NetWage = pc.NetWage,
+									Id = pc.Id,
+									IsVoid = pc.IsVoid,
+									PEOASOCoCheck = pc.PEOASOCoCheck,
+									PayDay = pc.PayDay,
+									PaymentMethod = (int)pc.PaymentMethod
+								}));
+								c.PayCheckAccumulation.PayCheckWages = new PayCheckWages()
+								{
+									GrossWage = c.PayCheckAccumulation.PayCheckList.Sum(pc => pc.GrossWage),
+									NetWage = c.PayCheckAccumulation.PayCheckList.Sum(pc => pc.NetWage),
+									Twelve1 = c.PayCheckAccumulation.PayCheckList.Count(pc => pc.PayDay.Day == 12 && pc.PayDay.Month == masterExtract.Extract.Report.EndDate.Month - 2),
+									Twelve2 = c.PayCheckAccumulation.PayCheckList.Count(pc => pc.PayDay.Day == 12 && pc.PayDay.Month == masterExtract.Extract.Report.EndDate.Month - 1),
+									Twelve3 = c.PayCheckAccumulation.PayCheckList.Count(pc => pc.PayDay.Day == 12 && pc.PayDay.Month == masterExtract.Extract.Report.EndDate.Month),
+									Quarter1FUTA = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 1 && pc.PayDay.Month <= 3).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+									Quarter1FUTAWage = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 1 && pc.PayDay.Month <= 3).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+									Quarter2FUTA = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 4 && pc.PayDay.Month <= 6).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+									Quarter2FUTAWage = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 4 && pc.PayDay.Month <= 6).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+									Quarter3FUTA = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 7 && pc.PayDay.Month <= 9).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+									Quarter3FUTAWage = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 7 && pc.PayDay.Month <= 9).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+									Quarter4FUTA = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 10 && pc.PayDay.Month <= 12).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+									Quarter4FUTAWage = h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 10 && pc.PayDay.Month <= 12).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+									CheckPay =
+										h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PaymentMethod == EmployeePaymentMethod.Check)
+											.Sum(pc => pc.NetWage),
+									DDPay =
+										h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+											.Sum(pc => pc.NetWage)
+								};
+								h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id).SelectMany(pc => pc.Taxes).ToList().ForEach(t =>
+								{
+									var t1 = taxesByYear.First(t3 => t3.Id == t.Tax.Id);
+									var t2 = new PayCheckTax()
+									{
+										TaxId = t.Tax.Id,
+										YTD = t.Amount,
+										YTDWage = t.TaxableWage,
+										Tax =
+											new HrMaxx.OnlinePayroll.Models.Tax()
+											{
+												AnnualMax = t1.AnnualMaxPerEmployee,
+												Code = t1.Tax.Code,
+												Name = t1.Tax.Name,
+												CountryId = t1.Tax.CountryId,
+												DefaultRate = t1.Tax.DefaultRate,
+												Id = t1.Id,
+												IsEmployeeTax = t.IsEmployeeTax,
+												IsCompanySpecific = t1.Tax.IsCompanySpecific,
+												Rate = t.Tax.Rate,
+												StateId = t1.Tax.StateId
+											}
+									};
+									var exists = c.PayCheckAccumulation.Taxes.FirstOrDefault(t3 => t3.TaxId == t2.TaxId);
+									if (exists == null)
+										c.PayCheckAccumulation.Taxes.Add(t2);
+									else
+									{
+										exists.YTD += t2.YTD;
+										exists.YTDWage += t2.YTDWage;
+									}
+								});
+
+								if (masterExtract.Extract.Report.ReportName.Equals("Federal941"))
+								{
+									h.PayChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id).SelectMany(pc => pc.Compensations).ToList().ForEach(
+										cc =>
+										{
+											var cc1 = new PayCheckCompensation()
+											{
+												PayTypeId = cc.PayType.Id,
+												PayTypeName = cc.PayType.Name,
+												YTD = cc.Amount
+											};
+											var exists = c.PayCheckAccumulation.Compensations.FirstOrDefault(cc3 => cc3.PayTypeId == cc.PayType.Id);
+											if (exists == null)
+												c.PayCheckAccumulation.Compensations.Add(cc1);
+											else
+												exists.YTD += cc1.YTD;
+										});
+								}
+								
+
+								if (!h.CredChecks.Any(pc => pc.CompanyId == c.Company.Id))
+								{
+									c.VoidedAccumulation = null;
+								}
+								else
+								{
+									h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id).ToList().ForEach(pc => c.VoidedAccumulation.VoidedPayCheckList.Add(new PayCheckSummary()
+									{
+										CheckNumber = pc.CheckNumber.Value,
+										CompanyId = pc.Employee.CompanyId,
+										FirstName = pc.Employee.FirstName,
+										LastName = pc.Employee.LastName,
+										GrossWage = pc.GrossWage,
+										NetWage = pc.NetWage,
+										Id = pc.Id,
+										IsVoid = pc.IsVoid,
+										PEOASOCoCheck = pc.PEOASOCoCheck,
+										PayDay = pc.PayDay,
+										PaymentMethod = (int)pc.PaymentMethod
+									}));
+									c.VoidedAccumulation.PayCheckWages = new PayCheckWages()
+									{
+										GrossWage = c.VoidedAccumulation.VoidedPayCheckList.Sum(pc=>pc.GrossWage),
+										NetWage = c.VoidedAccumulation.VoidedPayCheckList.Sum(pc => pc.NetWage),
+										Twelve1 = c.VoidedAccumulation.VoidedPayCheckList.Count(pc => pc.PayDay.Day==12 && pc.PayDay.Month==masterExtract.Extract.Report.EndDate.Month-2),
+										Twelve2 = c.VoidedAccumulation.VoidedPayCheckList.Count(pc => pc.PayDay.Day == 12 && pc.PayDay.Month == masterExtract.Extract.Report.EndDate.Month - 1),
+										Twelve3 = c.VoidedAccumulation.VoidedPayCheckList.Count(pc => pc.PayDay.Day == 12 && pc.PayDay.Month == masterExtract.Extract.Report.EndDate.Month),
+										Quarter1FUTA = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 1 && pc.PayDay.Month <= 3).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+										Quarter1FUTAWage = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 1 && pc.PayDay.Month <= 3).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+										Quarter2FUTA = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 4 && pc.PayDay.Month <= 6).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+										Quarter2FUTAWage = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 4 && pc.PayDay.Month <= 6).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+										Quarter3FUTA = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 7 && pc.PayDay.Month <= 9).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+										Quarter3FUTAWage = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 7 && pc.PayDay.Month <= 9).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+										Quarter4FUTA = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 10 && pc.PayDay.Month <= 12).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.Amount)),
+										Quarter4FUTAWage = h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PayDay.Month >= 10 && pc.PayDay.Month <= 12).Sum(pc => pc.Taxes.Where(t => t.Tax.Code == "FUTA").Sum(t => t.TaxableWage)),
+										CheckPay =
+											h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PaymentMethod == EmployeePaymentMethod.Check)
+												.Sum(pc => pc.NetWage),
+										DDPay =
+											h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id && pc.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+												.Sum(pc => pc.NetWage)
+									};
+									h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id).SelectMany(pc=>pc.Taxes).ToList().ForEach(t =>
+									{
+										var t1 = taxesByYear.First(t3 => t3.Id == t.Tax.Id);
+										var t2 = new PayCheckTax()
+										{
+											TaxId = t.Tax.Id,
+											YTD = t.Amount,
+											YTDWage = t.TaxableWage,
+											Tax =
+												new HrMaxx.OnlinePayroll.Models.Tax()
+												{
+													AnnualMax = t1.AnnualMaxPerEmployee,
+													Code = t1.Tax.Code,
+													Name = t1.Tax.Name,
+													CountryId = t1.Tax.CountryId,
+													DefaultRate = t1.Tax.DefaultRate,
+													Id = t1.Id,
+													IsEmployeeTax = t.IsEmployeeTax,
+													IsCompanySpecific = t1.Tax.IsCompanySpecific,
+													Rate = t.Tax.Rate,
+													StateId = t1.Tax.StateId
+												}
+										};
+										var exists = c.VoidedAccumulation.Taxes.FirstOrDefault(t3 => t3.TaxId == t2.TaxId);
+										if (exists == null)
+											c.VoidedAccumulation.Taxes.Add(t2);
+										else
+										{
+											exists.YTD += t2.YTD;
+											exists.YTDWage += t2.YTDWage;
+										}
+									});
+
+									if (masterExtract.Extract.Report.ReportName.Equals("Federal941"))
+									{
+										h.CredChecks.Where(pc => pc.Employee.CompanyId == c.Company.Id).SelectMany(pc => pc.Compensations).ToList().ForEach(
+											cc =>
+											{
+												var cc1 = new PayCheckCompensation()
+												{
+													PayTypeId = cc.PayType.Id,
+													PayTypeName = cc.PayType.Name,
+													YTD = cc.Amount
+												};
+												var exists = c.VoidedAccumulation.Compensations.FirstOrDefault(cc3 => cc3.PayTypeId == cc.PayType.Id);
+												if (exists == null)
+													c.VoidedAccumulation.Compensations.Add(cc1);
+												else
+													exists.YTD += cc1.YTD;
+											});
+									}
+								}
+
+
+								h.PayCheckAccumulation.AddAccumulation(c.PayCheckAccumulation);
+
+								if (c.VoidedAccumulation != null)
+								{
+									c.PayCheckAccumulation.SubtractAccumulation(c.VoidedAccumulation);
+									h.PayCheckAccumulation.SubtractAccumulation(c.VoidedAccumulation);
+								}
+									
+								c.Accumulation = null;
+								c.PayCheckAccumulation.PayCheckList = new List<PayCheckSummary>();
+								c.PayCheckAccumulation.VoidedPayCheckList = new List<PayCheckSummary>();
+								
+							});
+
+							h.Accumulation = null;
+							h.PayChecks = new List<PayCheck>();
+							h.CredChecks = new List<PayCheck>();
+
+						});
+						masterExtract.Extract.Data.History = new List<MasterExtract>();
+						_journalRepository.FixMasterExtract(masterExtract);
 					});
 
 					txn.Complete();

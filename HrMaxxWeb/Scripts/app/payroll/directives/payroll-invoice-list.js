@@ -34,6 +34,26 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					, { id: 9, title: 'Not Deposited' }
 					, { id: 10, title: 'ACH Pending' }
 					];
+					$scope.paymentstatuses = [
+					{ title: 'All' },
+					{ id: 1, title: 'Draft' }
+					, { id: 2, title: 'Submitted' }
+					, { id: 3, title: 'Paid' }
+					, { id: 4, title: 'Bounced' }
+					, { id: 5, title: 'Deposited' }
+					];
+
+					$scope.paymentmethods = [
+					{ title: 'All' },
+					{ id: 1, title: 'Check' }
+					, { id: 2, title: 'Cash' }
+					, { id: 3, title: 'Cert Fund' }
+					, { id: 4, title: 'Corp Check' }
+					, { id: 5, title: 'ACH' }
+					
+					];
+
+
 					$scope.selectedStatuses = [];
 					$scope.selectedStatus = [];
 					$scope.statusEvents = {
@@ -44,6 +64,31 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						onItemDeselect: function (item) {
 							$scope.selectedStatuses.splice($scope.selectedStatuses.indexOf($filter('filter')($scope.statuses, { key: item.id })[0]), 1);
 							
+						}
+					};
+
+					$scope.selectedPaymentStatuses = [];
+					$scope.selectedPaymentStatus = [];
+					$scope.paymentstatusEvents = {
+						onItemSelect: function (item) {
+							$scope.selectedPaymentStatuses.push($filter('filter')($scope.paymentstatuses, { key: item.id })[0]);
+
+						},
+						onItemDeselect: function (item) {
+							$scope.selectedPaymentStatuses.splice($scope.selectedPaymentStatuses.indexOf($filter('filter')($scope.paymentstatuses, { key: item.id })[0]), 1);
+
+						}
+					};
+					$scope.selectedPaymentMethods = [];
+					$scope.selectedPaymentMethod = [];
+					$scope.paymentmethodEvents = {
+						onItemSelect: function (item) {
+							$scope.selectedPaymentMethods.push($filter('filter')($scope.paymentmethods, { key: item.id })[0]);
+
+						},
+						onItemDeselect: function (item) {
+							$scope.selectedPaymentMethods.splice($scope.selectedPaymentMethods.indexOf($filter('filter')($scope.paymentmethods, { key: item.id })[0]), 1);
+
 						}
 					};
 
@@ -165,8 +210,18 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							if(st.id)
 								$scope.selectedStatus.push(st.id);
 						});
+						$scope.selectedPaymentStatus = [];
+						$.each($scope.selectedPaymentStatuses, function (i, st) {
+							if (st.id)
+								$scope.selectedPaymentStatus.push(st.id);
+						});
+						$scope.selectedPaymentMethod = [];
+						$.each($scope.selectedPaymentMethod, function (i, st) {
+							if (st.id)
+								$scope.selectedPaymentMethod.push(st.id);
+						});
 						var comp = dataSvc.selectedCompany ? dataSvc.selectedCompany.id : null;
-						payrollRepository.getInvoicesForHost(comp, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus).then(function (data) {
+						payrollRepository.getInvoicesForHost(comp, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus, $scope.selectedPaymentStatus, $scope.selectedPaymentMethod).then(function (data) {
 							$scope.list = data;
 							//$scope.processors = $filter('unique')($scope.list, 'processedBy');
 							$scope.tableParams.reload();
@@ -199,6 +254,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							//$scope.tableParams.filter.companyName = querystring.company;
 							dataSvc.selectedCompany = $filter('filter')($scope.mainData.companies, { name: $scope.mainData.invoiceCompany }, true)[0];
 							$scope.selectedStatuses = [];
+							$scope.selectedPaymentStatuses = [];
+							$scope.selectedPaymentMethods = [];
 							dataSvc.startDate = null;
 							dataSvc.endDate = null;
 							$scope.mainData.invoiceCompany = null;

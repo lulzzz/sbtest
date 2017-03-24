@@ -424,6 +424,7 @@
           <Property Name="InvoiceId" Type="uniqueidentifier" />
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
           <Property Name="Notes" Type="varchar(max)" />
+          <Property Name="TaxPayDay" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PayrollInvoice">
           <Key>
@@ -513,6 +514,7 @@
           <Property Name="InvoiceId" Type="uniqueidentifier" />
           <Property Name="VoidedOn" Type="datetime" />
           <Property Name="CreditInvoiceId" Type="uniqueidentifier" />
+          <Property Name="TaxPayDay" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="PayType">
           <Key>
@@ -2211,6 +2213,7 @@
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PayrollInvoices" Relationship="HrMaxxModel.FK_PayrollInvoice_Payroll" FromRole="Payroll" ToRole="PayrollInvoice" />
           <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="Payroll" ToRole="PayrollPayCheck" />
+          <Property Name="TaxPayDay" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <Association Name="FK_Employee_CompanyWorkerCompensation">
           <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="0..1" />
@@ -2614,6 +2617,7 @@
           <NavigationProperty Name="PayCheckExtracts" Relationship="HrMaxxModel.FK_PayCheckExtract_PayrollPayCheck" FromRole="PayrollPayCheck" ToRole="PayCheckExtract" />
           <NavigationProperty Name="Payroll" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="PayrollPayCheck" ToRole="Payroll" />
           <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollPayCheck" ToRole="PayrollInvoice" />
+          <Property Name="TaxPayDay" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         <Association Name="FK_Journal_PayrollPayCheck">
           <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="0..1" />
@@ -3121,6 +3125,7 @@
           <EntitySetMapping Name="Payrolls">
             <EntityTypeMapping TypeName="HrMaxxModel.Payroll">
               <MappingFragment StoreEntitySet="Payroll">
+                <ScalarProperty Name="TaxPayDay" ColumnName="TaxPayDay" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
                 <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
                 <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
@@ -3334,6 +3339,7 @@
           <EntitySetMapping Name="PayrollPayChecks">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
               <MappingFragment StoreEntitySet="PayrollPayCheck">
+                <ScalarProperty Name="TaxPayDay" ColumnName="TaxPayDay" />
                 <ScalarProperty Name="CreditInvoiceId" ColumnName="CreditInvoiceId" />
                 <ScalarProperty Name="VoidedOn" ColumnName="VoidedOn" />
                 <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />

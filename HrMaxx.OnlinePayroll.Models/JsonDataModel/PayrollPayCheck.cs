@@ -37,6 +37,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
+		public DateTime TaxPayDay { get; set; }
 		public int CheckNumber { get; set; }
 		public int PaymentMethod { get; set; }
 		public string Notes { get; set; }
