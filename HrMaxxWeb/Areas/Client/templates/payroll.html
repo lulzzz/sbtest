@@ -7,8 +7,21 @@
 	</div>
 	<div class="col-sm-12 m-b-5">
 		<div class="col-sm-2 form-group">
-			<label class="control-label">Start Date <span class="text-danger">*</span></label>
-			<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
+			<div class="form-group">
+				<label class="control-label">Start Date <span class="text-danger">*</span></label>
+				<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
+			</div>
+			<div class="form-group" >
+				<label></label>
+				<div>
+					<label for="ishistory" class="switch">
+						Is History Payroll?
+						<input id="ishistory" type="checkbox" ng-model="item.isHistory"/><i></i>
+					</label>
+				</div>
+
+			</div>
+			
 		</div>
 		<div class="col-sm-2 form-group">
 			<label class="control-label">End Date <span class="text-danger">*</span></label>

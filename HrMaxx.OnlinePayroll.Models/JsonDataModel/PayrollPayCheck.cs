@@ -47,6 +47,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string LastModifiedBy { get; set; }
 		public string WorkerCompensation { get; set; }
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsHistory { get; set; }
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
 		public Guid? CreditInvoiceId { get; set; }

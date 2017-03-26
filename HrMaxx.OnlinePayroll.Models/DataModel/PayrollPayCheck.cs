@@ -59,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.DateTime> VoidedOn { get; set; }
         public Nullable<System.Guid> CreditInvoiceId { get; set; }
         public System.DateTime TaxPayDay { get; set; }
+        public bool IsHistory { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }

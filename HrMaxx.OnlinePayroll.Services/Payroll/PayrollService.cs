@@ -87,6 +87,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included).OrderBy(pc=>pc.Employee.CompanyEmployeeNo))
 					{
 						paycheck.TaxPayDay = payroll.TaxPayDay;
+						paycheck.IsHistory = payroll.IsHistory;
 						var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == paycheck.Employee.Id);
 						employeeAccumulation.PayCodes = employeeAccumulation.PayCodes ?? new List<PayCheckPayCode>();
 						if (paycheck.Employee.PayType == EmployeeType.Hourly)
@@ -474,7 +475,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					payroll.TaxPayDay = payroll.PayDay;
 					payroll.Status = PayrollStatus.Committed;
-					payroll.PayChecks.ForEach(pc => pc.Status = PaycheckStatus.Saved);
+					payroll.PayChecks.ForEach(pc => { 
+						pc.Status = PaycheckStatus.Saved;
+						pc.IsHistory = payroll.IsHistory;
+					});
 					var companyIdForPayrollAccount = payroll.Company.Id;
 
 					var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);

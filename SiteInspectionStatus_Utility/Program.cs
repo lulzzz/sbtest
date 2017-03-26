@@ -2203,7 +2203,7 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					extracts.Where(e => !e.ExtractName.Equals("ACH") && !e.ExtractName.Equals("GarnishmentReport") && e.Id<184).ToList().ForEach(m =>
+					extracts.Where(e => !e.ExtractName.Equals("ACH") && !e.ExtractName.Equals("GarnishmentReport") && e.Id<199).ToList().ForEach(m =>
 					{
 						var masterExtract = _readerService.GetExtract(m.Id);
 						masterExtract.Extract.Data.Hosts.ForEach(h =>

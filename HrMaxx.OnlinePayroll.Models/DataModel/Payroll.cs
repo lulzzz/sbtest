@@ -35,6 +35,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool PEOASOCoCheck { get; set; }
         public string Notes { get; set; }
         public System.DateTime TaxPayDay { get; set; }
+        public bool IsHistory { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }

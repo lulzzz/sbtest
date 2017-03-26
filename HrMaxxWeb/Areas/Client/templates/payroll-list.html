@@ -1,5 +1,32 @@
 ﻿<div class="row">
 	<!-- begin panel -->
+	<script type="text/ng-template" id="popover/confirmcopy.html">
+		<div class="modal-header">
+
+		</div>
+		<div class="modal-body">
+			<div class="alert alert-{{type}}">
+				<pre class="alert alert-{{type}}">{{message}}</pre>
+			</div>
+		</div>
+		<div class="modal-footer text-center">
+			<div class="row">
+				<button type="button" class="btn btn-sm btn-primary pull-center" data-ng-click="ok(1)">
+					<span class="glyphicon glyphicon-check"></span> Use - Profile Rates <i class="fa fa-lg fa-question-circle text-default"></i>
+				</button>
+				<button type="button" class="btn btn-sm btn-info pull-center" data-ng-click="ok(2)">
+					<span class="glyphicon glyphicon-check"></span> Use - Payroll Rates <i class="fa fa-lg fa-question-circle text-default"></i>
+				</button>
+				<button type="button" class="btn btn-sm btn-default pull-center" data-ng-click="cancel()">
+					<span class="glyphicon glyphicon-remove-circle"></span> Cancel <i class="fa fa-lg fa-question-circle text-default"></i>
+				</button>
+			</div>
+			<div class="row alert alert-warning" ng-if="type==='danger'">
+				All activities are logged in the system.
+			</div>
+		</div>
+
+	</script>
 	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany && mainData.selectedCompany.contract">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Payroll List<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>

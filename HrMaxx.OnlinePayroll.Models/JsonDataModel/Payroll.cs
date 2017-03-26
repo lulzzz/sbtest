@@ -24,6 +24,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int Status { get; set; }
 		//public Guid? InvoiceId { get; set; }
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsHistory { get; set; }
 		public string Notes { get; set; }
 		//public PayrollInvoiceJson PayrollInvoice { get; set; }
 		public List<PayrollPayCheckJson> PayrollPayChecks { get; set; }
@@ -34,3 +35,4 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int InvoiceStatus { get; set; }
 	}
 }
+

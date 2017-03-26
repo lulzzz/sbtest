@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public InvoiceStatus InvoiceStatus { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsHistory { get; set; }
 		public decimal TotalGrossWage
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }
@@ -104,6 +105,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime LastModified { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsHistory { get; set; }
 
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }

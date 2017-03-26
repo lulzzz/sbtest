@@ -42,6 +42,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal EmployerTaxes { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsHistory { get; set; }
 
 		public string StatusText
 		{
@@ -111,6 +112,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime LastModified { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsHistory { get; set; }
 
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }

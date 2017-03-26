@@ -10,8 +10,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll','anchorSmoothScroll',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, anchorSmoothScroll) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', '$uibModal','anchorSmoothScroll',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, $modal, anchorSmoothScroll) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
@@ -170,12 +170,35 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.copyPayroll = function (event, payroll) {
 						event.stopPropagation();
-						$scope.$parent.$parent.confirmDialog('This action will ONLY copy time sheet data and NOT salaries or rates. Do you want to continue?', 'warning', function () {
-							$scope.refresh(payroll, 0);
+						confirmCopyDialog('Please select an option to continue', 'warning', function (option) {
+							$scope.refresh(payroll, 0, option);
 						
 						});
 					}
-					$scope.refresh = function (payroll, copydates) {
+					var confirmCopyDialog = function (message, type, callback) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/confirmcopy.html',
+							controller: 'confirmCopyDialogCtrl',
+							backdrop: true,
+							keyboard: true,
+							backdropClick: true,
+							size: 'lg',
+							resolve: {
+								message: function () {
+									return message;
+								},
+								type: function () {
+									return type;
+								}
+							}
+						});
+						modalInstance.result.then(function (result) {
+							callback(result);
+						}, function () {
+							return false;
+						});
+					}
+					$scope.refresh = function (payroll, copydates, option) {
 						var selected = {
 							company: $scope.mainData.selectedCompany,
 							startDate: copydates ? moment(payroll.startDate).toDate() : null,
@@ -197,7 +220,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
-								salary: employee.payType === 2 ? (matching ? matching.salary : employee.rate) : 0,
+								salary: employee.payType === 2 ? (matching && option===2 ? matching.salary : employee.rate) : 0,
 								compensations: [],
 								deductions: [],
 								isVoid: false,
@@ -228,8 +251,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 										pc.hours = matchingpc.hours;
 										pc.overtimeHours = matchingpc.overtimeHours;
 										pc.pwAmount = matchingpc.pwAmount;
-										if (pc.payCode.id >= 0) {
+										if (pc.payCode.id >= 0 && option === 2) {
 											pc.payCode.hourlyRate = matchingpc.payCode.hourlyRate;
+
+										} else {
+											pc.payCode.hourlyRate = paycode.hourlyRate;
 										}
 									}
 								}
@@ -601,3 +627,16 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
+common.controller('confirmCopyDialogCtrl', function ($scope, $uibModalInstance, message, type) {
+	$scope.message = message;
+	$scope.type = type ? type : 'info';
+	$scope.cancel = function () {
+		$uibModalInstance.dismiss();
+	};
+
+	$scope.ok = function (option) {
+		$uibModalInstance.close(option);
+	};
+
+
+});

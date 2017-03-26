@@ -656,6 +656,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.YTDNetWage, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
+				.ForMember(dest => dest.IsHistory, opt => opt.Ignore())
 				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.MapFrom(src=>src.PEOASOCoCheck))
 				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
 				.ForMember(dest => dest.VoidedOn, opt => opt.Ignore())
