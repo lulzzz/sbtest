@@ -236,7 +236,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							};
 							$.each(employee.payCodes, function (index1, paycode) {
 								var pc = {
-									payCode: paycode,
+									payCode: angular.copy(paycode),
 									screenHours: 0,
 									screenOvertime: 0,
 									hours: 0,

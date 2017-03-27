@@ -19,6 +19,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public Guid HostId { get; set; }
 		public int InvoiceNumber { get; set; }
 		public DateTime InvoiceDate { get; set; }
+		public DateTime PayrollTaxPayDay { get; set; }
+		public DateTime PayrollPayDay { get; set; }
 		public decimal Total { get; set; }
 		public decimal Balance { get; set; }
 		public string ProcessedBy { get; set; }

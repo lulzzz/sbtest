@@ -238,6 +238,7 @@ common.factory('payrollRepository', [
 			redateInvoiceAndPayroll: function (invoice, redate) {
 				var deferred = $q.defer();
 				invoice.invoiceDate = redate;
+				invoice.payrollTaxPayDay = redate;
 				payrollServer.all('RedateInvoice').post(invoice).then(function (result) {
 					deferred.resolve(result);
 				}, function (error) {

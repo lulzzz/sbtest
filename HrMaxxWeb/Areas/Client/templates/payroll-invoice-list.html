@@ -58,7 +58,7 @@
 						<td data-title=" 'Invoice #' " filter="{'invoiceNumber':'text'}" sortable=" 'invoiceNumber' " class="col-sm-1 text-center">
 							{{item.invoiceNumber}}
 						</td>
-						<td data-title=" 'Pay Day/Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center">
+						<td data-title=" 'Pay Day/Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center" ng-class="{'show-red': item.payrollPayDay!==item.payrollTaxPayDay}">
 							{{item.invoiceDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Days Overdue' " sortable=" 'daysOverdue' " class="col-sm-1 text-center">

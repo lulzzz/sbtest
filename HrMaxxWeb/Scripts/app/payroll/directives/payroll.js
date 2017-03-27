@@ -28,7 +28,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					
 					$scope.list = [];
-					
+					$scope.maindata = $scope.$parent.$parent.mainData;
 					$scope.data = dataSvc;
 					$scope.cancel = function() {
 						$scope.$parent.$parent.selected = null;
