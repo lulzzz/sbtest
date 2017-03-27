@@ -160,7 +160,7 @@ namespace SiteInspectionStatus_Utility
 						{
 							Console.WriteLine(string.Format("{0},{1},{2},{3}", check.Employee.Id, check.Id, check.Employee.FullName, check.PayDay.ToString("MM/dd/yyyy")));
 							payChecks++;
-							_payrollRepository.UpdatePayCheckSickLeaveAccumulation(check);
+							//_payrollRepository.UpdatePayCheckSickLeaveAccumulation(check);
 
 						}
 					}
@@ -2455,6 +2455,7 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 						});
 						masterExtract.Extract.Data.History = new List<MasterExtract>();
 						_journalRepository.FixMasterExtract(masterExtract);
+						Console.WriteLine("Extract {0} Done", masterExtract.Id);
 					});
 
 					txn.Complete();
@@ -2679,7 +2680,7 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 										sickLeave.YTDFiscal = Math.Round(ytdAccumulation + accumulationValue, 2, MidpointRounding.AwayFromZero);
 										sickLeave.YTDUsed = Math.Round(ytdUsed + sickLeave.Used, 2, MidpointRounding.AwayFromZero);
 
-										_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+										//_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
 										var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, "System", "Sick Leave Imported", Guid.Empty);
 										_mementoService.AddMementoData(memento);
 										payChecks++;
@@ -7668,7 +7669,7 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 									sickLeave.FiscalStart = new DateTime(2017,1,1);
 									sickLeave.FiscalEnd = new DateTime(2017, 12, 31);
 									pc.Employee.CarryOver = e.carryover;
-									_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+									//_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
 									var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, "System", "Sick Leave Imported 2", Guid.Empty);
 									_mementoService.AddMementoData(memento);
 									payChecks++;
@@ -7701,6 +7702,23 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 
 		private static void FixSickLeaveYTDValues(IContainer container)
 		{
+			FileStream ostrm;
+			StreamWriter writer;
+			TextWriter oldOut = Console.Out;
+			try
+			{
+				ostrm = new FileStream(string.Format("SickLeaveUpdate-{0}.txt", DateTime.Today.ToString("MMddyyyy")), FileMode.OpenOrCreate, FileAccess.Write);
+				writer = new StreamWriter(ostrm);
+				Console.SetOut(writer);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("Cannot open Redirect.txt for writing");
+				Console.WriteLine(e.Message);
+				return;
+			}
+
+
 			Console.WriteLine("Starting Sick Leave YTD Fix---Updating Checks");
 			using (var scope = container.BeginLifetimeScope())
 			{
@@ -7708,14 +7726,17 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 				var _payrollRepository = scope.Resolve<IPayrollRepository>();
 				
 				//var allemployees = _readerService.GetEmployees();
-				var allPayChecks = _readerService.GetPayChecks(isvoid: 0).Where(p => p.CompanyId != new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD")).ToList();
-				var employeeChecks = allPayChecks.GroupBy(p => p.Employee.Id);
+				var allPayChecks = _readerService.GetPayChecks();
+				var filteredChecks = allPayChecks.ToList();
+				var employeeChecks = filteredChecks.GroupBy(p => p.Employee.Id);
 				Console.WriteLine("Total Checks: " + allPayChecks.Count);
+				Console.WriteLine("Filtered Checks: " + filteredChecks.Count);
 				Console.WriteLine("Total Employees with Checks: " + employeeChecks.ToList().Count);
 				
 				var payChecks = 0;
 				var empsprocessed = 0;
 				var empList1 = new List<Guid>();
+				var pcs = new List<PayCheck>();
 				Console.WriteLine("EmployeeId, Name, PayDay, Id, YTD, Should Be, fiscalstart, sickleavehiredate");
 				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
@@ -7734,15 +7755,10 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 							var sl = check.Accumulations.First(a => a.PayType.PayType.Id == 6);
 							var checkfiscaldate = sl.FiscalStart;
 							var original = checkfiscaldate;
-							//if (sl.FiscalStart != original)
-							//{
-							//	sl.FiscalStart = original;
-							//	sl.FiscalEnd = sl.FiscalStart.AddYears(1).AddDays(-1);
-							//	needsupdating = true;
-							//}
+							
 							
 							var newval = sl.YTDFiscal;
-							var fiscalYTDChecks = checks.Where(p => p.PayDay >= sl.FiscalStart && p.Id != check.Id && (p.PayDay < check.PayDay || (p.PayDay==check.PayDay && p.Id<check.Id))).ToList();
+							var fiscalYTDChecks = allPayChecks.Where(p =>p.Employee.Id==e.Key && !p.IsVoid && p.PayDay >= sl.FiscalStart && p.Id != check.Id && (p.PayDay < check.PayDay || (p.PayDay==check.PayDay && p.Id<check.Id))).ToList();
 							if (fiscalYTDChecks.Any())
 							{
 								var ytd =
@@ -7761,7 +7777,8 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 							{
 								Console.WriteLine(string.Format("{0},{4},{5},{1},{2},{3},{6},{7}", check.Employee.Id, check.Id, original, newval, check.Employee.FullName, check.PayDay.ToString("MM/dd/yyyy"), checkfiscaldate.ToString("MM/dd/yyyy"), check.Employee.SickLeaveHireDate.ToString("MM/dd/yyyy")));
 								payChecks++;
-								_payrollRepository.UpdatePayCheckSickLeaveAccumulation(check);
+								pcs.Add(check);
+								//_payrollRepository.UpdatePayCheckSickLeaveAccumulation(check);
 								if (empList1.All(e1 => e1 != employee))
 									empList1.Add(employee);
 							}
@@ -7774,14 +7791,22 @@ empList.Add(new Guid("A5BA6939-716E-4EC9-AE3C-A72A00AEF8C8"));
 					Console.WriteLine("Checks with issues: " + payChecks);
 					Console.WriteLine("Employees Processed: " + empsprocessed);
 					Console.WriteLine("Employees with issue: " + empList1.Count);
-					Console.Write("Commit? ");
-					var commit = Convert.ToInt32(Console.ReadLine());
-					if (commit == 1)
+					if (pcs.Any())
 					{
-						txn.Complete();
+						Console.Write("Commit? ");
+						var commit = Convert.ToInt32(Console.ReadLine());
+						if (commit == 1)
+						{
+							_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pcs);
+							txn.Complete();
+						}
 					}
-
-
+					
+					writer.AutoFlush = true;
+					Console.SetOut(oldOut);
+					writer.Close();
+					ostrm.Close();
+					
 
 				}
 
