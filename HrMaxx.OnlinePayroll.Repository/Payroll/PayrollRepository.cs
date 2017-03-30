@@ -44,20 +44,39 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		}
 
-		public void UpdatePayCheckYTD(PayCheck employeeFutureCheck)
+		public void UpdatePayCheckYTD(PayCheck pc)
 		{
-			var dbPayCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == employeeFutureCheck.Id);
-			if (dbPayCheck != null)
+			using (var conn = GetConnection())
 			{
-				dbPayCheck.PayCodes = JsonConvert.SerializeObject(employeeFutureCheck.PayCodes);
-				dbPayCheck.Compensations = JsonConvert.SerializeObject(employeeFutureCheck.Compensations);
-				dbPayCheck.Taxes = JsonConvert.SerializeObject(employeeFutureCheck.Taxes);
-				dbPayCheck.Deductions = JsonConvert.SerializeObject(employeeFutureCheck.Deductions);
-				dbPayCheck.Accumulations = JsonConvert.SerializeObject(employeeFutureCheck.Accumulations);
-				dbPayCheck.YTDSalary = employeeFutureCheck.YTDSalary;
-				dbPayCheck.YTDGrossWage = employeeFutureCheck.YTDGrossWage;
-				dbPayCheck.YTDNetWage = employeeFutureCheck.YTDNetWage;
-				_dbContext.SaveChanges();
+				const string updateCheck =
+					@"update payrollpaycheck set Taxes=@Taxes, PayCodes=@PayCodes, Compensations=@Compensations, Deductions=@Deductions, Accumulations=@Accumulations, YTDSalary=@YTDSalary, YTDGrossWage=@YTDGrossWage, YTDNetWage=@YTDNetWage, WorkerCompensation=@WorkerCompensation WHERE Id = @PayCheckId;";
+				conn.Execute(updateCheck,
+					new
+					{
+						Taxes = JsonConvert.SerializeObject(pc.Taxes),
+						PayCodes = JsonConvert.SerializeObject(pc.PayCodes),
+						Compensations = JsonConvert.SerializeObject(pc.Compensations),
+						Deductions = JsonConvert.SerializeObject(pc.Deductions),
+						Accumulations = JsonConvert.SerializeObject(pc.Accumulations),
+						YTDSalary = pc.YTDSalary,
+						YTDGrossWage = pc.YTDGrossWage,
+						YTDNetWage = pc.YTDNetWage,
+						WorkerCompensation = pc.WorkerCompensation != null ? JsonConvert.SerializeObject(pc.WorkerCompensation) : null,
+						PayCheckId=pc.Id
+					});
+				//var dbPayCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == pc.Id);
+				//if (dbPayCheck != null)
+				//{
+				//	dbPayCheck.PayCodes = JsonConvert.SerializeObject(pc.PayCodes);
+				//	dbPayCheck.Compensations = JsonConvert.SerializeObject(pc.Compensations);
+				//	dbPayCheck.Taxes = JsonConvert.SerializeObject(pc.Taxes);
+				//	dbPayCheck.Deductions = JsonConvert.SerializeObject(pc.Deductions);
+				//	dbPayCheck.Accumulations = JsonConvert.SerializeObject(pc.Accumulations);
+				//	dbPayCheck.YTDSalary = pc.YTDSalary;
+				//	dbPayCheck.YTDGrossWage = pc.YTDGrossWage;
+				//	dbPayCheck.YTDNetWage = pc.YTDNetWage;
+				//	_dbContext.SaveChanges();
+				//}
 			}
 		}
 
@@ -415,5 +434,66 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			
 		}
 
+		public void FixPayCheckTaxes(List<PayCheck> taxupdate)
+		{
+			
+			using (var conn = GetConnection())
+			{
+				const string updateCheck = @"update payrollpaycheck set Taxes=@Taxes, EmployerTaxes=@EmployerTaxes WHERE Id = @PayCheckId;";
+				const string updateJournal = @"update journal set JournalDetails=@JournalDetails WHERE PayrollPayCheckId = @PayCheckId;";
+				const string selectJournal = @"select * from Journal Where PayrollPayCheckId=@PayCheckId";
+				const string updatePayCheckTax = @"update PayCheckTax set TaxableWage=@TaxableWage, Amount=@Amount Where PayCheckId=@PayCheckId and TaxId=@TaxId";
+
+				taxupdate.ForEach(pc1 =>
+				{
+					var pc = _mapper.Map<PayCheck, PayrollPayCheck>(pc1);
+					conn.Execute(updateCheck, new { Taxes=pc.Taxes, EmployerTaxes = pc.EmployerTaxes, PayCheckId=pc.Id });
+					IEnumerable<Models.DataModel.Journal> journals = conn.Query<Models.DataModel.Journal>(selectJournal,
+					new { PayCheckId = pc.Id });
+					var j = journals.First();
+					var j1 = _mapper.Map<Models.DataModel.Journal, Models.Journal>(j);
+
+					var futaTax = pc1.Taxes.First(t => t.Tax.Code.Equals("FUTA"));
+					var ettTax = pc1.Taxes.First(t => t.Tax.Code.Equals("ETT"));
+					var suiTax = pc1.Taxes.First(t => t.Tax.Code.Equals("SUI"));
+					j1.JournalDetails.First(jd => jd.AccountName.Equals("Expense: Payroll Taxes: Federal Unemployment Tax")).Amount =
+						futaTax.Amount;
+					j1.JournalDetails.First(jd => jd.AccountName.Equals("Expense: Payroll Taxes: CA Employment Training Tax")).Amount =
+						ettTax.Amount;
+					j1.JournalDetails.First(jd => jd.AccountName.Equals("Expense: Payroll Taxes: CA State Unemployment Tax")).Amount =
+						suiTax.Amount;
+					conn.Execute(updateJournal, new { JournalDetails=JsonConvert.SerializeObject(j1.JournalDetails), PayCheckId=pc1.Id });
+					
+					conn.Execute(updatePayCheckTax, new {TaxableWage=futaTax.TaxableWage, Amount=futaTax.Amount, PayCheckId=pc1.Id, TaxId=futaTax.Tax.Id});
+					conn.Execute(updatePayCheckTax, new { TaxableWage = ettTax.TaxableWage, Amount = ettTax.Amount, PayCheckId = pc1.Id, TaxId = ettTax.Tax.Id });
+					conn.Execute(updatePayCheckTax, new { TaxableWage = suiTax.TaxableWage, Amount = suiTax.Amount, PayCheckId = pc1.Id, TaxId = suiTax.Tax.Id });
+				});
+
+			}
+		}
+
+		public void FixPayCheckAccumulations(List<PayCheck> accupdate)
+		{
+			using (var conn = GetConnection())
+			{
+				const string updatecheck = @"update PayrollPayCheck set Accumulations=@Accumulations Where Id=@Id";
+				const string updateacc = @"update PayCheckPayTypeAccumulation set AccumulatedValue=@AccumulatedValue, Used=@Used, CarryOver=@CarryOver Where PayCheckId=@PayCheckId and PayTypeId=@PayTypeId";
+
+				accupdate.ForEach(pta =>
+				{
+					conn.Execute(updatecheck, new {Accumulations=JsonConvert.SerializeObject(pta.Accumulations), Id=pta.Id });
+					pta.Accumulations.ForEach(a => conn.Execute(updateacc,
+						new
+						{
+							AccumulatedValue = a.AccumulatedValue,
+							Used = a.Used,
+							CarryOver = a.CarryOver,
+							PayCheckId = pta.Id,
+							PayTypeId = a.PayType.PayType.Id
+						}));
+				});
+
+			}
+		}
 	}
 }

@@ -117,6 +117,10 @@
 </xsl:template>
 
 <xsl:template match="CompanyAccumulations">
+	<xsl:call-template name="FieldTemplate">
+		<xsl:with-param name="name1" select="'f1-16'"/>
+		<xsl:with-param name="val1" select="PayCheckWages/Twelve3"/>
+	</xsl:call-template>
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1-17'"/>
 		<xsl:with-param name="field2" select="'f1-18'"/>

@@ -14,7 +14,7 @@
 			</div>
 			<div class="col-sm-12" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id, 'danger':selected.isVoid===1}">
+					<tr ng-repeat="item in tableData | orderBy:'id':true track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':selected.id===item.id, 'danger':selected.isVoid===1}">
 						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
 							{{item.payDay | date:'MM/dd/yyyy'}}<span ng-show="item.payDay!==item.taxPayDay" class="show-red">({{item.taxPayDay | date:'MM/dd/yyyy'}})</span>
 						</td>
