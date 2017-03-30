@@ -681,7 +681,7 @@ select * into #tmpComp
 						and pc.Id in (select Id from #tmpVoids where CompanyId=ExtractCompany.Id)
 						
 						and @report<>'Report1099'
-						group by pc.id, pc.GrossWage, pc.NetWage, pc.Salary, pc.PaymentMethod, e.TaxCategory, pc.TaxPayDay
+						group by pc.id, pc.GrossWage, pc.NetWage, pc.Salary, pc.PaymentMethod, e.TaxCategory, pc.TaxPayDay, pc.StartDate, pc.EndDate
 					)a
 			
 				for xml path('PayCheckWages'), elements, type
