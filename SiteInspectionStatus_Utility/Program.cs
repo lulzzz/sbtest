@@ -776,7 +776,7 @@ namespace SiteInspectionStatus_Utility
 		private static decimal CalculatePayTypeUsage(HrMaxx.OnlinePayroll.Models.Employee employee, decimal compnesaitonAmount)
 		{
 			var quotient = employee.Rate;
-			if (employee.PayType == EmployeeType.Salary || employee.PayType == EmployeeType.JobCost)
+			if (employee.PayType == EmployeeType.Salary)
 			{
 				if (employee.PayrollSchedule == PayrollSchedule.Weekly)
 					quotient = employee.Rate / (40);

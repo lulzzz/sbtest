@@ -387,7 +387,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private decimal CalculatePayTypeUsage(Employee employee, decimal compnesaitonAmount)
 		{
 			var quotient = employee.Rate;
-			if (employee.PayType == EmployeeType.Salary || employee.PayType == EmployeeType.JobCost)
+			if (employee.PayType == EmployeeType.Salary)
 			{
 				if (employee.PayrollSchedule == PayrollSchedule.Weekly)
 					quotient = employee.Rate/(40);
@@ -398,7 +398,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				else if (employee.PayrollSchedule == PayrollSchedule.Monthly)
 					quotient = (employee.Rate*12)/(40*52);
 			}
-			else if (employee.PayType == EmployeeType.PieceWork)
+			else if (employee.PayType == EmployeeType.PieceWork || employee.PayType == EmployeeType.JobCost)
 			{
 				quotient = employee.Rate;
 			}
@@ -2118,7 +2118,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			employeeAccumulation.Deductions = employeeAccumulation.Deductions ?? new List<PayCheckDeduction>();
 			var localGrossWage = grossWage;
 			var eeApplied = false;
-			payCheck.Deductions.OrderBy(d=>d.Deduction.Type.Category.GetDbId()).ThenBy(d=>d.EmployeeDeduction.Priority).ToList().ForEach(d =>
+			payCheck.Deductions.OrderBy(d=>d.Deduction.Type.Category.GetDbId()).ThenBy(d=>d.EmployeeDeduction.Priority.HasValue? d.EmployeeDeduction.Priority.Value : int.MaxValue).ThenBy(d=>d.Deduction.Type.Id).ToList().ForEach(d =>
 			{
 				if ((d.Deduction.Type.Category == DeductionCategory.Other ||
 				    d.Deduction.Type.Category == DeductionCategory.PostTaxDeduction) && !eeApplied)

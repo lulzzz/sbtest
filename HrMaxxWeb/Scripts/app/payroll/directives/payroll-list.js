@@ -155,7 +155,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								}
 								
 							} else {
-								selected.endDate = moment(selected.startDate).add(1, 'month').toDate();
+								selected.endDate = moment(selected.startDate).endOf('month').toDate();
 								//selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
 							}
 							
