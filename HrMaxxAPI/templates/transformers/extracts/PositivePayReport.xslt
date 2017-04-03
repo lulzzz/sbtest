@@ -20,7 +20,7 @@
 <xsl:apply-templates select="Journals/Journal">
 	<xsl:sort select="CheckNumber" data-type="number"/>
 </xsl:apply-templates>
-T<xsl:value-of select="$total"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(Journals/Journal)"/><xsl:with-param name="count" select="9"/></xsl:call-template>
+T<xsl:value-of select="$total"/><xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(Journals/Journal) + count(Journals/Journal[IsReIssued=1])"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 </xsl:template>  
 <xsl:template match="Journal">
 <xsl:variable name="mainaccount" select="MainAccountId"/>
@@ -31,6 +31,17 @@ T<xsl:value-of select="$total"/><xsl:call-template name="padLeft"><xsl:with-para
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="$accountNumber"/><xsl:with-param name="count" select="10"/></xsl:call-template><xsl:value-of select="$amount"/>$$spaces5$$<xsl:call-template name="padRight"><xsl:with-param name="data" select="$checkNumber"/><xsl:with-param name="count" select="13"/></xsl:call-template>$$spaces5$$$$spaces2$$<xsl:value-of select="$issueDate"/><xsl:choose>
 	<xsl:when test="IsVoid='true'">$$spaces5$$$$spaces2$$$$spaces1$$V</xsl:when>
 </xsl:choose><xsl:text>$$n</xsl:text>
+<xsl:choose>
+<xsl:when test="IsReIssued">
+<xsl:call-template name="padRight">
+<xsl:with-param name="data" select="$accountNumber"/>
+<xsl:with-param name="count" select="10"/>
+</xsl:call-template><xsl:value-of select="$amount"/>$$spaces5$$<xsl:call-template name="padRight">
+<xsl:with-param name="data" select="OriginalCheckNumber"/>
+<xsl:with-param name="count" select="13"/>
+</xsl:call-template>$$spaces5$$$$spaces2$$<xsl:value-of select="msxsl:format-date(ReIssuedDate, 'yyyyMMdd')"/>$$spaces5$$$$spaces2$$$$spaces1$$V<xsl:text>$$n</xsl:text>
+</xsl:when>
+</xsl:choose>
 </xsl:template>
 	<xsl:template name="padRight">
 		<xsl:param name="data"/>

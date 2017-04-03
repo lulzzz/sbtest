@@ -34,6 +34,10 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public bool PEOASOCoCheck { get; set; }
 
+		public bool IsReIssued { get; set; }
+		public int? OriginalCheckNumber { get; set; }
+		public DateTime? ReIssuedDate { get; set; }
+
 		public int EntityType1
 		{
 			get

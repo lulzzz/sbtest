@@ -622,7 +622,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 							
 						}, function(erorr) {
-							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+							addAlert('Error generating positive pay report: ' + erorr.statusText, 'danger');
 						});
 
 					};

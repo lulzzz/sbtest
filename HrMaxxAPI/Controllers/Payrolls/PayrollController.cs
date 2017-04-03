@@ -295,6 +295,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			MakeServiceCall(() => _payrollService.MarkPayCheckPrinted(payCheckId), "mark paycheck printed");
 		}
 
+		[HttpGet]
+		[Route(PayrollRoutes.ReIssuePayCheck)]
+		public void ReIssuePayCheck(int payCheckId)
+		{
+			MakeServiceCall(() => _payrollService.ReIssuePayCheck(payCheckId), "re issue Check");
+			
+		}
+
 		private HttpResponseMessage Printed(FileDto document)
 		{
 			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };

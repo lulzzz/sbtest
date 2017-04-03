@@ -545,7 +545,7 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 			else {
 				var accumulated = 0;
 				var hrs = accPayType[0].available;
-				if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3) {
+				if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3 || $scope.original.employee.payType === 4) {
 					accumulated = hrs * $scope.original.employee.rate;
 				}
 				else if ($scope.original.employee.payType === 2) {

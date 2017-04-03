@@ -381,6 +381,9 @@
           <Property Name="DocumentId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
           <Property Name="OriginalDate" Type="datetime" />
+          <Property Name="IsReIssued" Type="bit" Nullable="false" />
+          <Property Name="OriginalCheckNumber" Type="int" />
+          <Property Name="ReIssuedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="MasterExtracts">
           <Key>
@@ -517,6 +520,9 @@
           <Property Name="CreditInvoiceId" Type="uniqueidentifier" />
           <Property Name="TaxPayDay" Type="datetime" Nullable="false" />
           <Property Name="IsHistory" Type="bit" Nullable="false" />
+          <Property Name="IsReIssued" Type="bit" Nullable="false" />
+          <Property Name="OriginalCheckNumber" Type="int" />
+          <Property Name="ReIssuedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="PayType">
           <Key>
@@ -2259,6 +2265,9 @@
           <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="PayrollPayCheck" Relationship="HrMaxxModel.FK_Journal_PayrollPayCheck" FromRole="Journal" ToRole="PayrollPayCheck" />
           <Property Name="OriginalDate" Type="DateTime" Precision="3" />
+          <Property Name="IsReIssued" Type="Boolean" Nullable="false" />
+          <Property Name="OriginalCheckNumber" Type="Int32" />
+          <Property Name="ReIssuedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Journal_EntityType">
           <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
@@ -2622,6 +2631,9 @@
           <NavigationProperty Name="PayrollInvoice" Relationship="HrMaxxModel.FK_PayrollPayCheck_PayrollInvoice" FromRole="PayrollPayCheck" ToRole="PayrollInvoice" />
           <Property Name="TaxPayDay" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsHistory" Type="Boolean" Nullable="false" />
+          <Property Name="IsReIssued" Type="Boolean" Nullable="false" />
+          <Property Name="OriginalCheckNumber" Type="Int32" />
+          <Property Name="ReIssuedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Journal_PayrollPayCheck">
           <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="0..1" />
@@ -3150,6 +3162,9 @@
           <EntitySetMapping Name="Journals">
             <EntityTypeMapping TypeName="HrMaxxModel.Journal">
               <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="ReIssuedDate" ColumnName="ReIssuedDate" />
+                <ScalarProperty Name="OriginalCheckNumber" ColumnName="OriginalCheckNumber" />
+                <ScalarProperty Name="IsReIssued" ColumnName="IsReIssued" />
                 <ScalarProperty Name="OriginalDate" ColumnName="OriginalDate" />
                 <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
@@ -3344,6 +3359,9 @@
           <EntitySetMapping Name="PayrollPayChecks">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
               <MappingFragment StoreEntitySet="PayrollPayCheck">
+                <ScalarProperty Name="ReIssuedDate" ColumnName="ReIssuedDate" />
+                <ScalarProperty Name="OriginalCheckNumber" ColumnName="OriginalCheckNumber" />
+                <ScalarProperty Name="IsReIssued" ColumnName="IsReIssued" />
                 <ScalarProperty Name="IsHistory" ColumnName="IsHistory" />
                 <ScalarProperty Name="TaxPayDay" ColumnName="TaxPayDay" />
                 <ScalarProperty Name="CreditInvoiceId" ColumnName="CreditInvoiceId" />

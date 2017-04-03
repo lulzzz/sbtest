@@ -62,12 +62,12 @@
 		
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager" >
 
-			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2)}">
+			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2), 'info':(listitem.isReIssued && !listitem.isVoid)}">
 				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' ">
 					{{listitem.companyEmployeeNo}}
 				</td>
 				<td data-title=" 'Check #' " filter="{ 'checkNumber': 'text' }" sortable=" 'checkNumber' ">
-					{{listitem.checkNumber}}
+					{{listitem.checkNumber}}<span ng-show="listitem.isReIssued" class="show-red">({{listitem.originalCheckNumber}})</span>
 				</td>
 				<td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
 					{{listitem.name}}
@@ -117,6 +117,7 @@
 						<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)"><i class="fa fa-lg fa-eye"></i></button>
 						<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)"><i class="fa fa-lg fa-fire"></i></button>
 						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)"><i class="fa fa-lg fa-print m-r-5"></i></button>
+						<button class="btn btn-sm btn-info" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
 					</div>
 				</td>
 

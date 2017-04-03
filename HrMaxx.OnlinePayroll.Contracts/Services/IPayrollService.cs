@@ -54,5 +54,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void SavePayCheckDeductions(List<PayCheckDeduction> ptdeds);
 		void SavePayCheckPayCodes(List<PayCheckPayCode> ptcodes);
 		void SavePayCheckWorkerCompensation(List<PayCheckWorkerCompensation> ptwcs);
+		void ReIssuePayCheck(int payCheckId);
 	}
 }

@@ -38,5 +38,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SavePayCheckWorkerCompensations(List<PayCheckWorkerCompensation> ptwcs);
 		void FixPayCheckTaxes(List<PayCheck> taxupdate);
 		void FixPayCheckAccumulations(List<PayCheck> accupdate);
+		void ReIssueCheck(int payCheckId);
 	}
 }

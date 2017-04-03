@@ -13,6 +13,7 @@
 		public const string PrintPayCheck = "Payroll/PrintPayCheck/{payrollId:guid}/{checkId:int}";
 		public const string Print = "Payroll/Print";
 		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";
+		public const string ReIssuePayCheck = "Payroll/ReIssueCheck/{payCheckId:int}";
 		public const string PrintPayrollReport = "Payroll/PrintPayrollReport";
 		public const string PrintPayrollTimesheet = "Payroll/PrintPayrollTimesheet";
 		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks";

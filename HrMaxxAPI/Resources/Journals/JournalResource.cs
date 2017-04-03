@@ -50,6 +50,9 @@ namespace HrMaxxAPI.Resources.Journals
 		public Guid? DocumentId { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsReIssued { get; set; }
+		public int? OriginalCheckNumber { get; set; }
+		public DateTime? ReIssuedDate { get; set; }
 
 		public decimal DisplayAmount
 		{

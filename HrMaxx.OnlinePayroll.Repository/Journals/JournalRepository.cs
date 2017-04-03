@@ -181,7 +181,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			if (companyId.HasValue)
 				journals = journals.Where(j => j.CompanyId == companyId.Value);
 
-			journals = journals.Where(j => (!j.OriginalDate.HasValue && j.TransactionDate >= startDate && j.TransactionDate <= endDate) || (j.OriginalDate.HasValue && j.OriginalDate >= startDate && j.OriginalDate <= endDate));
+			journals = journals.Where(j => (!j.OriginalDate.HasValue && j.TransactionDate >= startDate && j.TransactionDate <= endDate) || (j.OriginalDate.HasValue && j.OriginalDate >= startDate && j.OriginalDate <= endDate) || (j.ReIssuedDate.HasValue && j.IsReIssued && j.ReIssuedDate.Value >= startDate && j.ReIssuedDate.Value <= endDate));
 			
 			return _mapper.Map<List<Models.DataModel.Journal>, List<Models.Journal>>(journals.ToList());
 		}

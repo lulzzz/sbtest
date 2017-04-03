@@ -60,6 +60,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.Guid> CreditInvoiceId { get; set; }
         public System.DateTime TaxPayDay { get; set; }
         public bool IsHistory { get; set; }
+        public bool IsReIssued { get; set; }
+        public Nullable<int> OriginalCheckNumber { get; set; }
+        public Nullable<System.DateTime> ReIssuedDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }

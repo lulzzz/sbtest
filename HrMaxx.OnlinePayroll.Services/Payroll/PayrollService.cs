@@ -2478,6 +2478,26 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		public void ReIssuePayCheck(int payCheckId)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_payrollRepository.ReIssueCheck(payCheckId);
+					txn.Complete();
+					
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update pay check normalized worker comps");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds, string fullName, Guid userId)
 		{
 			try

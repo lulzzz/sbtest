@@ -35,6 +35,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.Guid DocumentId { get; set; }
         public bool PEOASOCoCheck { get; set; }
         public Nullable<System.DateTime> OriginalDate { get; set; }
+        public bool IsReIssued { get; set; }
+        public Nullable<int> OriginalCheckNumber { get; set; }
+        public Nullable<System.DateTime> ReIssuedDate { get; set; }
     
         public virtual EntityType EntityType1 { get; set; }
         public virtual Company Company { get; set; }

@@ -114,6 +114,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		
 		public bool Included { get; set; }
 
+		public bool IsReIssued { get; set; }
+		public int? OriginalCheckNumber { get; set; }
+		public DateTime? ReIssuedDate { get; set; }
+
 		public decimal CheckPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? NetWage : 0; } }
 		public decimal DDPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? 0 : NetWage; } }
 

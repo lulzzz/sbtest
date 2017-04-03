@@ -158,6 +158,14 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('error printing pay check', 'danger');
 						});
 					}
+					$scope.reIssueCheck = function (listitem) {
+						payrollRepository.reIssueCheck(listitem.id).then(function () {
+							addAlert('successfully re-issued pay check', 'success');
+							$scope.$parent.$parent.updateListAndItem($scope.item.id);
+						}, function (error) {
+							addAlert('error printing pay check', 'danger');
+						});
+					}
 					$scope.printPayrollChecks = function (payroll) {
 						payrollRepository.printPayrollChecks(payroll).then(function (data) {
 							var a = document.createElement('a');

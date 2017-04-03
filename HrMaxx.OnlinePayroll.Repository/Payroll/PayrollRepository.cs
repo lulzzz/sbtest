@@ -495,5 +495,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 			}
 		}
+
+		public void ReIssueCheck(int payCheckId)
+		{
+			using (var conn = GetConnection())
+			{
+				const string updatecheck = @"update pc set IsReIssued=1, ReIssuedDate=cast(getDate() as date), CheckNumber=(select max(j.CheckNumber)+1 from Journal j where ((pc.PEOASOCoCheck=1 and j.PEOASOCoCheck=1) or (pc.PEOASOCoCheck=0 and j.CompanyId=pc.CompanyId))) from PayrollPayCheck pc Where Id=@Id";
+				const string updateacc = @"update Journal set IsReIssued=1, ReIssuedDate=cast(getDate() as date), CheckNumber=(select CheckNumber from PayrollPayCheck pc where pc.Id=PayrollPayCheckId) where PayrollPayCheckId=@PayCheckId";
+
+				conn.Execute(updatecheck, new {Id = payCheckId});
+				conn.Execute(updateacc, new {PayCheckId = payCheckId});
+
+			}
+		}
 	}
 }
