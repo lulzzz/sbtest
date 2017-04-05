@@ -115,7 +115,16 @@
 				</Cell>
 				<Cell>
 					<Data ss:Type="String">
+						<xsl:choose>
+						<xsl:when test="IsReIssued='true'">
+							<xsl:value-of select="msxsl:format-date(ReIssuedDate, 'MM/dd/yyyy')" />
+						
+						</xsl:when>
+						<xsl:otherwise>
 						<xsl:value-of select="msxsl:format-date(PayDay, 'MM/dd/yyyy')" />
+						</xsl:otherwise>
+						</xsl:choose>
+						
 					</Data>
 				</Cell>
 				<Cell>
@@ -136,6 +145,42 @@
 					</Data>
 				</Cell>
 			</Row>
+			<xsl:choose>
+				<xsl:when test="IsReIssued='true'">
+					<Row>
+						<Cell>
+							<Data ss:Type="String">
+								<xsl:value-of select="$comp/Name"/>
+							</Data>
+						</Cell>
+						<Cell>
+							<Data ss:Type="String">
+								<xsl:value-of select="OriginalCheckNumber" />
+							</Data>
+						</Cell>
+						<Cell>
+							<Data ss:Type="String">
+								<xsl:value-of select="msxsl:format-date(PayDay, 'MM/dd/yyyy')" />
+							</Data>
+						</Cell>
+						<Cell>
+							<Data ss:Type="String">
+								<xsl:value-of select="concat(FirstName, ' ', LastName)"/>
+							</Data>
+						</Cell>
+						<Cell ss:StyleID="s64">
+							<Data ss:Type="Number">
+								<xsl:value-of select="format-number(NetWage,'######0.00')"/>
+							</Data>
+						</Cell>
+						<Cell>
+							<Data ss:Type="String">
+								V
+							</Data>
+						</Cell>
+					</Row>
+				</xsl:when>
+			</xsl:choose>
 		</xsl:for-each>
 	</xsl:template>
 </xsl:stylesheet>

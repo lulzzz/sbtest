@@ -664,10 +664,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())
 				
 				.ForMember(dest => dest.Included, opt => opt.Ignore())
-				.ForMember(dest => dest.DocumentId, opt => opt.Ignore())
-				.ForMember(dest => dest.IsReIssued, opt => opt.Ignore())
-				.ForMember(dest => dest.OriginalCheckNumber, opt => opt.Ignore())
-				.ForMember(dest => dest.ReIssuedDate, opt => opt.Ignore());
+				.ForMember(dest => dest.DocumentId, opt => opt.Ignore());
 
 			CreateMap<Models.MasterExtract, Models.DataModel.MasterExtract>()
 				//.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Extract)))

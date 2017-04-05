@@ -283,6 +283,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int CheckNumber { get; set; }
 		public int PaymentMethod { get; set; }
 		public bool PEOASOCoCheck { get; set; }
+		public bool IsReIssued { get; set; }
+		public int? OriginalCheckNumber { get; set; }
+		public DateTime? ReIssuedDate { get; set; }
 	}
 
 	public class ExtractInvoicePayment

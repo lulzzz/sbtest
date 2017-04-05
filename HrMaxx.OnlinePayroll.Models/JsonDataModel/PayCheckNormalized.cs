@@ -136,5 +136,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal NetWage { get; set; }
 		public bool IsVoid { get; set; }
 		public Guid CompanyId { get; set; }
+		public bool IsReIssued { get; set; }
+		public int? OriginalCheckNumber { get; set; }
+		public DateTime? ReIssuedDate { get; set; }
 	}
 }
