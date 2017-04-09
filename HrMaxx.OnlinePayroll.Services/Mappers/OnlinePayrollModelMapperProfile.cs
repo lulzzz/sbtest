@@ -648,7 +648,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulations, opt => opt.Ignore())
 				.ForMember(dest => dest.WCAmount, opt => opt.Ignore())
-				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<PayrollWorkerCompensation>(src.WorkerCompensation)))
+				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src=>!string.IsNullOrWhiteSpace(src.WorkerCompensation) ? JsonConvert.DeserializeObject<PayrollWorkerCompensation>(src.WorkerCompensation) : null))
 				.ForMember(dest => dest.StartDate, opt => opt.Ignore())
 				.ForMember(dest => dest.EndDate, opt => opt.Ignore())
 				.ForMember(dest => dest.YTDSalary, opt => opt.Ignore())

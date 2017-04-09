@@ -71,11 +71,35 @@ namespace SiteInspectionStatus_Utility
 				case 9:
 					FixPayrollYTD(container);
 					break;
+				case 10:
+					FixPayCheckYTD(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+
+		private static void FixPayCheckYTD(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var mementoService = scope.Resolve<IMementoDataService>();
+				var original = _readerService.GetPaycheck(35693);
+				var newone = _readerService.GetPaycheck(37041);
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					original.SubtractFromYTD(newone);
+					original.Compensations.Remove(original.Compensations.First(c => c.PayType.Id == 4));
+					_payrollRepository.SavePayCheck(original);
+					var memento = Memento<PayCheck>.Create(original, EntityTypeEnum.PayCheck, "System", "YTD fixed", Guid.Empty);
+					mementoService.AddMementoData(memento);
+					txn.Complete();
+				}
+			}
 		}
 
 		private static void FixPayrollTaxesAccumulations(IContainer container)

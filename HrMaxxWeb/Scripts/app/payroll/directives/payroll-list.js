@@ -220,7 +220,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								department: employee.department ? employee.department : '',
 								employee: employee,
 								payCodes: [],
-								salary: employee.payType === 2 ? (matching && option===2 ? matching.salary : employee.rate) : 0,
+								salary: employee.payType === 2 || employee.payType===4? (matching && option===2 ? matching.salary : employee.rate) : 0,
 								compensations: [],
 								deductions: [],
 								isVoid: false,
@@ -234,34 +234,39 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
 								paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
 							};
-							$.each(employee.payCodes, function (index1, paycode) {
-								var pc = {
-									payCode: angular.copy(paycode),
-									screenHours: 0,
-									screenOvertime: 0,
-									hours: 0,
-									overtimeHours: 0,
-									pwAmount: 0
-								};
-								if (matching) {
-									var matchingpc = $filter('filter')(matching.payCodes, { payCode: { id: paycode.id } })[0];
-									if (matchingpc) {
-										pc.screenHours = matchingpc.screenHours;
-										pc.screenOvertime = matchingpc.screenOvertime;
-										pc.hours = matchingpc.hours;
-										pc.overtimeHours = matchingpc.overtimeHours;
-										pc.pwAmount = matchingpc.pwAmount;
-										if (pc.payCode.id >= 0 && option === 2) {
-											pc.payCode.hourlyRate = matchingpc.payCode.hourlyRate;
+							if (employee.payType < 4) {
+								$.each(employee.payCodes, function(index1, paycode) {
+									var pc = {
+										payCode: angular.copy(paycode),
+										screenHours: 0,
+										screenOvertime: 0,
+										hours: 0,
+										overtimeHours: 0,
+										pwAmount: 0
+									};
+									if (matching) {
+										var matchingpc = $filter('filter')(matching.payCodes, { payCode: { id: paycode.id } })[0];
+										if (matchingpc) {
+											pc.screenHours = matchingpc.screenHours;
+											pc.screenOvertime = matchingpc.screenOvertime;
+											pc.hours = matchingpc.hours;
+											pc.overtimeHours = matchingpc.overtimeHours;
+											pc.pwAmount = matchingpc.pwAmount;
+											if (pc.payCode.id >= 0 && option === 2) {
+												pc.payCode.hourlyRate = matchingpc.payCode.hourlyRate;
 
-										} else {
-											pc.payCode.hourlyRate = paycode.hourlyRate;
+											} else {
+												pc.payCode.hourlyRate = paycode.hourlyRate;
+											}
 										}
 									}
-								}
-								paycheck.payCodes.push(pc);
-							});
+									paycheck.payCodes.push(pc);
+								});
+							} 
+							
 							if (matching) {
+								if (employee.payType === 4)
+									paycheck.payCodes = angular.copy(matching.payCodes);
 								paycheck.compensations = angular.copy(matching.compensations);
 								paycheck.deductions = angular.copy(matching.deductions);
 								$.each(paycheck.deductions, function(id, d) {

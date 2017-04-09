@@ -1,4 +1,4 @@
-﻿<div class="row">
+﻿ <div class="row">
 	<!-- begin panel -->
 	<script type="text/ng-template" id="popover/confirmcopy.html">
 		<div class="modal-header">
@@ -44,7 +44,7 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
+					<tr ng-repeat="item in tableData | orderBy:['-payDay','-maxCheckId'] track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
 						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
 							{{item.payDay | date:'MM/dd/yyyy'}} ({{item.taxPayDay | date:'MM/dd/yyyy'}})
 						</td>
@@ -64,7 +64,7 @@
 						<td data-title=" 'Net Wage' " sortable=" 'totalNetWage' " class="col-sm-1 text-center show-red">
 							{{item.totalNetWage | currency:'$'}}
 						</td>
-						
+
 						<td data-title=" 'Invoice #' " sortable=" 'invoiceNumber' " class="col-sm-1 text-center" ng-show="showInvoices()">
 							{{item.invoiceNumber}}
 						</td>

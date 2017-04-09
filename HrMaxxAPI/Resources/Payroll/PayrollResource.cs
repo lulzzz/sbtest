@@ -57,7 +57,12 @@ namespace HrMaxxAPI.Resources.Payroll
 		{
 			get { return Company.Name; }
 		}
-		
+
+		public int MaxCheckId
+		{
+			get { return PayChecks.Max(pc => pc.Id != null ? pc.Id.Value : 0); }
+		}
+
 	}
 	public class PayCheckResource
 	{

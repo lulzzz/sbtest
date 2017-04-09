@@ -293,10 +293,7 @@ namespace HrMaxx.OnlinePayroll.Models
 					pc.YTD = Math.Round(pc.YTD + pc1.Amount, 2, MidpointRounding.AwayFromZero);
 					pc.YTDOvertime = Math.Round(pc.YTDOvertime + pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				}
-				else
-				{
-					PayCodes.Add(pc1);
-				}
+				
 			});
 			
 		}
@@ -310,10 +307,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					c.YTD = Math.Round(c.YTD + c1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
-				else
-				{
-					Compensations.Add(c1);
-				}
+				
 			});
 		}
 
@@ -326,10 +320,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					d.YTD = Math.Round(d.YTD + d1.Amount, 2, MidpointRounding.AwayFromZero);
 				}
-				else
-				{
-					Deductions.Add(d1);
-				}
+				
 			});
 		}
 

@@ -172,7 +172,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 							var prCalculatedRate = (pc.Hours + pc.OvertimeHours)>0 ? Math.Round((pc.PWAmount + PRBreakPay) / (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero) : 0;
 							var prApplicableRate = (decimal) 0 + prCalculatedRate;
-							if (prCalculatedRate < payroll.Company.MinWage)
+							if (prCalculatedRate>0 && prCalculatedRate < payroll.Company.MinWage && (pc.Hours + pc.OvertimeHours)>0)
 							{
 								prApplicableRate = payroll.Company.MinWage;
 								var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
@@ -489,7 +489,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var ptdeds = new List<PayCheckDeduction>();
 					var ptcodes = new List<PayCheckPayCode>();
 					var ptwcs = new List<PayCheckWorkerCompensation>();
-					savedPayroll.PayChecks.ForEach(pc =>
+					savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 					{
 						
 						pc.Accumulations.ForEach(a =>
@@ -599,7 +599,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 					foreach (var paycheck in savedPayroll.PayChecks)
 					{
-						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id!=paycheck.Id).ToList();
+						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay>paycheck.PayDay && p.Id!=paycheck.Id).ToList();
 						foreach (var employeeFutureCheck in employeeFutureChecks)
 						{
 							employeeFutureCheck.AddToYTD(paycheck);
@@ -1006,7 +1006,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
 				{
 					var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
-					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderByDescending(pc=>pc.CheckNumber).ToList(), journals);
+					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
 				}
 				using (var txn = TransactionScopeHelper.Transaction())
 				{

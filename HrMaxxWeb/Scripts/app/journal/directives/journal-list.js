@@ -236,7 +236,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 								id: j.payeeId,
 								payeeName: j.payeeName,
 								payeeType: j.entityType,
-								dispalyName: translatePayeeType(j.entityType) + ': ' + j.payeeName
+								displayName: translatePayeeType(j.entityType) + ': ' + j.payeeName
 							};
 							var exists = $filter('filter')(dataSvc.payees, { id: payee.id })[0];
 							if (!exists) {
