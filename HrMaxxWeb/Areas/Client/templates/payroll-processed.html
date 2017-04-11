@@ -117,7 +117,7 @@
 						<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></button>
 						<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></button>
 						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check"><i class="fa fa-lg fa-print m-r-5"></i></button>
-						<button class="btn btn-sm btn-info" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
+						<button class="btn btn-sm btn-info" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
 					</div>
 				</td>
 
@@ -150,7 +150,7 @@
 				<h2 class="modal-title">Pay Check Details</h2>
 			</div>
 			<div class="modal-body">
-				<paycheck check="check"/>
+				<paycheck check="check" main-data="mainData" />
 			</div>
 		
 	</script>

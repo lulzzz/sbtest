@@ -273,35 +273,32 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			_dbContext.SaveChanges();
 		}
 
-		public void UpdatePayCheckSickLeaveAccumulation(List<PayCheck> pcs)
+		public void UpdatePayCheckSickLeaveAccumulation(PayCheck payCheck)
 		{
 			var ptaccums = new List<PayCheckPayTypeAccumulation>();
 			using (var conn = GetConnection())
 			{
 				const string updatesql = @"Update PayrollPayCheck set Accumulations=@Accumulation Where Id=@PayCheckId";
-				
-
-				pcs.ForEach(pc =>
+				conn.Execute(updatesql, new { Accumulation = JsonConvert.SerializeObject(payCheck.Accumulations), PayCheckId=payCheck.Id });
+				payCheck.Accumulations.ForEach(a =>
 				{
-					pc.Accumulations.ForEach(a =>
+					var ptaccum = new PayCheckPayTypeAccumulation
 					{
-						var ptaccum = new PayCheckPayTypeAccumulation
-						{
-							PayCheckId = pc.Id,
-							PayTypeId = a.PayType.PayType.Id,
-							FiscalEnd = a.FiscalEnd,
-							FiscalStart = a.FiscalStart,
-							AccumulatedValue = a.AccumulatedValue,
-							Used = a.Used,
-							CarryOver = a.CarryOver
-						};
-						ptaccums.Add(ptaccum);
-					});
-					conn.Execute(updatesql, new { Accumulation = JsonConvert.SerializeObject(pc.Accumulations), PayCheckId=pc.Id });
+						PayCheckId = payCheck.Id,
+						PayTypeId = a.PayType.PayType.Id,
+						FiscalEnd = a.FiscalEnd,
+						FiscalStart = a.FiscalStart,
+						AccumulatedValue = a.AccumulatedValue,
+						Used = a.Used,
+						CarryOver = a.CarryOver
+					};
+					ptaccums.Add(ptaccum);
 				});
-
+				
+					
 			}
-			//SavePayCheckPayTypeAccumulations(ptaccums);
+			
+			SavePayCheckPayTypeAccumulations(ptaccums);
 		}
 
 		public void UpdatePayrollDates(Models.Payroll mappedResource)

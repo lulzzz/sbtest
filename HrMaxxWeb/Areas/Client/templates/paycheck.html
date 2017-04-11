@@ -95,25 +95,91 @@
 	<div class="col-sm-12">
 		<table class="table table-bordered table-condensed">
 			<tr>
-				<th colspan="7" class="text-center">Accumulated Pay Types</th>
+				<th colspan="10" class="text-center">Accumulated Pay Types</th>
 			</tr>
 			<tr>
 				<th class="text-center">Types</th>
+				<th class="text-center">Fiscal Start Date</th>
+				<th class="text-center">Fiscal End Date</th>
 				<th class="text-center">Hours Used</th>
 				<th class="text-center">YTD Used</th>
 				<th class="text-center">Current</th>
-				<th class="text-center">YTD Accumulation</th>
+				<th class="text-center">YTD Acc</th>
 				<th class="text-center">Carry Over</th>
 				<th class="text-center">Available</th>
+				<th ng-show="showControls"></th>
 			</tr>
 			<tr ng-repeat="pt in check.accumulations">
-				<td>{{pt.payType.payType.description}} ({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})</td>
-				<td class="text-right">{{pt.used}}</td>
-				<td class="text-right">{{pt.ytdUsed}}</td>
-				<td class="text-right">{{pt.accumulatedValue}}</td>
-				<td class="text-right">{{pt.ytdFiscal}}</td>
-				<td class="text-right">{{pt.carryOver}}</td>
-				<td class="text-right">{{pt.available}}</td>
+				<td>{{pt.payType.payType.description}}</td>
+				<td>
+					<span ng-show="!rowform.$visible">
+						{{pt.fiscalStart | date:'MM/dd/yyyy'}}
+					</span>
+					<span ng-show="rowform.$visible">
+						<date-ctrl name="fiscalStart" model="pt.fiscalStart" />
+					</span>
+					
+				</td>
+				<td>
+					<span ng-show="!rowform.$visible">
+						{{pt.fiscalEnd | date:'MM/dd/yyyy'}}
+					</span>
+					<span ng-show="rowform.$visible">
+						<date-ctrl name="fiscalEnd" model="pt.fiscalEnd" />
+					</span>
+				</td>
+				<td class="text-right">
+					<span e-ng-change="pt.used = $data;" editable-number="pt.used" e-name="used" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:7em;">
+						{{ pt.used }}
+					</span>
+				</td>
+				<td class="text-right">
+					<span e-ng-change="pt.ytdUsed = $data;" editable-number="pt.ytdUsed" e-name="ytdUsed" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:7em;">
+						{{ pt.ytdUsed }}
+					</span>
+				</td>
+				<td class="text-right">
+					<span e-ng-change="pt.accumulatedValue = $data;" editable-number="pt.accumulatedValue" e-name="accumulatedValue" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:7em;">
+						{{ pt.accumulatedValue }}
+					</span>
+					
+				</td>
+				<td class="text-right">
+					<span e-ng-change="pt.ytdFiscal = $data;" editable-number="pt.ytdFiscal" e-name="ytdFiscal" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:7em;">
+						{{ pt.ytdFiscal }}
+					</span>
+					
+				</td>
+				<td class="text-right">
+					<span e-ng-change="pt.carryOver = $data;" editable-number="pt.carryOver" e-name="carryOver" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:5em;">
+						{{ pt.carryOver }}
+					</span>
+				</td>
+				<td class="text-right">
+					<span ng-show="!rowform.$visible">
+						{{pt.available  | currency:''}}
+					</span>
+					<span ng-show="rowform.$visible">
+						{{ (pt.carryOver + pt.ytdFiscal - pt.ytdUsed) | currency:''}}
+					</span>
+					
+				</td>
+				<td style="white-space: nowrap" ng-show="showControls">
+					<!-- form -->
+					<form editable-form id="rowform" name="rowform" onbeforesave="saveAccumulation()" class="form-buttons form-inline" shown="selected==pt">
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
+							<i class="fa fa-edit m-r-5"></i> 
+						</button>
+						
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(pt)" ng-show="rowform.$visible" class="btn btn-success">
+							<i class="fa fa-save m-r-5"></i> 
+						</button>
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+							<i class="fa fa-remove m-r-5"></i> 
+						</button>
+						
+					</form>
+				</td>
 			</tr>
 			
 		</table>

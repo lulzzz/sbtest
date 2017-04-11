@@ -90,7 +90,7 @@
 							<tax-payment item="memento.object" datasvc="dataSvc" company="mainData.selectedCompany" show-controls="false" />							
 						</div>
 						<div class="row" ng-if="sourceTypeId===7">
-							<paycheck check="memento.object" />
+							<paycheck check="memento.object" main-data="mainData"/>
 						</div>
 					<div class="row" ng-if="sourceTypeId===11">
 						<payroll-invoice invoice="memento.object" datasvc="dataSvc" host="mainData.selectedHost" main-data="mainData" show-controls="false" />
@@ -118,7 +118,7 @@
 				</div>
 				<div class="modal-body" >
 					<div class="alert alert-{{type}}">
-						<pre class="alert alert-{{type}}">{{message}}</pre>
+						<pre class="alert alert-{{type}}" style="word-wrap:break-word">{{message}}</pre>
 					</div>					
 				</div>
 				<div class="modal-footer text-center">

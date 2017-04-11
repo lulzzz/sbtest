@@ -43,5 +43,6 @@
 		public const string UpdatePayrollDates = "Payroll/UpdatePayrollDates";
 		public const string FixCubesByCompany = "Payroll/FixCubesByCompany/{companyId:guid}/{year:int}";
 		public const string FillPayCheckNormalized = "Payroll/FillPayCheckNormalized";
+		public const string UpdateAccumulation = "Payroll/UpdateAccumulation";
 	}
 }

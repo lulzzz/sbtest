@@ -229,6 +229,19 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 								});
 							}
 						}
+						if ($scope.selected.sickLeaveHireDate !== $scope.original.sickLeaveHireDate) {
+							$scope.$parent.$parent.$parent.$parent.confirmDialog('Changing sick leave hire date may need to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
+								'do you want to proceed?', 'danger', function () {
+									saveEmpployee();
+								}
+							);
+						} else {
+							saveEmpployee();
+						}
+						
+						
+					}
+					var saveEmpployee  = function() {
 						companyRepository.saveEmployee($scope.selected).then(function (result) {
 							if (!$scope.isPopup)
 								$scope.$parent.$parent.save(result);
@@ -279,7 +292,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						
 						$timeout(function () {
-							
+							$scope.original = angular.copy($scope.selected);
 							if ($scope.selected.birthDate)
 								$scope.selected.birthDate = moment($scope.selected.birthDate).toDate();
 							$scope.selected.hireDate = moment($scope.selected.hireDate).toDate();

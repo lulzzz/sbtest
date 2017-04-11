@@ -351,6 +351,17 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpPost]
+		[Route(PayrollRoutes.UpdateAccumulation)]
+		[DeflateCompression]
+		public HttpStatusCode UpdateAccumulation(PayCheckAccumulation resource)
+		{
+			var accumulation = Mapper.Map<PayTypeAccumulationResource, PayTypeAccumulation>(resource.Accumulation);
+
+			MakeServiceCall(() => _payrollService.UpdatePayCheckAccumulation(resource.PayCheckId, accumulation, CurrentUser.FullName, CurrentUser.UserId), string.Format("update pay check accumulation for id={0} and accumulation type={1}", resource.PayCheckId, accumulation.PayType.PayType.Description));
+			return HttpStatusCode.OK;
+		}
+
+		[HttpPost]
 		[Route(PayrollRoutes.ProcessPayroll)]
 		[DeflateCompression]
 		public PayrollResource ProcessPayroll(PayrollResource resource)

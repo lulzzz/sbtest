@@ -264,9 +264,13 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							templateUrl: 'popover/reviewpaycheck.html',
 							controller: 'paycheckPopupCtrl',
 							size: 'lg',
+							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
 									return listitem;
+								},
+								maindata: function() {
+									return $scope.mainData;
 								}
 							}
 						});
@@ -317,8 +321,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 		}
 	}
 ]);
-common.controller('paycheckPopupCtrl', function ($scope, $uibModalInstance, $filter, paycheck) {
+common.controller('paycheckPopupCtrl', function ($scope, $uibModalInstance, $filter, paycheck, maindata) {
 	$scope.check = paycheck;
-	
+	$scope.mainData = maindata;
 
 });

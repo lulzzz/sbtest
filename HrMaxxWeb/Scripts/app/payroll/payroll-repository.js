@@ -158,6 +158,19 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			updatePayCheckAccumulation: function (payCheckId, accumulation) {
+				var deferred = $q.defer();
+				payrollServer.all('UpdateAccumulation').post({
+					payCheckId: payCheckId,
+					Accumulation: accumulation
+				}).then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			createPayrollInvoice: function (payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('CreatePayrollInvoice').post(payroll).then(function (data) {

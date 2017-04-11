@@ -2498,6 +2498,30 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
+		public void UpdatePayCheckAccumulation(int payCheckId, PayTypeAccumulation accumulation, string user, string userId)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var payCheck = _readerService.GetPaycheck(payCheckId);
+					payCheck.Accumulations.RemoveAll(a => a.PayType.PayType.Id == accumulation.PayType.PayType.Id);
+					payCheck.Accumulations.Add(accumulation);
+					_payrollRepository.UpdatePayCheckSickLeaveAccumulation(payCheck);
+					var memento = Memento<PayCheck>.Create(payCheck, EntityTypeEnum.PayCheck, user, "Pay Type Accumulation Updated", new Guid(userId));
+					_mementoDataService.AddMementoData(memento);
+					txn.Complete();
+					
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update pay check accumulation");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public InvoiceDeliveryClaim ClaimDelivery(List<Guid> invoiceIds, string fullName, Guid userId)
 		{
 			try
