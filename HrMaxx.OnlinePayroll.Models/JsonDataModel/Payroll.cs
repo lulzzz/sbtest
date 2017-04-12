@@ -33,6 +33,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Total { get; set; }
 		public int InvoiceNumber { get; set; }
 		public int InvoiceStatus { get; set; }
+
+		public Guid? CopiedFrom { get; set; }
+		public Guid? MovedFrom { get; set; }
 	}
 }
 

@@ -441,6 +441,23 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.MovePayrolls)]
+		[DeflateCompression]
+		public HttpStatusCode MovePayrolls(Guid source, Guid target)
+		{
+			MakeServiceCall(() => _payrollService.MovePayrolls(source, target, new Guid(CurrentUser.UserId), CurrentUser.FullName), string.Format("move payrolls from {0}  to {1}", source, target));
+			return HttpStatusCode.OK;
+		}
+		[HttpGet]
+		[Route(PayrollRoutes.CopyPayrolls)]
+		[DeflateCompression]
+		public HttpStatusCode CopyPayrolls(Guid source, Guid target)
+		{
+			MakeServiceCall(() => _payrollService.CopyPayrolls(source, target, new Guid(CurrentUser.UserId), CurrentUser.FullName), string.Format("move payrolls from {0}  to {1}", source, target));
+			return HttpStatusCode.OK;
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.PayCheck)]
 		[DeflateCompression]
 		public PayCheckResource GetPayCheck(int checkId)

@@ -429,6 +429,8 @@
           <Property Name="Notes" Type="varchar(max)" />
           <Property Name="TaxPayDay" Type="datetime" Nullable="false" />
           <Property Name="IsHistory" Type="bit" Nullable="false" />
+          <Property Name="CopiedFrom" Type="uniqueidentifier" />
+          <Property Name="MovedFrom" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="PayrollInvoice">
           <Key>
@@ -2223,6 +2225,8 @@
           <NavigationProperty Name="PayrollPayChecks" Relationship="HrMaxxModel.FK_PayrollDetail_Payroll" FromRole="Payroll" ToRole="PayrollPayCheck" />
           <Property Name="TaxPayDay" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsHistory" Type="Boolean" Nullable="false" />
+          <Property Name="CopiedFrom" Type="Guid" />
+          <Property Name="MovedFrom" Type="Guid" />
         </EntityType>
         <Association Name="FK_Employee_CompanyWorkerCompensation">
           <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="0..1" />
@@ -3141,6 +3145,8 @@
           <EntitySetMapping Name="Payrolls">
             <EntityTypeMapping TypeName="HrMaxxModel.Payroll">
               <MappingFragment StoreEntitySet="Payroll">
+                <ScalarProperty Name="MovedFrom" ColumnName="MovedFrom" />
+                <ScalarProperty Name="CopiedFrom" ColumnName="CopiedFrom" />
                 <ScalarProperty Name="IsHistory" ColumnName="IsHistory" />
                 <ScalarProperty Name="TaxPayDay" ColumnName="TaxPayDay" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />

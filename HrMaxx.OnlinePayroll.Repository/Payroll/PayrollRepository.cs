@@ -15,6 +15,7 @@ using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
 using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
 using InvoiceDeliveryClaim = HrMaxx.OnlinePayroll.Models.InvoiceDeliveryClaim;
+using Journal = HrMaxx.OnlinePayroll.Models.Journal;
 using PayrollInvoice = HrMaxx.OnlinePayroll.Models.PayrollInvoice;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
@@ -503,6 +504,41 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				conn.Execute(updatecheck, new {Id = payCheckId});
 				conn.Execute(updateacc, new {PayCheckId = payCheckId});
 
+			}
+		}
+
+		public void MovePayrolls(List<Models.Payroll> payrolls, List<Journal> affectedJournals, List<PayrollInvoice> invoices, Guid source, Guid target)
+		{
+			var dbPayrolls = _mapper.Map<List<Models.Payroll>, List<Models.DataModel.Payroll>>(payrolls);
+			dbPayrolls.ForEach(p=>p.PayrollPayChecks.ToList().ForEach(pc => pc.CompanyId = p.CompanyId));
+			var dbPayChecks = dbPayrolls.SelectMany(p => p.PayrollPayChecks.ToList()).ToList();
+			var dbjournals = _mapper.Map<List<Journal>, List<Models.DataModel.Journal>>(affectedJournals);
+			var dbInvoices = _mapper.Map<List<Models.PayrollInvoice>, List<Models.DataModel.PayrollInvoice>>(invoices);
+			const string updatepayroll = @"update Payroll set CompanyId=@CompanyId, Company=@Company, MovedFrom=@MovedFrom where Id=@Id";
+			const string updatecheck = @"update PayrollPayCheck set CompanyId=@CompanyId, EmployeeId=@EmployeeId, Employee=@Employee, Deductions=@Deductions, WorkerCompensation=@WorkerCompensation, Accumulations=@Accumulations, PayCodes=@PayCodes Where Id=@Id";
+			const string updatejournals = @"update journal set CompanyId=@CompanyId, JournalDetails=@JournalDetails, MainAccountId=@MainAccountId, PayeeId=@PayeeId Where Id=@Id";
+			const string updateInvoices = @"update PayrollInvoice set CompanyId=@CompanyId, WorkerCompensations = @WorkerCompensations where Id=@Id";
+			const string updatepayrolldate = @"update employee set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where EmployeeId=Employee.Id and isvoid=0) where companyid=@CompanyId";
+			const string updatesource = "update Company set LastPayrollDate=null where Id=@SourceCompanyId;update Employee set LastPayrollDate=null where CompanyId=@CompanyId";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(updatepayroll, dbPayrolls);
+				conn.Execute(updatecheck, dbPayChecks);
+				conn.Execute(updatejournals, dbjournals);
+				conn.Execute(updateInvoices, dbInvoices);
+				conn.Execute(updatepayrolldate, new {CompanyId = target});
+				conn.Execute(updatesource, new { CompanyId = source, SourceCompanyId=source });
+			}
+		}
+
+		public void DeleteAllPayrolls(Guid target)
+		{
+			const string deletepayrolls =
+				@"delete from Journal where PayrollPayCheckId in (select Id from PayrollPayCheck where CompanyId=@JCompanyId);delete from PayrollPayCheck where CompanyId=@PCompanyId;delete from Payroll where CompanyId=@PPCompanyId;";
+			using (var conn = GetConnection())
+			{
+				
+				conn.Execute(deletepayrolls, new { JCompanyId = target, PCompanyId = target, PPCompanyId=target });
 			}
 		}
 	}

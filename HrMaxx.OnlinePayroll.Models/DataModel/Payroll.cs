@@ -36,6 +36,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Notes { get; set; }
         public System.DateTime TaxPayDay { get; set; }
         public bool IsHistory { get; set; }
+        public Nullable<System.Guid> CopiedFrom { get; set; }
+        public Nullable<System.Guid> MovedFrom { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }

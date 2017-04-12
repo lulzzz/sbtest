@@ -44,6 +44,9 @@ namespace HrMaxxAPI.Resources.Payroll
 		public bool PEOASOCoCheck { get; set; }
 		public bool IsHistory { get; set; }
 
+		public Guid? CopiedFrom { get; set; }
+		public Guid? MovedFrom { get; set; }
+
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }
