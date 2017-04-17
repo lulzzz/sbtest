@@ -323,9 +323,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			_dbContext.SaveChanges();
 		}
 		
-		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
+		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims(DateTime? startDate, DateTime? endDate)
 		{
-			var dbClaims = _dbContext.InvoiceDeliveryClaims.ToList();
+			var dbClaims = _dbContext.InvoiceDeliveryClaims.Where(id => ((startDate.HasValue && id.DeliveryClaimedOn >= startDate.Value) || (!startDate.HasValue)) && ((endDate.HasValue && id.DeliveryClaimedOn <= endDate.Value) || (!endDate.HasValue))).ToList();
 			return _mapper.Map<List<Models.DataModel.InvoiceDeliveryClaim>, List<Models.InvoiceDeliveryClaim>>(dbClaims);
 		}
 
@@ -539,6 +539,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			{
 				
 				conn.Execute(deletepayrolls, new { JCompanyId = target, PCompanyId = target, PPCompanyId=target });
+			}
+		}
+
+		public void UpdateInvoiceDeliveryData(List<InvoiceDeliveryClaim> claims)
+		{
+			var dbClaims = _mapper.Map<List<InvoiceDeliveryClaim>, List<Models.DataModel.InvoiceDeliveryClaim>>(claims);
+			const string updateinvoicedelivery =
+				@"Update InvoiceDeliveryClaim set Invoices=@Invoices where Id=@Id";
+			using (var conn = GetConnection())
+			{
+
+				conn.Execute(updateinvoicedelivery, dbClaims);
 			}
 		}
 	}

@@ -74,11 +74,34 @@ namespace SiteInspectionStatus_Utility
 				case 10:
 					FixPayCheckYTD(container);
 					break;
+				case 11:
+					UpdateInvoiceDeliveryLists(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+		private static void UpdateInvoiceDeliveryLists(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var mapper = scope.Resolve<IMapper>();
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					var claims = _payrollRepository.GetInvoiceDeliveryClaims(null, null);
+					claims.ForEach(id =>
+					{
+						id.InvoiceSummaries = mapper.Map<List<PayrollInvoice>, List<InvoiceSummaryForDelivery>>(id.Invoices);
+						id.Invoices = null;
+					});
+					_payrollRepository.UpdateInvoiceDeliveryData(claims);
+					txn.Complete();
+				}
+			}
 		}
 
 		private static void FixPayCheckYTD(IContainer container)

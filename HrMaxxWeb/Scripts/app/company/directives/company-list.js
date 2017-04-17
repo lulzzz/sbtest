@@ -11,8 +11,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes',
-				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository',
+				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
 					var dataSvc = {
 						isBodyOpen: true
 						
@@ -246,6 +246,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								},
 								companyRepository : function() {
 									return companyRepository;
+								},
+								payrollRepository : function() {
+									return payrollRepository;
 								}
 							}
 						});
@@ -301,7 +304,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 		}
 	}
 ]);
-common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository) {
+common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, payrollRepository) {
 	$scope.original = company;
 	$scope.company = angular.copy(company);
 	$scope.mainData = mainData;
@@ -311,11 +314,22 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.endDate = null;
 	$scope.selectedHost = null;
 	$scope.error = null;
+
+	$scope.selectedCompanySource = null;
+	$scope.selectedCompanyTarget = null;
+	$scope.mcPayrollsOption = 1;
+	$scope.option = 0;
+	$scope.alerts = [];
+	var addAlert = function(type, message) {
+		$scope.alerts = [];
+		$scope.alerts.push({ type: type, msg: message });
+	}
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();
 	};
 	$scope.save = function () {
 		$scope.error = null;
+		$scope.alerts = [];
 		companyRepository.copyCompany({
 			companyId: $scope.company.id,
 			hostId: $scope.selectedHost.id,
@@ -324,14 +338,28 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 			startDate: $scope.startDate,
 			endDate: $scope.endDate
 		}).then(function (result) {
-			$uibModalInstance.close($scope);
-			
+			//$uibModalInstance.close($scope);
+			addAlert('success', 'successfully copied company');
 
 		}, function (error) {
-			$scope.error = error.statusText;
+			addAlert('danger', error.statusText);
 		});
 		
 	};
+	$scope.moveCopyPayrolls = function () {
+		$scope.alerts = [];
+		payrollRepository.moveCopyPayrolls({
+			source: $scope.company.id,
+			target: $scope.selectedCompanyTarget.id,
+			option: $scope.mcPayrollsOption
+		}).then(function (result) {
+			//$uibModalInstance.close($scope);
+			addAlert('success', 'successfully ' + ($scope.mcPayrollsOption===1 ? 'moved' : 'copied') + ' payrolls');
+
+		}, function (error) {
+			addAlert('danger', error.statusText);
+		});
+	}
 	$scope.isValid = function() {
 		if (!$scope.selectedHost)
 			return false;

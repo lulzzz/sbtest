@@ -234,6 +234,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						if (data) {
 							var ws_data = null;
 							ws_data = mapListToDataTable(data);
+							
 							clearIfExists('InvoiceStatusChartData', data.data, 'Invoices by Statuses');
 
 							var options = {
@@ -244,22 +245,23 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 								hAxis: {
 									title: "Status"
 								},
-								seriesType: "bars",
-								isStacked: false,
+								legend: { position: 'none' },
+								bar: { groupWidth: "50%" },
 								'width': '100%',
 								'height': 400,
 								'chartKey': 'InvoiceStatusChartData'
 							};
 
-							var chart = new google.visualization.ComboChart($element.find('#invoiceststusChart')[0]);
+							var chart = new google.visualization.ColumnChart($element.find('#invoiceststusChart')[0]);
 							var element = angular.element(document.querySelector('#invoiceststusChart'));
 							chart.draw(ws_data, options);
 							google.visualization.events.addListener(chart, 'select', function () {
 								var selection = chart.getSelection();
 								var col = selection[0].column;
+								var row = selection[0].row;
 								var key = options.chartKey;
 								var ctx = $filter('filter')($scope.chartData, { chartName: key }, true);
-								var criteria = ctx[0].chartData[0][col];
+								var criteria = ctx[0].chartData[row+1][0];
 								$scope.drawInvoiceStatusPastDueChart(criteria);
 								$scope.drawInvoiceStatusDetailedChart(criteria);
 							});

@@ -2,7 +2,17 @@ common.factory('payrollRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', 'payrollServer', '$upload',
 	function ($http, zionAPI, zionPaths, $q, payrollServer, upload) {
 		return {
-			
+			moveCopyPayrolls: function (request) {
+				var deferred = $q.defer();
+				var api = request.option === 1 ? 'MovePayrolls' : 'CopyPayrolls';
+				payrollServer.one(api).one(request.source, request.target).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			savePayroll: function(payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('Payroll').post(payroll).then(function (data) {
@@ -280,9 +290,19 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			getInvoiceDeliveryClaims: function () {
+			updateInvoiceDelivery: function (invoiceDelivery) {
 				var deferred = $q.defer();
-				payrollServer.one('InvoiceDeliveryClaims').getList().then(function (list) {
+				payrollServer.all('SaveInvoiceDelivery').post(invoiceDelivery).then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getInvoiceDeliveryClaims: function (startDate, endDate) {
+				var deferred = $q.defer();
+				payrollServer.all('InvoiceDeliveryClaims').post({startDate: startDate, endDate: endDate}).then(function (list) {
 					deferred.resolve(list);
 				}, function (error) {
 					deferred.reject(error);

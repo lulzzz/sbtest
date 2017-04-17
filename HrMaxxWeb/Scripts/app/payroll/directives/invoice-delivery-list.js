@@ -14,7 +14,9 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 				function ($scope, $element, $location, $filter, ngTableParams, payrollRepository) {
 					var dataSvc = {
 						isBodyOpen: true,
-						isBodyOpenHistory: true
+						isBodyOpenHistory: true,
+						startDate: moment().add(-1, 'week').toDate(),
+						endDate: null
 
 				}
 					$scope.list = [];
@@ -83,8 +85,8 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 							
 						});
 					}
-					var getInvoiceDeliveryClaims = function() {
-						payrollRepository.getInvoiceDeliveryClaims().then(function (data) {
+					$scope.getInvoiceDeliveryClaims = function() {
+						payrollRepository.getInvoiceDeliveryClaims(dataSvc.startDate, dataSvc.endDate).then(function (data) {
 							$scope.history = data;
 							
 						}, function (error) {
@@ -122,7 +124,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					var init = function () {
 						
 						getInvoices();
-						getInvoiceDeliveryClaims();
+						$scope.getInvoiceDeliveryClaims();
 					}
 					init();
 					$scope.viewHistoryItem = function (listitem) {
@@ -137,6 +139,9 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 							resolve: {
 								item: function () {
 									return listitem;
+								},
+								payrollRepository: function() {
+									return payrollRepository;
 								}
 							}
 						});
@@ -147,9 +152,43 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 		}
 	}
 ]);
-common.controller('invoiceDeliveryListCtrl', function ($scope, $uibModalInstance, $filter, item) {
+common.controller('invoiceDeliveryListCtrl', function ($scope, $uibModalInstance, $filter, item, payrollRepository) {
 	$scope.item = item;
-	
-	
-	
+	$scope.originalCount = item.invoiceSummaries.length;
+	$scope.alerts = [];
+	$scope.add = function() {
+		$scope.item.invoiceSummaries.push({
+			clientName:'', clientCity:'', total:0, notes:'', isPayrollDelivery:false, isEditable:true
+		});
+		
+	}
+	$scope.hasChanges=function() {
+		return $scope.item.invoiceSummaries.length !== $scope.originalCount;
+	}
+	$scope.isValid = function() {
+		var returnVal = true;
+		$.each($scope.item.invoiceSummaries, function(ind, i) {
+			if (!i.isPayrollDelivery && (!i.clientCity || !i.clientName || !i.notes)) {
+				returnVal = false;
+				return;
+			}
+		});
+		return returnVal;
+	}
+	var addAlert = function(m, t) {
+		$scope.alerts = [];
+		$scope.alerts.push({ msg: m, type: t });
+	}
+	$scope.update = function() {
+		payrollRepository.updateInvoiceDelivery($scope.item).then(function () {
+			addAlert('successfully updated delivery list', 'success');
+			$.each($scope.item.invoiceSummaries, function (ind, i) {
+				i.isEditable = false;
+			});
+			$scope.originalCount = $scope.item.invoiceSummaries.length;
+		}, function (error) {
+			addAlert('error printing invoice delivery list', 'danger');
+
+		});
+	}
 });

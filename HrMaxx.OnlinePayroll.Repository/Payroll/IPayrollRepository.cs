@@ -9,7 +9,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 	public interface IPayrollRepository
 	{
 		
-		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
+		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims(DateTime? startDate, DateTime? endDate);
 		
 		//Payrolls
 		Models.Payroll SavePayroll(Models.Payroll payroll);
@@ -41,5 +41,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void ReIssueCheck(int payCheckId);
 		void MovePayrolls(List<Models.Payroll> payrolls, List<Journal> affectedJournals, List<PayrollInvoice> invoices, Guid guid, Guid source);
 		void DeleteAllPayrolls(Guid target);
+		void UpdateInvoiceDeliveryData(List<InvoiceDeliveryClaim> claims);
 	}
 }

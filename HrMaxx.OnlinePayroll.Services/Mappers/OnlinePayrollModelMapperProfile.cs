@@ -698,9 +698,11 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.DataModel.SearchTable, Models.SearchResult>();
 
 			CreateMap<Models.InvoiceDeliveryClaim, Models.DataModel.InvoiceDeliveryClaim>()
-				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src=>JsonConvert.SerializeObject(src.Invoices)));
+				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src=>JsonConvert.SerializeObject(src.InvoiceSummaries)));
+
 			CreateMap<Models.DataModel.InvoiceDeliveryClaim, Models.InvoiceDeliveryClaim>()
-				.ForMember(dest => dest.Invoices, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.PayrollInvoice>>(src.Invoices)));
+				.ForMember(dest => dest.Invoices, opt => opt.Ignore())
+				.ForMember(dest => dest.InvoiceSummaries, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.InvoiceSummaryForDelivery>>(src.Invoices)));
 
 			CreateMap<Models.ACHTransaction, Models.DataModel.ACHTransaction>()
 				.ForMember(dest => dest.OrignatorType, opt => opt.MapFrom(src=>src.OriginatorType))
@@ -714,7 +716,13 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.ACHResponseDB, Models.ACHResponse>();
 
-
+			CreateMap<Models.PayrollInvoice, Models.InvoiceSummaryForDelivery>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.Company.Name))
+				.ForMember(dest => dest.ClientCity, opt => opt.MapFrom(src => src.Company.CompanyAddress.City))
+				.ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total))
+				.ForMember(dest => dest.IsPayrollDelivery, opt => opt.MapFrom(src => true))
+				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes));
 
 
 		}

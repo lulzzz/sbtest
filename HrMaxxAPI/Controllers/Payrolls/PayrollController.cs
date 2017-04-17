@@ -601,13 +601,20 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return MakeServiceCall(() => _payrollService.ClaimDelivery(invoiceIds, CurrentUser.FullName, new Guid(CurrentUser.UserId)), string.Format("claim delivery of invoices with ids={0}", invoiceIds));
 			
 		}
+		[HttpPost]
+		[Route(PayrollRoutes.SaveInvoiceDelivery)]
+		public void SaveInvoiceDelivery(InvoiceDeliveryClaim claim)
+		{
+			MakeServiceCall(() => _payrollService.SaveClaimDelivery(claim), string.Format("update claim delivery"));
 
-		[HttpGet]
+		}
+
+		[HttpPost]
 		[Route(PayrollRoutes.InvoiceDeliveryClaims)]
 		[DeflateCompression]
-		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
+		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims(PayrollFilterResource request)
 		{
-			return MakeServiceCall(() => _payrollService.GetInvoiceDeliveryClaims(), "Get Invoice Delivery Claims");
+			return MakeServiceCall(() => _payrollService.GetInvoiceDeliveryClaims(request.StartDate, request.EndDate), "Get Invoice Delivery Claims");
 		}
 
 		[HttpGet]

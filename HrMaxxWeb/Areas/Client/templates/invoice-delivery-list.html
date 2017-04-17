@@ -65,7 +65,7 @@
 							{{item.companyName}}
 						</td>
 						<td colspan="1" class="text-center">
-							{{item.company.businessAddress.city}}
+							{{item.city}}
 						</td>
 						<td colspan="1" class="text-center">
 							{{item.total | currency:'$'}}
@@ -77,6 +77,7 @@
 
 
 					</tr>
+					
 
 				</table>
 
@@ -92,6 +93,22 @@
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpenHistory">
+			<div class="row">
+				
+				<div class="col-sm-1 form-group">
+					<label class="control-label">Start Date </label>
+					<date-ctrl name="startdate" model="data.startDate" disabled="false" />
+				</div>
+				<div class="col-sm-1 form-group">
+					<label class="control-label">End Date </label>
+					<date-ctrl name="enddate" model="data.endDate" disabled="false" />
+				</div>
+				
+				<div class="col-sm-1 form-group">
+					<label></label>
+					<button class="btn btn-sm btn-primary form-control" ng-click="getInvoiceDeliveryClaims()">Filter</button>
+				</div>
+			</div>
 			<table class="table  table-invoice">
 				<thead>
 					<tr>
@@ -110,7 +127,7 @@
 						{{h.userName}}
 					</td>
 					<td colspan="1" class="text-center">
-						{{h.invoices.length}}
+						{{h.invoiceSummaries.length}}
 					</td>
 					<td><button class="btn btn-primary btn-sm btn-pinterest" ng-click="viewHistoryItem(h)">view</button></td>
 				</tr>
@@ -121,10 +138,16 @@
 	<script type="text/ng-template" id="popover/delivery.html">
 
 		<div class="modal-body">
+			<div ng-repeat="alert in alerts" class="alert alert-{{alert.type}}" style="margin-bottom:0px">
+				<i class="fa fa-check text-succcess fa-lg" ng-if="alert.type==='success'"></i>
+				<i class="fa fa-exclamation-triangle text-danger fa-lg" ng-if="alert.type==='danger'"></i>
+				<i class="fa fa-exclamation-triangle text-warning fa-lg" ng-if="alert.type==='warning'"></i>
+				<i class="fa fa-info-circle text-info fa-lg" ng-if="alert.type==='info'"></i>{{alert.msg}}
+			</div>
 			<div class=" col-sm-12 m-20">
 				<h2 class="text-center">Delivery Log</h2>
 				<br />
-				<h4 class="text-center">{{item.userName}} ( {{item.deliveryClaimedOn | date:'MM/dd/yyyy'}}) </h4>
+				<h4 class="text-center">{{item.userName}} ( {{item.deliveryClaimedOn | date:'MM/dd/yyyy'}}) <i class="fa fa-plus-circle fa-lg"  ng-click="add()"></i></h4>
 			</div>
 			<table class="table table-invoice">
 				<thead>
@@ -136,28 +159,36 @@
 						<th colspan="7" class="text-center">Notes</th>
 					</tr>
 				</thead>
-				<tr ng-repeat="inv in item.invoices track by $index">
+				<tr ng-repeat="inv in item.invoiceSummaries track by $index" ng-class="{'warning':!inv.isPayrollDelivery}">
 					<td colspan="1" class="text-center">
 						{{$index + 1}}
 					</td>
 
 					<td colspan="2" class="text-center">
-						{{inv.company.name}}
+						<span ng-show="!inv.isEditable">{{inv.clientName}}</span>
+						<input type="text" class="form-control" ng-model="inv.clientName" ng-show="inv.isEditable"/>
 					</td>
 					<td colspan="1" class="text-center">
-						{{inv.company.businessAddress.city}}
+						<span ng-show="!inv.isEditable">{{inv.clientCity}}</span>
+						<input type="text" class="form-control" ng-model="inv.clientCity" ng-show="inv.isEditable" />
+						
 					</td>
 					<td colspan="1" class="text-center">
 						{{inv.total | currency:'$'}}
 					</td>
 
 					<td colspan="7" class="col-sm-8 text-center">
-						{{inv.notes}}
+						<span ng-show="!inv.isEditable">{{inv.notes}}</span>
+						<input type="text" class="form-control" ng-model="inv.notes" ng-show="inv.isEditable" />						
 					</td>
 
 
 				</tr>
-
+				<tr ng-show="hasChanges()">
+					<td colspan="5">
+						<button class="btn btn-sm btn-primary" ng-click="update()" ng-disabled="!isValid()">save</button>
+					</td>
+				</tr>
 			</table>
 		</div>
 	</script>

@@ -15,7 +15,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IPayrollService
 	{
 		
-		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims();
+		List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims(DateTime? startDate, DateTime? endDate);
 		
 		//Payroll
 		Payroll ProcessPayroll(Payroll payroll);
@@ -58,5 +58,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void UpdatePayCheckAccumulation(int payCheckId, PayTypeAccumulation accumulation, string user, string userId);
 		void MovePayrolls(Guid source, Guid target, Guid guid, string fullName);
 		void CopyPayrolls(Guid source, Guid target, Guid guid, string fullName);
+		void SaveClaimDelivery(InvoiceDeliveryClaim claim);
 	}
 }

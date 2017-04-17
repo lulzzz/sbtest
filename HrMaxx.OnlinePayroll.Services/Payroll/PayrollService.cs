@@ -489,6 +489,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var ptdeds = new List<PayCheckDeduction>();
 					var ptcodes = new List<PayCheckPayCode>();
 					var ptwcs = new List<PayCheckWorkerCompensation>();
+					
 					savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 					{
 						
@@ -586,7 +587,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						var host = _hostService.GetHost(payroll.Company.HostId);
 						companyIdForPayrollAccount = host.Company.Id;
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
-						savedPayroll.PayChecks.ForEach(pc =>
+						savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 						{
 							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
 							pc.DocumentId = j.DocumentId;
@@ -650,63 +651,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 
 			
-		}
-
-		public Models.Payroll ConfirmPayrollForMigration(Models.Payroll payroll)
-		{
-			try
-			{
-				
-					payroll.Status = PayrollStatus.Committed;
-					payroll.PayChecks.ForEach(pc => pc.Status = PaycheckStatus.Saved);
-					var companyIdForPayrollAccount = payroll.Company.Id;
-
-					var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
-					var savedPayroll = _payrollRepository.SavePayroll(payroll);
-					savedPayroll.PayChecks.ForEach(pc =>
-					{
-						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
-						pc.DocumentId = j.DocumentId;
-					});
-
-					//PEO/ASO Co Check
-					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice && payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
-					{
-						var host = _hostService.GetHost(payroll.Company.HostId);
-						companyIdForPayrollAccount = host.Company.Id;
-						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
-						savedPayroll.PayChecks.ForEach(pc =>
-						{
-							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
-							pc.DocumentId = j.DocumentId;
-						});
-					}
-
-					//var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPayroll.Company.Id, savedPayroll.PayDay);
-					var companyPayChecks = _readerService.GetPayChecks(companyId: savedPayroll.Company.Id, startDate: savedPayroll.PayDay, year: savedPayroll.PayDay.Year, isvoid:0);
-					var affectedChecks = new List<PayCheck>();
-					foreach (var paycheck in savedPayroll.PayChecks)
-					{
-						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id!=paycheck.Id).ToList();
-						foreach (var employeeFutureCheck in employeeFutureChecks)
-						{
-							employeeFutureCheck.AddToYTD(paycheck);
-							_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
-							affectedChecks.Add(employeeFutureCheck);
-						}
-					}
-					
-					return savedPayroll;
-				
-
-
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
 		}
 
 		public Models.Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string user)
@@ -851,53 +795,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private Models.Payroll VoidPayCheckForMigration(Guid payrollId, int payCheckId, string name, Guid userId)
-		{
-			try
-			{
-				
-					var paycheck = _readerService.GetPaycheck(payCheckId);
-					var journal = _journalService.GetPayCheckJournal(payCheckId, paycheck.PEOASOCoCheck);
-					paycheck.Status = PaycheckStatus.Void;
-					paycheck.IsVoid = true;
-					var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, name);
-
-					journal.IsVoid = true;
-					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name, userId);
-					if (paycheck.PEOASOCoCheck)
-					{
-						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
-						if (journal1 != null)
-						{
-							journal1.IsVoid = true;
-							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name, userId);
-						}
-
-					}
-
-					//var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPaycheck.Employee.CompanyId, savedPaycheck.PayDay);
-					var companyPayChecks = _readerService.GetPayChecks(companyId:savedPaycheck.Employee.CompanyId, startDate:savedPaycheck.PayDay, year:savedPaycheck.PayDay.Year, isvoid:0);
-					var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id!=paycheck.Id).ToList();
-					foreach (var employeeFutureCheck in employeeFutureChecks)
-					{
-						employeeFutureCheck.SubtractFromYTD(paycheck);
-						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
-					}
-
-
-
-					return _readerService.GetPayroll(payrollId);
-
-
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
 		public FileDto PrintPayCheck(int payCheckId)
 		{
 			try
@@ -978,30 +875,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				
-					var documents = new List<FileDto>();
-					var updateStatus = false;
-					//if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
-					//{
-					//	foreach (var paychecks in payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc => pc.CheckNumber))
-					//	{
-							
-					//			var file = PrintPayCheck(payroll, paychecks);
-					//			if(paychecks.Status!=PaycheckStatus.Printed && paychecks.Status!=PaycheckStatus.PrintedAndPaid)
-					//				updateStatus = true;
-							
-					//		documents.Add(file);
-					//	}
-					//}
-
-
-
-					//var returnFile = _reportService.PrintPayrollWithoutSummary(payroll, documents);
-					//using (var txn = TransactionScopeHelper.Transaction())
-					//{
-					//	if (payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && updateStatus))
-					//		_payrollRepository.MarkPayrollPrinted(payroll.Id);
-					//	txn.Complete();
-					//}
 				var returnFile = new FileDto();
 				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
 				{
@@ -2304,8 +2177,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							_companyService.SaveEmployee(e, false);
 							
 						});
-						if (copyPayrolls)
-							MigratePayrolls(companyId, saved, employees, startDate, endDate, userId);
+						
 					}
 					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
 					{
@@ -2535,7 +2407,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = fullName,
 						UserId = userId,
 						DeliveryClaimedOn = DateTime.Now,
-						Invoices = invoices
+						InvoiceSummaries = Mapper.Map<List<PayrollInvoice>, List<InvoiceSummaryForDelivery>>(invoices)
 					};
 					_payrollRepository.SaveInvoiceDeliveryClaim(invoiceDeliveryClaim);
 					if(invoices.Any())
@@ -2602,11 +2474,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims()
+		public List<InvoiceDeliveryClaim> GetInvoiceDeliveryClaims(DateTime? startDate, DateTime? endDate)
 		{
 			try
 			{
-				return _payrollRepository.GetInvoiceDeliveryClaims();
+				return _payrollRepository.GetInvoiceDeliveryClaims(startDate, endDate);
 			}
 			catch (Exception e)
 			{
@@ -2697,87 +2569,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " fix invoice data ");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		private void MigratePayrolls(Guid oldCompanyId, Company company, List<Employee> employees, DateTime? startDate, DateTime? endDate, Guid userId)
-		{
-			try
-			{
-				var payrolls = _readerService.GetPayrolls(oldCompanyId, startDate, endDate);
-				payrolls.OrderBy(p=>p.LastModified).ToList().ForEach(payroll =>
-				{
-					var original = Utilities.GetCopy(payroll);
-					payroll.Company = company;
-					payroll.Id = CombGuid.Generate();
-					payroll.PayChecks.ForEach(paycheck =>
-					{
-						paycheck.Id = 0;
-						paycheck.Employee = employees.First(e => e.SSN.Equals(paycheck.Employee.SSN));
-						paycheck.PayCodes.ForEach(pc =>
-						{
-							var hourlyrate = pc.PayCode.HourlyRate;
-							pc.PayCode = paycheck.Employee.PayCodes.First(pc1 => pc1.Code.Equals(pc.PayCode.Code));
-							pc.PayCode.HourlyRate = hourlyrate;
-						});
-						paycheck.Deductions.ForEach(ded =>
-						{
-							ded.Deduction =
-								company.Deductions.First(
-									d => d.Type.Id == ded.Deduction.Type.Id && d.DeductionName.Equals(ded.Deduction.DeductionName));
-							
-						});
-						if(paycheck.WorkerCompensation!=null)
-							paycheck.WorkerCompensation.WorkerCompensation =
-								company.WorkerCompensations.First(wc => wc.Code.Equals(paycheck.WorkerCompensation.WorkerCompensation.Code));
-					}
-					);
-					var processed = ProcessPayroll(payroll);
-					var confirmed = ConfirmPayrollForMigration(processed);
-					original.PayChecks.Where(pc=>pc.IsVoid).ToList().ForEach(pc =>
-					{
-						var newone = confirmed.PayChecks.First(pc1 => pc1.Employee.SSN.Equals(pc.Employee.SSN));
-						VoidPayCheckForMigration(confirmed.Id, newone.Id, pc.LastModifiedBy,userId);
-					});
-					//if (confirmed.Invoice != null)
-					//{
-					//	if (payroll.Invoice != null)
-					//	{
-					//		var oldInvoice = Utilities.GetCopy(payroll.Invoice);
-					//		var invoice = confirmed.Invoice;
-					//		invoice.InvoiceDate = oldInvoice.InvoiceDate;
-					//		invoice.InvoiceNumber = oldInvoice.InvoiceNumber;
-					//		invoice.MiscCharges = oldInvoice.MiscCharges;
-					//		invoice.ApplyWCMinWageLimit = oldInvoice.ApplyWCMinWageLimit;
-					//		invoice.CompanyInvoiceSetup = oldInvoice.CompanyInvoiceSetup;
-					//		invoice.VoidedCreditedChecks = oldInvoice.VoidedCreditedChecks;
-					//		invoice.CalculateTotal();
-					//		invoice.Payments = oldInvoice.Payments;
-					//		invoice.Status = oldInvoice.Status;
-					//		invoice.SubmittedBy = oldInvoice.SubmittedBy;
-					//		invoice.SubmittedOn = oldInvoice.SubmittedOn;
-					//		invoice.DeliveredBy = oldInvoice.DeliveredBy;
-					//		invoice.DeliveredOn = oldInvoice.DeliveredOn;
-					//		invoice.Courier = oldInvoice.Courier;
-					//		invoice.Deductions = oldInvoice.Deductions;
-					//		invoice.ProcessedBy = oldInvoice.ProcessedBy;
-					//		invoice.Notes = oldInvoice.Notes;
-					//		SavePayrollInvoiceForMigration(invoice);
-					//	}
-					//	else
-					//	{
-					//		DeletePayrollInvoice(confirmed.Invoice.Id);
-					//	}
-						
-					//}
-					
-				});
-			}
-			catch (Exception e)
-			{
-				var message = string.Format("Failed to migrate payrolls during copy. Please make sure that the target host is set up with COA and a payroll bank account.");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -3079,7 +2870,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 						{
-							savedPayroll.PayChecks.ForEach(pc =>
+							savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 							{
 								var j = CreateJournalEntry(payroll.Company, pc, targetHostCOA, user, true, targetHost.Company.Id);
 								pc.DocumentId = j.DocumentId;
@@ -3102,6 +2893,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 					txn.Complete();
 				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Failed to copy payrolls");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void SaveClaimDelivery(InvoiceDeliveryClaim claim)
+		{
+			try
+			{
+				_payrollRepository.UpdateInvoiceDeliveryData(new List<InvoiceDeliveryClaim>{claim});
 			}
 			catch (Exception e)
 			{
