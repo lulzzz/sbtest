@@ -171,7 +171,7 @@
 														<div>
 															<label for="directdebitpayer" class="switch">
 																Pay by Direct Deposit
-																<input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" ng-disabled="!mainData.selectedHost.company.directDebitPayer" /><i></i>
+																<input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" ng-disabled="!mainData.selectedHost.isHostAllowsDirectDebit" /><i></i>
 															</label>
 														</div>
 													</div>

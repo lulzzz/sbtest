@@ -22,9 +22,10 @@ namespace HrMaxxAPI.Resources.Common
 		public DateTime EffectiveDate { get; set; }
 		public Guid? CompanyId { get; set; }
 		public HostHomePage HomePage { get; set; }
-		public Contact Contact { get; set; } 
+		public Contact Contact { get; set; }
+		public bool IsHostAllowsDirectDebit { get; set; }
 	}
-
+	
 	public class CompanyListItemResource
 	{
 		public Guid Id { get; set; }
