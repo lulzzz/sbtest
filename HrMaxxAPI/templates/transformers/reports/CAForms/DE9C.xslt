@@ -113,9 +113,6 @@
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'74'"/><xsl:with-param name="val1" select="substring(../Contact/Phone,1,3)"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'75'"/><xsl:with-param name="val1" select="concat(substring(../Contact/Phone,4,3), ' ', substring(../Contact/Phone,7,4))"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'76'"/><xsl:with-param name="val1" select="$todaydate"/></xsl:call-template>
-			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'77'"/><xsl:with-param name="val1" select="../Host/FirmName"/></xsl:call-template>
-			
-			
 			
 		</Fields>
 	</Report>
@@ -131,9 +128,9 @@
 	<xsl:template match="Accumulation">
 	<xsl:param name="currPage"/>
 	<xsl:variable name="starter" select="7*(position() - 1) + 18"/>
-	<xsl:variable name="subjectWages" select="PayCheckWages/GrossWage - sum(Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/Id=9]/YTD)"/>
-	<xsl:variable name="PITWages" select="Taxes/PayCheckTax[Tax/Code='SIT']/YTDWage"/>
-	<xsl:variable name="PIT" select="Taxes/PayCheckTax[Tax/Code='SIT']/YTD"/>
+	<xsl:variable name="subjectWages" select="format-number(PayCheckWages/GrossWage - sum(Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/Id=9]/YTD),'#,##0.00')"/>
+	<xsl:variable name="PITWages" select="format-number(Taxes/PayCheckTax[Tax/Code='SIT']/YTDWage,'#,##0.00')"/>
+	<xsl:variable name="PIT" select="format-number(Taxes/PayCheckTax[Tax/Code='SIT']/YTD,'#,##0.00')"/>
 	<xsl:variable name="ssn" select="concat(substring(SSNVal,1,3),'-',substring(SSNVal,4,2),'-',substring(SSNVal,6,4))"/>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="$starter"/><xsl:with-param name="val1" select="$ssn"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="$starter+1"/><xsl:with-param name="val1" select="FirstName"/></xsl:call-template>

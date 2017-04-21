@@ -13,11 +13,11 @@
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 
 	<xsl:variable name="fein1" select="translate(/ReportResponse/Company/FederalEIN,'-','')"/>
-	<xsl:variable name="ssConst" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employer']/Tax/Rate) div 100"/>
-	<xsl:variable name="mdConst" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/Tax/Rate + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
+	<xsl:variable name="ssConst" select="format-number(sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee' or Tax/Code='SS_Employer']/Tax/Rate) div 100, '######0.000')"/>
+	<xsl:variable name="mdConst" select="format-number(sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee' or Tax/Code='MD_Employer']/Tax/Rate) div 100, '######0.000')"/>
 	<xsl:variable name="totalTips" select="sum(/ReportResponse/CompanyAccumulations/Compensations/PayCheckCompensation[PayTypeId=3]/YTD)"/>
 	<xsl:variable name="totalFITWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FIT']/YTDWage"/>
-	<xsl:variable name="totalSSWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage"/>
+	<xsl:variable name="totalSSWages" select="sum(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage) - $totalTips"/>
 
 	<xsl:variable name="totalMDWages" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage"/>
 	<xsl:variable name="totalFITTax" select="/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FIT']/YTD"/>

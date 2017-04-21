@@ -1,5 +1,5 @@
-﻿<div class="row table-responsive">
-	<div class="panel panel-inverse panel-with-tabs" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'">
+﻿<div class="row">
+	<div class="panel panel-inverse panel-with-tabs hidden-print" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'">
 		<div class="panel-heading p-5">
 			<!-- begin nav-tabs -->
 			<div class="tab-overflow">
@@ -239,8 +239,8 @@
 
 		</div>
 	</div>
-	<div class="panel panel-inverse panel-with-tabs" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'">
-		<div class="panel-heading p-5">
+	<div class="panel panel-inverse panel-with-tabs hidden-print" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'">
+		<div class="panel-heading p-5 hidden-print">
 			<!-- begin nav-tabs -->
 			<div class="tab-overflow">
 				<ul class="nav nav-tabs nav-tabs-inverse">
@@ -253,7 +253,7 @@
 			</div>
 		</div>
 		<div class="tab-content">
-			<div class="tab-pane fade in" ng-if="selectedRep" ng-class="{'active':selectedRep}">
+			<div class="tab-pane fade in table-responsive" ng-if="selectedRep" ng-class="{'active':selectedRep}">
 				<table class="table table-bordered table-condensed">
 					<thead>
 						<tr>
@@ -296,5 +296,28 @@
 			</div>
 
 		</div>
+	</div>
+	<div class="row table-responsive visible-print">
+		<div class="col-sm-12">
+			<h4>{{selectedRep.name}} - Total Commissions: {{selectedRep.commission | currency:'$'}}</h4>
+		</div>
+		<table class="table table-bordered table-invoice">
+			<thead>
+				
+				<tr>
+					<th class="col-sm-4">Company</th>
+					<th class="col-sm-2">Invoice #</th>
+					<th class="col-sm-4">Invoice Date</th>
+					<th class="col-sm-2">Commission</th>
+
+				</tr>
+			</thead>
+			<tr ng-repeat="invoice in selectedRep.commissions | orderBy:'companyName'">
+				<td>{{invoice.companyName}}</td>
+				<td>{{invoice.invoiceNumber}}</td>
+				<td>{{invoice.invoiceDate | date:'MM/dd/yyyy'}}</td>
+				<td>{{invoice.commission | currency:'$'}}</td>
+			</tr>
+		</table>
 	</div>
 </div>

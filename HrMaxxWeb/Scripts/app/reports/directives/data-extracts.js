@@ -470,6 +470,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 								},
 								reportRepository: function () {
 									return reportRepository;
+								},
+								$window: function() {
+									return $window;
 								}
 							}
 						});
@@ -689,7 +692,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
-common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, reportRepository, item) {
+common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, reportRepository, item, $window) {
 	
 	$scope.alerts = [];
 	var addAlert = function(message, status) {
@@ -729,6 +732,10 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 		});
 
 	};
+	$scope.print = function () {
+		$scope.viewMode = 'Print';
+		$window.print();
+	}
 	$scope.printExtract = function () {
 		reportRepository.printExtract($scope.masterExtract.journals, $scope.masterExtract.extract.report).then(function (data) {
 			var a = document.createElement('a');

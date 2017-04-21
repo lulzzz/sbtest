@@ -1,4 +1,4 @@
-﻿<div class="row">
+﻿<div class="row hidden-print">
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
 		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===1?0:1)">
@@ -548,7 +548,7 @@
 	
 	<script type="text/ng-template" id="popover/extractView.html">
 
-		<div class="modal-header">
+		<div class="modal-header hidden-print">
 			<h3 class="modal-title">{{masterExtract.extract.report.description}} Data
 			<i class="pull-right fa fa-lg fa-times-circle-o" ng-click="dismiss()"/>
 			</h3><br />
@@ -558,13 +558,14 @@
 			</div>
 		</div>
 		<div class="modal-body" ng-if="masterExtract">
-			<div class=" row m-b-5 p-b-5">
+			<div class=" row m-b-5 p-b-5 hidden-print">
 				<span ng-show="masterExtract.extract.report.allowFiling && masterExtract.extract.report.depositDate"><u><i><strong>Deposit Date: {{masterExtract.extract.report.depositDate | date:'MM/dd/yyyy'}}</strong></i></u></span>
 				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File & Save</button>
 				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.salesReps.length>0" ng-click="payCommissions()">Pay & Save</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
-				<button class="btn btn-sm btn-info pull-right" ng-show="true" ng-click="regenerateFile()">Regenerate File</button>
+				<button class="btn btn-sm btn-info pull-right" ng-show="masterextract.extract.report.reportname!=='CommissionsReport'" ng-click=" regeneratefile()">Regenerate File</button>
 				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0" ng-click="printExtract()">Print Checks</button>
+				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.report.reportName==='CommissionsReport'" ng-click="print()"><i class="fa fa-print"></i> print</button>
 			</div>
 			<extract-view master-extract="masterExtract"  />
 								

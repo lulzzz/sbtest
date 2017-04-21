@@ -857,7 +857,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var xml = GetXml<ExtractResponse>(extract.Data);
 
-			var args = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList);
+			var args = extract.ArgumentList!=null ? JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList) : new List<KeyValuePair<string, string>>();
 			var argList = new XsltArgumentList();
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
 
