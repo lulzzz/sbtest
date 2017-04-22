@@ -103,7 +103,9 @@ namespace HrMaxx.Common.Repository.Files
 				ZipFile.CreateFromDirectory(source, _destinationPath + fileName, CompressionLevel.Fastest, false);
 			}
 
-			return GetFileBytesByPath(_destinationPath + fileName);
+			var bytes = GetFileBytesByPath(_destinationPath + fileName);
+			File.Delete(_destinationPath + fileName);
+			return bytes;
 		}
 
 		public List<string> GetDirectoryFiles()
@@ -168,6 +170,22 @@ namespace HrMaxx.Common.Repository.Files
 				File.Delete(filePath);
 			}
 			File.WriteAllBytes(filePath, file);
+		}
+
+		public void SaveFile(string directory, string name, string extension, string content)
+		{
+
+			var invalidChars = Path.GetInvalidFileNameChars();
+
+			name = new string(name
+			.Where(x => !invalidChars.Contains(x))
+			.ToArray());
+			var fileName = string.Format("{0}\\{1}.{2}", directory, name, extension);
+			if (File.Exists(fileName))
+			{
+				File.Delete(fileName);
+			}
+			File.WriteAllText(fileName, content);
 		}
 	}
 }

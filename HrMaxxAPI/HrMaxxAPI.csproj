@@ -335,6 +335,7 @@
     <Content Include="templates\transformers\extracts\CAPITEFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\CBT-ACHTransformer.xslt" />
     <Content Include="templates\transformers\extracts\DailyDepositReport.xslt" />
+    <Content Include="templates\transformers\extracts\DE9XmlTransformer.xslt" />
     <Content Include="templates\transformers\extracts\Federal940EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />

@@ -619,7 +619,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Deductions, opt => opt.Ignore())
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.Ignore())
 				.ForMember(dest => dest.Contract, opt => opt.Ignore())
-				.ForMember(dest => dest.CompanyTaxRates, opt => opt.Ignore())
 				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.Created, opt => opt.Ignore())

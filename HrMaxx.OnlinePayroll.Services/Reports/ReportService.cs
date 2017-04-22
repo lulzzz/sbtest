@@ -13,6 +13,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Services;
@@ -42,10 +43,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private readonly ICommonService _commonService;
 		private readonly IHostService _hostService;
 		private readonly ITaxationService _taxationService;
-		private readonly IPayrollRepository _payrollRepository;
 		private readonly IMetaDataRepository _metaDataRepository;
 
 		private readonly IReaderService _readerService;
+		private readonly IDocumentService _documentService;
+		private readonly IFileRepository _fileRepository;
 
 		private readonly string _filePath;
 		private readonly string _templatePath;
@@ -58,7 +60,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 		public IBus Bus { get; set; }
 
-		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IPayrollRepository payrollRepository, IMetaDataRepository metaDataRepository, IReaderService readerService, string filePath, string templatePath)
+		public ReportService(IReportRepository reportRepository, ICompanyRepository companyRepository, IJournalService journalService, IPDFService pdfService, ICommonService commonService, IHostService hostService, ITaxationService taxationService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService, IFileRepository fileRepository, string filePath, string templatePath)
 		{
 			_reportRepository = reportRepository;
 			_companyRepository = companyRepository;
@@ -67,11 +69,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			_filePath = filePath;
 			_templatePath = templatePath;
 			_commonService = commonService;
-			_payrollRepository = payrollRepository;
 			_metaDataRepository = metaDataRepository;
 			_hostService = hostService;
 			_taxationService = taxationService;
 			_readerService = readerService;
+			_documentService = documentService;
+			_fileRepository = fileRepository;
 		}
 
 
@@ -219,6 +222,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return StateCAUIExcel(request);
 				else if (request.ReportName.Equals("StateCADE6"))
 					return StateCADE6(request);
+				else if (request.ReportName.Equals("StateCADE9"))
+					return StateCADE9(request);
 				else if (request.ReportName.Equals("HostWCReport"))
 					return GetHostWCReport(request);
 				else if (request.ReportName.Equals("DailyDepositReport"))
@@ -769,6 +774,54 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE6Transformer.xslt", "txt", string.Format("California State Quarterly DE 6 Reporting File-{0}-{1}.txt", request.Year, request.Quarter));
 		}
+		private Extract StateCADE9(ReportRequest request)
+		{
+			request.Description = string.Format("California State DE9 for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request, true, includeDeductions: true, includeCompensaitons: false);
+
+			var argList = new List<KeyValuePair<string, string>>();
+
+			argList.Add(new KeyValuePair<string, string>("endQuarterMonth", ((int)((request.EndDate.Month + 2) / 3) * 3).ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("quarter", request.Quarter.ToString()));
+			argList.Add(new KeyValuePair<string, string>("identifier", string.Format("GIIGPaxolCaliforniaDE9-{0}-{1}-{2}",request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"), DateTime.Now.ToString("MMddyyyyhhmmss"))));
+
+			var directory = _documentService.CreateDirectory(request.Description);
+			data.Hosts.ForEach(h => GenerateDE9Xml( h, "transformers/extracts/DE9XmlTransformer.xslt", "xml", directory, argList));
+			var resultFile = request.Description + ".zip";
+			var fileStream = _documentService.ZipDirectory(directory, resultFile);
+			_documentService.DeleteDirectory(directory);
+			var extract = new Extract()
+			{
+				Report = request,
+				Data = data,
+				Template = string.Format("{0}{1}", _templatePath, "transformers/extracts/DE9XmlTransformer.xslt"),
+				ArgumentList = JsonConvert.SerializeObject(argList),
+				FileName = resultFile,
+				Extension = "zip"
+			};
+			extract.File = new FileDto
+			{
+				Data = fileStream,
+				DocumentExtension = extract.Extension,
+				Filename = extract.FileName,
+				MimeType = "application/octet-stream"
+			};
+			return extract;
+		}
+
+		private void GenerateDE9Xml(ExtractHost host, string template, string extension, string directory, List<KeyValuePair<string, string>> args)
+		{
+			var xml = GetXml<ExtractHost>(host);
+
+			
+			var argList = new XsltArgumentList();
+			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
+			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, template), argList);
+			
+			_fileRepository.SaveFile(directory, host.HostCompany.Name, extension, transformed);
+		}
 
 		private Extract Get1099Extract(ReportRequest request)
 		{
@@ -846,6 +899,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				FileName = filename,
 				Extension = extension
 			};
+			
 			if (!request.AllowExclude)
 			{
 				return GetExtractTransformedWithFile(extract);
