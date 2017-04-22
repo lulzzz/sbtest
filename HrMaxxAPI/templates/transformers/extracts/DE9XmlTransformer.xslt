@@ -24,7 +24,7 @@
 			<xsl:value-of select="format-number(HostCompany/CompanyTaxRates/CompanyTaxRate[TaxId=10 and TaxYear=$selectedYear]/Rate div 100, '#0.00000')"/>
 		</xsl:variable>
 		<xsl:variable name="ETTRate">
-			<xsl:value-of select="format-number(HostCompany/CompanyTaxRates/CompanyTaxRate[TaxId=9 and TaxYear=$selectedYear]/Rate div 100, '#.00000')"/>
+			<xsl:value-of select="format-number(HostCompany/CompanyTaxRates/CompanyTaxRate[TaxId=9 and TaxYear=$selectedYear]/Rate div 100, '#0.00000')"/>
 		</xsl:variable>
 		<ReturnDataState xsi:schemaLocation="http://www.irs.gov/efileReturnDataState.xsd" xmlns="http://www.irs.gov/efile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ContentLocation>
