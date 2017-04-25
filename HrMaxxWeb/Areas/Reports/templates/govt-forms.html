@@ -3,6 +3,9 @@
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Government Forms</h4>
+			<div class="alert alert-danger" ng-if="mainData.selectedCompany.fileUnderHost">
+				This is a Leasing Company. Do Not file forms for Leasing Companies
+			</div>
 		</div>
 		<div class="panel-body" >
 			<div class="col-sm-6">

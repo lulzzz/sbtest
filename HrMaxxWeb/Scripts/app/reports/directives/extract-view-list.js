@@ -32,6 +32,10 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							desc: 'California State UI & ETT'
 						},
 						{
+							name: 'StateCADE9',
+							desc: 'California State DE 9'
+						},
+						{
 							name: 'GarnishmentReport',
 							desc: 'Wage Garnishment'
 						},

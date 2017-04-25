@@ -663,7 +663,15 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				{
 					if (extract.Report.ReportName.Equals("GarnishmentReport"))
 						masterExtract = CreateGarnishmentPayments(extract, fullName, masterExtract);
-					else
+					else if (extract.Report.ReportName.Equals("StateCADE9"))
+					{
+						masterExtract = _journalRepository.SaveMasterExtract(masterExtract,
+							extract.Data.Hosts.SelectMany(h => h.PayCheckAccumulation.PayCheckList.Select(pc => pc.Id)).ToList(),
+							extract.Data.Hosts.SelectMany(h => h.PayCheckAccumulation.VoidedPayCheckList.Select(pc => pc.Id)).ToList(),
+							new List<Journal>());
+					}
+						
+					else 
 						masterExtract = CreateTaxPayments(extract, fullName, masterExtract);
 					txn.Complete();
 				}

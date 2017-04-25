@@ -777,7 +777,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract StateCADE9(ReportRequest request)
 		{
 			request.Description = string.Format("California State DE9 for {0} (Quarter={1})", request.Year, request.Quarter);
-			request.AllowFiling = false;
+			request.AllowFiling = true;
+			request.AllowExclude = true;
+			request.DepositDate = DateTime.Now;
 			var data = GetExtractResponse(request, true, includeDeductions: true, includeCompensaitons: false);
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -787,28 +789,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("quarter", request.Quarter.ToString()));
 			argList.Add(new KeyValuePair<string, string>("identifier", string.Format("GIIGPaxolCaliforniaDE9-{0}-{1}-{2}",request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"), DateTime.Now.ToString("MMddyyyyhhmmss"))));
 
-			var directory = _documentService.CreateDirectory(request.Description);
-			data.Hosts.ForEach(h => GenerateDE9Xml( h, "transformers/extracts/DE9XmlTransformer.xslt", "xml", directory, argList));
-			var resultFile = request.Description + ".zip";
-			var fileStream = _documentService.ZipDirectory(directory, resultFile);
-			_documentService.DeleteDirectory(directory);
-			var extract = new Extract()
-			{
-				Report = request,
-				Data = data,
-				Template = string.Format("{0}{1}", _templatePath, "transformers/extracts/DE9XmlTransformer.xslt"),
-				ArgumentList = JsonConvert.SerializeObject(argList),
-				FileName = resultFile,
-				Extension = "zip"
-			};
-			extract.File = new FileDto
-			{
-				Data = fileStream,
-				DocumentExtension = extract.Extension,
-				Filename = extract.FileName,
-				MimeType = "application/octet-stream"
-			};
-			return extract;
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE9XmlTransformer.xslt", "zip", request.Description);
+
+			
 		}
 
 		private void GenerateDE9Xml(ExtractHost host, string template, string extension, string directory, List<KeyValuePair<string, string>> args)
@@ -919,17 +902,39 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var templateName = splits[splits.Length - 1];
 
 			//var transformed = XmlTransformNew<ExtractResponse>(extract.Data,string.Format("{0}{1}", _templatePath, templateName), argList);
-			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
+			
+			if (extract.Report.ReportName.Equals("StateCADE9"))
+			{
+				var directory = _documentService.CreateDirectory(extract.FileName);
+				extract.Data.Hosts.ForEach(h => GenerateDE9Xml(h, templateName, "xml", directory, args));
+				var resultFile = extract.Report.Description + ".zip";
+				var fileStream = _documentService.ZipDirectory(directory, resultFile);
+				_documentService.DeleteDirectory(directory);
+				
+				extract.File = new FileDto
+				{
+					Data = fileStream,
+					DocumentExtension = extract.Extension,
+					Filename = extract.FileName + "." + extract.Extension,
+					MimeType = "application/octet-stream"
+				};
+				
+			}
+			else
+			{
+				var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
+				if (extract.Extension.Equals("txt"))
+					transformed = Transform(transformed);
 
-			if (extract.Extension.Equals("txt"))
-				transformed = Transform(transformed);
-
-			extract.File = new FileDto{
+				extract.File = new FileDto
+				{
 					Data = Encoding.UTF8.GetBytes(transformed),
 					DocumentExtension = extract.Extension,
 					Filename = extract.FileName,
 					MimeType = "application/octet-stream"
 				};
+			}
+			
 			
 			return extract;
 			

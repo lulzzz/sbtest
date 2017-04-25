@@ -19,6 +19,8 @@
     
   </xsl:template>
   <xsl:template match="ExtractHost">
+		<xsl:variable name="TotalGrossPay" select="format-number(PayCheckAccumulations/PayCheckWages/GrossWage,'###0.00')"/>
+		
 		
 		<xsl:variable name="SUIRate">
 			<xsl:value-of select="format-number(HostCompany/CompanyTaxRates/CompanyTaxRate[TaxId=10 and TaxYear=$selectedYear]/Rate div 100, '#0.00000')"/>
@@ -26,6 +28,21 @@
 		<xsl:variable name="ETTRate">
 			<xsl:value-of select="format-number(HostCompany/CompanyTaxRates/CompanyTaxRate[TaxId=9 and TaxYear=$selectedYear]/Rate div 100, '#0.00000')"/>
 		</xsl:variable>
+		<xsl:variable name="SUIWage" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTDWage,'###0.00')"/>
+		<xsl:variable name="UIContribution" select="format-number($SUIWage*$SUIRate,'###0.00')"/>
+
+		<xsl:variable name="ETTWage" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTDWage,'###0.00')"/>
+		<xsl:variable name="ETTContribution" select="format-number($ETTWage*$ETTRate,'###0.00')"/>
+		<xsl:variable name="SDIRate" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/Tax/Rate,'###0.00')"/>
+		<xsl:variable name="SDIWage" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTDWage,'###0.00')"/>
+		<xsl:variable name="SDIContribution" select="format-number($SDIWage*$SDIRate div 100,'###0.00')"/>
+		<xsl:variable name="SITTax" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT']/YTD,'###0.00')"/>
+		<xsl:variable name="SUITax" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD,'###0.00')"/>
+		<xsl:variable name="SDITax" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTD,'###0.00')"/>
+		<xsl:variable name="ETTTax" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTD,'###0.00')"/>
+		<xsl:variable name="box18" select="format-number($UIContribution + $ETTContribution + $SDIContribution + $SITTax,'###0.00')"/>
+		<xsl:variable name="TotalStateTax" select="format-number($SITTax + $SUITax + $SDITax + $ETTTax,'###0.00')"/>
+		<xsl:variable name="Total" select="format-number($box18 - $TotalStateTax,'###0.00')"/>
 		<ReturnDataState xsi:schemaLocation="http://www.irs.gov/efileReturnDataState.xsd" xmlns="http://www.irs.gov/efile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ContentLocation>
 				<xsl:value-of select="concat($identifier,'-',HostCompany/Id)"/>
@@ -39,14 +56,14 @@
 				</Taxyear>
 				<PreparerFirm>
 					<BusinessName>
-						<BusinessNameLine1>GIIG</BusinessNameLine1>
+						<BusinessNameLine1>GARMENT INDUSTRY INSURANCE GROUP</BusinessNameLine1>
 					</BusinessName>
 					<Address>
 						<USAddress>
-							<AddressLine1>500 N. STATE COLLEGE BLVD #1100</AddressLine1>
-							<City>ORANGE</City>
+							<AddressLine1>2750 N. Bellflower Blvd Ste 200</AddressLine1>
+							<City>Long Beach</City>
 							<State>CA</State>
-							<ZipCode>92868</ZipCode>
+							<ZipCode>90815</ZipCode>
 						</USAddress>
 					</Address>
 				</PreparerFirm>
@@ -96,13 +113,13 @@
 					<xsl:value-of select="$SUIRate"/>
 				</UITaxRate>
 				<UITaxesYear>
-					<xsl:value-of select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD"/>
+					<xsl:value-of select="$UIContribution"/>
 				</UITaxesYear>
 				<EmploymentTrainingTaxRate>
 					<xsl:value-of select="$ETTRate"/>
 				</EmploymentTrainingTaxRate>
 				<EmploymentTrainingTaxesYear>
-					<xsl:value-of select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTD"/>
+					<xsl:value-of select="$ETTContribution"/>
 				</EmploymentTrainingTaxesYear>
 				<DITaxableWagesYear>
 					<xsl:value-of select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTDWage"/>
@@ -111,13 +128,30 @@
 					<xsl:value-of select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/Tax/Rate div 100, '#0.00000')"/>
 				</DITaxRate>
 				<DITaxesYear>
-					<xsl:value-of select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTD"/>
+					<xsl:value-of select="$SDIContribution"/>
 				</DITaxesYear>
 					<TotalContributionsYear>
-						<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI' or Tax/Code='SIT' or Tax/Code='SUI' or Tax/Code='ETT']/YTD)"/>
+						<xsl:value-of select="$box18"/>
 					</TotalContributionsYear>
-				<TotalCreditsYear>0.00</TotalCreditsYear>
-				<WHBalanceDue>0.00</WHBalanceDue>
+				<TotalCreditsYear>
+					<xsl:value-of select="$TotalStateTax"/>
+				</TotalCreditsYear>
+				<WHBalanceDue>
+					<xsl:choose>
+						<xsl:when test="$TotalStateTax > $box18">
+							<xsl:value-of select="format-number($TotalStateTax - $box18,'#,##0.00')"/>
+						</xsl:when>
+						<xsl:otherwise>0.00</xsl:otherwise>
+					</xsl:choose>
+				</WHBalanceDue>
+				<WHOverpayment>
+					<xsl:choose>
+						<xsl:when test="$box18 > $TotalStateTax">
+							<xsl:value-of select="format-number($box18 - $TotalStateTax,'#,##0.00')"/>
+						</xsl:when>
+						<xsl:otherwise>0.00</xsl:otherwise>
+					</xsl:choose>
+				</WHOverpayment>
 			</StateAnnual>
 		</ReturnDataState>
 

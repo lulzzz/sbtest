@@ -451,7 +451,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						getReport('StateCADE6', 'California Quarterly DE6 Reporting File', dataSvc.filterDE6Q.year, dataSvc.filterDE6Q.quarter, null, null, null, null, null, true);
 					}
 					$scope.getReportDE9 = function () {
-						getReport('StateCADE9', 'California Quarterly DE9 Reporting File', dataSvc.filterDE9Q.year, dataSvc.filterDE9Q.quarter, null, null, null, null, null, false);
+						getReport('StateCADE9', 'California Quarterly DE9 Reporting File', dataSvc.filterDE9Q.year, dataSvc.filterDE9Q.quarter, null, null, null, null, null, true);
 					}
 					var showReview = function (report, extract) {
 						var modalInstance = $modal.open({
