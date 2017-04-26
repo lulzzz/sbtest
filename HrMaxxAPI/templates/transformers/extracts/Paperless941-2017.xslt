@@ -1384,7 +1384,7 @@
 				<Cell><Data ss:Type="String"><xsl:value-of select="$enddate"/></Data></Cell>
 				<Cell><Data ss:Type="Number">
 				<xsl:choose>
-					<xsl:when test="PayCheckAccumulation/Count3"><xsl:value-of select="PayCheckAccumulation/Count3"/></xsl:when>
+					<xsl:when test="PayCheckAccumulation/PayCheckWages/Twelve3"><xsl:value-of select="PayCheckAccumulation/PayCheckWages/Twelve3"/></xsl:when>
 					<xsl:otherwise>0</xsl:otherwise>
 				</xsl:choose>
 				</Data></Cell>
