@@ -62,7 +62,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheckPayTypeAccumulation> PreviousAccumulations { get; set; }
 
 		public List<ExtractTaxState> States { get; set; }
-
+		
 		public List<DailyAccumulation> DailyAccumulations { get; set; }
 		public List<MonthlyAccumulation> MonthlyAccumulations { get; set; } 
 

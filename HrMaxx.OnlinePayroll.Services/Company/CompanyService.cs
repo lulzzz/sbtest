@@ -706,5 +706,23 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
 			}
 		}
+
+		public void UpdateWCRates(List<CompanyWorkerCompensation> rates, string fullName, Guid guid)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_companyRepository.SaveWorkerCompensations(rates);	
+					txn.Complete();
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "updating wc rates" + e.Message);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
+			}
+		}
 	}
 }

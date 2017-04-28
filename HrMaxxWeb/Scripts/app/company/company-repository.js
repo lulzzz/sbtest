@@ -330,6 +330,37 @@ common.factory('companyRepository', [
 				});
 				return deferred.promise;
 			},
+			importWCRates: function (attachment) {
+				var url = zionAPI.URL + 'Company/ImportWCRates';
+				var deferred = $q.defer();
+				upload.upload({
+					url: url,
+					method: 'POST',
+					data: {
+						inspection: attachment.data
+					},
+					file: attachment.doc.file,
+				}).success(function (data, status, headers, config) {
+					attachment.doc.uploaded = true;
+					attachment.completed = true;
+					deferred.resolve(data);
+
+				})
+				.error(function (data, status, statusText, headers, config) {
+					deferred.reject(statusText);
+				});
+				return deferred.promise;
+			},
+			uploadWCRates: function(list) {
+				var deferred = $q.defer();
+				companyServer.all('UpdateWCRates').post({ rates: list }).then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getCaliforniaEDDExport: function () {
 				var deferred = $q.defer();
 				$http.get(zionAPI.URL + "Company/CaliforniaEDD", { responseType: "arraybuffer" }).success(

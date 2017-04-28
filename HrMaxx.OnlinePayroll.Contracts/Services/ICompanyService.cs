@@ -41,5 +41,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid);
 		void RaiseMinWage(decimal minWage);
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName);
+		void UpdateWCRates(List<CompanyWorkerCompensation> rates, string fullName, Guid guid);
 	}
 }

@@ -21,7 +21,7 @@
 	<xsl:variable name="TotalGrossPay" select="format-number(/ReportResponse/CompanyAccumulations/PayCheckWages/GrossWage,'###0.00')"/>
 	<xsl:variable name="SUIRate">
 		<xsl:choose>
-			<xsl:when test="/ReportResponse/Company/Contract/InvoiceSetup/InvoiceType='PEOASOCoCheck'">
+			<xsl:when test="/ReportResponse/Company/FileUnderHost='true'">
 				<xsl:value-of select="/ReportResponse/Host/Company/CompanyTaxRates/CompanyTaxRate[TaxId=10 and TaxYear=$selectedYear]/Rate"/>
 			</xsl:when>
 			<xsl:otherwise>
@@ -31,7 +31,7 @@
 	</xsl:variable>
 	<xsl:variable name="ETTRate">
 		<xsl:choose>
-			<xsl:when test="/ReportResponse/Company/Contract/InvoiceSetup/InvoiceType='PEOASOCoCheck'">
+			<xsl:when test="/ReportResponse/Company/FileUnderHost='true'">
 				<xsl:value-of select="/ReportResponse/Host/Company/CompanyTaxRates/CompanyTaxRate[TaxId=9 and TaxYear=$selectedYear]/Rate"/>
 			</xsl:when>
 			<xsl:otherwise>

@@ -487,6 +487,58 @@ namespace HrMaxxAPI.Controllers.Companies
 			}
 		}
 
+		/// <summary>
+		/// Upload Entity Document for a given entity
+		/// </summary>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.ImportWCRates)]
+		public async Task<HttpResponseMessage> ImportWCRates()
+		{
+			var filename = string.Empty;
+			try
+			{
+				var fileUploadObj = await ProcessMultipartContentWCRateImport();
+				filename = fileUploadObj.file.FullName;
+				
+				var companies = _readerService.GetCompanies(); //_companyService.GetAllCompanies();
+
+				var importedRows = _excelServce.ImportWithMap(fileUploadObj.file, fileUploadObj.ImportMap, fileUploadObj.FileName, false);
+				var wcRates = new List<CompanyWorkerCompensationRatesResource>();
+				var error = string.Empty;
+				importedRows.ForEach(er =>
+				{
+					try
+					{
+						wcRates.AddRange(CompanyWorkerCompensationRatesResource.FillFromImport(er, companies, fileUploadObj.ImportMap));
+					}
+					catch (Exception ex)
+					{
+						error += "Error at Row " + er.Row + ": " + ex.Message + "<br>";
+					}
+				});
+				if (!string.IsNullOrWhiteSpace(error))
+					throw new Exception(error);
+
+				return this.Request.CreateResponse(HttpStatusCode.OK, wcRates);
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error importing employees", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message
+				});
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(filename))
+					File.Delete(filename);
+			}
+		}
+
 		private async Task<TaxRateImportResource> ProcessMultipartContentTaxRateImport()
 		{
 			if (!Request.Content.IsMimeMultipartContent())
@@ -508,6 +560,29 @@ namespace HrMaxxAPI.Controllers.Companies
 			fileUploadObj.file = uploadedFileInfo;
 			return fileUploadObj;
 		}
+
+		private async Task<WCRateImportResource> ProcessMultipartContentWCRateImport()
+		{
+			if (!Request.Content.IsMimeMultipartContent())
+			{
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.UnsupportedMediaType
+				});
+			}
+
+			var provider = FileUploadHelpers.GetMultipartProvider();
+			var result = await Request.Content.ReadAsMultipartAsync(provider);
+
+			var fileUploadObj = FileUploadHelpers.GetFormData<WCRateImportResource>(result);
+
+			var originalFileName = FileUploadHelpers.GetDeserializedFileName(result.FileData.First());
+			var uploadedFileInfo = new FileInfo(result.FileData.First().LocalFileName);
+			fileUploadObj.FileName = originalFileName;
+			fileUploadObj.file = uploadedFileInfo;
+			return fileUploadObj;
+		}
+
 		[HttpPost]
 		[Route(CompanyRoutes.SaveTaxRates)]
 		public List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTaxResource> resource)
@@ -515,6 +590,16 @@ namespace HrMaxxAPI.Controllers.Companies
 			var rates = Mapper.Map<List<CaliforniaCompanyTaxResource>, List<CaliforniaCompanyTax>>(resource);
 			return MakeServiceCall(() => _metaDataService.SaveTaxRates(rates), "copy company", true);
 			
+		}
+
+		[HttpPost]
+		[Route(CompanyRoutes.UpdateWCRates)]
+		public HttpStatusCode CopyCompany(UpdateWCRatesResource resource)
+		{
+			var rates = Mapper.Map<List<CompanyWorkerCompensationRatesResource>, List<CompanyWorkerCompensation >> (resource.Rates);
+			
+			MakeServiceCall(() => _companyService.UpdateWCRates(rates, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "update WC Rates");
+			return HttpStatusCode.OK;
 		}
 
 		[HttpPost]

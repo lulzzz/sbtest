@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.SqlClient;
@@ -8,9 +9,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using Dapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
@@ -28,14 +31,15 @@ using VendorCustomer = HrMaxx.OnlinePayroll.Models.VendorCustomer;
 
 namespace HrMaxx.OnlinePayroll.Repository.Companies
 {
-	public class CompanyRepository : ICompanyRepository
+	public class CompanyRepository : BaseDapperRepository, ICompanyRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		private readonly IUtilRepository _utilRepository;
 		private string _sqlCon;
 
-		public CompanyRepository(IMapper mapper, OnlinePayrollEntities dbContext, IUtilRepository utilRepository, string sqlCon)
+		public CompanyRepository(IMapper mapper, OnlinePayrollEntities dbContext, IUtilRepository utilRepository, DbConnection connection, string sqlCon)
+			: base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
@@ -660,6 +664,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					cmd.ExecuteNonQuery();
 					con.Close();
 				}
+			}
+		}
+
+		public void SaveWorkerCompensations(List<CompanyWorkerCompensation> rates)
+		{
+			const string update = @"update CompanyWorkerCompensation set Rate=@Rate where CompanyId=@CompanyId and Code=@Code;";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(update, rates);
 			}
 		}
 	}

@@ -55,12 +55,12 @@ namespace HrMaxx.Infrastructure.Excel
 			}
 		}
 
-		public Excel(FileInfo file)
+		public Excel(FileInfo file, bool allowMultiplesheets = false)
 		{
 			if (file.Exists)
 			{
 				_package = new ExcelPackage(file);
-				if(_package.Workbook.Worksheets.Count!=1)
+				if(!allowMultiplesheets && _package.Workbook.Worksheets.Count!=1)
 					throw new Exception("File contains multiple sheets");
 				_worksheet = _package.Workbook.Worksheets[1];
 				

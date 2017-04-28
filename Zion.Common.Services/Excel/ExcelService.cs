@@ -133,7 +133,7 @@ namespace HrMaxx.Common.Services.Excel
 			}
 		}
 
-		public List<ExcelRead> ImportWithMap(FileInfo file, ImportMap importMap, string fileName)
+		public List<ExcelRead> ImportWithMap(FileInfo file, ImportMap importMap, string fileName, bool allowmultiplesheets  =false)
 		{
 			try
 			{
@@ -141,7 +141,7 @@ namespace HrMaxx.Common.Services.Excel
 
 				var data = new List<ExcelRead>();
 				if (fileName.ToLower().EndsWith(".xlsx"))
-					data = _excelRepository.GetExcelDataWithMap(file, importMap.StartingRow, importMap);
+					data = _excelRepository.GetExcelDataWithMap(file, importMap.StartingRow, importMap, allowmultiplesheets);
 				else if (fileName.ToLower().EndsWith(".csv") || fileName.ToLower().EndsWith(".txt"))
 				{
 					var lines = File.ReadAllLines(file.Directory.FullName + "/" + file.Name);

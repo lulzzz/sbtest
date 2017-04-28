@@ -33,6 +33,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string CopyCompany = "Company/Copy";
 		public const string AllCompanies = "Company/AllCompanies/{year:int}";
 		public const string ImportTaxRates = "Company/ImportTaxRates";
+		public const string ImportWCRates = "Company/ImportWCRates";
 		public const string SaveTaxRates = "Company/SaveTaxRates";
 		public const string GetCaliforniaEDDExport = "Company/CaliforniaEDD";
 		public const string RaiseMinWage = "Company/RaiseMinWage/{minWage:decimal}";
@@ -42,6 +43,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string MinifiedCompanyList = "Company/CompanyListMinified";
 		public const string MinifiedEmployeeList = "Company/EmployeeListMinified";
 		public const string FixEmployeePayCodes = "Company/FixEmployeePayCodes/{companyId:guid}";
-		public const string CopyEmployees = "Company/CopyEmployees";
+		public const string CopyEmployees = "Company/CopyEmployees"; 
+		public const string UpdateWCRates = "Company/UpdateWCRates";
 	}
 }

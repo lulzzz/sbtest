@@ -95,32 +95,38 @@ namespace HrMaxx.Common.Repository.Excel
 			return returnVal;
 		}
 
-		public List<ExcelRead> GetExcelDataWithMap(FileInfo file, int startingRow, ImportMap importMap)
+		public List<ExcelRead> GetExcelDataWithMap(FileInfo file, int startingRow, ImportMap importMap, bool allowmultiplesheets = false)
 		{
 			var result = new List<ExcelRead>();
-			using (var xl = new Infrastructure.Excel.Excel(file))
+			using (var xl = new Infrastructure.Excel.Excel(file, allowmultiplesheets))
 			{
-				var workSheet = xl.Worksheet;
-
-				var end = workSheet.Dimension.End;
-				var lastRow = importMap.LastRow.HasValue ? importMap.LastRow.Value : (end.Row > 1000 ? 1000 : end.Row);
-				for (int row = startingRow; row <=lastRow; row++)
-				{ // Row by row...
-					var erow = new ExcelRead { Row = row, Values = new List<KeyValuePair<string, string>>() };
-					for (int col = 1; col <= end.Column; col++)
-					{ // ... Cell by cell...
-						var match = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == col);
-						if (!string.IsNullOrWhiteSpace(match.Key))
+				xl.Worksheets.ForEach(workSheet =>
+				{
+					var end = workSheet.Dimension.End;
+					var lastRow = importMap.LastRow.HasValue ? importMap.LastRow.Value : (end.Row > 1000 ? 1000 : end.Row);
+					for (int row = startingRow; row <= lastRow; row++)
+					{
+						// Row by row...
+						var erow = new ExcelRead {Row = row, Values = new List<KeyValuePair<string, string>>()};
+						for (int col = 1; col <= end.Column; col++)
 						{
-							var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
-							var header = string.IsNullOrWhiteSpace(match.Key) ? ("Col-" + col) : match.Key;
-							erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
-						}
-						
+							// ... Cell by cell...
+							var match = importMap.ColumnMap.FirstOrDefault(cm => cm.Value == col);
+							if (!string.IsNullOrWhiteSpace(match.Key))
+							{
+								var cellValue = workSheet.Cells[row, col].Text; // This got me the actual value I needed.
+								var header = string.IsNullOrWhiteSpace(match.Key) ? ("Col-" + col) : match.Key;
+								erow.Values.Add(new KeyValuePair<string, string>(header.ToLower(), cellValue));
+							}
 
+
+						}
+						result.Add(erow);
 					}
-					result.Add(erow);
-				}
+				});
+
+				
+				
 
 
 			}

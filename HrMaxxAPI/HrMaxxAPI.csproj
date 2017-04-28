@@ -295,6 +295,7 @@
     <Compile Include="Resources\OnlinePayroll\AccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\BankAccountResource.cs" />
     <Compile Include="Resources\OnlinePayroll\CompanyResource.cs" />
+    <Compile Include="Resources\OnlinePayroll\CompanyWorkerCompensationRatesResource.cs" />
     <Compile Include="Resources\OnlinePayroll\CopyCompanyResource.cs" />
     <Compile Include="Resources\OnlinePayroll\EmployeeImportResource.cs" />
     <Compile Include="Resources\OnlinePayroll\EmployeeResource.cs" />

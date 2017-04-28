@@ -43,7 +43,7 @@
 		<xsl:variable name="box18" select="format-number($UIContribution + $ETTContribution + $SDIContribution + $SITTax,'###0.00')"/>
 		<xsl:variable name="TotalStateTax" select="format-number($SITTax + $SUITax + $SDITax + $ETTTax,'###0.00')"/>
 		<xsl:variable name="Total" select="format-number($box18 - $TotalStateTax,'###0.00')"/>
-		<ReturnDataState xsi:schemaLocation="http://www.irs.gov/efileReturnDataState.xsd" xmlns="http://www.irs.gov/efile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<ReturnDataState xsi:schemaLocation="http://www.irs.gov/efile/ReturnDataState.xsd" xmlns="http://www.irs.gov/efile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ContentLocation>
 				<xsl:value-of select="concat($identifier,'-',HostCompany/Id)"/>
 			</ContentLocation>
@@ -54,19 +54,7 @@
 				<Taxyear>
 					<xsl:value-of select="$selectedYear"/>
 				</Taxyear>
-				<PreparerFirm>
-					<BusinessName>
-						<BusinessNameLine1>GARMENT INDUSTRY INSURANCE GROUP</BusinessNameLine1>
-					</BusinessName>
-					<Address>
-						<USAddress>
-							<AddressLine1>2750 N. Bellflower Blvd Ste 200</AddressLine1>
-							<City>Long Beach</City>
-							<State>CA</State>
-							<ZipCode>90815</ZipCode>
-						</USAddress>
-					</Address>
-				</PreparerFirm>
+				
 				<ReturnType>StateAnnual</ReturnType>
 				<StateEIN>
 					<TypeStateEIN>WithholdingAccountNo</TypeStateEIN>
@@ -80,7 +68,7 @@
 					<BusinessAddress>
 						<BusinessName>
 							<BusinessNameLine1>
-								<xsl:value-of select="HostCompany/TaxFilingName"/>
+								<xsl:value-of select="translate(translate(HostCompany/TaxFilingName,'.',''),',','')"/>
 							</BusinessNameLine1>
 						</BusinessName>
 						<Address>
@@ -92,9 +80,9 @@
 								<State>
 									<xsl:value-of select="'CA'"/>
 								</State>
-								<ZipCode>
+								<ZIPCode>
 									<xsl:value-of select="HostCompany/BusinessAddress/Zip"/>
-								</ZipCode>
+								</ZIPCode>
 							</USAddress>
 						</Address>
 					</BusinessAddress>
@@ -136,22 +124,7 @@
 				<TotalCreditsYear>
 					<xsl:value-of select="$TotalStateTax"/>
 				</TotalCreditsYear>
-				<WHBalanceDue>
-					<xsl:choose>
-						<xsl:when test="$TotalStateTax > $box18">
-							<xsl:value-of select="format-number($TotalStateTax - $box18,'#,##0.00')"/>
-						</xsl:when>
-						<xsl:otherwise>0.00</xsl:otherwise>
-					</xsl:choose>
-				</WHBalanceDue>
-				<WHOverpayment>
-					<xsl:choose>
-						<xsl:when test="$box18 > $TotalStateTax">
-							<xsl:value-of select="format-number($box18 - $TotalStateTax,'#,##0.00')"/>
-						</xsl:when>
-						<xsl:otherwise>0.00</xsl:otherwise>
-					</xsl:choose>
-				</WHOverpayment>
+				
 			</StateAnnual>
 		</ReturnDataState>
 

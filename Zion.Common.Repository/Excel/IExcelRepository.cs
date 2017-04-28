@@ -19,6 +19,6 @@ namespace HrMaxx.Common.Repository.Excel
 		List<ExcelRead> GetExcelData(FileInfo file, int startingRow);
 
 		FileDto GetImportTemplateCSV(string californiaeddexportCsv, List<string> list, List<List<string>> rowList, bool b);
-		List<ExcelRead> GetExcelDataWithMap(FileInfo file, int startingRow, ImportMap importMap);
+		List<ExcelRead> GetExcelDataWithMap(FileInfo file, int startingRow, ImportMap importMap, bool allowmultiplesheets = false);
 	}
 }

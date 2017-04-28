@@ -299,6 +299,13 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.BusinessAddress, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<Address>(src.BusinessAddress)))
 				.ForMember(dest => dest.EmployeeTaxes, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployeeTaxes)))
 				.ForMember(dest => dest.EmployerTaxes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollTax>>(src.EmployerTaxes)));
+			CreateMap<CompanyWorkerCompensationRatesResource, CompanyWorkerCompensation>()
+				.ForMember(dest => dest.Id, opt => opt.Ignore())
+				.ForMember(dest => dest.MinGrossWage, opt => opt.Ignore())
+				.ForMember(dest => dest.Description, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId))
+				.ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
+				.ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.ProposedRate));
 		}
 	}
 }

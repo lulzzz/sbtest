@@ -14,19 +14,61 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 				function ($scope, $rootScope, $filter, companyRepository) {
 					$scope.fullList = [];
 					$scope.list = [];
+					$scope.listWCRates = [];
 					$scope.alerts = [];
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					var dataSvc = {
+						openedRack: 0,
 						minYear: 2016,
 						selectedYear: null,
 						years: [],
 						companyMetaData: null,
 						importInProcess: false,
+						importInProcessWC: false,
 						currentYear: new Date().getFullYear()
 					}
 					$scope.data = dataSvc;
+					$scope.importMap = {
+						startingRow: 2,
+						columnCount: 5,
+						lastRow: null,
+						columnMap: [
+						{
+							key:"ClientNo", value:1
+						},
+						{
+							key: "Code", value: 4
+						}, {
+							key: "Rate", value: 5
+						}]
+						
+					};
+					$scope.setSelected = function (index) {
+						$scope.selected = $scope.importMap.columnMap[index];
+					}
+					$scope.isItemValid = function (field) {
+						if (!field.key || !field.value)
+							return false;
+						else {
+							var matches = $filter('filter')($scope.importMap.columnMap, { value: field.value }, true);
+							if (matches.length > 1)
+								return false;
+							else {
+								return true;
+							}
+						}
+					}
+					
+					$scope.saveSelected = function (field) {
+						$scope.selected = null;
+					}
+					$scope.cancelSelected = function (field, index) {
+						if (!field.key || !field.value)
+							$scope.importMap.columnMap.splice(index, 1);
+						$scope.selected = null;
+					}
 					$scope.closeAlert = function (index) {
 						$scope.alerts.splice(index, 1);
 					};
@@ -89,6 +131,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						});
 					}
 					$scope.files = [];
+					$scope.filesWC = [];
 					$scope.onFileSelect = function ($files) {
 						$scope.files = [];
 						for (var i = 0; i < $files.length; i++) {
@@ -112,6 +155,36 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 											completed: false
 										});
 										uploadDocument();
+									});
+								}
+							}(fileReader, i);
+						}
+
+					};
+
+					$scope.onFileSelectWC = function ($files) {
+						$scope.files = [];
+						for (var i = 0; i < $files.length; i++) {
+							var $file = $files[i];
+
+							var fileReader = new FileReader();
+							fileReader.readAsDataURL($files[i]);
+							var loadFile = function (fileReader, index) {
+								fileReader.onload = function (e) {
+									$timeout(function () {
+										$scope.files.push({
+											doc: {
+												file: $files[index],
+												file_data: e.target.result,
+												uploaded: false
+											},
+											data: JSON.stringify({
+												importMap: $scope.importMap
+											}),
+											currentProgress: 0,
+											completed: false
+										});
+										uploadDocumentWC();
 									});
 								}
 							}(fileReader, i);
@@ -145,7 +218,34 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 
 
 					}
-				
+					var uploadDocumentWC = function () {
+						companyRepository.importWCRates($scope.files[0]).then(function (wcRates) {
+							$scope.listWCRates = angular.copy(wcRates);
+							dataSvc.importInProcessWC = true;
+						}, function (error) {
+							addAlert('error in importing wc rates for clients: ' + error, 'danger');
+
+						});
+
+
+					}
+					$scope.removeWC = function(wc, index) {
+						$scope.listWCRates.splice(index, 1);
+					}
+					$scope.uploadWCRates = function() {
+						$scope.$parent.$parent.confirmDialog('this will update all matching valid WC rates, do you wish to continue?', 'danger', function () {
+							companyRepository.uploadWCRates($scope.listWCRates).then(function (timesheets) {
+
+								addAlert('successfully updated WC Rates in the system', 'success');
+
+								$scope.listWCRates = [];
+								dataSvc.importInProcessWC = false;
+							}, function (error) {
+								addAlert(error, 'danger');
+
+							});
+						});
+					}
 					var _init = function () {
 						$scope.mainData.showFilterPanel = false;
 						var currentYear = new Date().getFullYear();

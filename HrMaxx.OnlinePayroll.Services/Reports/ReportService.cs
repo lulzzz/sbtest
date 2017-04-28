@@ -803,7 +803,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
 			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, template), argList);
 			
-			_fileRepository.SaveFile(directory, host.HostCompany.Name, extension, transformed);
+			_fileRepository.SaveFile(directory, host.HostCompany.Name.Replace(".", string.Empty).Replace(",",string.Empty), extension, transformed);
 		}
 
 		private Extract Get1099Extract(ReportRequest request)

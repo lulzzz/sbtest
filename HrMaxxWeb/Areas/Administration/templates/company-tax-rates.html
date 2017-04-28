@@ -1,11 +1,12 @@
 ﻿<div class="col-sm-12">
 	<div class="panel panel-inverse">
 
-		<div class="panel-heading" >
-			<h4 class="panel-title">Comapny Tax Rates - California by year</h4>
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===1?0:1)">
+			<h4 class=" panel-title">
+				Comapny Tax Rates - California by year<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===1, 'glyphicon-chevron-right': data.openedRack!==1}"></i></h4>
 
 		</div>
-		<div class="panel-body" >
+		<div class="panel-body" ng-show="data.openedRack===1">
 			<div class="row m-5">
 				<div class="col-sm-3">
 					<select ng-model="data.selectedYear" ng-change="getCompanyTaxRates()" class="form-control" convert-to-number ng-options="year for year in data.years track by year">
@@ -62,6 +63,115 @@
 				</table>
 			</div>
 			
+		</div>
+	</div>
+	<div class="panel panel-inverse">
+
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===2?0:2)">
+			<h4 class=" panel-title">
+				Upload WC Rates<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===2, 'glyphicon-chevron-right': data.openedRack!==2}"></i>
+			</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.openedRack===2">
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="form-group">
+						<label>First Row</label>
+						<input class="form-control"
+						       type="number"
+						       ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+					</div>
+					<div class="form-group">
+						<table class="table table-header table-bordered table-condensed form-controls input-sm">
+							<thead>
+								<tr>
+									<td class="col-sm-6">Field</td>
+									<td class="col-sm-3">Position/Column #</td>
+									<td ng-show="!data.importInProcessWC"></td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="f in importMap.columnMap track by $index">
+
+									<td>
+										<!-- editable tesltra worktype (select-local) -->
+										<span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
+											{{ f.key }}
+										</span>
+									</td>
+									<td>
+										<span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">
+											{{ f.value }}
+										</span>
+									</td>
+									<td style="white-space: nowrap" ng-show="!data.importInProcessWC">
+										<!-- form -->
+										<form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
+											<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
+												<i class="fa fa-edit m-r-5"></i>
+											</button>
+											<button type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="delete($index)">
+												<i class="fa fa-recycle m-r-5"></i>
+											</button>
+											<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success">
+												<i class="fa fa-save m-r-5"></i>
+											</button>
+											<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default">
+												<i class="fa fa-remove m-r-5"></i>
+											</button>
+										</form>
+									</td>
+
+								</tr>
+								<tr ng-show="!selected">
+									<td colspan="3">
+										<span ng-show="importMap.columnMap.length===0">No mappings found</span>
+									</td>
+
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+					<div>
+						<button ng-show="!data.importInProcessWC" class="btn btn-sm btn-success attach-button pull-left" id="attachments" ng-file-select="onFileSelectWC($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+							<i class="fa fa-upload"></i>Import WC Rates
+						</button>
+					</div>
+						
+				</div>
+				<div class="col-sm-8">
+					<button class="btn btn-sm btn-primary" ng-click="uploadWCRates()" ng-show="data.importInProcessWC"><i class="fa fa-save"> update</i></button>
+					<table class="table table-header table-bordered table-condensed form-controls input-sm" ng-show="listWCRates.length>0 && data.importInProcessWC">
+						<thead>
+							<tr>
+								<td class="col-sm-2">Client No</td>
+								<td class="col-sm-4">Client Name</td>
+								<td class="col-sm-1">Code</td>
+								<td class="col-sm-1">Current Rate</td>
+								<td class="col-sm-1">Proposed Rate</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="wc in listWCRates track by $index" ng-class="{'danger':wc.currentRate==='NA', 'warning':wc.currentRate!=='NA' && wc.currentRate>wc.proposedRate, 'success':wc.currentRate!=='NA' && wc.currentRate<wc.proposedRate}">
+								<td class="col-sm-2">{{wc.clientNo}}</td>
+								<td class="col-sm-4">{{wc.companyName}}</td>
+								<td class="col-sm-2">{{wc.code}}</td>
+								<td class="col-sm-2">{{wc.currentRate}}</td>
+								<td class="col-sm-2">{{wc.proposedRate | currency:'$'}}</td>
+								<td><button class="btn btn-sm btn-danger" ng-click="removeWC(wc, $index)"><i class="fa fa-recycle"></i></button></td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+				
+
+
+			</div>
+
 		</div>
 	</div>
 </div>
