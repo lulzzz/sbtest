@@ -155,11 +155,11 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat="wc in listWCRates track by $index" ng-class="{'danger':wc.currentRate==='NA', 'warning':wc.currentRate!=='NA' && wc.currentRate>wc.proposedRate, 'success':wc.currentRate!=='NA' && wc.currentRate<wc.proposedRate}">
+							<tr ng-repeat="wc in listWCRates track by $index" ng-class="{'danger':!wc.currentRate, 'warning':wc.currentRate && wc.currentRate>wc.proposedRate, 'success':wc.currentRate && wc.currentRate<wc.proposedRate}">
 								<td class="col-sm-2">{{wc.clientNo}}</td>
 								<td class="col-sm-4">{{wc.companyName}}</td>
 								<td class="col-sm-2">{{wc.code}}</td>
-								<td class="col-sm-2">{{wc.currentRate}}</td>
+								<td class="col-sm-2">{{wc.currentRate ? (wc.currentRate | currency:'$') : 'NA'}}</td>
 								<td class="col-sm-2">{{wc.proposedRate | currency:'$'}}</td>
 								<td><button class="btn btn-sm btn-danger" ng-click="removeWC(wc, $index)"><i class="fa fa-recycle"></i></button></td>
 							</tr>

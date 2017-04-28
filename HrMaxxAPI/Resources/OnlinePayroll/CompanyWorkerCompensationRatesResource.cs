@@ -13,7 +13,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string CompanyName { get; set; }
 		public int ClientNo { get; set; }
 		public int Code { get; set; }
-		public string CurrentRate { get; set; }
+		public decimal? CurrentRate { get; set; }
 		public decimal ProposedRate { get; set; }
 
 		public static List<CompanyWorkerCompensationRatesResource> FillFromImport(ExcelRead er, List<Company> companies, ImportMap importMap)
@@ -27,7 +27,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			{
 				var wcr = new CompanyWorkerCompensationRatesResource()
 				{
-					CompanyId = c.Id, CompanyName = c.Name, Code = code, ClientNo = clientNo, ProposedRate = proposedRate, CurrentRate = c.WorkerCompensations.Any(cwc=>cwc.Code==code) ? c.WorkerCompensations.First(cwc=>cwc.Code==code).Rate.ToString("c") : "NA"
+					CompanyId = c.Id, CompanyName = c.Name, Code = code, ClientNo = clientNo, ProposedRate = proposedRate, CurrentRate = c.WorkerCompensations.Any(cwc=>cwc.Code==code) ? c.WorkerCompensations.First(cwc=>cwc.Code==code).Rate : default(decimal?)
 				};
 				returnList.Add(wcr);
 			});
