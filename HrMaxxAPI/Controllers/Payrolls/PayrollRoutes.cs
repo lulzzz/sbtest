@@ -9,7 +9,6 @@
 		public const string VoidPayCheck = "Payroll/VoidPayCheck/{payrollId:guid}/{payCheckId:int}";
 		public const string PayCheck = "Payroll/PayCheck/{checkId:int}";
 		
-		public const string GetInvoicePayroll = "Payroll/PayrollsForInvoice/{invoiceId:guid}";
 		public const string PrintPayCheck = "Payroll/PrintPayCheck/{payrollId:guid}/{checkId:int}";
 		public const string Print = "Payroll/Print";
 		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";

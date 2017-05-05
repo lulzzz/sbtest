@@ -1346,8 +1346,6 @@
     <Content Include="Scripts\app\payroll\directives\paycheck-list.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-invoice.js" />
     <Content Include="Scripts\app\payroll\directives\paycheck.js" />
-    <Content Include="Scripts\app\payroll\directives\invoice-list.js" />
-    <Content Include="Scripts\app\payroll\directives\invoice.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-invoice-list.js" />
     <Content Include="Scripts\app\payroll\directives\payroll-processed.js" />
     <Content Include="Scripts\app\payroll\directives\payroll.js" />

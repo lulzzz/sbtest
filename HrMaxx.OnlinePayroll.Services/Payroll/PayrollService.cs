@@ -962,10 +962,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
+				var invoice = _readerService.GetPayrollInvoice(invoiceId);
+				var payroll = _readerService.GetPayroll(invoice.PayrollId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var invoice = _readerService.GetPayrollInvoice(invoiceId);
-					var payroll = _readerService.GetPayrolls(null, invoiceId:invoice.Id).First();
+					
 					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, UserId = userId, LastModified = DateTime.Now, ProcessedBy = payroll.UserName, InvoiceNumber = invoice.InvoiceNumber};
 					_payrollRepository.DeletePayrollInvoice(invoiceId);
 					var recreated = CreateInvoice(payroll, payrollInvoice, true);

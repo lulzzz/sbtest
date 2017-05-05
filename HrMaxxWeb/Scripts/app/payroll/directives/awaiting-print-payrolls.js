@@ -100,14 +100,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 							$scope.addAlert('error printing pay check', 'danger');
 						});
 					}
-					$scope.isPrintable = function (payroll) {
-						var nonVoids = $filter('filter')(payroll.payChecks, { isVoid: false });
-						if (nonVoids.length > 0)
-							return true;
-						else {
-							return false;
-						}
-					}
+					
 					$scope.refreshData = function(event) {
 						event.stopPropagation();
 						getPayrolls();

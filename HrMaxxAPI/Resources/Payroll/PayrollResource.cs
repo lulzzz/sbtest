@@ -67,6 +67,34 @@ namespace HrMaxxAPI.Resources.Payroll
 		}
 
 	}
+
+	public class PayrollMinifiedResource
+	{
+		public Guid Id { get; set; }
+		public string CompanyName { get; set; }
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
+		public DateTime PayDay { get; set; }
+		public DateTime LastModified { get; set; }
+		public string ProcessedBy { get; set; }
+		public PayrollStatus Status { get; set; }
+
+		public Guid? InvoiceId { get; set; }
+		public decimal Total { get; set; }
+		public int InvoiceNumber { get; set; }
+		public InvoiceStatus InvoiceStatus { get; set; }
+		public decimal TotalGrossWage { get; set; }
+		public decimal TotalNetWage { get; set; }
+
+		public string StatusText
+		{
+			get { return Status.GetDbName(); }
+		}
+		public string InvoiceStatusText
+		{
+			get { return InvoiceStatus.GetDbName(); }
+		}
+	}
 	public class PayCheckResource
 	{
 		public Guid PayrollId { get; set; }

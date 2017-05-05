@@ -111,8 +111,8 @@ common.directive('depositTicket', ['zionAPI','version',
 							return true;
 					}
 					$scope.canceljd = function($index) {
-						if ($scope.item.selectedjd.isNew) {
-							$scope.item.journalDetails.splice($index, 1);
+						if ($scope.selectedjd.isNew) {
+							$scope.item.journalDetails.splice($index+1, 1);
 						}
 						$scope.selectedjd = null;
 					}

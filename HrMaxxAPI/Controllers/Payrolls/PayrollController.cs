@@ -327,10 +327,10 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[HttpGet]
 		[Route(PayrollRoutes.UnPrintedPayrolls)]
 		[DeflateCompression]
-		public List<PayrollResource> GetUnPrintedPayrolls()
+		public List<PayrollMinifiedResource> GetUnPrintedPayrolls()
 		{
-			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, status:(int)PayrollStatus.Committed, excludeVoids:1), string.Format("get list of un printed payrolls "));
-			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
+			var payrolls = MakeServiceCall(() => _readerService.GetMinifiedPayrolls(null, status:(int)PayrollStatus.Committed, excludeVoids:1), string.Format("get list of un printed payrolls "));
+			return Mapper.Map<List<PayrollMinified>, List<PayrollMinifiedResource>>(payrolls);
 		}
 
 		[HttpPost]
@@ -467,14 +467,6 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		
-		[HttpGet]
-		[Route(PayrollRoutes.GetInvoicePayroll)]
-		[DeflateCompression]
-		public List<PayrollResource> GetInvoicePayroll(Guid invoiceId)
-		{
-			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(null, invoiceId:invoiceId), string.Format("get payrolls for invoice with id={0}", invoiceId));
-			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
-		}
 		[HttpGet]
 		[Route(PayrollRoutes.PrintPayCheck)]
 		[DeflateCompression]

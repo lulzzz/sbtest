@@ -128,16 +128,7 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			getPayrollsForInvoice: function (invoiceId) {
-				var deferred = $q.defer();
-					payrollServer.one('PayrollsForInvoice').one(invoiceId).getList().then(function (data) {
-					deferred.resolve(data);
-				}, function (error) {
-					deferred.reject(error);
-				});
-
-				return deferred.promise;
-			},
+			
 			getInvoicesForCompany: function (companyId) {
 				var deferred = $q.defer();
 				payrollServer.one('Invoices').one(companyId).getList().then(function (data) {

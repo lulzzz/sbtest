@@ -12,6 +12,7 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 	{
 		T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList);
 		T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList, XmlRootAttribute xmlRootAttribute);
+		T GetDataFromStoredProc1<T>(string proc, List<FilterParam> paramList, XmlRootAttribute xmlRootAttribute);
 		T GetDataFromJsonStoredProc<T, T1>(string proc, List<FilterParam> paramList);
 		T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList);
 	}

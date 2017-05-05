@@ -796,6 +796,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private void GenerateDE9Xml(ExtractHost host, string template, string extension, string directory, List<KeyValuePair<string, string>> args)
 		{
+			host.HostCompany.Name = host.HostCompany.Name.Trim();
+			host.HostCompany.TaxFilingName = host.HostCompany.TaxFilingName.Trim();
+			host.HostCompany.BusinessAddress.AddressLine1 = host.HostCompany.BusinessAddress.AddressLine1.Trim();
+			host.HostCompany.BusinessAddress.City = host.HostCompany.BusinessAddress.City.Trim();
 			var xml = GetXml<ExtractHost>(host);
 
 			

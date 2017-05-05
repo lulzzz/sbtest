@@ -266,6 +266,49 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
+		public List<PayrollMinified> GetMinifiedPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids = 0)
+		{
+			try
+			{
+
+				var paramList = new List<FilterParam>();
+				if (companyId.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "company", Value = companyId.Value.ToString() });
+				}
+				if (startDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "startdate", Value = startDate.Value.Date.ToString("MM/dd/yyyy") });
+				}
+				if (endDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Value.Date.ToString("MM/dd/yyyy") });
+				}
+
+				if (invoiceId.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "invoice", Value = invoiceId.Value.ToString() });
+				}
+				if (status > 0)
+				{
+					paramList.Add(new FilterParam { Key = "status", Value = status.ToString() });
+				}
+				if (excludeVoids > 0)
+				{
+					paramList.Add(new FilterParam { Key = "void", Value = excludeVoids.ToString() });
+				}
+				var payrolls = _reader.GetDataFromStoredProc1<List<PayrollMinified>>("GetMinifiedPayrolls", paramList, new XmlRootAttribute("PayrollMinifiedList"));
+				
+				return payrolls;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Payroll list through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 	  public Payroll GetPayroll(Guid payrollId)
 	  {
 			try

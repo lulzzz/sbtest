@@ -188,6 +188,7 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now)); 
 
 			CreateMap<Payroll, PayrollResource>();
+			CreateMap<PayrollMinified, PayrollMinifiedResource>();
 
 			CreateMap<PayCheckResource, PayCheck>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : 0))

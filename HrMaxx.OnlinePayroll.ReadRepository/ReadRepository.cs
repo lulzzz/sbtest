@@ -35,6 +35,7 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 					paramList.Where(p=>!string.IsNullOrWhiteSpace(p.Key) && !string.IsNullOrWhiteSpace(p.Value)).ToList()
 									.ForEach(p => cmd.Parameters.AddWithValue(string.Format("@{0}", p.Key), p.Value));
 					cmd.Connection = con;
+					cmd.CommandTimeout = 0;
 					con.Open();
 
 					var data = string.Empty;
@@ -102,6 +103,11 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 				var serializer = new XmlSerializer(typeof(T));
 				return (T)serializer.Deserialize(memStream);	
 			}
+		}
+		public T GetDataFromStoredProc1<T>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute)
+		{
+			var data = GetData(proc, paramList);
+			return Deserialize<T>(data, rootAttribute);
 		}
 		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute)
 		{
