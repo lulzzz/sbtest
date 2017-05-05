@@ -142,10 +142,11 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 		{
 			try
 			{
+				var hostImageMementos =
+							 _stagingDataService.GetStagingData<HostHomePageStagingDocument>(stagingId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var hostImageMementos =
-							_stagingDataService.GetStagingData<HostHomePageStagingDocument>(stagingId);
+					
 					if (hostImageMementos != null)
 					{
 						foreach (var hostImage in hostImageMementos)

@@ -15,7 +15,7 @@
 		public const string ReIssuePayCheck = "Payroll/ReIssueCheck/{payCheckId:int}";
 		public const string PrintPayrollReport = "Payroll/PrintPayrollReport";
 		public const string PrintPayrollTimesheet = "Payroll/PrintPayrollTimesheet";
-		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks";
+		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks/{payrollId:guid}";
 		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{year:int}";
 		public const string CreatePayrollInvoice = "Payroll/CreatePayrollInvoice";
 		

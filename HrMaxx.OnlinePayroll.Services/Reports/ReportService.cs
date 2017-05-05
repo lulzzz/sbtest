@@ -1116,8 +1116,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			try
 			{
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
+				
 					extract.Data.Hosts.ForEach(h =>
 					{
 						h.ACHTransactions = h.ACHTransactions.Where(t => t.Included).ToList();
@@ -1144,9 +1143,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						MimeType = "application/octet-stream"
 					};
 					_reportRepository.SaveACHExtract(extract, fullName);
-					txn.Complete();
+					
 					return extract;
-				}
+				
 			}
 			catch (Exception e)
 			{

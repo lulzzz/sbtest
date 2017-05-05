@@ -275,10 +275,11 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
+				var employees = _readerService.GetEmployees(company: mappedResource.CompanyId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					var pc = _companyRepository.SavePayCode(mappedResource);
-					var employees = _readerService.GetEmployees(company:mappedResource.CompanyId);
+					
 					employees.Where(e => e.PayCodes.Any(ec => ec.Id == pc.Id)).ToList().ForEach(e =>
 					{
 						e.PayCodes.RemoveAll(ec => ec.Id == pc.Id);
@@ -390,9 +391,10 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
+				var exists = _companyRepository.EmployeeExists(employee.Id);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var exists = _companyRepository.EmployeeExists(employee.Id);
+					
 					var notificationText = !exists ? "A new Employee {0} has been created" : "{0} has been updated";
 					var eventType = !exists ? NotificationTypeEnum.Created : NotificationTypeEnum.Updated;
 					if (employee.PayType == EmployeeType.Hourly &&
@@ -534,9 +536,10 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
+				var parent = _readerService.GetCompany(mappedResource.ParentId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var parent = _readerService.GetCompany(mappedResource.ParentId);
+					
 					var child = JsonConvert.DeserializeObject<Company>(JsonConvert.SerializeObject(parent));
 					child.Id = mappedResource.Id;
 					child.ParentId = parent.Id;
@@ -619,10 +622,11 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
+				var companies = _readerService.GetCompanies().Where(c => c.HostId == new Guid("75A78BE4-7226-466B-86BA-A6E200DCAAAC") || c.HostId == new Guid("9AF2FC03-5D35-4A82-9E17-A6E200DDBA73")).ToList();
+				var employees = _readerService.GetEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var companies = _readerService.GetCompanies().Where(c => c.HostId == new Guid("75A78BE4-7226-466B-86BA-A6E200DCAAAC") || c.HostId == new Guid("9AF2FC03-5D35-4A82-9E17-A6E200DDBA73")).ToList();
-					var employees = _readerService.GetEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
+					
 					var selectEmployees = new List<Employee>();
 					var selectedCompanies = new List<Company>();
 					companies.ForEach(c =>
@@ -679,10 +683,11 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
+				var company = _readerService.GetCompany(targetCompanyId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, employeeIds, fullName);
-					var company = _readerService.GetCompany(targetCompanyId);
+					
 					var employees = _readerService.GetEmployees(company: targetCompanyId);
 					employees.Where(e => e.PayCodes.Any()).ToList().ForEach(e =>
 					{

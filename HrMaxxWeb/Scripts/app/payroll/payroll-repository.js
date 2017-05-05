@@ -404,7 +404,7 @@ common.factory('payrollRepository', [
 			},
 			printPayrollChecks: function (payroll) {
 				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Payroll/PrintPayrollChecks", payroll, { responseType: "arraybuffer" }).success(
+				$http.get(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll, { responseType: "arraybuffer" }).success(
 					function (data, status, headers) {
 						var type = headers('Content-Type');
 						var disposition = headers('Content-Disposition');

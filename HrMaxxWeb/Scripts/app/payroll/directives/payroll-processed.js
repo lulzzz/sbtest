@@ -167,7 +167,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						});
 					}
 					$scope.printPayrollChecks = function (payroll) {
-						payrollRepository.printPayrollChecks(payroll).then(function (data) {
+						payrollRepository.printPayrollChecks(payroll.id).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';

@@ -24,7 +24,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Payroll> FixPayrollData(Guid? companyId);
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
 		Payroll DeletePayroll(Payroll mappedResource);
-		FileDto PrintPayrollChecks(Payroll payroll);
+		FileDto PrintPayrollChecks(Guid payrollId);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
 		Payroll VoidPayroll(Payroll mappedResource, string userName, string userId);
 

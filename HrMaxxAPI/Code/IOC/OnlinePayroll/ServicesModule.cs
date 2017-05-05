@@ -53,11 +53,6 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
-			builder.RegisterType<DashboardService>()
-				.As<IDashboardService>()
-				.InstancePerLifetimeScope()
-				.PropertiesAutowired();
-
 			builder.RegisterType<ReportService>()
 				.WithParameter(new NamedParameter("filePath", _pdfPath))
 				.WithParameter(new NamedParameter("templatePath", _templatePath))

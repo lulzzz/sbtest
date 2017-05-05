@@ -105,16 +105,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		public void MarkPayrollPrinted(Guid payrollId)
 		{
-			var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollId);
-			dbPayroll.Status = (int)PayrollStatus.Printed;
-			foreach (var check in dbPayroll.PayrollPayChecks.Where(pc=>!pc.IsVoid).ToList())
+
+			using (var conn = GetConnection())
 			{
-				if (check.Status == (int) PaycheckStatus.Saved)
-					check.Status = (int) PaycheckStatus.Printed;
-				else if (check.Status == (int)PaycheckStatus.Paid)
-					check.Status = (int)PaycheckStatus.PrintedAndPaid;
+				const string updatecheck = @"update PayrollPayCheck set Status=case status when 3 then 4 when 5 then 6 end Where PayrollId=@PayrollId";
+				const string updatepayroll = @"update Payroll set Status=@Status Where Id=@Id";
+
+				conn.Execute(updatepayroll, new {Status = (int) PayrollStatus.Printed, Id = payrollId});
+				conn.Execute(updatecheck, new { PayrollId = payrollId });
+				
 			}
-			_dbContext.SaveChanges();
+
+			
 		}
 
 		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)

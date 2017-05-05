@@ -32,17 +32,15 @@ namespace HrMaxxAPI.Controllers.Payrolls
 	{
 		private readonly IPayrollService _payrollService;
 		private readonly IDocumentService _documentService;
-		private readonly IDashboardService _dashboardService;
 		private readonly ITaxationService _taxationService;
 		private readonly ICompanyService _companyService;
 		private readonly IExcelService _excelService;
 		private readonly IReaderService _readerService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, IDashboardService dashboardService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService, IReaderService readerService)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService, IReaderService readerService)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
-			_dashboardService = dashboardService;
 			_taxationService = taxationService;
 			_companyService = companyService;
 			_excelService = excelService;
@@ -163,7 +161,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					new DateTime(year, 12, 31));
 					if (payrolls.Any())
 					{
-						_dashboardService.FixCompanyCubes(payrolls, c.Id, year);
+						//_dashboardService.FixCompanyCubes(payrolls, c.Id, year);
 					}
 				});
 				return HttpStatusCode.OK;
@@ -186,7 +184,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					new DateTime(year, 12, 31));
 				if (payrolls.Any())
 				{
-					_dashboardService.FixCompanyCubes(payrolls, company.Id, year);
+					//_dashboardService.FixCompanyCubes(payrolls, company.Id, year);
 				}
 				return HttpStatusCode.OK;
 			}
@@ -277,14 +275,12 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Printed(printed);
 		}
 
-		[HttpPost]
+		[HttpGet]
 		[Route(PayrollRoutes.PrintPayrollChecks)]
 		[DeflateCompression]
-		public HttpResponseMessage PrintPayrollChecks(PayrollResource payroll)
+		public HttpResponseMessage PrintPayrollChecks(Guid payrollId)
 		{
-			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
-			
-			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(mapped), "print all check for payroll with id " + mapped.Id, true);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId), "print all check for payroll with id " + payrollId, true);
 			return Printed(printed);
 		}
 

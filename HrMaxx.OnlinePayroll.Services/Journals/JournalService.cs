@@ -468,20 +468,19 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				//using (var txn = TransactionScopeHelper.Transaction())
+				
+				var models = new List<PDFModel>();
+				journals.ForEach(j =>
 				{
-					var models = new List<PDFModel>();
-					journals.ForEach(j =>
-					{
-						var journal = _journalRepository.GetJournalById(j);
-						var company = _readerService.GetCompany(journal.CompanyId);
-						var coas = _companyService.GetComanyAccounts(journal.CompanyId);
+					var journal = _journalRepository.GetJournalById(j);
+					var company = _readerService.GetCompany(journal.CompanyId);
+					var coas = _companyService.GetComanyAccounts(journal.CompanyId);
 						
-						models.Add(GetRegularCheckPDFModel(coas, company, journal));
-					});
-					//txn.Complete();
-					return _pdfService.Print(string.Format("{0}-{1}-{2}.pdf", report.ReportName, report.StartDate.ToString("MMddyyyy"), report.StartDate.ToString("MMddyyyy")), models);
-				}
+					models.Add(GetRegularCheckPDFModel(coas, company, journal));
+				});
+					
+				return _pdfService.Print(string.Format("{0}-{1}-{2}.pdf", report.ReportName, report.StartDate.ToString("MMddyyyy"), report.StartDate.ToString("MMddyyyy")), models);
+				
 				
 			}
 			catch (Exception e)
