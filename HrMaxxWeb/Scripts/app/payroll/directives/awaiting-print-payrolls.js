@@ -62,7 +62,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 														orderedData;
 
 							$scope.tableParams = params;
-							$scope.tableData = orderedData;
+							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
 
 							params.total(orderedData.length); // set total for recalc pagination
 						}

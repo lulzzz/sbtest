@@ -348,7 +348,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/copyemployees.html',
 							controller: 'copyEmployeesCtrl',
-							size: 'md',
+							size: 'lg',
 							windowClass: 'my-modal-popup',
 							backdrop: true,
 							keyboard: true,
@@ -399,6 +399,7 @@ common.controller('payCheckListViewCtrl', function ($scope, $uibModalInstance, e
 common.controller('copyEmployeesCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, main, employees) {
 	$scope.original = company;
 	$scope.selectedCompany = null;
+	$scope.keepEmployeeNumbers = true;
 	$scope.mainData = mainData;
 	$scope.selectedEmployees = [];
 	$scope.employeeList = angular.copy(employees);
@@ -414,7 +415,7 @@ common.controller('copyEmployeesCtrl', function ($scope, $uibModalInstance, $fil
 				if (st.id)
 					selected.push(st.id);
 			});
-			companyRepository.copyEmployees($scope.original.id, $scope.selectedCompany.id, selected).then(function(result) {
+			companyRepository.copyEmployees($scope.original.id, $scope.selectedCompany.id, selected, $scope.keepEmployeeNumbers).then(function(result) {
 				$uibModalInstance.close($scope);
 
 

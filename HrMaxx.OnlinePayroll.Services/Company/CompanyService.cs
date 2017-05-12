@@ -679,14 +679,14 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName)
+		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers)
 		{
 			try
 			{
 				var company = _readerService.GetCompany(targetCompanyId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, employeeIds, fullName);
+					_companyRepository.CopyEmployees(sourceCompanyId, targetCompanyId, employeeIds, fullName, keepEmployeeNumbers);
 					
 					var employees = _readerService.GetEmployees(company: targetCompanyId);
 					employees.Where(e => e.PayCodes.Any()).ToList().ForEach(e =>

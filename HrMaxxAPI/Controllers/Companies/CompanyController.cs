@@ -62,7 +62,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		[Route(CompanyRoutes.CopyEmployees)]
 		public HttpStatusCode CopyEmployees(CopyEmployeeResource resource)
 		{
-			MakeServiceCall(() => _companyService.CopyEmployees(resource.SourceCompanyId, resource.TargetCompanyId, resource.EmployeeIds, CurrentUser.FullName), "Copy employees from one company to another");
+			MakeServiceCall(() => _companyService.CopyEmployees(resource.SourceCompanyId, resource.TargetCompanyId, resource.EmployeeIds, CurrentUser.FullName, resource.KeepEmployeeNumbers), "Copy employees from one company to another");
 			return HttpStatusCode.OK;
 		}
 
@@ -606,7 +606,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		[Route(CompanyRoutes.CopyCompany)]
 		public CompanyResource CopyCompany(CopyCompanyResource resource)
 		{
-			var newcompany = MakeServiceCall(() => _payrollService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "copy company", true);
+			var newcompany = MakeServiceCall(() => _payrollService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName, new Guid(CurrentUser.UserId), resource.KeepEmployeeNumbers), "copy company", true);
 			return Mapper.Map<Company, CompanyResource>(newcompany);
 		}
 

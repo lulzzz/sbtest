@@ -643,7 +643,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			_dbContext.SaveChanges();
 		}
 
-		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string user)
+		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string user, bool keepEmployeeNumbers)
 		{
 			using (var con = new SqlConnection(_sqlCon))
 			{
@@ -655,6 +655,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					if(employeeIds.Any())
 						cmd.Parameters.AddWithValue("@employeeIds", employeeIds.Aggregate(string.Empty, (current, m) => current + m + ", "));
 					cmd.Parameters.AddWithValue("@LastModifiedBy", user);
+					cmd.Parameters.AddWithValue("@KeepEmployeeNumbers", keepEmployeeNumbers);
 				
 					cmd.Connection = con;
 					con.Open();

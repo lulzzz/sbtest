@@ -91,11 +91,22 @@
 				<label>Employees</label><br/>
 				<div class="col-sm-4" ng-dropdown-multiselect="" options="employeeList" extra-settings="{displayProp: 'name', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, enableSearch: true,buttonDefaultText:'select employees'}" selected-model="selectedEmployees">
 				</div>
-			<div class="form-group col-sm-12">				
+			<div class="col-sm-12">				
+				<div class="form-group col-sm-8">
 					<label>Target Company</label>
 					<select id="host" class="form-control" ng-model="selectedCompany" ng-options="(comp.name + (comp.companyNo? ('(' + comp.companyNo + ')') : '')) for comp in mainData.companies | filter:{ id:'!' + original.id} | orderBy:'name' track by comp.id">
 						<option value="">Select Company</option>
 					</select>
+				</div>
+				<div class="form-group col-sm-4">
+					<label></label>
+					<div>
+						<label for="copyemployees" class="switch">
+							Keep Employee #?
+							<input id="copyemployees" type="checkbox" ng-model="keepEmployeeNumbers" /><i></i>
+						</label>
+					</div>
+				</div>
 				
 			</div>
 

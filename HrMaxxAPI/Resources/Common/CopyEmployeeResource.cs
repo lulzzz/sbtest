@@ -9,6 +9,7 @@ namespace HrMaxxAPI.Resources.Common
 	{
 		public Guid SourceCompanyId { get; set; }
 		public Guid TargetCompanyId { get; set; }
-		public List<Guid> EmployeeIds { get; set; } 
+		public List<Guid> EmployeeIds { get; set; }
+		public bool KeepEmployeeNumbers { get; set; }
 	}
 }

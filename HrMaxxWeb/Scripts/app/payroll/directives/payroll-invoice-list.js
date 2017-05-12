@@ -19,7 +19,15 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						endDate: null,
 						selectedCompany: null
 					}
-					
+					$scope.printList = function (event) {
+						$scope.selectedInvoice = null;
+						event.stopPropagation();
+						$timeout(function () {
+						 	
+						 	$window.print();
+						}, 1);
+						
+					}
 					$scope.list = [];
 					$scope.statuses = [
 					{title:'All'},

@@ -103,9 +103,9 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
-			copyEmployees: function (sourceCompanyId, targetCompanyId, employees) {
+			copyEmployees: function (sourceCompanyId, targetCompanyId, employees, keepEmployeeNumbers) {
 				var deferred = $q.defer();
-				companyServer.all('CopyEmployees').post({ sourceCompanyId: sourceCompanyId, targetCompanyId: targetCompanyId, employeeIds: employees }).then(function (data) {
+				companyServer.all('CopyEmployees').post({ sourceCompanyId: sourceCompanyId, targetCompanyId: targetCompanyId, employeeIds: employees, keepEmployeeNumbers: keepEmployeeNumbers }).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

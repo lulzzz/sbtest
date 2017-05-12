@@ -2144,7 +2144,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 
-		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid userId)
+		public Company Copy(Guid companyId, Guid hostId, bool copyEmployees, bool copyPayrolls, DateTime? startDate, DateTime? endDate, string fullName, Guid userId, bool keepEmployeeNumbers)
 		{
 			try
 			{
@@ -2156,19 +2156,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var saved = _companyRepository.CopyCompany(companyId, company.Id, company.HostId, hostId, copyEmployees, copyPayrolls, startDate, endDate, fullName);
 					if (copyEmployees)
 					{
-						
-						employees.Where(e=>e.PayCodes.Any()).ToList().ForEach(e =>
+						_companyRepository.CopyEmployees(companyId, company.Id, new List<Guid>(), fullName, keepEmployeeNumbers );
+						employees.Where(e => e.PayCodes.Any()).ToList().ForEach(e =>
 						{
 							e.PayCodes.ForEach(pc =>
 							{
-								if(pc.Id>0)
+								if (pc.Id > 0)
 									pc.Id = saved.PayCodes.First(pc1 => pc1.Code.Equals(pc.Code)).Id;
 								pc.CompanyId = saved.Id;
 							});
 							_companyService.SaveEmployee(e, false);
-							
+
 						});
-						
 					}
 					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
 					{
@@ -2574,7 +2573,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				try
 				{
-					_companyService.CopyEmployees(source, target, new List<Guid>(), user);
+					_companyService.CopyEmployees(source, target, new List<Guid>(), user, true);
 				}
 				catch (Exception)
 				{
@@ -2697,7 +2696,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				try
 				{
-					_companyService.CopyEmployees(source, target, new List<Guid>(), user);
+					_companyService.CopyEmployees(source, target, new List<Guid>(), user, true);
 				}
 				catch (Exception)
 				{

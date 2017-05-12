@@ -14,6 +14,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public Guid HostId { get; set; }
 		public bool CopyEmployees { get; set; }
 		public bool CopyPayrolls { get; set; }
+		public bool KeepEmployeeNumbers { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 	}

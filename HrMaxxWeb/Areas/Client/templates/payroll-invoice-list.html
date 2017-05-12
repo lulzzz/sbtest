@@ -37,12 +37,15 @@
 			
 		</div>
 	</div>
-	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4">
-		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Invoice List
-				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>	
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-class="{'hidden-print': selectedInvoice}">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">
+				Invoice List
+				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>
 				<span class="badge" ng-if="tableData.length>0">{{tableParams.total()}}</span>
-				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
+				<button class="btn btn-xs btn-success pull-right" ng-click="printList($event)"><i class="fa fa-print"></i></button>
+			</h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
@@ -86,20 +89,20 @@
 						<td data-title=" 'Processed On' " sortable=" 'processedOn' " class="col-sm-1 text-center">
 							{{item.processedOn | date:'MM/dd/yyyy hh:mm a'}}
 						</td>
-						
+
 						<td data-title=" 'Delivered On' " sortable=" 'deliveredOn' " class="col-sm-1 text-center">
 							{{item.deliveredOn | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Courier' " sortable=" 'courier' " class="col-sm-1 text-center">
 							{{item.courier}}
 						</td>
-						
+
 
 					</tr>
 
 				</table>
 				<script type="text/ng-template" id="custom/pager">
-					<ul class="pager ng-cloak">
+					<ul class="pager ng-cloak hidden-print">
 						<li ng-repeat="page in pages"
 								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
 								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
@@ -127,12 +130,12 @@
 						<option value="1">Draft</option>
 						<option value="2">Approved</option>
 						<option value="3">Delivered</option>
-						<option value="4">Closed</option>						
+						<option value="4">Closed</option>
 						<option value="7">Partial Payment</option>
 						<option value="10">ACH Pending</option>
-						
-						
-						
+
+
+
 					</select>
 				</script>-->
 			</div>

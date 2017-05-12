@@ -310,6 +310,7 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.mainData = mainData;
 	$scope.copyemployees = true;
 	$scope.copypayrolls = false;
+	$scope.keepEmployeeNumbers = true;
 	$scope.startDate = null;
 	$scope.endDate = null;
 	$scope.selectedHost = null;
@@ -335,6 +336,7 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 			hostId: $scope.selectedHost.id,
 			copyEmployees: $scope.copyemployees,
 			copyPayrolls: $scope.copypayrolls,
+			keepEmployeeNumbers: (!$scope.copyemployees? false : $scope.keepEmployeeNumbers),
 			startDate: $scope.startDate,
 			endDate: $scope.endDate
 		}).then(function (result) {
