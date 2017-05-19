@@ -19,8 +19,9 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					$scope.tableData = [];
-					$scope.showPayRates = true;
+					
 					$scope.totalChecks = null;
+					$scope.showTaxes = $scope.item.isHistory;
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
 						count: 10,
@@ -258,6 +259,26 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							}
 							
 						});
+					}
+					$scope.selectedTaxItem = null;
+					$scope.setSelectedTaxItem = function(listitem) {
+						$scope.originalTaxItem = angular.copy(listitem);
+						$scope.selectedTaxItem = angular.copy(listitem);
+					}
+					$scope.saveSelectedTaxItem = function (listitem) {
+						$.each(listitem.taxes, function(ind, t) {
+							var ot = $filter('filter')($scope.originalTaxItem.taxes, { tax: { id: t.tax.id } })[0];
+							t.ytdTax = ot.ytdTax - ot.amount + t.amount;
+						});
+						$scope.originalTaxItem = null;
+						$scope.selectedTaxItem = null;
+						return listitem;
+					}
+					$scope.cancelSelectedTaxItem = function (listitem) {
+						listitem = angular.copy($scope.originalTaxItem);
+						$scope.originalTaxItem = null;
+						$scope.selectedTaxItem = null;
+						return listitem;
 					}
 					$scope.viewcheck = function(listitem) {
 						var modalInstance = $modal.open({

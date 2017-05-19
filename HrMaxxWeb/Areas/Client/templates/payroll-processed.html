@@ -1,4 +1,5 @@
 ﻿<div class="row table-responsive">
+
 	<div class="col-sm-12">
 		<div class="col-sm-1">
 			<label>Pay Period</label>
@@ -58,6 +59,9 @@
 	<pre class="col-sm-12 alert alert-info text-center" ng-if="!(item.status===2 || item.status===6)">
 		<b>{{company.payCheckStock===1? 'MICR' : company.payCheckStock===2 ? 'Laser Middle' : company.payCheckStock===3 ? 'Laser Top' : 'MICR QB'}}!</b>
 	</pre>
+	<div class="col-sm-12 text-center">
+		<button class="btn btn-sm btn-success" ng-click="showTaxes=!showTaxes">{{showTaxes? 'Show Rates' : 'Show Taxes'}}</button>
+	</div>
 	<div class="col-sm-12">
 		
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager" >
@@ -78,7 +82,7 @@
 				<td data-title=" 'Deductions' " sortable=" 'grossWage' " class="col-sm-1 text-right">
 					{{listitem.deductionAmount | currency:"$"}}
 				</td>
-				<td data-title=" 'Pay Rates' " class="col-sm-3 text-right" ng-show="showPayRates">
+				<td data-title=" 'Pay Rates' " class="col-sm-3 text-right" ng-if="!showTaxes">
 					<div class="row" ng-if="listitem.employee.payType===2">
 						<div class="col-sm-6 text-left">Salary</div><div class="col-sm-6 text-right">{{listitem.salary | currency:'$'}}</div>
 					</div>
@@ -106,7 +110,35 @@
 
 					</div>
 				</td>
-
+				<td data-title=" 'Taxes' " class="col-sm-3 text-right" ng-if="showTaxes">
+					<div class="col-sm-12 text-center">
+						<strong>Employee:</strong>
+						<i class="fa fa-pencil pull-right" ng-if="mainData.userRole==='Master' && item.isHistory && (item.status===2 || item.status===6) && (!selectedTaxItem || selectedTaxItem.employee.id!==listitem.employee.id)" ng-click="setSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-remove pull-right" ng-if="mainData.userRole==='Master' && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = cancelSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-save pull-right" ng-if="mainData.userRole==='Master' && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = saveSelectedTaxItem(listitem)"></i>
+					</div>
+					<div class="col-sm-12" ng-repeat="tax in listitem.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'">
+						<div class="col-sm-4 text-left"><strong>{{tax.tax.code}}:</strong></div>
+						<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
+						<div class="col-sm-4 text-right" ng-if="!selectedTaxItem || selectedTaxItem.employee.id!==listitem.employee.id">{{tax.amount | currency:'$'}}</div>
+						<div class="col-sm-4 text-right" ng-if="selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id">
+							<input class="form-control" ng-model="tax.amount" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
+						</div>
+					</div>
+					
+					<div class="col-sm-12 text-center">
+						<strong>Employer:</strong>
+					</div>
+					<div class="col-sm-12" ng-repeat="tax in listitem.taxes | filter:{isEmployeeTax:false} | orderBy:'tax.id'">
+						<div class="col-sm-4 text-left"><strong>{{tax.tax.code}}:</strong></div>
+						<div class="col-sm-4 text-right">{{tax.taxableWage | currency:'$'}}</div>
+						<div class="col-sm-4 text-right" ng-if="!selectedTaxItem || selectedTaxItem.employee.id!==listitem.employee.id">{{tax.amount | currency:'$'}}</div>
+						<div class="col-sm-4 text-right" ng-if="selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id">
+							<input class="form-control" ng-model="tax.amount" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
+						</div>
+					</div>
+					
+				</td>
 				<td data-title=" 'Net Pay' " sortable=" 'netWage' " class="col-sm-1 text-right">
 					{{listitem.netWage | currency:"$"}}
 				</td>
@@ -116,7 +148,7 @@
 					<div class="col-sm-10 text-right">
 						<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></button>
 						<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></button>
-						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check"><i class="fa fa-lg fa-print m-r-5"></i></button>
+						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></button>
 						<button class="btn btn-sm btn-info" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
 					</div>
 				</td>
@@ -140,7 +172,7 @@
 		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print timesheet</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print report</button>
-		<button class="btn btn-sm btn-success" ng-click="printPayrollChecks(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print checks</button>
+		<button class="btn btn-sm btn-success" ng-click="printPayrollChecks(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> print checks</button>
 		<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 	</div>
 	

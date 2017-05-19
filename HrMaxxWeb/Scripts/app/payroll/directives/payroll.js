@@ -233,6 +233,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						if (!pc.included && !pc.userActioned  && original && !angular.equals(pc, original)) {
 							pc.included = true;
 						}
+						var pwAmount = -1;
 						var returnVal = false;
 						var salary = pc.salary;
 						var payCodeSum = 0;
@@ -246,14 +247,22 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							paycode.hours = calculateHours(paycode.screenHours);
 							paycode.overtimeHours = calculateHours(paycode.screenOvertime);
 							payCodeSum += (paycode.hours + paycode.overtimeHours);
-							if (paycode.payCode.id >= 0 && paycode.payCode.hourlyRate < $scope.company.minWage && (paycode.hours>0 || paycode.overtimeHours>0))
+							if (paycode.payCode.id >= 0 && paycode.payCode.hourlyRate < $scope.company.minWage && (paycode.hours > 0 || paycode.overtimeHours > 0)) {
+								if (paycode.payCode.hourlyRate <= 0) {
+									pwAmount = 0;
+									return;
+								}
 								pc.hasWarning = true;
-							if (paycode.payCode.id === -1 && paycode.pwAmount <= 0) {
-								payCodeSum = 0;
+							}
+							if (paycode.payCode.id === -1 && ((paycode.pwAmount <= 0 && (paycode.hours > 0 || paycode.overtimeHours > 0)) || (paycode.pwAmount > 0 && paycode.hours <= 0 && paycode.overtimeHours <= 0))) {
+								payCodeSum = pwAmount = 0;
 								return;
 							}
 							
 						});
+						if (pwAmount === 0) {
+							return pc.hasError = true;
+						}
 						$.each(pc.compensations, function (index1, comp) {
 							comps += comp.amount;
 						});

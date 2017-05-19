@@ -108,7 +108,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 			using (var conn = GetConnection())
 			{
-				const string updatecheck = @"update PayrollPayCheck set Status=case status when 3 then 4 when 5 then 6 end Where PayrollId=@PayrollId";
+				const string updatecheck = @"update PayrollPayCheck set Status=case status when 3 then 4 when 5 then 6 else status end Where PayrollId=@PayrollId";
 				const string updatepayroll = @"update Payroll set Status=@Status Where Id=@Id";
 
 				conn.Execute(updatepayroll, new {Status = (int) PayrollStatus.Printed, Id = payrollId});

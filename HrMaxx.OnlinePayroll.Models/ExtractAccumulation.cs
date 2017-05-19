@@ -350,7 +350,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		private void BuildGarnishmentAccumulations(IEnumerable<VendorCustomer> agencies, IList<PayCheck> payChecks  )
 		{
 			GarnishmentAgencies = new List<GarnishmentAgency>();
-			var garnishments = payChecks.SelectMany(pc => pc.Deductions.Where(d => d.Deduction.Type.Id == 3)).ToList();
+			var garnishments = payChecks.SelectMany(pc => pc.Deductions.Where(d => d.Deduction.Type.Id == 3 && d.Amount>0)).ToList();
 
 			foreach (var @agency in agencies)
 			{
@@ -360,7 +360,7 @@ namespace HrMaxx.OnlinePayroll.Models
 					{
 						Agency = @agency,
 						Accounts = garnishments.Where(g => g.EmployeeDeduction.AgencyId == @agency.Id).Select(g => new GarnishmentAgencyAccount { Deduction = g.Deduction.DeductionName, AccountNo = g.EmployeeDeduction.AccountNo, Amount = g.Amount }).ToList(),
-						PayCheckIds = payChecks.Where(pc => pc.Deductions.Any(d => d.Deduction.Type.Id == 3 && d.EmployeeDeduction.AgencyId == @agency.Id)).Select(pc => pc.Id).ToList()
+						PayCheckIds = payChecks.Where(pc => pc.Deductions.Any(d => d.Deduction.Type.Id == 3 && d.EmployeeDeduction.AgencyId == @agency.Id && d.Amount>0)).Select(pc => pc.Id).ToList()
 					};
 					GarnishmentAgencies.Add(ea);
 				}
