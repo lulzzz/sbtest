@@ -491,6 +491,7 @@
     <Content Include="templates\GovtForms\W2\W2-2017-Employer.pdf" />
     <Content Include="templates\GovtForms\W2\W2-2017.pdf" />
     <Content Include="templates\GovtForms\W3\W3-2017.pdf" />
+    <Content Include="templates\transformers\PaySlip.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
