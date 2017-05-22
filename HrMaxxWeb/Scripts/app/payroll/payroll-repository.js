@@ -350,6 +350,33 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+
+			printPaySlip: function (payrollId, payCheckId) {
+				var deferred = $q.defer();
+				$http.get(zionAPI.URL + "Payroll/PrintPayCheckPaySlip/" + payrollId + "/" + payCheckId, { responseType: "arraybuffer" }).success(
+					function (data, status, headers) {
+						var type = headers('Content-Type');
+						var disposition = headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}).error(function (data, status) {
+						var e = /* error */
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
 			printPayrollReport: function (payroll) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Payroll/PrintPayrollReport", payroll, { responseType: "arraybuffer" }).success(
@@ -427,7 +454,33 @@ common.factory('payrollRepository', [
 					});
 
 				return deferred.promise;
-			},	
+			},
+			printPayrollCheckPaySlips: function (payroll) {
+				var deferred = $q.defer();
+				$http.get(zionAPI.URL + "Payroll/PrintPayrollPaySlips/" + payroll, { responseType: "arraybuffer" }).success(
+					function (data, status, headers) {
+						var type = headers('Content-Type');
+						var disposition = headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}).error(function (data, status) {
+						var e = /* error */
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
 			getTimesheetImportTemplate: function (companyId, payTypes) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Payroll/TimesheetImportTemplate", {

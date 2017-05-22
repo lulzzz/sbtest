@@ -65,6 +65,16 @@ namespace HrMaxx.Infrastructure.Security
 			}
 
 		}
+		public Guid Employee
+		{
+			get
+			{
+				return HasClaim(claim => claim.Type == HrMaxxClaimTypes.Employee)
+						? new Guid(FindFirst(claim => claim.Type == HrMaxxClaimTypes.Employee).Value)
+						: Guid.Empty;
+			}
+
+		}
 
 		public string eMail
 		{

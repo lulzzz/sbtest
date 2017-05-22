@@ -298,6 +298,10 @@ namespace HrMaxxAPI.Controllers.Companies
 		{
 			//var employees = MakeServiceCall(() => _companyService.GetEmployeeList(companyId), string.Format("getting list of employees for {0}", companyId), true);
 			var employees = MakeServiceCall(() => _readerService.GetEmployees(company:companyId), string.Format("getting list of employees for {0}", companyId), true);
+			if (CurrentUser.Employee != Guid.Empty)
+			{
+				employees = employees.Where(e => e.Id == CurrentUser.Employee).ToList();
+			}
 			return Mapper.Map<List<Employee>, List<EmployeeResource>>(employees);
 		}
 

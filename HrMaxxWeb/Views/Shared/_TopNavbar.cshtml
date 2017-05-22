@@ -1,4 +1,5 @@
-﻿<div id="header" class="header navbar navbar-default navbar-fixed-top hidden-print">
+﻿@using HrMaxx.Infrastructure.Security
+<div id="header" class="header navbar navbar-default navbar-fixed-top hidden-print">
 	<!-- begin container-fluid -->
 	<div class="container-fluid">
 		<!-- begin mobile sidebar expand / collapse button -->
@@ -18,12 +19,20 @@
 			@if (Request.IsAuthenticated)
 			{
 				<li ng-controller="searchResult" style="width:600px">
-					<form class="navbar-form full-width">
-						<div class="form-group">
-							<input type="text" class="form-control" style="width:590px" placeholder="Enter keyword" ng-model="selectedResult" ng-keydown="removeTagOnBackspace($event, $viewValue)" ng-mouseenter="reset();$viewValue=null" ng-mouseleave="reset();$viewValue=null" typeahead-min-length="3" typeahead-show-hint="true" typeahead-on-select="resultSelected($item, $model, $label, $event)" typeahead-loading="loading" uib-typeahead="result as (result.sourceType + ': ' + result.searchText) for result in (results.length===0 ? getSearchResults($viewValue) : (results | filter:$viewValue))">
-							<button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
-						</div>
-					</form>
+					@if (CurrentUser.Role != "Employee")
+					{
+						<form class="navbar-form full-width">
+							<div class="form-group">
+								<input type="text" class="form-control" style="width: 590px" placeholder="Enter keyword" ng-model="selectedResult" ng-keydown="removeTagOnBackspace($event, $viewValue)" ng-mouseenter="reset();$viewValue=null" ng-mouseleave="reset();$viewValue=null" typeahead-min-length="3" typeahead-show-hint="true" typeahead-on-select="resultSelected($item, $model, $label, $event)" typeahead-loading="loading" uib-typeahead="result as (result.sourceType + ': ' + result.searchText) for result in (results.length===0 ? getSearchResults($viewValue) : (results | filter:$viewValue))">
+								<button type="submit" class="btn btn-search"><i class="fa fa-search"></i></button>
+							</div>
+						</form>
+					}
+					else
+					{
+						<span style="width:600px">&nbsp;</span>
+					}
+					
 				</li>
 
 				<li class="dropdown" id="dvNotifications" ng-controller="notificationCtrl">

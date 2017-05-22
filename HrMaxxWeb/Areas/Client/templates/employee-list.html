@@ -7,9 +7,9 @@
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
 			<div class="col-sm-12 visible-print" ><h6><u>Employee List</u></h6></div>
-			<div class="row hidden-print">
+			<div class="row hidden-print" ng-if="mainData.userRole!=='Employee'">
 				<div class="col-sm-4" ng-dropdown-multiselect="" options="cols" extra-settings="{displayProp: 'title', idProp: 'field', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedHeaders">
-					
+
 				</div>
 				<button class="btn btn-success btn-sm" ng-click="refreshTable()" ng-disabled="selectedHeaders.length===0">update view</button>
 				<button class="btn btn-success btn-sm" ng-click="print()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-print"></i>print</button>
@@ -17,7 +17,7 @@
 			<div ng-show="list.length===0 && !selectedContact" class="table table-bordered">
 				No Employees found
 			</div>
-			<div class="row" ng-show="list.length>0">
+			<div class="row" ng-show="list.length>0 && mainData.userRole!=='Employee'">
 				<table ng-table-dynamic="tableParamsNew with cols"
 				       class="table" show-filter="showFilter" template-pagination="custom/pager">
 					<tr ng-repeat="row in $data" class="mouse-over-pointer" ng-click="set(row)" ng-class="{'success':selected.id===row.id}">
@@ -32,7 +32,7 @@
 				</table>
 				
 				<script type="text/ng-template" id="custom/pager">
-					<ul class="pager ng-cloak hidden-print">
+					<ul class="pager ng-cloak hidden-print" ng-if="mainData.userRole!=='Employee'">
 						<li ng-repeat="page in pages"
 								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
 								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
@@ -51,14 +51,14 @@
 					</ul>
 				</script>
 			</div>
-			<div class="row hidden-print">
+			<div class="row hidden-print" ng-if="mainData.userRole!=='Employee'">
 				<button class="btn btn-sm btn-primary pull-left" ng-show="mainData.selectedCompany && !selected" ng-click="add()">Add</button>
-				
+
 				<button class="btn btn-sm btn-info attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 					<i class="fa fa-upload"></i>Import Employees
 				</button>
 				&nbsp;
-				<button class="btn btn-sm btn-primary pull-right" ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template</button>
+				<button class="btn btn-sm btn-primary pull-right"  ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template</button>
 				&nbsp;
 				<button class="btn btn-sm btn-success pull-right" ng-if="mainData.userRole==='Master'" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
 				&nbsp;

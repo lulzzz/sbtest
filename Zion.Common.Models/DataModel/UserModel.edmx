@@ -50,6 +50,7 @@
           <Property Name="Host" Type="uniqueidentifier" />
           <Property Name="Company" Type="uniqueidentifier" />
           <Property Name="Active" Type="bit" Nullable="false" />
+          <Property Name="Employee" Type="uniqueidentifier" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
@@ -156,6 +157,7 @@
           <Property Name="Host" Type="Guid" />
           <Property Name="Company" Type="Guid" />
           <Property Name="Active" Type="Boolean" Nullable="false" />
+          <Property Name="Employee" Type="Guid" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="UserModel.User" Multiplicity="1">
@@ -215,6 +217,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="UserModel.User">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="Employee" ColumnName="Employee" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="Company" ColumnName="Company" />
                 <ScalarProperty Name="Host" ColumnName="Host" />

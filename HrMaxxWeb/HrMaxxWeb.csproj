@@ -270,6 +270,7 @@
     <Content Include="Areas\Client\templates\invoicedelivery.html" />
     <Content Include="Areas\Client\templates\company-locations.html" />
     <Content Include="Areas\Client\templates\paycheck-list.html" />
+    <Content Include="Areas\Client\templates\paychecks.html" />
     <Content Include="Areas\Client\templates\tax-payment.html" />
     <Content Include="Areas\Client\templates\vendor-customer.html" />
     <Content Include="Areas\Reports\templates\ach-report.html" />

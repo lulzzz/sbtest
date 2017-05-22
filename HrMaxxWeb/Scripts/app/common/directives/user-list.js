@@ -24,6 +24,8 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					companies: [],
 					hosts: [],
 					employees: [],
+					filteredCompanies: [],
+					filteredEmployees:[],
 					selectedHost: null,
 					selectedCompany: null,
 					roles: [
@@ -50,7 +52,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					}, {
 						roleId: 5,
 						roleName: 'Employee',
-						show: false
+						show: true
 					}]
 				}
 				
@@ -142,40 +144,58 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					$scope.originalUser = item;
 					$scope.selectedUser = angular.copy(item);
 					dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+					if (dataSvc.selectedHost)
+						$scope.hostSelected();
 					dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+					if (dataSvc.selectedCompany)
+						$scope.companySelected();
+					dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
 				}
 				$scope.roleChanged = function () {
 					var item = $scope.selectedUser;
-					if (item.role.roleId === 1 || item.role.roleId === 2) {
-						item.host = null;
-						item.company = null;
+					if ($scope.originalUser) {
+						if (item.role.roleId === 1 || item.role.roleId === 2) {
+							item.host = null;
+							item.company = null;
+						}
+						if (item.role.roleId === 3 || item.role.roleId === 6) {
+							item.host = $scope.originalUser.host;
+							item.company = null;
+							dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+						}
+						if (item.role.roleId === 4) {
+							item.host = $scope.originalUser.host;
+							item.company = $scope.originalUser.company;
+							dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+							dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+						}
+						if (item.role.roleId === 5) {
+							item.host = $scope.originalUser.host;
+							item.company = $scope.originalUser.company;
+							item.employee = $scope.originalUser.employee;
+							dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+							if (dataSvc.selectedHost)
+								$scope.hostSelected();
+							dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+							if (dataSvc.selectedCompany)
+								$scope.companySelected();
+							dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
+						}
 					}
-					if (item.role.roleId === 3 || item.role.roleId === 6) {
-						item.host = $scope.originalUser.host;
-						item.company = null;
-						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
-					}
-					if (item.role.roleId === 4) {
-						item.host = $scope.originalUser.host;
-						item.company = $scope.originalUser.company;
-						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
-						dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
-					}
-					if (item.role.roleId === 5) {
-						item.host = $scope.originalUser.host;
-						item.company = $scope.originalUser.company;
-						item.employee = $scope.originalUser.employee;
-						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
-						dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
-						dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
-					}
+					
 				}
 				
 				$scope.hostSelected = function() {
 					$scope.selectedUser.host = dataSvc.selectedHost.id;
+					dataSvc.filteredCompanies = angular.copy($filter('filter')(dataSvc.companies, { host: dataSvc.selectedHost.id }));
 				}
 				$scope.companySelected = function () {
 					$scope.selectedUser.company = dataSvc.selectedCompany.id;
+					dataSvc.filteredEmployees = angular.copy($filter('filter')(dataSvc.employees, { company: dataSvc.selectedCompany.id }));
+				}
+				$scope.employeeSelected = function () {
+					$scope.selectedUser.employee = dataSvc.selectedEmployee.id;
+					
 				}
 				$scope.validateUser = function() {
 					var u = $scope.selectedUser;

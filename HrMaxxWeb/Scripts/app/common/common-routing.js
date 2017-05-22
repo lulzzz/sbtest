@@ -84,6 +84,9 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Client/Employees/:time', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/employees.html'
 	});
+	$routeProvider.when('/Client/PayChecks', {
+		templateUrl: zionAPI.Web + 'Areas/Client/templates/paychecks.html'
+	});
 	$routeProvider.when('/Client/Employees', {
 		templateUrl: zionAPI.Web + 'Areas/Client/templates/employees.html'
 	});

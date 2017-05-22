@@ -113,7 +113,11 @@
 							</tr>
 							<tr ng-if="selectedUser.company || selectedUser.role.roleId===4 || selectedUser.role.roleId===5">
 								<td class="field">Company</td>
-								<td><select id="company" class="form-control" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.companies track by c.id"></select></td>
+								<td><select id="company" class="form-control" ng-disabled="!data.selectedHost" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.filteredCompanies track by c.id"></select></td>
+							</tr>
+							<tr ng-if="selectedUser.company && selectedUser.role.roleId===5">
+								<td class="field">Employee</td>
+								<td><select id="employee" class="form-control" ng-disabled="!data.selectedCompany" ng-change="employeeSelected()" ng-model="data.selectedEmployee" ng-options="c.name for c in data.filteredEmployees track by c.id"></select></td>
 							</tr>
 							<tr>
 								<td class="field">Active</td>

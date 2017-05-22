@@ -68,12 +68,14 @@
 			hostCompanies: [],
 			selectedHost: null,
 			selectedCompany: null,
+			selectedEmployee: null,
 			config: null,
 			isFilterOpen: true,
 			showFilterPanel: true,
 			showCompanies: true,
 			userHost: null,
 			userCompany: null,
+			userEmployee: null,
 			userRole: null,
 			myName: '',
 			isReady: false,
@@ -127,6 +129,10 @@
 				if (dataInput.company !== '00000000-0000-0000-0000-000000000000') {
 					dataSvc.userCompany = dataInput.company;
 					
+				}
+				if (dataInput.employee !== '00000000-0000-0000-0000-000000000000') {
+					dataSvc.userEmployee = dataInput.employee;
+
 				}
 				$scope.refreshHostAndCompanies();
 				dataSvc.showFilterPanel = !dataSvc.userHost || (dataSvc.userHost && !dataSvc.userCompany);
@@ -215,7 +221,9 @@
 			//	$scope.addAlert('error getting company list', 'danger');
 			//});
 			dataSvc.hostCompanies = $filter('filter')(dataSvc.companies, {hostId: dataSvc.selectedHost.id});
-			
+			if (dataSvc.userCompany) {
+				$scope.setHostandCompany(dataSvc.userHost, dataSvc.userCompany, "#!/Client/Employees/" + (new Date().getTime()));
+			}
 		}
 		$scope.hostSelected = function () {
 			dataSvc.selectedCompany = null;

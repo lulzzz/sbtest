@@ -25,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
 		Payroll DeletePayroll(Payroll mappedResource);
 		FileDto PrintPayrollChecks(Guid payrollId);
+		FileDto PrintPayrollPayslips(Guid payrollId);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
 		Payroll VoidPayroll(Payroll mappedResource, string userName, string userId);
 
@@ -33,7 +34,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayCheck(int payCheck);
 		FileDto PrintPayCheck(PayCheck payCheck);
 		void MarkPayCheckPrinted(int payCheckId);
-		
+
+		FileDto PrintPaySlip(int payCheck);
 		//Invoice
 		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, Guid userId, bool fetchCompany);
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);

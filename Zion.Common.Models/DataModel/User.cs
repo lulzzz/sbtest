@@ -38,6 +38,7 @@ namespace HrMaxx.Common.Models.DataModel
         public Nullable<System.Guid> Host { get; set; }
         public Nullable<System.Guid> Company { get; set; }
         public bool Active { get; set; }
+        public Nullable<System.Guid> Employee { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UserClaim> UserClaims { get; set; }

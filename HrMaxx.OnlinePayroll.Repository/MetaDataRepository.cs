@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
@@ -134,14 +135,14 @@ namespace HrMaxx.OnlinePayroll.Repository
 		{
 			var hosts = _dbContext.Hosts.Where(h => (host.HasValue && h.Id == host.Value) || (!host.HasValue)).Select(h=>new { h.Id, Name = h.FirmName }).ToList();
 			var companies = _dbContext.Companies.Where(c => ((host.HasValue && c.HostId == host.Value) || (!host.HasValue))
-																					&& ((company.HasValue && c.Id == company.Value) || (!company.HasValue))).Select(h => new { h.Id, Name = h.CompanyName }).ToList();
+																					&& ((company.HasValue && c.Id == company.Value) || (!company.HasValue))).Select(h => new { h.Id, Name = h.CompanyName, Host=h.HostId }).ToList();
 			var employees = _dbContext.Employees.Where(e => ((employee.HasValue && e.Id == employee.Value) || !employee.HasValue)
 			                                                &&
 			                                                ((company.HasValue && e.CompanyId == company.Value) ||
 			                                                 !company.HasValue)
 			                                                &&
 			                                                ((host.HasValue && e.Company.HostId == host.Value) || !host.HasValue)
-				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName}).ToList();
+				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName, Company=e.CompanyId}).ToList();
 			return new {Hosts = hosts, Companies = companies, Employees = employees};
 		}
 

@@ -94,6 +94,20 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 							addAlert('error printing pay check', 'danger');
 						});
 					}
+					$scope.getPaySlip = function () {
+						payrollRepository.printPaySlip($scope.selected.payrollId, $scope.selected.id).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+
+						}, function (error) {
+							addAlert('error printing pay check', 'danger');
+						});
+					}
 					var getPaychecks = function (companyId, employeeId) {
 						payrollRepository.getPaycheckList(companyId, employeeId).then(function (data) {
 							$scope.list = data;
@@ -106,6 +120,7 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.addAlert('error getting pay checks', 'danger');
 						});
 					}
+
 					
 
 					var init = function () {

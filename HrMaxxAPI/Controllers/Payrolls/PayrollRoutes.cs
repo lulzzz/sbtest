@@ -8,7 +8,7 @@
 		public const string CommitPayroll = "Payroll/Commit";
 		public const string VoidPayCheck = "Payroll/VoidPayCheck/{payrollId:guid}/{payCheckId:int}";
 		public const string PayCheck = "Payroll/PayCheck/{checkId:int}";
-		
+
 		public const string PrintPayCheck = "Payroll/PrintPayCheck/{payrollId:guid}/{checkId:int}";
 		public const string Print = "Payroll/Print";
 		public const string MarkPayCheckPrinted = "Payroll/MarkPrinted/{payCheckId:int}";
@@ -18,14 +18,14 @@
 		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks/{payrollId:guid}";
 		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{year:int}";
 		public const string CreatePayrollInvoice = "Payroll/CreatePayrollInvoice";
-		
+
 		public const string ApprovedInvoices = "Payroll/ApprovedInvoices";
 		public const string PayrollInvoice = "Payroll/PayrollInvoice";
 		public const string DeletePayrollInvoice = "Payroll/DeletePayrollInvoice/{invoiceId:guid}";
 		public const string GetInvoiceById = "Payroll/PayrollInvoice/{invoiceId:guid}";
 		public const string FixPayrollData = "Payroll/FixPayrollData";
 		public const string FixPayrollDataForCompany = "Payroll/FixPayrollData/{companyId:guid}";
-		public const string RecreateInvoice = "Payroll/RecreateInvoice/{invoiceId:guid}"; 
+		public const string RecreateInvoice = "Payroll/RecreateInvoice/{invoiceId:guid}";
 		public const string DelayTaxes = "Payroll/DelayTaxes/{invoiceId:guid}";
 		public const string RedateInvoice = "Payroll/RedateInvoice";
 		public const string ImportTimesheets = "Payroll/ImportTimesheets";
@@ -46,5 +46,7 @@
 		public const string MovePayrolls = "Payroll/MovePayrolls/{source:guid}/{target:guid}";
 		public const string CopyPayrolls = "Payroll/CopyPayrolls/{source:guid}/{target:guid}";
 		public const string SaveInvoiceDelivery = "Payroll/SaveInvoiceDelivery";
+		public const string PrintPayrollPaySlips = "Payroll/PrintPayrollPaySlips/{payrollId:guid}";
+		public const string PrintPayCheckPaySlip = "Payroll/PrintPayCheckPaySlip/{payrollId:guid}/{checkId:int}";
 	}
 }

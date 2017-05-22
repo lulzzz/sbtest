@@ -180,6 +180,7 @@ namespace HrMaxxAPI.Controllers.User
 						userExists.LastName = model.LastName;
 						userExists.Host = model.Host;
 						userExists.Company = model.Company;
+						userExists.Employee = model.Employee;
 						userExists.PhoneNumber = model.Phone;
 						if (userExists.Email != model.Email)
 						{
@@ -212,7 +213,7 @@ namespace HrMaxxAPI.Controllers.User
 
 				}
 
-				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Active = model.Active, PhoneNumber = model.Phone };
+				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Employee = model.Employee, Active = model.Active, PhoneNumber = model.Phone };
 				var result = await UserManager.CreateAsync(user, "Paxol1234!");
 				if (result.Succeeded)
 				{

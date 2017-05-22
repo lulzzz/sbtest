@@ -285,6 +285,24 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.PrintPayrollPaySlips)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintPayrollPaySlips(Guid payrollId)
+		{
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollPayslips(payrollId), "print all pay slips for payroll with id " + payrollId, true);
+			return Printed(printed);
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.PrintPayCheckPaySlip)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintPayCheckPaySlip(Guid payrollId, int checkId)
+		{
+			var printed = MakeServiceCall(() => _payrollService.PrintPaySlip(checkId), string.Format("print payslip with id={0}", checkId), true);
+			return Printed(printed);
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.MarkPayCheckPrinted)]
 		public void MarkPayCheckPrinted(int payCheckId)
 		{
@@ -471,6 +489,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return MakeServiceCall(() => _payrollService.PrintPayCheck(checkId), string.Format("print paycheck with id={0}", checkId), true);
 			
 		}
+		
 
 		[HttpPost]
 		[Route(PayrollRoutes.CreatePayrollInvoice)]

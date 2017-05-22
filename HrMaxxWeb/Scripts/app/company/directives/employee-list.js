@@ -317,6 +317,13 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 								$scope.mainData.fromSearch = false;
 								$scope.mainData.showemployee = null;
 							}
+							else if ($scope.mainData.userEmployee) {
+								var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userEmployee })[0];
+								if (exists1) {
+									$scope.mainData.selectedEmployee = exists1;
+									$scope.set(exists1);
+								}
+							}
 						}, function (erorr) {
 							addAlert('error getting employee list', 'danger');
 						});
