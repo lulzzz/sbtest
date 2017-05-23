@@ -134,6 +134,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DeductionType Type { get; set; }
 		public DeductionType DeductionType { get; set; }
 		public decimal? FloorPerCheck { get; set; }
+		public bool ApplyInvoiceCredit { get; set; }
 		public string DeductionName { get; set; }
 		public string Description { get; set; }
 		public decimal AnnualMax { get; set; }

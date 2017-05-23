@@ -386,7 +386,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck ||
 			    CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
 			{
-				Deductions.Where(d => d.Deduction.Type.Id == 4).ToList().ForEach(d => MiscCharges.Add(new MiscFee
+				Deductions.Where(d => d.Deduction.ApplyInvoiceCredit).ToList().ForEach(d => MiscCharges.Add(new MiscFee
 				{
 					RecurringChargeId = d.Deduction.Id * -1,
 					Amount = d.Amount * -1,

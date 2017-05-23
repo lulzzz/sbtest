@@ -269,7 +269,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 									paycheck.payCodes = angular.copy(matching.payCodes);
 								paycheck.compensations = angular.copy(matching.compensations);
 								paycheck.deductions = angular.copy(matching.deductions);
-								$.each(paycheck.deductions, function(id, d) {
+								$.each(paycheck.deductions, function (id, d) {
+									var compDed = $filter('filter')($scope.mainData.selectedCompany.deductions, { id: d.deduction.id })[0];
+									if (compDed) {
+										d.deduction = compDed;
+										d.employeeDeduction.deduction = compDed;
+									}
 									d.accountNo = d.employeeDeduction.accountNo;
 									d.agencyId = d.employeeDeduction.agencyId;
 									d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
@@ -462,6 +467,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 								var match = $filter('filter')($scope.list, { id: selectedItemId })[0];
 								if (match)
 									$scope.set(match);
+								else {
+									$scope.set(null);
+								}
 							} else {
 								$scope.set(null);
 							}

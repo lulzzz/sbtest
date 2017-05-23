@@ -142,6 +142,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public string Description { get; set; }
 		public decimal? FloorPerCheck { get; set; }
+		public bool ApplyInvoiceCredit { get; set; }
 		public decimal AnnualMax { get; set; }
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }

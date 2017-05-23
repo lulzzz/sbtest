@@ -9,7 +9,8 @@
 				<td class="col-sm-2">Name</td>
 				<td class="col-sm-2">Description</td>
 				<td class="col-sm-2">Floor Per Check</td>
-				<td class="col-sm-2">Annual Max</td>
+				<td class="col-sm-1">Invoice Credit?</td>
+				<td class="col-sm-1">Annual Max</td>
 				<td class="col-sm-2" ng-show="showControls"></td>
 			</tr>
 		</thead>
@@ -33,11 +34,18 @@
 				</td>
 				<td>
 					<!-- editable comment (text with validation) -->
-					<span editable-number="item.floorPerCheck" e-name="floor" e-form="rowform" e-ng-change="item.floorValue = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+					<span editable-number="item.applyInvocie" e-name="floor" e-form="rowform" e-ng-change="item.floorValue = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
 						{{ item.floorPerCheck }}
 					</span>
+
+				</td>
+				<td>
+					<label for="invoicecredit" class="switch">
+						<input id="invoicecredit" type="checkbox" ng-model="item.applyInvoiceCredit" ng-disabled="!rowform.$visible" /><i></i>
+					</label>
 					
 				</td>
+				
 				<td>
 					<!-- editable comment (text with validation) -->
 					<span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
@@ -47,13 +55,13 @@
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelected($index)">
 							<i class="fa fa-edit m-r-5"></i> edit
 						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-sm btn-success">
 							<i class="fa fa-save m-r-5"></i> save
 						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-sm btn-default">
 							<i class="fa fa-remove m-r-5"></i> cancel
 						</button>
 					</form>

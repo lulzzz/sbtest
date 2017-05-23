@@ -480,6 +480,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					payroll.PayChecks.ForEach(pc => { 
 						pc.Status = PaycheckStatus.Saved;
 						pc.IsHistory = payroll.IsHistory;
+						if (pc.IsHistory)
+						{
+							var netwage = pc.NetWage;
+							pc.NetWage = Math.Round(pc.GrossWage - pc.DeductionAmount - pc.EmployeeTaxes + pc.CompensationNonTaxableAmount, 2, MidpointRounding.AwayFromZero);
+							pc.YTDNetWage = Math.Round(pc.YTDNetWage - netwage + pc.NetWage, MidpointRounding.AwayFromZero);
+						}
 					});
 					
 

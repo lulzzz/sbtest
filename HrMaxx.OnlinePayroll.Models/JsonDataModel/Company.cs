@@ -127,7 +127,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Description { get; set; }
 		public decimal? AnnualMax { get; set; }
 		public decimal? FloorPerCheck { get; set; }
-
+		public bool ApplyInvoiceCredit { get; set; }
 		public DeductionType DeductionType { get; set; }
 		
 	}

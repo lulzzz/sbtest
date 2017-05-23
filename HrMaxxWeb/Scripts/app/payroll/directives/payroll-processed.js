@@ -269,6 +269,10 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						$.each(listitem.taxes, function(ind, t) {
 							var ot = $filter('filter')($scope.originalTaxItem.taxes, { tax: { id: t.tax.id } })[0];
 							t.ytdTax = ot.ytdTax - ot.amount + t.amount;
+							if (t.tax.isEmployeeTax) {
+								listitem.netWage = listitem.netWage + ot.amount - t.amount;
+								listitem.ytdNetWage = listitem.ytdNetWage + ot.amount - t.amount;
+							}
 						});
 						$scope.originalTaxItem = null;
 						$scope.selectedTaxItem = null;
