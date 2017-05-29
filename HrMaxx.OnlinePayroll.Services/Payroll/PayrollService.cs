@@ -2087,7 +2087,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						company.Id);
 				var signature = companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
 				var pdfs = new List<PDFModel>();
-				foreach (var payCheck in payChecks.OrderBy(pc=>pc.CheckNumber))
+				foreach (var payCheck in payChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ThenBy(pc=>pc.CheckNumber))
 				{
 					if(payCheck.Employee.PayType==EmployeeType.JobCost)
 						pdfs.Add(GetPdfModelJobCost(payroll, payCheck, journals.First(j=>j.PayrollPayCheckId==payCheck.Id), company, nameCompany, company1, bankcoa, signature));

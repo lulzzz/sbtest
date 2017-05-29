@@ -116,47 +116,24 @@
 
 				</div>
 				<div class="col-sm-6">
-					<table class="table table-bordered table-condensed" ng-show="data.approachingPayrolls.length>1">
-						<thead>
-							<tr class="hidden-print">
-								<th colspan="4">
-									Companies with Approaching Payrolls
-									<button class="btn btn-xs btn-info pull-right" ng-click="print()" ng-show="data.filteredApproachingPayrolls.length>1"><i class="fa fa-print m-r-5"></i> print</button>
-									<select class="form-control small hidden-print pull-right" style="width:7em;" ng-change="filterCompaniesApproachingPayroll()" ng-model="data.filterApproachingPayroll">
-										<option value="">All</option>
-										<option value="Today">Today</option>
-										<option value="1 day">1 day</option>
-										<option value="2 days">2 days</option>
-										<option value="3 days">3 days</option>
-										<option value="4 days">4 days</option>
-										<option value="5 days">5 days</option>
-										<option value="Overdue">Overdue</option>
-									</select>
+					<table ng-table="tableParams" class="table" show-filter="true" >
+						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" >
+							<td data-title=" 'Host' " sortable=" 'host' " filter="{ 'host': 'text' }" class="col-sm-4 text-center">
+								{{item.host}}
+							</td>
+							<td data-title=" 'Company' " sortable=" 'company' " filter="{ 'company': 'text' }" class="col-sm-4 text-center">
+								{{item.company }}
+							</td>
+							<td data-title=" 'Next Payroll Due' " filter="{ 'due': 'number' }" sortable=" 'due' " class="col-sm-3 text-center">
+								{{item.due}}
+							</td>
+							<td class="hidden-print col-sm-1 text-center">
+								<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
+							</td>
+						</tr>
 
-
-								</th>
-
-
-							</tr>
-							<tr>
-								<th>Host</th>
-								<th>Company</th>
-								<th>Next Payroll Due</th>
-								<th class="hidden-print"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="ctx in data.filteredApproachingPayrolls track by $index" ng-if="$index>0">
-								<td ng-repeat="d in ctx track by $index" ng-if="$index>1">
-									{{d}}
-								</td>
-								<td class="hidden-print">
-									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
-								</td>
-
-							</tr>
-						</tbody>
 					</table>
+					
 
 				</div>
 			</div>

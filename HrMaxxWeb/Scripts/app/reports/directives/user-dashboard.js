@@ -10,8 +10,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window', 'commonRepository',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window, commonRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window', 'commonRepository', 'NgTableParams',
+				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window, commonRepository, ngTableParams) {
 					var dataSvc = {
 						isBodyOpen: true,
 						response: null,
@@ -20,6 +20,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						payrollsWithoutInvoice: [],
 						companiesWithoutPayroll: [],
 						filterApproachingPayroll: '',
+						sortApproachingPayrolls:1,
 						myNews: [],
 						reportData: [],
 						tab:1
@@ -355,11 +356,61 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					};
 
+					$scope.tableData = [];
+					$scope.tableParams = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						sorting: {
+							due: 'asc'     // initial sorting
+						}
+					}, {
+						total: $scope.filteredApproachingPayrolls ? $scope.filteredApproachingPayrolls.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableData(params);
+							return $scope.tableData;
+						}
+					});
+					if ($scope.tableParams.settings().$scope == null) {
+						$scope.tableParams.settings().$scope = $scope;
+					}
+					$scope.fillTableData = function (params) {
+
+						// use build-in angular filter
+						if (dataSvc.filteredApproachingPayrolls && dataSvc.filteredApproachingPayrolls.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')(dataSvc.filteredApproachingPayrolls, params.filter()) :
+																dataSvc.filteredApproachingPayrolls;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParams = params;
+							$scope.tableData = orderedData;
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+
 					$scope.drawCompaniesWithApproachingPayrolls = function () {
 						var data = $filter('filter')(dataSvc.reportData, { result: 'GetCompaniesNextPayrollChartData' })[0];
 						if (data) {
 							dataSvc.approachingPayrolls = data.data;
-							dataSvc.filteredApproachingPayrolls = angular.copy(data.data);
+							var filtered = [];
+							$.each(dataSvc.approachingPayrolls, function (ind, ap) {
+								if (ind > 0) {
+									filtered.push({
+										host: ap[2],
+										company: ap[3],
+										due: ap[4]
+									});
+								}
+								
+							});
+							dataSvc.filteredApproachingPayrolls = angular.copy(filtered);
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
 						}
 					};
 
@@ -381,6 +432,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.filteredApproachingPayrolls = angular.copy(dataSvc.approachingPayrolls);
 						}
 					}
+					
 
 					var addAlert = function (error, type) {
 						$sco$scope.audienceIpe.$parent.$parent.addAlert(error, type);
