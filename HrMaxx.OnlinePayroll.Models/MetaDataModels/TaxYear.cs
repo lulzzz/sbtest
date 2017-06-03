@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Models.MetaDataModels
 		public decimal? Rate { get; set; }
 		public decimal? AnnualMaxPerEmployee { get; set; }
 		public decimal? TaxRateLimit { get; set; }
+		public bool HasChanged { get; set; }
 
 		public bool IsFederal
 		{

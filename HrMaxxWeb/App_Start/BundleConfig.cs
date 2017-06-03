@@ -197,6 +197,7 @@ namespace HrMaxxWeb
 				"~/Scripts/app/reports/directives/extract-view-list.js",
 				"~/Scripts/app/common/directives/insurance-group-list.js",
 				"~/Scripts/app/common/directives/company-tax-rates.js",
+				"~/Scripts/app/common/directives/tax-rates.js",
 				"~/Scripts/app/common/search-ctrl.js",
 				"~/Scripts/app/payroll/directives/awaiting-print-payrolls.js",
 				"~/Scripts/app/payroll/directives/paycheck-list.js",

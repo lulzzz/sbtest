@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.USTaxModels;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -15,5 +16,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ApplicationConfig GetApplicationConfig();
 		ApplicationConfig SaveApplicationConfiguration(ApplicationConfig configs);
 		int PullReportConstant(string form940, int quarterly);
+		USTaxTables GetTaxTables();
+		USTaxTables SaveTaxTables(int year, USTaxTables taxTables);
+		USTaxTables CreateTaxes(int year);
 	}
 }

@@ -257,10 +257,12 @@
     <Compile Include="Code\IOC\IOCBootstrapper.cs" />
     <Compile Include="Code\IOC\LoggingModule.cs" />
     <Compile Include="Code\Security\HrMaxxViewPage.cs" />
+    <Content Include="Areas\Administration\templates\tax-rates.html" />
     <Content Include="Areas\Administration\templates\company-tax-rates.html" />
     <Content Include="Areas\Administration\templates\CompanyTaxes.html" />
     <Content Include="Areas\Administration\templates\config.html" />
     <Content Include="Areas\Administration\templates\Configurations.html" />
+    <Content Include="Areas\Administration\templates\Taxes.html" />
     <Content Include="Areas\Client\templates\awaiting-print-payroll-list.html" />
     <Content Include="Areas\Client\templates\awaitingprintpayrolls.html" />
     <Content Include="Areas\Client\templates\company.html" />
@@ -1286,6 +1288,7 @@
     <Content Include="Scripts\app\common\common-repository.js" />
     <Content Include="Scripts\app\common\common-routing.js" />
     <Content Include="Scripts\app\common\common.js" />
+    <Content Include="Scripts\app\common\directives\tax-rates.js" />
     <Content Include="Scripts\app\common\directives\company-tax-rates.js" />
     <Content Include="Scripts\app\common\directives\date-ctrl.js" />
     <Content Include="Scripts\app\common\directives\insurance-group-list.js" />

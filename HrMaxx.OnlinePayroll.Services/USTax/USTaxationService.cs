@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
@@ -35,7 +36,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			try
 			{
 				TaxTables = _taxationRepository.FillTaxTables();
-				TaxTables.Taxes = _metaDataRepository.GetAllTaxes().ToList();
+				//TaxTables.Taxes = _metaDataRepository.GetAllTaxes().ToList();
+				TaxTables.Years = TaxTables.Taxes.Select(t => t.TaxYear).Distinct().ToList();
 				Configurations = _metaDataRepository.GetConfigurations();
 			}
 			catch (Exception e)
@@ -119,6 +121,60 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " pull file sequence for form " + form940);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public USTaxTables GetTaxTables()
+		{
+			try
+			{
+				return TaxTables;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " pull taxes for year ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public USTaxTables SaveTaxTables(int year, USTaxTables taxTables)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_taxationRepository.SaveTaxTables(year, taxTables);
+					txn.Complete();
+				}
+				FillTaxTables();
+				return TaxTables;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save taxes for year " + year);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public USTaxTables CreateTaxes(int year)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_taxationRepository.CreateTaxes(year);
+					txn.Complete();
+				}
+				FillTaxTables();
+				return TaxTables;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " save taxes for year " + year);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

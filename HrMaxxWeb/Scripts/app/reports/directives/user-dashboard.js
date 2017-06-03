@@ -352,7 +352,22 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.drawCompaniesWithoutPayrollChart = function () {
 						var data = $filter('filter')(dataSvc.reportData, { result: 'GetCompaniesWithoutPayroll' })[0];
 						if (data) {
-							dataSvc.companiesWithoutPayroll = data.data;
+							var d = data.data;
+							$.each(d, function (ind, ap) {
+								if (ind > 0) {
+									var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
+									dataSvc.companiesWithoutPayroll.push({
+										hostId: ap[0],
+										companyId: ap[1],
+										host: ap[2],
+										company: ap[3],
+										salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
+										due: ap[5]
+									});
+								}
+
+							});
+							
 						}
 					};
 
@@ -400,10 +415,14 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							var filtered = [];
 							$.each(dataSvc.approachingPayrolls, function (ind, ap) {
 								if (ind > 0) {
+									var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
 									filtered.push({
+										hostId: ap[0],
+										companyId: ap[1],
 										host: ap[2],
 										company: ap[3],
-										due: ap[4]
+										salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
+										due: ap[5]
 									});
 								}
 								
@@ -421,7 +440,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 								if (ind === 0) {
 									filtered.push(ap);
 								} else {
-									if (ap[4] === dataSvc.filterApproachingPayroll) {
+									if (ap[5] === dataSvc.filterApproachingPayroll) {
 										filtered.push(ap);
 									}
 								}
@@ -461,8 +480,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							return false;
 					}
 
-					$scope.viewPayrolls = function(d) {
-						$scope.$parent.$parent.setHostandCompany(d[0], d[1], "#!/Client/Payrolls#invoice");
+					$scope.viewPayrolls = function(host, company) {
+						$scope.$parent.$parent.setHostandCompany(host, company, "#!/Client/Payrolls#invoice");
 					}
 
 					function _init() {

@@ -317,6 +317,36 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
+			getTaxTables: function () {
+				var deferred = $q.defer();
+				commonServer.one('GetTaxes').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			createTaxTables: function (year) {
+				var deferred = $q.defer();
+				commonServer.one('CreateTaxes/' + year).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			saveTaxTables: function (year, taxtables) {
+				var deferred = $q.defer();
+				commonServer.all('SaveTaxes').post({year: year, taxTables: taxtables}).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 
 		};
 	}

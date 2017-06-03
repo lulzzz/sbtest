@@ -10,6 +10,7 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 {
 	public class USTaxTables
 	{
+		public List<int> Years { get; set; } 
 		public List<TaxByYear> Taxes { get; set; }
 		public List<FITTaxTableRow> FITTaxTable { get; set; }
 		public List<FITWithholdingAllowanceTableRow> FitWithholdingAllowanceTable { get; set; }

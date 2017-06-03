@@ -21,22 +21,32 @@
 					<table class="table table-bordered table-condensed" ng-show="data.companiesWithoutPayroll.length>1">
 						<thead>
 							<tr>
-								<th colspan="4">Brand New Companies</th>
+								<th colspan="5">Brand New Companies</th>
 							</tr>
 							<tr>
 								<th>Host</th>
 								<th>Company</th>
+								<th>Sales Rep</th>
 								<th>Days past</th>
 								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr ng-repeat="ctx in data.companiesWithoutPayroll track by $index" ng-if="$index>0">
-								<td ng-repeat="d in ctx track by $index" ng-if="$index>1">
-									{{d}}
+								<td>
+									{{ctx.host}}
 								</td>
 								<td>
-									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
+									{{ctx.company}}
+								</td>
+								<td>
+									{{ctx.salesRep}}
+								</td>
+								<td>
+									{{ctx.due}}
+								</td>
+								<td>
+									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx.hostId, ctx.companyId)">view</button>
 								</td>
 
 							</tr>
@@ -65,24 +75,6 @@
 				</div>
 
 			</div>
-
-			<div class="row col-md-12 hidden-print">
-				<div class="col-md-6">
-					<div id="payrollChart"></div>
-					<button type="submit" class="btn btn-primary" ng-if="chartExists('PayrollChartData')" ng-click="viewChartData('PayrollChartData')">
-						view data
-					</button>
-
-
-				</div>
-				<div class="col-md-6">
-					<div id="invoiceChart"></div>
-					<button type="submit" class="btn btn-primary" ng-if="chartExists('InvoiceChartData')" ng-click="viewChartData('InvoiceChartData')">
-						view data
-					</button>
-
-				</div>
-			</div>
 			<br />
 			<br />
 			<div class="row col-sm-12 m-t-10">
@@ -105,7 +97,7 @@
 									{{d}}
 								</td>
 								<td>
-									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
+									<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])">view</button>
 								</td>
 
 							</tr>
@@ -116,19 +108,22 @@
 
 				</div>
 				<div class="col-sm-6">
-					<table ng-table="tableParams" class="table" show-filter="true" >
-						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" >
+					<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
+						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer">
 							<td data-title=" 'Host' " sortable=" 'host' " filter="{ 'host': 'text' }" class="col-sm-4 text-center">
 								{{item.host}}
 							</td>
 							<td data-title=" 'Company' " sortable=" 'company' " filter="{ 'company': 'text' }" class="col-sm-4 text-center">
 								{{item.company }}
 							</td>
+							<td data-title=" 'Sales Rep' " sortable=" 'salesRep' " filter="{ 'salesRep': 'text' }" class="col-sm-4 text-center">
+								{{item.salesRep }}
+							</td>
 							<td data-title=" 'Next Payroll Due' " filter="{ 'due': 'number' }" sortable=" 'due' " class="col-sm-3 text-center">
 								{{item.due}}
 							</td>
 							<td class="hidden-print col-sm-1 text-center">
-								<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx)">view</button>
+								<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(item.hostId, item.companyId)">view</button>
 							</td>
 						</tr>
 

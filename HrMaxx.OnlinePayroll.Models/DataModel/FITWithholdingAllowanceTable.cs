@@ -16,7 +16,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     {
         public int Id { get; set; }
         public Nullable<int> PayrollPeriodID { get; set; }
-        public Nullable<double> AmtForOneWithholdingAllow { get; set; }
+        public Nullable<decimal> AmtForOneWithholdingAllow { get; set; }
         public Nullable<int> Year { get; set; }
     }
 }

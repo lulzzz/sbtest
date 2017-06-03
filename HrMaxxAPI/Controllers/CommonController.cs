@@ -10,7 +10,9 @@ using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.USTaxModels;
 using HrMaxxAPI.Resources.Common;
+using HrMaxxAPI.Resources.OnlinePayroll;
 
 namespace HrMaxxAPI.Controllers
 {
@@ -21,13 +23,15 @@ namespace HrMaxxAPI.Controllers
 		public readonly IMetaDataService _metaDataService;
 		private readonly IMementoDataService _mementoDataService;
 		private readonly IReaderService _readerService;
+		private readonly ITaxationService _taxationService;
 		
-		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService, IReaderService readerService)
+		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService, IReaderService readerService, ITaxationService taxationService)
 		{
 			_commonService = commonService;
 			_metaDataService = metaDataService;
 			_mementoDataService = mementoDataService;
 			_readerService = readerService;
+			_taxationService = taxationService;
 		}
 
 		[HttpGet]
@@ -167,6 +171,27 @@ namespace HrMaxxAPI.Controllers
 
 			var data = MakeServiceCall(() => _readerService.GetDataFromStoredProc<HostAndCompanies>("GetHostAndCompanies", paramList), "fill search table", true);
 			return Mapper.Map<HostAndCompanies, HostAndCompaniesResource>(data);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.GetTaxes)]
+		public USTaxTables GetTaxes()
+		{
+			return MakeServiceCall(() => _taxationService.GetTaxTables(), "Tax Tables", true);
+		}
+
+		[HttpPost]
+		[Route(HrMaxxRoutes.SaveTaxes)]
+		public USTaxTables SaveTaxes(SaveTaxesResource resource)
+		{
+			return MakeServiceCall(() => _taxationService.SaveTaxTables(resource.Year, resource.TaxTables), "Save Tax Tables", true);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.CreateTaxes)]
+		public USTaxTables CreateTaxes(int year)
+		{
+			return MakeServiceCall(() => _taxationService.CreateTaxes(year), "create entries in Tax Tables for year " + year, true);
 		}
 	}
 }

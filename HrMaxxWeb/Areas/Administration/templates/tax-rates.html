@@ -1,0 +1,646 @@
+﻿<div class="col-sm-12">
+	<div class="panel panel-inverse">
+
+		<div class="panel-heading" >
+			<h4 class=" panel-title">
+				Manage Tax Rates</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.taxTables">
+			<div class="row m-5">
+				<div class="col-sm-1">
+					<label>Taxes by Year</label>
+				</div>
+				<div class="col-sm-3">
+					<select ng-model="data.selectedYear" class="form-control" ng-click="data.selectedTab=0" convert-to-number ng-options="year for year in data.taxTables.years track by year">
+						<option value=""> select year</option>
+					</select>
+				</div>
+				<div class="col-sm-4">
+					<button class="btn btn-primary" ng-show="!data.selectedYear" ng-click="addNewYear()">Add</button>
+					<button class="btn btn-info" ng-show="data.selectedYear && hasChanges()" ng-click="save()">Save</button>
+					<button class="btn btn-default" ng-show="data.selectedYear" ng-click="cancel()">Cancel</button>
+				</div>
+			</div>
+			<div class="row m-5" >
+				
+				<ul class="nav nav-tabs nav-tabs-inverse" ng-show="data.selectedYear">
+					<li ng-class="{'active':data.selectedTab===0}" ng-click="data.selectedTab=0"><a data-toggle="tab">Tax Rates</a></li>
+					<li ng-class="{'active':data.selectedTab===1}" ng-click="data.selectedTab=1"><a data-toggle="tab">FIT</a></li>
+					<li ng-class="{'active':data.selectedTab===2}" ng-click="data.selectedTab=2"><a data-toggle="tab">FIT Withholding</a></li>
+					<li ng-class="{'active':data.selectedTab===3}" ng-click="data.selectedTab=3"><a data-toggle="tab">SIT</a></li>
+					<li ng-class="{'active':data.selectedTab===4}" ng-click="data.selectedTab=4"><a data-toggle="tab">SIT Low Income</a></li>
+					<li ng-class="{'active':data.selectedTab===5}" ng-click="data.selectedTab=5"><a data-toggle="tab">Standard Deduction</a></li>
+					<li ng-class="{'active':data.selectedTab===6}" ng-click="data.selectedTab=6"><a data-toggle="tab">Estimated Deduction</a></li>
+					<li ng-class="{'active':data.selectedTab===7}" ng-click="data.selectedTab=7"><a data-toggle="tab">Exemption Allowance</a></li>
+
+				</ul>
+				
+				
+			</div>
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===0 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-2">Code</th>
+							<th class="col-sm-2">Name</th>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Rate</th>
+							<th class="col-sm-2">Annual Max</th>
+							<th class="col-sm-2">Limit</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.taxes | filter:{ taxYear:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.tax.code}}
+							</td>
+							<td>
+								{{item.tax.name}}
+							</td>
+							<td>
+								{{item.taxYear}}
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.rate" e-name="rate" e-form="rowform" e-ng-change="item.rate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.rate }}
+								</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.annualMaxPerEmployee" e-name="annualMaxPerEmployee" e-form="rowform" e-ng-change="item.annualMaxPerEmployee = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.annualMaxPerEmployee }}
+								</span>
+
+							</td>
+
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.taxRateLimit" e-name="taxRateLimit" e-form="rowform" e-ng-change="item.taxRateLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.taxRateLimit }}
+								</span>
+							</td>
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="saveTR(item)" class="form-buttons form-inline" shown="selectedTR.tax.code===item.tax.code">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedTR(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+									
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelTR(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedTR && data.taxTables.taxes.length===0">
+							<td colspan="7">
+								<span >No items found</span>
+							</td>
+
+							
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===1 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-2">Filing Status</th>
+							<th class="col-sm-1">Start</th>
+							<th class="col-sm-1">End</th>
+							<th class="col-sm-1">Flat Rate</th>
+							<th class="col-sm-1">Additional Percentage</th>
+							<th class="col-sm-1">Excess Over Amount</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.fitTaxTable | filter:{ year:data.selectedYear } track by item.id" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.payrollScheduleText = item.payrollSchedule1.value; item.payrollSchedule = item.payrollSchedule1.key" ng-model="item.payrollSchedule1" ng-options="ps.value for ps in data.payrollSchedules track by ps.key">
+									<option value="">Pay Period</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.payrollScheduleText}}</span>
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.filingStatusText = item.filingStatus1.value; item.filingStatus=item.filingStatus1.key" ng-model="item.filingStatus1" ng-options="ps.value for ps in data.federalFilingStatuses track by ps.key">
+									<option value="">Filing Status</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.filingStatusText}}</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.rangeStart" e-name="rangeStart" e-form="rowform" e-ng-change="item.rangeStart = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.rangeStart }}
+								</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.rangeEnd" e-name="rangeEnd" e-form="rowform" e-ng-change="item.rangeEnd = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.rangeEnd }}
+								</span>
+
+							</td>
+
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.flatRate" e-name="flatRate" e-form="rowform" e-ng-change="item.flatRate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.flatRate }}
+								</span>
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.additionalPercentage" e-name="additionalPercentage" e-form="rowform" e-ng-change="item.additionalPercentage = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.additionalPercentage }}
+								</span>
+
+							</td>
+
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.excessOverAmoutt" e-name="excessOverAmoutt" e-form="rowform" e-ng-change="item.excessOverAmoutt = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.excessOverAmoutt }}
+								</span>
+							</td>
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="item = saveFIT(item)" class="form-buttons form-inline" shown="selectedFIT.payrollSchedule===item.payrollSchedule && selectedFIT.filingStatus===item.filingStatus && selectedFIT.rangeStart===item.rangeStart && selectedFIT.rangeEnd===item.rangeEnd">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedFIT(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-danger" ng-click="removeFIT(item)">
+										<i class="fa fa-remove m-r-5"></i> remove
+									</button>
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelFIT(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedFIT">
+							<td colspan="9">
+								<span ng-show="data.taxTables.fitTaxTable.length===0">No items found </span>
+								<button class="btn btn-sm btn-primary"  ng-click="addFIT()"><i class="fa fa-plus-square"></i> add</button>
+							</td>
+
+
+						</tr>
+						
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===2 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-3">Amount for 1 Withholding Allowance</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.fitWithholdingAllowanceTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.payrollScheduleText = item.payrollSchedule1.value; item.payrollSchedule = item.payrollSchedule1.key" ng-model="item.payrollSchedule1" ng-options="ps.value for ps in data.payrollSchedules track by ps.key">
+									<option value="">Pay Period</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.payrollScheduleText}}</span>
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amoutForOneWithholdingAllowance" e-name="amoutForOneWithholdingAllowance" e-form="rowform" e-ng-change="item.amoutForOneWithholdingAllowance = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amoutForOneWithholdingAllowance }}
+								</span>
+
+							</td>
+
+
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="saveFITW(item)" class="form-buttons form-inline" shown="selectedFITW.payrollSchedule===item.payrollSchedule">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedFITW(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();item = cancelFITW(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedTR && data.taxTables.fitWithholdingAllowanceTable.length===0">
+							<td colspan="4">
+								<span>No items found</span>
+							</td>
+
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===3 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-2">Filing Status</th>
+							<th class="col-sm-1">Start</th>
+							<th class="col-sm-1">End</th>
+							<th class="col-sm-1">Flat Rate</th>
+							<th class="col-sm-1">Additional Percentage</th>
+							<th class="col-sm-1">Excess Over Amount</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.casitTaxTable | filter:{ year:data.selectedYear } track by item.id" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.payrollScheduleText = item.payrollSchedule1.value; item.payrollSchedule = item.payrollSchedule1.key" ng-model="item.payrollSchedule1" ng-options="ps.value for ps in data.payrollSchedules track by ps.key">
+									<option value="">Pay Period</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.payrollScheduleText}}</span>
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.filingStatusText = item.filingStatus1.value; item.filingStatus=item.filingStatus1.key" ng-model="item.filingStatus1" ng-options="ps.value for ps in data.californiaFilingStatuses track by ps.key">
+									<option value="">Filing Status</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.filingStatusText}}</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.rangeStart" e-name="rangeStart" e-form="rowform" e-ng-change="item.rangeStart = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.rangeStart }}
+								</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.rangeEnd" e-name="rangeEnd" e-form="rowform" e-ng-change="item.rangeEnd = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.rangeEnd }}
+								</span>
+
+							</td>
+
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.flatRate" e-name="flatRate" e-form="rowform" e-ng-change="item.flatRate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.flatRate }}
+								</span>
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.additionalPercentage" e-name="additionalPercentage" e-form="rowform" e-ng-change="item.additionalPercentage = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.additionalPercentage }}
+								</span>
+
+							</td>
+
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.excessOverAmoutt" e-name="excessOverAmoutt" e-form="rowform" e-ng-change="item.excessOverAmoutt = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.excessOverAmoutt }}
+								</span>
+							</td>
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="item = saveSIT(item)" class="form-buttons form-inline" shown="selectedSIT.payrollSchedule===item.payrollSchedule && selectedSIT.filingStatus===item.filingStatus && selectedSIT.rangeStart===item.rangeStart && selectedSIT.rangeEnd===item.rangeEnd">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedSIT(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-danger" ng-click="removeSIT(item)">
+										<i class="fa fa-remove m-r-5"></i> remove
+									</button>
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSIT(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedSIT">
+							<td colspan="9">
+								<span ng-show="data.taxTables.casitTaxTable.length===0">No items found </span>
+								<button class="btn btn-sm btn-primary" ng-click="addSIT()"><i class="fa fa-plus-square"></i> add</button>
+							</td>
+
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===4 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-2">Filing Status</th>
+							<th class="col-sm-3">Amount</th>
+							<th class="col-sm-4">Amount If Exempt Grt 2</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.casitLowIncomeTaxTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.payrollScheduleText = item.payrollSchedule1.value; item.payrollSchedule = item.payrollSchedule1.key" ng-model="item.payrollSchedule1" ng-options="ps.value for ps in data.payrollSchedules track by ps.key">
+									<option value="">Pay Period</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.payrollScheduleText}}</span>
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.filingStatusText = item.filingStatus1.value; item.filingStatus=item.filingStatus1.key" ng-model="item.filingStatus1" ng-options="ps.value for ps in data.californiaLowIncomeFilingStatuses track by ps.key">
+									<option value="">Filing Status</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.filingStatusText}}</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amount" e-name="amount" e-form="rowform" e-ng-change="item.amount = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amount }}
+								</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amountIfExemptGreaterThan2" e-name="amountIfExemptGreaterThan2" e-form="rowform" e-ng-change="item.amountIfExemptGreaterThan2 = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amountIfExemptGreaterThan2 }}
+								</span>
+
+							</td>
+
+
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="saveSITLow(item)" class="form-buttons form-inline" shown="selectedSITLow.payrollSchedule===item.payrollSchedule && selectedSITLow.filingStatus===item.filingStatus">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedSITLow(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel(); cancelSITLow(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedTR && data.taxTables.casitLowIncomeTaxTable.length===0">
+							<td colspan="4">
+								<span>No items found</span>
+							</td>
+
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===5 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-2">Filing Status</th>
+							<th class="col-sm-3">Amount</th>
+							<th class="col-sm-4">Amount If Exempt Grt 1</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.caStandardDeductionTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.payrollScheduleText = item.payrollSchedule1.value; item.payrollSchedule = item.payrollSchedule1.key" ng-model="item.payrollSchedule1" ng-options="ps.value for ps in data.payrollSchedules track by ps.key">
+									<option value="">Pay Period</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.payrollScheduleText}}</span>
+							</td>
+							<td>
+								<select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.filingStatusText = item.filingStatus1.value; item.filingStatus=item.filingStatus1.key" ng-model="item.filingStatus1" ng-options="ps.value for ps in data.californiaLowIncomeFilingStatuses track by ps.key">
+									<option value="">Filing Status</option>
+								</select>
+								<span ng-show="!item.isNew || !rowform.$visible">{{item.filingStatusText}}</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amount" e-name="amount" e-form="rowform" e-ng-change="item.amount = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amount }}
+								</span>
+
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amountIfExemptGreaterThan1" e-name="amountIfExemptGreaterThan1" e-form="rowform" e-ng-change="item.amountIfExemptGreaterThan1 = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amountIfExemptGreaterThan1 }}
+								</span>
+
+							</td>
+
+
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="saveStdDed(item)" class="form-buttons form-inline" shown="selectedStdDed.payrollSchedule===item.payrollSchedule && selectedStdDed.filingStatus===item.filingStatus">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedStdDed(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel(); cancelStdDed(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedTR && data.taxTables.caStandardDeductionTable.length===0">
+							<td colspan="4">
+								<span>No items found</span>
+							</td>
+
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===6 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-2">No of Allowances</th>
+							<th class="col-sm-2">Amount</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.estimatedDeductionTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								{{item.payrollScheduleText}}
+							</td>
+							<td>
+								{{item.allowances}}
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amount" e-name="amount" e-form="rowform" e-ng-change="item.amount = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amount }}
+								</span>
+
+							</td>
+
+
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="saveEstDed(item)" class="form-buttons form-inline" shown="selectedEstDed.payrollSchedule===item.payrollSchedule && selectedEstDed.allowances===item.allowances">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedEstDed(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelEstDed(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedTR && data.taxTables.estimatedDeductionTable.length===0">
+							<td colspan="4">
+								<span>No items found</span>
+							</td>
+
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="row m-5 tab-content" ng-if="data.selectedTab===7 && data.selectedYear">
+				<table class="table table-header table-bordered table-condensed form-controls input-sm">
+					<thead>
+						<tr>
+							<th class="col-sm-1">Year</th>
+							<th class="col-sm-2">Pay Period</th>
+							<th class="col-sm-2">No of Allowances</th>
+							<th class="col-sm-2">Amount</th>
+							<th class="col-sm-1"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="item in data.taxTables.exemptionAllowanceTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+							<td>
+								{{item.year}}
+							</td>
+							<td>
+								{{item.payrollScheduleText}}
+							</td>
+							<td>
+								{{item.allowances}}
+							</td>
+							<td>
+								<!-- editable comment (text with validation) -->
+								<span editable-number="item.amount" e-name="amount" e-form="rowform" e-ng-change="item.amount = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+									{{ item.amount }}
+								</span>
+
+							</td>
+
+
+							<td style="white-space: nowrap">
+								<!-- form -->
+								<form editable-form id="rowform" name="rowform" onbeforesave="saveExmpAllow(item)" class="form-buttons form-inline" shown="selectedExmpAllow.payrollSchedule===item.payrollSchedule && selectedExmpAllow.allowances===item.allowances">
+									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedExmpAllow(item)">
+										<i class="fa fa-edit m-r-5"></i> edit
+									</button>
+
+									<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+										<i class="fa fa-save m-r-5"></i> save
+									</button>
+									<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel(); cancelExmpAllow(item)" class="btn btn-sm btn-default">
+										<i class="fa fa-remove m-r-5"></i> cancel
+									</button>
+								</form>
+							</td>
+
+						</tr>
+						<tr ng-show="!selectedTR && data.taxTables.exemptionAllowanceTable.length===0">
+							<td colspan="4">
+								<span>No items found</span>
+							</td>
+
+
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
+</div>

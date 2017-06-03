@@ -123,6 +123,10 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Admin/CompanyTaxes', {
 		templateUrl: zionAPI.Web + 'Areas/Administration/templates/CompanyTaxes.html'
 	});
+
+	$routeProvider.when('/Admin/Taxes', {
+		templateUrl: zionAPI.Web + 'Areas/Administration/templates/Taxes.html'
+	});
 	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.hashPrefix('!');
