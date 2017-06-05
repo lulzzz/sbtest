@@ -12,7 +12,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodID" Type="int" />
           <Property Name="NoOfAllowances" Type="int" />
-          <Property Name="Amount" Type="money" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <EntityType Name="ExemptionAllowanceTable">
@@ -22,7 +22,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodID" Type="int" />
           <Property Name="NoOfAllowances" Type="int" />
-          <Property Name="Amount" Type="money" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <EntityType Name="FITTaxTable">
@@ -32,11 +32,11 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodID" Type="int" />
           <Property Name="FilingStatus" Type="varchar" MaxLength="50" />
-          <Property Name="StartRange" Type="float" />
-          <Property Name="EndRange" Type="float" />
-          <Property Name="FlatRate" Type="float" />
-          <Property Name="AdditionalPercentage" Type="float" />
-          <Property Name="ExcessOvrAmt" Type="float" />
+          <Property Name="StartRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <EntityType Name="FITWithholdingAllowanceTable">
@@ -45,7 +45,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodID" Type="int" />
-          <Property Name="AmtForOneWithholdingAllow" Type="float" />
+          <Property Name="AmtForOneWithholdingAllow" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <EntityType Name="SITLowIncomeTaxTable">
@@ -55,8 +55,8 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodId" Type="int" />
           <Property Name="FilingStatus" Type="varchar" MaxLength="50" />
-          <Property Name="Amount" Type="money" />
-          <Property Name="AmtIfExmpGrtThan2" Type="money" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AmtIfExmpGrtThan2" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <EntityType Name="SITTaxTable">
@@ -80,12 +80,12 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodID" Type="int" />
           <Property Name="FilingStatus" Type="varchar" MaxLength="50" />
-          <Property Name="Amount" Type="money" />
-          <Property Name="AmtIfExmpGrtThan1" Type="money" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AmtIfExmpGrtThan1" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
             <PropertyRef Name="TaxCode" />
@@ -113,6 +113,24 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="USTaxTablesModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="USTaxTableEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="TaxDeductionPrecedences" EntityType="USTaxTablesModel.TaxDeductionPrecedence" />
+          <EntitySet Name="EstimatedDeductionsTables" EntityType="USTaxTablesModel.EstimatedDeductionsTable" />
+          <EntitySet Name="ExemptionAllowanceTables" EntityType="USTaxTablesModel.ExemptionAllowanceTable" />
+          <EntitySet Name="FITTaxTables" EntityType="USTaxTablesModel.FITTaxTable" />
+          <EntitySet Name="FITWithholdingAllowanceTables" EntityType="USTaxTablesModel.FITWithholdingAllowanceTable" />
+          <EntitySet Name="SITLowIncomeTaxTables" EntityType="USTaxTablesModel.SITLowIncomeTaxTable" />
+          <EntitySet Name="SITTaxTables" EntityType="USTaxTablesModel.SITTaxTable" />
+          <EntitySet Name="StandardDeductionTables" EntityType="USTaxTablesModel.StandardDeductionTable" />
+        </EntityContainer>
+        <EntityType Name="TaxDeductionPrecedence">
+          <Key>
+            <PropertyRef Name="TaxCode" />
+            <PropertyRef Name="DeductionTypeId" />
+          </Key>
+          <Property Name="TaxCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DeductionTypeId" Type="Int32" Nullable="false" />
+        </EntityType>
         <EntityType Name="EstimatedDeductionsTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -120,7 +138,7 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
           <Property Name="NoOfAllowances" Type="Int32" />
-          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
         <EntityType Name="ExemptionAllowanceTable">
@@ -130,7 +148,7 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
           <Property Name="NoOfAllowances" Type="Int32" />
-          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
         <EntityType Name="FITTaxTable">
@@ -140,11 +158,11 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
           <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="StartRange" Type="Double" />
-          <Property Name="EndRange" Type="Double" />
-          <Property Name="FlatRate" Type="Double" />
-          <Property Name="AdditionalPercentage" Type="Double" />
-          <Property Name="ExcessOvrAmt" Type="Double" />
+          <Property Name="StartRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
         <EntityType Name="FITWithholdingAllowanceTable">
@@ -153,7 +171,7 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
-          <Property Name="AmtForOneWithholdingAllow" Type="Double" />
+          <Property Name="AmtForOneWithholdingAllow" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
         <EntityType Name="SITLowIncomeTaxTable">
@@ -163,8 +181,8 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodId" Type="Int32" />
           <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="AmtIfExmpGrtThan2" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AmtIfExmpGrtThan2" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
         <EntityType Name="SITTaxTable">
@@ -188,27 +206,9 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
           <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Amount" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="AmtIfExmpGrtThan1" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AmtIfExmpGrtThan1" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
-        </EntityType>
-        <EntityContainer Name="USTaxTableEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="EstimatedDeductionsTables" EntityType="Self.EstimatedDeductionsTable" />
-          <EntitySet Name="ExemptionAllowanceTables" EntityType="Self.ExemptionAllowanceTable" />
-          <EntitySet Name="FITTaxTables" EntityType="Self.FITTaxTable" />
-          <EntitySet Name="FITWithholdingAllowanceTables" EntityType="Self.FITWithholdingAllowanceTable" />
-          <EntitySet Name="SITLowIncomeTaxTables" EntityType="Self.SITLowIncomeTaxTable" />
-          <EntitySet Name="SITTaxTables" EntityType="Self.SITTaxTable" />
-          <EntitySet Name="StandardDeductionTables" EntityType="Self.StandardDeductionTable" />
-          <EntitySet Name="TaxDeductionPrecedences" EntityType="USTaxTablesModel.TaxDeductionPrecedence" />
-        </EntityContainer>
-        <EntityType Name="TaxDeductionPrecedence">
-          <Key>
-            <PropertyRef Name="TaxCode" />
-            <PropertyRef Name="DeductionTypeId" />
-          </Key>
-          <Property Name="TaxCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="DeductionTypeId" Type="Int32" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -216,97 +216,97 @@ warning 6002: The table/view 'HrMaxx.dbo.TaxDeductionPrecedence' does not have a
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="USTaxTablesModelStoreContainer" CdmEntityContainer="USTaxTableEntities">
+          <EntitySetMapping Name="TaxDeductionPrecedences">
+            <EntityTypeMapping TypeName="USTaxTablesModel.TaxDeductionPrecedence">
+              <MappingFragment StoreEntitySet="TaxDeductionPrecedence">
+                <ScalarProperty Name="DeductionTypeId" ColumnName="DeductionTypeId" />
+                <ScalarProperty Name="TaxCode" ColumnName="TaxCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="EstimatedDeductionsTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.EstimatedDeductionsTable">
               <MappingFragment StoreEntitySet="EstimatedDeductionsTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
-                <ScalarProperty Name="NoOfAllowances" ColumnName="NoOfAllowances" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="NoOfAllowances" ColumnName="NoOfAllowances" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ExemptionAllowanceTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.ExemptionAllowanceTable">
               <MappingFragment StoreEntitySet="ExemptionAllowanceTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
-                <ScalarProperty Name="NoOfAllowances" ColumnName="NoOfAllowances" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="NoOfAllowances" ColumnName="NoOfAllowances" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="FITTaxTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.FITTaxTable">
               <MappingFragment StoreEntitySet="FITTaxTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
-                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
-                <ScalarProperty Name="StartRange" ColumnName="StartRange" />
-                <ScalarProperty Name="EndRange" ColumnName="EndRange" />
-                <ScalarProperty Name="FlatRate" ColumnName="FlatRate" />
-                <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
-                <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
+                <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
+                <ScalarProperty Name="FlatRate" ColumnName="FlatRate" />
+                <ScalarProperty Name="EndRange" ColumnName="EndRange" />
+                <ScalarProperty Name="StartRange" ColumnName="StartRange" />
+                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="FITWithholdingAllowanceTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.FITWithholdingAllowanceTable">
               <MappingFragment StoreEntitySet="FITWithholdingAllowanceTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
-                <ScalarProperty Name="AmtForOneWithholdingAllow" ColumnName="AmtForOneWithholdingAllow" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="AmtForOneWithholdingAllow" ColumnName="AmtForOneWithholdingAllow" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SITLowIncomeTaxTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.SITLowIncomeTaxTable">
               <MappingFragment StoreEntitySet="SITLowIncomeTaxTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodId" ColumnName="PayrollPeriodId" />
-                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="AmtIfExmpGrtThan2" ColumnName="AmtIfExmpGrtThan2" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="AmtIfExmpGrtThan2" ColumnName="AmtIfExmpGrtThan2" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="PayrollPeriodId" ColumnName="PayrollPeriodId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SITTaxTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.SITTaxTable">
               <MappingFragment StoreEntitySet="SITTaxTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
-                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
-                <ScalarProperty Name="StartRange" ColumnName="StartRange" />
-                <ScalarProperty Name="EndRange" ColumnName="EndRange" />
-                <ScalarProperty Name="FlatRate" ColumnName="FlatRate" />
-                <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
-                <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
+                <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
+                <ScalarProperty Name="FlatRate" ColumnName="FlatRate" />
+                <ScalarProperty Name="EndRange" ColumnName="EndRange" />
+                <ScalarProperty Name="StartRange" ColumnName="StartRange" />
+                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="StandardDeductionTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.StandardDeductionTable">
               <MappingFragment StoreEntitySet="StandardDeductionTable">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
-                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="AmtIfExmpGrtThan1" ColumnName="AmtIfExmpGrtThan1" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TaxDeductionPrecedences">
-            <EntityTypeMapping TypeName="USTaxTablesModel.TaxDeductionPrecedence">
-              <MappingFragment StoreEntitySet="TaxDeductionPrecedence">
-                <ScalarProperty Name="DeductionTypeId" ColumnName="DeductionTypeId" />
-                <ScalarProperty Name="TaxCode" ColumnName="TaxCode" />
+                <ScalarProperty Name="AmtIfExmpGrtThan1" ColumnName="AmtIfExmpGrtThan1" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

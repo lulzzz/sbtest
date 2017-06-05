@@ -48,7 +48,7 @@
 							<th class="col-sm-2">Rate</th>
 							<th class="col-sm-2">Annual Max</th>
 							<th class="col-sm-2">Limit</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -83,7 +83,7 @@
 									{{ item.taxRateLimit }}
 								</span>
 							</td>
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="saveTR(item)" class="form-buttons form-inline" shown="selectedTR.tax.code===item.tax.code">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedTR(item)">
@@ -124,7 +124,7 @@
 							<th class="col-sm-1">Flat Rate</th>
 							<th class="col-sm-1">Additional Percentage</th>
 							<th class="col-sm-1">Excess Over Amount</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -180,7 +180,7 @@
 									{{ item.excessOverAmoutt }}
 								</span>
 							</td>
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="item = saveFIT(item)" class="form-buttons form-inline" shown="selectedFIT.payrollSchedule===item.payrollSchedule && selectedFIT.filingStatus===item.filingStatus && selectedFIT.rangeStart===item.rangeStart && selectedFIT.rangeEnd===item.rangeEnd">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedFIT(item)">
@@ -219,7 +219,7 @@
 							<th class="col-sm-1">Year</th>
 							<th class="col-sm-2">Pay Period</th>
 							<th class="col-sm-3">Amount for 1 Withholding Allowance</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -242,7 +242,7 @@
 							</td>
 
 
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="saveFITW(item)" class="form-buttons form-inline" shown="selectedFITW.payrollSchedule===item.payrollSchedule">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedFITW(item)">
@@ -283,7 +283,7 @@
 							<th class="col-sm-1">Flat Rate</th>
 							<th class="col-sm-1">Additional Percentage</th>
 							<th class="col-sm-1">Excess Over Amount</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -339,7 +339,7 @@
 									{{ item.excessOverAmoutt }}
 								</span>
 							</td>
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="item = saveSIT(item)" class="form-buttons form-inline" shown="selectedSIT.payrollSchedule===item.payrollSchedule && selectedSIT.filingStatus===item.filingStatus && selectedSIT.rangeStart===item.rangeStart && selectedSIT.rangeEnd===item.rangeEnd">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedSIT(item)">
@@ -380,7 +380,7 @@
 							<th class="col-sm-2">Filing Status</th>
 							<th class="col-sm-3">Amount</th>
 							<th class="col-sm-4">Amount If Exempt Grt 2</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -417,7 +417,7 @@
 							</td>
 
 
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="saveSITLow(item)" class="form-buttons form-inline" shown="selectedSITLow.payrollSchedule===item.payrollSchedule && selectedSITLow.filingStatus===item.filingStatus">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedSITLow(item)">
@@ -455,7 +455,7 @@
 							<th class="col-sm-2">Filing Status</th>
 							<th class="col-sm-3">Amount</th>
 							<th class="col-sm-4">Amount If Exempt Grt 1</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -492,7 +492,7 @@
 							</td>
 
 
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="saveStdDed(item)" class="form-buttons form-inline" shown="selectedStdDed.payrollSchedule===item.payrollSchedule && selectedStdDed.filingStatus===item.filingStatus">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedStdDed(item)">
@@ -529,7 +529,7 @@
 							<th class="col-sm-2">Pay Period</th>
 							<th class="col-sm-2">No of Allowances</th>
 							<th class="col-sm-2">Amount</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -552,7 +552,7 @@
 							</td>
 
 
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="saveEstDed(item)" class="form-buttons form-inline" shown="selectedEstDed.payrollSchedule===item.payrollSchedule && selectedEstDed.allowances===item.allowances">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedEstDed(item)">
@@ -589,7 +589,7 @@
 							<th class="col-sm-2">Pay Period</th>
 							<th class="col-sm-2">No of Allowances</th>
 							<th class="col-sm-2">Amount</th>
-							<th class="col-sm-1"></th>
+							<th class="col-sm-1" ng-show="data.selectedYear>data.currentYear"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -612,7 +612,7 @@
 							</td>
 
 
-							<td style="white-space: nowrap">
+							<td style="white-space: nowrap" ng-show="data.selectedYear>data.currentYear">
 								<!-- form -->
 								<form editable-form id="rowform" name="rowform" onbeforesave="saveExmpAllow(item)" class="form-buttons form-inline" shown="selectedExmpAllow.payrollSchedule===item.payrollSchedule && selectedExmpAllow.allowances===item.allowances">
 									<button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedExmpAllow(item)">

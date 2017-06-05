@@ -18,6 +18,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					var dataSvc = {
+						currentYear: new Date().getFullYear(),
 						taxTables: null,
 						originalTaxTables: null,
 						selectedYear: null,

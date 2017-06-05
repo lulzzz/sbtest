@@ -5,7 +5,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 	public interface ITaxationRepository
 	{
 		USTaxTables FillTaxTables();
-		void SaveTaxTables(int year, USTaxTables taxTables);
+		USTaxTables FillTaxTablesByContext();
+		void SaveTaxTables(int year, USTaxTables taxTables, USTaxTables tables);
 		void CreateTaxes(int year);
 	}
 }

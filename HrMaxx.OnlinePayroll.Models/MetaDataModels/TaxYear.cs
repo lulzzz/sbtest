@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HrMaxx.OnlinePayroll.Models.MetaDataModels
 {
-	public class TaxByYear
+	public class TaxByYear : IEquatable<TaxByYear>
 	{
 		public int Id { get; set; }
 		public TaxDefinition Tax { get; set; }
@@ -23,6 +23,17 @@ namespace HrMaxx.OnlinePayroll.Models.MetaDataModels
 		public bool IsState
 		{
 			get { return Tax.StateId.HasValue; }
+		}
+
+		public bool Equals(TaxByYear other)
+		{
+			if (this.Id == other.Id && this.TaxYear == other.TaxYear && this.Rate == other.Rate &&
+					this.AnnualMaxPerEmployee == other.AnnualMaxPerEmployee && this.TaxRateLimit == other.TaxRateLimit &&
+					this.IsFederal == other.IsFederal && this.IsState == other.IsState && this.Tax.Equals(other.Tax))
+			{
+				return true;
+			}
+			return false;
 		}
 	}
 }

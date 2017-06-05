@@ -383,7 +383,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.FileExtension));
 
 			CreateMap<Tax, TaxDefinition>();
-			CreateMap<TaxYearRate, TaxByYear>();
+			CreateMap<TaxYearRate, TaxByYear>()
+				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src=>false));
 			CreateMap<TaxByYear, TaxYearRate>()
 				.ForMember(dest => dest.TaxId, opt => opt.MapFrom(src=>src.Tax.Id))
 				.ForMember(dest => dest.Tax, opt => opt.Ignore());

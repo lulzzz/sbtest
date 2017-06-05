@@ -8,7 +8,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 {
-	public class ExemptionAllowanceTableRow
+	public class ExemptionAllowanceTableRow : IEquatable<ExemptionAllowanceTableRow>
 	{
 		public int Id { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
@@ -18,5 +18,10 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 		public bool HasChanged { get; set; }
 
 		public string PayrollScheduleText { get { return PayrollSchedule.GetHrMaxxName(); } }
+		public bool Equals(ExemptionAllowanceTableRow other)
+		{
+			return this.Id == other.Id && this.PayrollSchedule == other.PayrollSchedule && this.Allowances == other.Allowances &&
+						 this.Amount == other.Amount && this.Year == other.Year;
+		}
 	}
 }

@@ -77,12 +77,36 @@ namespace SiteInspectionStatus_Utility
 				case 11:
 					UpdateInvoiceDeliveryLists(container);
 					break;
+				case 12:
+					CompareTaxRates(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+
+		private static void CompareTaxRates(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _taxationService = scope.Resolve<ITaxationService>();
+				var taxTables = _taxationService.GetTaxTables();
+				var taxTablesContext = _taxationService.GetTaxTablesByContext();
+				var differentTaxYearRates = taxTables.Taxes.Where(t => taxTablesContext.Taxes.All(t1 => !t.Equals(t1))).ToList();
+				var differentFIT = taxTables.FITTaxTable.Where(t => taxTablesContext.FITTaxTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentSIT = taxTables.CASITTaxTable.Where(t => taxTablesContext.CASITTaxTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentSITLow = taxTables.CASITLowIncomeTaxTable.Where(t => taxTablesContext.CASITLowIncomeTaxTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentFITW = taxTables.FitWithholdingAllowanceTable.Where(t => taxTablesContext.FitWithholdingAllowanceTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentStdDed = taxTables.CAStandardDeductionTable.Where(t => taxTablesContext.CAStandardDeductionTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentEStdDed = taxTables.EstimatedDeductionTable.Where(t => taxTablesContext.EstimatedDeductionTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentExempAllow = taxTables.ExemptionAllowanceTable.Where(t => taxTablesContext.ExemptionAllowanceTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentDedPre = taxTables.TaxDeductionPrecendences.Where(t => taxTablesContext.TaxDeductionPrecendences.All(t1 => !t.Equals(t1))).ToList();
+
+			}
+		}
+
 		private static void UpdateInvoiceDeliveryLists(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())

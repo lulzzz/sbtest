@@ -38,6 +38,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				TaxTables = _taxationRepository.FillTaxTables();
 				//TaxTables.Taxes = _metaDataRepository.GetAllTaxes().ToList();
 				TaxTables.Years = TaxTables.Taxes.Select(t => t.TaxYear).Distinct().ToList();
+
 				Configurations = _metaDataRepository.GetConfigurations();
 			}
 			catch (Exception e)
@@ -140,13 +141,21 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
+		public USTaxTables GetTaxTablesByContext()
+		{
+			var tt = _taxationRepository.FillTaxTablesByContext();
+			tt.Taxes = _metaDataRepository.GetAllTaxes().ToList();
+			tt.Years = tt.Taxes.Select(t => t.TaxYear).Distinct().ToList();
+			return tt;
+		}
+
 		public USTaxTables SaveTaxTables(int year, USTaxTables taxTables)
 		{
 			try
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					_taxationRepository.SaveTaxTables(year, taxTables);
+					_taxationRepository.SaveTaxTables(year, taxTables, TaxTables);
 					txn.Complete();
 				}
 				FillTaxTables();

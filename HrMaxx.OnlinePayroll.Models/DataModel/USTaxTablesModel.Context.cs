@@ -25,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<TaxDeductionPrecedence> TaxDeductionPrecedences { get; set; }
         public virtual DbSet<EstimatedDeductionsTable> EstimatedDeductionsTables { get; set; }
         public virtual DbSet<ExemptionAllowanceTable> ExemptionAllowanceTables { get; set; }
         public virtual DbSet<FITTaxTable> FITTaxTables { get; set; }
@@ -32,6 +33,5 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<SITLowIncomeTaxTable> SITLowIncomeTaxTables { get; set; }
         public virtual DbSet<SITTaxTable> SITTaxTables { get; set; }
         public virtual DbSet<StandardDeductionTable> StandardDeductionTables { get; set; }
-        public virtual DbSet<TaxDeductionPrecedence> TaxDeductionPrecedences { get; set; }
     }
 }

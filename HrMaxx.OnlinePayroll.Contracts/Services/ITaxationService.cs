@@ -17,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ApplicationConfig SaveApplicationConfiguration(ApplicationConfig configs);
 		int PullReportConstant(string form940, int quarterly);
 		USTaxTables GetTaxTables();
+		USTaxTables GetTaxTablesByContext();
 		USTaxTables SaveTaxTables(int year, USTaxTables taxTables);
 		USTaxTables CreateTaxes(int year);
 	}

@@ -709,3 +709,21 @@ BEGIN
 	DateDiff(day, CreationDate, getdate() )>0
 END
 GO
+
+Alter table FITTaxTable Alter column StartRange decimal(18,2);
+Alter table FITTaxTable Alter column EndRange decimal(18,2);
+Alter table FITTaxTable Alter column FlatRate decimal(18,2);
+Alter table FITTaxTable Alter column AdditionalPercentage decimal(18,2);
+Alter table FITTaxTable Alter column ExcessOvrAmt decimal(18,2);
+Alter table FITWithholdingAllowanceTable aLter column AmtForOneWithholdingAllow decimal(18,2);
+Alter table SITTaxTable Alter column StartRange decimal(18,2);
+Alter table SITTaxTable Alter column EndRange decimal(18,2);
+Alter table SITTaxTable Alter column FlatRate decimal(18,2);
+Alter table SITTaxTable Alter column AdditionalPercentage decimal(18,2);
+Alter table SITTaxTable Alter column ExcessOvrAmt decimal(18,2);
+Alter table SITLowIncomeTaxTable Alter column Amount decimal(18,2);
+Alter table SITLowIncomeTaxTable Alter column AmtIfExmpGrtThan2 decimal(18,2);
+Alter table StandardDeductionTable Alter column Amount decimal(18,2);
+Alter table StandardDeductionTable Alter column AmtIfExmpGrtThan1 decimal(18,2);
+Alter table EstimatedDeductionsTable Alter column Amount decimal(18,2);
+Alter table ExemptionAllowanceTable Alter column Amount decimal(18,2);

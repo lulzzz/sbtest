@@ -8,7 +8,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 {
-	public class FITTaxTableRow
+	public class FITTaxTableRow : IEquatable<FITTaxTableRow>
 	{
 		public int Id { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
@@ -23,5 +23,15 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 
 		public string PayrollScheduleText { get { return PayrollSchedule.GetHrMaxxName(); } }
 		public string FilingStatusText { get { return FilingStatus.GetDbName(); } }
+
+		public bool Equals(FITTaxTableRow other)
+		{
+			if (this.Id == other.Id && this.PayrollSchedule == other.PayrollSchedule && this.FilingStatus == other.FilingStatus &&
+			    this.RangeEnd == other.RangeEnd && this.RangeStart == other.RangeStart && this.FlatRate == other.FlatRate &&
+					this.ExcessOverAmoutt == other.ExcessOverAmoutt && this.AdditionalPercentage == other.AdditionalPercentage && this.Year == other.Year)
+				return true;
+			return false;
+
+		}
 	}
 }

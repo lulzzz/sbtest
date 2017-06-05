@@ -79,7 +79,31 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			
 		}
 
-		public void SaveTaxTables(int year, USTaxTables taxTables)
+		public USTaxTables FillTaxTablesByContext()
+		{
+			var fit = _dbContext.FITTaxTables;
+			var fitwithholding = _dbContext.FITWithholdingAllowanceTables;
+			var stddeds = _dbContext.StandardDeductionTables;
+			var sit = _dbContext.SITTaxTables;
+			var sitlow = _dbContext.SITLowIncomeTaxTables;
+			var estded = _dbContext.EstimatedDeductionsTables;
+			var exempallow = _dbContext.ExemptionAllowanceTables;
+			var dedpre = _dbContext.TaxDeductionPrecedences;
+
+			return new USTaxTables
+			{
+				FITTaxTable = _mapper.Map<List<FITTaxTable>, List<FITTaxTableRow>>(fit.ToList()),
+				FitWithholdingAllowanceTable = _mapper.Map<List<FITWithholdingAllowanceTable>, List<FITWithholdingAllowanceTableRow>>(fitwithholding.ToList()),
+				CASITTaxTable = _mapper.Map<List<SITTaxTable>, List<CASITTaxTableRow>>(sit.ToList()),
+				CASITLowIncomeTaxTable = _mapper.Map<List<SITLowIncomeTaxTable>, List<CASITLowIncomeTaxTableRow>>(sitlow.ToList()),
+				CAStandardDeductionTable = _mapper.Map<List<StandardDeductionTable>, List<CAStandardDeductionTableRow>>(stddeds.ToList()),
+				EstimatedDeductionTable = _mapper.Map<List<EstimatedDeductionsTable>, List<EstimatedDeductionTableRow>>(estded.ToList()),
+				ExemptionAllowanceTable = _mapper.Map<List<ExemptionAllowanceTable>, List<ExemptionAllowanceTableRow>>(exempallow.ToList()),
+				TaxDeductionPrecendences = _mapper.Map<List<Models.DataModel.TaxDeductionPrecedence>, List<Models.USTaxModels.TaxDeductionPrecendence>>(dedpre.ToList())
+			};
+		}
+
+		public void SaveTaxTables(int year, USTaxTables taxTables, USTaxTables original)
 		{
 			const string insertTaxYearRate = @"update TaxYearRate set Rate=@Rate, AnnualMaxPerEmployee=@AnnualMaxPerEmployee, TaxRateLimit= @TaxRateLimit where Id=@Id;";
 			const string insertFit = @"if exists(select 'x' from FITTaxTable Where Id=@Id) update FITTaxTable set StartRange=@StartRange, EndRange=@EndRange, FlatRate=@FlatRate, AdditionalPercentage=@AdditionalPercentage, ExcessOvrAmt=@ExcessOvrAmt where Id=@Id; else insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) values(@PayrollPeriodId, @FilingStatus, @StartRange, @EndRange, @FlatRate, @AdditionalPercentage, @ExcessOvrAmt, @Year);";
@@ -89,6 +113,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			const string insertStdDed = @"update StandardDeductionTable set Amount=@Amount, AmtIfExmpGrtThan1=@AmtIfExmpGrtThan1 where Id=@Id;";
 			const string insertEstDed = @"update EstimatedDeductionsTable set Amount=@Amount where Id=@Id";
 			const string insertExmpAllow = @"update ExemptionAllowanceTable set Amount=@Amount where Id=@Id;";
+
+			const string deleteFIT = @"delete from FITTaxTable where Id=@Id;";
+			const string deleteSIT = @"delete from SITTaxTable where Id=@Id;";
 
 
 			var taxyearrate = _mapper.Map<List<TaxByYear>, List<TaxYearRate>>(taxTables.Taxes.Where(t=>t.TaxYear==year && t.HasChanged).ToList());
@@ -106,10 +133,21 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 					conn.Execute(insertTaxYearRate, taxyearrate);
 				if(fit.Any())
 					conn.Execute(insertFit, fit);
+				if (taxTables.FITTaxTable.Count < original.FITTaxTable.Count)
+				{
+					var missing = original.FITTaxTable.Where(t => taxTables.FITTaxTable.All(t1 => t.Id != t1.Id)).ToList();
+					conn.Execute(deleteFIT, missing);
+				}
 				if (fitWithholding.Any())
 					conn.Execute(insertFitWithholding, fitWithholding);
 				if (sit.Any())
 					conn.Execute(insertSit, sit);
+
+				if (taxTables.CASITTaxTable.Count < original.FITTaxTable.Count)
+				{
+					var missing = original.CASITTaxTable.Where(t => taxTables.CASITTaxTable.All(t1 => t.Id != t1.Id)).ToList();
+					conn.Execute(deleteSIT, missing);
+				}
 				if (sitLow.Any())
 					conn.Execute(insertSitLow, sitLow);
 				if (stddeds.Any())

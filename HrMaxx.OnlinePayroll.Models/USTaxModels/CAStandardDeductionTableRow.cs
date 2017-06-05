@@ -8,7 +8,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 {
-	public class CAStandardDeductionTableRow
+	public class CAStandardDeductionTableRow : IEquatable<CAStandardDeductionTableRow>
 	{
 		public int Id { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
@@ -20,5 +20,12 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 
 		public string PayrollScheduleText { get { return PayrollSchedule.GetHrMaxxName(); } }
 		public string FilingStatusText { get { return FilingStatus.GetDbName(); } }
+
+		public bool Equals(CAStandardDeductionTableRow other)
+		{
+			return this.Id == other.Id && this.PayrollSchedule == other.PayrollSchedule &&
+						 this.FilingStatus == other.FilingStatus && this.Amount == other.Amount &&
+						 this.AmountIfExemptGreaterThan1 == other.AmountIfExemptGreaterThan1 && this.Year == other.Year;
+		}
 	}
 }
