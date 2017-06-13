@@ -108,7 +108,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			try
 			{
 				var users = _userService.GetUsers(event1.SavedObject.Company.HostId, null).Select(u => u.UserId).ToList();
-				var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master }, null);
+				var adminUsers = _userService.GetUsersByRoleAndId(new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master, RoleTypeEnum.SuperUser }, null);
 				users.AddRange(adminUsers);
 				Bus.Publish<Notification>(new Notification
 				{
@@ -121,7 +121,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					Text = "A new invoice has been created for " + event1.SavedObject.Company.Name + " with Invoice date " + event1.SavedObject.InvoiceDate,
 					ReturnUrl = "#!/Admin/Invoices/?invoice=" + event1.SavedObject.Id,
 					EventType = event1.EventType,
-					Roles = new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master },
+					Roles = new List<RoleTypeEnum>() { RoleTypeEnum.CorpStaff, RoleTypeEnum.Master, RoleTypeEnum.SuperUser },
 					AffectedUsers = users.Distinct().ToList()
 				});
 			}

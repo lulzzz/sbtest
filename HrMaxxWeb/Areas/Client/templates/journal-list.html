@@ -152,7 +152,7 @@
 
 			</div>
 		</div>
-		<div class="col-sm-2" ng-if="selected.id" ng-show="mainData.userRole==='Master'">
+		<div class="col-sm-2" ng-if="selected.id" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
 			<memento-list main-data="mainData" source-type-id="selected.entityType1" memento-id="selected.mementoId" heading="'Check Versions'" data="data" />
 		</div>
 		

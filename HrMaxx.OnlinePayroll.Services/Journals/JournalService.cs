@@ -115,6 +115,27 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
+		public Journal UnVoidJournal(int id, TransactionType transactionType, string name, Guid userId)
+		{
+			try
+			{
+				var j = _journalRepository.UnVoidJournal(id, transactionType, name);
+				if (transactionType != TransactionType.PayCheck)
+				{
+					var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, name, string.Format("Check un-voided"), userId);
+					_mementoDataService.AddMementoData(memento);
+				}
+
+				return j;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Journal with id=" + id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public JournalList GetJournalListByCompanyAccount(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate)
 		{
 			try
@@ -527,6 +548,19 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			catch (Exception e)
 			{
 				
+				throw;
+			}
+		}
+
+		public void DeleteExtract(int extractId)
+		{
+			try
+			{
+				_journalRepository.DeleteJournals(extractId);
+			}
+			catch (Exception e)
+			{
+
 				throw;
 			}
 		}

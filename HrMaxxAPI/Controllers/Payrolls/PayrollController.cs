@@ -455,6 +455,15 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.UnVoidPayCheck)]
+		[DeflateCompression]
+		public PayrollResource UnVoidPayCheck(Guid payrollId, int payCheckId)
+		{
+			var voided = MakeServiceCall(() => _payrollService.UnVoidPayCheck(payrollId, payCheckId, CurrentUser.FullName, CurrentUser.UserId), string.Format("void paycheck in payroll={0} with id={1}", payrollId, payCheckId));
+			return Mapper.Map<Payroll, PayrollResource>(voided);
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.MovePayrolls)]
 		[DeflateCompression]
 		public HttpStatusCode MovePayrolls(Guid source, Guid target)

@@ -25,7 +25,7 @@
 					<tr ng-repeat="row in $data" class="mouse-over-pointer" ng-click="setCompany(row)" ng-class="{'success':selectedCompany.id===row.id}">
 						<td ng-repeat="col in $columns" class="text-center" ng-class="{'hidden-print':col.field==='controls'}">
 							{{ col.field!=='controls' ? col.isdate? (row[col.field] | date:'MM/dd/yyyy') : col.ismoney ? (row[col.field] | currency:'$') : row[col.field] : ''}}
-							<button type="button" class="btn btn-sm btn-info" ng-click="copycompany($event, row)" ng-show="col.field==='controls' && mainData.userRole==='Master'"><i class="fa fa-copy"></i></button>
+							<button type="button" class="btn btn-sm btn-info" ng-click="copycompany($event, row)" ng-show="col.field==='controls' && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')"><i class="fa fa-copy"></i></button>
 						</td>
 						
 					</tr>

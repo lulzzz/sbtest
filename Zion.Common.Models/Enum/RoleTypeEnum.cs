@@ -21,5 +21,7 @@ namespace HrMaxx.Common.Models.Enum
 		Employee=5,
 		[HrMaxxSecurity(DbId = 6, HrMaxxId = "D444F503-3354-40DF-8021-F4C9E99074B6", DbName = "HostStaff")]
 		HostStaff = 6,
+		[HrMaxxSecurity(DbId = 7, HrMaxxId = "D444F503-3354-40DF-8021-F4C9E99074B6", DbName = "SuperUser")]
+		SuperUser = 7,
 	}
 }

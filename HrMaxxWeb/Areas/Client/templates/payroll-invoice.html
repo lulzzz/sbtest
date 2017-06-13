@@ -244,7 +244,7 @@
 							<td class="text-left">{{ee.amount | currency:'$'}}</td>
 						</tr>
 						<tr ng-show="invoice.expandedEE" class="hidden-print" ng-repeat="dd in invoice.deductions | orderBy:'name'">
-							<td> - {{dd.name}}</td>
+							<td> - {{dd.name}}<span ng-show="dd.deduction.type.id===3">({{dd.employeeDeduction.accountNo}})</span></td>
 							<td></td>
 							<td>{{dd.method===1?'':'$'}}{{dd.rate | currency:''}}{{dd.method===1?'%':''}}</td>
 							<td class="text-left">{{dd.amount | currency:'$'}}</td>
@@ -357,7 +357,7 @@
 							</td>
 							
 						</tr>
-						<tr class="warning hidden-print" ng-show="mainData.userRole==='Master'">
+						<tr class="warning hidden-print" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
 							<td colspan="2" class="text-left"><h5><b><em><u>Commission</u></em></b></h5></td>
 							<td>
 								<select ng-model="invoice.salesRep" ng-disabled="invoice.commissionClaimed" name="user" class="form-control" ng-options="u.userId as (u.firstName + ' ' + u.lastName) for u in mainData.users">
@@ -407,7 +407,7 @@
 			<div class="col-sm-12 m-l-20" ng-if="invoice.id">
 				<comment-list source-type-id="2" source-id="invoice.companyId" list="invoice.comments" heading="'Internal Notes'" />
 			</div>
-			<div class="col-sm-12 m-l-20" id="versions" ng-if="invoice.id" ng-show="mainData.userRole==='Master'">
+			<div class="col-sm-12 m-l-20" id="versions" ng-if="invoice.id" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
 				<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="invoice.id" heading="'Invoice Versions'" />
 			</div>
 		</div>

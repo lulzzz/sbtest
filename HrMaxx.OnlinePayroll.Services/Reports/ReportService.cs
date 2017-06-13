@@ -396,6 +396,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return _readerService.GetCommissionsExtract(id);
 		}
 
+		public void DeleteExtract(int extractId)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_journalService.DeleteExtract(extractId);
+					txn.Complete();
+					
+				}
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" delete extract id {0}", extractId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Extract GetPositivePayReport(ReportRequest request)
 		{
 			var host = _hostService.GetHost(request.HostId);

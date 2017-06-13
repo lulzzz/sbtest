@@ -722,6 +722,67 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public Models.Payroll UnVoidPayCheck(Guid payrollId, int payCheckId, string name, string user)
+		{
+			try
+			{
+				var payroll = _readerService.GetPayroll(payrollId);
+				var paycheck = payroll.PayChecks.First(pc => pc.Id == payCheckId);
+				var journal = _journalService.GetPayCheckJournal(payCheckId, paycheck.PEOASOCoCheck);
+				var companyPayChecks = _readerService.GetPayChecks(companyId: paycheck.Employee.CompanyId, startDate: paycheck.PayDay, year: paycheck.PayDay.Year, isvoid: 0);
+				var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id != paycheck.Id).ToList();
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+
+					paycheck.Status = PaycheckStatus.Saved;
+					paycheck.IsVoid = false;
+					var savedPaycheck = _payrollRepository.UnVoidPayCheck(paycheck, name);
+
+					journal.IsVoid = true;
+					var savedJournal = _journalService.UnVoidJournal(journal.Id, TransactionType.PayCheck, name, new Guid(user));
+					if (paycheck.PEOASOCoCheck)
+					{
+						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
+						if (journal1 != null)
+						{
+							journal1.IsVoid = true;
+							_journalService.UnVoidJournal(journal1.Id, TransactionType.PayCheck, name, new Guid(user));
+						}
+
+					}
+
+					foreach (var employeeFutureCheck in employeeFutureChecks)
+					{
+						employeeFutureCheck.AddToYTD(paycheck);
+						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+					}
+
+
+
+					txn.Complete();
+
+					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
+					{
+						SavedObject = savedPaycheck,
+						HostId = payroll.Company.HostId,
+						UserId = new Guid(user),
+						TimeStamp = DateTime.Now,
+						EventType = NotificationTypeEnum.Updated,
+						AffectedChecks = employeeFutureChecks,
+						UserName = name
+					});
+				}
+				return _readerService.GetPayroll(payrollId);
+
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public Models.Payroll VoidPayroll(Models.Payroll payroll1, string userName, string userId)
 		{

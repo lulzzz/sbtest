@@ -3,25 +3,25 @@
 	<div class="col-sm-12">
 		<div class="col-sm-1">
 			<label>Pay Period</label>
-			<button class="btn btn-sm btn-success" ng-show="mainData.userRole==='Master' && item.status>2 && item.status!==6" ng-click="updatePayrollDates()"><i class="fa fa-save">update pay period</i></button>
+			<button class="btn btn-sm btn-success" ng-show="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status>2 && item.status!==6" ng-click="updatePayrollDates()"><i class="fa fa-save">update pay period</i></button>
 		</div>
-		<div class="col-sm-2 form-group" ng-if="mainData.userRole!=='Master' || item.status===2 || item.status===6">
+		<div class="col-sm-2 form-group" ng-if="mainData.userRole==='SuperUser' || mainData.userRole!=='Master' || item.status===2 || item.status===6">
 			<label class="control-label">Start Date: </label>
 			<span>{{item.startDate | date: 'MM/dd/yyyy'}}</span>
-			
+
 		</div>
-		<div class="col-sm-2" ng-if="mainData.userRole!=='Master' || item.status===2 || item.status===6">
-			<label class="control-label" ng-show="mainData.userRole!=='Master' || item.status===2 || item.status===6" ">End Date: </label>
+		<div class="col-sm-2" ng-if="mainData.userRole==='SuperUser' || mainData.userRole!=='Master' || item.status===2 || item.status===6">
+			<label class="control-label" ng-show="mainData.userRole==='SuperUser' || mainData.userRole!=='Master' || item.status===2 || item.status===6" ">End Date: </label>
 			<span>{{item.endDate | date: 'MM/dd/yyyy'}}</span>
-			
+
 		</div>
-		<div class="col-sm-2 form-group" ng-if="mainData.userRole==='Master' && item.status>2 && item.status!==6">
+		<div class="col-sm-2 form-group" ng-if="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status>2 && item.status!==6">
 			<label class="control-label">Start Date <span class="text-danger">*</span></label>
-			<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false"  />
+			<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
 		</div>
-		<div class="col-sm-2" ng-if="mainData.userRole==='Master' && item.status>2 && item.status!==6">
-			<label class="control-label" >End Date <span class="text-danger">*</span></label>
-			<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="!item.startDate" ng-if="item.startDate"  />
+		<div class="col-sm-2" ng-if="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status>2 && item.status!==6">
+			<label class="control-label">End Date <span class="text-danger">*</span></label>
+			<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="!item.startDate" ng-if="item.startDate" />
 		</div>
 		<div class="col-sm-2" ng-class="{'show-red':!canConfirm()}">
 			<label class="control-label">Check Date: </label>
@@ -113,9 +113,9 @@
 				<td data-title=" 'Taxes' " class="col-sm-3 text-right" ng-if="showTaxes">
 					<div class="col-sm-12 text-center">
 						<strong>Employee:</strong>
-						<i class="fa fa-pencil pull-right" ng-if="mainData.userRole==='Master' && item.isHistory && (item.status===2 || item.status===6) && (!selectedTaxItem || selectedTaxItem.employee.id!==listitem.employee.id)" ng-click="setSelectedTaxItem(listitem)"></i>
-						<i class="fa fa-remove pull-right" ng-if="mainData.userRole==='Master' && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = cancelSelectedTaxItem(listitem)"></i>
-						<i class="fa fa-save pull-right" ng-if="mainData.userRole==='Master' && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = saveSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-pencil pull-right" ng-if="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.isHistory && (item.status===2 || item.status===6) && (!selectedTaxItem || selectedTaxItem.employee.id!==listitem.employee.id)" ng-click="setSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-remove pull-right" ng-if="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = cancelSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-save pull-right" ng-if="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = saveSelectedTaxItem(listitem)"></i>
 					</div>
 					<div class="col-sm-12" ng-repeat="tax in listitem.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'">
 						<div class="col-sm-4 text-left"><strong>{{tax.tax.code}}:</strong></div>
@@ -148,6 +148,7 @@
 					<div class="col-sm-10 text-right">
 						<button class="btn btn-sm btn-warning" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></button>
 						<button class="btn btn-sm btn-danger" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></button>
+						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></button>
 						<button class="btn btn-sm btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></button>
 						<button class="btn btn-sm btn-info" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
 					</div>

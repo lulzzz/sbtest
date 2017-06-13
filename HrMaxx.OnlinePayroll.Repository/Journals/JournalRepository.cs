@@ -113,6 +113,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(journal);
 		}
 
+		public Models.Journal UnVoidJournal(int id, TransactionType transactionType, string name)
+		{
+			var journal = _dbContext.Journals.FirstOrDefault(j => j.Id == id && j.TransactionType == (int)transactionType);
+			if (journal != null)
+			{
+				journal.IsVoid = false;
+				journal.LastModified = DateTime.Now;
+				journal.LastModifiedBy = name;
+				_dbContext.SaveChanges();
+			}
+			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(journal);
+		}
+
 		public List<Models.Journal> GetJournalList(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate)
 		{
 			var journals = _dbContext.Journals.Where(j => j.CompanyId == companyId && j.MainAccountId == accountId).AsQueryable();
@@ -209,6 +222,24 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				_dbContext.SaveChanges();
 			}
 			
+		}
+
+		public void DeleteJournals(int extractId)
+		{
+			var me1 = _dbContext.MasterExtracts.First(m => m.Id == extractId);
+			var journals = JsonConvert.DeserializeObject<List<int>>(me1.Journals);
+			const string deletejournals =
+				@"delete from Journal where Id=@Id";
+			const string deleteextract = @"delete from PayCheckExtract where MasterExtractId=@MasterExtractId;delete from MasterExtracts where Id=@MasterExtractId;";
+			const string deleteextractdetails =
+				"delete from PaxolArchive.dbo.MasterExtract where MasterExtractId=@MasterExtractId;";
+			
+			using (var conn = GetConnection())
+			{
+				journals.ForEach(j=>conn.Execute(deletejournals, new {Id=j}));
+				conn.Execute(deleteextract, new {MasterExtractId = extractId});
+				conn.Execute(deleteextractdetails, new { MasterExtractId = extractId });
+			}
 		}
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)

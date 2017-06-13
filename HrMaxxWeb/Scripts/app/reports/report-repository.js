@@ -74,6 +74,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			deleteExtract: function (extractId) {
+				var deferred = $q.defer();
+				reportServer.one('DeleteExtract/' + extractId).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getMasterExtract: function (report) {
 				var deferred = $q.defer();
 				reportServer.one('Extract/' + report).get().then(function (data) {

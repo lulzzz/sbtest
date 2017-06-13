@@ -17,5 +17,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		void SaveACHExtract(ACHExtract extract, string fullName);
 		List<ACHMasterExtract> GetACHExtractList();
 		MasterExtract SaveCommissionExtract(CommissionsExtract extract, string fullName);
+		
 	}
 }

@@ -100,7 +100,7 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 						UserId = savedHost.UserId,
 						Source = savedHost.UserName,
 						TimeStamp = DateTime.Now,
-						Roles = new List<RoleTypeEnum> { RoleTypeEnum.Master, RoleTypeEnum.CorpStaff },
+						Roles = new List<RoleTypeEnum> { RoleTypeEnum.Master, RoleTypeEnum.CorpStaff, RoleTypeEnum.SuperUser },
 						Text = string.Format("{0} by {1}", string.Format(notificationText, savedHost.FirmName), savedHost.UserName),
 						ReturnUrl = "#!/?host=" + savedHost.FirmName,
 						EventType = eventType

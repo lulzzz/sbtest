@@ -10,6 +10,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		Journal SaveJournal(Journal journal, bool isPEOCheck = false);
 		Journal GetPayCheckJournal(int payCheckId, bool peoasoCoCheck);
 		Journal VoidJournal(int id, TransactionType transactionType, string name);
+		Journal UnVoidJournal(int id, TransactionType transactionType, string name);
 		List<Journal> GetJournalList(Guid companyId, int accountId, DateTime? startDate, DateTime? endDate);
 		List<Journal> GetCompanyJournals(Guid? companyId, DateTime? startDate, DateTime? endDate);
 
@@ -19,5 +20,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		Models.Journal GetJournalById(int id);
 		List<Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate);
 		void FixMasterExtractPayCheckMapping(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
+		void DeleteJournals(int journals);
 	}
 }

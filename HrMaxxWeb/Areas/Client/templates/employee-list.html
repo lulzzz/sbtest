@@ -60,7 +60,7 @@
 				&nbsp;
 				<button class="btn btn-sm btn-primary pull-right"  ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template</button>
 				&nbsp;
-				<button class="btn btn-sm btn-success pull-right" ng-if="mainData.userRole==='Master'" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
+				<button class="btn btn-sm btn-success pull-right" ng-if="mainData.userRole==='SuperUser' || mainData.userRole==='Master'" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
 				&nbsp;
 			</div>
 

@@ -198,6 +198,14 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 
 		[HttpGet]
+		[Route(ReportRoutes.DeleteExtract)]
+		public void DeleteExtract(int extractId)
+		{
+			MakeServiceCall(() => _reportService.DeleteExtract(extractId), "delete extract id " + extractId);
+
+		}
+
+		[HttpGet]
 		[Route(ReportRoutes.Extract)]
 		[DeflateCompression]
 		public MasterExtract Extract(int id)

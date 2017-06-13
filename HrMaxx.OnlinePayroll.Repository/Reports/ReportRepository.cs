@@ -262,6 +262,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtract);
 		}
 
+		
+
 		public List<MasterExtract> GetExtractList(string report)
 		{
 			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();
@@ -282,7 +284,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Parameters.AddWithValue("@criteria", criteria.Replace("-", string.Empty));
-					if(!role.Equals(RoleTypeEnum.Master.GetDbName()))
+					if (!role.Equals(RoleTypeEnum.Master.GetDbName()) && !role.Equals(RoleTypeEnum.SuperUser.GetDbName()))
 						cmd.Parameters.AddWithValue("@role", role);
 					if(host!=Guid.Empty)
 						cmd.Parameters.AddWithValue("@host", host);

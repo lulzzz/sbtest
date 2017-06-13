@@ -260,6 +260,18 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							
 						});
 					}
+
+					$scope.unvoidcheck = function (listitem) {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to Un-Void? you will have adjust invoices and extracts yourself', 'info', function () {
+							payrollRepository.unvoidPayCheck($scope.item.id, listitem.id).then(function (data) {
+								$scope.$parent.$parent.updateListAndItem($scope.item.id);
+							}, function (error) {
+								addAlert('error voiding pay check', 'danger');
+							});
+							
+
+						});
+					}
 					$scope.selectedTaxItem = null;
 					$scope.setSelectedTaxItem = function(listitem) {
 						$scope.originalTaxItem = angular.copy(listitem);

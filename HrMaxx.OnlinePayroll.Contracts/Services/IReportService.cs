@@ -31,5 +31,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CommissionsExtract GetCommissionsReport(CommissionsReportRequest request);
 		MasterExtract PayCommissions(CommissionsExtract extract, string fullName);
 		CommissionsExtract GetCommissionsExtract(int id);
+		void DeleteExtract(int extractId);
 	}
 }

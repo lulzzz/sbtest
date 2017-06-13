@@ -191,7 +191,7 @@ namespace HrMaxx.Common.Services.Common
 		{
 			try
 			{
-				if (audienceScope.HasValue && audienceScope.Value == (int) RoleTypeEnum.Master)
+				if (audienceScope.HasValue && (audienceScope.Value == (int) RoleTypeEnum.Master || audienceScope.Value == (int) RoleTypeEnum.SuperUser))
 					audienceScope = null;
 				return _commonRepository.GetNewsListforUser(audienceScope, audienceId);
 			}
@@ -250,7 +250,8 @@ namespace HrMaxx.Common.Services.Common
 			try
 			{
 				if (!string.IsNullOrWhiteSpace(role) &&
-				    ((RoleTypeEnum.Master == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role)) ||
+						((RoleTypeEnum.SuperUser == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role)) ||
+							(RoleTypeEnum.Master == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role)) ||
 				     (RoleTypeEnum.CorpStaff == HrMaaxxSecurity.GetEnumFromDbName<RoleTypeEnum>(role))))
 					return _commonRepository.GetNewsListforUser(null, null).Where(n=>n.IsActive).ToList();
 				

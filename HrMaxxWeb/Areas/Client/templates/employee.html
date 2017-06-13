@@ -10,7 +10,7 @@
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right" id="companytabs">
 					<li ng-class="{'active':tab!==6}" ng-click="tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-					<li ng-class="{'active':tab===6}" ng-show=" selected.id && showControls && mainData.userRole==='Master'" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
+					<li ng-class="{'active':tab===6}" ng-show=" selected.id && showControls && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 				</ul>
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">

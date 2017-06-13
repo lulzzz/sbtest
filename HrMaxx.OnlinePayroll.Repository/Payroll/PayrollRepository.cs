@@ -96,6 +96,21 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			return _mapper.Map<PayrollPayCheck, PayCheck>(pc);
 		}
 
+		public PayCheck UnVoidPayCheck(PayCheck paycheck, string name)
+		{
+			var pc = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == paycheck.Id);
+			if (pc != null)
+			{
+				pc.IsVoid = paycheck.IsVoid;
+				pc.Status = (int)paycheck.Status;
+				pc.VoidedOn = DateTime.Now;
+				pc.LastModified = DateTime.Now;
+				pc.LastModifiedBy = name;
+				_dbContext.SaveChanges();
+			}
+			return _mapper.Map<PayrollPayCheck, PayCheck>(pc);
+		}
+
 		public void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed)
 		{
 			var dbcheck = _dbContext.PayrollPayChecks.First(p => p.Id == payCheckId);

@@ -223,6 +223,19 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							addAlert('Failed to download report ' + $scope.selected.extract.report.description + ': ' + erorr, 'danger');
 						});
 					};
+					$scope.deleteExtract = function (item, event) {
+						event.stopPropagation();
+						reportRepository.deleteExtract(item.id).then(function () {
+
+							$scope.list.splice($scope.list.indexOf(item));
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							addAlert('successfully deleted extract', 'success');
+						}, function (erorr) {
+							addAlert('Failed to delete extract', 'danger');
+						});
+					}
+
 					var init = function () {
 						var querystring = $location.search();
 						if (querystring.report) {

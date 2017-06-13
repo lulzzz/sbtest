@@ -7,6 +7,7 @@
 		public const string ProcessPayroll = "Payroll/Process";
 		public const string CommitPayroll = "Payroll/Commit";
 		public const string VoidPayCheck = "Payroll/VoidPayCheck/{payrollId:guid}/{payCheckId:int}";
+		public const string UnVoidPayCheck = "Payroll/UnVoidPayCheck/{payrollId:guid}/{payCheckId:int}";
 		public const string PayCheck = "Payroll/PayCheck/{checkId:int}";
 
 		public const string PrintPayCheck = "Payroll/PrintPayCheck/{payrollId:guid}/{checkId:int}";

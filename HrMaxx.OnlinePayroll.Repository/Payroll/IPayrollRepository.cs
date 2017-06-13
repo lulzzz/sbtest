@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SavePayCheck(PayCheck pc);
 		void UpdatePayCheckYTD(PayCheck employeeFutureCheck);
 		PayCheck VoidPayCheck(PayCheck paycheck, string name);
+		PayCheck UnVoidPayCheck(PayCheck paycheck, string name);
 		void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed);
 		//Invoices
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice);

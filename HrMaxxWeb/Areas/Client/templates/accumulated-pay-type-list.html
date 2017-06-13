@@ -34,7 +34,7 @@
 					<!-- editable comment (text with validation) -->
 					<div>
 						<label for="compmanaged" class="switch">
-							<input id="compmanaged" type="checkbox" ng-model="item.companyManaged" ng-disabled="mainData.userRole!=='Master'" /><i></i>
+							<input id="compmanaged" type="checkbox" ng-model="item.companyManaged" ng-disabled="mainData.userRole==='SuperUser' || mainData.userRole!=='Master'" /><i></i>
 						</label>
 					</div>
 					

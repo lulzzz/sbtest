@@ -83,6 +83,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			unvoidPayCheck: function (payrollId, payCheckId) {
+				var deferred = $q.defer();
+				payrollServer.one('UnVoidPayCheck').one(payrollId, payCheckId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getPayCheckById: function (checkId) {
 				var deferred = $q.defer();
 				payrollServer.one('PayCheck/' + checkId).get().then(function (data) {

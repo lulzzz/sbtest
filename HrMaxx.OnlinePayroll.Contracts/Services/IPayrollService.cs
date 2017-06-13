@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//PayCheck
 		Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string fullName);
+		Payroll UnVoidPayCheck(Guid payrollId, int payCheckId, string name, string fullName);
 		FileDto PrintPayCheck(int payCheck);
 		FileDto PrintPayCheck(PayCheck payCheck);
 		void MarkPayCheckPrinted(int payCheckId);

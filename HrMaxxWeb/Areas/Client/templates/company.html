@@ -13,7 +13,7 @@
 					<li ng-class="{'active':tab===3}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=3"><a data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
 					<li ng-class="{'active':tab===4}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=4"><a data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
 					<li ng-class="{'active':tab===5}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=5"><a data-toggle="tab"><i class="fa fa-file-archive-o"></i> <span class="hidden-xs">Documents</span></a></li>
-					<li ng-class="{'active':tab===6}" ng-show=" selectedCompany.id && !isPopup && mainData.userRole==='Master'" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
+					<li ng-class="{'active':tab===6}" ng-show=" selectedCompany.id && !isPopup && (mainData.userRole==='SuperUser' ||  mainData.userRole==='Master')" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 				</ul>
 				<h2 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
@@ -44,7 +44,7 @@
 											Taxation
 											<small>Taxation Address and Federal and State details</small>
 										</li>
-										<li ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff' || mainData.userRole==='Host' || mainData.userRole==='HostStaff'">
+										<li ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master' || mainData.userRole==='CorpStaff' || mainData.userRole==='Host' || mainData.userRole==='HostStaff'">
 											Contract
 											<small>Details for billing and invoice</small>
 										</li>
@@ -122,7 +122,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>Payroll Days in Past</label>
-														<input type="text" name="payrolldaysinpast" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" ng-model="selectedCompany.payrollDaysInPast" ng-disabled="mainData.userRole!=='Master'" />
+														<input type="text" name="payrolldaysinpast" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" ng-model="selectedCompany.payrollDaysInPast" ng-disabled="mainData.userRole==='SuperUser' || mainData.userRole!=='Master'" />
 													</div>
 													<div class="form-group">
 														<label>Payroll Schedule</label>
@@ -343,7 +343,7 @@
 										</fieldset>
 									</div>
 									<!-- end wizard step-3 -->
-									<div class="wizard-step-4" ng-show="mainData.userRole==='Master' || mainData.userRole==='CorpStaff' || mainData.userRole==='Host' || mainData.userRole==='HostStaff'">
+									<div class="wizard-step-4" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master' || mainData.userRole==='CorpStaff' || mainData.userRole==='Host' || mainData.userRole==='HostStaff'">
 										<fieldset>
 											<legend class="width-full">Contract <span class="show-red" ng-show="selectedCompany.contract.invoiceSetup.notSaved">Invoice configurations are not saved</span></legend>
 											<!-- begin row -->
@@ -585,7 +585,7 @@
 													</div>
 												</div>
 											</div>
-											
+
 											<div class="row" ng-if="selectedCompany.contract.billingOption===3">
 												<div class="col-sm-4"></div>
 												<div class="col-sm-8">
@@ -599,7 +599,7 @@
 																	<th class="col-sm-3">Method</th>
 																	<th class="col-sm-2">Rate</th>
 																</tr>
-																<tr >
+																<tr>
 																	<td>
 																		<select ng-model="selectedCompany.contract.invoiceSetup.salesRep.user" name="user" class="form-control" data-parsley-group="wizard-step-4" required ng-options="(u.firstName + ' ' + u.lastName) for u in mainData.users | orderBy:'firstName' track by u.userId">
 																			<option value="">Select User</option>
@@ -614,7 +614,7 @@
 																		</select>
 																	</td>
 																	<td><input data-parsely-type="number" ng-model="selectedCompany.contract.invoiceSetup.salesRep.rate" class="form-control" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01"></td>
-																	
+
 																</tr>
 															</thead>
 														</table>
