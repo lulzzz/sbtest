@@ -18,20 +18,17 @@
 			</div>
 			<div class="row" ng-show="list.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
-					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="{'success':(selected && selected.extract.id===item.extract.id)}">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':(selected && selected.extract.id===item.extract.id), 'warning':!item.confirmationNo}">
 						<td data-title="' Date'" class="col-sm-1">
 							{{item.lastModified | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" 'Extract' " class="col-sm-3">
-							{{item.extractName}}
-						</td>
-						<td data-title=" 'Period Start' "  sortable=" 'extract.report.startDate' " class="col-sm-2">
+						<td data-title=" 'Period Start' "  sortable=" 'extract.report.startDate' " class="col-sm-1">
 							{{item.startDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" 'Period End' " sortable=" 'extract.report.endDate' " class="col-sm-2">
+						<td data-title=" 'Period End' " sortable=" 'extract.report.endDate' " class="col-sm-1">
 							{{item.endDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" 'Deposit Date' " sortable=" 'extract.report.depositDate' " class="col-sm-2">
+						<td data-title=" 'Deposit Date' " sortable=" 'extract.report.depositDate' " class="col-sm-1">
 							{{item.depositDate | date:'MM/dd/yyyy'}}
 						</td>
 						<td data-title=" 'Run By' " class="col-sm-1">
@@ -40,8 +37,22 @@
 						<td data-title=" '# of EFT Checks' " class="col-sm-1">
 							{{item.journals.length}}
 						</td>
-						<td ng-show="mainData.userRole==='SuperUser'">
-							<button class="btn btn-sm btn-danger" ng-click="deleteExtract(item, $event)"><i class="fa fa-lg fa-fire"></i></button>
+						<td data-title=" 'Confirmation' " class="col-sm-2">
+							<input class="form-control" ng-model="item.confirmationNo" ng-show="editing.id===item.id" />
+							<span ng-show="!editing || editing.id!==item.id">{{item.confirmationNo}}</span>
+						</td>
+						<td data-title=" 'Confirmation User' " class="col-sm-1">
+							{{item.confirmationNoUser}}
+						</td>
+						<td data-title=" 'Confirmation Date' " class="col-sm-2">
+							{{item.confirmationNoTS | date:'MM/dd/yyyy hh:mm:ss:a'}}
+						</td>
+						<td class="col-sm-1">
+							<button class="btn btn-sm btn-primary" ng-show="!editing" ng-click="set(item)"><i class="fa fa-eye"></i></button>
+							<button class="btn btn-sm btn-primary" ng-show="!editing && !item.confirmationNo" ng-click="editExtract(item, $event)"><i class="fa fa-pencil"></i></button>
+							<button class="btn btn-sm btn-success" ng-show="editing" ng-disabled="!item.confirmationNo" ng-click="confirmExtract(item, $event)"><i class="fa fa-save"></i></button>
+							<button class="btn btn-sm btn-default" ng-show="editing" ng-click="cancelExtract(item, $event);"><i class="fa fa-remove"></i></button>
+							<button class="btn btn-sm btn-danger" ng-show="mainData.userRole==='SuperUser' && !editing" ng-click="deleteExtract(item, $event)"><i class="fa fa-lg fa-fire"></i></button>
 						</td>
 						
 					</tr>

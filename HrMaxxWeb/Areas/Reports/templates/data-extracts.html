@@ -443,11 +443,7 @@
 
 				</div>
 			</div>
-			<div class="col-sm-5" >
-				<extract-view-list main-data="mainData" />
-			</div>
-
-
+			
 		</div>
 	</div>
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
@@ -573,6 +569,17 @@
 		</div>
 	</div>
 	
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===4?0:4)">
+			<h4 class="panel-title">Extract History<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===4, 'glyphicon-chevron-right': data.openedRack!==4}"></i></h4>
+		</div>
+		<div class="panel-body" ng-show="data.openedRack===4">
+			
+				<extract-view-list main-data="mainData" />
+			
+		</div>
+	</div>
+	
 	<script type="text/ng-template" id="popover/extractView.html">
 
 		<div class="modal-header hidden-print">
@@ -580,6 +587,7 @@
 			<i class="pull-right fa fa-lg fa-times-circle-o" ng-click="dismiss()"/>
 			</h3><br />
 			<h5><u><i><strong>Date Range: {{masterExtract.extract.report.startDate | date:'MM/dd/yyyy'}} - {{masterExtract.extract.report.endDate | date:'MM/dd/yyyy'}}</strong></i></u></h5>
+			<h5><u><i><strong>Confirmation No: {{masterExtract.confirmationNo}} </strong></i></u><span ng-show="masterExtract.confirmationNo">({{masterExtract.confirmationNoUser}} at {{masterExtract.confirmationNoTS | date:'MM/dd/yyyy hh:mm:ss a'}})</span></h5>
 			<div class="alert" ng-if="alerts.length>0" ng-class="'alert-' + alerts[0].status">
 				{{alerts[0].message}}
 			</div>

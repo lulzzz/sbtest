@@ -21,6 +21,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
     public string Journals { get; set; }
     public DateTime LastModified { get; set; }
     public string LastModifiedBy { get; set; }
+		public string ConfirmationNo { get; set; }
+		public string ConfirmationNoUser { get; set; }
+		public DateTime? ConfirmationNoTS { get; set; }
     
 	}
 }

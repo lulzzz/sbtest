@@ -96,6 +96,29 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 						$scope.selected = null;
 						
 					}
+					$scope.editExtract = function(item, event) {
+						event.stopPropagation();
+						$scope.editing = item;
+					}
+					$scope.confirmExtract = function(item, event) {
+						event.stopPropagation();
+						reportRepository.confirmExtract(item).then(function (data) {
+
+							$scope.list.splice($scope.list.indexOf(item));
+							$scope.list.push(data);
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+							addAlert('successfully confirmed extract', 'success');
+						}, function (erorr) {
+							addAlert('Failed to delete extract', 'danger');
+						});
+						$scope.editing = null;
+					}
+					$scope.cancelExtract = function (item, event) {
+						event.stopPropagation();
+						$scope.editing = null;
+					}
+
 
 					$scope.set = function (item) {
 						$scope.selected = null;

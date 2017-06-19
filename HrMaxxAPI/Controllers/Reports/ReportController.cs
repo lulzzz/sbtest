@@ -204,6 +204,15 @@ namespace HrMaxxAPI.Controllers.Reports
 			MakeServiceCall(() => _reportService.DeleteExtract(extractId), "delete extract id " + extractId);
 
 		}
+		[HttpPost]
+		[Route(ReportRoutes.ConfirmExtract)]
+		public MasterExtract ConfirmExtract(MasterExtract extract)
+		{
+			extract.ConfirmationNoUser = CurrentUser.FullName;
+			extract.ConfirmationNoTS = DateTime.Now;
+			return MakeServiceCall(() => _reportService.ConfirmExtract(extract), "confirm extract id " + extract.Id, true);
+
+		}
 
 		[HttpGet]
 		[Route(ReportRoutes.Extract)]

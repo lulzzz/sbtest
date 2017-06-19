@@ -87,6 +87,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		{
 			get { return Contract.InvoiceSetup==null ? string.Empty : Contract.InvoiceSetup.InvoiceType.GetDbName(); }
 		}
+
+		public string TaxDepositFrequency
+		{
+			get { return DepositSchedule.GetDbName(); }
+		}
 	}
 	public class ContractDetailsResource
 	{

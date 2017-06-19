@@ -31,6 +31,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Journals { get; set; }
         public System.DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
+        public string ConfirmationNo { get; set; }
+        public string ConfirmationNoUser { get; set; }
+        public Nullable<System.DateTime> ConfirmationNoTS { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ACHTransactionExtract> ACHTransactionExtracts { get; set; }

@@ -10,11 +10,13 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/company-tax-rates.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
-				function ($scope, $rootScope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository', 'NgTableParams',
+				function ($scope, $rootScope, $filter, companyRepository, ngTableParams) {
 					$scope.fullList = [];
 					$scope.list = [];
 					$scope.listWCRates = [];
+					$scope.companyScheduleList = [];
+					$scope.loadedScheudleList = false;
 					$scope.alerts = [];
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
@@ -261,6 +263,53 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						});
 						
 						
+					}
+					$scope.tableData = [];
+					$scope.tableParams = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						filter: {
+							name: '',       // initial filter
+						},
+						sorting: {
+							name: 'asc'     // initial sorting
+						}
+					}, {
+						total: $scope.companyScheduleList ? $scope.companyScheduleList.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableData(params);
+							return $scope.tableData;
+						}
+					});
+					//if ($scope.tableParams.settings().$scope == null) {
+					//	$scope.tableParams.settings().$scope = $scope;
+					//}
+					$scope.fillTableData = function (params) {
+						// use build-in angular filter
+						if ($scope.companyScheduleList && $scope.companyScheduleList.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.companyScheduleList, params.filter()) :
+																$scope.companyScheduleList;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParams = params;
+							$scope.tableData = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					$scope.loadCompaniesForSchedules = function() {
+						companyRepository.getCompanyListAll().then(function (result) {
+							$scope.companyScheduleList = result;
+							$scope.tableParams.reload();
+							$scope.fillTableData($scope.tableParams);
+						}, function (error) {
+							addAlert('error in getting company list', 'danger');
+						});
 					}
 					_init();
 

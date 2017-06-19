@@ -416,6 +416,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		public MasterExtract ConfirmExtract(MasterExtract extract)
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_reportRepository.ConfirmExtract(extract);
+					txn.Complete();
+					
+				}
+				return extract;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" confirm extract id {0}", extract.Id));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Extract GetPositivePayReport(ReportRequest request)
 		{
 			var host = _hostService.GetHost(request.HostId);

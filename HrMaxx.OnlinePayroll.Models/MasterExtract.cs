@@ -18,6 +18,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Extract Extract { get; set; }
 		public bool IsFederal { get; set; }
 		public List<int> Journals { get; set; }
+		public string ConfirmationNo { get; set; }
+		public string ConfirmationNoUser { get; set; }
+		public DateTime? ConfirmationNoTS { get; set; }
  
 	}
 	public class ACHMasterExtract

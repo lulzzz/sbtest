@@ -54,9 +54,13 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum DepositSchedule941
 	{
+		[HrMaxxSecurity(DbId = 0, DbName = "Next Day")]
 		NextDay=0,
+		[HrMaxxSecurity(DbId = 1, DbName = "Semi Weekly")]
 		SemiWeekly=1,
+		[HrMaxxSecurity(DbId = 2, DbName = "Monthly")]
 		Monthly=2,
+		[HrMaxxSecurity(DbId = 3, DbName = "Quarterly")]
 		Quarterly=3
 	}
 

@@ -262,7 +262,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtract);
 		}
 
-		
+		public void ConfirmExtract(MasterExtract extract)
+		{
+			var ext = _dbContext.MasterExtracts.First(e => e.Id == extract.Id);
+			ext.ConfirmationNo = extract.ConfirmationNo;
+			ext.ConfirmationNoTS = extract.ConfirmationNoTS;
+			ext.ConfirmationNoUser = extract.ConfirmationNoUser;
+			_dbContext.SaveChanges();
+		}
+
 
 		public List<MasterExtract> GetExtractList(string report)
 		{

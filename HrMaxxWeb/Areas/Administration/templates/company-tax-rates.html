@@ -174,4 +174,68 @@
 
 		</div>
 	</div>
+	<div class="panel panel-inverse">
+
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===3?0:3)">
+			<h4 class=" panel-title">
+				Companies by Deposit Schedule<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===3, 'glyphicon-chevron-right': data.openedRack!==3}"></i>
+			</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.openedRack===3">
+
+			<div ng-if="companyScheduleList.length===0">
+				{{ loadedScheudleList ? 'No companies found' : 'list not loaded yet'}} <button class="btn btn-sm btn-primary" ng-click="loadCompaniesForSchedules()" ng-show="!loadedScheudleList"><i class="fa fa-refresh"></i></button>
+			</div>
+			<div class="row" ng-show="companyScheduleList.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':selectedCompany.id===item.id}">
+						<td data-title="' #'"  class="col-sm-1">
+							{{$index + 1}}
+						</td>
+						<td data-title="' No'" filter="{ 'companyNumber': 'text' }" sortable=" 'companyNumber' " class="col-sm-1">
+							{{item.companyNumber}}
+						</td>
+						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3">
+							{{item.name}}
+						</td>
+						
+						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
+							{{item.lastPayrollDate | date:'MM/dd/yyyy'}}
+						</td>
+
+						<td data-title=" 'File Under Host' " sortable=" 'fileUnderHost' " class="col-sm-1">
+							{{item.fileUnderHost ? 'Yes' : 'No'}}
+						</td>
+						<td data-title=" 'Contract Type' " filter="{ 'contractType': 'text' }" sortable=" 'contractType' " class="col-sm-1">
+							{{item.contractType}}
+						</td>
+						<td data-title=" 'Deposit Frequency' " filter="{ 'taxDepositFrequency': 'text' }" sortable=" 'taxDepositFrequency'" class="col-sm-1">
+							{{item.taxDepositFrequency}}
+						</td>
+
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								<button type="button" ng-class="{'active':params.count() == params.total()}" ng-click="params.count(params.total())" class="btn btn-default btn-sm">All</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+		</div>
 </div>
