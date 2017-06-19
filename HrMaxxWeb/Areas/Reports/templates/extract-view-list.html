@@ -50,8 +50,8 @@
 						<td class="col-sm-1">
 							<button class="btn btn-sm btn-primary" ng-show="!editing" ng-click="set(item)" title="view"><i class="fa fa-eye"></i></button>
 							<button class="btn btn-sm btn-primary" ng-show="!editing && !item.confirmationNo" ng-click="editExtract(item, $event)" title="edit"><i class="fa fa-pencil"></i></button>
-							<button class="btn btn-sm btn-success" ng-show="editing" ng-disabled="!item.confirmationNo" title="save" ng-click="confirmExtract(item, $event)"><i class="fa fa-save"></i></button>
-							<button class="btn btn-sm btn-default" ng-show="editing" title="cancel" ng-click="cancelExtract(item, $event);"><i class="fa fa-remove"></i></button>
+							<button class="btn btn-sm btn-success" ng-show="editing && editing.id===item.id" ng-disabled="!item.confirmationNo" title="save" ng-click="confirmExtract(item, $event)"><i class="fa fa-save"></i></button>
+							<button class="btn btn-sm btn-default" ng-show="editing  && editing.id===item.id" title="cancel" ng-click="cancelExtract(item, $event);"><i class="fa fa-remove"></i></button>
 							<button class="btn btn-sm btn-danger" ng-show="mainData.userRole==='SuperUser' && !editing" title="delete" ng-click="deleteExtract(item, $event)"><i class="fa fa-lg fa-fire"></i></button>
 						</td>
 						
