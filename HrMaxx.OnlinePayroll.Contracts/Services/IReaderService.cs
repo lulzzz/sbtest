@@ -54,6 +54,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false);
 
+		ExtractResponse GetTaxEligibilityAccumulation(DepositSchedule941? depositSchedule);
+
 		//Companies
 		List<JournalPayee> GetJournalPayees(Guid companyId);
 		JournalPayee GetPayee(Guid company, Guid id, int payeeType);

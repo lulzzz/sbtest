@@ -8,6 +8,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
@@ -638,6 +639,28 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data {0}-{1}-{2}-{3}", report, startDate, endDate, depositSchedule941));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
+	  public ExtractResponse GetTaxEligibilityAccumulation(DepositSchedule941? depositSchedule)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "depositSchedule", Value = ((int)depositSchedule.Value).ToString() });
+				
+				
+				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
+					"GetTaxEligibilityAccumulation", paramList);
+				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
+				
+				return returnVal;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "tax eligibility accumulations");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

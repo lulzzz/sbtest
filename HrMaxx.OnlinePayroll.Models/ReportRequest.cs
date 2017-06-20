@@ -23,7 +23,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool AllowFiling { get; set; }
 		public bool AllowExclude { get; set; }
 		public bool IncludeVoids { get; set; }
-		
+		public decimal YearlyLimit { get; set; }
+		public decimal QuarterlyLimit { get; set; }
+
 		public ExtractType ExtractType
 		{
 			get

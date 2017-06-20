@@ -234,6 +234,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetInternalPositivePayReport(request);
 				else if (request.ReportName.Equals("GarnishmentReport"))
 					return GetGarnishmentReport(request);
+				else if (request.ReportName.Equals("SemiWeeklyEligibility"))
+					return GetSemiWeeklyEligibilityReport(request);
 				
 				else
 				{
@@ -259,6 +261,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		private Extract GetSemiWeeklyEligibilityReport(ReportRequest request)
+		{
+			var data = GetExtractResponseSemiWeeklyEligibility(request);
+
+			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
+			request.AllowExclude = true;
+
+			var argList = new List<KeyValuePair<string, string>>();
+
+			return GetExtractTransformed(request, data, argList, string.Empty, string.Empty, request.Description);
 		}
 
 		private Extract GetHostWCReport(ReportRequest request)
@@ -549,6 +563,49 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return data;
 		}
+
+		private ExtractResponse GetExtractResponseSemiWeeklyEligibility(ReportRequest request)
+		{
+			var data = _readerService.GetTaxEligibilityAccumulation(request.DepositSchedule);
+			
+			
+			
+			data.Hosts.ForEach(h =>
+			{
+				
+					h.PayCheckAccumulation = new Accumulation() {  PayCheckWages = new PayCheckWages(), PayCheckList = new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes = new List<PayCheckTax>(), Deductions = new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(), WorkerCompensations = new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>() };
+					h.EmployeeAccumulationList = new List<Accumulation>();
+					h.Companies.ForEach(c =>
+					{
+						h.PayCheckAccumulation.AddAccumulation(c.PayCheckAccumulation);
+
+						c.PayCheckAccumulation.PayCheckList = new List<PayCheckSummary>();
+
+						
+					});
+
+
+
+			});
+			data.Hosts = data.Hosts.Where(h => h.PayCheckAccumulation != null && h.PayCheckAccumulation.PayCheckWages != null
+				&& (
+						((h.PayCheckAccumulation.PayCheckWages.Quarter1FUTA + h.PayCheckAccumulation.PayCheckWages.Quarter2FUTA + h.PayCheckAccumulation.PayCheckWages.Quarter3FUTA + h.PayCheckAccumulation.PayCheckWages.Quarter4FUTA) >= request.YearlyLimit)
+						||
+						h.PayCheckAccumulation.PayCheckWages.Quarter1FUTA >= request.QuarterlyLimit
+						||
+						h.PayCheckAccumulation.PayCheckWages.Quarter2FUTA >= request.QuarterlyLimit
+						||
+						h.PayCheckAccumulation.PayCheckWages.Quarter3FUTA >= request.QuarterlyLimit
+						||
+						h.PayCheckAccumulation.PayCheckWages.Quarter4FUTA >= request.QuarterlyLimit
+						)
+						
+				).ToList();
+			
+
+			return data;
+		}
+
 		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false, bool includeTaxes = true, bool includeCompensaitons = false, bool includeDeductions=false, bool includeWorkerCompensations = false, bool includePayCodes= false)
 		{
 			//var data = _reportRepository.GetExtractReport(request);
@@ -1952,10 +2009,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				request.StartDate = new DateTime(request.Year, request.Month, 1).Date;
 				request.EndDate = new DateTime(request.Year, request.Month, DateTime.DaysInMonth(request.Year, request.Month)).Date;
 			}
-			else
+			else if (request.Year > 0)
 			{
 				request.StartDate = new DateTime(request.Year, 1, 1).Date;
 				request.EndDate = new DateTime(request.Year, 12, 31).Date;
+			}
+			else
+			{
+				request.StartDate = new DateTime(DateTime.Now.Year, 1, 1).Date;
+				request.EndDate = new DateTime(DateTime.Now.Year, 12, 31).Date;
 			}
 		}
 

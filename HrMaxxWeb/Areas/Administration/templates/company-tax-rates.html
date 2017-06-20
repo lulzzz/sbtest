@@ -184,8 +184,8 @@
 		</div>
 		<div class="panel-body" ng-show="data.openedRack===3">
 
-			<div ng-if="companyScheduleList.length===0">
-				{{ loadedScheudleList ? 'No companies found' : 'list not loaded yet'}} <button class="btn btn-sm btn-primary" ng-click="loadCompaniesForSchedules()" ng-show="!loadedScheudleList"><i class="fa fa-refresh"></i></button>
+			<div >
+				<span ng-if="companyScheduleList.length===0">{{ loadedScheudleList ? 'No companies found' : 'list not loaded yet'}}</span> <button class="btn btn-sm btn-primary" ng-click="loadCompaniesForSchedules()" ><i class="fa fa-refresh"></i></button>
 			</div>
 			<div class="row" ng-show="companyScheduleList.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
@@ -238,4 +238,88 @@
 				</script>
 			</div>
 		</div>
+	</div>
+	<div class="panel panel-inverse">
+
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===4?0:4)">
+			<h4 class=" panel-title">
+				Semi Weekly Tax Eligibility<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===4, 'glyphicon-chevron-right': data.openedRack!==4}"></i>
+			</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.openedRack===4">
+
+			<div class="row">
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label>941 Deposit Schedule</label>
+						<select ng-model="depositSchedule" name="deposit" class="form-control" convert-to-number>
+							<option value="0">Next Day</option>
+							<option value="1">Semi-Weekly</option>
+							<option value="2">Monthly</option>
+							<option value="3">Quarterly</option>
+
+						</select>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label>Yearly Limit</label>
+						<div>
+							<input type="number" ng-model="yearlyLimit" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label>Quarterly Limit</label>
+						<div>
+							<input type="number" ng-model="quarterlyLimit" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<button class="btn btn-sm btn-primary" ng-disabled="!depositSchedule || !yearlyLimit || !quarterlyLimit || yearlyLimit<=0 || quarterlyLimit<=0" ng-click="loadSemiWeeklyEligibilityReport()"><i class="fa fa-search"></i></button>
+					</div>
+
+				</div>
+			</div>
+			<div class="row" ng-show="semiWeeklyEligibilityReport.data.hosts.length>0">
+				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
+					<tr ng-repeat="item in tableDataSWE track by $index" class="mouse-over-pointer">
+						<td data-title="' #'" class="text-center col-sm-1">
+							{{$index + 1}}
+						</td>
+						<td data-title=" 'Filing Company' " class=" text-center col-sm-3">
+							{{item.hostCompany.name}}
+						</td>
+
+						<td data-title=" 'Q4' " class="text-center col-sm-1" ng-class="{'warning' : item.payCheckAccumulation.payCheckWages.quarter4FUTA >= quarterlyLimit}">
+							{{item.payCheckAccumulation.payCheckWages.quarter4FUTA | currency:'$'}}
+						</td>
+						<td data-title=" 'Q3' " class="text-center col-sm-1" ng-class="{'warning' : item.payCheckAccumulation.payCheckWages.quarter3FUTA >= quarterlyLimit}">
+							{{item.payCheckAccumulation.payCheckWages.quarter3FUTA | currency:'$'}}
+						</td>
+						<td data-title=" 'Q2' " class="text-center col-sm-1" ng-class="{'warning' : item.payCheckAccumulation.payCheckWages.quarter2FUTA >= quarterlyLimit}">
+							{{item.payCheckAccumulation.payCheckWages.quarter2FUTA | currency:'$'}}
+						</td>
+						<td data-title=" 'Q1' " class="text-center col-sm-1" ng-class="{'warning' : item.payCheckAccumulation.payCheckWages.quarter1FUTA >= quarterlyLimit}">
+							{{item.payCheckAccumulation.payCheckWages.quarter1FUTA | currency:'$'}}
+						</td>
+						<td data-title=" 'Total' " class="text-center col-sm-1" ng-class="{'danger' : (item.payCheckAccumulation.payCheckWages.quarter1FUTA + item.payCheckAccumulation.payCheckWages.quarter2FUTA + item.payCheckAccumulation.payCheckWages.quarter3FUTA +item.payCheckAccumulation.payCheckWages.quarter4FUTA ) >= yearlyLimit}">
+							{{ (item.payCheckAccumulation.payCheckWages.quarter1FUTA + item.payCheckAccumulation.payCheckWages.quarter2FUTA + item.payCheckAccumulation.payCheckWages.quarter3FUTA +item.payCheckAccumulation.payCheckWages.quarter4FUTA ) | currency:'$'}}
+						</td>
+						
+
+					</tr>
+
+				</table>
+				
+			</div>
+		</div>
+	</div>
 </div>
+

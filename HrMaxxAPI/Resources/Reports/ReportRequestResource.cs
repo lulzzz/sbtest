@@ -19,7 +19,8 @@ namespace HrMaxxAPI.Resources.Reports
 		public DateTime? EndDate { get; set; }
 		public DepositSchedule941? DepositSchedule { get; set; }
 		public DateTime? DepositDate { get; set; }
-		
+		public decimal YearlyLimit { get; set; }
+		public decimal QuarterlyLimit { get; set; }
 	}
 
 	public class CommissionsReportRequestResource

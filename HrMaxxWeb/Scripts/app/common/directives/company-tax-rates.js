@@ -10,13 +10,21 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/company-tax-rates.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$filter', 'companyRepository', 'NgTableParams',
-				function ($scope, $rootScope, $filter, companyRepository, ngTableParams) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository', 'reportRepository', 'NgTableParams',
+				function ($scope, $rootScope, $filter, companyRepository, reportRepository, ngTableParams) {
 					$scope.fullList = [];
 					$scope.list = [];
 					$scope.listWCRates = [];
 					$scope.companyScheduleList = [];
 					$scope.loadedScheudleList = false;
+
+					$scope.loadedSemiWeeklyEligibility = false;
+					$scope.semiWeeklyEligibilityReport = null;
+					$scope.depositSchedule = 2;
+					$scope.yearlyLimit = 50000;
+					$scope.quarterlyLimit = 12500;
+
+
 					$scope.alerts = [];
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
@@ -309,6 +317,48 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.fillTableData($scope.tableParams);
 						}, function (error) {
 							addAlert('error in getting company list', 'danger');
+						});
+					}
+					$scope.tableDataSWE = [];
+					$scope.tableParamsSWE = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						
+					}, {
+						total: $scope.semiWeeklyEligibilityReport && $scope.semiWeeklyEligibilityReport.data ? $scope.semiWeeklyEligibilityReport.data.hosts.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableDataSWE(params);
+							return $scope.tableDataSWE;
+						}
+					});
+					//if ($scope.tableParams.settings().$scope == null) {
+					//	$scope.tableParams.settings().$scope = $scope;
+					//}
+					$scope.fillTableDataSWE = function (params) {
+						// use build-in angular filter
+						if ($scope.semiWeeklyEligibilityReport && $scope.semiWeeklyEligibilityReport.data.hosts.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.semiWeeklyEligibilityReport.data.hosts, params.filter()) :
+																$scope.semiWeeklyEligibilityReport.data.hosts;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParamsSWE = params;
+							$scope.tableDataSWE = orderedData;
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					$scope.loadSemiWeeklyEligibilityReport = function () {
+						reportRepository.getExtract({ reportName: 'SemiWeeklyEligibility', depositSchedule: $scope.depositSchedule, yearlyLimit: $scope.yearlyLimit, quarterlyLimit: $scope.quarterlyLimit }).then(function (result) {
+							$scope.semiWeeklyEligibilityReport = result;
+							$scope.tableParamsSWE.reload();
+							$scope.fillTableDataSWE($scope.tableParamsSWE);
+						}, function (error) {
+							addAlert('error in getting semi weekly eligibility list', 'danger');
 						});
 					}
 					_init();
