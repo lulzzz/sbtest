@@ -426,7 +426,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					TaxTables.CASITTaxTable.First(
 						r =>
 							r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
-							(int)r.FilingStatus == (int)payCheck.Employee.FederalStatus
+							(int)r.FilingStatus == (int)payCheck.Employee.State.TaxStatus
 							&& r.RangeStart <= withholding
 							&& (r.RangeEnd >= withholding || r.RangeEnd == 0));
 

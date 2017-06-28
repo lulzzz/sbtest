@@ -1540,6 +1540,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-"+accumulationCounter, scl.Used.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-"+accumulationCounter, scl.AccumulatedValue.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-"+accumulationCounter, scl.YTDFiscal.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-" + accumulationCounter, scl.YTDUsed.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-" + accumulationCounter, scl.CarryOver.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-"+accumulationCounter, scl.Available.ToString()));
 					accumulationCounter++;
 				});
@@ -1932,6 +1934,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.Used.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-1", scl.AccumulatedValue.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-1", scl.YTDUsed.ToString()));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-1", scl.CarryOver.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
 			}
 			return pdf;
@@ -2108,6 +2112,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-1", scl.AccumulatedValue.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-1", scl.YTDUsed.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-1", scl.CarryOver.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
 				}
 
