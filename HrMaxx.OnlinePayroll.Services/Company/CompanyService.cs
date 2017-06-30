@@ -18,6 +18,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
+using HrMaxx.OnlinePayroll.Repository.Payroll;
 using Magnum;
 using Newtonsoft.Json;
 
@@ -28,14 +29,16 @@ namespace HrMaxx.OnlinePayroll.Services
 		private readonly ICompanyRepository _companyRepository;
 		private readonly IMementoDataService _mementoDataService;
 		private readonly IReaderService _readerService;
+		private readonly IPayrollRepository _payrollRepository;
 		
 		public IBus Bus { get; set; }
 		
-		public CompanyService(ICompanyRepository companyRepository, IMementoDataService mementoDataService, IReaderService readerService)
+		public CompanyService(ICompanyRepository companyRepository, IMementoDataService mementoDataService, IReaderService readerService, IPayrollRepository payrollRepository)
 		{
 			_companyRepository = companyRepository;
 			_mementoDataService = mementoDataService;
 			_readerService = readerService;
+			_payrollRepository = payrollRepository;
 		}
 
 		
@@ -391,7 +394,8 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var exists = _companyRepository.EmployeeExists(employee.Id);
+				var dbEmployee = _companyRepository.GetEmployeeById(employee.Id);
+				var exists = dbEmployee != null;
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					
@@ -408,6 +412,11 @@ namespace HrMaxx.OnlinePayroll.Services
 						});
 					}
 					var savedEmployee = _companyRepository.SaveEmployee(employee);
+					if (dbEmployee!=null && dbEmployee.SickLeaveHireDate < employee.SickLeaveHireDate)
+					{
+						_payrollRepository.UpdateEmployeeChecksForLeaveCycle(dbEmployee.Id, dbEmployee.SickLeaveHireDate,
+							employee.SickLeaveHireDate);
+					}
 					var memento = Memento<Employee>.Create(savedEmployee, EntityTypeEnum.Employee, savedEmployee.UserName);
 					_mementoDataService.AddMementoData(memento);
 					if (sendNotification)

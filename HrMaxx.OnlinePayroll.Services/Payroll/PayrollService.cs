@@ -328,21 +328,36 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					var carryOver = (decimal)0;
 
-					if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id))
+					if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate))
 					{
-						var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id);
+						var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate);
 						ytdAccumulation = accum.YTDFiscal;
 						ytdUsed = accum.YTDUsed;
 						carryOver = accum.CarryOver;
 						
 					}
-					else if (employeeAccumulation.PreviousAccumulations!=null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id))
+					else if ((employeeAccumulation.PreviousAccumulations != null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id)) || (employeeAccumulation.Accumulations != null &&
+								employeeAccumulation.Accumulations.Any(
+									ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate)))
 					{
-						carryOver = employeeAccumulation.PreviousAccumulations.First(ac => ac.PayTypeId == payType.PayType.Id).Available;
-						
+						if (employeeAccumulation.PreviousAccumulations != null)
+						{
+							var payCheckPayTypeAccumulation = employeeAccumulation.PreviousAccumulations.FirstOrDefault(ac => ac.PayTypeId == payType.PayType.Id);
+							if (payCheckPayTypeAccumulation != null)
+								carryOver = payCheckPayTypeAccumulation.Available;
+						}
+
+						if (employeeAccumulation.Accumulations != null &&
+						    employeeAccumulation.Accumulations.Any(
+							    ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate))
+						{
+							var accum = employeeAccumulation.Accumulations.Where(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate).OrderBy(a=>a.FiscalStart).Last();
+							carryOver += accum.Available;
+						}
 					}
 					else
 					{
+
 						carryOver = paycheck.Employee.CarryOver;
 					}
 

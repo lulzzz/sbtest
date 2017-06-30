@@ -570,5 +570,35 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				conn.Execute(updateinvoicedelivery, dbClaims);
 			}
 		}
+		public void UpdateEmployeeChecksForLeaveCycle(Guid employeeId, DateTime oldHireDate, DateTime newHireDate)
+		{
+			var previousAccumEndDate = newHireDate.AddDays(-1);
+			var pcs = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == employeeId);
+			var payChecks = _mapper.Map<List<PayrollPayCheck>, List<PayCheck>>(pcs.ToList());
+			const string updatecheck = @"update PayrollPayCheck set Accumulations=@Accumulations where Id=@Id;";
+			var updateList = new List<PayCheck>();
+			payChecks.ForEach(pc =>
+			{
+				if (
+					pc.Accumulations.Any(
+						a =>
+							a.FiscalStart.Date == oldHireDate.Date && a.FiscalStart.Date <= previousAccumEndDate.Date &&
+							a.FiscalEnd.Date >= previousAccumEndDate.Date))
+				{
+					pc.Accumulations.Where(a =>
+							a.FiscalStart.Date == oldHireDate.Date && a.FiscalStart.Date <= previousAccumEndDate.Date &&
+							a.FiscalEnd.Date >= previousAccumEndDate.Date).ToList().ForEach(a=>a.FiscalEnd=previousAccumEndDate.Date);
+					updateList.Add(pc);
+				}
+			});
+			var dbUpdateList = _mapper.Map<List<PayCheck>, List<PayrollPayCheck>>(updateList);
+
+			const string update = @"update pta set FiscalEnd=@HireDate from PayCheckPayTypeAccumulation pta, payrollpaycheck ppc where pta.PayCheckId=ppc.Id and ppc.EmployeeId=@EmployeeId and pta.FiscalStart= @OldHireDate and @HireDate between pta.FiscalStart and pta.FiscalEnd";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(updatecheck, dbUpdateList);
+				conn.Execute(update, new { EmployeeId = employeeId, HireDate = previousAccumEndDate.ToString("MM/dd/yyyy"), OldHireDate = oldHireDate.ToString("MM/dd/yyyy") });
+			}
+		}
 	}
 }

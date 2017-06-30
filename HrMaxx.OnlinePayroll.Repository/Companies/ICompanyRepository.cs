@@ -42,5 +42,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		void UpdateMinWage(decimal minWage, List<Employee> selectEmployees, List<Company> selectedCompanies);
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
 		void SaveWorkerCompensations(List<CompanyWorkerCompensation> rates);
+		Employee GetEmployeeById(Guid id);
+		
 	}
 }

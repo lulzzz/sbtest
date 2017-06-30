@@ -43,5 +43,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void MovePayrolls(List<Models.Payroll> payrolls, List<Journal> affectedJournals, List<PayrollInvoice> invoices, Guid guid, Guid source);
 		void DeleteAllPayrolls(Guid target);
 		void UpdateInvoiceDeliveryData(List<InvoiceDeliveryClaim> claims);
+		void UpdateEmployeeChecksForLeaveCycle(Guid employeeId, DateTime oldHireDate, DateTime newHireDate);
 	}
 }

@@ -677,5 +677,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				conn.Execute(update, rates);
 			}
 		}
+
+		public Employee GetEmployeeById(Guid id)
+		{
+			var emp = _dbContext.Employees.FirstOrDefault(e => e.Id == id);
+			return _mapper.Map<Models.DataModel.Employee, Models.Employee>(emp);
+		}
+
+		
 	}
 }

@@ -230,7 +230,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 							}
 						}
 						if ($scope.selected.sickLeaveHireDate !== $scope.original.sickLeaveHireDate) {
-							$scope.$parent.$parent.$parent.$parent.confirmDialog('Changing sick leave hire date may need to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
+							$scope.$parent.$parent.$parent.$parent.confirmDialog('Changing sick leave hire date would require you to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
 								'do you want to proceed?', 'danger', function () {
 									saveEmpployee();
 								}

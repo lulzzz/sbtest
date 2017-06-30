@@ -68,12 +68,12 @@ common.directive('paycheck', ['zionAPI', '$timeout', '$window', 'version',
 						if (!$scope.check && $scope.checkId) {
 							payrollRepository.getPayCheckById($scope.checkId).then(function(data) {
 								$scope.check = data;
-								$scope.showControls = $scope.mainData.userRole === 'Master' && $scope.check.status > 2;
+								$scope.showControls = ($scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'SuperUser') && $scope.check.status > 2;
 							}, function(erorr) {
 								$scope.$parent.$parent.addAlert('error getting paycheck by id', 'danger');
 							});
 						} else {
-							$scope.showControls = $scope.mainData.userRole === 'Master' && $scope.check.status > 2;
+							$scope.showControls = ($scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'SuperUser') && $scope.check.status > 2;
 						}
 					}
 					_init();
