@@ -241,7 +241,9 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						
 						
 					}
-					var saveEmpployee  = function() {
+					var saveEmpployee = function () {
+						$scope.selected.hireDate = moment($scope.selected.hireDate).format("MM/DD/YYYY");
+						$scope.selected.sickLeaveHireDate = moment($scope.selected.sickLeaveHireDate).format("MM/DD/YYYY");
 						companyRepository.saveEmployee($scope.selected).then(function (result) {
 							if (!$scope.isPopup)
 								$scope.$parent.$parent.save(result);
