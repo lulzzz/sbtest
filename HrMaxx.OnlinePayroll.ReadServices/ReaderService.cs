@@ -568,6 +568,49 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 		  }
 	  }
+		public ExtractResponse GetExtractResponseSpecial(ReportRequest request)
+		{
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "report", Value = request.ReportName });
+				paramList.Add(new FilterParam { Key = "startDate", Value = request.StartDate.ToString("MM/dd/yyyy") });
+				paramList.Add(new FilterParam { Key = "endDate", Value = request.EndDate.ToString("MM/dd/yyyy") });
+				if (request.DepositSchedule != null)
+				{
+					paramList.Add(new FilterParam { Key = "depositSchedule", Value = ((int)request.DepositSchedule).ToString() });
+				}
+				if (request.HostId != Guid.Empty)
+				{
+					paramList.Add(new FilterParam { Key = "host", Value = request.HostId.ToString() });
+
+				}
+				if (request.IncludeVoids)
+				{
+					paramList.Add(new FilterParam { Key = "includeVoids", Value = request.IncludeVoids.ToString() });
+				}
+				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
+					"GetExtractDataSpecial", paramList);
+				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
+				dbReport.Hosts.ForEach(c =>
+				{
+					var contact = new List<Contact>();
+					c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
+					if (selcontact != null)
+					{
+						returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id).Contact = selcontact;
+					}
+				});
+				return returnVal;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data {0}-{1}-{2}-{3}-{4}", request.ReportName, request.StartDate, request.EndDate, request.DepositDate, request.DepositSchedule));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 	  public ExtractResponse GetExtractAccumulation(string report, DateTime startDate, DateTime endDate, Guid? hostId = null,
 		  DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,

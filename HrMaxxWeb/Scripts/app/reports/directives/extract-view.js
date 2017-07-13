@@ -28,6 +28,10 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedHost = host;
 						$scope.selectedCompany = null;
 						$scope.selectedAgency = null;
+						$scope.selectedEmployee = null;
+						if ($scope.selectedHost.companies.length === 1) {
+							$scope.selectedCompany = $scope.selectedHost.companies[0];
+						}
 					}
 					$scope.setCompany = function(comp) {
 						$scope.selectedCompany = comp;
@@ -35,6 +39,11 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.showVoidedChecks = false;
 						$scope.showHistory = false;
 						$scope.selectedCompanyFilings = [];
+						if ($scope.selectedCompany.employeeAccumulations.length === 1) {
+							$scope.selectedEmployee = $scope.selectedCompany.employeeAccumulations[0];
+						} else {
+							$scope.selectedEmployee = null;
+						}
 						$.each($scope.history, function(ind, h) {
 							var host = $filter('filter')(h.extract.data.hosts, { host: { id: $scope.selectedHost.host.id } })[0];
 							if (host) {
@@ -52,6 +61,9 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 							}
 						});
 
+					}
+					$scope.setEmployee = function (ea) {
+						$scope.selectedEmployee = ea;
 					}
 					$scope.setAgency = function(agency) {
 						$scope.selectedAgency = agency;

@@ -24,6 +24,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Q2Amount { get; set; }
 		public decimal Q3Amount { get; set; }
 		public decimal Q4Amount { get; set; }
+		public ExtractAccumulationMode Mode { get; set; }
+
 		public List<PayrollWorkerCompensation> WorkerCompensations { get; set; }
 		public List<PayrollPayType> Compensations { get; set; }
 		public List<PayrollDeduction> Deductions { get; set; }
@@ -101,8 +103,9 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return WorkerCompensations != null ? Math.Round(WorkerCompensations.Sum(t => t.Amount), 2, MidpointRounding.AwayFromZero) : 0; }
 		}
 		public void Initialize(IEnumerable<PayCheck> checks, IEnumerable<PayCheck> voidedchecks, List<VendorCustomer> vendors , bool buildCounts,
-			bool buildDaily, bool buildGarnishment, int year, int quarter)
+			bool buildDaily, bool buildGarnishment, int year, int quarter, ExtractAccumulationMode mode=ExtractAccumulationMode.All)
 		{
+			Mode = mode;
 			var payChecks = checks as IList<PayCheck> ?? checks.ToList();
 			AddPayChecks(payChecks);
 			CreditPayChecks(voidedchecks);
@@ -110,6 +113,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			if(buildCounts) SetCounts(year, quarter, payChecks);
 			if(buildDaily) BuildDailyAccumulations(quarter, payChecks);
 			if(buildGarnishment) BuildGarnishmentAccumulations(vendors, payChecks);
+
 
 		}
 		public void AddPayChecks(IEnumerable<PayCheck> checks)
@@ -127,13 +131,20 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 				GrossWage += Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
 				NetWage += Math.Round(add.NetWage, 2, MidpointRounding.AwayFromZero);
+				if (Mode == ExtractAccumulationMode.All)
+				{
+					AddCompensations(add.Compensations);
+					AddDeductions(add.Deductions);
+					AddTaxes(add.Taxes);
+				}
 				
-				AddCompensations(add.Compensations);
-				AddDeductions(add.Deductions);
-				AddTaxes(add.Taxes);
 				//PayChecks.Add(add);
-				if(add.WorkerCompensation!=null)
-					AddWorkerCompensation(add.WorkerCompensation);
+				if (Mode == ExtractAccumulationMode.WC || Mode==ExtractAccumulationMode.All)
+				{
+					if (add.WorkerCompensation != null)
+						AddWorkerCompensation(add.WorkerCompensation);
+				}
+				
 			}
 		}
 		private void CreditPayChecks(IEnumerable<PayCheck> checks)
@@ -151,12 +162,17 @@ namespace HrMaxx.OnlinePayroll.Models
 				
 				GrossWage -= Math.Round(add.GrossWage, 2, MidpointRounding.AwayFromZero);
 				NetWage -= Math.Round(add.NetWage, 2, MidpointRounding.AwayFromZero);
-
-				CreditCompensations(add.Compensations);
-				CreditDeductions(add.Deductions);
-				CreditTaxes(add.Taxes);
+				if (Mode == ExtractAccumulationMode.All)
+				{
+					CreditCompensations(add.Compensations);
+					CreditDeductions(add.Deductions);
+					CreditTaxes(add.Taxes);
+				}
 				//CreditChecks.Add(add);
-				CreditWorkerCompensation(add.WorkerCompensation);
+				if (Mode == ExtractAccumulationMode.WC || Mode == ExtractAccumulationMode.All)
+				{
+					CreditWorkerCompensation(add.WorkerCompensation);
+				}
 			}
 		}
 		private void AddWorkerCompensation(PayrollWorkerCompensation wcomp)

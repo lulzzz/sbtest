@@ -226,6 +226,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return StateCADE9(request);
 				else if (request.ReportName.Equals("HostWCReport"))
 					return GetHostWCReport(request);
+				else if (request.ReportName.Equals("HostWCReportRedated"))
+					return GetHostWCReportRedated(request);
 				else if (request.ReportName.Equals("DailyDepositReport"))
 					return GetDailyDepositReport(request);
 				else if (request.ReportName.Equals("PositivePayReport"))
@@ -277,13 +279,24 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetHostWCReport(ReportRequest request)
 		{
-			var data = GetExtractResponseGarnishment(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
+			var data = GetExtractResponseHostWC(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
 
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
-			request.AllowFiling = false;
+			request.AllowFiling = true;
 
 			var argList = new List<KeyValuePair<string, string>>();
 			
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostWCReport.xslt", "xls", request.Description + ".xls");
+		}
+		private Extract GetHostWCReportRedated(ReportRequest request)
+		{
+			var data = GetExtractResponseHostWCRedated(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
+			request.ReportName = "HostWCReport";
+			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
+			request.AllowFiling = true;
+
+			var argList = new List<KeyValuePair<string, string>>();
+
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostWCReport.xslt", "xls", request.Description + ".xls");
 		}
 
@@ -488,78 +501,140 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var data = _readerService.GetExtractResponse(request);
 
-			if (request.ReportName.Contains("1099"))
+			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
 			{
-				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
-				{
-					throw new Exception(NoPayrollData);
-				}
-				else
-				{
-					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.Vendors.Any(v => v.Amount > 0))).ToList();
-				}
-
+				throw new Exception(NoPayrollData);
 			}
 			else
 			{
-				if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
-				{
-					throw new Exception(NoPayrollData);
-				}
-				else
-				{
-					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
-				}
+				data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
 			}
+			
 			var garnishmentAgencies = new List<VendorCustomer>();
 			if (buildGarnishments)
 				garnishmentAgencies = _metaDataRepository.GetGarnishmentAgencies();
 			data.Hosts.ForEach(h =>
 			{
-				if (!request.ReportName.Contains("1099"))
+				
+				h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
+				h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
+				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
+				var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
+
+				h.Accumulation.Initialize(payChecks, voidedPayChecks, garnishmentAgencies, buildCounts, buildDaily, buildGarnishments, request.Year, request.Quarter);
+
+				h.PayChecks.AddRange(payChecks);
+				h.CredChecks.AddRange(voidedPayChecks);
+
+				if (buildEmployeeAccumulations)
+					h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
+
+				h.Companies.ForEach(c =>
 				{
-					h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
-					h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
-					var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
-					var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
+					c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
+					c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter);
 
-					h.Accumulation.Initialize(payChecks, voidedPayChecks, garnishmentAgencies, buildCounts, buildDaily, buildGarnishments, request.Year, request.Quarter);
+					if (buildCompanyEmployeeAccumulation)
+						c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
+					c.PayChecks = new List<PayCheck>();
+					c.VoidedPayChecks = new List<PayCheck>();
+				});
 
-					h.PayChecks.AddRange(payChecks);
-					h.CredChecks.AddRange(voidedPayChecks);
-
-					if (buildEmployeeAccumulations)
-						h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
-
-					h.Companies.ForEach(c =>
-					{
-						c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
-						c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter);
-
-						if (buildCompanyEmployeeAccumulation)
-							c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
-						c.PayChecks = new List<PayCheck>();
-						c.VoidedPayChecks = new List<PayCheck>();
-					});
-
-				}
-				else
-				{
-					h.Companies = h.Companies.Where(c => c.Vendors.Any(v => v.Amount > 0)).ToList();
-					h.Companies.ForEach(c =>
-					{
-						c.VendorAccumulation = new VendorAccumulation();
-						c.VendorAccumulation.Add(c.Vendors);
-					});
-					h.VendorAccumulation = new VendorAccumulation();
-					h.VendorAccumulation.Add(h.Companies.SelectMany(c => c.Vendors).ToList());
-				}
-
+				
+				
 			});
 			if (buildGarnishments)
 			{
 				data.Hosts = data.Hosts.Where(h => h.Accumulation.GarnishmentAgencies.Any(ga => ga.Total > 0)).ToList();
 			}
+
+			return data;
+		}
+
+		private ExtractResponse GetExtractResponseHostWC(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily = false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
+		{
+			var data = _readerService.GetExtractResponse(request);
+
+			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			else
+			{
+				data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
+			}
+
+			
+			data.Hosts.ForEach(h =>
+			{
+
+				h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
+				h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
+				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
+				var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
+
+				
+				h.PayChecks.AddRange(payChecks);
+				h.CredChecks.AddRange(voidedPayChecks);
+
+				h.Companies.ForEach(c =>
+				{
+					c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
+					c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter, ExtractAccumulationMode.WC);
+
+					if (buildCompanyEmployeeAccumulation)
+						c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks, ExtractAccumulationMode.WC);
+					c.PayChecks = new List<PayCheck>();
+					c.VoidedPayChecks = new List<PayCheck>();
+				});
+
+
+
+			});
+			
+			return data;
+		}
+
+		private ExtractResponse GetExtractResponseHostWCRedated(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily = false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
+		{
+			var data = _readerService.GetExtractResponseSpecial(request);
+
+			if (data.Hosts.All(h => h.Companies.All(c => !c.PayChecks.Any() && !c.VoidedPayChecks.Any())))
+			{
+				throw new Exception(NoPayrollData);
+			}
+			else
+			{
+				data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayChecks.Any() || c.VoidedPayChecks.Any())).ToList();
+			}
+
+
+			data.Hosts.ForEach(h =>
+			{
+
+				h.Companies = h.Companies.Where(c => c.PayChecks.Any() || c.VoidedPayChecks.Any()).ToList();
+				h.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
+				var payChecks = h.Companies.SelectMany(c => c.PayChecks).ToList();
+				var voidedPayChecks = h.Companies.SelectMany(c => c.VoidedPayChecks).ToList();
+
+
+				h.PayChecks.AddRange(payChecks);
+				h.CredChecks.AddRange(voidedPayChecks);
+
+				h.Companies.ForEach(c =>
+				{
+					c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
+					c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter, ExtractAccumulationMode.WC);
+
+					if (buildCompanyEmployeeAccumulation)
+						c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks, ExtractAccumulationMode.WC);
+					c.PayChecks = new List<PayCheck>();
+					c.VoidedPayChecks = new List<PayCheck>();
+				});
+
+
+
+			});
 
 			return data;
 		}
@@ -1446,7 +1521,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return response;
 		}
 
-		private List<EmployeeAccumulation> getEmployeeAccumulations(List<PayCheck> paychecks)
+		private List<EmployeeAccumulation> getEmployeeAccumulations(List<PayCheck> paychecks, ExtractAccumulationMode mode=ExtractAccumulationMode.All)
 		{
 			var result = new List<EmployeeAccumulation>();
 			var empchecks = paychecks.GroupBy(p => p.Employee.Id).ToList();
@@ -1455,7 +1530,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				var pc = group.ToList();
 				var ea = new EmployeeAccumulation
 				{
-					Accumulation = new ExtractAccumulation()
+					Accumulation = new ExtractAccumulation() { Mode=mode}
 				};
 				ea.Accumulation.AddPayChecks(pc);
 				ea.Employee = pc.OrderByDescending(p=>p.LastModified).First().Employee;

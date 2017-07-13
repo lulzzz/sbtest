@@ -14,7 +14,7 @@
 		</div>
 		<div class="tab-content">
 			<div class="tab-pane fade in" ng-if="selectedHost" ng-class="{'active':selectedHost}">
-				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName!=='Report1099'  && masterExtract.extract.report.reportName!=='GarnishmentReport'">
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName!=='Report1099'  && masterExtract.extract.report.reportName!=='GarnishmentReport' && masterExtract.extract.report.reportName!=='HostWCReport'">
 					<thead>
 						<tr>
 							<th class="col-sm-4">Amounts</th>
@@ -62,7 +62,7 @@
 							</div>
 						</td>
 						<td class="col-sm-3" ng-show="selectedHost">
-							
+
 							<div class="row  m-b-2 m-t-2" ng-show="selectedHost.payCheckAccumulation.payCheckList.length>0">
 								<button class="btn btn-info btn-sm" ng-click="showPayChecks=!showPayChecks"><i class="fa" ng-class="{'fa-plus-circle': !showPayChecks, 'fa-minus-circle': showPayChecks}"></i> Pay Checks <span class="badge">{{selectedHost.payCheckAccumulation.payCheckList.length}}</span></button>
 
@@ -121,7 +121,7 @@
 
 					</tr>
 				</table>
-				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='Report1099' && masterExtract.extract.report.reportName!=='GarnishmentReport'">
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='Report1099' && masterExtract.extract.report.reportName!=='GarnishmentReport' && masterExtract.extract.report.reportName!=='HostWCReport'">
 					<thead>
 						<tr>
 							<th class="col-sm-4">Host Amounts</th>
@@ -189,7 +189,7 @@
 
 					</tr>
 				</table>
-				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='GarnishmentReport'">
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='GarnishmentReport' && masterExtract.extract.report.reportName!=='HostWCReport'">
 					<thead>
 						<tr>
 							<th class="col-sm-4">Company Amounts</th>
@@ -232,6 +232,71 @@
 								<i><u>{{getGarnishmentCheckEmployeeName(pc)}}</u></i>
 							</div>
 						</td>
+
+					</tr>
+				</table>
+				<table class="table table-bordered table-condensed" ng-show="masterExtract.extract.report.reportName==='HostWCReport'">
+					<thead>
+						<tr>
+							<th class="col-sm-3">Companies</th>
+							<th class="col-sm-3">Amounts</th>
+							<th class="col-sm-3">Employees</th>
+							<th class="col-sm-3">Employee Amounts</th>
+
+						</tr>
+					</thead>
+					<tr>
+						<td class="col-sm-3">
+							<div class="row" ng-repeat="comp in selectedHost.companies">
+								<button class="btn btn-xs m-t-5" ng-class="{'btn-info' : selectedCompany.company.id===comp.company.id}" ng-click="setCompany(comp)">{{comp.company.name}}</button>
+							</div>
+							
+						</td>
+						<td class="col-sm-3" ng-show="selectedCompany">
+						
+							<div class="row">
+								<div class="col-sm-6"><strong>Idlns</strong></div>
+								<div class="col-sm-6 text-right">{{selectedCompany.company.insuranceGroup.groupNo}}</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6"><strong>Client No</strong></div>
+								<div class="col-sm-6 text-right">{{selectedCompany.company.insuranceClientNo }}</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6"><strong>Gross Wage</strong></div>
+								<div class="col-sm-6 text-right">{{selectedCompany.accumulation.grossWage | currency:'$'}}</div>
+							</div>
+							<div class="row" ng-repeat="wc in selectedCompany.accumulation.workerCompensations">
+								<div class="col-sm-6"><strong>{{wc.workerCompensation.code}}</strong></div>
+								<div class="col-sm-3 text-right">{{wc.wage | currency:'$'}}</div>
+								<div class="col-sm-3 text-right">{{wc.amount | currency:'$'}}</div>
+
+							</div>
+						</td>
+						<td class="col-sm-3" ng-show="selectedCompany">
+							<div class="row" ng-repeat="ea in selectedCompany.employeeAccumulations">
+								<button class="btn btn-xs m-t-5" ng-class="{'btn-info' : selectedEmployee.employee.id===ea.employee.id}" ng-click="setEmployee(ea)">{{ea.employee.lastName + ' ' + ea.employee.firstName}}</button>
+							</div>
+							
+						</td>
+						<td class="col-sm-3" ng-show="selectedEmployee">
+							<div class="row">
+								<div class="col-sm-6"><strong>SSN</strong></div>
+								<div class="col-sm-6 text-right">{{selectedEmployee.employee.ssn}}</div>
+							</div>
+							<div class="row">
+								<div class="col-sm-6"><strong>Gross Wage</strong></div>
+								<div class="col-sm-6 text-right">{{selectedEmployee.accumulation.grossWage | currency:'$'}}</div>
+							</div>
+
+							<div class="row" ng-repeat="wc1 in selectedEmployee.accumulation.workerCompensations">
+								<div class="col-sm-6"><strong>{{wc1.workerCompensation.code}}</strong></div>
+								<div class="col-sm-3 text-right">{{wc1.wage | currency:'$'}}</div>
+								<div class="col-sm-3 text-right">{{wc1.amount | currency:'$'}}</div>
+
+							</div>
+						</td>
+						
 
 					</tr>
 				</table>
@@ -297,13 +362,13 @@
 
 		</div>
 	</div>
-	<div class="row table-responsive visible-print">
+	<div class="row table-responsive visible-print" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'">
 		<div class="col-sm-12">
 			<h4>{{selectedRep.name}} - Total Commissions: {{selectedRep.commission | currency:'$'}}</h4>
 		</div>
 		<table class="table table-bordered table-invoice">
 			<thead>
-				
+
 				<tr>
 					<th class="col-sm-4">Company</th>
 					<th class="col-sm-2">Invoice #</th>

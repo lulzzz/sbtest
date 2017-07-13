@@ -545,18 +545,37 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositDate: null
 						}
 						if (dataSvc.selectedHost) {
-							request.hosId = dataSvc.selectedHost.id;
+							request.hostId = dataSvc.selectedHost.id;
 						}
-						reportRepository.getExtractDocument(request).then(function (data) {
-							var a = document.createElement('a');
-							a.href = data.file;
-							a.target = '_blank';
-							a.download = data.name;
-							document.body.appendChild(a);
-							a.click();
-							
+						reportRepository.getExtract(request).then(function (extract) {
+							showReview(request, extract);
+
+
 						}, function (erorr) {
-							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
+						});
+
+					}
+
+					$scope.getHostWCReportSpecial = function () {
+						var request = {
+							reportName: 'HostWCReportRedated',
+							year: moment().year(),
+							quarter: 0,
+							month: 0,
+							
+							depositSchedule: null,
+							depositDate: null
+						}
+						if (dataSvc.selectedHost) {
+							request.hostId = dataSvc.selectedHost.id;
+						}
+						reportRepository.getExtract(request).then(function (extract) {
+							showReview(request, extract);
+
+
+						}, function (erorr) {
+							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
 						});
 
 					}

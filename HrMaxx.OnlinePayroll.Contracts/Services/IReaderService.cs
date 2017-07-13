@@ -48,6 +48,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//ExtractData
 		ExtractResponse GetExtractResponse(ReportRequest request);
+		ExtractResponse GetExtractResponseSpecial(ReportRequest request);
 
 		ExtractResponse GetExtractAccumulation(string report, DateTime startDate, DateTime endDate, Guid? host = null, 
 			DepositSchedule941? depositSchedule941 = null,  bool includeVoids = false, bool includeTaxes = false,

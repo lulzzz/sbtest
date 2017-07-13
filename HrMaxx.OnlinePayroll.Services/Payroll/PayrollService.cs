@@ -157,89 +157,128 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								paycheck.Notes += string.Format(" Piece-work: {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
 								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
 							}
-							var breakRate =
-								Math.Round(
-									((pc.PWAmount + regularWage - regularBreakPay)/
-									 (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime))), 2, MidpointRounding.AwayFromZero);
 
-							if (breakRate < payroll.Company.MinWage)
+							var dividend = (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime));
+							if (dividend != 0)
 							{
-								breakRate = payroll.Company.MinWage;
-							}
-							var PRBreakPay = Math.Round(breakRate * pc.BreakTime, 2, MidpointRounding.AwayFromZero);
-							var breakMakeup = Math.Round(((breakRate - regularRate)*regularBreaktime), 2, MidpointRounding.AwayFromZero);
-							
+								var breakRate =
+									Math.Round(
+										((pc.PWAmount + regularWage - regularBreakPay)/
+										 dividend), 2, MidpointRounding.AwayFromZero);
 
-							var prCalculatedRate = (pc.Hours + pc.OvertimeHours)>0 ? Math.Round((pc.PWAmount + PRBreakPay) / (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero) : 0;
-							var prApplicableRate = (decimal) 0 + prCalculatedRate;
-							if (prCalculatedRate>0 && prCalculatedRate < payroll.Company.MinWage && (pc.Hours + pc.OvertimeHours)>0)
-							{
-								prApplicableRate = payroll.Company.MinWage;
-								var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
-								var finalAmount = Math.Round(prApplicableRate*(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
-								var makeUpAmount = Math.Round(finalAmount - pc.PWAmount, 2, MidpointRounding.AwayFromZero);
-								
-								if (makeUpComp != null)
+								if (breakRate < payroll.Company.MinWage)
 								{
-									makeUpComp.Amount = makeUpAmount;
-									makeUpComp.Hours = Math.Round(pc.Hours + pc.OvertimeHours, 2, MidpointRounding.AwayFromZero);
-									makeUpComp.Rate = Math.Round(makeUpAmount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+									breakRate = payroll.Company.MinWage;
 								}
-								else
-								{
-									paycheck.Compensations.Add(new PayrollPayType() { Amount = makeUpAmount, Hours = 0, Rate = 0, PayType = payTypes.First(pt=>pt.Id==12), YTD = 0 });
-								}
-							}
+								var PRBreakPay = Math.Round(breakRate*pc.BreakTime, 2, MidpointRounding.AwayFromZero);
+								var breakMakeup = Math.Round(((breakRate - regularRate)*regularBreaktime), 2, MidpointRounding.AwayFromZero);
 
-							if (PRBreakPay > 0)
-							{
-								var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 13);
-								if (breakComp != null)
-								{
-									breakComp.Amount = PRBreakPay;
-									breakComp.Hours = pc.BreakTime;
-									breakComp.Rate = breakRate;
-								}
-								else
-								{
-									paycheck.Compensations.Add(new PayrollPayType() { Amount = PRBreakPay, Hours = pc.BreakTime, Rate = breakRate, PayType = payTypes.First(pt => pt.Id == 13), YTD = 0 });
-								}
 
-							}
-							if (breakMakeup > 0)
-							{
-								var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 14);
-								var breakmakeuprate = Math.Round(breakRate - regularRate, 2, MidpointRounding.AwayFromZero);
-								if (breakComp != null)
+								var prCalculatedRate = (pc.Hours + pc.OvertimeHours) > 0
+									? Math.Round((pc.PWAmount + PRBreakPay)/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero)
+									: 0;
+								var prApplicableRate = (decimal) 0 + prCalculatedRate;
+								if (prCalculatedRate > 0 && prCalculatedRate < payroll.Company.MinWage && (pc.Hours + pc.OvertimeHours) > 0)
 								{
-									breakComp.Amount = breakMakeup;
-									breakComp.Hours = regularBreaktime;
-									breakComp.Rate = breakmakeuprate;
-								}
-								else
-								{
-									paycheck.Compensations.Add(new PayrollPayType() { Amount = breakMakeup, Hours = regularBreaktime, Rate = breakmakeuprate, PayType = payTypes.First(pt => pt.Id == 14), YTD = 0 });
+									prApplicableRate = payroll.Company.MinWage;
+									var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
+									var finalAmount = Math.Round(prApplicableRate*(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+									var makeUpAmount = Math.Round(finalAmount - pc.PWAmount, 2, MidpointRounding.AwayFromZero);
+
+									if (makeUpComp != null)
+									{
+										makeUpComp.Amount = makeUpAmount;
+										makeUpComp.Hours = Math.Round(pc.Hours + pc.OvertimeHours, 2, MidpointRounding.AwayFromZero);
+										makeUpComp.Rate = Math.Round(makeUpAmount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+									}
+									else
+									{
+										paycheck.Compensations.Add(new PayrollPayType()
+										{
+											Amount = makeUpAmount,
+											Hours = 0,
+											Rate = 0,
+											PayType = payTypes.First(pt => pt.Id == 12),
+											YTD = 0
+										});
+									}
 								}
 
-							}
-							
-							paycheck.Employee.Rate = prApplicableRate;
-							pc.PayCode.HourlyRate = prApplicableRate;
-							
-							if (pc.SickLeaveTime > 0)
-							{
-								var sickComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 6);
-								if (sickComp != null)
+								if (PRBreakPay > 0)
 								{
-									sickComp.Amount = Math.Round(Math.Max(prApplicableRate,regularRate) * pc.SickLeaveTime, 2, MidpointRounding.AwayFromZero);
-									sickComp.Hours = pc.SickLeaveTime;
-									sickComp.Rate = Math.Max(prApplicableRate, regularRate);
+									var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 13);
+									if (breakComp != null)
+									{
+										breakComp.Amount = PRBreakPay;
+										breakComp.Hours = pc.BreakTime;
+										breakComp.Rate = breakRate;
+									}
+									else
+									{
+										paycheck.Compensations.Add(new PayrollPayType()
+										{
+											Amount = PRBreakPay,
+											Hours = pc.BreakTime,
+											Rate = breakRate,
+											PayType = payTypes.First(pt => pt.Id == 13),
+											YTD = 0
+										});
+									}
+
 								}
-								else
+								if (breakMakeup > 0)
 								{
-									paycheck.Compensations.Add(new PayrollPayType() { Amount = Math.Round(Math.Max(prApplicableRate, regularRate) * pc.SickLeaveTime, 2, MidpointRounding.AwayFromZero), Hours = pc.SickLeaveTime, Rate = Math.Max(prApplicableRate, regularRate), PayType = payTypes.First(pt => pt.Id == 6), YTD = 0 });
+									var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 14);
+									var breakmakeuprate = Math.Round(breakRate - regularRate, 2, MidpointRounding.AwayFromZero);
+									if (breakComp != null)
+									{
+										breakComp.Amount = breakMakeup;
+										breakComp.Hours = regularBreaktime;
+										breakComp.Rate = breakmakeuprate;
+									}
+									else
+									{
+										paycheck.Compensations.Add(new PayrollPayType()
+										{
+											Amount = breakMakeup,
+											Hours = regularBreaktime,
+											Rate = breakmakeuprate,
+											PayType = payTypes.First(pt => pt.Id == 14),
+											YTD = 0
+										});
+									}
+
 								}
 
+
+
+								paycheck.Employee.Rate = prApplicableRate;
+								pc.PayCode.HourlyRate = prApplicableRate;
+
+								if (pc.SickLeaveTime > 0)
+								{
+									var sickComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 6);
+									if (sickComp != null)
+									{
+										sickComp.Amount = Math.Round(Math.Max(prApplicableRate, regularRate)*pc.SickLeaveTime, 2,
+											MidpointRounding.AwayFromZero);
+										sickComp.Hours = pc.SickLeaveTime;
+										sickComp.Rate = Math.Max(prApplicableRate, regularRate);
+									}
+									else
+									{
+										paycheck.Compensations.Add(new PayrollPayType()
+										{
+											Amount =
+												Math.Round(Math.Max(prApplicableRate, regularRate)*pc.SickLeaveTime, 2, MidpointRounding.AwayFromZero),
+											Hours = pc.SickLeaveTime,
+											Rate = Math.Max(prApplicableRate, regularRate),
+											PayType = payTypes.First(pt => pt.Id == 6),
+											YTD = 0
+										});
+									}
+
+								}
 							}
 						}
 						

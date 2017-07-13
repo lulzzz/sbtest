@@ -473,6 +473,7 @@
 					<div class="col-sm-4 form-group">
 						<label></label><br />
 						<button class="btn btn-sm btn-primary" ng-click="getHostWCReport()" ng-disabled="!data.filterWC.startDate || !data.filterWC.endDate">WC Extract</button>
+						<button class="btn btn-sm btn-primary" ng-click="getHostWCReportSpecial()" ng-show="mainData.userRole==='SuperUser'" ng-disabled="!data.filterWC.startDate || !data.filterWC.endDate">WC for Redated</button>
 
 					</div>
 
@@ -598,7 +599,7 @@
 				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File & Save</button>
 				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.salesReps.length>0" ng-click="payCommissions()">Pay & Save</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
-				<button class="btn btn-sm btn-info pull-right" ng-show="masterextract.extract.report.reportname!=='CommissionsReport'" ng-click=" regeneratefile()">Regenerate File</button>
+				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.extract.report.reportName!=='CommissionsReport' && masterExtract.extract.report.reportName!=='HostWCReport'" ng-click=" regeneratefile()">Regenerate File</button>
 				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0" ng-click="printExtract()">Print Checks</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.report.reportName==='CommissionsReport'" ng-click="print()"><i class="fa fa-print"></i> print</button>
 			</div>

@@ -480,4 +480,11 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		CCD=2
 	}
 
+	public enum ExtractAccumulationMode
+	{
+		All=0,
+		WC=1,
+		Garnishment=2
+	}
+
 }

@@ -703,6 +703,13 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							extract.Data.Hosts.SelectMany(h => h.PayCheckAccumulation.VoidedPayCheckList.Select(pc => pc.Id)).ToList(),
 							new List<Journal>());
 					}
+					else if (extract.Report.ReportName.Equals("HostWCReport"))
+					{
+						masterExtract.Extract.Report.DepositDate = DateTime.Now;
+						masterExtract = _journalRepository.SaveMasterExtract(masterExtract,
+							extract.Data.Hosts.SelectMany(h => h.PayChecks.Select(pc => pc.Id)).ToList(),new List<int>(),
+							new List<Journal>());
+					}
 						
 					else 
 						masterExtract = CreateTaxPayments(extract, fullName, masterExtract);

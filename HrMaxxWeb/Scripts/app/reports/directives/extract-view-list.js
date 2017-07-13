@@ -42,6 +42,10 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 						{
 							name: 'Commissions',
 							desc: 'Sales Commissions'
+						},
+						{
+							name: 'HostWCReport',
+							desc: 'WC Report'
 						}],
 						isBodyOpen: true
 					}

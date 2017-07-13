@@ -80,11 +80,325 @@ namespace SiteInspectionStatus_Utility
 				case 12:
 					CompareTaxRates(container);
 					break;
+				case 13:
+					FixAccumulationCycleAndYTD(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+
+		private static void FixAccumulationCycleAndYTD(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var _companyRepository = scope.Resolve<ICompanyRepository>();
+
+				var payCheckList = new List<PayCheck>();
+				var empList = new List<HrMaxx.OnlinePayroll.Models.Employee>();
+				var leaveCycleEmployees = new List<LeaveCycleEmployee>();
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("979CF583-4796-496F-A414-A6ED0156EBFB"),OldFiscalStart = new DateTime(2017,1,2), NewFiscalStart = new DateTime(2017,1,1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("227DCBC0-2C8E-4116-9A4C-A6FA00B1688D"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("887F0FC6-B720-4AE2-A8CA-A6ED01536FC7"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C8225E66-9FB6-408E-AB75-A6ED01537062"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4B84B3A-536E-4C0F-B23A-A75B00A6310A"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B86121A9-C69A-4E0C-BDA6-A75B00A8403C"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4245E431-73EB-4A93-975C-A76F009B41A7"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F842C501-FE89-4EF4-9731-A76F009CF259"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("94C36C7B-8EF3-419C-AD04-A73100B59254"), OldFiscalStart = new DateTime(2017, 3, 10), NewFiscalStart = new DateTime(2017, 3, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CFA22B90-2206-4C32-A234-A777009C156C"), OldFiscalStart = new DateTime(2017, 5, 19), NewFiscalStart = new DateTime(2017, 5, 18) });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D0855437-8643-4E50-AA93-A784009A597B"), OldFiscalStart = new DateTime(2017, 6, 1), NewFiscalStart = new DateTime(2017, 5, 31) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("89762729-1560-4A73-8A27-A6ED01579909"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("66D0F241-FFD0-487D-8AC1-A70700E42FA5"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9105FD21-4EF7-4877-A3B7-A72300879337"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("415ED0BF-8BFF-4C1A-8732-A72300890B3B"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CD16FF42-2439-49E4-817C-A73700FB1B9D"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("717E808E-E60D-4FED-A95E-A73700FCB2FF"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C7AA35AA-5549-40F2-A34A-A73700FE71C9"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BAEE375C-F54E-4B09-877C-A73E0105EC72"), OldFiscalStart = new DateTime(2017, 3, 23), NewFiscalStart = new DateTime(2017, 3, 22) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4B303004-3B13-4C3B-AAFE-A74D00E74319"), OldFiscalStart = new DateTime(2017, 4, 7), NewFiscalStart = new DateTime(2017, 4, 6) });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C65C5E51-B298-4AE9-A04A-A6ED0152A55E"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EBA50AEA-511A-4439-8BB4-A6ED0152A5E1"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E06C5FED-E33F-42A0-B863-A70800C79529"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("95EF384F-3863-4096-8868-A75500C1ABAD"), OldFiscalStart = new DateTime(2017, 4, 15), NewFiscalStart = new DateTime(2017, 4, 14) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F0CA2BA2-0230-41B0-9F9D-A76300C009A9"), OldFiscalStart = new DateTime(2017, 4, 29), NewFiscalStart = new DateTime(2017, 4, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("855D176A-A6A2-4F02-A8C7-A76A00C45630"), OldFiscalStart = new DateTime(2017, 5, 6), NewFiscalStart = new DateTime(2017, 5, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("052A360E-3926-439A-9C5E-A76D00CAC32C"), OldFiscalStart = new DateTime(2017, 5, 9), NewFiscalStart = new DateTime(2017, 5, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FF127E53-CD60-4A8C-9370-A77500BDFD37"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F7B77F52-7C04-4563-9CCC-A77500BE97E3"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DFCFBD0E-5BB2-444A-B19F-A77500BF54A6"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0E80A5B5-9F6A-4FA0-A691-A77E00FCF11D"), OldFiscalStart = new DateTime(2017, 5, 26), NewFiscalStart = new DateTime(2017, 5, 25) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0504755A-4246-4D44-8206-A70F00A09A2B"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("170C8802-BCC8-4675-99F1-A70F00A5B303"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9E927320-ACCD-41AE-85BA-A71300D76550"), OldFiscalStart = new DateTime(2017, 2, 8), NewFiscalStart = new DateTime(2017, 2, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("153C9CD4-CA57-4F8E-9BF8-A71600C61B84"), OldFiscalStart = new DateTime(2017, 2, 11), NewFiscalStart = new DateTime(2017, 2, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("97665A9E-8EFE-4F13-A3E8-A73700D4B525"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CAA5D056-B313-4DAC-8F98-A73F00C22A3A"), OldFiscalStart = new DateTime(2017, 3, 24), NewFiscalStart = new DateTime(2017, 3, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3A9031F8-8223-4384-A5E2-A73F00CC784F"), OldFiscalStart = new DateTime(2017, 3, 24), NewFiscalStart = new DateTime(2017, 3, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7908685D-606D-49D1-B952-A75B00A57BAC"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("91A09021-11D2-4568-A8F9-A76800AD9D02"), OldFiscalStart = new DateTime(2017, 5, 4), NewFiscalStart = new DateTime(2017, 5, 3) });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0504755A-4246-4D44-8206-A70F00A09A2B"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("170C8802-BCC8-4675-99F1-A70F00A5B303"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B02EF90E-F8EB-4C19-B4CE-A77D00B4357C"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C91414C0-302F-4B4D-B14B-6AD98BE4AA0C"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("370D3D17-0101-4D37-A523-AD91FCB4D605"), OldFiscalStart = new DateTime(2017, 2, 16), NewFiscalStart = new DateTime(2017, 2, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B569C675-3ABA-4B98-A9BC-A6F300A2B232"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EF37F268-36D0-450E-A01B-A75300BE35FB"), OldFiscalStart = new DateTime(2017, 4, 13), NewFiscalStart = new DateTime(2017, 4, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FACB2B60-D3B9-47B6-BFEE-A73900B728DB"), OldFiscalStart = new DateTime(2017, 3, 18), NewFiscalStart = new DateTime(2017, 3, 17) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B596133B-5527-4FFC-B9C3-A70F00B41811"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C090DB1C-8006-4F9A-B8BB-A73900B777FB"), OldFiscalStart = new DateTime(2017, 3, 18), NewFiscalStart = new DateTime(2017, 3, 17) });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F463F9AC-E9C2-4075-81D3-A73700BEAA6A"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C3C12366-63F0-4C00-83E6-A70F00AC7051"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6493EE1E-DA0E-4DE1-B1B4-A72200A07E28"), OldFiscalStart = new DateTime(2017, 2, 23), NewFiscalStart = new DateTime(2017, 2, 22) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4564AC4D-53CF-4F08-AB11-A72200A10F69"), OldFiscalStart = new DateTime(2017, 2, 23), NewFiscalStart = new DateTime(2017, 2, 22) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DF20DC67-F205-4BFE-B127-A74400B2F2DC"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("902786B7-04CD-4635-A83A-A77C00BFF83B"), OldFiscalStart = new DateTime(2017, 5, 24), NewFiscalStart = new DateTime(2017, 5, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("96CCE43E-1581-4DFC-A404-A6ED014ECE97"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0ABFC7EF-468D-44CF-8B44-A6ED014ED45B"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0ABFC7EF-468D-44CF-8B44-A6ED014ED45B"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7A9C47C6-A53F-4526-BA3A-A72300CDFA74"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A76BF856-4568-4204-A639-A72800BA47FE"), OldFiscalStart = new DateTime(2017, 3, 1), NewFiscalStart = new DateTime(2017, 2, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E19F3385-27A4-46EA-975E-A72800BADD34"), OldFiscalStart = new DateTime(2017, 3, 1), NewFiscalStart = new DateTime(2017, 2, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C9764B07-E85A-4E95-9C27-A72800BBBB92"), OldFiscalStart = new DateTime(2017, 3, 1), NewFiscalStart = new DateTime(2017, 2, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E2AAAF0B-0154-4B54-BCD9-A77B00B6FE18"), OldFiscalStart = new DateTime(2017, 5, 23), NewFiscalStart = new DateTime(2017, 5, 22) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4212E23-14CE-40FD-A910-A6ED01596803"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("60E6F47B-6383-4803-9A1F-A6ED0159688B"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3A0AD396-868A-49D5-9BEE-A73700CA0876"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("73017F37-6E1F-4FA0-B85E-A76D00B218E8"), OldFiscalStart = new DateTime(2017, 5, 9), NewFiscalStart = new DateTime(2017, 5, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D7961F8F-1B45-49F2-AD0B-A6ED0158C337"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9CCCBB53-5264-4832-942F-A70D00BC67C9"), OldFiscalStart = new DateTime(2017, 2, 2), NewFiscalStart = new DateTime(2017, 2, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FB976F09-085F-4C07-B425-A74B00B00B95"), OldFiscalStart = new DateTime(2017, 4, 5), NewFiscalStart = new DateTime(2017, 4, 4) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("19CAC5C4-6961-439C-925A-A77500A52117"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2FD88FDC-3CAA-48D8-8708-A73500B38578"), OldFiscalStart = new DateTime(2017, 3, 14), NewFiscalStart = new DateTime(2017, 3, 13) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A757BD06-4B4D-4253-9AEF-A70F00C55707"), OldFiscalStart = new DateTime(2017, 2, 5), NewFiscalStart = new DateTime(2017, 2, 4) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("09A7BB5A-4480-4907-9D54-A77400B68DE3"), OldFiscalStart = new DateTime(2017, 5, 16), NewFiscalStart = new DateTime(2017, 5, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F3FE723E-6FB2-41AE-8685-A75800A61E9B"), OldFiscalStart = new DateTime(2017, 4, 18), NewFiscalStart = new DateTime(2017, 4, 17) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("77056273-94E3-45BE-96EA-A76E009D7FC2"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("59015FD0-B437-4FD1-82C9-A72A00F53D2E"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("841C34DA-3059-40B7-B2B5-A74400B7DDF1"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8A8E4A5A-3F5A-4C7A-AB69-A74400B96A85"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D4D9FA54-3990-4884-8AF2-A74400BBBA81"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2703B5B0-9EE0-47F9-9ADA-A74E00A29D05"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("72760DA1-EF67-48BD-8B47-A74E00A3CFA1"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("093A37DE-BB81-4B96-8E0D-A74E00A50ED0"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F42A232B-42E4-498D-B876-A75300AA7175"), OldFiscalStart = new DateTime(2017, 4, 13), NewFiscalStart = new DateTime(2017, 4, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E9CB7D56-E2D7-4152-B6CF-C10838928999"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A49B5E5D-D8A9-481E-887C-8B0AFC0CEE6B"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6E3F724B-4DD2-43A0-BC95-A71C00BE32C8"), OldFiscalStart = new DateTime(2017, 2, 17), NewFiscalStart = new DateTime(2017, 2, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5134A09A-AA3A-4E57-B3A1-A71C00BF1833"), OldFiscalStart = new DateTime(2017, 2, 17), NewFiscalStart = new DateTime(2017, 2, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("20C78637-7495-4C04-B0AC-A6ED014DB432"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0675E56F-D18F-483C-8BEF-A6ED014F1E20"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4A5E1F6F-6194-467C-8B24-A73100D80D8B"), OldFiscalStart = new DateTime(2017, 3, 10), NewFiscalStart = new DateTime(2017, 3, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0273CCF5-8DE0-4836-9FBE-A77700B2B7FE"), OldFiscalStart = new DateTime(2017, 5, 19), NewFiscalStart = new DateTime(2017, 5, 18) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("64F5E859-591A-417B-9A0D-A77D00CCF102"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("08E7DE3E-C496-4FAC-A557-A6ED015635C6"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3CBE1010-3837-46B7-B6A6-A77E00AD75B4"), OldFiscalStart = new DateTime(2017, 5, 26), NewFiscalStart = new DateTime(2017, 5, 25) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F1FA9B13-4B02-417F-9077-A74C00A3BFC9"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9AC07F4B-7184-4E3C-AA09-A71300C10A71"), OldFiscalStart = new DateTime(2017, 2, 8), NewFiscalStart = new DateTime(2017, 2, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("728EC1A4-2277-4669-ADAF-A74300BF52CC"), OldFiscalStart = new DateTime(2017, 3, 28), NewFiscalStart = new DateTime(2017, 3, 27) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("90794DF7-56E7-4C4C-A782-A72900B0004F"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("28E9AA5F-84F5-4C73-9471-A72900B099CC"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("807E3E79-5691-441F-9C54-A72900B1906A"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A1D5CDA1-5B5F-4FDD-9D68-A6FA00BB854E"), OldFiscalStart = new DateTime(2017, 2, 9), NewFiscalStart = new DateTime(2017, 2, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B1028404-E822-4925-A865-A6ED01524532"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CE258729-392D-48A2-8110-A72400B29037"), OldFiscalStart = new DateTime(2017, 2, 25), NewFiscalStart = new DateTime(2017, 2, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AAF9DDD5-DF66-4DFF-BD04-A72400B33650"), OldFiscalStart = new DateTime(2017, 2, 25), NewFiscalStart = new DateTime(2017, 2, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5160D8D7-E506-4160-9A9B-A72400B389EF"), OldFiscalStart = new DateTime(2017, 2, 25), NewFiscalStart = new DateTime(2017, 2, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("05D86BC8-193C-496E-8CC0-A747009FE4DE"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("50CC6F76-0C4F-444C-814E-A74700A05533"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3273C719-D9A1-4A44-A0B3-A6ED01561671"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AC4A3AFE-0032-4D32-BEF1-A78C00AD9C18"), OldFiscalStart = new DateTime(2017, 6, 9), NewFiscalStart = new DateTime(2017, 6, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6C446D0D-990F-444F-9189-A73600C2C223"), OldFiscalStart = new DateTime(2017, 3, 15), NewFiscalStart = new DateTime(2017, 3, 14) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A118DE32-D1B8-40E4-B898-A73800AA2E11"), OldFiscalStart = new DateTime(2017, 3, 17), NewFiscalStart = new DateTime(2017, 3, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8A7D3E12-DE70-4CF1-803D-A6ED014E6F56"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("604F8D61-D5DC-4CCE-AE76-A77C00A73854"), OldFiscalStart = new DateTime(2017, 5, 24), NewFiscalStart = new DateTime(2017, 5, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("90661B59-5FF9-4AB2-9CDC-A78300BC6EAD"), OldFiscalStart = new DateTime(2017, 5, 31), NewFiscalStart = new DateTime(2017, 5, 30) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3EC6A9CE-BCF8-48AF-B793-A70100D15BFF"), OldFiscalStart = new DateTime(2017, 1, 21), NewFiscalStart = new DateTime(2017, 1, 20) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EA782E25-EB42-4EFB-98D3-A740009AAE57"), OldFiscalStart = new DateTime(2017, 3, 25), NewFiscalStart = new DateTime(2017, 3, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EA782E25-EB42-4EFB-98D3-A740009AAE57"), OldFiscalStart = new DateTime(2017, 3, 26), NewFiscalStart = new DateTime(2017, 3, 25) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E0BD5273-49BF-43D9-B8D2-A740009B05A6"), OldFiscalStart = new DateTime(2017, 3, 25), NewFiscalStart = new DateTime(2017, 3, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E0BD5273-49BF-43D9-B8D2-A740009B05A6"), OldFiscalStart = new DateTime(2017, 3, 26), NewFiscalStart = new DateTime(2017, 3, 25) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EC11947E-C1C8-4298-BD28-A6F900AC51F9"), OldFiscalStart = new DateTime(2016, 7, 8), NewFiscalStart = new DateTime(2016, 7, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4018353B-99BE-47BE-B12F-A74C00F77FCB"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6B81C4C4-1497-4FB2-9DE4-A74500A75BBE"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("651C753F-8472-4E77-BE5D-A74500A7FD14"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("676E335C-BE39-4B3B-98EA-A74500A9AB58"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CDBAD246-53CE-40F1-B494-A74500AA4766"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BCA5CC20-DC37-4857-932C-A72800F8329F"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9CD6606E-E9D7-428C-9CB4-A76200B5DFF9"), OldFiscalStart = new DateTime(2017, 4, 28), NewFiscalStart = new DateTime(2017, 4, 27) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A34CD49B-2BBE-4437-A82D-A75C00AA5AFE"), OldFiscalStart = new DateTime(2017, 4, 22), NewFiscalStart = new DateTime(2017, 4, 21) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0085887D-F732-4021-8D84-A75C00BF76CC"), OldFiscalStart = new DateTime(2017, 4, 22), NewFiscalStart = new DateTime(2017, 4, 21) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("11D08777-A636-42D6-BB57-A74C00C31D25"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A71740E1-96A0-4251-BA64-A74C00C3EB38"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6EA89209-BBBA-48B1-A9E4-A74C00C43F7C"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8DC86F1D-D1E9-4C12-8A52-A74C00C49123"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A2786CC0-2C77-4184-A865-A74C00C50EAF"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("33F9CB38-925E-4857-9256-A74C01032EEF"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FB070A3A-3076-4B48-BBB7-A74C01074925"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E9D93ACD-6FD7-4B49-B3A5-A716009A27A8"), OldFiscalStart = new DateTime(2017, 2, 11), NewFiscalStart = new DateTime(2017, 2, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5D756EBD-6CC2-47BB-96B8-A71600A53F10"), OldFiscalStart = new DateTime(2017, 2, 11), NewFiscalStart = new DateTime(2017, 2, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("126DF2B1-CB38-4939-84FC-A6ED014CC3B6"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("49ED700F-1A28-42FD-85DA-A76600C43492"), OldFiscalStart = new DateTime(2017, 5, 2), NewFiscalStart = new DateTime(2017, 5, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("52BAB27B-6750-44A7-9ADF-A72300A93953"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A41498C8-DC64-4884-AEA9-A6ED0159F928"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C9979ADA-4A30-40A8-8816-4038855DFAE9"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("833BF5C6-0C1C-451B-B3E4-6380CB6EE638"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2488907E-927E-45FF-97F0-B87321512700"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("95B5FFD1-2232-466E-BDC0-A73600BFD5FE"), OldFiscalStart = new DateTime(2017, 2, 13), NewFiscalStart = new DateTime(2017, 2, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("829514DB-37C5-420B-B018-A75A01011A95"), OldFiscalStart = new DateTime(2017, 4, 20), NewFiscalStart = new DateTime(2017, 4, 19) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4C2507B-DAC4-4E8E-9D91-A75A010177A9"), OldFiscalStart = new DateTime(2017, 4, 20), NewFiscalStart = new DateTime(2017, 4, 19) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F48FB93A-9377-497E-A8CE-A75A0102FBE2"), OldFiscalStart = new DateTime(2017, 4, 20), NewFiscalStart = new DateTime(2017, 4, 19) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DC83F028-F9E9-4D15-89C7-A73100B496BC"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B0E74CF6-D73B-4E91-88FE-A73100B78FFD"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C4EEAEC3-7F81-42A8-895A-A73200ABCE0E"), OldFiscalStart = new DateTime(2017, 3, 12), NewFiscalStart = new DateTime(2017, 3, 11) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3F52F21D-3984-4AC0-8077-A73200AF05F3"), OldFiscalStart = new DateTime(2017, 3, 13), NewFiscalStart = new DateTime(2017, 3, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("1D5B6E85-2F00-4745-8CCB-A70E00829592"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3660DB19-F1FF-4EB2-9D02-A76300A389D4"), OldFiscalStart = new DateTime(2017, 4, 29), NewFiscalStart = new DateTime(2017, 4, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4BFD81A-056E-4814-8B99-A7710115B072"), OldFiscalStart = new DateTime(2017, 5, 13), NewFiscalStart = new DateTime(2017, 5, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("90E963BA-2694-4FC6-9C2E-A7710116D45D"), OldFiscalStart = new DateTime(2017, 5, 13), NewFiscalStart = new DateTime(2017, 5, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BBF05FF3-F43D-4DB1-A973-A771011720FD"), OldFiscalStart = new DateTime(2017, 5, 13), NewFiscalStart = new DateTime(2017, 5, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BCEA660A-ABD9-4A04-BEF3-CCD37BB0EF0F"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("308DE758-0C08-455F-846A-A70E00F3D705"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2F67003E-B02E-491E-885C-A71200D175B9"), OldFiscalStart = new DateTime(2017, 2, 7), NewFiscalStart = new DateTime(2017, 2, 6) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CF0E7F8D-5D58-41C5-9C0E-A6ED0154416F"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("718DCC70-CE87-4C89-B630-A78600A28F4D"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("073B408D-5155-4E25-AC61-A78600A380BE"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("99948087-C5AA-4EFE-867F-A78600A44C62"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5D550BFB-4507-409A-B500-A74300C32F79"), OldFiscalStart = new DateTime(2017, 3, 28), NewFiscalStart = new DateTime(2017, 3, 27) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("005B053D-97FE-4484-A51E-A74300C386D5"), OldFiscalStart = new DateTime(2017, 3, 28), NewFiscalStart = new DateTime(2017, 3, 27) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0460CDA0-1EE3-4296-A1C2-A72E00AFCA3E"), OldFiscalStart = new DateTime(2017, 3, 7), NewFiscalStart = new DateTime(2017, 3, 6) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3AED00FD-4874-4C65-98D0-A71C00D080D2"), OldFiscalStart = new DateTime(2017, 2, 17), NewFiscalStart = new DateTime(2017, 2, 16) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B016D29F-6953-4C06-A58A-A73700C6DB3C"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("510731E9-E547-40DF-9D46-A6ED014C9546"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D8B6C3F9-0290-444B-BF35-A6ED014C9664"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DBA2F0EF-0FBC-4C3D-8909-A6ED014C9761"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DBA2F0EF-0FBC-4C3D-8909-A6ED014C9761"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("244F6BF9-1F51-4861-96A4-A6ED014C9B84"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("89DA998C-8A6A-490A-AACA-A77801024A31"), OldFiscalStart = new DateTime(2017, 5, 20), NewFiscalStart = new DateTime(2017, 5, 19) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B23D4696-78EC-4419-8C43-A77801029D64"), OldFiscalStart = new DateTime(2017, 5, 20), NewFiscalStart = new DateTime(2017, 5, 19) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("182097DF-6288-4AC6-B89E-A75500C0A909"), OldFiscalStart = new DateTime(2017, 4, 15), NewFiscalStart = new DateTime(2017, 4, 14) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EFC342F7-9DDF-490C-A71F-A6ED01598365"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7CC1C593-2B23-4936-BEFD-A6ED0159866F"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7CC1C593-2B23-4936-BEFD-A6ED0159866F"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F91D5945-1CBF-48E6-9868-A6F200C0421C"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3CC78AD6-F7FA-428B-B204-A6F200C92118"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E66D12DD-B8A1-4936-8375-A70E00BE656D"), OldFiscalStart = new DateTime(2017, 2, 3), NewFiscalStart = new DateTime(2017, 2, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4D947614-C846-4C7B-815C-A73200BE9293"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C4BDF1DA-BCD5-4F47-BEE8-A74E00A386C6"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5C4E9145-82BD-4BFB-AD81-A76A00BC2C77"), OldFiscalStart = new DateTime(2017, 5, 6), NewFiscalStart = new DateTime(2017, 5, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CEF9D8C7-0B95-4EDB-9315-A77800ACF9B5"), OldFiscalStart = new DateTime(2017, 5, 20), NewFiscalStart = new DateTime(2017, 5, 19) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6EAFD111-6E48-4D73-9813-A75F00CD86D9"), OldFiscalStart = new DateTime(2017, 4, 25), NewFiscalStart = new DateTime(2017, 4, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("94A6E8C3-E6D9-43D9-8866-A77E00C2A951"), OldFiscalStart = new DateTime(2017, 5, 26), NewFiscalStart = new DateTime(2017, 5, 25) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F70C14D0-69A2-4A7D-B5CB-A6ED014DC961"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("68C6CA96-EF5C-4903-B289-A6ED014DC9BB"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("09909B25-B817-48BE-AA06-A76D00A1D7E3"), OldFiscalStart = new DateTime(2017, 5, 9), NewFiscalStart = new DateTime(2017, 5, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("242FA9A1-0828-4757-B172-A76F00EB89BF"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("94E255BD-69A8-4C47-8632-A6F900D83BE0"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C9E85E0E-8857-4230-B5BD-A72A00BC955D"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DF494F55-40A4-4C33-841C-A72A00BDBCA6"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("80BE45AC-741F-4AAA-87DD-A74E00A17397"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("81FC9388-E34B-46B0-9C7F-A77D00BC4B04"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B4B728DC-4705-446A-ABFD-A77D00BD0CD0"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BA27A17B-B453-46E0-8C14-A6ED014F0B8D"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0B69C05E-ADCE-4001-B2E5-A77600A61C87"), OldFiscalStart = new DateTime(2017, 5, 18), NewFiscalStart = new DateTime(2017, 5, 17) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4FE78800-0E9F-4E40-ACDF-A75C00B7167F"), OldFiscalStart = new DateTime(2017, 4, 22), NewFiscalStart = new DateTime(2017, 4, 21) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C6AA3FB3-3469-4E05-B638-A6ED014B797E"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("06480A85-707F-45E1-87CC-A74700AE0D88"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AF71039C-ABF8-4A6D-9607-A73100ABCB45"), OldFiscalStart = new DateTime(2017, 3, 10), NewFiscalStart = new DateTime(2017, 3, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("68CE5847-5B51-47B1-94B9-A75B00C0D14C"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("39A3597B-774B-44E7-9133-A78C00A87D72"), OldFiscalStart = new DateTime(2017, 6, 9), NewFiscalStart = new DateTime(2017, 6, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("387197AA-D033-4DB0-8A6E-A6ED0154DB92"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("888FD876-FB34-4009-95B0-A6ED0154DFE4"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7104C20A-F3E8-4220-8DC7-A6ED0154EAE5"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BB53FDE8-D4AB-4346-89BD-A6ED0154FB56"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9A01F0EE-1E96-412F-A087-A76100D5C609"), OldFiscalStart = new DateTime(2017, 4, 27), NewFiscalStart = new DateTime(2017, 4, 26) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2C11A9D9-1002-4956-9164-A71B00BFF5F4"), OldFiscalStart = new DateTime(2017, 2, 16), NewFiscalStart = new DateTime(2017, 2, 15) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("135C108F-E9D8-4881-B199-A72900B69FEA"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8A4796ED-8E5B-4637-A64D-A76E01135AD5"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("017C6698-A871-4C36-BCD4-A76E0113CEA3"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4E4D3FC2-6654-4D34-96C9-A76E0114D228"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8C15BA59-808A-4E38-B245-A78400AACD2E"), OldFiscalStart = new DateTime(2017, 6, 1), NewFiscalStart = new DateTime(2017, 5, 31) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5D310AD5-4B66-423D-AD54-A6ED015674B5"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AA0C65AF-BE0C-41C8-B41B-A7470110F2E9"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7858A641-4951-4B85-A06B-A76A00C4B3ED"), OldFiscalStart = new DateTime(2017, 5, 6), NewFiscalStart = new DateTime(2017, 5, 5) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E5FA3F38-DC81-4F92-80A1-A78500BAE69B"), OldFiscalStart = new DateTime(2017, 6, 2), NewFiscalStart = new DateTime(2017, 6, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4284C0D5-8B7B-4C8E-886F-A79000B55299"), OldFiscalStart = new DateTime(2017, 6, 13), NewFiscalStart = new DateTime(2017, 6, 12) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B98DA369-48D5-4007-92FB-A79E009E59F1"), OldFiscalStart = new DateTime(2017, 6, 27), NewFiscalStart = new DateTime(2017, 6, 26) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("808A594E-3870-4C87-AD84-A73200A9CE67"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DDC3ED4F-6AEF-474C-80D4-A77000FBA473"), OldFiscalStart = new DateTime(2017, 5, 12), NewFiscalStart = new DateTime(2017, 5, 11) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A5E69A6F-0C16-42D9-9D13-A76600ED0AC0"), OldFiscalStart = new DateTime(2017, 5, 2), NewFiscalStart = new DateTime(2017, 5, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("1B16E501-6383-48B3-81F8-A6ED014B54F4"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6BB52FD2-C741-4E9F-B253-A6ED01596A57"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6EA3EA15-86C0-45EB-A7BA-11C3835F98CE"), OldFiscalStart = new DateTime(2017, 4, 11), NewFiscalStart = new DateTime(2017, 4, 10) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("89A73068-3FD9-431E-8B10-A78600B5B946"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("549DB64D-FA13-4FAF-B6FD-A7A000A9AC10"), OldFiscalStart = new DateTime(2017, 6, 29), NewFiscalStart = new DateTime(2017, 6, 28) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DE7EE3B3-E85A-4056-A90A-A71300C17EE9"), OldFiscalStart = new DateTime(2017, 2, 9), NewFiscalStart = new DateTime(2017, 2, 8) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("44C7F7FE-66CE-417B-BE42-A73200ADA46E"), OldFiscalStart = new DateTime(2017, 3, 12), NewFiscalStart = new DateTime(2017, 3, 11) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2036F061-FBD1-48B2-A748-A78B0098CC40"), OldFiscalStart = new DateTime(2017, 6, 8), NewFiscalStart = new DateTime(2017, 6, 7) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D5B793B2-2F7E-4F94-9409-A70C00B234EE"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AFAB215C-19FD-4B01-BF4B-A6F200D6A706"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("38DEC00D-0DDF-44AC-A5CD-A76F00EC7B74"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
+
+				leaveCycleEmployees.ForEach(e =>
+				{
+					var employee = _companyRepository.GetEmployeeById(e.EmployeeId);
+					
+					if (employee.SickLeaveHireDate.Date != e.NewFiscalStart.Date)
+					{
+						employee.SickLeaveHireDate = e.NewFiscalStart.Date;
+						empList.Add(employee);
+					}
+
+					var annualLimit = employee.CompanyId == new Guid("A931428F-705A-4EC9-AE6E-A6ED01575C58") ||
+														employee.CompanyId == new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28")
+						? (decimal)48
+						: (decimal)24;
+					var checks = _readerService.GetPayChecks(employeeId: e.EmployeeId);
+					var firstCarryOver = checks.OrderBy(p => p.Id).First(p=>p.Accumulations.Any()).Accumulations.First().CarryOver;
+					checks.Where(p=>p.Accumulations.Any(a=>a.FiscalStart.Date==e.OldFiscalStart.Date)).OrderBy(p=>p.Id).ToList().ForEach(
+						p =>
+						{
+							p.Accumulations.Where(a=>a.FiscalStart.Date==e.OldFiscalStart.Date).ToList().ForEach(a =>
+							{
+								a.FiscalStart = e.NewFiscalStart.Date;
+								a.FiscalEnd = a.FiscalStart.AddYears(1).AddDays(-1).Date;
+								var ytdAccumulation =
+									checks.Where(pc => pc.Id < p.Id).SelectMany(pc => pc.Accumulations).Sum(ac => ac.AccumulatedValue);
+
+								if ((ytdAccumulation + a.AccumulatedValue) >= a.PayType.AnnualLimit)
+									a.AccumulatedValue = Math.Max(a.PayType.AnnualLimit - ytdAccumulation, 0);
+
+								a.YTDFiscal = Math.Round(ytdAccumulation + a.AccumulatedValue,2,MidpointRounding.AwayFromZero);
+								a.YTDUsed = checks.Where(pc => pc.Id < p.Id).SelectMany(pc => pc.Accumulations).Sum(ac => ac.Used) + a.Used;
+								a.CarryOver = firstCarryOver;
+							});
+							payCheckList.Add(p);
+						});
+
+				});
+				Console.WriteLine("PayChecks " + payCheckList.Count); 
+				Console.WriteLine("Employees " + empList.Count);
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					payCheckList.ForEach(_payrollRepository.UpdatePayCheckSickLeaveAccumulation);
+					empList.ForEach(e =>
+					{
+						_companyRepository.SaveEmployee(e);
+						Console.WriteLine("E {0}, {1}, {2}",e.CompanyEmployeeNo, e.FullName, e.Id);
+					});
+					txn.Complete();
+				}
+			}
 		}
 
 		private static void CompareTaxRates(IContainer container)
@@ -940,6 +1254,13 @@ namespace SiteInspectionStatus_Utility
 			public Guid CompanyId { get; set; }
 			public decimal Percentage { get; set; }
 			public Guid UserId { get; set; }
+		}
+
+		public class LeaveCycleEmployee
+		{
+			public Guid EmployeeId { get; set; }
+			public DateTime OldFiscalStart { get; set; }
+			public DateTime NewFiscalStart { get; set; }
 		}
 	}
 }
