@@ -73,7 +73,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.tabChanged = function (tab) {
 						dataSvc.tab = tab;
-						if (tab === 1) {
+						if (tab === 4) {
 							$scope.drawCharts();
 						} else if (tab === 2) {
 							drawARCharts();
@@ -81,6 +81,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						else if (tab === 3) {
 							drawPerformanceCharts();
 						}
+						
 					}
 					var mapListToDataTable = function (input) {
 						return new google.visualization.arrayToDataTable(input.data);
@@ -492,7 +493,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							};
 
 							//google.load('visualization', '1.0', options);
-							$scope.drawCharts();
+							
 							commonRepository.getUserNews().then(function (data) {
 								dataSvc.myNews = data;
 								

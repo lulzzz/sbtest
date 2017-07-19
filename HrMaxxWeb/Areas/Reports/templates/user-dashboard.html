@@ -5,6 +5,7 @@
 	<div class="panel-heading">
 		<ul class="nav nav-tabs  nav-tabs-inverse" id="dashboardtabs">
 			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">General</span></a></li>
+			<li ng-class="{'active':data.tab===4}" ng-click="tabChanged(4)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Companies</span></a></li>
 			<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)"><a data-toggle="tab"><i class="fa fa-money"></i> <span class="hidden-xs">A.R.</span></a></li>
 			<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)"><a data-toggle="tab"><i class="fa fa-dollar"></i> <span class="hidden-xs">Performance</span></a></li>
 
@@ -17,7 +18,35 @@
 			
 		<div class="row" ng-show="data.tab===1">
 			<div class="col-sm-12 hidden-print table-responsive">
-				<div class="col-sm-6" style="height:300px; overflow-y:scroll">
+				
+				<div class="col-sm-6 col-sm-offset-3">
+					<div uib-carousel active="active" interval="5000" no-wrap="true">
+						<div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
+							<img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
+							<div class="carousel-caption">
+								<h3>{{news.title}}</h3>
+								<p style="font-size: 14pt">
+									{{news.newsContent}}
+									<br />
+									<i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss a'}}</i>
+								</p>
+							</div>
+
+							<div class="carousel-control">
+								News
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+			
+
+		</div>
+		<div class="row" ng-show="data.tab===4">
+			<div class="col-sm-12 hidden-print table-responsive">
+				<div class="col-sm-6">
 					<table class="table table-bordered table-condensed" ng-show="data.companiesWithoutPayroll.length>1">
 						<thead>
 							<tr>
@@ -52,33 +81,8 @@
 							</tr>
 						</tbody>
 					</table>
-				</div>
-				<div class="col-sm-6">
-					<div uib-carousel active="active" interval="5000" no-wrap="true">
-						<div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
-							<img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
-							<div class="carousel-caption">
-								<h3>{{news.title}}</h3>
-								<p style="font-size: 14pt">
-									{{news.newsContent}}
-									<br />
-									<i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss a'}}</i>
-								</p>
-							</div>
-
-							<div class="carousel-control">
-								News
-							</div>
-
-						</div>
-					</div>
-				</div>
-
-			</div>
-			<br />
-			<br />
-			<div class="row col-sm-12 m-t-10">
-				<div class="col-md-6 hidden-print">
+					<br />
+					<br />
 					<table class="table table-bordered table-condensed" ng-show="data.payrollsWithoutInvoice.length>1">
 						<thead>
 							<tr>
@@ -103,11 +107,9 @@
 							</tr>
 						</tbody>
 					</table>
-
-
-
 				</div>
-				<div class="col-sm-6">
+				
+				<div class="col-md-6 hidden-print">
 					<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
 						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer">
 							<td data-title=" 'Host' " sortable=" 'host' " filter="{ 'host': 'text' }" class="col-sm-4 text-center">
@@ -128,67 +130,69 @@
 						</tr>
 
 					</table>
-					
 
-				</div>
-			</div>
-
-		</div>
-		<div class="row" ng-show="data.tab===2">
-			<div class="row col-md-12 hidden-print">
-				<div class="col-md-6">
-					<div id="invoiceststusChart"></div>
-						
 
 
 				</div>
-				<div class="col-md-6">
-					<div id="invoicestatusdetailedChart"></div>
+
+			</div>
+			
+		</div>
+			<div class="row" ng-show="data.tab===2">
+				<div class="row col-md-12 hidden-print">
+					<div class="col-md-6">
+						<div id="invoiceststusChart"></div>
+
+
+
+					</div>
+					<div class="col-md-6">
+						<div id="invoicestatusdetailedChart"></div>
+
+					</div>
+				</div>
+				<div class="row col-md-12 hidden-print">
+					<div class="col-md-6" />
+					<div class="col-md-6">
+						<div id="invoicestatuspastdueChart"></div>
+
+					</div>
 
 				</div>
+				<br />
 			</div>
-			<div class="row col-md-12 hidden-print">
-				<div class="col-md-6"/>
-				<div class="col-md-6">
-					<div id="invoicestatuspastdueChart"></div>
+			<div class="row" ng-show="data.tab===3">
+				<div class="row col-md-12 hidden-print">
+					<div id="commissionPerformanceChart"></div>
 
 				</div>
-					
-			</div>
-			<br />
-		</div>
-		<div class="row" ng-show="data.tab===3">
-			<div class="row col-md-12 hidden-print">
-				<div id="commissionPerformanceChart"></div>
-				
-			</div>
-			<div class="row col-md-12 hidden-print">
-				<div id="processingPerformanceChart"></div>
+				<div class="row col-md-12 hidden-print">
+					<div id="processingPerformanceChart"></div>
 
+				</div>
+				<br />
 			</div>
-			<br />
-		</div>
-		<div id="chartTable" class="panel-body hidden-print">
-			<div ng-if="selectedChart" class="row text-center p-5">
-				<strong><em>{{selectedChart.title}}</em></strong>
-			</div>
-			<div class="row" ng-if="selectedChart">
+			<div id="chartTable" class="panel-body hidden-print">
+				<div ng-if="selectedChart" class="row text-center p-5">
+					<strong><em>{{selectedChart.title}}</em></strong>
+				</div>
+				<div class="row" ng-if="selectedChart">
 
-				<table class="table table-striped table-hover table-condensed table-bordered">
-					<thead>
-						<th ng-repeat="col in selectedChart.chartData[0]">{{col}}</th>
-					</thead>
-					<tbody>
-						<tr ng-repeat="row in selectedChart.chartData track by $index" ng-if="$index>0">
-							<td ng-repeat="val in row track by $index">
-								<span ng-show="$index===0">{{val}}</span>
-								<span ng-show="$index>0"><a ng-href="#!/Admin/Invoices?company={{selectedChart.chartData[0][$index]}}">{{val}}</a></span>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+					<table class="table table-striped table-hover table-condensed table-bordered">
+						<thead>
+							<th ng-repeat="col in selectedChart.chartData[0]">{{col}}</th>
+						</thead>
+						<tbody>
+							<tr ng-repeat="row in selectedChart.chartData track by $index" ng-if="$index>0">
+								<td ng-repeat="val in row track by $index">
+									<span ng-show="$index===0">{{val}}</span>
+									<span ng-show="$index>0"><a ng-href="#!/Admin/Invoices?company={{selectedChart.chartData[0][$index]}}">{{val}}</a></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
-	</div>
 </div>
 </div>
