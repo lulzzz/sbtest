@@ -378,10 +378,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\reports\941\Fed941-2017.xslt" />
-    <Content Include="templates\transformers\reports\941\Fed941-2016.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944-2017.xslt" />
-    <Content Include="templates\transformers\reports\944\Fed944-2016.xslt" />
-    <Content Include="templates\transformers\reports\944\Fed944-2015.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE6.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE7.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
