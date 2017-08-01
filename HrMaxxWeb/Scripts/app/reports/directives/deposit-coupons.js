@@ -19,12 +19,14 @@ common.directive('depositCoupons', ['zionAPI', '$timeout', '$window', 'version',
 						filter1: {
 							reportType: 0,
 							startDate: null,
-							endDate: null
+							endDate: null,
+							includeHistory: false
 						},
 						filter2: {
 							reportType: 1,
 							startDate: null,
-							endDate: null
+							endDate: null,
+							includeHistory: false
 						}
 					}
 					
@@ -38,13 +40,13 @@ common.directive('depositCoupons', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.getReport1 = function() {
-						getReport('Federal8109B_'+dataSvc.filter1.reportType, 'Federal Deposit Coupon', dataSvc.filter1.startDate, dataSvc.filter1.endDate);
+						getReport('Federal8109B_'+dataSvc.filter1.reportType, 'Federal Deposit Coupon', dataSvc.filter1.startDate, dataSvc.filter1.endDate, dataSvc.filter1.includeHistory);
 					}
 					$scope.getReport2 = function () {
-						getReport('CaliforniaDE88_' + dataSvc.filter2.reportType, 'California Deposit Coupon', dataSvc.filter2.startDate, dataSvc.filter2.endDate);
+						getReport('CaliforniaDE88_' + dataSvc.filter2.reportType, 'California Deposit Coupon', dataSvc.filter2.startDate, dataSvc.filter2.endDate, dataSvc.filter2.includeHistory);
 					}
 					
-					var getReport = function(reportName, desc, startDate, endDate) {
+					var getReport = function(reportName, desc, startDate, endDate, includeHistory) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
@@ -54,7 +56,8 @@ common.directive('depositCoupons', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: null,
 							month: null,
 							startDate:startDate,
-							endDate: endDate
+							endDate: endDate,
+							includeHistory: includeHistory
 						}
 						reportRepository.getReportDocument(request).then(function (data) {
 							var a = document.createElement('a');

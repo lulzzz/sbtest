@@ -6,7 +6,7 @@
 		</div>
 		<div class="panel-body" >
 			<div class="row">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" />	
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" />	
 			</div>
 			<div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.deductions.length===0" class="table table-bordered">
 				No deductions found

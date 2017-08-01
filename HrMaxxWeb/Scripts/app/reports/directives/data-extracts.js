@@ -41,11 +41,13 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							years: []
 						},
 						filter940: {
-							year : 0
+							year: 0,
+							includeHistory: false
 						},
 						paperless941: {
 							year: 0,
-							quarter:0
+							quarter: 0,
+							includeHistory:false
 						},
 						
 						filterW2: {
@@ -58,7 +60,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: 0,
 							month: null,
 							quarter: null,
-							depositDate: moment().startOf('day').toDate()
+							depositDate: moment().startOf('day').toDate(),
+							includeHistory: false
 						},
 						filterCAUIQ: {
 							year: 0,
@@ -67,7 +70,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: 0,
 							month: null,
 							quarter: null,
-							depositDate: moment().startOf('day').toDate()
+							depositDate: moment().startOf('day').toDate(),
+							includeHistory: false
 						},
 						filter941: {
 							year: 0,
@@ -76,7 +80,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: 0,
 							month: null,
 							quarter: null,
-							depositDate: moment().startOf('day').toDate()
+							depositDate: moment().startOf('day').toDate(),
+							includeHistory: false
 						},
 						filterCAPIT: {
 							year: 0,
@@ -85,19 +90,23 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositSchedule: 0,
 							month: null,
 							quarter: null,
-							depositDate: moment().startOf('day').toDate()
+							depositDate: moment().startOf('day').toDate(),
+							includeHistory: false
 						},
 						filter1099: {
-							year : 0
+							year: 0,
+							includeHistory: false
 						},
 						
 						filterDE6Q: {
 							year: 0,
-							quarter: 0
+							quarter: 0,
+							includeHistory: false
 						},
 						filterDE9Q: {
 							year: 0,
-							quarter: 0
+							quarter: 0,
+							includeHistory: false
 						},
 						filterCommissions: {
 							startDate: null,
@@ -361,97 +370,97 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.getReport940 = function() {
-						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null, null, null, null, null, null, true);
+						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null, null, null, null, null, null, true, dataSvc.filter940.includeHistory);
 					}
 					$scope.getReport941 = function () {
-						getReport('Paperless941', 'Paperless 941', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, true);
+						getReport('Paperless941', 'Paperless 941', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, true, dataSvc.paperless941.includeHistory);
 					}
 					
 					$scope.getReportW2Employee = function () {
-						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, true);
+						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
 					}
 					
 					$scope.getReport940Q = function () {
 						if (dataSvc.filter940Q.depositSchedule === 1)
-							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, null, 1, dataSvc.filter940Q.depositDate, null, dataSvc.filter940Q.payPeriod.startDate, dataSvc.filter940Q.payPeriod.endDate, true);
+							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, null, 1, dataSvc.filter940Q.depositDate, null, dataSvc.filter940Q.payPeriod.startDate, dataSvc.filter940Q.payPeriod.endDate, true, dataSvc.filter940Q.includeHistory);
 						else if (dataSvc.filter940Q.depositSchedule === 2)
-							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, null, 2, dataSvc.filter940Q.depositDate, dataSvc.filter940Q.month, null, null, true);
+							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, null, 2, dataSvc.filter940Q.depositDate, dataSvc.filter940Q.month, null, null, true, dataSvc.filter940Q.includeHistory);
 						else {
-							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, 3, dataSvc.filter940Q.depositDate, null, null, null, true);
+							getReport('Federal940', 'Federal 940 EFTPS File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, 3, dataSvc.filter940Q.depositDate, null, null, null, true, dataSvc.filter940Q.includeHistory);
 						}
 					}
 					$scope.getReport940QExcel = function () {
 						if (dataSvc.filter940Q.depositSchedule === 1)
-							getReport('Federal940Excel', 'Federal 940 EFTPS Excel File', dataSvc.filter940Q.year, null, 1, dataSvc.filter940Q.depositDate, null, dataSvc.filter940Q.payPeriod.startDate, dataSvc.filter940Q.payPeriod.endDate, false);
+							getReport('Federal940Excel', 'Federal 940 EFTPS Excel File', dataSvc.filter940Q.year, null, 1, dataSvc.filter940Q.depositDate, null, dataSvc.filter940Q.payPeriod.startDate, dataSvc.filter940Q.payPeriod.endDate, false, dataSvc.filter940Q.includeHistory);
 						else if (dataSvc.filter940Q.depositSchedule === 2)
-							getReport('Federal940Excel', 'Federal 940 EFTPS Excel File', dataSvc.filter940Q.year, null, 2, dataSvc.filter940Q.depositDate, dataSvc.filter940Q.month, null, null, false);
+							getReport('Federal940Excel', 'Federal 940 EFTPS Excel File', dataSvc.filter940Q.year, null, 2, dataSvc.filter940Q.depositDate, dataSvc.filter940Q.month, null, null, false, dataSvc.filter940Q.includeHistory);
 						else {
-							getReport('Federal940Excel', 'Federal 940 EFTPS Excel File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, 3, dataSvc.filter940Q.depositDate, null, null, null, false);
+							getReport('Federal940Excel', 'Federal 940 EFTPS Excel File', dataSvc.filter940Q.year, dataSvc.filter940Q.quarter, 3, dataSvc.filter940Q.depositDate, null, null, null, false, dataSvc.filter940Q.includeHistory);
 						}
 					}
 					$scope.getReportFederal941 = function () {
 						if(dataSvc.filter941.depositSchedule===1)
-							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 1, dataSvc.filter941.depositDate, null, dataSvc.filter941.payPeriod.startDate, dataSvc.filter941.payPeriod.endDate, true);
+							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 1, dataSvc.filter941.depositDate, null, dataSvc.filter941.payPeriod.startDate, dataSvc.filter941.payPeriod.endDate, true, dataSvc.filter941.includeHistory);
 						else if(dataSvc.filter941.depositSchedule===2)
-							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 2, dataSvc.filter941.depositDate, dataSvc.filter941.month, null, null, true);
+							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, null, 2, dataSvc.filter941.depositDate, dataSvc.filter941.month, null, null, true, dataSvc.filter941.includeHistory);
 						else {
-							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null, true);
+							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null, true, dataSvc.filter941.includeHistory);
 						}
 					}
 					$scope.getReportFederal941Excel = function () {
 						if (dataSvc.filter941.depositSchedule === 1)
-							getReport('Federal941Excel', 'Federal 941 EFTPS Excel File', dataSvc.filter941.year, null, 1, dataSvc.filter941.depositDate, null, dataSvc.filter941.payPeriod.startDate, dataSvc.filter941.payPeriod.endDate, false);
+							getReport('Federal941Excel', 'Federal 941 EFTPS Excel File', dataSvc.filter941.year, null, 1, dataSvc.filter941.depositDate, null, dataSvc.filter941.payPeriod.startDate, dataSvc.filter941.payPeriod.endDate, false, dataSvc.filter941.includeHistory);
 						else if (dataSvc.filter941.depositSchedule === 2)
-							getReport('Federal941Excel', 'Federal 941 EFTPS Excel File', dataSvc.filter941.year, null, 2, dataSvc.filter941.depositDate, dataSvc.filter941.month, null, null, false);
+							getReport('Federal941Excel', 'Federal 941 EFTPS Excel File', dataSvc.filter941.year, null, 2, dataSvc.filter941.depositDate, dataSvc.filter941.month, null, null, false, dataSvc.filter941.includeHistory);
 						else {
-							getReport('Federal941Excel', 'Federal 941 EFTPS Excel File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null, false);
+							getReport('Federal941Excel', 'Federal 941 EFTPS Excel File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null, false, dataSvc.filter941.includeHistory);
 						}
 					}
 					$scope.getReportCAPIT = function () {
 						if (dataSvc.filterCAPIT.depositSchedule === 1)
-							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 1, dataSvc.filterCAPIT.depositDate, null, dataSvc.filterCAPIT.payPeriod.startDate, dataSvc.filterCAPIT.payPeriod.endDate, true);
+							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 1, dataSvc.filterCAPIT.depositDate, null, dataSvc.filterCAPIT.payPeriod.startDate, dataSvc.filterCAPIT.payPeriod.endDate, true, dataSvc.filterCAPIT.includeHistory);
 						else if (dataSvc.filterCAPIT.depositSchedule === 2)
-							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 2, dataSvc.filterCAPIT.depositDate, dataSvc.filterCAPIT.month, null, null, true);
+							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, null, 2, dataSvc.filterCAPIT.depositDate, dataSvc.filterCAPIT.month, null, null, true, dataSvc.filterCAPIT.includeHistory);
 						else {
-							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null, true);
+							getReport('StateCAPIT', 'California PIT & DI GovOne File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null, true, dataSvc.filterCAPIT.includeHistory);
 						}
 					}
 					$scope.getReportCAPITExcel = function () {
 						if (dataSvc.filterCAPIT.depositSchedule === 1)
-							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, null, 1, dataSvc.filterCAPIT.depositDate, null, dataSvc.filterCAPIT.payPeriod.startDate, dataSvc.filterCAPIT.payPeriod.endDate, false);
+							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, null, 1, dataSvc.filterCAPIT.depositDate, null, dataSvc.filterCAPIT.payPeriod.startDate, dataSvc.filterCAPIT.payPeriod.endDate, false, dataSvc.filterCAPIT.includeHistory);
 						else if (dataSvc.filterCAPIT.depositSchedule === 2)
-							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, null, 2, dataSvc.filterCAPIT.depositDate, dataSvc.filterCAPIT.month, null, null, false);
+							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, null, 2, dataSvc.filterCAPIT.depositDate, dataSvc.filterCAPIT.month, null, null, false, dataSvc.filterCAPIT.includeHistory);
 						else {
-							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null, false);
+							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null, false, dataSvc.filterCAPIT.includeHistory);
 						}
 					}
 					$scope.getReportCAUIQ = function () {
 						if (dataSvc.filterCAUIQ.depositSchedule === 1)
-							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, true);
+							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, true, dataSvc.filterCAUIQ.includeHistory);
 						else if (dataSvc.filterCAUIQ.depositSchedule === 2)
-							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, true);
+							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, true, dataSvc.filterCAUIQ.includeHistory);
 						else {
-							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, true);
+							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, true, dataSvc.filterCAUIQ.includeHistory);
 						}
 					}
 					$scope.getReportCAUIQExcel = function () {
 						if (dataSvc.filterCAUIQ.depositSchedule === 1)
-							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, false);
+							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, false, dataSvc.filterCAUIQ.includeHistory);
 						else if (dataSvc.filterCAUIQ.depositSchedule === 2)
-							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, false);
+							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 2, dataSvc.filterCAUIQ.depositDate, dataSvc.filterCAUIQ.month, null, null, false, dataSvc.filterCAUIQ.includeHistory);
 						else {
-							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, false);
+							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, false, dataSvc.filterCAUIQ.includeHistory);
 						}
 					}
 
 					$scope.getReport1099 = function () {
-						getReport('Report1099', '1099', dataSvc.filter1099.year, null, null, null, null, null, null, true);
+						getReport('Report1099', '1099', dataSvc.filter1099.year, null, null, null, null, null, null, true, dataSvc.filter1099.includeHistory);
 					}
 					$scope.getReportDE6 = function () {
-						getReport('StateCADE6', 'California Quarterly DE6 Reporting File', dataSvc.filterDE6Q.year, dataSvc.filterDE6Q.quarter, null, null, null, null, null, true);
+						getReport('StateCADE6', 'California Quarterly DE6 Reporting File', dataSvc.filterDE6Q.year, dataSvc.filterDE6Q.quarter, null, null, null, null, null, true, dataSvc.filterDE6Q.includeHistory);
 					}
 					$scope.getReportDE9 = function () {
-						getReport('StateCADE9', 'California Quarterly DE9 Reporting File', dataSvc.filterDE9Q.year, dataSvc.filterDE9Q.quarter, null, null, null, null, null, true);
+						getReport('StateCADE9', 'California Quarterly DE9 Reporting File', dataSvc.filterDE9Q.year, dataSvc.filterDE9Q.quarter, null, null, null, null, null, true, dataSvc.filterDE9Q.includeHistory);
 					}
 					var showReview = function (report, extract) {
 						var modalInstance = $modal.open({
@@ -485,7 +494,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						});
 
 					}
-					var getReport = function(reportName, desc, year, quarter, depositSchedule, depositDate, month, start, end, review) {
+					var getReport = function(reportName, desc, year, quarter, depositSchedule, depositDate, month, start, end, review, includeHistory) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
@@ -495,7 +504,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							startDate:start,
 							endDate: end,
 							depositSchedule: depositSchedule,
-							depositDate: depositDate ? moment(depositDate).format("MM/DD/YYYY") : null
+							depositDate: depositDate ? moment(depositDate).format("MM/DD/YYYY") : null,
+							includeHistory: includeHistory
 						}
 						if (!review) {
 							reportRepository.getExtractDocument(request).then(function (data) {

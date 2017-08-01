@@ -20,7 +20,15 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+							
+								<label for="fp940history" class="switch">
+									Include History?
+									<input id="fp940history" type="checkbox" ng-model="data.filter940.includeHistory"  /><i></i>
+								</label>
+							
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Review</button>
 						</div>
 
@@ -47,7 +55,15 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+							
+								<label for="fp941history" class="switch">
+									Include History?
+									<input id="fp941history" type="checkbox" ng-model="data.paperless941.includeHistory" /><i></i>
+								</label>
+							
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.paperless941.year || !data.paperless941.quarter">Review</button>
 						</div>
 
@@ -66,7 +82,15 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+							
+								<label for="w2history" class="switch">
+									Include History?
+									<input id="w2history" type="checkbox" ng-model="data.filterW2.includeHistory" /><i></i>
+								</label>
+							
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Review</button>
 						</div>
 
@@ -86,7 +110,10 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+							
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Review</button>
 						</div>
 
@@ -121,7 +148,15 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+						
+								<label for="de6history" class="switch">
+									Include History?
+									<input id="de6history" type="checkbox" ng-model="data.filterDE6Q.includeHistory" /><i></i>
+								</label>
+							
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE6()" ng-disabled="!data.filterDE6Q.year || !data.filterDE6Q.quarter">Review</button>
 						</div>
 
@@ -148,7 +183,15 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+							
+								<label for="de9history" class="switch">
+									Include History?
+									<input id="de9history" type="checkbox" ng-model="data.filterDE9Q.includeHistory" /><i></i>
+								</label>
+							
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE9()" ng-disabled="!data.filterDE9Q.year || !data.filterDE9Q.quarter">Review</button>
 						</div>
 
@@ -165,7 +208,7 @@
 			<h4 class="panel-title">Tax Payments Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===2, 'glyphicon-chevron-right': data.openedRack!==2}"></i></h4>
 		</div>
 		<div class="panel-body" ng-show="data.openedRack===2">
-			<div class="col-sm-7">
+			<div class="col-sm-10">
 				<div class="row">
 					<div class="row">
 						<h4><u>Federal Tax Payment Extracts</u></h4>
@@ -176,7 +219,7 @@
 							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 941 EFTPS File {{data.filter941.depositSchedule===1 ? '( Semi-Weekly )' : data.filter941.depositSchedule===2 ? '( Monthly )' : data.filter941.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
 						</div>
 						<div class="col-sm-12">
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>Deposit Schedule</label>
 								<select name="depsc" ng-model="data.filter941.depositSchedule" ng-change="data.filter941.year=0" class="form-control" convert-to-number>
 									<option value="0"> select deposit schedule</option>
@@ -193,7 +236,7 @@
 								</select>
 							</div>
 
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>{{data.filter941.depositSchedule===1 ? 'Deposit Date' : data.filter941.depositSchedule===2 ? 'Month' : data.filter941.depositSchedule===3 ?'Quarter' : ''}}</label>
 								<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.key">
 									<option value=""> Please select</option>
@@ -227,13 +270,22 @@
 								<date-ctrl name="dep940q" model="data.filter941.depositDate" disabled="false" />
 							</div>
 							<div class="col-sm-2 form-group">
+								<label></label>
+								<div>
+									<label for="941history" class="switch">
+										Include History?
+										<input id="941history" type="checkbox" ng-model="data.filter941.includeHistory" /><i></i>
+									</label>
+								</div>
+							</div>
+							<div class="col-sm-2 form-group">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReportFederal941()" ng-disabled="!is941Valid()">Review</button>
 								<button class="btn btn-sm btn-primary" ng-click="getReportFederal941Excel()" ng-disabled="!is941Valid()">Excel</button>
-								
+
 							</div>
 
-						</div>
+							</div>
 
 					</div>
 
@@ -242,7 +294,7 @@
 							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 940 EFTPS File {{data.filter940Q.depositSchedule===1 ? '( Semi-Weekly )' : data.filter940Q.depositSchedule===2 ? '( Monthly )' : data.filter940Q.depositSchedule===3 ?'( Quarterly)' : ''}}</em></span></h5>
 						</div>
 						<div class="col-sm-12">
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>Deposit Schedule</label>
 								<select name="depsc" ng-model="data.filter940Q.depositSchedule" ng-change="data.filter940Q.year=0" class="form-control" convert-to-number>
 									<option value="0"> select deposit schedule</option>
@@ -258,7 +310,7 @@
 									<option value=""> select year</option>
 								</select>
 							</div>
-							<div class="col-sm-3">
+							<div class="col-sm-2">
 								<label>{{data.filter940Q.depositSchedule===1 ? 'Deposit Date' : data.filter940Q.depositSchedule===2 ? 'Month' : data.filter940Q.depositSchedule===3 ?'Quarter' : ''}}</label>
 								<select name="quarter940" ng-if="data.filter940Q.depositSchedule===1" ng-model="data.filter940Q.payPeriod" ng-disabled="!data.filter940Q.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter940Q.payPeriods track by payperiod.key">
 									<option value=""> Please select</option>
@@ -290,6 +342,15 @@
 								<label>Deposit Date</label>
 								<date-ctrl name="dep940q" model="data.filter940Q.depositDate" disabled="false" />
 							</div>
+							<div class="col-sm-2 form-group">
+								<label></label>
+								<div>
+									<label for="940history" class="switch">
+										Include History?
+										<input id="940history" type="checkbox" ng-model="data.filter940Q.includeHistory" /><i></i>
+									</label>
+								</div>
+							</div>
 							<div class="col-sm-2">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReport940Q()" ng-disabled="!is940Valid()">Review</button>
@@ -312,7 +373,7 @@
 							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California PIT & DI GovOne File {{data.filterCAPIT.depositSchedule===1 ? '( Semi-Weekly )' : data.filterCAPIT.depositSchedule===2 ? '( Monthly )' : data.filterCAPIT.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
 						</div>
 						<div class="col-sm-12">
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>Deposit Schedule</label>
 								<select name="capitdp" ng-model="data.filterCAPIT.depositSchedule" ng-change="data.filterCAPIT.year=0" class="form-control" convert-to-number>
 									<option value="0"> select deposit schedule</option>
@@ -329,7 +390,7 @@
 								</select>
 							</div>
 
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>Pay Period</label>
 								<select ng-if="data.filterCAPIT.depositSchedule===1" ng-model="data.filterCAPIT.payPeriod" ng-disabled="!data.filterCAPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAPIT.payPeriods track by payperiod.key">
 									<option value=""> Please select</option>
@@ -364,6 +425,15 @@
 								<date-ctrl name="dep940q" model="data.filterCAPIT.depositDate" min="minDepositDate" disabled="false" />
 							</div>
 							<div class="col-sm-2 form-group">
+								<label></label>
+								<div>
+									<label for="capithistory" class="switch">
+										Include History?
+										<input id="capithistory" type="checkbox" ng-model="data.filterCAPIT.includeHistory" /><i></i>
+									</label>
+								</div>
+							</div>
+							<div class="col-sm-2 form-group">
 								<br />
 								<button class="btn btn-sm btn-primary" ng-click="getReportCAPIT()" ng-disabled="!isCAPITValid()">Review</button>
 								<button class="btn btn-sm btn-primary" ng-click="getReportCAPITExcel()" ng-disabled="!isCAPITValid()">Excel</button>
@@ -378,7 +448,7 @@
 							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California UI & ETT GovOne File {{data.filterCAUIQ.depositSchedule===1 ? '( Semi-Weekly )' : data.filterCAUIQ.depositSchedule===2 ? '( Monthly )' : data.filterCAUIQ.depositSchedule===3 ?'( Quarterly)' : ''}} </em></span></h5>
 						</div>
 						<div class="col-sm-12">
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>Deposit Schedule</label>
 								<select ng-model="data.filterCAUIQ.depositSchedule" ng-change="data.filterCAUIQ.year=0" class="form-control" convert-to-number>
 									<option value="0"> select deposit schedule</option>
@@ -395,7 +465,7 @@
 								</select>
 							</div>
 
-							<div class="col-sm-3 form-group">
+							<div class="col-sm-2 form-group">
 								<label>Pay Period</label>
 								<select ng-if="data.filterCAUIQ.depositSchedule===1" ng-model="data.filterCAUIQ.payPeriod" ng-disabled="!data.filterCAUIQ.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAUIQ.payPeriods track by payperiod.key">
 									<option value=""> Please select</option>
@@ -428,6 +498,15 @@
 							<div class="col-sm-2 form-group">
 								<label>Deposit Date</label>
 								<date-ctrl model="data.filterCAUIQ.depositDate" min="minDepositDate" disabled="false" />
+							</div>
+							<div class="col-sm-2 form-group">
+								<label></label>
+								<div>
+									<label for="cauihistory" class="switch">
+										Include History?
+										<input id="cauihistory" type="checkbox" ng-model="data.filterCAUIQ.includeHistory" /><i></i>
+									</label>
+								</div>
 							</div>
 							<div class="col-sm-2 form-group">
 								<br />

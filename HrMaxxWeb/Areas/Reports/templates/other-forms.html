@@ -18,7 +18,15 @@
 								</select>
 							</div>
 							<div class="col-sm-3"></div>
-							<div class="col-sm-6">
+							<div class="col-sm-3 form-group">
+
+								<label for="qahistory" class="switch">
+									Include History?
+									<input id="qahistory" type="checkbox" ng-model="data.filterQA.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-3">
 								<button class="btn btn-sm btn-primary" ng-click="getReportQA()" ng-disabled="!data.filterQA.year">Display</button>
 							</div>
 
@@ -39,7 +47,15 @@
 							<div class="col-sm-3">
 
 							</div>
-							<div class="col-sm-6">
+							<div class="col-sm-3 form-group">
+
+								<label for="mqahistory" class="switch">
+									Include History?
+									<input id="mqahistory" type="checkbox" ng-model="data.filterMQA.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-3">
 								<button class="btn btn-sm btn-primary" ng-click="getReportMQA()" ng-disabled="!data.filterMQA.year">Display</button>
 							</div>
 

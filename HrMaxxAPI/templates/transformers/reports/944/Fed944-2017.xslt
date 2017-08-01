@@ -52,7 +52,7 @@
 <xsl:output method="xml" indent="no"/>
 	<xsl:template match="ReportResponse">
 	<ReportTransformed>
-		<Name>FilledForm941</Name>
+		<Name>FilledForm944</Name>
 		<Reports>
 			<Report>
 				<TemplatePath>GovtForms\944\</TemplatePath>

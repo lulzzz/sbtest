@@ -615,7 +615,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 	  public ExtractResponse GetExtractAccumulation(string report, DateTime startDate, DateTime endDate, Guid? hostId = null,
 		  DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,
 		  bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
-		  bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false)
+		  bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includeHistory=false)
 	  {
 			try
 			{
@@ -663,6 +663,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (includeMonthlyAccumulation)
 				{
 					paramList.Add(new FilterParam { Key = "includeMonthlyAccumulation", Value = includeMonthlyAccumulation.ToString() });
+				}
+				if (includeHistory)
+				{
+					paramList.Add(new FilterParam { Key = "includeHistory", Value = includeHistory.ToString() });
 				}
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractAccumulation", paramList);
@@ -819,7 +823,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		public List<Accumulation> GetTaxAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
 			bool includeVoids = false, bool includeTaxes = true,
 			bool includedDeductions = true, bool includedCompensations = true, bool includeWorkerCompensations = true,
-			bool includePayCodes = true, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true, string report = null)
+			bool includePayCodes = true, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true, string report = null, bool includeHistory = false)
 		{
 			try
 			{
@@ -877,7 +881,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "report", Value = report });
 				}
-
+				if (includeHistory)
+				{
+					paramList.Add(new FilterParam { Key = "includeHistory", Value = includeHistory.ToString() });
+				}
 
 				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
 					proc, paramList, new XmlRootAttribute("AccumulationList"));

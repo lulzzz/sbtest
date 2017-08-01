@@ -104,7 +104,8 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 							quarter: m.reportFilter.filter.quarter,
 							month: m.reportFilter.filter.month,
 							startDate: m.reportFilter.filterStartDate,
-							endDate: m.reportFilter.filterEndDate
+							endDate: m.reportFilter.filterEndDate,
+							includeHistory: m.reportFilter.filter.includeHistory
 						}
 						reportRepository.getReport(request).then(function (data) {
 							$scope.list = data.payChecks;

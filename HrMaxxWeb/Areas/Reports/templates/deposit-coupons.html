@@ -27,7 +27,7 @@
 						<div class="col-sm-3">
 							<date-ctrl name="ed1" model="data.filter1.endDate" />
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<select name="report1" ng-model="data.filter1.reportType" class="form-control" convert-to-number>
 								<option value="0"> Please select</option>
 								<option value="1"> Form 940</option>
@@ -35,7 +35,15 @@
 
 							</select>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group">
+
+							<label for="f1history" class="switch">
+								Include History?
+								<input id="f1history" type="checkbox" ng-model="data.filter1.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReport1()" ng-disabled="!data.filter1.startDate || !data.filter1.endDate || !data.filter1.reportType">Display 8109B</button>
 						</div>
 						
@@ -61,7 +69,7 @@
 						<div class="col-sm-3">
 							<date-ctrl name="ed2" model="data.filter2.endDate" />
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<select name="report2" ng-model="data.filter2.reportType" class="form-control" convert-to-number>
 								<option value="1"> All</option>
 								<option value="2"> UI + ETT</option>
@@ -69,7 +77,8 @@
 
 							</select>
 						</div>
-						<div class="col-sm-3">
+						
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReport2()" ng-disabled="!data.filter2.startDate || !data.filter2.endDate || !data.filter2.reportType">Display DE-88</button>
 						</div>
 

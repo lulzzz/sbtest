@@ -20,32 +20,45 @@
 			<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
 				<td class="col-sm-4">
 					<div class="row" ng-show="showDates &&  data.filter.filterByDateRange">
-						<div class="col-sm-5">
-							<div class="col-sm-2"><label>From: </label></div>
-							<date-ctrl name="startdate" model="data.filter.startDate" disabled="false" />
+						<div class="col-sm-12">
+							<div class="col-sm-6">
+								<div class="col-sm-2"><label>From: </label></div>
+								<date-ctrl name="startdate" model="data.filter.startDate" disabled="false" />
 
-						</div>
-						<div class="col-sm-5">
-							<div class="col-sm-2"><label>To: </label></div>
-							<date-ctrl name="enddate" model="data.filter.endDate" min="data.filter.startDate" />
+							</div>
+							<div class="col-sm-6">
+								<div class="col-sm-2"><label>To: </label></div>
+								<date-ctrl name="enddate" model="data.filter.endDate" min="data.filter.startDate" />
 
-							
+
+							</div>
 						</div>
-						<div class="col-sm-2">
-							<button class="btn btn-xs btn-success pull-right" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button>
+						<div class="col-sm-12">
+							<div class="col-sm-6 form-group" ng-show="showHistory">
+
+								<label for="bydatehistory" class="switch">
+									Include History?
+									<input id="bydatehistory" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-6">
+								<button class="btn btn-xs btn-success pull-right" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button>
+							</div>
 						</div>
+						
 					</div>
 
 				</td>
 
 				<td class="col-sm-4">
 					<div class="row" ng-show="data.filter.filterByMonthYear">
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
-						<div class="col-sm-4" >
+						<div class="col-sm-3" >
 							<select name="filtermonths" ng-model="data.filter.month" ng-disabled="!data.filter.year" class="form-control" ng-change="data.filter.quarter=0" convert-to-number>
 								<option value="0">select month</option>
 								<option value="1">January</option>
@@ -62,7 +75,7 @@
 								<option value="12">December</option>
 							</select>
 						</div>
-						<div class="col-sm-4" >
+						<div class="col-sm-3" >
 							<select name="filterquarter" ng-model="data.filter.quarter" ng-disabled="!data.filter.year" ng-change="data.filter.month=0" class="form-control" convert-to-number>
 								<option value="0">select quarter</option>
 								<option value="1">First Quarter</option>
@@ -71,7 +84,14 @@
 								<option value="4">Fourth Quarter</option>
 							</select>
 						</div>
-						
+						<div class="col-sm-3 form-group" ng-show="showHistory">
+
+							<label for="bymqhistory" class="switch">
+								Include History?
+								<input id="bymqhistory" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
+							</label>
+
+						</div>
 						<div class="col-sm-1"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
 					</div>
 

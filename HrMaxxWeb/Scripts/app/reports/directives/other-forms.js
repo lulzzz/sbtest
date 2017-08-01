@@ -20,10 +20,12 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 							years: []
 						},
 						filterQA: {
-							year : 0
+							year: 0,
+							includeHistory: false
 						},
 						filterMQA: {
-							year : 0
+							year: 0,
+							includeHistory: false
 						},
 						responseEmployeeTaxJournal: null,
 						responseEmployeeHourJournal: null,
@@ -48,10 +50,10 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.getReportQA = function() {
-						getReport('QuarterAnnualReport', 'Quarter Annual Payroll Tax Report', dataSvc.filterQA.year, null);
+						getReport('QuarterAnnualReport', 'Quarter Annual Payroll Tax Report', dataSvc.filterQA.year, null, dataSvc.filterQA.includeHistory);
 					}
 					$scope.getReportMQA = function () {
-						getReport('MonthlyQuarterAnnualReport', 'Monthly Quarter Annual Payroll Tax Report', dataSvc.filterMQA.year,null);
+						getReport('MonthlyQuarterAnnualReport', 'Monthly Quarter Annual Payroll Tax Report', dataSvc.filterMQA.year, null, dataSvc.filterMQA.includeHistory);
 					}
 					$scope.getReportEmployeeJournalByCheck = function () {
 						dataSvc.currentView = 1;
@@ -67,7 +69,7 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 						
 					}
 					
-					var getReport = function(reportName, desc, year, quarter) {
+					var getReport = function(reportName, desc, year, quarter, includeHistory) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
@@ -77,7 +79,8 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: quarter,
 							month: null,
 							startDate:null,
-							endDate: null
+							endDate: null,
+							includeHistory: includeHistory
 						}
 						reportRepository.getReportDocument(request).then(function (data) {
 							var a = document.createElement('a');

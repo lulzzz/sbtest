@@ -39,7 +39,8 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 							quarter: m.reportFilter.filter.quarter,
 							month: m.reportFilter.filter.month,
 							startDate: m.reportFilter.filterStartDate,
-							endDate: m.reportFilter.filterEndDate
+							endDate: m.reportFilter.filterEndDate,
+							includeHistory: m.reportFilter.filter.includeHistory
 						}
 						reportRepository.getReport(request).then(function (data) {
 							dataSvc.response = data;

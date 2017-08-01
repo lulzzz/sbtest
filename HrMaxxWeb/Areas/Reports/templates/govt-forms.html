@@ -27,7 +27,15 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+
+							<label for="fp940history" class="switch">
+								Include History?
+								<input id="fp940history" type="checkbox" ng-model="data.filter940.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Display 940</button>
 						</div>
 						
@@ -54,7 +62,15 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+
+							<label for="fp941history" class="switch">
+								Include History?
+								<input id="fp941history" type="checkbox" ng-model="data.filter941.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.filter941.year || !data.filter941.quarter">Display 941</button>
 						</div>
 
@@ -72,14 +88,22 @@
 								<option value=""> select year</option>
 							</select>
 						</div>
+						<div class="col-sm-3 form-group">
+
+							<label for="fp944history" class="switch">
+								Include History?
+								<input id="fp944history" type="checkbox" ng-model="data.filter944.includeHistory" /><i></i>
+							</label>
+
+						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						
 							<button class="btn btn-sm btn-primary" ng-click="getReport944()" ng-disabled="!data.filter944.year">Display 944</button>
 						</div>
 
 					</div>
 
-				</div>
+				
 				
 				<div class="col-sm-12">
 					<div class="col-sm-12">
@@ -91,7 +115,15 @@
 								<option value=""> select year</option>
 							</select>
 						</div>
-						<div class="col-sm-3"></div>
+						
+						<div class="col-sm-3 form-group">
+
+							<label for="w2history" class="switch">
+								Include History?
+								<input id="w2history" type="checkbox" ng-model="data.filterW2.includeHistory" /><i></i>
+							</label>
+
+						</div>
 						<div class="col-sm-6">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Display W2 - Employee</button>
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">Display W2 - Employer</button>
@@ -112,7 +144,15 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+
+							<label for="w3history" class="switch">
+								Include History?
+								<input id="w3history" type="checkbox" ng-model="data.filterW3.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW3()" ng-disabled="!data.filterW3.year">Display W3</button>
 						</div>
 
@@ -157,7 +197,15 @@
 						<div class="col-sm-3">
 							
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+
+							<label for="de7history" class="switch">
+								Include History?
+								<input id="de7history" type="checkbox" ng-model="data.filterde7.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE7()" ng-disabled="!data.filterde7.year">Display DE-7</button>
 						</div>
 
@@ -184,7 +232,15 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+
+							<label for="de6history" class="switch">
+								Include History?
+								<input id="de6history" type="checkbox" ng-model="data.filterde6.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE6()" ng-disabled="!data.filterde6.year || !data.filterde6.quarter">Display DE-6</button>
 						</div>
 
@@ -210,7 +266,15 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group">
+
+							<label for="de9history" class="switch">
+								Include History?
+								<input id="de9history" type="checkbox" ng-model="data.filterde9.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE9()" ng-disabled="!data.filterde9.year || !data.filterde9.quarter">Display DE-9</button>
 						</div>
 
@@ -222,7 +286,7 @@
 			
 		</div>
 	</div>
-
 	</div>
+	
 
 
