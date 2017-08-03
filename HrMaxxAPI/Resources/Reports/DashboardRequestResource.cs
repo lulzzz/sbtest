@@ -12,6 +12,6 @@ namespace HrMaxxAPI.Resources.Reports
 		public DateTime? EndDate { get; set; }
 		public string Criteria { get; set; }
 		public string ReportName { get; set; }
-		
+		public bool OnlyActive { get; set; }
 	}
 }

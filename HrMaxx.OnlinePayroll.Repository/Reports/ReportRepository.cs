@@ -68,7 +68,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 
 		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
 		{
-			return getDashboardData(dashboardRequest.Report, dashboardRequest.Host, dashboardRequest.Role, dashboardRequest.StartDate, dashboardRequest.EndDate, dashboardRequest.Criteria);
+			return getDashboardData(dashboardRequest.Report, dashboardRequest.Host, dashboardRequest.Role, dashboardRequest.StartDate, dashboardRequest.EndDate, dashboardRequest.Criteria, dashboardRequest.OnlyActive);
 		}
 
 		public ExtractResponse GetExtractReport(ReportRequest extractReport)
@@ -324,7 +324,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		}
 
 
-		private List<DashboardData> getDashboardData(string query, Guid? host, string role, DateTime? startDate = null, DateTime? endDate = null, string criteria = null)
+		private List<DashboardData> getDashboardData(string query, Guid? host, string role, DateTime? startDate = null, DateTime? endDate = null, string criteria = null, bool onlyActive=true)
 		{
 			
 			using (var con = new SqlConnection(_sqlCon))
@@ -343,6 +343,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 						cmd.Parameters.AddWithValue("@host", host);
 					if (role==RoleTypeEnum.HostStaff.GetDbName() || role==RoleTypeEnum.CorpStaff.GetDbName())
 						cmd.Parameters.AddWithValue("@role", role);
+
+					cmd.Parameters.AddWithValue("@onlyActive", onlyActive);
 					
 
 					cmd.Connection = con;

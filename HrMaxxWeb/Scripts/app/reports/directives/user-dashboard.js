@@ -56,8 +56,9 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						
 						
 					};
-					var drawARCharts = function() {
-						reportRepository.getDashboardData('GetInvoiceStatusChartData', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+					var drawARCharts = function (startdate, enddate, onlyActive) {
+						
+						reportRepository.getDashboardData('GetInvoiceStatusChartData', startdate, enddate, '', onlyActive).then(function (data) {
 							dataSvc.reportData = data;
 							$scope.chartData = [];
 							$scope.drawInvoiceStatusChart();
@@ -67,21 +68,31 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							console.log(error);
 						});
 					}
-					var drawPerformanceCharts = function () {
-						$scope.drawCommissionPerformanceChart();
-						$scope.drawProcessingPerformanceChart();
+					var drawPerformanceCharts = function (startdate, enddate, onlyActive) {
+						$scope.drawCommissionPerformanceChart(startdate, enddate, onlyActive);
+						$scope.drawProcessingPerformanceChart(startdate, enddate, onlyActive);
 					}
 					$scope.tabChanged = function (tab) {
+						var m = $scope.mainData;
 						dataSvc.tab = tab;
 						if (tab === 4) {
 							$scope.drawCharts();
 						} else if (tab === 2) {
-							drawARCharts();
+							drawARCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
 						}
 						else if (tab === 3) {
-							drawPerformanceCharts();
+							drawPerformanceCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
 						}
 						
+					}
+					$scope.getReport = function () {
+						var m = $scope.mainData;
+						if (dataSvc.tab === 2) {
+							drawARCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
+						}
+						else if (dataSvc.tab === 3) {
+							drawPerformanceCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
+						}
 					}
 					var mapListToDataTable = function (input) {
 						return new google.visualization.arrayToDataTable(input.data);
@@ -106,8 +117,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					}
 
-					$scope.drawCommissionPerformanceChart = function () {
-						reportRepository.getDashboardData('GetCommissionPerformanceChart', null, null, null).then(function (data1) {
+					$scope.drawCommissionPerformanceChart = function (startdate, enddate, onlyActive) {
+						reportRepository.getDashboardData('GetCommissionPerformanceChart', startdate, enddate, null, onlyActive).then(function (data1) {
 							var data = data1[0];
 							if (data1.length > 0) {
 								var ws_data = null;
@@ -139,8 +150,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						});
 						
 					};
-					$scope.drawProcessingPerformanceChart = function () {
-						reportRepository.getDashboardData('GetPayrollProcessingPerformanceChart', null, null, null).then(function (data1) {
+					$scope.drawProcessingPerformanceChart = function (startdate, enddate, onlyActive) {
+						reportRepository.getDashboardData('GetPayrollProcessingPerformanceChart', startdate, enddate, null, onlyActive).then(function (data1) {
 							var data = data1[0];
 							if (data1.length > 0) {
 								var ws_data = null;
@@ -272,7 +283,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 					};
 					$scope.drawInvoiceStatusDetailedChart = function (status) {
-						reportRepository.getDashboardData('GetInvoiceStatusDetailedChartData', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+						reportRepository.getDashboardData('GetInvoiceStatusDetailedChartData', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, status, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
 							var data = data1[0];
 							if (data1.length>0) {
 								var ws_data = null;
@@ -308,7 +319,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 					};
 					$scope.drawInvoiceStatusPastDueChart = function (status) {
-						reportRepository.getDashboardData('GetInvoiceStatusPastDueChartData', $scope.data.startDate, $scope.data.endDate, status).then(function (data1) {
+						reportRepository.getDashboardData('GetInvoiceStatusPastDueChartData', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, status, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
 							var data = data1[0];
 							if (data) {
 								var ws_data = null;
@@ -500,8 +511,16 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							}, function (erorr) {
 
 							});
-						
-						
+
+							$scope.mainData.reportFilter.filterStartDate = null;
+							$scope.mainData.reportFilter.filterEndDate = null;
+							$scope.mainData.reportFilter.filter.startDate = null;
+							$scope.mainData.reportFilter.filter.endDate = null;
+							$scope.mainData.reportFilter.filter.onlyActive = false;
+							$scope.mainData.reportFilter.filter.filterByDateRange = false;
+							$scope.mainData.reportFilter.filter.filterByMonthYear = false;
+							$scope.mainData.reportFilter.filter.month = 0;
+							$scope.mainData.reportFilter.filter.quarter = 0;
 
 					};
 

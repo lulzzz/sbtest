@@ -31,7 +31,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						},
 						filterWC: {
 							startDate: moment().add(-1, 'month').startOf('month').toDate(),
-							endDate: moment().add(-1, 'month').endOf('month').toDate()
+							endDate: moment().add(-1, 'month').endOf('month').toDate(),
+							includeHistory: false
 						},
 						filterG: {
 							startDate: moment().add(-1, 'month').startOf('month').toDate(),
@@ -42,16 +43,17 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						},
 						filter940: {
 							year: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						paperless941: {
 							year: 0,
 							quarter: 0,
-							includeHistory:false
+							includeHistory: true
 						},
 						
 						filterW2: {
-							year : 0
+							year: 0,
+							includeHistory: true
 						},
 						filter940Q: {
 							year: 0,
@@ -61,7 +63,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: false
+							includeHistory: true
 						},
 						filterCAUIQ: {
 							year: 0,
@@ -71,7 +73,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: false
+							includeHistory: true
 						},
 						filter941: {
 							year: 0,
@@ -81,7 +83,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: false
+							includeHistory: true
 						},
 						filterCAPIT: {
 							year: 0,
@@ -91,7 +93,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: false
+							includeHistory: true
 						},
 						filter1099: {
 							year: 0,
@@ -101,16 +103,18 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						filterDE6Q: {
 							year: 0,
 							quarter: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterDE9Q: {
 							year: 0,
 							quarter: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterCommissions: {
 							startDate: null,
-							endDate: null
+							endDate: null,
+							includeHistory: false,
+							includeInactive: true
 						}
 					}
 					$scope.is941Valid = function() {
@@ -696,7 +700,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							reportName: 'CommissionsReport',
 							userId: dataSvc.selectedSalesRep ? dataSvc.selectedSalesRep.userId : null,
 							startDate: dataSvc.filterCommissions.startDate ? moment(dataSvc.filterCommissions.startDate).format("MM/DD/YYYY") : moment("01-01-2017", "MM-DD-YYYY").format("MM/DD/YYYY"),
-							endDate: dataSvc.filterCommissions.endDate ? moment(dataSvc.filterCommissions.endDate).format("MM/DD/YYYY") : moment().format("MM/DD/YYYY")
+							endDate: dataSvc.filterCommissions.endDate ? moment(dataSvc.filterCommissions.endDate).format("MM/DD/YYYY") : moment().format("MM/DD/YYYY"),
+							includeInactive: dataSvc.filterCommissions.includeInactive
 						}
 						reportRepository.getCommissionsReport(request).then(function (extract) {
 							showReview(request, extract);

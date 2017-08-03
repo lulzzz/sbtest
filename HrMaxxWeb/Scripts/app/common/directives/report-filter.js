@@ -11,7 +11,8 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 				showDates: "=?showDates",
 				showPeriods: "=?showPeriods",
 				defaultsProvided: "=?defaultsProvided",
-				showHistory: "=?showHistory"
+				showHistory: "=?showHistory",
+				showActive: "=?showActive"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/report-filter.html?v=' + version,
 

@@ -314,14 +314,15 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
-			getDashboardData: function (report, startdate, enddate, criteria) {
+			getDashboardData: function (report, startdate, enddate, criteria, onlyActive) {
 				var deferred = $q.defer();
 
 				reportServer.all('DashboardReport').post({
 					report: report,
 					startDate: startdate,
 					endDate: enddate,
-					criteria: criteria
+					criteria: criteria,
+					onlyActive: onlyActive
 				}).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {

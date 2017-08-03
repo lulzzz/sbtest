@@ -21,43 +21,43 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 						},
 						filter940: {
 							year: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filter944: {
 							year: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterW2: {
 							year: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterW3: {
 							year: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filter1099: {
 							year: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filter941: {
 							year: 0,
 							quarter: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterde7: {
 							year: 0,
 							quarter: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterde6: {
 							year: 0,
 							quarter: 0,
-							includeHistory: false
+							includeHistory: true
 						},
 						filterde9: {
 							year: 0,
 							quarter: 0,
-							includeHistory: false
+							includeHistory: true
 						}
 					}
 					var currentYear = new Date().getFullYear();

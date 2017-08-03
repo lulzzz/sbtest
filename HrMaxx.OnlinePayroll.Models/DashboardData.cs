@@ -20,5 +20,6 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Criteria { get; set; }
 		public Guid? Host { get; set; }
 		public string Role { get; set; }
+		public bool OnlyActive { get; set; }
 	}
 }

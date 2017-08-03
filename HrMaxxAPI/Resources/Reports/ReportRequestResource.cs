@@ -30,6 +30,7 @@ namespace HrMaxxAPI.Resources.Reports
 		public Guid? UserId { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
+		public bool IncludeInactive { get; set; }
 	}
 
 	public class SearchRequest

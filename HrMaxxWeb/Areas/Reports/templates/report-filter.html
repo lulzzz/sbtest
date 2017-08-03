@@ -34,7 +34,7 @@
 							</div>
 						</div>
 						<div class="col-sm-12">
-							<div class="col-sm-6 form-group" ng-show="showHistory">
+							<div class="col-sm-3 form-group" ng-show="showHistory">
 
 								<label for="bydatehistory" class="switch">
 									Include History?
@@ -42,8 +42,16 @@
 								</label>
 
 							</div>
+							<div class="col-sm-3 form-group" ng-show="showActive">
+
+								<label for="bydateactive" class="switch">
+									Only Active?
+									<input id="bydateactive" type="checkbox" ng-model="data.filter.onlyActive" /><i></i>
+								</label>
+
+							</div>
 							<div class="col-sm-6">
-								<button class="btn btn-xs btn-success pull-right" ng-show="data.filter.startDate || data.filter.endDate" ng-click="filterByDateRange()">Go</button>
+								<button class="btn btn-xs btn-success pull-right" ng-click="filterByDateRange()">Go</button>
 							</div>
 						</div>
 						
@@ -89,6 +97,14 @@
 							<label for="bymqhistory" class="switch">
 								Include History?
 								<input id="bymqhistory" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3 form-group" ng-show="showActive">
+
+							<label for="bymqactive" class="switch">
+								Only Active?
+								<input id="bymqactive" type="checkbox" ng-model="data.filter.onlyActive" /><i></i>
 							</label>
 
 						</div>

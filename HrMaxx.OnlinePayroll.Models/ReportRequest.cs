@@ -52,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? EndDate { get; set; }
 		public string Description { get; set; }
 		public bool AllowFiling { get; set; }
+		public bool IncludeInactive { get; set; }
 	}
 
 }

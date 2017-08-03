@@ -15,7 +15,9 @@
 		</h2>
 	</div>
 	<div class="panel-body">
-			
+		<div class="row hidden-print" ng-show="data.tab===2 || data.tab===3">
+			<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="false" show-active="true"/>
+		</div>
 		<div class="row" ng-show="data.tab===1">
 			<div class="col-sm-12 hidden-print table-responsive">
 				

@@ -77,7 +77,14 @@
 
 							</select>
 						</div>
-						
+						<div class="col-sm-2 form-group">
+
+							<label for="f2history" class="switch">
+								Include History?
+								<input id="f2history" type="checkbox" ng-model="data.filter2.includeHistory" /><i></i>
+							</label>
+
+						</div>
 						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReport2()" ng-disabled="!data.filter2.startDate || !data.filter2.endDate || !data.filter2.reportType">Display DE-88</button>
 						</div>

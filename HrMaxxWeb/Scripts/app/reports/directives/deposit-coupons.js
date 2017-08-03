@@ -20,13 +20,13 @@ common.directive('depositCoupons', ['zionAPI', '$timeout', '$window', 'version',
 							reportType: 0,
 							startDate: null,
 							endDate: null,
-							includeHistory: false
+							includeHistory: true
 						},
 						filter2: {
 							reportType: 1,
 							startDate: null,
 							endDate: null,
-							includeHistory: false
+							includeHistory: true
 						}
 					}
 					

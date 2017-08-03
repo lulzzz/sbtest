@@ -11,6 +11,7 @@ using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
@@ -72,7 +73,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var payTypes = _metaDataRepository.GetAllPayTypes();
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
-						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
+						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -399,6 +400,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 						carryOver = paycheck.Employee.CarryOver;
 					}
+					if (ytdAccumulation > payType.AnnualLimit)
+						ytdAccumulation = payType.AnnualLimit;
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)

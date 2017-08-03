@@ -789,7 +789,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 		}
 
-		public List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null)
+		public List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, string ssns=null )
 	  {
 			try
 			{
@@ -806,6 +806,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (enddate.HasValue)
 				{
 					paramList.Add(new FilterParam { Key = "enddate", Value = enddate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (!string.IsNullOrWhiteSpace(ssns))
+				{
+					paramList.Add(new FilterParam { Key = "ssns", Value = ssns });
 				}
 			
 				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
@@ -909,6 +913,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 					paramList.Add(new FilterParam { Key = "startdate", Value = request.StartDate.Value.ToString("MM/dd/yyyy") });
 				if (request.EndDate.HasValue)
 					paramList.Add(new FilterParam { Key = "enddate", Value = request.EndDate.Value.ToString("MM/dd/yyyy") });
+				paramList.Add(new FilterParam { Key = "includeinactive", Value = request.IncludeInactive.ToString() });
 
 				return GetDataFromStoredProc<CommissionsResponse>(
 					"GetCommissionsReport", paramList);
