@@ -63,7 +63,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: true
+							includeHistory: false
 						},
 						filterCAUIQ: {
 							year: 0,
@@ -73,7 +73,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: true
+							includeHistory: false
 						},
 						filter941: {
 							year: 0,
@@ -83,7 +83,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: true
+							includeHistory: false
 						},
 						filterCAPIT: {
 							year: 0,
@@ -93,7 +93,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: null,
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
-							includeHistory: true
+							includeHistory: false
 						},
 						filter1099: {
 							year: 0,
