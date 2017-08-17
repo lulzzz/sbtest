@@ -230,7 +230,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			var journals = JsonConvert.DeserializeObject<List<int>>(me1.Journals);
 			const string deletejournals =
 				@"delete from Journal where Id=@Id";
-			const string deleteextract = @"delete from PayCheckExtract where MasterExtractId=@MasterExtractId;delete from MasterExtracts where Id=@MasterExtractId;";
+			const string deleteextract = @"delete from PayCheckExtract where MasterExtractId=@MasterExtractId;delete from CommissionExtract where MasterExtractId=@MasterExtractId;delete from MasterExtracts where Id=@MasterExtractId;";
 			const string deleteextractdetails =
 				"delete from PaxolArchive.dbo.MasterExtract where MasterExtractId=@MasterExtractId;";
 			

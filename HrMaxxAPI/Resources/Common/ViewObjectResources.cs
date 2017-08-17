@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.DynamicData;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
@@ -91,6 +92,15 @@ namespace HrMaxxAPI.Resources.Common
 					string.Format("{0}{1}{2}", InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "$" : "", InvoiceSetup.SalesRep.Rate, InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "" : "%") :
 					string.Empty;
 			}
+		}
+
+		public string ContactName
+		{
+			get { return Contact!=null ? string.Format("{0} {1}", Contact.FirstName, Contact.LastName) : string.Empty; }
+		}
+		public string Phone
+		{
+			get { return Contact!=null ? !string.IsNullOrWhiteSpace(Contact.Phone) ? Contact.Phone : !string.IsNullOrWhiteSpace(Contact.Mobile) ? Contact.Mobile : string.Empty  :  string.Empty; }
 		}
 	}
 	

@@ -42,19 +42,22 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedChart = null;
 						var element = angular.element(document.querySelector('#ncDetailedCriteriaForProject'));
 						element.html('');
-						reportRepository.getDashboardData('GetUserDashboard', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
-							dataSvc.reportData = data;
-							$scope.chartData = [];
-							$scope.drawPayrollWithoutInvoiceChart();
-							$scope.drawCompaniesWithApproachingPayrolls();
-							$scope.drawCompaniesWithoutPayrollChart();
-							
-							
-						}, function (error) {
-							console.log(error);
-						});
-						
-						
+						$scope.drawPayrollWithoutInvoiceChart();
+						$scope.drawCompaniesWithApproachingPayrolls();
+						$scope.drawCompaniesWithoutPayrollChart();
+						//reportRepository.getDashboardData('GetUserDashboard', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
+						//	dataSvc.reportData = data;
+						//	$scope.chartData = [];
+
+						//	$scope.drawCompaniesWithApproachingPayrolls();
+						//	$scope.drawCompaniesWithoutPayrollChart();
+
+
+						//}, function (error) {
+						//	console.log(error);
+						//});
+
+
 					};
 					var drawARCharts = function (startdate, enddate, onlyActive) {
 						
@@ -356,31 +359,74 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.drawPayrollWithoutInvoiceChart = function () {
-						var data = $filter('filter')(dataSvc.reportData, { result: 'GetPayrollsWithoutInvoice' })[0];
-						if (data) {
-							dataSvc.payrollsWithoutInvoice = data.data;
-						}
+						reportRepository.getDashboardData('GetPayrollsWithoutInvoice', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								dataSvc.payrollsWithoutInvoice = data.data;
+								
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
 					};
 					$scope.drawCompaniesWithoutPayrollChart = function () {
-						var data = $filter('filter')(dataSvc.reportData, { result: 'GetCompaniesWithoutPayroll' })[0];
-						if (data) {
-							var d = data.data;
-							$.each(d, function (ind, ap) {
-								if (ind > 0) {
-									var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
-									dataSvc.companiesWithoutPayroll.push({
-										hostId: ap[0],
-										companyId: ap[1],
-										host: ap[2],
-										company: ap[3],
-										salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
-										due: ap[5]
-									});
-								}
+						reportRepository.getDashboardData('GetCompaniesWithoutPayroll', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								var d = data.data;
+								$.each(d, function (ind, ap) {
+									if (ind > 0) {
+										var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
+										dataSvc.companiesWithoutPayroll.push({
+											hostId: ap[0],
+											companyId: ap[1],
+											host: ap[2],
+											company: ap[3],
+											salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
+											due: ap[5]
+										});
+									}
 
-							});
-							
-						}
+								});
+
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+						
+					};
+					$scope.drawCompaniesWithApproachingPayrolls = function () {
+						reportRepository.getDashboardData('GetCompaniesNextPayrollChartData', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								dataSvc.approachingPayrolls = data.data;
+								var filtered = [];
+								$.each(dataSvc.approachingPayrolls, function (ind, ap) {
+									if (ind > 0) {
+										var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
+										filtered.push({
+											hostId: ap[0],
+											companyId: ap[1],
+											host: ap[2],
+											company: ap[3],
+											salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
+											due: ap[5]
+										});
+									}
+
+								});
+								dataSvc.filteredApproachingPayrolls = angular.copy(filtered);
+								$scope.tableParams.reload();
+								$scope.fillTableData($scope.tableParams);
+
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+						
 					};
 
 					$scope.tableData = [];
@@ -420,30 +466,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					};
 
-					$scope.drawCompaniesWithApproachingPayrolls = function () {
-						var data = $filter('filter')(dataSvc.reportData, { result: 'GetCompaniesNextPayrollChartData' })[0];
-						if (data) {
-							dataSvc.approachingPayrolls = data.data;
-							var filtered = [];
-							$.each(dataSvc.approachingPayrolls, function (ind, ap) {
-								if (ind > 0) {
-									var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
-									filtered.push({
-										hostId: ap[0],
-										companyId: ap[1],
-										host: ap[2],
-										company: ap[3],
-										salesRep: salesRepJson.SalesRep ? salesRepJson.SalesRep.User.FirstName + ' ' + salesRepJson.SalesRep.User.LastName : 'NA',
-										due: ap[5]
-									});
-								}
-								
-							});
-							dataSvc.filteredApproachingPayrolls = angular.copy(filtered);
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-						}
-					};
+					
 
 					$scope.filterCompaniesApproachingPayroll = function() {
 						if (dataSvc.filterApproachingPayroll) {
