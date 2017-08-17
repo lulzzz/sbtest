@@ -14,8 +14,7 @@ namespace HrMaxx.Infrastructure
 		{
 			var key = String.Format(
 								CultureInfo.InvariantCulture,
-								"{0}:{1}",
-								type.FullName,
+								"{0}",
 								root.ElementName);
 
 			if (!cache.ContainsKey(key))
