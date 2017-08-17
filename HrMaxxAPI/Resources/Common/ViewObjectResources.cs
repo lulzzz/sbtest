@@ -100,7 +100,7 @@ namespace HrMaxxAPI.Resources.Common
 		}
 		public string Phone
 		{
-			get { return Contact!=null ? !string.IsNullOrWhiteSpace(Contact.Phone) ? Contact.Phone : !string.IsNullOrWhiteSpace(Contact.Mobile) ? Contact.Mobile : string.Empty  :  string.Empty; }
+			get { return Contact != null ? !string.IsNullOrWhiteSpace(Contact.Phone) ? string.Format("({0}) {1}-{2}", Contact.Phone.Substring(0, 3), Contact.Phone.Substring(3, 3), Contact.Phone.Substring(6, 4)) : !string.IsNullOrWhiteSpace(Contact.Mobile) ? string.Format("({0}) {1}-{2}", Contact.Mobile.Substring(0, 3), Contact.Mobile.Substring(3, 3), Contact.Mobile.Substring(6, 4)) : string.Empty : string.Empty; }
 		}
 	}
 	
