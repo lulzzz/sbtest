@@ -48,7 +48,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						{ id: 'contractType' },
 						{ id: 'getTextForStatus' },
 						{ id: 'salesRep' },
-						{ id: 'commission' }
+						{ id: 'commission' },
+						{ id: 'contactName' },
+						{ id: 'phone' }
 					];
 
 					$scope.refreshTable = function () {
