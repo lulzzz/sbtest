@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using Dapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
@@ -11,16 +14,17 @@ using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using Newtonsoft.Json;
 using DeductionType = HrMaxx.OnlinePayroll.Models.DeductionType;
 using PayType = HrMaxx.OnlinePayroll.Models.PayType;
+using Tax = HrMaxx.OnlinePayroll.Models.Tax;
 using VendorCustomer = HrMaxx.OnlinePayroll.Models.VendorCustomer;
 
 namespace HrMaxx.OnlinePayroll.Repository
 {
-	public class MetaDataRepository : IMetaDataRepository
+	public class MetaDataRepository : BaseDapperRepository, IMetaDataRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		
-		public MetaDataRepository(IMapper mapper, OnlinePayrollEntities dbContext)
+		public MetaDataRepository(IMapper mapper, OnlinePayrollEntities dbContext, DbConnection connection):base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
@@ -28,26 +32,52 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public IList<TaxByYear> GetCompanyOverridableTaxes()
 		{
-			var taxes = _dbContext.TaxYearRates.Where(t=>t.Tax.IsCompanySpecific).ToList();
-			return _mapper.Map<List<TaxYearRate>, List<TaxByYear>>(taxes);
+			const string sql =
+				"select TaxYearRate.* from TaxYearRate, Tax where TaxYearRate.TaxId=Tax.Id and Tax.IsCompanySpecific=1";
+			const string sql2 = "select * from Tax where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				var taxes = conn.Query<TaxYearRate>(sql).ToList();
+				taxes.ForEach(t =>
+				{
+					t.Tax = conn.Query<Models.DataModel.Tax>(sql2, new {Id = t.TaxId}).FirstOrDefault();
+				});
+				return _mapper.Map<List<TaxYearRate>, List<TaxByYear>>(taxes);
+			}
+			
+			
 		}
 
 		public IList<DeductionType> GetDeductionTypes()
 		{
-			var types = _dbContext.DeductionTypes.ToList();
-			return _mapper.Map<List<Models.DataModel.DeductionType>, List<DeductionType>>(types);
+			const string sql = "select * from DeductionType";
+			using (var conn = GetConnection())
+			{
+				var types = conn.Query<Models.DataModel.DeductionType>(sql).ToList();
+				return _mapper.Map<List<Models.DataModel.DeductionType>, List<DeductionType>>(types);
+			}
+			
 		}
 
 		public IList<PayType> GetAccumulablePayTypes()
 		{
-			var paytypes = _dbContext.PayTypes.Where(pt=>pt.IsAccumulable).ToList();
-			return _mapper.Map<List<Models.DataModel.PayType>, List<PayType>>(paytypes);
+			const string sql = "select * from PayType where IsAccumulable=1";
+			using (var conn = GetConnection())
+			{
+				var paytypes = conn.Query<Models.DataModel.PayType>(sql).ToList();
+				return _mapper.Map<List<Models.DataModel.PayType>, List<PayType>>(paytypes);
+			}
 		}
 
 		public IList<PayType> GetAllPayTypes()
 		{
-			var paytypes = _dbContext.PayTypes.ToList();
-			return _mapper.Map<List<Models.DataModel.PayType>, List<PayType>>(paytypes);
+			const string sql = "select * from PayType";
+			using (var conn = GetConnection())
+			{
+				var paytypes = conn.Query<Models.DataModel.PayType>(sql).ToList();
+				return _mapper.Map<List<Models.DataModel.PayType>, List<PayType>>(paytypes);
+			}
+			
 		}
 
 		public IList<TaxByYear> GetAllTaxes()
@@ -58,58 +88,86 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public Account GetPayrollAccount(Guid companyId)
 		{
-			var account =
-				_dbContext.CompanyAccounts.FirstOrDefault(
-					c =>
-						c.CompanyId == companyId && c.Type == (int) AccountType.Assets && c.SubType == (int) AccountSubType.Bank &&
-						c.UsedInPayroll);
-			return _mapper.Map<CompanyAccount, Account>(account);
+			const string sql = "select * from CompanyAccount where CompanyId=@CompanyId and Type=@Type and SubType=@SubType";
+			const string sql2 = "select * from BankAccount where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				var account =
+					conn.Query<Models.DataModel.CompanyAccount>(sql,
+						new {CompanyId = companyId, Type = (int) AccountType.Assets, SubType = (int) AccountSubType.Bank})
+						.FirstOrDefault();
+				if (account != null && account.BankAccountId != null)
+				{
+					account.BankAccount =
+					conn.Query<Models.DataModel.BankAccount>(sql2, new { Id = account.BankAccountId }).FirstOrDefault();
+				}
+				
+				return _mapper.Map<CompanyAccount, Account>(account);
+			}
+			//var account =
+			//	_dbContext.CompanyAccounts.FirstOrDefault(
+			//		c =>
+			//			c.CompanyId == companyId && c.Type == (int) AccountType.Assets && c.SubType == (int) AccountSubType.Bank &&
+			//			c.UsedInPayroll);
+			//return _mapper.Map<CompanyAccount, Account>(account);
 		}
 
 		public int GetMaxCheckNumber(Guid companyId)
 		{
-			var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid).ToList();
-			if (journals.Any())
+			const string sql = "select max(CheckNumber) as maxnumber from Journal where CompanyId=@CompanyId and IsVoid=0";
+			using (var conn = GetConnection())
 			{
-				var max  = journals.Max(p => p.CheckNumber) + 1;
-
-				if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
-				{
-					max = 100001 + max;
-				}
-				else
-				{
-					if(max<1001)
-						max = 1001;
-				}
+				dynamic result =
+					conn.Query(sql, new { CompanyId = companyId }).FirstOrDefault();
 				
-				return max; 
-			}
-			else
-			{
-				if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
+				if (result.maxnumber!=null)
 				{
-					return 100001;
+
+					var max = result.maxnumber+1;
+					if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
+					{
+						max = 100001 + max;
+					}
+					else
+					{
+						if (max < 1001)
+							max = 1001;
+					}
+
+					return max;
 				}
 				else
-					return 1001;
+				{
+					if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
+					{
+						return 100001;
+					}
+					else
+						return 1001;
+				}
 			}
+			//var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid).ToList();
+			
 		}
 
 		public int GetMaxAdjustmenetNumber(Guid companyId)
 		{
-			var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid && p.TransactionType==(int)TransactionType.Adjustment).ToList();
-			if (journals.Any())
+			const string sql = "select max(CheckNumber) as maxnumber from Journal where CompanyId=@CompanyId and IsVoid=0 and TransactionType=@TransactionType";
+			using (var conn = GetConnection())
 			{
-				var max = journals.Max(p => p.CheckNumber) + 1;
-				max = max <= 0 ? 1 : max;
-				return max;
-			}
+				dynamic result =
+					conn.Query(sql, new { CompanyId = companyId, TransactionType = (int)TransactionType.Adjustment }).FirstOrDefault();
 
-			else
-			{
-				return 1;
+				if (result.maxnumber != null)
+				{
+					return result.maxnumber + 1;
+				}
+				else
+				{
+					return 1;
+				}
 			}
+			
 		}
 
 		public List<Models.Payroll> GetUnInvoicedPayrolls(Guid companyId)
@@ -244,29 +302,45 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public ImportMap GetCompanyTsImportMap(Guid companyId)
 		{
-			var dbVal = _dbContext.CompanyTSImportMaps.FirstOrDefault(c => c.CompanyId == companyId);
-			if (dbVal != null)
-				return JsonConvert.DeserializeObject<ImportMap>(dbVal.TimeSheetImportMap);
-			return null;
+			const string sql = "select * from CompanyTSImportMap where CompanyId=@CompanyId";
+			using (var conn = GetConnection())
+			{
+				var result = conn.Query<Models.DataModel.CompanyTSImportMap>(sql, new {CompanyId = companyId}).FirstOrDefault();
+				if (result != null)
+					return JsonConvert.DeserializeObject<ImportMap>(result.TimeSheetImportMap);
+				return null;
+			}
+			
 		}
 
 		public List<VendorCustomer> GetGarnishmentAgencies()
 		{
-			var agencies = _dbContext.VendorCustomers.Where(vc => !vc.CompanyId.HasValue && vc.IsAgency).ToList();
-			return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<Models.VendorCustomer>>(agencies);
+			const string sql = "select * from VendorCustomer where CompanyId is null and IsAgency=1";
+			using (var conn = GetConnection())
+			{
+				var agencies = conn.Query<Models.DataModel.VendorCustomer>(sql);
+				return _mapper.Map<List<Models.DataModel.VendorCustomer>, List<Models.VendorCustomer>>(agencies.ToList());
+			}
+			
+			
 		}
 
 		public int GetMaxRegularCheckNumber(Guid companyId)
 		{
-			var journals = _dbContext.Journals.Where(p => p.TransactionType==(int)TransactionType.RegularCheck && p.CompanyId == companyId && !p.IsVoid).ToList();
-			if (journals.Any())
+			const string sql = "select max(CheckNumber) as maxnumber from Journal where CompanyId=@CompanyId and IsVoid=0 and TransactionType=@TransactionType";
+			using (var conn = GetConnection())
 			{
-				var max = journals.Max(p => p.CheckNumber) + 1;
-				return max;
-			}
-			else
-			{
-				return 101;
+				dynamic result =
+					conn.Query(sql, new {CompanyId = companyId, TransactionType = (int) TransactionType.RegularCheck}).FirstOrDefault();
+
+				if (result.maxnumber != null)
+				{
+					return result.maxnumber + 1;
+				}
+				else
+				{
+					return 101;
+				}
 			}
 		}
 	}

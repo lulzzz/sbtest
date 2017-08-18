@@ -289,8 +289,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 
 		public List<Account> GetCompanyAccounts(Guid companyId)
 		{
-			var accounts = _dbContext.CompanyAccounts.Where(c => c.CompanyId == companyId);
-			return _mapper.Map<List<CompanyAccount>, List<Account>>(accounts.ToList());
+			const string sql = "select * from CompanyAccount where CompanyId=@CompanyId";
+			const string sql2 = "select * from BankAccount where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				var accounts = conn.Query<CompanyAccount>(sql, new { CompanyId = companyId }).ToList();
+				accounts.Where(a => a.BankAccountId != null).ToList().ForEach(a =>
+				{
+					a.BankAccount = conn.Query<Models.DataModel.BankAccount>(sql2, new { Id = @a.BankAccountId }).FirstOrDefault();
+				});
+				return _mapper.Map<List<CompanyAccount>, List<Account>>(accounts.ToList());
+			}
+			
+			
 		}
 
 		public Account SaveCompanyAccount(Account account)

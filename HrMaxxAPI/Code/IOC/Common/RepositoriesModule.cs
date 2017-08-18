@@ -78,7 +78,13 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 			var uamNamedParameters = new List<NamedParameter>();
 			uamNamedParameters.Add(new NamedParameter("UAMUrl", _uamUrl));
-
+			builder.Register(cont =>
+			{
+				var connection = new SqlConnection(_connectionString);
+				return connection;
+			})
+				.Named<SqlConnection>("connection")
+				.InstancePerLifetimeScope();
 
 			builder.RegisterType<FileRepository>()
 				.WithParameters(namedParameters)
@@ -101,6 +107,8 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.PropertiesAutowired();
 
 			builder.RegisterType<CommonRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 			.As<ICommonRepository>()
 			.InstancePerLifetimeScope()
 			.PropertiesAutowired();

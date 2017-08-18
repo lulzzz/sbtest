@@ -71,9 +71,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
+				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
+				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
+				//Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -284,6 +287,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						}
 						
 						paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, paycheck, employeeAccumulation);
+						
 						paycheck.YTDSalary = Math.Round(employeeAccumulation.PayCheckWages.Salary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 						
 						var grossWage = GetGrossWage(paycheck);
@@ -331,6 +335,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 																	 payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck);
 					}
 					//PEO/ASO Co Check
+					//Log.Info("Processing finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					payroll.PEOASOCoCheck = (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 					                         payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck);
 					
@@ -527,7 +532,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var affectedChecks = new List<PayCheck>();
 			try
 			{
+				//var t1 = DateTime.Now;
+				//Log.Info("Confirm Payroll Starting: " + DateTime.Now.ToString("fff"));
+
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
+				//Log.Info("company future checks: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+				//t1 = DateTime.Now;
 				var companyIdForPayrollAccount = payroll.Company.Id;
 				var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
 				using (var txn = TransactionScopeHelper.Transaction())
@@ -544,10 +554,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							pc.YTDNetWage = Math.Round(pc.YTDNetWage - netwage + pc.NetWage, MidpointRounding.AwayFromZero);
 						}
 					});
-					
 
-					
+
+					//Log.Info("Save Payroll starting: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					savedPayroll = _payrollRepository.SavePayroll(payroll);
+					//Log.Info("Save Payroll ending: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					var ptaccums = new List<PayCheckPayTypeAccumulation>();
 					var pttaxes = new List<PayCheckTax>();
 					var ptcomps = new List<PayCheckCompensation>();
@@ -633,18 +646,32 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							};
 							ptwcs.Add(pt);
 						};
-				
+						
 						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
 						pc.DocumentId = j.DocumentId;
 						pc.CheckNumber = j.CheckNumber;
 
 					});
+					//Log.Info("saved first journal: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
+					//Log.Info("saved accumulation: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					_payrollRepository.SavePayCheckTaxes(pttaxes);
+					//Log.Info("saved taxes: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					_payrollRepository.SavePayCheckWorkerCompensations(ptwcs);
+					//Log.Info("saved worker comps: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					_payrollRepository.SavePayCheckPayCodes(ptcodes);
+					//Log.Info("saved pay codes: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					_payrollRepository.SavePayCheckCompensations(ptcomps);
+					//Log.Info("saved compensations: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					_payrollRepository.SavePayCheckDeductions(ptdeds);
+					//Log.Info("saved deductionss: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					//PEO/ASO Co Check
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 					    payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
@@ -661,8 +688,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 
 					//var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPayroll.Company.Id, savedPayroll.PayDay);
-					
-					
+
+					//Log.Info("Save journals: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					foreach (var paycheck in savedPayroll.PayChecks)
 					{
 						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay>paycheck.PayDay && p.Id!=paycheck.Id).ToList();
@@ -673,6 +701,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					}
+					//Log.Info("future checks updated: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
 						var inv = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
@@ -681,6 +711,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						savedPayroll.InvoiceStatus = inv.Status;
 						savedPayroll.Total = inv.Total;
 					}
+					//Log.Info("invoice created: " + (int)(DateTime.Now - t1).TotalMilliseconds);
+					//t1 = DateTime.Now;
 					var draftPayroll =
 							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
 					if (draftPayroll != null)
@@ -3145,8 +3177,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							pc.IsHistory = payroll.IsHistory;
 						});
 						var companyIdForPayrollAccount = payroll.Company.Id;
-
-						var savedPayroll = _payrollRepository.SavePayroll(payroll);
+						//Log.Info("Save Payroll starting: " + DateTime.Now.ToString("fff"));
+						var savedPayroll = _payrollRepository.SavePayroll(payroll); 
+						//Log.Info("Save Payroll ending: " + DateTime.Now.ToString("fff"));
 						var ptaccums = new List<PayCheckPayTypeAccumulation>();
 						var pttaxes = new List<PayCheckTax>();
 						var ptcomps = new List<PayCheckCompensation>();

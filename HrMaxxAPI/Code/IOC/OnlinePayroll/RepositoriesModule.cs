@@ -66,6 +66,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<MetaDataRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IMetaDataRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

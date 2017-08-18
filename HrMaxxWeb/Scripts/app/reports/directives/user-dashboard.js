@@ -371,6 +371,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						});
 					};
 					$scope.drawCompaniesWithoutPayrollChart = function () {
+						dataSvc.companiesWithoutPayroll = [];
 						reportRepository.getDashboardData('GetCompaniesWithoutPayroll', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
 							var data = data1[0];
 							if (data) {

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using Dapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using Magnum;
 using Newtonsoft.Json;
@@ -14,12 +17,12 @@ using News = HrMaxx.Common.Models.Dtos.News;
 
 namespace HrMaxx.Common.Repository.Common
 {
-	public class CommonRepository : ICommonRepository
+	public class CommonRepository : BaseDapperRepository, ICommonRepository
 	{
 		private readonly CommonEntities _dbContext;
 		private readonly IMapper _mapper;
 
-		public CommonRepository(IMapper mapper, CommonEntities dbContext)
+		public CommonRepository(IMapper mapper, CommonEntities dbContext, DbConnection connection) : base(connection)
 		{
 			_mapper = mapper;
 			_dbContext = dbContext;
@@ -178,8 +181,12 @@ namespace HrMaxx.Common.Repository.Common
 
 		public List<InsuranceGroupDto> GetInsuranceGroups()
 		{
-			var groups = _dbContext.InsuranceGroups.ToList();
-			return _mapper.Map<List<Models.DataModel.InsuranceGroup>, List<Models.InsuranceGroupDto>>(groups);
+			using (var conn = GetConnection())
+			{
+				var groups = conn.Query<Models.DataModel.InsuranceGroup>("select * from InsuranceGroup").ToList();
+				return _mapper.Map<List<Models.DataModel.InsuranceGroup>, List<Models.InsuranceGroupDto>>(groups);	
+			}
+			
 		}
 
 		public InsuranceGroup SaveInsuranceGroup(InsuranceGroupDto insuranceGroup)
