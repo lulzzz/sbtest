@@ -22,7 +22,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		//Invoices
 		//List<PayrollInvoice> GetPayrollInvoices(Guid host);
 		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null);
-		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null  );
+		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, int? invoiceNumber=null  );
+		List<PayrollInvoice> GetCompanyInvoices(Guid companyId, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null);
 		PayrollInvoice GetPayrollInvoice(Guid invoiceId);
 
 		//Payrolls
@@ -32,6 +33,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//Paychecks
 		List<PayCheck> GetPayChecks(Guid? companyId = null, Guid? employeeId=null, Guid? payrollId = null, DateTime? startDate = null, DateTime? endDate = null, int status = 0, int? isvoid = null, int? year = null);
+		List<PayCheck> GetCompanyPayChecksForInvoiceCredit(Guid companyId);
 		PayCheck GetPaycheck(int payCheckId);
 
 		//Companies

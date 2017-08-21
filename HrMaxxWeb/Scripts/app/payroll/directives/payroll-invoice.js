@@ -123,7 +123,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 					}
 					$scope.isInvoiceEditable = function () {
 						if ($scope.invoice) {
-							if ($scope.invoice.status !== 4 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
+							if ($scope.invoice.status !== 4 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff' || $scope.mainData.userRole === 'SuperUser')
 								return true;
 							else
 								return false;
@@ -131,7 +131,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						
 					}
 					$scope.isPaymentEditable = function (p) {
-						if (p.status === 1 || p.status===5 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff')
+						if (p.status === 1 || p.status === 5 || $scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'CorpStaff' || $scope.mainData.userRole === 'SuperUser')
 							return true;
 						else
 							return false;

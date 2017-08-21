@@ -180,12 +180,12 @@ namespace HrMaxx.OnlinePayroll.Models
 							Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
 							isEditable = false
 						};
-						if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+						if (prevInv.CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 						{
 							pcCredit.Amount += Math.Round(vpc.GrossWage, 2, MidpointRounding.AwayFromZero);
 							pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
 						}
-						else if (CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
+						else if (prevInv.CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
 						{
 							pcCredit.Amount += Math.Round(vpc.EmployeeTaxes, 2, MidpointRounding.AwayFromZero);
 							pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);

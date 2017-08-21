@@ -56,7 +56,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				var j = _journalRepository.SaveJournal(journal, company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck);
+				var j = _journalRepository.SaveJournal(journal, journal.PEOASOCoCheck, company.Contract.BillingOption == BillingOptions.Invoice &&
+							company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck);
 				return j;
 			}
 			catch (Exception e)

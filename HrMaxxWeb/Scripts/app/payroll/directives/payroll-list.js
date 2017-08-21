@@ -557,9 +557,12 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 						
 					}
 					$scope.updateSelectedInvoice = function (invoice) {
-						var match = $filter('filter')($scope.list, { invoice: { id: invoice.id } })[0];
+						var match = $filter('filter')($scope.list, { invoiceId: invoice.id })[0];
 						if (match) {
-							match.invoice = invoice;
+							match.invoiceStatusText = invoice.statusText;
+							match.invoiceStatus = invoice.status;
+							match.invoiceNumber = invoice.invoiceNumber;
+							match.total = invoice.total;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 						}

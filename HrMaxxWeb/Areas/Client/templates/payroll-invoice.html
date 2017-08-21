@@ -319,7 +319,8 @@
 									<span class="input-group-addon form-control" ng-show="!lineitem.isEditable">{{lineitem.description}}</span>
 
 								</div>
-								<span class="visible-print">{{lineitem.description}}</span>
+								<span ng-show="!isInvoiceEditable()">{{lineitem.description}}</span>
+								<span ng-show="isInvoiceEditable()" class="visible-print">{{lineitem.description}}</span>
 							</td>
 							<td><span ng-show="lineitem.recurringChargeId>0">{{lineitem.previouslyClaimed | currency:'$'}}</span></td>
 							<td></td>

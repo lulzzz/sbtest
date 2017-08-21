@@ -26,62 +26,138 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			_mapper = mapper;
 		}
 
-		public Models.Journal SaveJournal(Models.Journal journal, bool isPEOCheck = false)
+		//public Models.Journal SaveJournal(Models.Journal journal, bool isPEOCheck = false)
+		//{
+		//	var mapped = _mapper.Map<Models.Journal, Journal>(journal);
+		//	if (mapped.Id == 0)
+		//	{
+		//		if (journal.TransactionType == TransactionType.PayCheck)
+		//		{
+		//			if (isPEOCheck && mapped.CheckNumber > 0 &&
+		//					_dbContext.Journals.Any(
+		//						j => j.CheckNumber == mapped.CheckNumber && j.PayrollPayCheckId != mapped.PayrollPayCheckId))
+		//			{
+		//				mapped.CheckNumber = _dbContext.Journals.Where(j => j.PEOASOCoCheck).Max(j => j.CheckNumber) + 1;
+		//				if (mapped.PayrollPayCheckId.HasValue)
+		//				{
+		//					_dbContext.PayrollPayChecks.First(pc => pc.Id == mapped.PayrollPayCheckId).CheckNumber = mapped.CheckNumber;
+		//					var peoCompanyCheck = _dbContext.Journals.FirstOrDefault(j => j.TransactionType == (int)TransactionType.PayCheck && j.PayrollPayCheckId == mapped.PayrollPayCheckId);
+		//					if (peoCompanyCheck != null)
+		//						peoCompanyCheck.CheckNumber = mapped.CheckNumber;
+		//				}
+		//			}
+		//		}
+		//		else if (journal.TransactionType == TransactionType.RegularCheck || journal.TransactionType == TransactionType.DeductionPayment)
+		//		{
+		//			if (mapped.CheckNumber > 0 &&
+		//					_dbContext.Journals.Any(
+		//						j => j.CompanyId == mapped.CompanyId && j.CheckNumber == mapped.CheckNumber && (j.TransactionType == (int)TransactionType.RegularCheck || j.TransactionType == (int)TransactionType.DeductionPayment)))
+		//			{
+		//				mapped.CheckNumber = _dbContext.Journals.Where(j => j.CompanyId == mapped.CompanyId && (j.TransactionType == (int)TransactionType.RegularCheck || j.TransactionType == (int)TransactionType.DeductionPayment)).Max(j => j.CheckNumber) + 1;
+		//			}
+		//		}
+
+		//		_dbContext.Journals.Add(mapped);
+		//		_dbContext.SaveChanges();
+		//	}
+		//	else
+		//	{
+		//		var dbJournal = _dbContext.Journals.FirstOrDefault(j => j.Id == mapped.Id);
+		//		if (dbJournal != null)
+		//		{
+		//			dbJournal.Amount = mapped.Amount;
+		//			dbJournal.Memo = mapped.Memo;
+		//			dbJournal.TransactionDate = mapped.TransactionDate;
+		//			dbJournal.CheckNumber = mapped.CheckNumber;
+		//			dbJournal.IsVoid = mapped.IsVoid;
+		//			dbJournal.PayeeId = mapped.PayeeId;
+		//			dbJournal.PayeeName = mapped.PayeeName;
+		//			dbJournal.JournalDetails = mapped.JournalDetails;
+		//		}
+		//		else
+		//		{
+		//			_dbContext.Journals.Add(mapped);
+		//		}
+		//		_dbContext.SaveChanges();
+		//	}
+		//	return _mapper.Map<Models.DataModel.Journal, Models.Journal>(mapped);
+		//}
+
+		public Models.Journal SaveJournal(Models.Journal journal, bool isPEOCheck = false, bool peoPayroll = false)
 		{
+			const string insertjournal = "insert into Journal(CompanyId,TransactionType,PaymentMethod,CheckNumber,PayrollPayCheckId,EntityType,PayeeId,PayeeName,Amount,Memo,IsDebit,IsVoid,MainAccountId,TransactionDate,LastModified,LastModifiedBy,JournalDetails,DocumentId,PEOASOCoCheck,OriginalDate,IsReIssued,OriginalCheckNumber,ReIssuedDate) values(@CompanyId,@TransactionType,@PaymentMethod,@CheckNumber,@PayrollPayCheckId,@EntityType,@PayeeId,@PayeeName,@Amount,@Memo,@IsDebit,@IsVoid,@MainAccountId,@TransactionDate,@LastModified,@LastModifiedBy,@JournalDetails,@DocumentId,@PEOASOCoCheck,@OriginalDate,@IsReIssued,@OriginalCheckNumber,@ReIssuedDate); select cast(scope_identity() as int)";
 			var mapped = _mapper.Map<Models.Journal, Journal>(journal);
-			if (mapped.Id == 0)
+			using (var conn = GetConnection())
 			{
-				if (journal.TransactionType == TransactionType.PayCheck)
+				if (mapped.Id == 0)
 				{
-					if (isPEOCheck && mapped.CheckNumber > 0 &&
-					    _dbContext.Journals.Any(
-						    j => j.CheckNumber == mapped.CheckNumber && j.PayrollPayCheckId != mapped.PayrollPayCheckId))
+					if (journal.TransactionType == TransactionType.PayCheck)
 					{
-						mapped.CheckNumber = _dbContext.Journals.Where(j => j.PEOASOCoCheck).Max(j => j.CheckNumber) + 1;
-						if (mapped.PayrollPayCheckId.HasValue)
+
+						if (peoPayroll && isPEOCheck && mapped.CheckNumber > 0)
 						{
-							_dbContext.PayrollPayChecks.First(pc => pc.Id == mapped.PayrollPayCheckId).CheckNumber = mapped.CheckNumber;
-							var peoCompanyCheck = _dbContext.Journals.FirstOrDefault(j => j.TransactionType==(int)TransactionType.PayCheck && j.PayrollPayCheckId==mapped.PayrollPayCheckId);
-							if(peoCompanyCheck!=null)
-								peoCompanyCheck.CheckNumber = mapped.CheckNumber;
+							const string sql =
+							 "if exists(select 'z' from Journal Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal where PEOASOCoCheck=1; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
+							dynamic result =
+								conn.Query(sql, new { CheckNumber = mapped.CheckNumber, PayrollPayCheckId = mapped.PayrollPayCheckId }).FirstOrDefault();
+							if (result.checknumber != null)
+							{
+								mapped.CheckNumber = result.checknumber;
+							}
+
+						}
+						if (!peoPayroll && !isPEOCheck && mapped.CheckNumber > 0)
+						{
+							const string sql =
+							 "if exists(select 'z' from Journal Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId and CompanyId=@CompanyId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal where CompanyId=@CompanyId; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
+							dynamic result =
+								conn.Query(sql, new { CheckNumber = mapped.CheckNumber, PayrollPayCheckId = mapped.PayrollPayCheckId, CompanyId=mapped.CompanyId }).FirstOrDefault();
+							if (result.checknumber != null)
+							{
+								mapped.CheckNumber = result.checknumber;
+							}
+
 						}
 					}
-				}
-				else if(journal.TransactionType == TransactionType.RegularCheck || journal.TransactionType==TransactionType.DeductionPayment)
-				{
-					if (mapped.CheckNumber > 0 &&
-							_dbContext.Journals.Any(
-								j => j.CompanyId==mapped.CompanyId && j.CheckNumber == mapped.CheckNumber && (j.TransactionType==(int)TransactionType.RegularCheck || j.TransactionType==(int)TransactionType.DeductionPayment )))
+					else if (journal.TransactionType == TransactionType.RegularCheck ||
+									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
-						mapped.CheckNumber = _dbContext.Journals.Where(j => j.CompanyId == mapped.CompanyId && (j.TransactionType == (int)TransactionType.RegularCheck || j.TransactionType == (int)TransactionType.DeductionPayment)).Max(j => j.CheckNumber) + 1;
+						const string js = "select * from Journal where CompanyId=@CompanyId and CheckNumber=@CheckNumber and (TransactionType=@RC or TransactionType=@DP)";
+						var dbj1 =
+							conn.Query<Models.DataModel.Journal>(js, new { CheckNumber = mapped.CheckNumber, RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyId }).ToList();
+						if (mapped.CheckNumber > 0 &&
+								dbj1.Any())
+						{
+							mapped.CheckNumber = dbj1.Max(j => j.CheckNumber) + 1;
+
+						}
 					}
-				}
-				
-				_dbContext.Journals.Add(mapped);
-				_dbContext.SaveChanges();
-			}
-			else
-			{
-				var dbJournal = _dbContext.Journals.FirstOrDefault(j => j.Id == mapped.Id);
-				if (dbJournal != null)
-				{
-					dbJournal.Amount = mapped.Amount;
-					dbJournal.Memo = mapped.Memo;
-					dbJournal.TransactionDate = mapped.TransactionDate;
-					dbJournal.CheckNumber = mapped.CheckNumber;
-					dbJournal.IsVoid = mapped.IsVoid;
-					dbJournal.PayeeId = mapped.PayeeId;
-					dbJournal.PayeeName = mapped.PayeeName;
-					dbJournal.JournalDetails = mapped.JournalDetails;
+
+					mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
+
 				}
 				else
 				{
-					_dbContext.Journals.Add(mapped);
+					const string jsq =
+					"select * from Journal where Id=@Id";
+					var dbj2 = conn.Query<Journal>(jsq, new { Id = mapped.Id }).ToList();
+
+					if (dbj2.Any())
+					{
+						const string updatejournal =
+							"update journal set Amount=@Amount, Memo=@Memo, TransactionDate=@TransactionDate, CheckNumber=@CheckNumber, IsVoid=@IsVoid, PayeeId=@PayeeId, PayeeName=@PayeeName, JournalDetails=@JournalDetails Where Id=@Id";
+						conn.Execute(updatejournal, mapped);
+
+					}
+					else
+					{
+						mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
+					}
 				}
-				_dbContext.SaveChanges();
 			}
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(mapped);
 		}
+
 
 		public Models.Journal GetPayCheckJournal(int payCheckId, bool peoasoCoCheck)
 		{

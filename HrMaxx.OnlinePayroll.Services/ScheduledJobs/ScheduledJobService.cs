@@ -31,16 +31,18 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 				Log.Info("Scheduled Job Service Invocie Payment initiated " + DateTime.Now);
 				var count = 0;
 				var minDate = DateTime.Today.AddDays(-7);
-				var invoices = _readerService.GetPayrollInvoices(status: new List<InvoiceStatus>{InvoiceStatus.Deposited, InvoiceStatus.NotDeposited, InvoiceStatus.PartialPayment}, paymentStatuses:new List<PaymentStatus>{PaymentStatus.Deposited, PaymentStatus.Submitted}, paymentMethods: new List<InvoicePaymentMethod>{InvoicePaymentMethod.Check, InvoicePaymentMethod.Cash, InvoicePaymentMethod.ACH});
+				var invoices = _readerService.GetPayrollInvoices(status: new List<InvoiceStatus>{InvoiceStatus.Paid, InvoiceStatus.Deposited, InvoiceStatus.NotDeposited, InvoiceStatus.PartialPayment}, paymentStatuses:new List<PaymentStatus>{PaymentStatus.Deposited, PaymentStatus.Submitted}, paymentMethods: new List<InvoicePaymentMethod>{InvoicePaymentMethod.Check, InvoicePaymentMethod.Cash, InvoicePaymentMethod.ACH});
 				if (invoices.Any())
 				{
 					var applicable = invoices.Where(
 						i => i.InvoicePayments.Any() && i.InvoicePayments.Any(p => (p.Method == InvoicePaymentMethod.Check || p.Method == InvoicePaymentMethod.ACH) && (p.Status == PaymentStatus.Submitted || p.Status==PaymentStatus.Deposited) ))
 						.ToList();
-
+					Log.Info(string.Format("{0} Invocies to be updated possibly", applicable.Count));
+					var icounter = 0;
 					applicable.ForEach(
 						i =>
 						{
+							icounter++;
 							var depositedPayments =
 								i.InvoicePayments.Where(
 									p =>
@@ -55,11 +57,16 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 								p.Status = PaymentStatus.Paid;
 								p.LastModified = DateTime.Now;
 								p.LastModifiedBy = "System";
+								p.HasChanged = true;
 							});
-							i.LastModified = DateTime.Now;
-							i.UserName = "System";
-							_payrollService.SavePayrollInvoice(i);
-							count++;
+							if (depositedPayments.Any(d => d.HasChanged))
+							{
+								i.LastModified = DateTime.Now;
+								i.UserName = "System";
+								_payrollService.SavePayrollInvoice(i);
+								count++;
+							}
+						
 						});	
 				}
 				

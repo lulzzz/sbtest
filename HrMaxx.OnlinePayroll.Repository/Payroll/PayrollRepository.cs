@@ -35,6 +35,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		{
 			var mapped = _mapper.Map<Models.Payroll, Models.DataModel.Payroll>(payroll);
 			mapped.PayrollPayChecks.ToList().ForEach(pc=>pc.CompanyId = payroll.Company.Id);
+			//const string psql =
+			//	"insert into Payroll (Id,CompanyId,StartDate,EndDate,PayDay,StartingCheckNumber,Status,Company,LastModified,LastModifiedBy,InvoiceId,PEOASOCoCheck,Notes,TaxPayDay,IsHistory,CopiedFrom,MovedFrom) values(@Id,@CompanyId,@StartDate,@EndDate,@PayDay,@StartingCheckNumber,@Status,@Company,@LastModified,@LastModifiedBy,@InvoiceId,@PEOASOCoCheck,@Notes,@TaxPayDay,@IsHistory,@CopiedFrom,@MovedFrom);";
+			//const string pcsql = "insert into PayrollPayCheck(PayrollId,CompanyId,EmployeeId,Employee,GrossWage,NetWage,WCAmount,Compensations,Deductions,Taxes,Accumulations,Salary,YTDSalary,PayCodes,DeductionAmount,EmployeeTaxes,EmployerTaxes,Status,IsVoid,PayrmentMethod,PrintStatus,StartDate,EndDate,PayDay,CheckNumber,PaymentMethod,Notes,YTDGrossWage,YTDNetWage,LastModified,LastModifiedBy,WorkerCompensation,PEOASOCoCheck,InvoiceId,VoidedOn,CreditInvoiceId,TaxPayDay,IsHistory,IsReIssued,OriginalCheckNumber,ReIssuedDate) values(@PayrollId,@CompanyId,@EmployeeId,@Employee,@GrossWage,@NetWage,@WCAmount,@Compensations,@Deductions,@Taxes,@Accumulations,@Salary,@YTDSalary,@PayCodes,@DeductionAmount,@EmployeeTaxes,@EmployerTaxes,@Status,@IsVoid,@PayrmentMethod,@PrintStatus,@StartDate,@EndDate,@PayDay,@CheckNumber,@PaymentMethod,@Notes,@YTDGrossWage,@YTDNetWage,@LastModified,@LastModifiedBy,@WorkerCompensation,@PEOASOCoCheck,@InvoiceId,@VoidedOn,@CreditInvoiceId,@TaxPayDay,@IsHistory,@IsReIssued,@OriginalCheckNumber,@ReIssuedDate);select cast(Scope_Identity() as int)";
+			//using (var conn = GetConnection())
+			//{
+			//	conn.Execute(psql, mapped);
+			//	mapped.PayrollPayChecks.ToList().ForEach(pc =>
+			//	{
+			//		pc.PayrollId = mapped.Id;
+			//		pc.Id = conn.Query<int>(pcsql, pc).Single();
+			//	});
+			//}
 			var dbPayroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == mapped.Id);
 			if (dbPayroll == null)
 			{
@@ -134,80 +146,175 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			
 		}
 
+		//public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
+		//{
+		//	var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
+		//	var dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id || pi.PayrollId == payrollInvoice.PayrollId);
+		//	var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollInvoice.PayrollId);
+		//	var dbPayChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.PayChecks.Any(pc1 => pc1 == pc.Id)).ToList();
+		//	var dbCreditedChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.VoidedCreditedChecks.Any(vpc => vpc == pc.Id) && pc.IsVoid && pc.InvoiceId.HasValue).ToList();
+		//	if (dbPayrollInvoice == null)
+		//	{
+		//		_dbContext.PayrollInvoices.Add(mapped);
+		//		dbPayroll.InvoiceId = mapped.Id;
+		//		dbPayChecks.ForEach(pc => pc.InvoiceId = mapped.Id);
+		//		dbCreditedChecks.ForEach(pc => pc.CreditInvoiceId = mapped.Id);
+		//	}
+		//	else
+		//	{
+		//		var linkedVoidedChecks = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == dbPayrollInvoice.Id).ToList();
+		//		linkedVoidedChecks.ForEach(lvc => lvc.CreditInvoiceId = null);
+		//		dbCreditedChecks.ForEach(pc => pc.CreditInvoiceId = dbPayrollInvoice.Id);
+
+
+		//		dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
+		//		dbPayrollInvoice.Total = mapped.Total;
+		//		dbPayrollInvoice.LastModified = mapped.LastModified;
+		//		dbPayrollInvoice.LastModifiedBy = mapped.LastModifiedBy;
+		//		dbPayrollInvoice.Status = mapped.Status;
+		//		dbPayrollInvoice.SubmittedBy = mapped.SubmittedBy;
+		//		dbPayrollInvoice.SubmittedOn = mapped.SubmittedOn;
+		//		dbPayrollInvoice.DeliveredBy = mapped.DeliveredBy;
+		//		dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
+		//		dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
+		//		dbPayrollInvoice.Deductions = mapped.Deductions;
+		//		dbPayrollInvoice.Courier = mapped.Courier;
+		//		dbPayrollInvoice.Notes = mapped.Notes;
+		//		dbPayrollInvoice.Balance = mapped.Balance;
+		//		dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
+		//		dbPayrollInvoice.ApplyWCMinWageLimit = mapped.ApplyWCMinWageLimit;
+		//		dbPayrollInvoice.VoidedCreditChecks = mapped.VoidedCreditChecks;
+		//		dbPayrollInvoice.NetPay = mapped.NetPay;
+		//		dbPayrollInvoice.DDPay = mapped.DDPay;
+		//		dbPayrollInvoice.CheckPay = mapped.CheckPay;
+		//		dbPayrollInvoice.SalesRep = mapped.SalesRep;
+		//		dbPayrollInvoice.Commission = mapped.Commission;
+		//		var removeCounter = 0;
+		//		for (removeCounter = 0; removeCounter < dbPayrollInvoice.InvoicePayments.Count; removeCounter++)
+		//		{
+		//			var existingPayment = dbPayrollInvoice.InvoicePayments.ToList()[removeCounter];
+		//			if (mapped.InvoicePayments.All(ip => ip.Id != existingPayment.Id))
+		//			{
+		//				_dbContext.InvoicePayments.Remove(existingPayment);
+		//				removeCounter--;
+		//			}
+		//		}
+
+		//		foreach (var p in dbPayrollInvoice.InvoicePayments.Where(dip => mapped.InvoicePayments.Any(mip => dip.Id == mip.Id) && payrollInvoice.InvoicePayments.Any(pip => pip.Id == dip.Id && pip.HasChanged)))
+		//		{
+		//			var matching = mapped.InvoicePayments.First(mip => mip.Id == p.Id);
+		//			p.Amount = matching.Amount;
+		//			p.CheckNumber = matching.CheckNumber;
+		//			p.Method = matching.Method;
+		//			p.Notes = matching.Notes;
+		//			p.PaymentDate = matching.PaymentDate;
+		//			p.Status = (int)matching.Status;
+		//			p.LastModified = mapped.LastModified;
+		//			p.LastModifiedBy = mapped.LastModifiedBy;
+		//		}
+		//		_dbContext.InvoicePayments.AddRange(mapped.InvoicePayments.Where(mip => mip.Id == 0));
+
+		//	}
+		//	_dbContext.SaveChanges();
+		//	dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
+		//	return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(dbPayrollInvoice);
+		//}
+
 		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
 		{
+			const string pisql = "select * from PayrollInvoice where Id=@Id or PayrollId=@PayrollId";
+			const string pipaysql = "select * from InvoicePayment where InvoiceId=@Id";
+			const string insertsql =
+						"insert into PayrollInvoice(Id,CompanyId,PayrollId,PeriodStart,PeriodEnd,InvoiceSetup,GrossWages,EmployerTaxes,InvoiceDate,NoOfChecks,Deductions,WorkerCompensations,EmployeeContribution,EmployerContribution,AdminFee,EnvironmentalFee,MiscCharges,Total,Status,SubmittedOn,SubmittedBy,DeliveredOn,DeliveredBy,LastModified,LastModifiedBy,Courier,EmployeeTaxes,Notes,ProcessedBy,Balance,ProcessedOn,PayChecks,VoidedCreditChecks,ApplyWCMinWageLimit,DeliveryClaimedBy,DeliveryClaimedOn,NetPay,CheckPay,DDPay,SalesRep,Commission) values(@Id,@CompanyId,@PayrollId,@PeriodStart,@PeriodEnd,@InvoiceSetup,@GrossWages,@EmployerTaxes,@InvoiceDate,@NoOfChecks,@Deductions,@WorkerCompensations,@EmployeeContribution,@EmployerContribution,@AdminFee,@EnvironmentalFee,@MiscCharges,@Total,@Status,@SubmittedOn,@SubmittedBy,@DeliveredOn,@DeliveredBy,@LastModified,@LastModifiedBy,@Courier,@EmployeeTaxes,@Notes,@ProcessedBy,@Balance,@ProcessedOn,@PayChecks,@VoidedCreditChecks,@ApplyWCMinWageLimit,@DeliveryClaimedBy,@DeliveryClaimedOn,@NetPay,@CheckPay,@DDPay,@SalesRep,@Commission); select cast(scope_identity() as int)";
+			const string updatepayrollsql =
+				"update Payroll set InvoiceId=@Id where Id=@PayrollId;update PayrollPayCheck set InvoiceId=@Id where Id in @PayCheckIds;";
+
+			const string updatecreditcheckssql = "update PayrollPayCheck set CreditInvoiceId=@Id where Id in @CreditChecks;";
+
 			var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
-			var dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id || pi.PayrollId==payrollInvoice.PayrollId);
-			var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollInvoice.PayrollId);
-			var dbPayChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.PayChecks.Any(pc1 => pc1 == pc.Id)).ToList();
-			var dbCreditedChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.VoidedCreditedChecks.Any(vpc => vpc == pc.Id) && pc.IsVoid && pc.InvoiceId.HasValue).ToList();
-			if (dbPayrollInvoice == null)
+			using (var conn = GetConnection())
 			{
-				_dbContext.PayrollInvoices.Add(mapped);
-				dbPayroll.InvoiceId = mapped.Id;
-				dbPayChecks.ForEach(pc=>pc.InvoiceId=mapped.Id);
-				dbCreditedChecks.ForEach(pc=>pc.CreditInvoiceId=mapped.Id);
-			}
-			else
-			{
-				var linkedVoidedChecks = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == dbPayrollInvoice.Id).ToList();
-				linkedVoidedChecks.ForEach(lvc=>lvc.CreditInvoiceId=null);
-				dbCreditedChecks.ForEach(pc=>pc.CreditInvoiceId=dbPayrollInvoice.Id);
-
-
-				dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
-				dbPayrollInvoice.Total = mapped.Total;
-				dbPayrollInvoice.LastModified = mapped.LastModified;
-				dbPayrollInvoice.LastModifiedBy = mapped.LastModifiedBy;
-				dbPayrollInvoice.Status = mapped.Status;
-				dbPayrollInvoice.SubmittedBy = mapped.SubmittedBy;
-				dbPayrollInvoice.SubmittedOn = mapped.SubmittedOn;
-				dbPayrollInvoice.DeliveredBy = mapped.DeliveredBy;
-				dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
-				dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
-				dbPayrollInvoice.Deductions = mapped.Deductions;
-				dbPayrollInvoice.Courier = mapped.Courier;
-				dbPayrollInvoice.Notes = mapped.Notes;
-				dbPayrollInvoice.Balance = mapped.Balance;
-				dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
-				dbPayrollInvoice.ApplyWCMinWageLimit = mapped.ApplyWCMinWageLimit;
-				dbPayrollInvoice.VoidedCreditChecks = mapped.VoidedCreditChecks;
-				dbPayrollInvoice.NetPay = mapped.NetPay;
-				dbPayrollInvoice.DDPay = mapped.DDPay;
-				dbPayrollInvoice.CheckPay = mapped.CheckPay;
-				dbPayrollInvoice.SalesRep = mapped.SalesRep;
-				dbPayrollInvoice.Commission = mapped.Commission;
-				var removeCounter = 0;
-				for (removeCounter = 0; removeCounter < dbPayrollInvoice.InvoicePayments.Count; removeCounter++)
+				var pi =
+					conn.Query<Models.DataModel.PayrollInvoice>(pisql, new { Id = payrollInvoice.Id, PayrollId = payrollInvoice.PayrollId })
+						.FirstOrDefault();
+				if (pi == null)
 				{
-					var existingPayment = dbPayrollInvoice.InvoicePayments.ToList()[removeCounter];
-					if (mapped.InvoicePayments.All(ip=>ip.Id!=existingPayment.Id))
+
+					payrollInvoice.InvoiceNumber = conn.Query<int>(insertsql, mapped).Single();
+
+					conn.Execute(updatepayrollsql,
+						new
+						{
+							Id = mapped.Id,
+							PayrollId = mapped.PayrollId,
+							PayCheckIds = payrollInvoice.PayChecks
+						});
+					if (payrollInvoice.VoidedCreditedChecks.Any())
 					{
-						_dbContext.InvoicePayments.Remove(existingPayment);
-						removeCounter--;
+
+						conn.Execute(updatecreditcheckssql,
+							new
+							{
+								Id = mapped.Id,
+								CreditChecks = payrollInvoice.VoidedCreditedChecks
+							});
 					}
+					return payrollInvoice;
 				}
-
-				foreach (var p in dbPayrollInvoice.InvoicePayments.Where(dip=>mapped.InvoicePayments.Any(mip=>dip.Id==mip.Id) && payrollInvoice.InvoicePayments.Any(pip=>pip.Id==dip.Id && pip.HasChanged)))
+				else
 				{
-					var matching = mapped.InvoicePayments.First(mip=>mip.Id==p.Id);
-					p.Amount = matching.Amount;
-					p.CheckNumber = matching.CheckNumber;
-					p.Method = matching.Method;
-					p.Notes = matching.Notes;
-					p.PaymentDate = matching.PaymentDate;
-					p.Status = (int) matching.Status;
-					p.LastModified = mapped.LastModified;
-					p.LastModifiedBy = mapped.LastModifiedBy;
-				}
-				_dbContext.InvoicePayments.AddRange(mapped.InvoicePayments.Where(mip=>mip.Id==0));
-				
-			}
-			_dbContext.SaveChanges();
-			dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
-			return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(dbPayrollInvoice);
-		}
+					pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
+					const string updatepisql =
+						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
+																		SubmittedBy=@SubmittedBy, SubmittedOn	=@SubmittedOn, DeliveredBy=@DeliveredBy, DeliveredOn=@DeliveredOn, InvoiceDate=@InvoiceDate, Deductions=@Deductions, Courier=@Courier,
+																		Notes=@Notes, Balance=@Balance, WorkerCompensations=@WorkerCompensations, VoidedCreditChecks=@VoidedCreditChecks, NetPay=@NetPay, DDPay=@DDPay, CheckPay=@CheckPay, SalesRep=@SalesRep, 
+																		Commission=@Commission   															
+																		where Id=@Id";
+					
+					conn.Execute(updatepisql, mapped);
+					
+					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
+					{
+						const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
+						conn.Execute(removecreditchecks, mapped);
+						if (payrollInvoice.VoidedCreditedChecks.Any())
+						{
+							conn.Execute(updatecreditcheckssql,new { Id = mapped.Id, CreditChecks = payrollInvoice.VoidedCreditedChecks });
+						}
+					}
+					
+					const string removepayment = "delete from InvoicePayment where Id=@Id;";
+					const string updatepayment =
+						@"update InvoicePayment set Amount=@Amount, CheckNumber=@CheckNumber, Method=@Method, Notes=@Notes, PaymentDate=@PaymentDate, Status=@Status, 
+LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
+					const string insertpayment = "insert into InvoicePayment(InvoiceId,PaymentDate,Method,Status,CheckNumber,Amount,Notes,LastModified,LastModifiedBy) values(@InvoiceId,@PaymentDate,@Method,@Status,@CheckNumber,@Amount,@Notes,@LastModified,@LastModifiedBy);select cast(scope_identity() as int)";
 
+					
+					if(pi.InvoicePayments.Any(ip=>mapped.InvoicePayments.All(mp => mp.Id != ip.Id)))
+						conn.Execute(removepayment, pi.InvoicePayments.Where(ip => mapped.InvoicePayments.All(mp => mp.Id != ip.Id)));
+					foreach (var p in pi.InvoicePayments.Where(dip => mapped.InvoicePayments.Any(mip => dip.Id == mip.Id) && payrollInvoice.InvoicePayments.Any(pip => pip.Id == dip.Id && pip.HasChanged)))
+					{
+						var matching = mapped.InvoicePayments.First(mip => mip.Id == p.Id);
+						conn.Execute(updatepayment, matching);
+
+					}
+					mapped.InvoicePayments.Where(ip => ip.Id == 0).ToList().ForEach(p =>
+					{
+						p.Id = conn.Query<int>(insertpayment, p).Single();
+					});
+					
+						
+					//var dbPayrollInvoice = conn.Query<Models.DataModel.PayrollInvoice>(pisql, new { Id = mapped.Id, PayrollId = mapped.PayrollId }).First();
+					//dbPayrollInvoice.InvoicePayments =
+					//	conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = mapped.Id }).ToList();
+					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);
+				}
+
+			}
+
+
+		}
+		
 		public void DeletePayrollInvoice(Guid invoiceId)
 		{
 			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);

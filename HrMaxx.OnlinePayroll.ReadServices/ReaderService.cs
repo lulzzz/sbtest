@@ -148,7 +148,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 		}
 
-		public List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id=null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null  )
+		public List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, int? invoiceNumber = null)
 	  {
 			try
 			{
@@ -185,6 +185,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "id", Value = id.Value.ToString() });
 				}
+				if (invoiceNumber.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "invoicenumber", Value = invoiceNumber.Value.ToString() });
+				}
 				return GetDataFromStoredProc<List<PayrollInvoice>, List<Models.JsonDataModel.PayrollInvoiceJson>>(
 					"GetPayrollInvoicesXml", paramList, new XmlRootAttribute("PayrollInvoiceJsonList"));
 			}
@@ -195,6 +199,40 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 	  }
+
+		public List<PayrollInvoice> GetCompanyInvoices(Guid companyId, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null)
+		{
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
+				if (status != null)
+				{
+					paramList.Add(new FilterParam { Key = "status", Value = status.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+				}
+				
+				if (startDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "startdate", Value = startDate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (endDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (id.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "id", Value = id.Value.ToString() });
+				}
+				return GetDataFromStoredProc<List<PayrollInvoice>, List<Models.JsonDataModel.PayrollInvoiceJson>>(
+					"GetCompanyInvoices", paramList, new XmlRootAttribute("PayrollInvoiceJsonList"));
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Payroll invoices through JSON");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 	  public PayrollInvoice GetPayrollInvoice(Guid invoiceId)
 	  {
@@ -380,6 +418,28 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 	  }
+
+		public List<PayCheck> GetCompanyPayChecksForInvoiceCredit(Guid companyId)
+		{
+			try
+			{
+
+				var paramList = new List<FilterParam>();
+				
+					paramList.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
+				
+				var payrolls = GetDataFromStoredProc<List<PayCheck>, List<Models.JsonDataModel.PayrollPayCheckJson>>(
+					"GetCompanyPaychecksForInvoiceCredit", paramList, new XmlRootAttribute("PayCheckList"));
+
+				return payrolls;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Pay Check list through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 	  public PayCheck GetPaycheck(int payCheckId)
 	  {
