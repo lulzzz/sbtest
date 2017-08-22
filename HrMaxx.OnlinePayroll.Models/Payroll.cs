@@ -206,8 +206,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return PayCodes.Sum(p => p.OvertimeHours); }
 		}
-		public Guid DocumentId { get; set; }
-
+		
 		public void ResetYTD()
 		{
 			YTDSalary = Salary;

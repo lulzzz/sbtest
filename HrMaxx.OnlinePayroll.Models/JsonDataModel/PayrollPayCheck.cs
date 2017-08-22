@@ -51,8 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
 		public Guid? CreditInvoiceId { get; set; }
-		public Guid DocumentId { get; set; }
-
+		
 		public bool IsReIssued { get; set; }
 		public int? OriginalCheckNumber { get; set; }
 		public DateTime? ReIssuedDate { get; set; }

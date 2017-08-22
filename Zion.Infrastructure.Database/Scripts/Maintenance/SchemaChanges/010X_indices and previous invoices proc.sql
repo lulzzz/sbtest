@@ -153,8 +153,7 @@ BEGIN
 	
 		select 
 			PayrollPayCheck.*, 
-			Journal.DocumentId DocumentId ,
-			PayrollInvoice.*
+			Journal.DocumentId DocumentId
 		from PayrollPayCheck, Journal, PayrollInvoice
 		where 
 			PayrollPayCheck.Id=Journal.PayrollPayCheckId 

@@ -426,8 +426,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Salary, opt => opt.MapFrom(src=>src.Salary))
 				.ForMember(dest => dest.PayrollId, opt => opt.MapFrom(src => src.PayrollId))
 				.ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.InvoiceId))
-				.ForMember(dest => dest.Included, opt => opt.MapFrom(src => true))
-				.ForMember(dest => dest.DocumentId, opt => opt.MapFrom(src => src.Journals.Any(j => (j.PEOASOCoCheck == src.PEOASOCoCheck)) ? src.Journals.First(j => (j.PEOASOCoCheck == src.PEOASOCoCheck)).DocumentId : Guid.Empty));
+				.ForMember(dest => dest.Included, opt => opt.MapFrom(src => true));
 
 
 			CreateMap<Models.DataModel.Payroll, Models.Payroll>()
@@ -663,8 +662,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				
 				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())
 				
-				.ForMember(dest => dest.Included, opt => opt.Ignore())
-				.ForMember(dest => dest.DocumentId, opt => opt.Ignore());
+				.ForMember(dest => dest.Included, opt => opt.Ignore());
 
 			CreateMap<Models.MasterExtract, Models.DataModel.MasterExtract>()
 				//.ForMember(dest => dest.Extract, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Extract)))

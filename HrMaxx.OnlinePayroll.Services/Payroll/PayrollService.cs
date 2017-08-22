@@ -648,7 +648,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						};
 						
 						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
-						pc.DocumentId = j.DocumentId;
 						pc.CheckNumber = j.CheckNumber;
 
 					});
@@ -682,7 +681,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 						{
 							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
-							pc.DocumentId = j.DocumentId;
 							pc.CheckNumber = j.CheckNumber;
 						});
 					}
@@ -3288,8 +3286,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							};
 
 							var j = CreateJournalEntry(payroll.Company, pc, targetCOA, payroll.UserName);
-							
-							pc.DocumentId = j.DocumentId;
 							pc.CheckNumber = j.CheckNumber;
 
 						});
@@ -3305,7 +3301,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 							{
 								var j = CreateJournalEntry(payroll.Company, pc, targetHostCOA, user, true, targetHost.Company.Id);
-								pc.DocumentId = j.DocumentId;
 								pc.CheckNumber = j.CheckNumber;
 								
 							});
