@@ -1664,7 +1664,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				BoldFontFields = new List<KeyValuePair<string, string>>(),
 				TargetType = EntityTypeEnum.PayCheck,
 				Template = company1.PayCheckStock.GetHrMaxxName(),
-				DocumentId = journal.DocumentId,
 				Signature = null
 			};
 
@@ -2053,8 +2052,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					NormalFontFields = new List<KeyValuePair<string, string>>(),
 					BoldFontFields = new List<KeyValuePair<string, string>>(),
 					TargetType = EntityTypeEnum.PayCheck,
-					Template = PayCheckStock.JobCost.GetHrMaxxName(),
-					DocumentId = journal.DocumentId
+					Template = PayCheckStock.JobCost.GetHrMaxxName()
 				};
 				
 				int jcCounter = 0;

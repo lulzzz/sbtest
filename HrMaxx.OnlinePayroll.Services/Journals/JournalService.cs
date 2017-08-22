@@ -306,8 +306,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				NormalFontFields = new List<KeyValuePair<string, string>>(),
 				BoldFontFields = new List<KeyValuePair<string, string>>(),
 				TargetType = EntityTypeEnum.PayCheck,
-				Template = PDFTemplate(company.PayCheckStock, journal.TransactionType),
-				DocumentId = journal.DocumentId
+				Template = PDFTemplate(company.PayCheckStock, journal.TransactionType)
 			};
 
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("depTicket", "Deposit Ticket"));
@@ -377,8 +376,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				NormalFontFields = new List<KeyValuePair<string, string>>(),
 				BoldFontFields = new List<KeyValuePair<string, string>>(),
 				TargetType = EntityTypeEnum.PayCheck,
-				Template = PDFTemplate(company.PayCheckStock, journal.TransactionType),
-				DocumentId = journal.DocumentId
+				Template = PDFTemplate(company.PayCheckStock, journal.TransactionType)
 			};
 
 			var words = Utilities.NumberToWords(Math.Floor(journal.Amount));
