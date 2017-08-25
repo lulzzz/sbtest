@@ -278,7 +278,7 @@ namespace HrMaxx.OnlinePayroll.Models
 						apt.YTDFiscal = Math.Round(apt.YTDFiscal + apt1.AccumulatedValue, 2, MidpointRounding.AwayFromZero);
 						apt.YTDUsed = Math.Round(apt.YTDUsed + apt1.Used, 2, MidpointRounding.AwayFromZero);
 					}
-					else
+					else if (apt1.FiscalEnd < apt.FiscalStart)
 					{
 						apt.CarryOver = Math.Round(apt.CarryOver + (apt1.AccumulatedValue - apt1.Used), 2, MidpointRounding.AwayFromZero);
 					}
@@ -380,7 +380,7 @@ namespace HrMaxx.OnlinePayroll.Models
 						apt.YTDFiscal = Math.Round(apt.YTDFiscal - apt1.AccumulatedValue, 2, MidpointRounding.AwayFromZero);
 						apt.YTDUsed = Math.Round(apt.YTDUsed - apt1.Used, 2, MidpointRounding.AwayFromZero);
 					}
-					else
+					else if (apt1.FiscalEnd < apt.FiscalStart)
 					{
 						apt.CarryOver = Math.Round(apt.CarryOver - (apt1.AccumulatedValue - apt1.Used), 2, MidpointRounding.AwayFromZero);
 					}

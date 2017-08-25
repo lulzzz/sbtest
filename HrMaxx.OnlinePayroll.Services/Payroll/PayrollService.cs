@@ -73,10 +73,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
-				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
-				//Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -368,43 +368,75 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				if (!payType.CompanyManaged)
 				{
-					var ytdAccumulation = (decimal) 0;
-					var ytdUsed = (decimal) 0;
+					var currentAccumulaiton = employeeAccumulation.Accumulations != null &&
+					                          employeeAccumulation.Accumulations.Any(
+						                          ac =>
+							                          ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
+							                          ac.FiscalEnd == fiscalEndDate)
+						? employeeAccumulation.Accumulations.Where(
+							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate && ac.FiscalEnd == fiscalEndDate)
+							.OrderBy(ac => ac.FiscalStart)
+							.Last()
+						: null;
+					var previousAccumulations = employeeAccumulation.Accumulations != null &&
+																		employeeAccumulation.Accumulations.Any(
+																			ac =>
+																				ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate &&
+																				ac.FiscalEnd < fiscalEndDate)
+						? employeeAccumulation.Accumulations.Where(
+							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate && ac.FiscalEnd < fiscalEndDate)
+							.ToList()
+						: null;
+					
 
-					var carryOver = (decimal)0;
+					var carryOver = paycheck.Employee.CarryOver;
+					carryOver += previousAccumulations!=null
+						? previousAccumulations.Sum(ac=>ac.YTDFiscal - ac.YTDUsed)
+						: 0;
 
-					if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate))
+					var ytdAccumulation = (decimal)0;
+					var ytdUsed = (decimal)0;
+
+					if (currentAccumulaiton!=null)
 					{
-						var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate);
-						ytdAccumulation = accum.YTDFiscal;
-						ytdUsed = accum.YTDUsed;
-						carryOver = accum.CarryOver;
+						ytdAccumulation = currentAccumulaiton.YTDFiscal;
+						ytdUsed = currentAccumulaiton.YTDUsed;
+						//carryOver = accum.CarryOver;
+
+					}
+
+					//if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate))
+					//{
+					//	var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate);
+					//	ytdAccumulation = accum.YTDFiscal;
+					//	ytdUsed = accum.YTDUsed;
+					//	//carryOver = accum.CarryOver;
 						
-					}
-					else if ((employeeAccumulation.PreviousAccumulations != null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id)) || (employeeAccumulation.Accumulations != null &&
-								employeeAccumulation.Accumulations.Any(
-									ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate)))
-					{
-						if (employeeAccumulation.PreviousAccumulations != null)
-						{
-							var payCheckPayTypeAccumulation = employeeAccumulation.PreviousAccumulations.FirstOrDefault(ac => ac.PayTypeId == payType.PayType.Id);
-							if (payCheckPayTypeAccumulation != null)
-								carryOver = payCheckPayTypeAccumulation.Available;
-						}
+					//}
+					//else if ((employeeAccumulation.PreviousAccumulations != null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id)) || (employeeAccumulation.Accumulations != null &&
+					//			employeeAccumulation.Accumulations.Any(
+					//				ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate)))
+					//{
+					//	if (employeeAccumulation.PreviousAccumulations != null)
+					//	{
+					//		var payCheckPayTypeAccumulation = employeeAccumulation.PreviousAccumulations.FirstOrDefault(ac => ac.PayTypeId == payType.PayType.Id);
+					//		if (payCheckPayTypeAccumulation != null)
+					//			carryOver = payCheckPayTypeAccumulation.Available;
+					//	}
 
-						if (employeeAccumulation.Accumulations != null &&
-						    employeeAccumulation.Accumulations.Any(
-							    ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate))
-						{
-							var accum = employeeAccumulation.Accumulations.Where(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate).OrderBy(a=>a.FiscalStart).Last();
-							carryOver += accum.Available;
-						}
-					}
-					else
-					{
+					//	if (employeeAccumulation.Accumulations != null &&
+					//			employeeAccumulation.Accumulations.Any(
+					//				ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate))
+					//	{
+					//		var accum = employeeAccumulation.Accumulations.Where(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate).OrderBy(a=>a.FiscalStart).Last();
+					//		carryOver += accum.Available;
+					//	}
+					//}
+					//else
+					//{
 
-						carryOver = paycheck.Employee.CarryOver;
-					}
+					//	carryOver = paycheck.Employee.CarryOver;
+					//}
 					if (ytdAccumulation > payType.AnnualLimit)
 						ytdAccumulation = payType.AnnualLimit;
 
@@ -3339,6 +3371,41 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId)
+		{
+			try
+			{
+				var payChecks = _readerService.GetPayChecks(employeeId: employeeId);
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					payChecks.Where(pc => pc.Accumulations != null && pc.Accumulations.Any(ac => ac.FiscalStart.Date == mapped.FiscalStart.Date && ac.FiscalEnd.Date == mapped.FiscalEnd.Date)).ToList().ForEach(
+						pc =>
+						{
+							pc.Accumulations.Where(ac => ac.FiscalStart.Date == mapped.FiscalStart.Date && ac.FiscalEnd.Date == mapped.FiscalEnd.Date).ToList().ForEach(
+								ac =>
+								{
+									ac.FiscalStart = newFiscalStart;
+									ac.FiscalEnd = newFiscalEnd;
+									ac.CarryOver = mapped.CarryOver;
+								});
+							_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+						});
+					mapped.FiscalStart = newFiscalStart;
+					mapped.FiscalEnd = newFiscalEnd;
+					txn.Complete();
+				}
+				return mapped;
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Failed to update employee accumulations");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+
 		}
 	}
 }

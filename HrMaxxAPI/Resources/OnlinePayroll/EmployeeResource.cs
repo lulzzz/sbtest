@@ -72,7 +72,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public EmployeeStateResource State { get; set; }
 		public List<EmployeeDeductionResource> Deductions { get; set; }
 		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
-		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; } 
+		public List<PayCheckPayTypeAccumulationResource> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 
 		public string WcCode
@@ -407,5 +407,22 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal Percentage { get; set; }
 		[Required]
 		public BankAccountResource BankAccount { get; set; }
+	}
+	public class PayCheckPayTypeAccumulationResource
+	{
+		public int PayCheckId { get; set; }
+		public int PayTypeId { get; set; }
+		public string PayTypeName { get; set; }
+		public DateTime FiscalStart { get; set; }
+		public DateTime FiscalEnd { get; set; }
+		public DateTime NewFiscalStart { get; set; }
+		public DateTime NewFiscalEnd { get; set; }
+		public decimal AccumulatedValue { get; set; }
+		public decimal Used { get; set; }
+		public decimal CarryOver { get; set; }
+		public decimal YTDFiscal { get; set; }
+		public decimal YTDUsed { get; set; }
+		public decimal Available { get; set; }
+		public Guid EmployeeId { get; set; }
 	}
 }

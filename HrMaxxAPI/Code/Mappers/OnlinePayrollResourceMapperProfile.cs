@@ -180,6 +180,13 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<EmployeeDeduction, EmployeeDeductionResource>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount")));
 
+			CreateMap<PayCheckPayTypeAccumulation, PayCheckPayTypeAccumulationResource>()
+				.ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
+				.ForMember(dest => dest.NewFiscalEnd, opt => opt.MapFrom(src => src.FiscalEnd))
+				.ForMember(dest => dest.NewFiscalStart, opt => opt.MapFrom(src => src.FiscalStart));
+
+			CreateMap<PayCheckPayTypeAccumulationResource, PayCheckPayTypeAccumulation>();
+
 			CreateMap<PayrollResource, Payroll>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : CombGuid.Generate()))
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.Date))

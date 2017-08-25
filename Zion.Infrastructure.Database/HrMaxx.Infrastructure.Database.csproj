@@ -72,6 +72,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\Maintenance\SchemaChanges\009R2_Separations of archive and real.sql" />
+    <Content Include="Scripts\Maintenance\SchemaChanges\010Z_index fixes.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\010Y_removing redundancies.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

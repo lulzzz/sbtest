@@ -49,5 +49,6 @@
 		public const string SaveInvoiceDelivery = "Payroll/SaveInvoiceDelivery";
 		public const string PrintPayrollPaySlips = "Payroll/PrintPayrollPaySlips/{payrollId:guid}";
 		public const string PrintPayCheckPaySlip = "Payroll/PrintPayCheckPaySlip/{payrollId:guid}/{checkId:int}";
+		public const string SaveEmployeeAccumulation = "Payroll/EmployeeAccumulation";
 	}
 }

@@ -23,6 +23,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			saveEmployeeAccumulation: function (accumulation) {
+				var deferred = $q.defer();
+				payrollServer.all('EmployeeAccumulation').post(accumulation).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			processPayroll: function (payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('Process').post(payroll).then(function (data) {

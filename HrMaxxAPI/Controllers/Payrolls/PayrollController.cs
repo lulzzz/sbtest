@@ -633,6 +633,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return MakeServiceCall(() => _payrollService.GetInvoiceDeliveryClaims(request.StartDate, request.EndDate), "Get Invoice Delivery Claims");
 		}
 
+		[HttpPost]
+		[Route(PayrollRoutes.SaveEmployeeAccumulation)]
+		[DeflateCompression]
+		public PayCheckPayTypeAccumulationResource SaveEmployeeAccumulation(PayCheckPayTypeAccumulationResource request)
+		{
+			var mapped = Mapper.Map<PayCheckPayTypeAccumulationResource, PayCheckPayTypeAccumulation>(request);
+			var result = MakeServiceCall(() => _payrollService.UpdateEmployeeAccumulation(mapped, request.NewFiscalStart, request.NewFiscalEnd, request.EmployeeId), "update employee accumulation");
+			return Mapper.Map<PayCheckPayTypeAccumulation, PayCheckPayTypeAccumulationResource>(result);
+		}
+
 		[HttpGet]
 		[Route(PayrollRoutes.EmployeeChecks)]
 		[DeflateCompression]

@@ -13,8 +13,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes',
-				function ($scope, $element, $location, $filter, companyRepository, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'payrollRepository', 'EntityTypes',
+				function ($scope, $element, $location, $filter, companyRepository, payrollRepository, EntityTypes) {
 					var dataSvc = {
 						payCodes: [],
 						companyStates: [],
@@ -211,6 +211,34 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 					};
 					$scope.updateDeductionList = function(list) {
 						$scope.$parent.$parent.updateDeductionList(list);
+					}
+					$scope.setSelectedAccumulation = function(pt, index) {
+						pt.employeeId = $scope.selected.id;
+						pt.newFiscalStart = moment(pt.newFiscalStart).toDate();
+						pt.newFiscalEnd = moment(pt.newFiscalEnd).toDate();
+						pt.oldCarryOver = angular.copy(pt.carryOver);
+						$scope.selectedAccumulation = pt;
+						$scope.selectedAccumulationIndex = index;
+					}
+					$scope.cancelAccumulation = function(pt) {
+						pt.carryOver = angular.copy(pt.oldCarryOver);
+						$scope.selectedAccumulation = null;
+						$scope.selectedAccumulationIndex = null;
+					}
+					$scope.saveEmployeeAccumulation = function (pt) {
+						pt.fiscalStart = moment(pt.fiscalStart).format("MM/DD/YYYY");
+						pt.fiscalEnd = moment(pt.fiscalEnd).format("MM/DD/YYYY");
+						pt.newFiscalStart = moment(pt.newFiscalStart).format("MM/DD/YYYY");
+						pt.newFiscalEnd = moment(pt.newFiscalEnd).format("MM/DD/YYYY");
+						payrollRepository.saveEmployeeAccumulation(pt).then(function (result) {
+							pt.fiscalStart = result.fiscalStart;
+							pt.fiscalEnd = result.fiscalEnd;
+							pt.available = result.available;
+							$scope.selectedAccumulation = null;
+							$scope.selectedAccumulationIndex = null;
+						}, function (error) {
+							$scope.addAlert('error saving employee accumultion', 'danger');
+						});
 					}
 					$scope.save = function () {
 						if (false === $('form[name="employee"]').parsley().validate())

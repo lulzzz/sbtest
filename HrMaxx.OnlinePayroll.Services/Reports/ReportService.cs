@@ -1515,7 +1515,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: true, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayTypeAccumulation: false, includeHistory: request.IncludeHistory).First();
 			return response;

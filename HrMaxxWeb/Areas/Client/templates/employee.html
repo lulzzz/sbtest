@@ -109,8 +109,8 @@
 									<div class="row">
 										<div class="col-sm-4">
 											<div class="form-group" ng-hide="!selected.id">
-												<label>Employee No</label>
-												<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
+												<label>SL Carry Over</label>
+												<input type="text" name="slco" placeholder="Carry Over" class="form-control" ng-model="selected.carryOver" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -129,6 +129,12 @@
 										</div>
 									</div>
 									<div class="row">
+										<div class="col-sm-4">
+											<div class="form-group" ng-hide="!selected.id">
+												<label>Employee No</label>
+												<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
+											</div>
+										</div>
 										<div class="col-sm-4">
 											<div class="form-group" >
 												<label>Employee No (Company)</label>
@@ -505,23 +511,40 @@
 					</div>
 					<table class="table table-bordered table-condensed" ng-if="selected.accumulations.length>0">
 						<tr>
-							<th colspan="7" class="text-center">Accumulated Pay Types</th>
+							<th colspan="8" class="text-center">Accumulated Pay Types</th>
 						</tr>
 						<tr>
-							<th class="text-center">Types</th>
+							<th class="text-center">Type</th>
+							<th class="text-center">Cycle</th>
 							<th class="text-center">YTD Used</th>
 							<th class="text-center">YTD Accumulation</th>
 							<th class="text-center">Carry Over</th>
 							<th class="text-center">Available</th>
 							<th class="text-center">Available $</th>
+							<th class="text-center" ng-show=" mainData.userRole==='Master' || mainData.userRole==='SuperUser'"></th>
 						</tr>
-						<tr ng-repeat="pt in selected.accumulations">
-							<td>{{pt.payTypeName}} ({{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}})</td>
+						<tr ng-repeat="pt in selected.accumulations track by $index">
+							<td class="text-right">{{pt.payTypeName}}</td>
+							<td ng-show="!selectedAccumulation || selectedAccumulationIndex!==$index">{{pt.fiscalStart | date:'MM/dd/yyyy'}} - {{pt.fiscalEnd | date:'MM/dd/yyyy'}}</td>
+							<td ng-show="selectedAccumulation && selectedAccumulationIndex===$index">
+								<div class="col-sm-12">
+									<div class="col-sm-5"><date-ctrl name="fsd" required="true" model="pt.newFiscalStart" disabled="false" /></div>
+									<div class="col-sm-2 text-center">-</div>
+									<div class="col-sm-5"><date-ctrl name="fse" required="true" model="pt.newFiscalEnd" disabled="false" /></div>	
+								</div>
+								
+							</td>
 							<td class="text-right">{{pt.ytdUsed}}</td>
 							<td class="text-right">{{pt.ytdFiscal}}</td>
-							<td class="text-right">{{pt.carryOver}}</td>
+							<td class="text-right" ng-show="!selectedAccumulation || selectedAccumulationIndex!==$index">{{pt.carryOver}}</td>
+							<td class="text-right" ng-show="selectedAccumulation && selectedAccumulationIndex===$index"><input name="cao" class="form-control" ng-model="pt.carryOver" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal/></td>
 							<td class="text-right">{{pt.available}}</td>
 							<td class="text-right">{{calculateAvailableWage(pt) | currency:'$'}}</td>
+							<td ng-show=" mainData.userRole==='Master' || mainData.userRole==='SuperUser'">
+								<button class="btn btn-sm btn-primary" ng-show="!selectedAccumulation" ng-click="setSelectedAccumulation(pt, $index)"><i class="fa fa-pencil"></i></button>
+								<button class="btn btn-sm btn-success" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="saveEmployeeAccumulation(pt)"><i class="fa fa-save"></i></button>
+								<button class="btn btn-sm btn-default" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="cancelAccumulation(pt)"><i class="fa fa-remove"></i></button>
+							</td>
 						</tr>
 
 					</table>

@@ -77,6 +77,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						WorkerCompensation = pc.WorkerCompensation != null ? JsonConvert.SerializeObject(pc.WorkerCompensation) : null,
 						PayCheckId=pc.Id
 					});
+				const string updateaccumulation =
+					"update PayCheckPayTypeAccumulation set CarryOver=@CarryOver where PayCheckId=@PayCheckId and PayTypeId=@PayTypeId";
+				pc.Accumulations.ForEach(ac => conn.Execute(updateaccumulation, new {PayCheckId=pc.Id, PayTypeId=ac.PayType.PayType.Id, CarryOver=ac.CarryOver}));
 				//var dbPayCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == pc.Id);
 				//if (dbPayCheck != null)
 				//{
