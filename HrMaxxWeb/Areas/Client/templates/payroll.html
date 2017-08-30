@@ -238,13 +238,13 @@
 									<th>T/Pieces</th>
 								</tr>
 							</thead>
-							<tr ng-repeat="pc in paycheck.payCodes track by $index">
+							<tr ng-repeat-start="pc in paycheck.payCodes track by $index">
 								<td>
 									<input type="text" class="form-control" ng-model="pc.payCode.description" />
 								</td>
 								<td>
 									<input class="form-control"
-												 ng-model="pc.pwAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+												 ng-model="pc.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
 								</td>
 								<td>
 									<input class="form-control"
@@ -253,6 +253,23 @@
 								<td>
 									<input class="form-control"
 												 ng-model="pc.screenHours" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+?$/" />
+								</td>
+							</tr>
+							<tr ng-repeat-end ng-show="pc.overtimeHours>0 || pc.overtimeAmount>0">
+								<td>
+									{{pc.payCode.description}} (Overtime)
+								</td>
+								<td>
+									<input class="form-control"
+												 ng-model="pc.overtimeAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+								</td>
+								<td>
+									{{pc.payCode.hourlyRate * 0.5 | currency:''}}
+									
+								</td>
+								<td>
+									<input class="form-control"
+												 ng-model="pc.screenOvertime" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+?$/" />
 								</td>
 							</tr>
 						</table>

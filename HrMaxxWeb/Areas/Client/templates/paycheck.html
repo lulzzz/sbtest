@@ -46,9 +46,9 @@
 				<td class="text-right">{{pc.ytd | currency:'$'}}</td>
 			</tr>
 			<tr ng-repeat-end ng-if="(check.employee.payType<4  || (check.employee.payType===4 && check.expanded) ) && (pc.overtimeHours>0 || pc.ytdOvertime>0)">
-				<td>{{ pc.payCode.id===-1 || check.employee.payType===4 ? pc.payCode.description + ' 0.5 OT' : pc.payCode.description}} - Overtime</td>
+				<td>{{ pc.payCode.id===-1 || (check.employee.payType===4 && ((pc.overtimeAmount/(pc.overtimeHours*pc.payCode.hourlyRate)) > 1) ) ? pc.payCode.description + ' - Overtime' : pc.payCode.description + ' OT Makeup'}}</td>
 				<td class="text-right">{{pc.overtimeHours}}</td>
-				<td class="text-right">{{ (pc.payCode.id===-1 || check.employee.payType===4 ? pc.payCode.hourlyRate * 0.5 : pc.payCode.hourlyRate * 1.5) | currency:'$'}}</td>
+				<td class="text-right">{{ (pc.payCode.id===-1 ? pc.payCode.hourlyRate * 0.5 : (check.employee.payType===4 && ((pc.overtimeAmount/(pc.overtimeHours * pc.payCode.hourlyRate)) >1)) ? pc.payCode.hourlyRate * 1.5 : pc.payCode.hourlyRate * 0.5) | currency:'$'}}</td>
 				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
 			</tr>

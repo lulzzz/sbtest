@@ -2217,8 +2217,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					if (otcounter < 4 && (payCode.OvertimeAmount > 0 || payCode.YTDOvertime > 0))
 					{
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
-							string.Format("0.5 OT @ {0}", (payCode.PayCode.HourlyRate * (decimal)0.5).ToString("c"))));
+						if((payCode.OvertimeAmount/(payCode.OvertimeHours*payCode.PayCode.HourlyRate))<1)
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
+								string.Format("OT Makeup @ {0}", (payCode.PayCode.HourlyRate * (decimal)0.5).ToString("c"))));
+						else
+						{
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
+								string.Format("Overtime @ {0}", (payCode.PayCode.HourlyRate * (decimal)1.5).ToString("c"))));
+						}
+
+
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter,
 							payCode.OvertimeHours.ToString()));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter,
@@ -2434,8 +2442,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			else
 			{
+				const decimal overtimequotiant = (decimal)1.5;
 				payCodes.ForEach(pc =>
 				{
+					if (pc.PayCode.Id == 0)
+					{
+						pc.Amount = Math.Round(pc.Hours * pc.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
+						pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.PayCode.HourlyRate * overtimequotiant, 2, MidpointRounding.AwayFromZero);
+						paycheck.Salary = Math.Round(pc.Amount + pc.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
+					}
 					pc.YTD = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2, MidpointRounding.AwayFromZero);
 					pc.YTDOvertime = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
 				});

@@ -14,6 +14,7 @@ using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Services;
@@ -83,11 +84,255 @@ namespace SiteInspectionStatus_Utility
 				case 13:
 					FixAccumulationCycleAndYTD(container);
 					break;
+				case 14:
+					UpdateEmployeeCarryOver(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+
+		private static void UpdateEmployeeCarryOver(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var companyservice = scope.Resolve<ICompanyService>();
+				var payrollService = scope.Resolve<IPayrollService>();
+				var readerservice = scope.Resolve<IReaderService>();
+				var list = new List<EmpCarryOver>();
+				#region "list"
+				list.Add(new EmpCarryOver { empno = 1, carryover = (decimal) 34.48 });
+				list.Add(new EmpCarryOver { empno = 4, carryover = (decimal) 36.6 });
+				list.Add(new EmpCarryOver { empno = 7, carryover = (decimal) 34.41 });
+				list.Add(new EmpCarryOver { empno = 8, carryover = (decimal) 10.99 });
+				list.Add(new EmpCarryOver { empno = 10, carryover = (decimal) 18.46 });
+				list.Add(new EmpCarryOver { empno = 11, carryover = (decimal) 30.13 });
+				list.Add(new EmpCarryOver { empno = 12, carryover = (decimal) 36.9 });
+				list.Add(new EmpCarryOver { empno = 13, carryover = (decimal) 23.32 });
+				list.Add(new EmpCarryOver { empno = 14, carryover = (decimal) 34.7 });
+				list.Add(new EmpCarryOver { empno = 16, carryover = (decimal) 26.77 });
+				list.Add(new EmpCarryOver { empno = 17, carryover = (decimal) 33.59 });
+				list.Add(new EmpCarryOver { empno = 18, carryover = (decimal) 35.69 });
+				list.Add(new EmpCarryOver { empno = 20, carryover = (decimal) 36.14 });
+				list.Add(new EmpCarryOver { empno = 21, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 22, carryover = (decimal) 23.39 });
+				list.Add(new EmpCarryOver { empno = 23, carryover = (decimal) 17.5 });
+				list.Add(new EmpCarryOver { empno = 24, carryover = (decimal) 21.01 });
+				list.Add(new EmpCarryOver { empno = 25, carryover = (decimal) 35.81 });
+				list.Add(new EmpCarryOver { empno = 27, carryover = (decimal) 35.31 });
+				list.Add(new EmpCarryOver { empno = 28, carryover = (decimal) 31.48 });
+				list.Add(new EmpCarryOver { empno = 29, carryover = (decimal) 34.46 });
+				list.Add(new EmpCarryOver { empno = 30, carryover = (decimal) 31.85 });
+				list.Add(new EmpCarryOver { empno = 33, carryover = (decimal) 13.07 });
+				list.Add(new EmpCarryOver { empno = 34, carryover = (decimal) 38.39 });
+				list.Add(new EmpCarryOver { empno = 36, carryover = (decimal) 37.29 });
+				list.Add(new EmpCarryOver { empno = 38, carryover = (decimal) 9.15 });
+				list.Add(new EmpCarryOver { empno = 39, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 40, carryover = (decimal) 31.17 });
+				list.Add(new EmpCarryOver { empno = 41, carryover = (decimal) 37.43 });
+				list.Add(new EmpCarryOver { empno = 43, carryover = (decimal) 35.86 });
+				list.Add(new EmpCarryOver { empno = 44, carryover = (decimal) 33.73 });
+				list.Add(new EmpCarryOver { empno = 47, carryover = (decimal) 35.74 });
+				list.Add(new EmpCarryOver { empno = 48, carryover = (decimal) 31.84 });
+				list.Add(new EmpCarryOver { empno = 52, carryover = (decimal) 33.8 });
+				list.Add(new EmpCarryOver { empno = 53, carryover = (decimal) 34.96 });
+				list.Add(new EmpCarryOver { empno = 57, carryover = (decimal) 28.31 });
+				list.Add(new EmpCarryOver { empno = 58, carryover = (decimal) 38.01 });
+				list.Add(new EmpCarryOver { empno = 59, carryover = (decimal) 35.11 });
+				list.Add(new EmpCarryOver { empno = 62, carryover = (decimal) 38.11 });
+				list.Add(new EmpCarryOver { empno = 63, carryover = (decimal) 16.77 });
+				list.Add(new EmpCarryOver { empno = 66, carryover = (decimal) 38.27 });
+				list.Add(new EmpCarryOver { empno = 67, carryover = (decimal) 34.3 });
+				list.Add(new EmpCarryOver { empno = 68, carryover = (decimal) 31.8 });
+				list.Add(new EmpCarryOver { empno = 69, carryover = (decimal) 37.97 });
+				list.Add(new EmpCarryOver { empno = 72, carryover = (decimal) 36.12 });
+				list.Add(new EmpCarryOver { empno = 73, carryover = (decimal) 37.49 });
+				list.Add(new EmpCarryOver { empno = 74, carryover = (decimal) 35.63 });
+				list.Add(new EmpCarryOver { empno = 76, carryover = (decimal) 8.44 });
+				list.Add(new EmpCarryOver { empno = 77, carryover = (decimal) 32.76 });
+				list.Add(new EmpCarryOver { empno = 79, carryover = (decimal) 25.83 });
+				list.Add(new EmpCarryOver { empno = 81, carryover = (decimal) 32.21 });
+				list.Add(new EmpCarryOver { empno = 82, carryover = (decimal) 35.68 });
+				list.Add(new EmpCarryOver { empno = 84, carryover = (decimal) 32.12 });
+				list.Add(new EmpCarryOver { empno = 85, carryover = (decimal) 25.22 });
+				list.Add(new EmpCarryOver { empno = 86, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 87, carryover = (decimal) 35.42 });
+				list.Add(new EmpCarryOver { empno = 89, carryover = (decimal) 31.8 });
+				list.Add(new EmpCarryOver { empno = 90, carryover = (decimal) 27.99 });
+				list.Add(new EmpCarryOver { empno = 91, carryover = (decimal) 20.63 });
+				list.Add(new EmpCarryOver { empno = 92, carryover = (decimal) 29.02 });
+				list.Add(new EmpCarryOver { empno = 93, carryover = (decimal) 22.6 });
+				list.Add(new EmpCarryOver { empno = 94, carryover = (decimal) 27.84 });
+				list.Add(new EmpCarryOver { empno = 95, carryover = (decimal) 27.1 });
+				list.Add(new EmpCarryOver { empno = 97, carryover = (decimal) 20.9 });
+				list.Add(new EmpCarryOver { empno = 101, carryover = (decimal) 35.42 });
+				list.Add(new EmpCarryOver { empno = 103, carryover = (decimal) 32.5 });
+				list.Add(new EmpCarryOver { empno = 104, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 105, carryover = (decimal) 32.5 });
+				list.Add(new EmpCarryOver { empno = 107, carryover = (decimal) 21.68 });
+				list.Add(new EmpCarryOver { empno = 108, carryover = (decimal) 34.76 });
+				list.Add(new EmpCarryOver { empno = 109, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 110, carryover = (decimal) 19.82 });
+				list.Add(new EmpCarryOver { empno = 111, carryover = (decimal) 31.76 });
+				list.Add(new EmpCarryOver { empno = 113, carryover = (decimal) 12.19 });
+				list.Add(new EmpCarryOver { empno = 114, carryover = (decimal) 34.81 });
+				list.Add(new EmpCarryOver { empno = 115, carryover = (decimal) 35.07 });
+				list.Add(new EmpCarryOver { empno = 117, carryover = (decimal) 12 });
+				list.Add(new EmpCarryOver { empno = 119, carryover = (decimal) 35.04 });
+				list.Add(new EmpCarryOver { empno = 121, carryover = (decimal) 32.3 });
+				list.Add(new EmpCarryOver { empno = 122, carryover = (decimal) 35.28 });
+				list.Add(new EmpCarryOver { empno = 124, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 125, carryover = (decimal) 34.09 });
+				list.Add(new EmpCarryOver { empno = 126, carryover = (decimal) 35.95 });
+				list.Add(new EmpCarryOver { empno = 129, carryover = (decimal) 31.93 });
+				list.Add(new EmpCarryOver { empno = 131, carryover = (decimal) 36.54 });
+				list.Add(new EmpCarryOver { empno = 132, carryover = (decimal) 32.74 });
+				list.Add(new EmpCarryOver { empno = 133, carryover = (decimal) 35.08 });
+				list.Add(new EmpCarryOver { empno = 135, carryover = (decimal) 34.46 });
+				list.Add(new EmpCarryOver { empno = 137, carryover = (decimal) 37.55 });
+				list.Add(new EmpCarryOver { empno = 138, carryover = (decimal) 34 });
+				list.Add(new EmpCarryOver { empno = 139, carryover = (decimal) 36.4 });
+				list.Add(new EmpCarryOver { empno = 140, carryover = (decimal) 38.44 });
+				list.Add(new EmpCarryOver { empno = 141, carryover = (decimal) 33.34 });
+				list.Add(new EmpCarryOver { empno = 142, carryover = (decimal) 30.24 });
+				list.Add(new EmpCarryOver { empno = 143, carryover = (decimal) 34.98 });
+				list.Add(new EmpCarryOver { empno = 146, carryover = (decimal) 9.57 });
+				list.Add(new EmpCarryOver { empno = 147, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 151, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 152, carryover = (decimal) 24.8 });
+				list.Add(new EmpCarryOver { empno = 160, carryover = (decimal) 32.93 });
+				list.Add(new EmpCarryOver { empno = 161, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 163, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 165, carryover = (decimal) 8 });
+				list.Add(new EmpCarryOver { empno = 166, carryover = (decimal) 12.59 });
+				list.Add(new EmpCarryOver { empno = 168, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 171, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 172, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 177, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 180, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 181, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 183, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 184, carryover = (decimal) 10.53 });
+				list.Add(new EmpCarryOver { empno = 185, carryover = (decimal) 8 });
+				list.Add(new EmpCarryOver { empno = 186, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 187, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 191, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 194, carryover = (decimal) 8 });
+				list.Add(new EmpCarryOver { empno = 197, carryover = (decimal) 16 });
+				list.Add(new EmpCarryOver { empno = 198, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 199, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 201, carryover = (decimal) 16 });
+				list.Add(new EmpCarryOver { empno = 202, carryover = (decimal) 7.01 });
+				list.Add(new EmpCarryOver { empno = 204, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 206, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 209, carryover = (decimal) 14.59 });
+				list.Add(new EmpCarryOver { empno = 213, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 215, carryover = (decimal) 7.06 });
+				list.Add(new EmpCarryOver { empno = 217, carryover = (decimal) 16 });
+				list.Add(new EmpCarryOver { empno = 219, carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { empno = 220, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 222, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 225, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 227, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 231, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 232, carryover = (decimal) 14.73 });
+				list.Add(new EmpCarryOver { empno = 233, carryover = (decimal) 2.49 });
+				list.Add(new EmpCarryOver { empno = 234, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 235, carryover = (decimal) 21.2 });
+				list.Add(new EmpCarryOver { empno = 238, carryover = (decimal) 20.08 });
+				list.Add(new EmpCarryOver { empno = 239, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 240, carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { empno = 241, carryover = (decimal) 22.66 });
+				list.Add(new EmpCarryOver { empno = 242, carryover = (decimal) 17.23 });
+				list.Add(new EmpCarryOver { empno = 243, carryover = (decimal) 17.5 });
+				list.Add(new EmpCarryOver { empno = 245, carryover = (decimal) 15 });
+				list.Add(new EmpCarryOver { empno = 246, carryover = (decimal) 19.9 });
+				list.Add(new EmpCarryOver { empno = 247, carryover = (decimal) 15.17 });
+				list.Add(new EmpCarryOver { empno = 252, carryover = (decimal) 7.89 });
+				list.Add(new EmpCarryOver { empno = 254, carryover = (decimal) 7.43 });
+				list.Add(new EmpCarryOver { empno = 256, carryover = (decimal) 6.36 });
+				list.Add(new EmpCarryOver { empno = 258, carryover = (decimal) 5.35 });
+				list.Add(new EmpCarryOver { empno = 260, carryover = (decimal) 4.11 });
+				list.Add(new EmpCarryOver { empno = 262, carryover = (decimal) 3.1 });
+				list.Add(new EmpCarryOver { empno = 263, carryover = (decimal) 3.23 });
+				list.Add(new EmpCarryOver { empno = 265, carryover = (decimal) 3.21 });
+				list.Add(new EmpCarryOver { empno = 268, carryover = (decimal) 0.95 });
+				#endregion
+
+				var ud = new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E");
+				var ud2 = new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B");
+				var udemployees = readerservice.GetEmployees(company: ud);
+				var ud2employees = readerservice.GetEmployees(company: ud2);
+				udemployees = udemployees.Where(e => list.Any(e1 => e1.empno == e.CompanyEmployeeNo)).ToList();
+				var ssns = udemployees.Select(e => e.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ",");
+				var udaccumulations = readerservice.GetAccumulations(company: ud, startdate: new DateTime(2017, 1, 1).Date,
+					enddate: new DateTime(2017,8,27).Date, ssns: ssns);
+				var ud2accumulations = readerservice.GetAccumulations(company: ud2, startdate: new DateTime(2017, 1, 1).Date,
+					enddate: new DateTime(2017, 8, 27).Date, ssns: ssns);
+				var noupdate = (int)0;
+				var update = (int) 0;
+				var ud2match = (int)0;
+				var ud2update = (int)0;
+				var ud2noupdate = (int)0;
+				list.ForEach(e =>
+				{
+					var e1 = udemployees.First(e2 => e2.CompanyEmployeeNo == e.empno);
+					var ud2e = ud2employees.FirstOrDefault(e2 => e2.SSN == e1.SSN && e2.CompanyEmployeeNo == e1.CompanyEmployeeNo);
+					if (e1.CarryOver != e.carryover)
+					{
+						e1.CarryOver = e.carryover;
+						var acc = udaccumulations.First(e2 => e2.EmployeeId == e1.Id);
+						if (acc.Accumulations.Count == 1)
+						{
+							var sl = acc.Accumulations.First();
+							sl.CarryOver = e.carryover;
+							payrollService.UpdateEmployeeAccumulation(sl, sl.FiscalStart, sl.FiscalEnd, e1.Id);
+							update++;
+							
+						}
+						else
+						{
+							noupdate++;
+						}
+						e1.UserName = "System";
+						companyservice.SaveEmployee(e1, false);
+					}
+					else
+					{
+						noupdate++;
+					}
+					if(ud2e != null && ud2e.CarryOver!=e.carryover)
+					{
+						ud2match++;
+						ud2e.CarryOver = e.carryover;
+						var acc = ud2accumulations.First(e2 => e2.EmployeeId == ud2e.Id);
+						if (acc.Accumulations.Count == 1)
+						{
+							var sl = acc.Accumulations.First();
+							sl.CarryOver = e.carryover;
+							payrollService.UpdateEmployeeAccumulation(sl, sl.FiscalStart, sl.FiscalEnd, e1.Id);
+							ud2update++;
+
+						}
+						else
+						{
+							ud2noupdate++;
+						}
+						ud2e.UserName = "System";
+						companyservice.SaveEmployee(ud2e, false);
+					}
+					
+				});
+				Console.WriteLine("Total: {0}", list.Count);
+				Console.WriteLine("Update: {0}", update);
+				Console.WriteLine("No Update: {0}", noupdate);
+				Console.WriteLine("Total: {0}", ud2match);
+				Console.WriteLine("Update: {0}", ud2update);
+				Console.WriteLine("No Update: {0}", ud2noupdate);
+
+			}
 		}
 
 		private static void FixAccumulationCycleAndYTD(IContainer container)
@@ -364,7 +609,7 @@ namespace SiteInspectionStatus_Utility
 						? (decimal)48
 						: (decimal)24;
 					var checks = _readerService.GetPayChecks(employeeId: e.EmployeeId);
-					var firstCarryOver = checks.OrderBy(p => p.Id).First(p=>p.Accumulations.Any()).Accumulations.First().CarryOver;
+					var firstcarryover = (decimal) checks.OrderBy(p => p.Id).First(p=>p.Accumulations.Any()).Accumulations.First().CarryOver;
 					checks.Where(p=>p.Accumulations.Any(a=>a.FiscalStart.Date==e.OldFiscalStart.Date)).OrderBy(p=>p.Id).ToList().ForEach(
 						p =>
 						{
@@ -380,7 +625,7 @@ namespace SiteInspectionStatus_Utility
 
 								a.YTDFiscal = Math.Round(ytdAccumulation + a.AccumulatedValue,2,MidpointRounding.AwayFromZero);
 								a.YTDUsed = checks.Where(pc => pc.Id < p.Id).SelectMany(pc => pc.Accumulations).Sum(ac => ac.Used) + a.Used;
-								a.CarryOver = firstCarryOver;
+								a.CarryOver = (decimal)firstcarryover;
 							});
 							payCheckList.Add(p);
 						});
@@ -739,7 +984,7 @@ namespace SiteInspectionStatus_Utility
 										updateAccumulation = true;
 										pcaccum.AccumulatedValue = ac.AccumulatedValue;
 										pcaccum.Used = ac.Used;
-										pcaccum.CarryOver = ac.CarryOver;
+										pcaccum.CarryOver = (decimal) ac.CarryOver;
 										Console.WriteLine("{0},{1},{2},{3},{4},{5},{6}, {7},{8}", payroll.Company.Id, payroll.Company.Name.Replace(",", string.Empty), payroll.Id, pc.Id, pc.Employee.FullName, pcaccum.AccumulatedValue, ac.AccumulatedValue, pcaccum.Used, ac.Used);
 										accumissue++;
 									}
@@ -1100,24 +1345,24 @@ namespace SiteInspectionStatus_Utility
 					var ytdAccumulation = (decimal)0;
 					var ytdUsed = (decimal)0;
 
-					var carryOver = (decimal)0;
+					var carryover = (decimal) (decimal)0;
 
 					if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id))
 					{
 						var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id);
 						ytdAccumulation = accum.YTDFiscal;
 						ytdUsed = accum.YTDUsed;
-						carryOver = accum.CarryOver;
+						carryover = (decimal) accum.CarryOver;
 
 					}
 					else if (employeeAccumulation.PreviousAccumulations != null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id))
 					{
-						carryOver = employeeAccumulation.PreviousAccumulations.First(ac => ac.PayTypeId == payType.PayType.Id).Available;
+						carryover = (decimal) employeeAccumulation.PreviousAccumulations.First(ac => ac.PayTypeId == payType.PayType.Id).Available;
 
 					}
 					else
 					{
-						carryOver = paycheck.Employee.CarryOver;
+						carryover = (decimal) paycheck.Employee.CarryOver;
 					}
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
@@ -1142,7 +1387,7 @@ namespace SiteInspectionStatus_Utility
 						FiscalEnd = fiscalEndDate,
 						Used = Math.Round(thisCheckUsed, 2, MidpointRounding.AwayFromZero),
 						YTDUsed = Math.Round(ytdUsed + thisCheckUsed, 2, MidpointRounding.AwayFromZero),
-						CarryOver = Math.Round(carryOver, 2, MidpointRounding.AwayFromZero)
+						CarryOver = (decimal) Math.Round(carryover, 2, MidpointRounding.AwayFromZero)
 					});
 				}
 				else if (paycheck.Accumulations.Any(apt => apt.PayType.Id == payType.Id))
@@ -1261,6 +1506,12 @@ namespace SiteInspectionStatus_Utility
 			public Guid EmployeeId { get; set; }
 			public DateTime OldFiscalStart { get; set; }
 			public DateTime NewFiscalStart { get; set; }
+		}
+
+		public class EmpCarryOver
+		{
+			public int empno { get; set; }
+			public decimal carryover { get; set; }
 		}
 	}
 }

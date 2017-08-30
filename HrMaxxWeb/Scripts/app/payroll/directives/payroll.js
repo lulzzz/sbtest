@@ -145,16 +145,18 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						$scope.tableData.splice($scope.tableData.indexOf(listitem), 1);
 					}
 					$scope.includeAll = function () {
-						dataSvc.toggleState = !dataSvc.toggleState;
+						
 						$.each($scope.tableData, function (index, p) {
 							var li = $filter('filter')($scope.list, { employee: { id: p.employee.id } })[0];
 							if (li) {
 
-								li.included = dataSvc.toggleState;
-								p.included = dataSvc.toggleState;
+								li.included = !dataSvc.toggleState;
+								p.included = !dataSvc.toggleState;
+								
 							}
 							
 						});
+						dataSvc.toggleState = !dataSvc.toggleState;
 					}
 					$scope.itemIncluded = function(pc) {
 						pc.userActioned = true;
@@ -229,8 +231,12 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 					$scope.isPayCheckInvalid = function (pc) {
 						var original = $filter('filter')($scope.originals, { employee: { id: pc.employee.id } })[0];
-						
-						if (!pc.included && !pc.userActioned  && original && !angular.equals(pc, original)) {
+						var orignalcopy = angular.copy(original);
+						orignalcopy.included = pc.included;
+						orignalcopy.hasWCWarning = pc.hasWCWarning;
+						orignalcopy.hasError = pc.hasError;
+						orignalcopy.hasWarning = pc.hasWarning;
+						if (!pc.included && !pc.userActioned && orignalcopy && !angular.equals(pc, orignalcopy)) {
 							pc.included = true;
 						}
 						var pwAmount = -1;
