@@ -73,10 +73,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
-				Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
-				Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				//Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -2217,14 +2217,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					if (otcounter < 4 && (payCode.OvertimeAmount > 0 || payCode.YTDOvertime > 0))
 					{
-						if((payCode.OvertimeAmount/(payCode.OvertimeHours*payCode.PayCode.HourlyRate))<1)
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
-								string.Format("OT Makeup @ {0}", (payCode.PayCode.HourlyRate * (decimal)0.5).ToString("c"))));
+						if (payCode.OvertimeHours > 0)
+						{
+							if ((payCode.OvertimeAmount/(payCode.OvertimeHours*payCode.PayCode.HourlyRate)) < 1)
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
+									string.Format("OT Makeup @ {0}", (payCode.PayCode.HourlyRate*(decimal) 0.5).ToString("c"))));
+							else
+							{
+								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
+									string.Format("Overtime @ {0}", (payCode.PayCode.HourlyRate*(decimal) 1.5).ToString("c"))));
+							}
+						}
 						else
 						{
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
-								string.Format("Overtime @ {0}", (payCode.PayCode.HourlyRate * (decimal)1.5).ToString("c"))));
+									string.Format("Overtime")));
 						}
+						
 
 
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter,
