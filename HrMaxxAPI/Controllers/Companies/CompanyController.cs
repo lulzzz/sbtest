@@ -14,6 +14,7 @@ using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.OnlinePayroll;
@@ -68,6 +69,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 	  [HttpGet]
 	  [Route(CompanyRoutes.MetaData)]
+		[DeflateCompression]
 	  public object GetMetaData()
 	  {
 			return MakeServiceCall(() => _metaDataService.GetCompanyMetaData(), "Get company meta data", true);
@@ -75,6 +77,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.PEOCompanies)]
+		[DeflateCompression]
 		public List<CompanySUIRate> PEOCompanies()
 		{
 			return MakeServiceCall(() => _metaDataService.GetPEOCompanies(), "Get PEO Companies", true);
@@ -82,6 +85,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.EmployeeMetaData)]
+		[DeflateCompression]
 		public object GetEmployeeMetaData()
 		{
 			return MakeServiceCall(() => _metaDataService.GetEmployeeMetaData(), "Get employee meta data", true);
@@ -89,6 +93,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.PayrollMetaData)]
+		[DeflateCompression]
 		public object GetPayrollMetaData(Guid companyId)
 		{
 			return MakeServiceCall(() => _metaDataService.GetPayrollMetaData(companyId), "Get payroll meta data", true);
@@ -96,6 +101,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.InvoiceMetaData)]
+		[DeflateCompression]
 		public object GetInvoiceMetaData(Guid companyId)
 		{
 			return MakeServiceCall(() => _metaDataService.GetInvoiceMetaData(companyId), "Get invoice meta data", true);
@@ -103,6 +109,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.CompanyList)]
+		[DeflateCompression]
 		public IList<CompanyResource> GetAllCompanies()
 		{
 			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
@@ -112,6 +119,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 		[HttpGet]
 		[Route(CompanyRoutes.MinifiedCompanyList)]
+		[DeflateCompression]
 		public HttpResponseMessage GetAllCompaniesMinified()
 		{
 			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
@@ -135,6 +143,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.MinifiedEmployeeList)]
+		[DeflateCompression]
 		public HttpResponseMessage GetAllCompaniesAndEmployeesMinified()
 		{
 			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
@@ -163,6 +172,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.Companies)]
+		[DeflateCompression]
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{
 			//var companies =  MakeServiceCall(() => _companyService.GetCompanies(hostId, CurrentUser.Company), "Get companies for hosts", true);
@@ -180,6 +190,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 		[HttpGet]
 		[Route(CompanyRoutes.Company)]
+		[DeflateCompression]
 		public CompanyResource GetCompany(Guid id)
 		{
 			//var companies = MakeServiceCall(() => _companyService.GetCompanyById(id), "Get company by id", true);
@@ -242,6 +253,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpPost]
 		[Route(CompanyRoutes.SaveLocation)]
+		[DeflateCompression]
 		public CompanyResource SaveLocation(CompanyLocationResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyLocationResource, CompanyLocation>(resource);
@@ -251,6 +263,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.VendorCustomerList)]
+		[DeflateCompression]
 		public List<VendorCustomerResource> SavePayCode(Guid? companyId, bool isVendor)
 		{
 			var vendors = MakeServiceCall(() => _companyService.GetVendorCustomers(companyId, isVendor), string.Format("getting list of vendor or customer for {0}, {1}", companyId, isVendor), true);
@@ -258,6 +271,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 		[HttpGet]
 		[Route(CompanyRoutes.GlobalVendors)]
+		[DeflateCompression]
 		public List<VendorCustomerResource> GlobalVendors()
 		{
 			var vendors = MakeServiceCall(() => _companyService.GetVendorCustomers(null, true), string.Format("getting list of global vendors"), true);
@@ -275,6 +289,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.Accounts)]
+		[DeflateCompression]
 		public List<AccountResource> GetCompanyAccounts(Guid companyId)
 		{
 			var accounts = MakeServiceCall(() => _companyService.GetComanyAccounts(companyId), string.Format("getting list of accounts for {0}", companyId), true);
@@ -294,6 +309,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.EmployeeList)]
+		[DeflateCompression]
 		public List<EmployeeResource> EmployeeList(Guid companyId)
 		{
 			//var employees = MakeServiceCall(() => _companyService.GetEmployeeList(companyId), string.Format("getting list of employees for {0}", companyId), true);
@@ -336,6 +352,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.GetEmployeeImportTemplate)]
+		[DeflateCompression]
 		public HttpResponseMessage GetEmployeeImportTemplate(Guid companyId)
 		{
 			
@@ -357,6 +374,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.ImportEmployees)]
+		[DeflateCompression]
 		public async Task<HttpResponseMessage> ImportEmployees()
 		{
 			var filename = string.Empty;
@@ -441,6 +459,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.ImportTaxRates)]
+		[DeflateCompression]
 		public async Task<HttpResponseMessage> ImportTaxRates()
 		{
 			var filename = string.Empty;
@@ -616,6 +635,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.AllCompanies)]
+		[DeflateCompression]
 		public List<CaliforniaCompanyTax> AllCompanies(int year)
 		{
 			return MakeServiceCall(() => _companyService.GetCaliforniaCompanyTaxes(year), "Get all companies for tax rates", true);
@@ -623,6 +643,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[HttpGet]
 		[Route(CompanyRoutes.GetCaliforniaEDDExport)]
+		[DeflateCompression]
 		public HttpResponseMessage GetCaliforniaEDDExport()
 		{
 
