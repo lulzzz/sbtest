@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Transactions;
 using Dapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
@@ -114,65 +115,65 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxCheckNumber(Guid companyId)
 		{
-			//const string sql = "select max(CheckNumber) as maxnumber from Journal with (nolock) where CompanyId=@CompanyId and IsVoid=0";
-			//using (var conn = GetConnection())
+			const string sql = "select max(CheckNumber) as maxnumber from Journal with (nolock) where TransactionType=@TransactionType and CompanyId=@CompanyId and IsVoid=0";
+			using (var conn = GetConnection())
+			{
+				dynamic result =
+					conn.Query(sql, new { CompanyId = companyId, TransactionType=(int)TransactionType.PayCheck }).FirstOrDefault();
+
+				if (result.maxnumber != null)
+				{
+
+					var max = result.maxnumber + 1;
+					if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
+					{
+						max = 100001 + max;
+					}
+					else
+					{
+						if (max < 1001)
+							max = 1001;
+					}
+
+					return max;
+				}
+				else
+				{
+					if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
+					{
+						return 100001;
+					}
+					else
+						return 1001;
+				}
+			}
+			
+			//var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid && p.TransactionType==(int)TransactionType.PayCheck).Select(j=>j.CheckNumber).ToList();
+			//if (journals.Any())
 			//{
-			//	dynamic result =
-			//		conn.Query(sql, new { CompanyId = companyId }).FirstOrDefault();
-				
-			//	if (result.maxnumber!=null)
+			//	var max = journals.Max(p => p) + 1;
+
+			//	if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
 			//	{
-
-			//		var max = result.maxnumber+1;
-			//		if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
-			//		{
-			//			max = 100001 + max;
-			//		}
-			//		else
-			//		{
-			//			if (max < 1001)
-			//				max = 1001;
-			//		}
-
-			//		return max;
+			//		max = 100001 + max;
 			//	}
 			//	else
 			//	{
-			//		if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
-			//		{
-			//			return 100001;
-			//		}
-			//		else
-			//			return 1001;
+			//		if (max < 1001)
+			//			max = 1001;
 			//	}
+
+			//	return max;
 			//}
-			//var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid).ToList();
-			var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid && p.TransactionType==(int)TransactionType.PayCheck).Select(j=>j.CheckNumber).ToList();
-			if (journals.Any())
-			{
-				var max = journals.Max(p => p) + 1;
-
-				if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
-				{
-					max = 100001 + max;
-				}
-				else
-				{
-					if (max < 1001)
-						max = 1001;
-				}
-
-				return max;
-			}
-			else
-			{
-				if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
-				{
-					return 100001;
-				}
-				else
-					return 1001;
-			}
+			//else
+			//{
+			//	if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
+			//	{
+			//		return 100001;
+			//	}
+			//	else
+			//		return 1001;
+			//}
 			
 		}
 
