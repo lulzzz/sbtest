@@ -87,6 +87,9 @@ namespace SiteInspectionStatus_Utility
 				case 14:
 					UpdateEmployeeCarryOver(container);
 					break;
+				case 15:
+					FixAccumulationCycleAndYTDForPEO(container);
+					break;
 				default:
 					break;
 			}
@@ -640,6 +643,137 @@ namespace SiteInspectionStatus_Utility
 					{
 						_companyRepository.SaveEmployee(e);
 						Console.WriteLine("E {0}, {1}, {2}",e.CompanyEmployeeNo, e.FullName, e.Id);
+					});
+					txn.Complete();
+				}
+			}
+		}
+
+		private static void FixAccumulationCycleAndYTDForPEO(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var _companyRepository = scope.Resolve<ICompanyRepository>();
+
+				var payCheckList = new List<PayCheck>();
+				var empList = new List<HrMaxx.OnlinePayroll.Models.Employee>();
+				var leaveCycleEmployees = new List<LeaveCycleEmployee>();
+				#region "employee cycles"
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("91342FA5-8457-4EF4-A1B3-A769011747F8"), NewFiscalStart = new DateTime(2017, 4, 27), CarryOver = 0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("70407278-E3C9-4119-B2E3-A76D00CB1A04"), NewFiscalStart = new DateTime(2017, 4, 20), CarryOver = 0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("36C99ED4-499F-419B-9444-A70100BFD8B3"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = 0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D56EDB48-BC0D-46FA-B3A7-A78600A9EBA7"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = 24 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("1A57B387-69C7-40C7-9F9F-A6F300D23BC0"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)3.42 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C0E1A5BA-1C5A-433D-8760-A6F200193494"), NewFiscalStart = new DateTime(2016, 5, 9), CarryOver = 24 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("71AB1C29-AB73-41A5-826B-A6ED0157A2F6"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)11.61 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2519CD8A-FD1A-43BB-8BCB-9B0561737745"), NewFiscalStart = new DateTime(2017, 5, 8), CarryOver = 0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0CF9E3E5-1491-4ED0-82C3-A6ED015600D1"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = 0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D1221921-5283-4374-8037-527B9F863F42"), NewFiscalStart = new DateTime(2016, 7, 1), CarryOver = 0 });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CF471BF1-5C07-4E69-A3D2-A79400C3203A"), NewFiscalStart = new DateTime(2017, 6, 12), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0818E8A6-B5C8-4F4C-AAEC-A7B400B69380"), NewFiscalStart = new DateTime(2017, 7, 6), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("404A4634-7032-4BC7-BA0C-A6F300AA2B72"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)19.88 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("386A6E48-B1E0-4DF1-AFDE-A73E010740E5"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)7.51 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("640CA660-EBC4-42D9-B4CB-A769011822FF"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E196E5F3-FA21-4EC4-8730-A6F901022B79"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("429CB9B3-C410-47A6-B10E-A728009BF54B"), NewFiscalStart = new DateTime(2017, 2, 28), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0DF42C13-7971-4202-9331-A7690116CD43"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("92D970C5-A2EC-4C7D-B3BB-A7690117B5F1"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F3C3959B-B67D-4C2F-9AB7-A76D00C8C16C"), NewFiscalStart = new DateTime(2017, 5, 8), CarryOver = (decimal)0 });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0700B0E8-6646-45B8-A63A-A769011664AD"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F14B026F-85B4-4FD2-9EAC-A76901141D2C"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("52FDA1A4-1D03-474D-A38D-A6ED0156082E"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("244A67D9-4F02-4B0E-9D87-C66132EAC59E"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("65DD8BA8-525F-43CB-A692-A6F900D628D7"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)24 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F82D7957-0538-42C1-8B62-A78600A93515"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)24 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D4FA0762-5307-4FE5-8FEF-A71B00DDBD9A"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BBE32717-A722-4620-A741-A768009BD1A8"), NewFiscalStart = new DateTime(2017, 5, 3), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("33FE3166-3ACD-42F4-A66C-A6F300EA9F25"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)4.32 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("74559EE2-9FAD-47DA-B046-A7BD00C13D52"), NewFiscalStart = new DateTime(2017, 2, 23), CarryOver = (decimal)0 });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C53A186F-644B-480A-8D5E-A77000A65A59"), NewFiscalStart = new DateTime(2017, 5, 3), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FA8C074B-2A61-4C57-B584-A6ED01514B5C"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)8 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BABE9F3F-9368-41B0-A9CA-A6ED0155BAB8"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9AE5F074-CF53-401D-A207-A6F300AA31BA"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)16.62 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F0CA2BA2-0230-41B0-9F9D-A76300C009A9"), NewFiscalStart = new DateTime(2017, 4, 12), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0959C77E-2A4E-4834-8A61-A6ED0155FA80"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F266DDE1-A8D5-4A3C-B478-F3EDC49DA756"), NewFiscalStart = new DateTime(2017, 5, 15), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7C00DA6E-7B62-41D7-AEA2-A6ED0150E544"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)19 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F56B63D5-2AE9-4307-8CF9-423B8E9A2722"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)23.33 });
+
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C2439697-72D2-406F-A189-A6F800A5EA37"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DD5AE2F7-9793-45C4-9AFB-A6F300AA03F9"), NewFiscalStart = new DateTime(2017, 1, 1), CarryOver = (decimal)22 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C2C9ED5A-28FF-4167-8D01-A76D00CB6612"), NewFiscalStart = new DateTime(2017, 5, 8), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7A33ECF0-8B41-4E1A-991D-A76E009C955A"), NewFiscalStart = new DateTime(2017, 5, 9), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AD72E3C5-9C80-4B0D-9EA9-A7690115C798"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3A4B9D79-CF4A-4E54-B81C-A76901150708"), NewFiscalStart = new DateTime(2017, 5, 4), CarryOver = (decimal)0 });
+				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F70AAC53-AC9C-4286-B69C-A769011C83C3"), NewFiscalStart = new DateTime(2017, 2, 17), CarryOver = (decimal)0 });
+				#endregion
+				leaveCycleEmployees.ForEach(e =>
+				{
+					var employee = _companyRepository.GetEmployeeById(e.EmployeeId);
+					var company = _readerService.GetCompany(employee.CompanyId);
+					employee.SickLeaveHireDate = e.NewFiscalStart.Date;
+					employee.CarryOver = e.CarryOver;
+					empList.Add(employee);
+
+					var newFiscalEndDate = e.NewFiscalStart.AddYears(1).AddDays(-1).Date;
+					var checks = _readerService.GetEmployeePayChecks(e.EmployeeId);
+					
+					checks.Where(p => !p.IsHistory).OrderBy(p => p.PayDay).ThenBy(p=>p.Id).ToList().ForEach(
+						p =>
+						{
+							p.Accumulations.ForEach(a =>
+							{
+								if (p.PayDay >= e.NewFiscalStart.Date && p.PayDay <=newFiscalEndDate)
+								{
+									a.FiscalStart = e.NewFiscalStart.Date;
+									a.FiscalEnd = newFiscalEndDate;
+								}
+								else
+								{
+									a.FiscalStart = CalculateFiscalStartDate(employee.SickLeaveHireDate.Date, p.PayDay).Date;
+									a.FiscalEnd = a.FiscalStart.AddYears(1).AddDays(-1).Date;
+								}
+								
+								var ytdAccumulation =
+									checks.Where(pc =>!pc.IsHistory && (pc.PayDay.Date<p.PayDay || (pc.PayDay.Date==p.PayDay.Date && pc.Id<p.Id)) && pc.Accumulations.Any(a1=>a1.FiscalStart==a.FiscalStart && a1.FiscalEnd==a.FiscalEnd)).SelectMany(pc => pc.Accumulations);
+								var prevs =
+									checks.Where(
+										pc =>
+											!pc.IsHistory && (pc.PayDay.Date < p.PayDay || (pc.PayDay.Date == p.PayDay.Date && pc.Id < p.Id)) && pc.Accumulations.Any(a1 => a1.FiscalStart < a.FiscalStart))
+										.SelectMany(pc => pc.Accumulations);
+								var ytdfiscal = ytdAccumulation.Sum(a2 => a2.AccumulatedValue);
+								if ((a.AccumulatedValue + ytdfiscal) >
+								    company.AccumulatedPayTypes.First(pt => pt.PayType.Id == a.PayType.PayType.Id).AnnualLimit)
+									a.AccumulatedValue =
+										company.AccumulatedPayTypes.First(pt => pt.PayType.Id == a.PayType.PayType.Id).AnnualLimit - ytdfiscal;
+								
+								a.YTDFiscal = Math.Round(a.AccumulatedValue + ytdAccumulation.Sum(a2 => a2.AccumulatedValue), 2,
+									MidpointRounding.AwayFromZero);
+								a.YTDUsed = Math.Round(a.Used + ytdAccumulation.Sum(a2 => a2.Used), 2,
+									MidpointRounding.AwayFromZero);
+								a.CarryOver = Math.Round(employee.CarryOver + prevs.Sum(a2 => a2.AccumulatedValue - a2.Used), 2, MidpointRounding.AwayFromZero);
+								
+
+								
+							});
+							payCheckList.Add(p);
+						});
+
+				});
+				Console.WriteLine("PayChecks " + payCheckList.Count);
+				Console.WriteLine("Employees " + empList.Count);
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					payCheckList.ForEach(_payrollRepository.UpdatePayCheckSickLeaveAccumulation);
+					empList.ForEach(e =>
+					{
+						_companyRepository.SaveEmployeeSickLeaveAndCarryOver(e);
+						Console.WriteLine("E {0}, {1}, {2}", e.CompanyEmployeeNo, e.FullName, e.Id);
 					});
 					txn.Complete();
 				}
@@ -1506,6 +1640,7 @@ namespace SiteInspectionStatus_Utility
 			public Guid EmployeeId { get; set; }
 			public DateTime OldFiscalStart { get; set; }
 			public DateTime NewFiscalStart { get; set; }
+			public decimal CarryOver { get; set; }
 		}
 
 		public class EmpCarryOver

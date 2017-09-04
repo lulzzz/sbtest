@@ -588,7 +588,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					c.VoidedPayChecks = new List<PayCheck>();
 				});
 
-
+				h.Accumulation.BuildWCOvertime(h.PayChecks);
+				h.PayChecks = new List<PayCheck>();
+				h.CredChecks = new List<PayCheck>();
 
 			});
 			

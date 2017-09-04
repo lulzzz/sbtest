@@ -441,6 +441,23 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 		}
 
+	  public List<PayCheck> GetEmployeePayChecks(Guid employeeId)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam> { new FilterParam{Key="employee", Value = employeeId.ToString()} };
+				var result = GetDataFromStoredProc<List<PayCheck>, List<Models.JsonDataModel.PayrollPayCheckJson>>(
+					"GetEmployeePaychecks", paramList, new XmlRootAttribute("PayCheckList"));
+				return result;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Pay Check by id ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
 	  public PayCheck GetPaycheck(int payCheckId)
 	  {
 			try

@@ -34,6 +34,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheck> CreditChecks { get; set; }
 		public List<DailyAccumulation> DailyAccumulations { get; set; }
 		public List<GarnishmentAgency> GarnishmentAgencies { get; set; }
+		public List<HostCompanyWorkerCompensationPayCode> Overtimes { get; set; }
+		public List<HostEmployeeWorkerCompensationPayCode> EmployeeOvertimes { get; set; } 
 		public ExtractAccumulation()
 		{
 			GrossWage = 0;
@@ -384,8 +386,48 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 		}
 
+		public  void BuildWCOvertime(List<PayCheck> payChecks)
+		{
+			
+			Overtimes = new List<HostCompanyWorkerCompensationPayCode>();
+			EmployeeOvertimes = new List<HostEmployeeWorkerCompensationPayCode>();
+			var list1 = payChecks.GroupBy(pc => pc.CompanyId).ToList();
+			list1.ForEach(c =>
+			{
+				var list2 = c.ToList().GroupBy(pc => pc.WorkerCompensation.WorkerCompensation.Id).ToList();
+				list2.ForEach(wc => Overtimes.Add(new HostCompanyWorkerCompensationPayCode
+				{
+					CompanyId = c.Key, WorkerCompensationId = wc.Key, OvertimeAmount = wc.ToList().SelectMany(pc1=>pc1.PayCodes).Sum(pc2=>pc2.OvertimeAmount)
+				}));
+			});
+			var emplist = payChecks.GroupBy(pc => pc.Employee.Id).ToList();
+			emplist.ForEach(c =>
+			{
+				var list2 = c.ToList().GroupBy(pc => pc.WorkerCompensation.WorkerCompensation.Id).ToList();
+				list2.ForEach(wc => EmployeeOvertimes.Add(new HostEmployeeWorkerCompensationPayCode
+				{
+					EmployeeId = c.Key,
+					WorkerCompensationId = wc.Key,
+					OvertimeAmount = wc.ToList().SelectMany(pc1 => pc1.PayCodes).Sum(pc2 => pc2.OvertimeAmount)
+				}));
+			});
+		}
+
 
 
 		
+	}
+
+	public class HostCompanyWorkerCompensationPayCode
+	{
+		public Guid CompanyId { get; set; }
+		public int WorkerCompensationId { get; set; }
+		public decimal OvertimeAmount { get; set; }
+	}
+	public class HostEmployeeWorkerCompensationPayCode
+	{
+		public Guid EmployeeId { get; set; }
+		public int WorkerCompensationId { get; set; }
+		public decimal OvertimeAmount { get; set; }
 	}
 }

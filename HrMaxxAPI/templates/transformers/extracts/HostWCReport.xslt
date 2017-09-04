@@ -233,7 +233,8 @@
 		<xsl:variable name ="acc" select="Accumulation"/>
 		<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation">
 			<xsl:variable name ="wcid" select="WorkerCompensation/Id"/>
-			<xsl:variable name="overtime" select="sum($host/PayChecks/PayCheck[CompanyId=$comp/Id and WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>
+			<!--<xsl:variable name="overtime" select="sum($host/PayChecks/PayCheck[CompanyId=$comp/Id and WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>-->
+			<xsl:variable name="overtime" select="sum($host/Accumulation/Overtimes/HostCompanyWorkerCompensationPayCode[CompanyId=$comp/Id and WorkerCompensationId=$wcid]/OvertimeAmount)"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="String">
@@ -276,7 +277,8 @@
 			<xsl:variable name="acc" select="Accumulation"/>
 			<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation[Amount>0]">
 				<xsl:variable name="wcid" select="WorkerCompensation/Id"/>
-				<xsl:variable name="overtime" select="sum($host/PayChecks/PayCheck[Employee/Id=$emp/Id and WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>
+				<!--<xsl:variable name="overtime" select="sum($host/PayChecks/PayCheck[Employee/Id=$emp/Id and WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>-->
+				<xsl:variable name="overtime" select="sum($host/Accumulation/EmployeeOvertimes/HostEmployeeWorkerCompensationPayCode[EmployeeId=$emp/Id and WorkerCompensationId=$wcid]/OvertimeAmount)"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="String">
@@ -335,7 +337,8 @@
 			<xsl:variable name="acc" select="Accumulation"/>
 			<xsl:for-each select="Accumulation/WorkerCompensations/PayrollWorkerCompensation[Amount=0]">
 				<xsl:variable name="wcid" select="WorkerCompensation/Id"/>
-				<xsl:variable name="overtime" select="sum($host/PayChecks/PayCheck[Employee/Id=$emp/Id and WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>
+				<!--<xsl:variable name="overtime" select="sum($host/PayChecks/PayCheck[Employee/Id=$emp/Id and WorkerCompensation/WorkerCompensation/Id=$wcid]/PayCodes/PayrollPayCode/OvertimeAmount)"/>!-->
+				<xsl:variable name="overtime" select="sum($host/Accumulation/EmployeeOvertimes/HostEmployeeWorkerCompensationPayCode[EmployeeId=$emp/Id and WorkerCompensationId=$wcid]/OvertimeAmount)"/>
 				<Row>
 					<Cell>
 						<Data ss:Type="String">

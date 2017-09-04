@@ -43,6 +43,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
 		void SaveWorkerCompensations(List<CompanyWorkerCompensation> rates);
 		Employee GetEmployeeById(Guid id);
-		
+
+		void SaveEmployeeSickLeaveAndCarryOver(Employee employee);
 	}
 }

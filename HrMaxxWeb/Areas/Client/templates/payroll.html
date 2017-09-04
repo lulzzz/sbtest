@@ -244,15 +244,15 @@
 								</td>
 								<td>
 									<input class="form-control"
-												 ng-model="pc.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+												 ng-model="pc.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{0,4})?$/" />
 								</td>
 								<td>
 									<input class="form-control"
-												 ng-model="pc.payCode.hourlyRate" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+												 ng-model="pc.payCode.hourlyRate" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{0,4})?$/" />
 								</td>
 								<td>
 									<input class="form-control"
-												 ng-model="pc.screenHours" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+?$/" />
+												 ng-model="pc.screenHours" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{0,4})?$/" />
 								</td>
 							</tr>
 							<tr ng-repeat-end ng-show="pc.overtimeHours>0 || pc.overtimeAmount>0">
@@ -269,7 +269,7 @@
 								</td>
 								<td>
 									<input class="form-control"
-												 ng-model="pc.screenOvertime" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+?$/" />
+												 ng-model="pc.screenOvertime" data-parsley-type="number" required data-parsley-pattern="/^[0-9]+(\.[0-9]{0,4})?$/" />
 								</td>
 							</tr>
 						</table>

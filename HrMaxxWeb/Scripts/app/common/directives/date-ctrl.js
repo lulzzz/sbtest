@@ -45,11 +45,13 @@ common.directive('dateCtrl', ['zionAPI','version',
 				$scope.open = function () {
 					$scope.data.opened = true;
 				};
-				$scope.isValid = function() {
+				$scope.isValid = function () {
+					$scope.dateOptions.minDate = $scope.min ? $scope.min : moment("01/01/1920", "MM/DD/YYYY").toDate();
+					$scope.dateOptions.maxDate = $scope.max ? $scope.max : moment("12/31/2050", "MM/DD/YYYY").toDate();
 					if ($scope.required && !$scope.model) {
 						return false;
 					}						
-					else if ($scope.model && $scope.model < $scope.dateOptions.minDate ) {
+					else if ($scope.model && $scope.model < $scope.dateOptions.minDate) {
 						return false;
 					}
 					else if ($scope.model && $scope.model > $scope.dateOptions.maxDate) {

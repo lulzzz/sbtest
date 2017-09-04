@@ -259,3 +259,52 @@ or
 
 END
 GO
+/****** Object:  StoredProcedure [dbo].[GetEmployeePaychecks]    Script Date: 30/08/2017 5:02:27 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetEmployeePaychecks]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetEmployeePaychecks]
+GO
+/****** Object:  StoredProcedure [dbo].[GetEmployeePaychecks]    Script Date: 30/08/2017 5:02:27 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetEmployeePaychecks]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetEmployeePaychecks] AS' 
+END
+GO
+ALTER PROCEDURE [dbo].[GetEmployeePaychecks]
+	@employee uniqueidentifier
+AS
+BEGIN
+	declare @ssn varchar(24), @ispeo bit, @hostId uniqueidentifier,@company uniqueidentifier
+	select @ssn=ssn, @ispeo=FileUnderHost, @hostId=HostId, @company=company.Id from employee, company where employee.Id=@employee and employee.companyid=company.id;
+	
+
+select id into #tmpcomp from company
+where 
+((@ispeo=1 and HostId=@hostid and FileUnderHost=1)
+or
+(@ispeo=0 and id=@company)
+)
+
+		select 
+			PayrollPayCheck.*
+		from PayrollPayCheck , Employee 
+		where 
+			PayrollPayCheck.EmployeeId=Employee.Id
+			and PayrollPayCheck.CompanyId in (select Id from #tmpcomp)
+			and Employee.SSN = @ssn
+		Order by PayrollPayCheck.Id 
+		for Xml path('PayrollPayCheckJson'), root('PayCheckList'), Elements, type
+		
+	
+	
+END
+GO
+
+IF Not EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[PayrollPayCheck]') AND name = N'IX_PayrollPayCheckStatus')
+CREATE NONCLUSTERED INDEX [IX_PayrollPayCheckStatus]
+ON [dbo].[PayrollPayCheck] ([Status])
+
+GO

@@ -62,6 +62,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void MovePayrolls(Guid source, Guid target, Guid guid, string fullName);
 		void CopyPayrolls(Guid source, Guid target, Guid guid, string fullName);
 		void SaveClaimDelivery(InvoiceDeliveryClaim claim);
-		PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId);
+		PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId);		
 	}
 }

@@ -696,6 +696,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<Models.DataModel.Employee, Models.Employee>(emp);
 		}
 
-		
+		public void SaveEmployeeSickLeaveAndCarryOver(Employee employee)
+		{
+			var mapped = _mapper.Map<Models.Employee, Models.DataModel.Employee>(employee);
+			var company = _dbContext.Companies.First(c => c.Id == employee.CompanyId);
+			const string update = @"update e set SickLeaveHireDate=@SickLeaveHireDate, CarryOver=@CarryOver from Employee e, Company c where e.CompanyId=c.Id and e.SSN=@SSN and ((@IsPeo=1 and c.Id in (select Id from Company where HostId=@HostId and FileUnderHost=1)) or (@IsPeo=0 and c.Id=@Company))";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(update, new { SickLeaveHireDate=mapped.SickLeaveHireDate, CarryOver=mapped.CarryOver, SSN=mapped.SSN, HostId=company.HostId, IsPeo=company.FileUnderHost, Company=employee.CompanyId});
+			}
+		}
 	}
 }
