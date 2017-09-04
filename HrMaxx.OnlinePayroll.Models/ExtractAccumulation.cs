@@ -391,16 +391,18 @@ namespace HrMaxx.OnlinePayroll.Models
 			
 			Overtimes = new List<HostCompanyWorkerCompensationPayCode>();
 			EmployeeOvertimes = new List<HostEmployeeWorkerCompensationPayCode>();
-			var list1 = payChecks.GroupBy(pc => pc.CompanyId).ToList();
+			var list1 = payChecks.Where(pc=>pc.WorkerCompensation!=null).GroupBy(pc => pc.CompanyId).ToList();
 			list1.ForEach(c =>
 			{
 				var list2 = c.ToList().GroupBy(pc => pc.WorkerCompensation.WorkerCompensation.Id).ToList();
 				list2.ForEach(wc => Overtimes.Add(new HostCompanyWorkerCompensationPayCode
 				{
-					CompanyId = c.Key, WorkerCompensationId = wc.Key, OvertimeAmount = wc.ToList().SelectMany(pc1=>pc1.PayCodes).Sum(pc2=>pc2.OvertimeAmount)
+					CompanyId = c.Key,
+					WorkerCompensationId = wc.Key,
+					OvertimeAmount = wc.ToList().Where(pc => pc.PayCodes != null && pc.PayCodes.Any(ppc => ppc.OvertimeAmount > 0)).SelectMany(pc1 => pc1.PayCodes).Sum(pc2 => pc2.OvertimeAmount)
 				}));
 			});
-			var emplist = payChecks.GroupBy(pc => pc.Employee.Id).ToList();
+			var emplist = payChecks.Where(pc => pc.WorkerCompensation != null).GroupBy(pc => pc.Employee.Id).ToList();
 			emplist.ForEach(c =>
 			{
 				var list2 = c.ToList().GroupBy(pc => pc.WorkerCompensation.WorkerCompensation.Id).ToList();
@@ -408,7 +410,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				{
 					EmployeeId = c.Key,
 					WorkerCompensationId = wc.Key,
-					OvertimeAmount = wc.ToList().SelectMany(pc1 => pc1.PayCodes).Sum(pc2 => pc2.OvertimeAmount)
+					OvertimeAmount = wc.ToList().Where(pc => pc.PayCodes != null && pc.PayCodes.Any(ppc => ppc.OvertimeAmount > 0)).SelectMany(pc1 => pc1.PayCodes).Sum(pc2 => pc2.OvertimeAmount)
 				}));
 			});
 		}
