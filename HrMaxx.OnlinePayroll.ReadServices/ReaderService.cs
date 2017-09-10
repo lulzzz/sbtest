@@ -103,7 +103,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		//	}
 		//}
 
-		public List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null)
+		public List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null,  bool includeTaxesDelayed = false)
 		{
 			try
 			{
@@ -135,6 +135,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (endDate.HasValue)
 				{
 					paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (includeTaxesDelayed)
+				{
+					paramList.Add(new FilterParam { Key = "includeTaxesDelayed", Value = "1" });
 				}
 
 				return GetDataFromStoredProc<List<PayrollInvoiceListItem>, List<PayrollInvoiceListItem>>(

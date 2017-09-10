@@ -30,5 +30,6 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<InvoicePaymentMethod> PaymentMethod { get; set; } 
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
+		public bool IncludeDelayedTaxes { get; set; }
 	}
 }

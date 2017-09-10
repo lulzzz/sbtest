@@ -30,6 +30,14 @@
 					<div class="col-sm-12" ng-dropdown-multiselect="" options="paymentmethods" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentMethods"></div>
 				</div>
 				<div class="col-sm-1 form-group">
+					<label >Only Delayed Taxes</label>
+					<div>
+						<label for="delayedtaxes" class="switch">
+							<input id="delayedtaxes" type="checkbox" ng-model="data.includeDelayedTaxes" /><i></i>
+						</label>
+					</div>
+				</div>
+				<div class="col-sm-1 form-group">
 					<label></label>
 					<button class="btn btn-sm btn-primary form-control" ng-click="updateData()">Filter</button>
 				</div>
@@ -81,7 +89,7 @@
 							{{item.checkNumbers}}
 						</td>
 						<td data-title=" 'Status' " filter="{status:'select'}" filter-data="statuses" sortable=" 'statusText' " class="col-sm-1 text-center">
-							{{item.statusText}}
+							{{item.statusText}} <i class="fa fa-pause" style="color:red" ng-if="item.taxesDelayed"></i>
 						</td>
 						<td data-title=" 'Processed By' " filter="{processedBy:'text'}" sortable=" 'processedBy' " class="col-sm-1 text-center">
 							{{item.processedBy}}

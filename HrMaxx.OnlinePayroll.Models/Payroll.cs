@@ -29,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Total { get; set; }
 		public int InvoiceNumber { get; set; }
 		public InvoiceStatus InvoiceStatus { get; set; }
+		public bool TaxesDelayed { get; set; }
 
 		public bool PEOASOCoCheck { get; set; }
 		public bool IsHistory { get; set; }

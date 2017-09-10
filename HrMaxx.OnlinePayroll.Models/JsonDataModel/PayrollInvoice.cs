@@ -59,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public CompanyJson Company { get; set; }
 		public List<InvoicePaymentJson> InvoicePayments { get; set; }
 		public bool CommissionClaimed { get; set; }
+		public bool TaxesDelayed { get; set; }
 		
 	}
 

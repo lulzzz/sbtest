@@ -1289,7 +1289,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							invoice.DeliveredBy = invoice.UserName;
 						}
 
-						if (invoice.Status != InvoiceStatus.OnHold && (invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.NotDeposited || invoice.Status == InvoiceStatus.ACHPending ))
+						if ((invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.NotDeposited || invoice.Status == InvoiceStatus.ACHPending ))
 						{
 							if (invoice.Balance <= 0)
 								invoice.Status = InvoiceStatus.Paid;
@@ -2528,7 +2528,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				var invoice = _readerService.GetPayrollInvoice(invoiceId);
-				invoice.Status = InvoiceStatus.OnHold;
+				invoice.TaxesDelayed = true;
 				invoice.LastModified = DateTime.Now;
 				invoice.UserName = fullName;
 				var saved = _payrollRepository.SavePayrollInvoice(invoice);
@@ -2555,35 +2555,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					if (invoice.Balance <= 0)
-						invoice.Status = InvoiceStatus.Paid;
-					else if (invoice.Balance <= invoice.Total)
-					{
-						if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced))
-							invoice.Status = InvoiceStatus.PaymentBounced;
-						else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Submitted))
-						{
-							var totalPayments = invoice.InvoicePayments.Where(p => p.Status != PaymentStatus.PaymentBounced).Sum(p => p.Amount);
-									if (totalPayments < invoice.Total)
-									{
-										invoice.Status = InvoiceStatus.NotDeposited;
-									}
-									else
-									{
-										invoice.Status = InvoiceStatus.Deposited;	
-									}
-						}
-						else if (invoice.InvoicePayments.Any())
-						{
-							invoice.Status = InvoiceStatus.PartialPayment;
-						}
-						else
-						{
-							invoice.Status = InvoiceStatus.Delivered;
-
-						}
-					}
-					
+					invoice.TaxesDelayed = false;
 					invoice.LastModified = DateTime.Now;
 				
 					var saved = _payrollRepository.SavePayrollInvoice(invoice);

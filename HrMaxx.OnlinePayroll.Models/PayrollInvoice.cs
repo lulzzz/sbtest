@@ -63,6 +63,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? SalesRep { get; set; }
 		public decimal Commission { get; set; }
 		public bool CommissionClaimed { get; set; }
+		public bool TaxesDelayed { get; set; }
 
 		public decimal PaidAmount
 		{

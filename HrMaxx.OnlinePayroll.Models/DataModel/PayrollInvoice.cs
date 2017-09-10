@@ -64,6 +64,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal DDPay { get; set; }
         public Nullable<System.Guid> SalesRep { get; set; }
         public Nullable<decimal> Commission { get; set; }
+        public Nullable<bool> TaxesDelayed { get; set; }
     
         public virtual Company Company { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

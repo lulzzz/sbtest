@@ -21,7 +21,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//Invoices
 		//List<PayrollInvoice> GetPayrollInvoices(Guid host);
-		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null);
+		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, bool includeTaxesDelayed = false);
 		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, int? invoiceNumber=null  );
 		List<PayrollInvoice> GetCompanyInvoices(Guid companyId, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null);
 		PayrollInvoice GetPayrollInvoice(Guid invoiceId);

@@ -90,6 +90,9 @@ namespace SiteInspectionStatus_Utility
 				case 15:
 					FixAccumulationCycleAndYTDForPEO(container);
 					break;
+				case 16:
+					SeparateInvoiceTaxesDelayed(container);
+					break;
 				default:
 					break;
 			}
@@ -337,6 +340,27 @@ namespace SiteInspectionStatus_Utility
 
 			}
 		}
+
+		private static void SeparateInvoiceTaxesDelayed(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var _readerService = scope.Resolve<IReaderService>();
+				var _payrollService = scope.Resolve<IPayrollService>();
+				var _companyRepository = scope.Resolve<ICompanyRepository>();
+
+				var invoices = _readerService.GetPayrollInvoices(status: new List<InvoiceStatus> { InvoiceStatus.OnHold }, paymentStatuses: new List<PaymentStatus>(), paymentMethods: new List<InvoicePaymentMethod>());	
+				invoices.ForEach(i =>
+				{
+					i.Status = InvoiceStatus.Delivered;
+					i.TaxesDelayed = true;
+					var i1 = _payrollService.SavePayrollInvoice(i);
+					Console.WriteLine("New Status {0}", i1.Status.GetDbName());
+				});
+			
+			}
+		}
+
 
 		private static void FixAccumulationCycleAndYTD(IContainer container)
 		{
@@ -648,6 +672,7 @@ namespace SiteInspectionStatus_Utility
 				}
 			}
 		}
+
 
 		private static void FixAccumulationCycleAndYTDForPEO(IContainer container)
 		{

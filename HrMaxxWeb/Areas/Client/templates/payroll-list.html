@@ -69,7 +69,7 @@
 							{{item.invoiceNumber}}
 						</td>
 						<td data-title=" 'Invoice Status' " sortable=" 'invoiceStatusText' " class="col-sm-1 text-center" ng-show="showInvoices()">
-							{{item.invoiceStatusText}}
+							{{item.invoiceStatusText}} <i class="fa fa-pause" style="color:red" ng-if="item.taxesDelayed"></i>
 						</td>
 						<td data-title=" 'Invoice Total' " sortable=" 'total' " class="col-sm-1 text-center" ng-show="showInvoices()">
 							{{item.total | currency:'$'}}

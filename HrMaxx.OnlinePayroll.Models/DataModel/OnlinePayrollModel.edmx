@@ -244,7 +244,7 @@
           <Property Name="MiddleInitial" Type="varchar" MaxLength="1" />
           <Property Name="Contact" Type="varchar(max)" Nullable="false" />
           <Property Name="Gender" Type="int" Nullable="false" />
-          <Property Name="SSN" Type="varchar(max)" Nullable="false" />
+          <Property Name="SSN" Type="varchar" MaxLength="24" />
           <Property Name="BirthDate" Type="datetime" />
           <Property Name="HireDate" Type="datetime" Nullable="false" />
           <Property Name="Department" Type="varchar(max)" />
@@ -482,6 +482,7 @@
           <Property Name="DDPay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="SalesRep" Type="uniqueidentifier" />
           <Property Name="Commission" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="TaxesDelayed" Type="bit" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -2110,7 +2111,7 @@
           <Property Name="MiddleInitial" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="Contact" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Gender" Type="Int32" Nullable="false" />
-          <Property Name="SSN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="SSN" Type="String" MaxLength="24" FixedLength="false" Unicode="false" />
           <Property Name="BirthDate" Type="DateTime" Precision="3" />
           <Property Name="HireDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Department" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -2556,6 +2557,7 @@
           <Property Name="SalesRep" Type="Guid" />
           <Property Name="Commission" Type="Decimal" Precision="18" Scale="2" />
           <NavigationProperty Name="CommissionExtracts" Relationship="HrMaxxModel.FK_CommissionExtract_PayrollInvoice" FromRole="PayrollInvoice" ToRole="CommissionExtract" />
+          <Property Name="TaxesDelayed" Type="Boolean" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3326,6 +3328,7 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="TaxesDelayed" ColumnName="TaxesDelayed" />
                 <ScalarProperty Name="Commission" ColumnName="Commission" />
                 <ScalarProperty Name="SalesRep" ColumnName="SalesRep" />
                 <ScalarProperty Name="DDPay" ColumnName="DDPay" />

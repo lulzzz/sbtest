@@ -271,7 +271,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
 																		SubmittedBy=@SubmittedBy, SubmittedOn	=@SubmittedOn, DeliveredBy=@DeliveredBy, DeliveredOn=@DeliveredOn, InvoiceDate=@InvoiceDate, Deductions=@Deductions, Courier=@Courier,
 																		Notes=@Notes, Balance=@Balance, WorkerCompensations=@WorkerCompensations, VoidedCreditChecks=@VoidedCreditChecks, NetPay=@NetPay, DDPay=@DDPay, CheckPay=@CheckPay, SalesRep=@SalesRep, 
-																		Commission=@Commission   															
+																		Commission=@Commission , TaxesDelayed=@TaxesDelayed  															
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);

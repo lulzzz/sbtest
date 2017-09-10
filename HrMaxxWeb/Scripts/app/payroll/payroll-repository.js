@@ -202,7 +202,7 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			getInvoicesForHost: function (company, startdate, enddate, statuses, paymentstatuses, paymentmethods) {
+			getInvoicesForHost: function (company, startdate, enddate, statuses, paymentstatuses, paymentmethods, includeDelayedTaxes) {
 				var deferred = $q.defer();
 				payrollServer.all('PayrollInvoices').post({
 					companyId: company,
@@ -210,7 +210,8 @@ common.factory('payrollRepository', [
 					endDate: enddate,
 					status: statuses,
 					paymentStatus: paymentstatuses,
-					paymentMethod: paymentmethods
+					paymentMethod: paymentmethods,
+					includeDelayedTaxes: includeDelayedTaxes
 				}).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {

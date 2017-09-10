@@ -539,7 +539,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public List<PayrollInvoiceListItemResource> GetPayrollInvoices(PayrollInvoiceFilterResource resource)
 		{
 			
-			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoiceList(CurrentUser.Host, companyId: resource.CompanyId, status: resource.Status, startDate: resource.StartDate, endDate: resource.EndDate, paymentStatuses: resource.PaymentStatus, paymentMethods:resource.PaymentMethod), string.Format("get invoices for host with id={0}", CurrentUser.Host));
+			var invoices = MakeServiceCall(() => _readerService.GetPayrollInvoiceList(CurrentUser.Host, companyId: resource.CompanyId, status: resource.Status, startDate: resource.StartDate, endDate: resource.EndDate, paymentStatuses: resource.PaymentStatus, paymentMethods:resource.PaymentMethod, includeTaxesDelayed: resource.IncludeDelayedTaxes), string.Format("get invoices for host with id={0}", CurrentUser.Host));
 			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
 			{
 				invoices = invoices.Where(i => !i.IsHostCompany && i.IsVisibleToHost).ToList();

@@ -34,6 +34,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Total { get; set; }
 		public int InvoiceNumber { get; set; }
 		public int InvoiceStatus { get; set; }
+		public bool TaxesDelayed { get; set; }
 
 		public Guid? CopiedFrom { get; set; }
 		public Guid? MovedFrom { get; set; }
@@ -55,6 +56,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Total { get; set; }
 		public int InvoiceNumber { get; set; }
 		public int InvoiceStatus { get; set; }
+		public bool TaxesDelayed { get; set; }
 		public decimal TotalGrossWage { get; set; }
 		public decimal TotalNetWage { get; set; }
 	}

@@ -32,5 +32,6 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string DeliveryClaimedBy { get; set; }
 		public DateTime? DeliveryClaimedOn { get; set; }
 		public string BusinessAddress { get; set; }
+		public bool TaxesDelayed { get; set; }
 	}
 }

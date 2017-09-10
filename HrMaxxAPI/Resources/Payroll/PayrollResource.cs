@@ -31,6 +31,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal Total { get; set; }
 		public int InvoiceNumber { get; set; }
 		public InvoiceStatus InvoiceStatus { get; set; }
+		public bool TaxesDelayed { get; set; }
 		public PayrollStatus Status { get; set; }
 		public DateTime LastModified { get; set; }
 

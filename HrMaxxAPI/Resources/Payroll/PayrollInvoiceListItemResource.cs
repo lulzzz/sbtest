@@ -36,6 +36,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string DeliveryClaimedBy { get; set; }
 		public DateTime? DeliveryClaimedOn { get; set; }
 		public Address BusinessAddress { get; set; }
+		public bool TaxesDelayed { get; set; }
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }

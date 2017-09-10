@@ -72,6 +72,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\Maintenance\SchemaChanges\009R2_Separations of archive and real.sql" />
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011B_Delay Taxes separation.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011A_employee YTD fix.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

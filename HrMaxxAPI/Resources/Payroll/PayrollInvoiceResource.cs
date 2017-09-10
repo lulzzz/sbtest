@@ -68,6 +68,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string DeliveryClaimedBy { get; set; }
 		public DateTime DeliveryClaimedOn { get; set; }
 
+		public bool TaxesDelayed { get; set; }
+
 		public bool HasVoidedCredits
 		{
 			get { return MiscCharges.Any(mc => mc.PayCheckId > 0); }

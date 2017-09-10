@@ -440,6 +440,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.InvoiceStatus, opt => opt.MapFrom(src => src.PayrollInvoices.Any() ? (InvoiceStatus) src.PayrollInvoices.First().Status : default(InvoiceStatus)))
 				.ForMember(dest => dest.InvoiceNumber, opt => opt.MapFrom(src => src.PayrollInvoices.Any() ? src.PayrollInvoices.First().InvoiceNumber : default(int)))
 				.ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.PayrollInvoices.Any() ? src.PayrollInvoices.First().Total : default(decimal)))
+				.ForMember(dest => dest.TaxesDelayed, opt => opt.MapFrom(src => src.PayrollInvoices.Any() ? src.PayrollInvoices.First().TaxesDelayed : default(bool)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 			CreateMap<Models.Payroll, Models.DataModel.Payroll>()
