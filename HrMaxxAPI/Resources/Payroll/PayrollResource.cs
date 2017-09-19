@@ -77,6 +77,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
 		public DateTime LastModified { get; set; }
+		public bool IsHistory { get; set; }
 		public string ProcessedBy { get; set; }
 		public PayrollStatus Status { get; set; }
 
@@ -86,6 +87,11 @@ namespace HrMaxxAPI.Resources.Payroll
 		public InvoiceStatus InvoiceStatus { get; set; }
 		public decimal TotalGrossWage { get; set; }
 		public decimal TotalNetWage { get; set; }
+
+		public string PayDayText
+		{
+			get { return PayDay.ToString("MM/dd/yyyy"); }
+		}
 
 		public string StatusText
 		{

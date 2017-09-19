@@ -44,11 +44,12 @@
 		public const string FixCubesByCompany = "Payroll/FixCubesByCompany/{companyId:guid}/{year:int}";
 		public const string FillPayCheckNormalized = "Payroll/FillPayCheckNormalized";
 		public const string UpdateAccumulation = "Payroll/UpdateAccumulation";
-		public const string MovePayrolls = "Payroll/MovePayrolls/{source:guid}/{target:guid}";
-		public const string CopyPayrolls = "Payroll/CopyPayrolls/{source:guid}/{target:guid}";
+		public const string MovePayrolls = "Payroll/MovePayrolls";
+		public const string CopyPayrolls = "Payroll/CopyPayrolls";
 		public const string SaveInvoiceDelivery = "Payroll/SaveInvoiceDelivery";
 		public const string PrintPayrollPaySlips = "Payroll/PrintPayrollPaySlips/{payrollId:guid}";
 		public const string PrintPayCheckPaySlip = "Payroll/PrintPayCheckPaySlip/{payrollId:guid}/{checkId:int}";
 		public const string SaveEmployeeAccumulation = "Payroll/EmployeeAccumulation";
+		public const string CompanyPayrolls = "Payroll/CompanyPayrolls/{companyId:guid}";
 	}
 }

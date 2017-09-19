@@ -3009,11 +3009,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void MovePayrolls(Guid source, Guid target, Guid userId, string user)
+		public void MovePayrolls(Guid source, Guid target, Guid userId, string user, bool moveAll, List<Guid> payrollsToCopy, bool ashistory)
 		{
 			try
 			{
-
+				var payrolls = _readerService.GetPayrolls(companyId: source);
+				if (!moveAll && payrollsToCopy.Any())
+				{
+					payrolls = payrolls.Where(p => payrollsToCopy.Contains(p.Id)).ToList();
+				}
 				try
 				{
 					_companyService.CopyEmployees(source, target, new List<Guid>(), user, true);
@@ -3029,20 +3033,24 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var targetHost = _hostService.GetHost(targetCompany.HostId);
 				var sourceEmployees = _readerService.GetEmployees(company:source);
 				var targetEmployees = _readerService.GetEmployees(company:target);
-				var payrolls = _readerService.GetPayrolls(companyId:source);
+				
 				var sourceCOA = _companyRepository.GetCompanyAccounts(source);
 				var targetCOA = _companyRepository.GetCompanyAccounts(target);
 				var sourceHostCOA = _companyRepository.GetCompanyAccounts(sourceHost.Company.Id);
 				var targetHostCOA = _companyRepository.GetCompanyAccounts(targetHost.Company.Id);
 				var affectedJournals = new List<Journal>();
+
 				
+
 				payrolls.OrderBy(p => p.LastModified).ToList().ForEach(payroll =>
 				{
 					var original = Utilities.GetCopy(payroll);
+					payroll.IsHistory = ashistory || payroll.IsHistory;
 					payroll.MovedFrom = source;
 					payroll.Company = targetCompany;
 					payroll.PayChecks.ForEach(paycheck =>
-						{
+					{
+						paycheck.IsHistory = payroll.IsHistory;
 							paycheck.Employee = targetEmployees.First(e => e.SSN.Equals(paycheck.Employee.SSN));
 							paycheck.PayCodes.ForEach(pc =>
 							{
@@ -3132,11 +3140,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void CopyPayrolls(Guid source, Guid target, Guid userId, string user)
+		public void CopyPayrolls(Guid source, Guid target, Guid userId, string user, bool moveAll, List<Guid> payrollsToCopy, bool ashistory)
 		{
 			try
 			{
-
+				var payrolls = _readerService.GetPayrolls(companyId: source);
+				if (!moveAll && payrollsToCopy.Any())
+				{
+					payrolls = payrolls.Where(p => payrollsToCopy.Contains(p.Id)).ToList();
+				}
 				try
 				{
 					_companyService.CopyEmployees(source, target, new List<Guid>(), user, true);
@@ -3151,7 +3163,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var targetHost = _hostService.GetHost(targetCompany.HostId);
 				var sourceEmployees = _readerService.GetEmployees(company: source);
 				var targetEmployees = _readerService.GetEmployees(company: target);
-				var payrolls = _readerService.GetPayrolls(companyId: source);
 				
 				var targetCOA = _companyRepository.GetCompanyAccounts(target);
 				
@@ -3162,7 +3173,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					_payrollRepository.DeleteAllPayrolls(target);
 					payrolls.OrderBy(p => p.LastModified).ToList().ForEach(payroll =>
 					{
-						
+						payroll.IsHistory = ashistory || payroll.IsHistory;
 						payroll.CopiedFrom = source;
 						payroll.Id = CombGuid.Generate();
 						payroll.Company = targetCompany;

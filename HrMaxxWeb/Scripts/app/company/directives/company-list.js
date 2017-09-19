@@ -26,7 +26,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						{ field: "fileUnderHost", title: "Leasing?", show: true, sortable: "fileUnderHost", ismoney: false },
 						{ field: "contractType", title: "Contract Type", show: true },
 						{ field: "getTextForStatus", title: "Status", show: true, filter: { getTextForStatus: 'text' }, sortable: "getTextForStatus" },
-						{ field: "address", title: "Address", show: false },
+						{ field: "address", title: "Address", show: false, filter: { address: "text" } },
 						{ field: "ein", title: "EIN", show: false },
 						{ field: "insuranceInfo", title: "Insurance", show: false },
 						{ field: "stateEIN", title: "State EIN", show: false },
@@ -238,7 +238,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							controller: 'copyCompanyCtrl',
 							size: 'lg',
 							windowClass: 'my-modal-popup',
-							backdrop: true,
+							backdrop: false,
 							keyboard: true,
 							backdropClick: true,
 							resolve: {
@@ -322,13 +322,30 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 
 	$scope.selectedCompanySource = null;
 	$scope.selectedCompanyTarget = null;
+	$scope.selectedPayrollList = [];
+	$scope.payrollsLoaded = false;
 	$scope.mcPayrollsOption = 1;
+	$scope.asPayrollsOption = 1;
 	$scope.option = 0;
+	$scope.ashistory = false;
 	$scope.alerts = [];
 	var addAlert = function(type, message) {
 		$scope.alerts = [];
 		$scope.alerts.push({ type: type, msg: message });
 	}
+
+	$scope.loadPayrolls = function() {
+		if (!$scope.payrollsLoaded) {
+			payrollRepository.getCompanyPayrollList($scope.company.id).then(function (result) {
+				$scope.payrollsLoaded = true;
+				$scope.payrolls = result;
+
+			}, function (error) {
+				addAlert('danger', 'unable to load payroll list for selection');
+			});
+		}
+	}
+
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss();
 	};
@@ -354,10 +371,19 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	};
 	$scope.moveCopyPayrolls = function () {
 		$scope.alerts = [];
+		var payrollList = [];
+		if ($scope.asPayrollsOption === 2) {
+			$.each($scope.selectedPayrollList, function(i, p) {
+				payrollList.push(p.id);
+			});
+		}
 		payrollRepository.moveCopyPayrolls({
 			source: $scope.company.id,
 			target: $scope.selectedCompanyTarget.id,
-			option: $scope.mcPayrollsOption
+			option: $scope.mcPayrollsOption,
+			payrollOption: $scope.asPayrollsOption === 1,
+			asHistory: $scope.ashistory,
+			payrolls: payrollList
 		}).then(function (result) {
 			//$uibModalInstance.close($scope);
 			addAlert('success', 'successfully ' + ($scope.mcPayrollsOption===1 ? 'moved' : 'copied') + ' payrolls');

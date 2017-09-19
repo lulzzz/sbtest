@@ -641,8 +641,8 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			var dbPayChecks = dbPayrolls.SelectMany(p => p.PayrollPayChecks.ToList()).ToList();
 			var dbjournals = _mapper.Map<List<Journal>, List<Models.DataModel.Journal>>(affectedJournals);
 			var dbInvoices = _mapper.Map<List<Models.PayrollInvoice>, List<Models.DataModel.PayrollInvoice>>(invoices);
-			const string updatepayroll = @"update Payroll set CompanyId=@CompanyId, Company=@Company, MovedFrom=@MovedFrom where Id=@Id";
-			const string updatecheck = @"update PayrollPayCheck set CompanyId=@CompanyId, EmployeeId=@EmployeeId, Employee=@Employee, Deductions=@Deductions, WorkerCompensation=@WorkerCompensation, Accumulations=@Accumulations, PayCodes=@PayCodes Where Id=@Id";
+			const string updatepayroll = @"update Payroll set CompanyId=@CompanyId, Company=@Company, MovedFrom=@MovedFrom, IsHistory=@IsHistory where Id=@Id";
+			const string updatecheck = @"update PayrollPayCheck set CompanyId=@CompanyId, IsHistory=@IsHistory, EmployeeId=@EmployeeId, Employee=@Employee, Deductions=@Deductions, WorkerCompensation=@WorkerCompensation, Accumulations=@Accumulations, PayCodes=@PayCodes Where Id=@Id";
 			const string updatejournals = @"update journal set CompanyId=@CompanyId, JournalDetails=@JournalDetails, MainAccountId=@MainAccountId, PayeeId=@PayeeId Where Id=@Id";
 			const string updateInvoices = @"update PayrollInvoice set CompanyId=@CompanyId, WorkerCompensations = @WorkerCompensations where Id=@Id";
 			const string updatepayrolldate = @"update employee set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where EmployeeId=Employee.Id and isvoid=0) where companyid=@CompanyId";
@@ -661,7 +661,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		public void DeleteAllPayrolls(Guid target)
 		{
 			const string deletepayrolls =
-				@"delete from Journal where PayrollPayCheckId in (select Id from PayrollPayCheck where CompanyId=@JCompanyId);delete from PayrollPayCheck where CompanyId=@PCompanyId;delete from Payroll where CompanyId=@PPCompanyId;";
+				@"delete from PayrollInvoice where CompanyId=@JCompanyId and PayrollId in (select Id from Payroll where CompanyId=@PPCompanyId and MovedFrom is null);delete from Journal where PayrollPayCheckId in (select Id from PayrollPayCheck where CompanyId=@JCompanyId and PayrollId in (select Id from Payroll where CompanyId=@PPCompanyId and MovedFrom is null));delete from PayrollPayCheck where CompanyId=@PCompanyId and PayrollId in (select Id from Payroll where CompanyId=@PPCompanyId and MovedFrom is null);delete from Payroll where CompanyId=@PPCompanyId and MovedFrom is null;";
 			using (var conn = GetConnection())
 			{
 				

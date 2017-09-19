@@ -339,11 +339,21 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.CompanyPayrolls)]
+		[DeflateCompression]
+		public List<PayrollMinifiedResource> CompanyPayrolls(Guid companyId)
+		{
+			var payrolls = MakeServiceCall(() => _readerService.GetMinifiedPayrolls(companyId: companyId));
+			return Mapper.Map<List<PayrollMinified>, List<PayrollMinifiedResource>>(payrolls);
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.UnPrintedPayrolls)]
 		[DeflateCompression]
 		public List<PayrollMinifiedResource> GetUnPrintedPayrolls()
 		{
 			var payrolls = MakeServiceCall(() => _readerService.GetMinifiedPayrolls(null, status:(int)PayrollStatus.Committed, excludeVoids:1), string.Format("get list of un printed payrolls "));
+			payrolls = payrolls.Where(p => !p.IsHistory).ToList();
 			return Mapper.Map<List<PayrollMinified>, List<PayrollMinifiedResource>>(payrolls);
 		}
 
@@ -463,20 +473,20 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Mapper.Map<Payroll, PayrollResource>(voided);
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(PayrollRoutes.MovePayrolls)]
 		[DeflateCompression]
-		public HttpStatusCode MovePayrolls(Guid source, Guid target)
+		public HttpStatusCode MovePayrolls(MoveCopyPayrollRequest request)
 		{
-			MakeServiceCall(() => _payrollService.MovePayrolls(source, target, new Guid(CurrentUser.UserId), CurrentUser.FullName), string.Format("move payrolls from {0}  to {1}", source, target));
+			MakeServiceCall(() => _payrollService.MovePayrolls(request.SourceId, request.TargetId, new Guid(CurrentUser.UserId), CurrentUser.FullName, request.MoveAll, request.Payrolls, request.AsHistory), string.Format("move payrolls from {0}  to {1}", request.SourceId, request.TargetId));
 			return HttpStatusCode.OK;
 		}
-		[HttpGet]
+		[HttpPost]
 		[Route(PayrollRoutes.CopyPayrolls)]
 		[DeflateCompression]
-		public HttpStatusCode CopyPayrolls(Guid source, Guid target)
+		public HttpStatusCode CopyPayrolls(MoveCopyPayrollRequest request)
 		{
-			MakeServiceCall(() => _payrollService.CopyPayrolls(source, target, new Guid(CurrentUser.UserId), CurrentUser.FullName), string.Format("move payrolls from {0}  to {1}", source, target));
+			MakeServiceCall(() => _payrollService.CopyPayrolls(request.SourceId, request.TargetId, new Guid(CurrentUser.UserId), CurrentUser.FullName, request.MoveAll, request.Payrolls, request.AsHistory), string.Format("move payrolls from {0}  to {1}", request.SourceId, request.TargetId));
 			return HttpStatusCode.OK;
 		}
 

@@ -165,7 +165,9 @@
 									</div>
 
 								</div>
-								<div class="col-sm-4">
+							</div>
+							<div class="row" ng-show="company && selectedCompanyTarget" style="height:200px">
+								<div class="col-sm-3">
 									<div class="form-group">
 										<label class="col-md-5 control-label">Move or Copy</label>
 										<div class="col-md-7">
@@ -177,7 +179,7 @@
 											</div>
 											<div class="radio">
 												<label>
-													<input type="radio" name="optionsRadios" value="2" ng-model="mcPayrollsOption" convert-to-number/>
+													<input type="radio" name="optionsRadios" value="2" ng-model="mcPayrollsOption" convert-to-number />
 													Copy Payrolls
 												</label>
 											</div>
@@ -186,10 +188,50 @@
 
 
 								</div>
+								<div class="col-sm-3">
+									<label></label>
+									<div>
+										<label for="ashistory" class="switch">
+											As history?
+											<input id="ashistory" type="checkbox" ng-model="ashistory"  /><i></i>
+										</label>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="form-group">
+										<label class="col-md-5 control-label">All or Some</label>
+										<div class="col-md-7">
+											<div class="radio">
+												<label>
+													<input type="radio" name="optionsRadios1" value="1" ng-model="asPayrollsOption" convert-to-number ng-change="selectedPayrollList=[]" />
+													All
+												</label>
+											</div>
+											<div class="radio">
+												<label>
+													<input type="radio" name="optionsRadios1" value="2" ng-model="asPayrollsOption" convert-to-number ng-change="loadPayrolls()" />
+													Select
+												</label>
+											</div>
+										</div>
+									</div>
 
+
+								</div>
+								<div class="col-sm-3" ng-if="company && asPayrollsOption===2">
+									<div class="form-group">
+										<label for="statuses">Payrolls</label>
+										<div class="col-sm-12" ng-dropdown-multiselect="" options="payrolls" extra-settings="{displayProp: 'payDayText', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPayrollList"></div>
+									</div>
+								</div>
+								
 							</div>
+								
+								
+
+								
 							<div class="row alert alert-warning">
-								Moving or Copying payrolls will remove all existing payrolls from Target Company.<br />
+								Moving or Copying payrolls will remove all existing payrolls (except the ones which were moved) from Target Company .<br />
 								Also, employees missing from Target Company will be copied over from the source.
 							</div>
 

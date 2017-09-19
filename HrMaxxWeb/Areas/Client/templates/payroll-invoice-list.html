@@ -88,7 +88,7 @@
 						<td data-title=" 'Checks' " filter="{'checkNumbers':'text'}" sortable=" 'checkNumbers' " class="col-sm-1 text-center">
 							{{item.checkNumbers}}
 						</td>
-						<td data-title=" 'Status' " filter="{status:'select'}" filter-data="statuses" sortable=" 'statusText' " class="col-sm-1 text-center">
+						<td data-title=" 'Status' " filter="{status:'select'}" filter-data="statuses" sortable=" 'statusText' " class="col-sm-1 text-center" ng-class="{'danger': item.status===6}">
 							{{item.statusText}} <i class="fa fa-pause" style="color:red" ng-if="item.taxesDelayed"></i>
 						</td>
 						<td data-title=" 'Processed By' " filter="{processedBy:'text'}" sortable=" 'processedBy' " class="col-sm-1 text-center">

@@ -32,4 +32,13 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime? EndDate { get; set; }
 		public bool IncludeDelayedTaxes { get; set; }
 	}
+
+	public class MoveCopyPayrollRequest
+	{
+		public Guid SourceId { get; set; }
+		public Guid TargetId { get; set; }
+		public bool MoveAll { get; set; }
+		public List<Guid> Payrolls { get; set; }
+		public bool AsHistory { get; set; }
+	}
 }

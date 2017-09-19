@@ -5,7 +5,17 @@ common.factory('payrollRepository', [
 			moveCopyPayrolls: function (request) {
 				var deferred = $q.defer();
 				var api = request.option === 1 ? 'MovePayrolls' : 'CopyPayrolls';
-				payrollServer.one(api).one(request.source, request.target).get().then(function (data) {
+				payrollServer.all(api).post({ sourceId: request.source, targetId: request.target, moveAll: request.payrollOption, payrolls: request.payrolls, asHistory: request.asHistory}).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getCompanyPayrollList: function (companyId) {
+				var deferred = $q.defer();
+				payrollServer.one('CompanyPayrolls').one(companyId).getList().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

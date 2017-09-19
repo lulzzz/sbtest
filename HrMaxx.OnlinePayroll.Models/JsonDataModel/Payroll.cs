@@ -49,6 +49,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
 		public DateTime LastModified { get; set; }
+		public bool IsHistory { get; set; }
 		public string ProcessedBy { get; set; }
 		public int Status { get; set; }
 		
