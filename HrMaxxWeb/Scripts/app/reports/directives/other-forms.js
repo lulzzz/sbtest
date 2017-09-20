@@ -123,10 +123,10 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 						});
 					}
 
-					$scope.getTaxValue = function(pc, taxId) {
-						var match = $filter('filter')(pc.taxes, { tax: { id: taxId } })[0];
+					$scope.getAccumulationTaxValue = function (taxes, taxId) {
+						var match = $filter('filter')(taxes, { tax : { id: taxId } })[0];
 						if (match)
-							return match.amount;
+							return match.ytd;
 						else {
 							return 0;
 						}

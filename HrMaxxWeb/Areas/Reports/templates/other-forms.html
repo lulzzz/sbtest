@@ -132,27 +132,15 @@
 									<td colspan="9"></td>
 									
 								</tr>
-								<tr ng-repeat="pc in ea.payChecks" ng-show="ea.showDetails">
-									<td colspan="2"></td>
-									<td class="text-right">{{pc.payDay | date:'MM/dd/yyyy'}}</td>
-									<td class="text-right">{{pc.checkNumber}}</td>
-									<td class="text-right">{{pc.grossWage | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(pc, 1) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(pc, 2) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(pc, 4) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(pc, 7) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(pc, 8) | currency:'$'}}</td>
-									<td class="text-right">{{pc.netWage | currency:'$'}}</td>
-								</tr>
 								<tr ng-repeat-end class="info">
-									<td colspan="4" class="text-center"><i class="fa fa-lg" ng-class="{'fa-plus-circle': !ea.showDetails, 'fa-minus-circle': ea.showDetails}" ng-click="ea.showDetails=!ea.showDetails"></i><em>Total</em></td>
-									<td class="text-right">{{ea.accumulation.grossWage | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(ea.accumulation, 1) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(ea.accumulation, 2) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(ea.accumulation, 4) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(ea.accumulation, 7) | currency:'$'}}</td>
-									<td class="text-right">{{getTaxValue(ea.accumulation, 8) | currency:'$'}}</td>
-									<td class="text-right">{{ea.accumulation.netWage | currency:'$'}}</td>
+									<td colspan="4" class="text-center"><i class="fa fa-lg" ng-if="ea.payCheckList && ea.payCheckList.length>0" ng-class="{'fa-plus-circle': !ea.showDetails, 'fa-minus-circle': ea.showDetails}" ng-click="ea.showDetails=!ea.showDetails"></i><em>Total</em></td>
+									<td class="text-right">{{ea.payCheckWages.grossWage | currency:'$'}}</td>
+									<td class="text-right">{{getAccumulationTaxValue(ea.taxes, 1) | currency:'$'}}</td>
+									<td class="text-right">{{getAccumulationTaxValue(ea.taxes, 2) | currency:'$'}}</td>
+									<td class="text-right">{{getAccumulationTaxValue(ea.taxes, 4) | currency:'$'}}</td>
+									<td class="text-right">{{getAccumulationTaxValue(ea.taxes, 7) | currency:'$'}}</td>
+									<td class="text-right">{{getAccumulationTaxValue(ea.taxes, 8) | currency:'$'}}</td>
+									<td class="text-right">{{ea.payCheckWages.netWage | currency:'$'}}</td>
 								</tr>
 		
 							</tbody>
@@ -179,29 +167,19 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr ng-repeat-start="ea in data.responseEmployeeHourJournal.employeeAccumulations">
-									<td class="text-center">{{ea.employee.ssn}}</td>
-									<td class="text-center">{{ea.employee.fullName}}</td>
+								<tr ng-repeat-start="ea in data.responseEmployeeHourJournal.employeeAccumulationList">
+									<td class="text-center">{{ea.ssnVal}}</td>
+									<td class="text-center">{{ea.fullName}}</td>
 									<td colspan="9"></td>
 
 								</tr>
-								<tr ng-repeat="pc in ea.payChecks" ng-show="ea.showDetails">
-									<td colspan="2"></td>
-									<td class="text-right">{{pc.payDay | date:'MM/dd/yyyy'}}</td>
-									<td class="text-right">{{pc.checkNumber}}</td>
-									<td class="text-right">{{pc.grossWage | currency:'$'}}</td>
-									<td class="text-right">{{pc.regular | currency:''}}</td>
-									<td class="text-right">{{pc.overtime | currency:''}}</td>
-									<td class="text-right">{{(pc.compensationTaxableAmount + pc.compensationNonTaxableAmount) | currency:'$'}}</td>
-									<td class="text-right">{{pc.netWage | currency:'$'}}</td>
-								</tr>
 								<tr ng-repeat-end class="info">
-									<td colspan="4" class="text-center"><i class="fa fa-lg" ng-class="{'fa-plus-circle': !ea.showDetails, 'fa-minus-circle': ea.showDetails}" ng-click="ea.showDetails=!ea.showDetails"></i><em>Total</em></td>
-									<td class="text-right">{{ea.accumulation.grossWage | currency:'$'}}</td>
-									<td class="text-right">{{ea.accumulation.regular | currency:''}}</td>
-									<td class="text-right">{{ea.accumulation.overtime | currency:''}}</td>
-									<td class="text-right">{{ea.accumulation.totalCompensations | currency:'$'}}</td>
-									<td class="text-right">{{ea.accumulation.netWage | currency:'$'}}</td>
+									<td colspan="4" class="text-center"><i class="fa fa-lg" ng-if="ea.payCheckList && ea.payCheckList.length>0" ng-class="{'fa-plus-circle': !ea.showDetails, 'fa-minus-circle': ea.showDetails}" ng-click="ea.showDetails=!ea.showDetails"></i><em>Total</em></td>
+									<td class="text-right">{{ea.payCheckWages.grossWage | currency:'$'}}</td>
+									<td class="text-right">{{ea.regular | currency:''}}</td>
+									<td class="text-right">{{ea.overtime | currency:''}}</td>
+									<td class="text-right">{{ea.totalCompensations | currency:'$'}}</td>
+									<td class="text-right">{{ea.payCheckWages.netWage | currency:'$'}}</td>
 								</tr>
 
 							</tbody>

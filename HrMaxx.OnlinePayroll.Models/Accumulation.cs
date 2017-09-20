@@ -96,6 +96,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal CaliforniaTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == 1).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
 		public decimal Overtime { get { return Math.Round(PayCodes.Sum(pc => pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal Regular { get { return Math.Round(PayCodes.Sum(pc => pc.YTDAmount), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal TotalCompensations { get { return Math.Round(Compensations.Sum(pc => pc.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
 		public List<PayCheckTax> ApplicableTaxes
 		{
