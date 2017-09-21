@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -93,13 +94,112 @@ namespace SiteInspectionStatus_Utility
 				case 16:
 					SeparateInvoiceTaxesDelayed(container);
 					break;
+				case 17:
+					FixSickLeave(container);
+					break;
+				case 18:
+					ChangeEmployeesToHourly(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+		private static void ChangeEmployeesToHourly(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var companyservice = scope.Resolve<ICompanyService>();
+				var payrollService = scope.Resolve<IPayrollService>();
+				var readerservice = scope.Resolve<IReaderService>();
 
+				var compList = new List<Guid>();
+				compList.Add(new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD"));
+				var counter = (int)0;
+				compList.ForEach(c =>
+				{
+					var company = readerservice.GetCompany(c);
+					var employees = readerservice.GetEmployees(company: c);
+					employees.Where(e=>e.PayType==EmployeeType.JobCost || e.PayType==EmployeeType.PieceWork).ToList().ForEach(e =>
+					{
+						e.PayType = EmployeeType.Hourly;
+						e.PayCodes = new List<CompanyPayCode>();
+						var baserate = new CompanyPayCode
+						{
+							Id = 0,
+							Code = "Base Rate",
+							Description = "Base Rate",
+							HourlyRate = e.Rate,
+							CompanyId = e.CompanyId
+						};
+						if (baserate.HourlyRate == 0)
+						{
+							e.Rate = company.MinWage;
+							baserate.HourlyRate = company.MinWage;
+						}
+						e.PayCodes.Add(baserate);
+						e.UserName = "System";
+						companyservice.SaveEmployee(e, false);
+						counter++;
+					});
+					
+				});
+
+				Console.WriteLine("Checks Updated " + counter);
+
+			}
+		}
+		private static void FixSickLeave(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var companyservice = scope.Resolve<ICompanyService>();
+				var payrollService = scope.Resolve<IPayrollService>();
+				var readerservice = scope.Resolve<IReaderService>();
+
+				var compList = new List<Guid>();
+				compList.Add(new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E"));
+				compList.Add(new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B"));
+				var payChecks = new List<int>();
+				var counter = (int) 0;
+				compList.ForEach(c =>
+				{
+					var company = readerservice.GetCompany(c);
+					var employees = readerservice.GetEmployees(company: c);
+					var payrolls = readerservice.GetPayrolls(c);
+					payrolls.Where(p=>!p.IsHistory).OrderBy(p=>p.PayDay).ToList().ForEach(p =>
+					{
+						var empList = employees.Where(e => p.PayChecks.Any(pc => pc.Employee.Id == e.Id)).ToList();
+						var employeeAccumulations = readerservice.GetAccumulations(company: p.Company.Id,
+						startdate: new DateTime(p.PayDay.Year, 1, 1), enddate: p.PayDay, ssns: empList.Select(pc => pc.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
+						p.PayChecks.Where(pc => !pc.IsVoid && pc.Accumulations.Any(a=>a.PayType.PayType.Id == 6)).ToList().ForEach(pc =>
+						{
+							var slVal = pc.Accumulations.First(a => a.PayType.PayType.Id == 6).AccumulatedValue;
+							var ytd = pc.Accumulations.First(a => a.PayType.PayType.Id == 6).YTDFiscal;
+							var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == pc.Employee.Id);
+							if (employeeAccumulation.Accumulations.Any(a => a.PayTypeId == 6))
+							{
+								employeeAccumulation.Accumulations.First(a => a.PayTypeId == 6).YTDFiscal -= slVal;
+							}
+							var accums = ProcessAccumulations(pc, company.AccumulatedPayTypes,
+								employeeAccumulation);
+							var shouldbe = accums.First(a => a.PayType.PayType.Id == 6);
+							
+							if (shouldbe.AccumulatedValue != slVal)
+							{
+								payrollService.UpdatePayCheckAccumulation(pc.Id, shouldbe, "System", Guid.Empty.ToString());
+								Console.WriteLine(string.Format("{0}--{1}--{2}--{3}--{4}--{5}", pc.Id, pc.PayDay.ToString("MM/dd/yyyy"), slVal, shouldbe.AccumulatedValue, ytd, shouldbe.YTDFiscal));
+								counter++;
+							}
+						});
+					});
+				});
+				
+				Console.WriteLine("Checks Updated " + counter);
+
+			}
+		}
 		private static void UpdateEmployeeCarryOver(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())

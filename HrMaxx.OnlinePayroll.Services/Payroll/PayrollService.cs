@@ -3127,7 +3127,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				});
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					_payrollRepository.DeleteAllPayrolls(target);
+					//_payrollRepository.DeleteAllPayrolls(target);
 					_payrollRepository.MovePayrolls(payrolls, affectedJournals, invoices, source, target);
 					txn.Complete();
 				}
