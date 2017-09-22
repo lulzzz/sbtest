@@ -42,6 +42,13 @@ common.directive('cpaReport', ['zionAPI', '$timeout', '$window', 'version',
 							return "https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg";
 						}
 					}
+					$scope.showResponse = function() {
+						if (dataSvc.response && dataSvc.response.companyId === $scope.mainData.selectedCompany.id && moment(dataSvc.startDate).format("MM/DD/YYYY") === moment(dataSvc.response.startDate).format("MM/DD/YYYY") && moment(dataSvc.endDate).format("MM/DD/YYYY") === moment(dataSvc.response.endDate).format("MM/DD/YYYY"))
+							return true;
+						else {
+							return false;
+						}
+					}
 					$scope.getReport = function() {
 						var m = $scope.mainData;
 						var request = {

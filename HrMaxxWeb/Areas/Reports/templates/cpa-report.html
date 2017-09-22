@@ -30,7 +30,7 @@
 							<div class="col-sm-3">
 								<label>&nbsp;</label><br/>
 								<button class="btn btn-sm btn-primary" ng-click="getReport()" ng-disabled="!data.startDate || !data.endDate">Display</button>
-								<button class="btn btn-sm btn-success" ng-click="print()" ng-show="data.response"><i class="pull-right fa fa-lg fa-print"></i> print</button>
+								<button class="btn btn-sm btn-success" ng-click="print()" ng-if="showResponse()"><i class="pull-right fa fa-lg fa-print"></i> print</button>
 							</div>
 
 						</div>
@@ -38,18 +38,15 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-10 col-sm-offset-1" ng-if="data.response">
-				
-				
-					
-					
-				<div class="col-sm-12 table-responsive">
-					<table class="table table-borderless">
-							
+			<div class="col-sm-10 col-sm-offset-1" ng-if="showResponse()">
 
-					</table>
+
+
+
+				<div class="col-sm-12 table-responsive">
+					<table class="table table-borderless"></table>
 					<table class="table table-borderless">
-							
+
 						<tbody>
 							<tr>
 								<td>
@@ -57,15 +54,15 @@
 
 								</td>
 								<td>
-									<h3>{{data.startDate | date:'MM/dd/yyyy'}} - {{data.endDate | date:'MM/dd/yyyy'}} Accounting Report</h3>
+									<h3>{{data.response.startDate | date:'MM/dd/yyyy'}} - {{data.response.endDate | date:'MM/dd/yyyy'}} Accounting Report</h3>
 								</td>
 								<td></td>
 								<td></td>
 							</tr>
 							<tr class="hidden-print">
-								<td ><h4>{{mainData.selectedCompany.name}}</h4></td>
-									
-									
+								<td><h4>{{mainData.selectedCompany.name}}</h4></td>
+
+
 							</tr>
 							<tr>
 								<td colspan="4"><h5>How to account for {{ data.response.isPeo ? 'PEO Staffing' : 'Conventional Payroll'}} Expenses</h5></td>
@@ -114,15 +111,15 @@
 									{{ data.response.t1Value | currency:'$'}}
 								</td>
 							</tr>
-								
+
 						</tbody>
 					</table>
-						
+
 
 				</div>
-				
-				
-				
+
+
+
 			</div>
 			
 			

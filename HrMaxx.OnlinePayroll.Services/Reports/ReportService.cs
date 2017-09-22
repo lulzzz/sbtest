@@ -476,6 +476,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 				var cpareport =  new CPAReport()
 				{
+					CompanyId = request.CompanyId, StartDate = request.StartDate, EndDate = request.EndDate,
 					IsPeo = company.FileUnderHost, CooValue = employeeAccumulations.Where(ea=>ea.CompanyWorkerCompensation!=null && ea.CompanyWorkerCompensation.Rate==0).Sum(ea=>ea.PayCheckWages.GrossWage),
 					SawValue = !company.FileUnderHost ? Math.Round(companyAccumulation.PayCheckWages.GrossWage - employeeAccumulations.Where(ea => ea.CompanyWorkerCompensation != null && ea.CompanyWorkerCompensation.Rate == 0).Sum(ea => ea.PayCheckWages.GrossWage) ,2, MidpointRounding.AwayFromZero) : 0,
 					PrtValue = !company.FileUnderHost ? companyAccumulation.EmployerTaxes : 0
