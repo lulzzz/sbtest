@@ -12,6 +12,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getCPAReport: function (request) {
+				var deferred = $q.defer();
+				reportServer.all('CPAReport').post(request).then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getACHReport: function (request) {
 				var deferred = $q.defer();
 				reportServer.all('ACHReport').post(request).then(function (response) {

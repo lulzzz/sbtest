@@ -173,22 +173,33 @@ namespace SiteInspectionStatus_Utility
 						var empList = employees.Where(e => p.PayChecks.Any(pc => pc.Employee.Id == e.Id)).ToList();
 						var employeeAccumulations = readerservice.GetAccumulations(company: p.Company.Id,
 						startdate: new DateTime(p.PayDay.Year, 1, 1), enddate: p.PayDay, ssns: empList.Select(pc => pc.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
-						p.PayChecks.Where(pc => !pc.IsVoid && pc.Accumulations.Any(a=>a.PayType.PayType.Id == 6)).ToList().ForEach(pc =>
+						p.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
 						{
-							var slVal = pc.Accumulations.First(a => a.PayType.PayType.Id == 6).AccumulatedValue;
-							var ytd = pc.Accumulations.First(a => a.PayType.PayType.Id == 6).YTDFiscal;
+							var slVal = pc.Accumulations!=null && pc.Accumulations.Any(a => a.PayType.PayType.Id == 6) ? pc.Accumulations.First(a => a.PayType.PayType.Id == 6).AccumulatedValue : 0;
+							var ytd = pc.Accumulations != null && pc.Accumulations.Any(a => a.PayType.PayType.Id == 6) ? pc.Accumulations.First(a => a.PayType.PayType.Id == 6).YTDFiscal : 0;
 							var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == pc.Employee.Id);
 							if (employeeAccumulation.Accumulations.Any(a => a.PayTypeId == 6))
 							{
 								employeeAccumulation.Accumulations.First(a => a.PayTypeId == 6).YTDFiscal -= slVal;
 							}
+							pc.Employee = employees.First(e => e.Id == pc.Employee.Id);
 							var accums = ProcessAccumulations(pc, company.AccumulatedPayTypes,
 								employeeAccumulation);
 							var shouldbe = accums.First(a => a.PayType.PayType.Id == 6);
 							
-							if (shouldbe.AccumulatedValue != slVal)
+							if (shouldbe.AccumulatedValue != slVal || shouldbe.YTDFiscal!=ytd)
 							{
-								payrollService.UpdatePayCheckAccumulation(pc.Id, shouldbe, "System", Guid.Empty.ToString());
+								var sl = pc.Accumulations.FirstOrDefault(a => a.PayType.PayType.Id == 6);
+								if (sl == null)
+								{
+									sl = shouldbe;
+								}
+								else
+								{
+									sl.AccumulatedValue = shouldbe.AccumulatedValue;
+									sl.YTDFiscal = shouldbe.YTDFiscal;
+								}
+								payrollService.UpdatePayCheckAccumulation(pc.Id, sl, "System", Guid.Empty.ToString());
 								Console.WriteLine(string.Format("{0}--{1}--{2}--{3}--{4}--{5}", pc.Id, pc.PayDay.ToString("MM/dd/yyyy"), slVal, shouldbe.AccumulatedValue, ytd, shouldbe.YTDFiscal));
 								counter++;
 							}

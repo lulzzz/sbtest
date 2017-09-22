@@ -1,0 +1,134 @@
+﻿<div class="row">
+	<style type="text/css" media="print">
+		@page {
+			size: landscape;
+		}
+	</style>
+
+	<!-- begin panel -->
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">CPA Report</h4>
+		</div>
+		<div class="panel-body" >
+			<div class="row hidden-print">
+				<div class="col-sm-6">
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Accounting Report</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3 form-group">
+								<label>Start Date</label>
+								<date-ctrl model="data.startDate" disabled="false" />
+							</div>
+							<div class="col-sm-3 form-group">
+								<label>End Date</label>
+								<date-ctrl model="data.endDate" disabled="false" min="data.startDate" />
+							</div>
+							
+							<div class="col-sm-3">
+								<label>&nbsp;</label><br/>
+								<button class="btn btn-sm btn-primary" ng-click="getReport()" ng-disabled="!data.startDate || !data.endDate">Display</button>
+								<button class="btn btn-sm btn-success" ng-click="print()" ng-show="data.response"><i class="pull-right fa fa-lg fa-print"></i> print</button>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-10 col-sm-offset-1" ng-if="data.response">
+				
+				
+					
+					
+				<div class="col-sm-12 table-responsive">
+					<table class="table table-borderless">
+							
+
+					</table>
+					<table class="table table-borderless">
+							
+						<tbody>
+							<tr>
+								<td>
+									<img ng-src="{{getHostLogo()}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:200px;height:40px" /><br />
+
+								</td>
+								<td>
+									<h3>{{data.startDate | date:'MM/dd/yyyy'}} - {{data.endDate | date:'MM/dd/yyyy'}} Accounting Report</h3>
+								</td>
+								<td></td>
+								<td></td>
+							</tr>
+							<tr class="hidden-print">
+								<td ><h4>{{mainData.selectedCompany.name}}</h4></td>
+									
+									
+							</tr>
+							<tr>
+								<td colspan="4"><h5>How to account for {{ data.response.isPeo ? 'PEO Staffing' : 'Conventional Payroll'}} Expenses</h5></td>
+							</tr>
+							<tr>
+								<td colspan="3" class="text-left">
+									1. Compensation of Officers (Form 1120 line 12, Form 1120S line 7)<br />
+									{{ data.response.isPeo ? '(For reference ONLY, do NOT use)' : ''}}
+								</td>
+								<td class="text-right">
+									{{ data.response.cooValue | currency:'$'}}
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" class="text-left">
+									2. Salaries and wages (Form 1120 line 13, Form 1120S line 8, Form 1040 Sch C)
+								</td>
+								<td class="text-right">
+									{{ data.response.isPeo ? 'NOT USED' : (data.response.sawValue | currency:'$') }}
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" class=" text-left">
+									3. Payroll Taxes (Form 1120 line 17, Form 1120S line 12, Form 1040 Sch C)
+								</td>
+								<td class="text-right">
+									{{ data.response.isPeo ? 'NOT USED' : (data.response.prtValue | currency:'$') }}
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" class=" text-left">
+									4. Other Fees on invoices
+								</td>
+								<td class="text-right">
+									NOT USED
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" class="text-left">
+									5. Other Deductions (Attach Statement Form 1120 line 26, Form 1120S line 19, Form 1040 Sch C)<br />
+									Staffing Cost or Cost of Labor<br />
+									(Includes administration fee, bank fee, payroll revolving credit fee, workers compensation insurance cost,
+									employee benefits, etc.)
+								</td>
+								<td class="text-right">
+									{{ data.response.t1Value | currency:'$'}}
+								</td>
+							</tr>
+								
+						</tbody>
+					</table>
+						
+
+				</div>
+				
+				
+				
+			</div>
+			
+			
+		</div>
+	</div>
+
+</div>
+
+

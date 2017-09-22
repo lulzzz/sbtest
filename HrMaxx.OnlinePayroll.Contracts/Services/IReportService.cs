@@ -33,5 +33,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CommissionsExtract GetCommissionsExtract(int id);
 		void DeleteExtract(int extractId);
 		MasterExtract ConfirmExtract(MasterExtract extract);
+		CPAReport GetCPAReport(ReportRequest request);
 	}
 }

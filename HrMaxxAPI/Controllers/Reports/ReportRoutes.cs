@@ -7,6 +7,7 @@
 		public const string ACHFileAndExtract = "Reports/ACHFileAndExtract";
 
 		public const string Report = "Reports/Report";
+		public const string CPAReport = "Reports/CPAReport";
 
 		public const string ReportDocument = "Reports/ReportDocument";
 		public const string ExtractDocument = "Reports/ExtractDocument";

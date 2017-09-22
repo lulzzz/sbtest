@@ -283,6 +283,7 @@
     <Content Include="Areas\Reports\templates\extract-view-list.html" />
     <Content Include="Areas\Reports\templates\extract-view.html" />
     <Content Include="Areas\Reports\templates\Extracts.html" />
+    <Content Include="Areas\Reports\templates\cpa-report.html" />
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
     <Content Include="Content\images\blank.png" />
@@ -1365,6 +1366,7 @@
     <Content Include="Scripts\app\reports\directives\data-extracts.js" />
     <Content Include="Scripts\app\reports\directives\extract-view-list.js" />
     <Content Include="Scripts\app\reports\directives\extract-view.js" />
+    <Content Include="Scripts\app\reports\directives\cpa-report.js" />
     <Content Include="Scripts\app\reports\directives\other-forms.js" />
     <Content Include="Scripts\app\reports\directives\income-statement.js" />
     <Content Include="Scripts\app\reports\directives\govt-forms.js" />

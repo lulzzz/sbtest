@@ -38,6 +38,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				return (EmployeeType) EmpPayType;
 			}}
+		public CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
 
 		public string ContactStr { get; set; }
 		public Contact Contact { 

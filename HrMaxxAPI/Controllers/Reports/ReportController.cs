@@ -51,6 +51,16 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 
 		[HttpPost]
+		[Route(ReportRoutes.CPAReport)]
+		[DeflateCompression]
+		public CPAReport GetCPAReport(ReportRequestResource resource)
+		{
+			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
+			return MakeServiceCall(() => _reportService.GetCPAReport(request), string.Format("getting CPA Report for request for company={0}", request.CompanyId));
+			
+		}
+
+		[HttpPost]
 		[Route(ReportRoutes.ReportDocument)]
 		[DeflateCompression]
 		public HttpResponseMessage GetReportDocment(ReportRequestResource resource)

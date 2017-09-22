@@ -463,6 +463,47 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		public CPAReport GetCPAReport(ReportRequest request)
+		{
+			try
+			{
+				var company = _readerService.GetCompany(request.CompanyId);
+				var companyAccumulation = _readerService.GetTaxAccumulations(company: request.CompanyId,
+								startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayTypeAccumulation: false, includeHistory: request.IncludeHistory).First();
+				var payrollInvoices = _readerService.GetPayrollInvoices(companyId: request.CompanyId, startDate: request.StartDate,
+					endDate: request.EndDate, byPayDay:true);
+				var employeeAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
+				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: false, includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+				var cpareport =  new CPAReport()
+				{
+					IsPeo = company.FileUnderHost, CooValue = employeeAccumulations.Where(ea=>ea.CompanyWorkerCompensation!=null && ea.CompanyWorkerCompensation.Rate==0).Sum(ea=>ea.PayCheckWages.GrossWage),
+					SawValue = !company.FileUnderHost ? Math.Round(companyAccumulation.PayCheckWages.GrossWage - employeeAccumulations.Where(ea => ea.CompanyWorkerCompensation != null && ea.CompanyWorkerCompensation.Rate == 0).Sum(ea => ea.PayCheckWages.GrossWage) ,2, MidpointRounding.AwayFromZero) : 0,
+					PrtValue = !company.FileUnderHost ? companyAccumulation.EmployerTaxes : 0
+				};
+				if (company.FileUnderHost)
+				{
+					if(company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck)
+						cpareport.T1Value = Math.Round(payrollInvoices.Sum(pi=>pi.Total),2, MidpointRounding.AwayFromZero);
+					else
+					{
+						cpareport.T1Value = Math.Round(payrollInvoices.Sum(pi=>pi.Total + pi.NetPay),2, MidpointRounding.AwayFromZero);
+					}
+				}
+				else
+				{
+					cpareport.T1Value = Math.Round(payrollInvoices.Sum(pi => pi.AdminFee + pi.EnvironmentalFee), 2, MidpointRounding.AwayFromZero);
+				}
+				return cpareport;
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" cpa report for company id {0}", request.CompanyId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Extract GetPositivePayReport(ReportRequest request)
 		{
 			var host = _hostService.GetHost(request.HostId);

@@ -202,7 +202,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/payroll/directives/awaiting-print-payrolls.js",
 				"~/Scripts/app/payroll/directives/paycheck-list.js",
 				"~/Scripts/app/reports/directives/ach-report.js",
-				"~/Scripts/app/reports/directives/commissions-view.js"
+				"~/Scripts/app/reports/directives/commissions-view.js",
+				"~/Scripts/app/reports/directives/cpa-report.js"
 
 				
 

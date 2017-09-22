@@ -152,7 +152,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 		}
 
-		public List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, int? invoiceNumber = null)
+		public List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, int? invoiceNumber = null, bool byPayDay = false)
 	  {
 			try
 			{
@@ -193,6 +193,9 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "invoicenumber", Value = invoiceNumber.Value.ToString() });
 				}
+				if(byPayDay)
+					paramList.Add(new FilterParam { Key = "bypayday", Value = byPayDay.ToString() });
+
 				return GetDataFromStoredProc<List<PayrollInvoice>, List<Models.JsonDataModel.PayrollInvoiceJson>>(
 					"GetPayrollInvoicesXml", paramList, new XmlRootAttribute("PayrollInvoiceJsonList"));
 			}
