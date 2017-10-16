@@ -3404,7 +3404,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format("Failed to delete Payroll with Id={0}", payroll.Id);
+				var message = string.Format("This Payroll cannot be deleted because it does not meet the criteria");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

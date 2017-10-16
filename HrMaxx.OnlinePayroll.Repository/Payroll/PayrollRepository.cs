@@ -714,7 +714,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 
 		public void DeletePayroll(Guid id)
 		{
-			const string delete = @" delete from PaxolArchive.Common.Memento where MementoId in (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(pc.Id, 12), SPACE(1), '0')) as uniqueidentifier) from PayrollPayCheck pc where PayrollId=@PayrollId); delete from journal where PayrollPayCheckId in (select id from PayrollPayCheck where PayrollId=@PayrollId);delete from PayrollPayCheck where PayrollId=@PayrollId; delete from Payroll where Id=@PayrollId;";
+			const string delete = @"if dbo.CanDeletePayroll(@PayrollId)=1 begin delete from PaxolArchive.Common.Memento where MementoId in (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(pc.Id, 12), SPACE(1), '0')) as uniqueidentifier) from PayrollPayCheck pc where PayrollId=@PayrollId); delete from journal where PayrollPayCheckId in (select id from PayrollPayCheck where PayrollId=@PayrollId);delete from PayrollPayCheck where PayrollId=@PayrollId; delete from Payroll where Id=@PayrollId;end else raiserror('This Payroll cannot be delete',16,1);";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(delete, new {PayrollId=id});
