@@ -263,7 +263,12 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.fillCAUIPayPeriods = function () {
 						dataSvc.filterCAUIQ.payPeriods = fillPayPeriods(dataSvc.filterCAUIQ.year);
 					}
-
+					
+					var isQuarterDifferent = function(start, end) {
+						var stqtr = Math.floor((start.month() + 3) / 3);
+						var endqytr = Math.floor((end.month() + 3) / 3);
+						return stqtr !== endqytr;
+					}
 					var fillPayPeriods = function (year) {
 						var payPeriods = [];
 						var startDate = moment("01-01-" + year, "MM-DD-YYYY");
@@ -293,11 +298,13 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 									endDate1 = moment(currDate).add('days', -3);
 								}
 
-								if (dayofquarter === 2) {
+								
+
+								if (isQuarterDifferent(startDate1, endDate1)) {
 									if (quarter === 1) {
 										payPeriods.push({
 											key: currDate.format("MM/DD/YYYY"),
-											val: currDate.format("ddd, MMMM DD, YYYY") + "-4th Q",
+											val: moment(currDate.format("MM") + "/" + currDate.format("DD") + "/" + (currDate.year() - 1), "MM-DD-YYYY").format("ddd, MMMM DD, YYYY") + "-4th Q",
 											startDate: startDate1.format("MM/DD/YYYY"),
 											endDate: moment(startDate1.format("MM") + "-" + startDate1.daysInMonth() + "-" + startDate1.year(), "MM-DD-YYYY").format("MM/DD/YYYY")
 										});

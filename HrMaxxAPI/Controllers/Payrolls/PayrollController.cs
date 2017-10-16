@@ -434,13 +434,22 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpPost]
-		[Route(PayrollRoutes.DeletePayroll)]
-		public PayrollResource DeletePayroll(PayrollResource resource)
+		[Route(PayrollRoutes.DeleteDraftPayroll)]
+		public PayrollResource DeleteDraftPayroll(PayrollResource resource)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			if(mappedResource.Status!=PayrollStatus.Draft)
 				throw new Exception("Only draft payrolls can be deleted from the system");
-			var processed = MakeServiceCall(() => _payrollService.DeletePayroll(mappedResource), string.Format("delete draft payroll from staging for company={0}", resource.Company.Id));
+			var processed = MakeServiceCall(() => _payrollService.DeleteDraftPayroll(mappedResource), string.Format("delete draft payroll from staging for company={0}", resource.Company.Id));
+			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.DeletePayroll)]
+		public PayrollResource DeletePayroll(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+			
+			var processed = MakeServiceCall(() => _payrollService.DeletePayroll(mappedResource), string.Format("delete payroll for company={0} with Id={1}", resource.Company.Id, resource.Id));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 

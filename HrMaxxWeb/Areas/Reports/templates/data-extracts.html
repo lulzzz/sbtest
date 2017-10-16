@@ -238,7 +238,7 @@
 
 							<div class="col-sm-2 form-group">
 								<label>{{data.filter941.depositSchedule===1 ? 'Deposit Date' : data.filter941.depositSchedule===2 ? 'Month' : data.filter941.depositSchedule===3 ?'Quarter' : ''}}</label>
-								<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.key">
+								<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.val">
 									<option value=""> Please select</option>
 
 								</select>
@@ -312,7 +312,7 @@
 							</div>
 							<div class="col-sm-2">
 								<label>{{data.filter940Q.depositSchedule===1 ? 'Deposit Date' : data.filter940Q.depositSchedule===2 ? 'Month' : data.filter940Q.depositSchedule===3 ?'Quarter' : ''}}</label>
-								<select name="quarter940" ng-if="data.filter940Q.depositSchedule===1" ng-model="data.filter940Q.payPeriod" ng-disabled="!data.filter940Q.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter940Q.payPeriods track by payperiod.key">
+								<select name="quarter940" ng-if="data.filter940Q.depositSchedule===1" ng-model="data.filter940Q.payPeriod" ng-disabled="!data.filter940Q.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter940Q.payPeriods track by payperiod.val">
 									<option value=""> Please select</option>
 
 								</select>
@@ -392,7 +392,7 @@
 
 							<div class="col-sm-2 form-group">
 								<label>Pay Period</label>
-								<select ng-if="data.filterCAPIT.depositSchedule===1" ng-model="data.filterCAPIT.payPeriod" ng-disabled="!data.filterCAPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAPIT.payPeriods track by payperiod.key">
+								<select ng-if="data.filterCAPIT.depositSchedule===1" ng-model="data.filterCAPIT.payPeriod" ng-disabled="!data.filterCAPIT.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAPIT.payPeriods track by payperiod.val">
 									<option value=""> Please select</option>
 
 								</select>
@@ -467,7 +467,7 @@
 
 							<div class="col-sm-2 form-group">
 								<label>Pay Period</label>
-								<select ng-if="data.filterCAUIQ.depositSchedule===1" ng-model="data.filterCAUIQ.payPeriod" ng-disabled="!data.filterCAUIQ.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAUIQ.payPeriods track by payperiod.key">
+								<select ng-if="data.filterCAUIQ.depositSchedule===1" ng-model="data.filterCAUIQ.payPeriod" ng-disabled="!data.filterCAUIQ.year" class="form-control" ng-options="payperiod.val for payperiod in data.filterCAUIQ.payPeriods track by payperiod.val">
 									<option value=""> Please select</option>
 
 								</select>

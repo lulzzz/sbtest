@@ -138,7 +138,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 			using (var conn = GetConnection())
 			{
-				const string updatecheck = @"update PayrollPayCheck set Status=case status when 3 then 4 when 5 then 6 else status end Where PayrollId=@PayrollId";
+				//const string updatecheck = @"update PayrollPayCheck set Status=case status when 3 then 4 when 5 then 6 else status end Where PayrollId=@PayrollId";
+				const string updatecheck = @"update PayrollPayCheck set Status=4 Where PayrollId=@PayrollId and Status=3;update PayrollPayCheck set Status=6 Where PayrollId=@PayrollId and Status=5;";
 				const string updatepayroll = @"update Payroll set Status=@Status Where Id=@Id";
 
 				conn.Execute(updatepayroll, new {Status = (int) PayrollStatus.Printed, Id = payrollId});
@@ -708,6 +709,16 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			{
 				conn.Execute(updatecheck, dbUpdateList);
 				conn.Execute(update, new { EmployeeId = employeeId, HireDate = previousAccumEndDate.ToString("MM/dd/yyyy"), OldHireDate = oldHireDate.ToString("MM/dd/yyyy") });
+			}
+		}
+
+		public void DeletePayroll(Guid id)
+		{
+			const string delete = @" delete from PaxolArchive.Common.Memento where MementoId in (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(pc.Id, 12), SPACE(1), '0')) as uniqueidentifier) from PayrollPayCheck pc where PayrollId=@PayrollId); delete from journal where PayrollPayCheckId in (select id from PayrollPayCheck where PayrollId=@PayrollId);delete from PayrollPayCheck where PayrollId=@PayrollId; delete from Payroll where Id=@PayrollId;";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(delete, new {PayrollId=id});
+				
 			}
 		}
 	}

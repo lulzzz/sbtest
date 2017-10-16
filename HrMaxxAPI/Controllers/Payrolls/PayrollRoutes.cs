@@ -34,6 +34,7 @@
 		public const string ImportTimesheetsTemplate = "Payroll/TimesheetImportTemplate";
 		public const string ClaimDelivery = "Payroll/ClaimDelivery";
 		public const string SaveProcessedPayroll = "Payroll/SaveProcessedPayroll";
+		public const string DeleteDraftPayroll = "Payroll/DeleteDraftPayroll";
 		public const string DeletePayroll = "Payroll/DeletePayroll";
 		public const string VoidPayroll = "Payroll/VoidPayroll";
 		public const string InvoiceDeliveryClaims = "Payroll/InvoiceDeliveryClaims";

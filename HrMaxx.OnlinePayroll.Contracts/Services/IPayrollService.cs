@@ -23,7 +23,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayrollReport(Payroll payroll);
 		List<Payroll> FixPayrollData(Guid? companyId);
 		Payroll SaveProcessedPayroll(Payroll mappedResource);
-		Payroll DeletePayroll(Payroll mappedResource);
+		Payroll DeleteDraftPayroll(Payroll mappedResource);
 		FileDto PrintPayrollChecks(Guid payrollId);
 		FileDto PrintPayrollPayslips(Guid payrollId);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
@@ -62,6 +62,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void MovePayrolls(Guid source, Guid target, Guid guid, string fullName, bool moveAll, List<Guid> payrolls, bool ashistory );
 		void CopyPayrolls(Guid source, Guid target, Guid guid, string fullName, bool moveAll, List<Guid> payrolls, bool ashistory);
 		void SaveClaimDelivery(InvoiceDeliveryClaim claim);
-		PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId);		
+		PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId);
+		Payroll DeletePayroll(Payroll mappedResource);
 	}
 }

@@ -2889,7 +2889,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public Models.Payroll DeletePayroll(Models.Payroll payroll)
+		public Models.Payroll DeleteDraftPayroll(Models.Payroll payroll)
 		{
 			try
 			{
@@ -3394,6 +3394,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 
 		}
-		
+
+		public Models.Payroll DeletePayroll(Models.Payroll payroll)
+		{
+			try
+			{
+				_payrollRepository.DeletePayroll(payroll.Id);
+				return payroll;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Failed to delete Payroll with Id={0}", payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }
