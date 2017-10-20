@@ -359,21 +359,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes, Accumulation employeeAccumulation)
 		{
 			var result = new List<PayTypeAccumulation>();
-			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, false);
-			var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+			
 
 			
 			
 			foreach (var payType in accumulatedPayTypes)	
 			{
+				var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, payType);
+				var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+
 				if (!payType.CompanyManaged)
 				{
-					if (payType.IsLumpSum)
-					{
-						fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, true);
-						fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
-
-					}
+					
 					var currentAccumulaiton = employeeAccumulation.Accumulations != null &&
 					                          employeeAccumulation.Accumulations.Any(
 						                          ac =>
@@ -515,9 +512,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay, bool isLumpSum)
+		private DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay, AccumulatedPayType payType)
 		{
-			if(isLumpSum) 
+			if(payType.IsLumpSum) 
 				return new DateTime(payDay.Year, 1, 1).Date;
 			DateTime result;
 			var accumulationBaseDate = new DateTime(2015, 7, 1);
