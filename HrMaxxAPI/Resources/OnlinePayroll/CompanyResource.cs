@@ -167,6 +167,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public decimal AnnualLimit { get; set; }
 		public bool CompanyManaged { get; set; }
+		public bool IsLumpSum { get; set; }
 	}
 
 	public class CompanyTaxStateResource

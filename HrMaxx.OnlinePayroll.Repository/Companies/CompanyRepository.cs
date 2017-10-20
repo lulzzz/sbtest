@@ -222,6 +222,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.RatePerHour = mappedwc.RatePerHour;
 					wc.AnnualLimit = mappedwc.AnnualLimit;
 					wc.CompanyManaged = mappedwc.CompanyManaged;
+					wc.IsLumpSum = mappedwc.IsLumpSum;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -392,6 +393,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			else
 			{
 				var dbEmployee = dbEmployees.First();
+				me.Id = dbEmployee.Id;
 				dbEmployee.FirstName = me.FirstName;
 				dbEmployee.LastName = me.LastName;
 				dbEmployee.LastModified = me.LastModified;

@@ -122,7 +122,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 					else if (journal.TransactionType == TransactionType.RegularCheck ||
 									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
-						const string js = "select * from Journal where CompanyId=@CompanyId and CheckNumber=@CheckNumber and (TransactionType=@RC or TransactionType=@DP)";
+						const string js = "select * from Journal where CompanyId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
 						var dbj1 =
 							conn.Query<Models.DataModel.Journal>(js, new { CheckNumber = mapped.CheckNumber, RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyId }).ToList();
 						if (mapped.CheckNumber > 0 &&

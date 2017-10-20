@@ -513,7 +513,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				request.EndDate.Date);
 			journals =
 				journals.Where(
-					j => (j.TransactionType == TransactionType.PayCheck || j.TransactionType == TransactionType.RegularCheck) && j.PaymentMethod==EmployeePaymentMethod.Check).ToList();
+					j => (j.TransactionType == TransactionType.PayCheck || j.TransactionType == TransactionType.RegularCheck || j.TransactionType == TransactionType.DeductionPayment) && j.PaymentMethod == EmployeePaymentMethod.Check).ToList();
 			if(!journals.Any())
 				throw  new Exception(NoData);
 			journals.Where(j=>j.OriginalDate.HasValue).ToList().ForEach(j=>j.TransactionDate = j.OriginalDate.Value);

@@ -30,7 +30,8 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 						ratePerHour: 0,
 						annualLimit: 0,
 						isNew: true,
-						companyManaged: false
+						companyManaged: false,
+						isLumpSum: false
 					};
 					$scope.list.push($scope.selected);
 				},

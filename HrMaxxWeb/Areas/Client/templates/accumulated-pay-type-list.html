@@ -5,11 +5,12 @@
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-3">Pay Type</td>
+				<td class="col-sm-2">Pay Type</td>
 				<td class="col-sm-2">Rate Per Hour (upto 4 decimal)</td>
 				<td class="col-sm-2">Annual Limit (Hrs per Employee)</td>
 				<td class="col-sm-2">Is Company Managed?</td>
-				<td class="col-sm-3" ng-show="showControls"></td>
+				<td class="col-sm-2">Is LumpSum?</td>
+				<td class="col-sm-2" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -34,10 +35,19 @@
 					<!-- editable comment (text with validation) -->
 					<div>
 						<label for="compmanaged" class="switch">
-							<input id="compmanaged" type="checkbox" ng-model="item.companyManaged" ng-disabled="mainData.userRole==='SuperUser' || mainData.userRole!=='Master'" /><i></i>
+							<input id="compmanaged" type="checkbox" ng-model="item.companyManaged" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
 						</label>
 					</div>
 					
+				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<div>
+						<label for="lumpsum" class="switch">
+							<input id="lumpsum" type="checkbox" ng-model="item.isLumpSum" ng-disabled="mainData.userRole!=='SuperUser' && mainData.userRole!=='Master'" /><i></i>
+						</label>
+					</div>
+
 				</td>
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->

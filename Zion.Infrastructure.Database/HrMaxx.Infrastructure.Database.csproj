@@ -72,6 +72,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\Maintenance\SchemaChanges\009R2_Separations of archive and real.sql" />
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011G_company leave lumpsum.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011F_index for ach report.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011E_deleting payroll changes.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

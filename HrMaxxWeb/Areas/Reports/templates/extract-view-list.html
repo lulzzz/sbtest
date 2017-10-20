@@ -20,7 +20,7 @@
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':(selected && selected.extract.id===item.extract.id), 'warning':!item.confirmationNo}">
 						<td data-title="' Date'" class="col-sm-1">
-							{{item.lastModified | date:'MM/dd/yyyy'}}
+							{{item.lastModified | date:'MM/dd/yyyy hh:mm:a'}}
 						</td>
 						<td data-title=" 'Period Start' "  sortable=" 'extract.report.startDate' " class="col-sm-1">
 							{{item.startDate | date:'MM/dd/yyyy'}}

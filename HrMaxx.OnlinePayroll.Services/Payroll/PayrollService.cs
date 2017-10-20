@@ -359,7 +359,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes, Accumulation employeeAccumulation)
 		{
 			var result = new List<PayTypeAccumulation>();
-			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay);
+			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, false);
 			var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
 
 			
@@ -368,6 +368,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				if (!payType.CompanyManaged)
 				{
+					if (payType.IsLumpSum)
+					{
+						fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, true);
+						fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+
+					}
 					var currentAccumulaiton = employeeAccumulation.Accumulations != null &&
 					                          employeeAccumulation.Accumulations.Any(
 						                          ac =>
@@ -405,42 +411,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					}
 
-					//if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate))
-					//{
-					//	var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart==fiscalStartDate && ac.FiscalEnd==fiscalEndDate);
-					//	ytdAccumulation = accum.YTDFiscal;
-					//	ytdUsed = accum.YTDUsed;
-					//	//carryOver = accum.CarryOver;
-						
-					//}
-					//else if ((employeeAccumulation.PreviousAccumulations != null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id)) || (employeeAccumulation.Accumulations != null &&
-					//			employeeAccumulation.Accumulations.Any(
-					//				ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate)))
-					//{
-					//	if (employeeAccumulation.PreviousAccumulations != null)
-					//	{
-					//		var payCheckPayTypeAccumulation = employeeAccumulation.PreviousAccumulations.FirstOrDefault(ac => ac.PayTypeId == payType.PayType.Id);
-					//		if (payCheckPayTypeAccumulation != null)
-					//			carryOver = payCheckPayTypeAccumulation.Available;
-					//	}
-
-					//	if (employeeAccumulation.Accumulations != null &&
-					//			employeeAccumulation.Accumulations.Any(
-					//				ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate))
-					//	{
-					//		var accum = employeeAccumulation.Accumulations.Where(ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate).OrderBy(a=>a.FiscalStart).Last();
-					//		carryOver += accum.Available;
-					//	}
-					//}
-					//else
-					//{
-
-					//	carryOver = paycheck.Employee.CarryOver;
-					//}
 					if (ytdAccumulation > payType.AnnualLimit)
 						ytdAccumulation = payType.AnnualLimit;
 
-					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
+					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
 						? CalculatePayTypeUsage(paycheck.Employee,
 							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
@@ -452,6 +426,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						accumulationValue = thisCheckValue;
 					}
+
+					
 
 					result.Add(new PayTypeAccumulation
 					{
@@ -508,17 +484,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			return quotient==0 ? 0 : Convert.ToDecimal(Math.Round(compnesaitonAmount / quotient, 2, MidpointRounding.AwayFromZero));
 		}
 
-		private decimal CalculatePayTypeAccumulation(PayCheck paycheck, decimal ratePerHour)
+		private decimal CalculatePayTypeAccumulation(PayCheck paycheck, AccumulatedPayType payType, decimal ytd)
 		{
+			if (payType.IsLumpSum)
+			{
+				return payType.AnnualLimit - ytd;
+			}
+
 			if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWork)
 			{
-				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours)*ratePerHour;
+				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours)*payType.RatePerHour;
 			}
 			else
 			{
 				if (paycheck.Employee.Rate <= 0)
 					return 0;
-				var val = (paycheck.Salary/paycheck.Employee.Rate)*(40*52/365)*ratePerHour;
+				var val = (paycheck.Salary/paycheck.Employee.Rate)*(40*52/365)*payType.RatePerHour;
 				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
 					return 7*val;
 				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
@@ -534,8 +515,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay)
+		private DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay, bool isLumpSum)
 		{
+			if(isLumpSum) 
+				return new DateTime(payDay.Year, 1, 1).Date;
 			DateTime result;
 			var accumulationBaseDate = new DateTime(2015, 7, 1);
 			if (hireDate <= accumulationBaseDate)
