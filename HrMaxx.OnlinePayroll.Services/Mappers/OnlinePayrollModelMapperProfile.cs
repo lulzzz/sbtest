@@ -631,7 +631,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(dest => dest.Notes, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollMessage, opt => opt.Ignore())
-				.ForMember(dest => dest.Contact, opt => opt.Ignore());
+				.ForMember(dest => dest.Contact, opt => opt.Ignore())
+				.ForMember(dest => dest.IsFiler1095, opt => opt.Ignore());
 
 			CreateMap<Models.ExtractDBCompany, Common.Models.InsuranceGroupDto>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.InsuranceGroupNo))
