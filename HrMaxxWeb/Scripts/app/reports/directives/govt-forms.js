@@ -31,6 +31,10 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 							year: 0,
 							includeHistory: true
 						},
+						filterC1095: {
+							year: 0,
+							includeHistory: true
+						},
 						filterW3: {
 							year: 0,
 							includeHistory: true
@@ -107,6 +111,9 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 						getReport('CaliforniaDE9', 'California DE 9', dataSvc.filterde9.year, dataSvc.filterde9.quarter, dataSvc.filterde9.includeHistory);
 						getReport('CaliforniaDE9C', 'California DE 9C', dataSvc.filterde9.year, dataSvc.filterde9.quarter, dataSvc.filterde9.includeHistory);
 					}
+					$scope.getReportC1095 = function () {
+						getReport('C1095', 'Federal 1095-C', dataSvc.filterC1095.year, null, dataSvc.filterC1095.includeHistory);
+					}
 
 					var getReport = function(reportName, desc, year, quarter, includeHistory) {
 						var m = $scope.mainData;
@@ -136,8 +143,8 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.hasCalifornia = function() {
 						var comp = $scope.mainData.selectedCompany;
 						if (comp) {
-							var cal = $filter('filter')(comp.states, { state : { stateId: 1 } })[0];
-							if (cal)
+							var cal = $filter('filter')(comp.states, { state : { stateId: 1 } });
+							if (cal.length>0)
 								return true;
 							else
 								return false;

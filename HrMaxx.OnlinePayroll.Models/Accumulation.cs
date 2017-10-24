@@ -65,7 +65,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<ExtractTaxState> States { get; set; }
 		
 		public List<DailyAccumulation> DailyAccumulations { get; set; }
-		public List<MonthlyAccumulation> MonthlyAccumulations { get; set; } 
+		public List<MonthlyAccumulation> MonthlyAccumulations { get; set; }
+
+		public List<PayCheckSummary1095> PayCheck1095Summaries { get; set; } 
+		public List<C1095Month> C1095Months { get; set; } 
 
 		public decimal EmployeeTaxes { get { return Math.Round( Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.YTD),2,MidpointRounding.AwayFromZero); } }
 		public decimal EmployerTaxes { get { return Math.Round( Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } }
@@ -301,6 +304,74 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 			});
 		}
-		
+
+		public string C1095Line14All { get; set; }
+		public string C1095Line15All { get; set; }
+		public string C1095Line16All { get; set; }
+		public void BuildC1095Months(Company company)
+		{
+			C1095Months = new List<C1095Month>();
+			
+			var months = PayCheck1095Summaries.GroupBy(pc => pc.PayDay.Month).ToList();
+			months.ForEach(m => C1095Months.Add(new C1095Month
+			{
+				Month = m.Key, IsFullTime = getIsFullTime(m.ToList(), company.MinWage), IsNonNewHire = getIsNonNewHire(m.ToList()),Value = m.ToList().SelectMany(pc=>pc.Deductions).Sum(d=>d.Amount), Checks = m.Count(),
+				IsEnrolled = company.Deductions.Any(d=>d.DeductionType.Id==10) && m.ToList().Any(pc=>pc.Deductions.Any()),
+				Code14 = m.ToList().Any() ? "1E" : "1H"
+			}));
+			for (var i = 1; i <= 12; i++)
+			{
+				if (C1095Months.All(c => c.Month != i))
+				{
+					C1095Months.Add(new C1095Month{Month=i, IsFullTime = false, Checks = 0, Value=0, IsEnrolled = false, IsNonNewHire = false, Code14 = "1H"});
+				}
+				var m = C1095Months.First(c => c.Month == i);
+				if (m.Checks == 0)
+					m.Code16 = "2A";
+				else if (!m.IsFullTime || m.IsNonNewHire)
+					m.Code16 = "2B";
+				else if (m.IsEnrolled)
+					m.Code16 = "2C";
+				else
+				{
+					m.Code16 = "2F";
+				}
+			}
+			C1095Line14All = C1095Months.Select(c=>c.Code14).Distinct().Count()==1 ? C1095Months[0].Code14 : string.Empty;
+			C1095Line15All = C1095Months.Select(c => c.Value).Distinct().Count() == 1 ? C1095Months[0].Value.ToString("##,###.00") : string.Empty;
+			C1095Line16All = C1095Months.Select(c => c.Code16).Distinct().Count() == 1 ? C1095Months[0].Code16 : string.Empty;
+		}
+
+		public bool getIsFullTime(List<PayCheckSummary1095> checks, decimal minWage )
+		{
+			decimal hours = 0;
+			if (PayType == EmployeeType.Hourly || PayType==EmployeeType.PieceWork)
+			{
+				hours = checks.Sum(pc => pc.PayCodes.Sum(pcc => pcc.Hours + pcc.OvertimeHours));
+				
+			}
+			else if (PayType == EmployeeType.Salary)
+			{
+				hours = checks.Sum(pc => pc.GrossWage)/minWage;
+			}
+			else if (PayType == EmployeeType.JobCost)
+			{
+				hours = checks.Sum(pc => pc.PayCodes.Where(pcc=>pcc.PayCode.Id==0).Sum(pcc=>pcc.Hours + pcc.OvertimeHours));
+			}
+
+			
+
+			if (hours >= 120) 
+				return true;
+
+			return false;
+		}
+
+		public bool getIsNonNewHire(List<PayCheckSummary1095> checks)
+		{
+			var maxPayDay = checks.Max(pc => pc.PayDay);
+			var diff = (maxPayDay - HireDate).TotalDays;
+			return diff < 90 ? true : false;
+		}
 	}
 }

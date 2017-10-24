@@ -87,6 +87,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.ClientNo = dbMappedCompany.ClientNo;
 				dbCompany.Notes = dbMappedCompany.Notes;
 				dbCompany.PayrollMessage = dbMappedCompany.PayrollMessage;
+				dbCompany.IsFiler944 = dbMappedCompany.IsFiler944;
+				dbCompany.IsFiler1095 = dbMappedCompany.IsFiler1095;
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);

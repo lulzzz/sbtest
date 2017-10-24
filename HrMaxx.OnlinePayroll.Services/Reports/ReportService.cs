@@ -124,6 +124,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetFederal941(request);
 				else if (request.ReportName.Equals("Federal944"))
 					return GetFederal944(request);
+				else if (request.ReportName.Equals("C1095"))
+					return GetC1095Report(request);
 				else if (request.ReportName.Equals("W2Employee"))
 					return GetW2Report(request, true);
 				else if (request.ReportName.Equals("W2Employer"))
@@ -172,7 +174,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message==HostNotSetUp)
+				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp || e.Message.StartsWith(NoData))
 				{
 					message = e.Message;
 				}
@@ -1689,6 +1691,28 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W2/W2-" + (isEmployee? string.Empty : "Employer-") + request.Year + ".xslt");
+
+		}
+		private FileDto GetC1095Report(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			response.Company = GetCompany(request.CompanyId);
+			if (!response.Company.Deductions.Any(d => d.Type.Id == 10))
+			{
+				throw new Exception(NoData + " The company does not offer Obamacare Medical.");
+			}
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeTaxes: false, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false, includeHistory: request.IncludeHistory, includeC1095: true).ToList();
+			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company));
+			response.Host = GetHost(response.Company.HostId);
+			if (response.Company.FileUnderHost)
+				response.Company = response.Host.Company;
+
+			
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/C1095/C1095-" + request.Year + ".xslt");
 
 		}
 

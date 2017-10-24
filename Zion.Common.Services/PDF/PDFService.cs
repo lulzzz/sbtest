@@ -11,6 +11,8 @@ using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using Magnum;
 using Magnum.Extensions;
+using PdfSharp;
+using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using Persits.PDF;
 using PdfDocument = Persits.PDF.PdfDocument;
@@ -193,6 +195,7 @@ namespace HrMaxx.Common.Services.PDF
 						for (int idx = 0; idx < count; idx++)
 						{
 							var page = objDoc1.Pages[idx];
+							
 							objDoc.AddPage(page);
 							//objDoc.InsertPage(docCount, page);
 						}
@@ -201,7 +204,7 @@ namespace HrMaxx.Common.Services.PDF
 					
 				}
 				byte[] fileContents = null;
-
+				
 				using (var stream = new MemoryStream())
 				{
 					objDoc.Save(stream, true);
@@ -223,6 +226,7 @@ namespace HrMaxx.Common.Services.PDF
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		
 		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<Guid> documents, byte[] data)
 		{
 			try
@@ -372,6 +376,7 @@ namespace HrMaxx.Common.Services.PDF
 							}
 							else
 							{
+								
 								var objField = objDoc.Form.FindField(field.Name);
 								if (objField != null)
 								{

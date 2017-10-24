@@ -141,4 +141,20 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? ReIssuedDate { get; set; }
 		
 	}
+
+	public class PayCheckSummary1095
+	{
+		public decimal Salary { get; set; }
+		public decimal GrossWage { get; set; }
+		public DateTime PayDay { get; set; }
+		public string PayCodesFlat { get; set; }
+		
+		public List<PayrollPayCode> PayCodes { get
+		{
+			return string.IsNullOrWhiteSpace(PayCodesFlat)
+				? new List<PayrollPayCode>()
+				: JsonConvert.DeserializeObject<List<PayrollPayCode>>(PayCodesFlat);
+		} }
+		public List<PayCheckDeduction> Deductions { get; set; }
+	}
 }

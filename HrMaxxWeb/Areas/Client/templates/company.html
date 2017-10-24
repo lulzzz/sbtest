@@ -249,6 +249,7 @@
 														</div>
 													</div>
 												</div>
+												
 
 											</div>
 											<div class="row">
@@ -295,7 +296,19 @@
 													</div>
 												</div>
 											</div>
-
+											<div class="row">
+												<div class="col-sm-3">
+													<div class="form-group">
+														<label></label>
+														<div>
+															<label for="efileforms" class="switch">
+																1095 Filer
+																<input id="efileforms" type="checkbox" ng-model="selectedCompany.isFiler1095" /><i></i>
+															</label>
+														</div>
+													</div>
+												</div>
+											</div>
 										</fieldset>
 										<fieldset>
 											<legend class="width-full">States <i class="fa fa-plus-circle" ng-show="availableStates().length>0 && !selectedCompany.isLocation" ng-click="addState()"></i></legend>

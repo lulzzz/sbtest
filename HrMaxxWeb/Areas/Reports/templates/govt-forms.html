@@ -179,6 +179,33 @@
 
 				</div>
 				
+				<div class="col-sm-12" ng-if="mainData.selectedCompany.isFiler1095">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Medical Obamacare – Form 1095-C</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearC1095" ng-model="data.filterC1095.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+
+						<div class="col-sm-3 form-group">
+
+							<label for="c1095history" class="switch">
+								Include History?
+								<input id="c1095history" type="checkbox" ng-model="data.filterC1095.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-6">
+							<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
+						</div>
+
+					</div>
+
+				</div>
+				
 			</div>
 			<div class="col-sm-6" ng-if="hasCalifornia()"> 
 				<div class="row">

@@ -62,6 +62,18 @@ namespace HrMaxx.OnlinePayroll.Models
 		
 	}
 
+	public class C1095Month
+	{
+		public int Month { get; set; }
+		public bool IsFullTime { get; set; }
+		public bool IsNonNewHire { get; set; }
+		public decimal Value { get; set; }
+		public int Checks { get; set; }
+		public string Code14 { get; set; }
+		public string Code16 { get; set; }
+		public bool IsEnrolled { get; set; }
+	}
+
 	public class GarnishmentAgency
 	{
 		public VendorCustomer Agency { get; set; }
