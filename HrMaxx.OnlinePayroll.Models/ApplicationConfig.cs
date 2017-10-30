@@ -18,7 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string MagneticFileId { get; set; }
 		public string TCC { get; set; }
 		public string SsaBsoW2MagneticFileId { get; set; }
-		
+		public List<KeyValuePair<int, decimal>> C1095Limits { get; set; } 
 		 
   }
 	public class InvoiceLateFeeConfig

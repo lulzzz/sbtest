@@ -55,6 +55,10 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							year: 0,
 							includeHistory: true
 						},
+						filterC1095: {
+							year: 0,
+							includeHistory: true
+						},
 						filter940Q: {
 							year: 0,
 							payPeriods: [],
@@ -389,6 +393,16 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					
 					$scope.getReportW2Employee = function () {
 						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
+					}
+					$scope.getReportW2EmployeeReport = function () {
+						getReport('SSAW2MagneticReport', 'Federal W2 Employee Report', dataSvc.filterW2.year, null, null, null, null, null, null, false, dataSvc.filterW2.includeHistory);
+					}
+
+					$scope.getReportC1095 = function () {
+						getReport('C1095', 'Federal 1095-C File', dataSvc.filterC1095.year, null, null, null, null, null, null, false, dataSvc.filterC1095.includeHistory);
+					}
+					$scope.getReportC1095Report = function () {
+						getReport('C1095Report', 'Federal 1095-C File Report', dataSvc.filterC1095.year, null, null, null, null, null, null, false, dataSvc.filterC1095.includeHistory);
 					}
 					
 					$scope.getReport940Q = function () {

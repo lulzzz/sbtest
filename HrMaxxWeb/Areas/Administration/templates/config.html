@@ -50,7 +50,25 @@
 
 
 						</div>
-
+						<div class="form-group">
+							<table class="table table-bordered table-condensed">
+								<thead>
+									<tr>
+										<th colspan="2">C1095 Limits</th>
+									</tr>
+									<tr>
+										<th>Year</th>
+										<th>Limit</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="limit in data.configs.c1095Limits">
+										<td><input class="form-control" type="number" ng-model="limit.key" data-parsley-type="number" data-parsley-min="data.minYear" data-parsley-max="data.maxYear" data-parsley-trigger="blur" step="1" /></td>
+										<td><input class="form-control" type="number" ng-model="limit.value" data-parsley-type="number" data-parsley-min="0" data-parsley-trigger="blur" step="1" /></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 
 					</div>
 					<div class="col-sm-4">

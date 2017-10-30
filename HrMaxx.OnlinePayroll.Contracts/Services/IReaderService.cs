@@ -56,7 +56,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ExtractResponse GetExtractAccumulation(string report, DateTime startDate, DateTime endDate, Guid? host = null, 
 			DepositSchedule941? depositSchedule941 = null,  bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
-			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includeHistory = false);
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includeHistory = false, bool includeC1095 = false);
 
 		ExtractResponse GetTaxEligibilityAccumulation(DepositSchedule941? depositSchedule);
 
@@ -73,5 +73,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includeVoids = false, bool includeTaxes = true,
 			bool includedDeductions = true, bool includedCompensations = true, bool includeWorkerCompensations = true,
 			bool includePayCodes = true, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true, string report = null, bool includeHistory = false, bool includeC1095 = false);
+
+		
 	}
 }

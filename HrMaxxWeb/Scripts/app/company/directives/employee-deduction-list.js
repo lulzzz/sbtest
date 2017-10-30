@@ -110,7 +110,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				}
 
 				$scope.isItemValid = function(item) {
-					if (!item.deduction || !item.method || !item.rate)
+					if (!item.deduction || !item.method)
 						return false;
 					else if (item.deduction.type.id === 3) {
 						if (!item.accountNo || !item.agencyId)

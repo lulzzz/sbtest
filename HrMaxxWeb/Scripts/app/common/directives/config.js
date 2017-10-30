@@ -16,7 +16,9 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 					tags: [],
 					rootHost: null,
 					isBodyOpen: true,
-					insuranceGroups:[]
+					insuranceGroups: [],
+					minYear: 2017
+					
 			}
 
 				$scope.data = dataSvc;
@@ -50,7 +52,8 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 				}
 				
 				var init = function () {
-
+					dataSvc.maxYear = new Date().getFullYear();
+					
 					commonRepository.getConfigData().then(function (result) {
 						dataSvc.configs = angular.copy(result);
 						if (result.rootHostId) {
@@ -63,6 +66,14 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 									text: c
 								});
 							});
+						}
+						if (!dataSvc.configs.c1095Limits)
+							dataSvc.configs.c1095Limits = [];
+						for (var i = dataSvc.minYear; i <= dataSvc.maxYear; i++) {
+							var exists = $filter('filter')(dataSvc.configs.c1095Limits, { key: i });
+							if (exists.length === 0) {
+								dataSvc.configs.c1095Limits.push({ key: i, value: 0 });
+							}
 						}
 
 					}, function (error) {

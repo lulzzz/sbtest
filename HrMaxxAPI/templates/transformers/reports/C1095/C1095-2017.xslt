@@ -427,21 +427,7 @@
 	
 	</Report>
 </xsl:template>	
-<xsl:template name="W2Repeater">
-	<xsl:param name="prefix"/>
-	<xsl:param name="val"/>
-	<xsl:param name="iter"/>
-	
-	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="concat($prefix,'_',$iter)"/><xsl:with-param name="val1" select="$val"/></xsl:call-template>
-	<xsl:if test="$iter>1">
-		<xsl:call-template name="W2Repeater">
-			<xsl:with-param name="prefix" select="$prefix"/>
-			<xsl:with-param name="val" select="$val"/>
-			<xsl:with-param name="iter" select="$iter - 1"/>
-		</xsl:call-template>
-	</xsl:if>
 
-</xsl:template>
 
 
 

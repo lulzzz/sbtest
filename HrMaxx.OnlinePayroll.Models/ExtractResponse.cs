@@ -105,7 +105,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<ExtractTaxState> States { get; set; }
 		public List<ExtractContact> Contacts { get; set; }
 		public List<ExtractDBCompany> Companies { get; set; }
-		public List<ACHTransaction> ACHTransactions { get; set; } 
+		public List<ACHTransaction> ACHTransactions { get; set; }
+		
 	}
 
 	
@@ -229,6 +230,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string InsuranceGroup { get; set; }
 		public string InsuranceGroupName { get; set; }
 		public Guid? ParentId { get; set; }
+		public decimal MinWage { get; set; }
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }
 		public List<Accumulation> Accumulations { get; set; }

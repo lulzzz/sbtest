@@ -699,7 +699,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 	  public ExtractResponse GetExtractAccumulation(string report, DateTime startDate, DateTime endDate, Guid? hostId = null,
 		  DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,
 		  bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
-		  bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includeHistory=false)
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includeHistory = false, bool includeC1095 = false)
 	  {
 			try
 			{
@@ -752,6 +752,11 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "includeHistory", Value = includeHistory.ToString() });
 				}
+				if (includeC1095)
+				{
+					paramList.Add(new FilterParam { Key = "includeC1095", Value = includeC1095.ToString() });
+				}
+				
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractAccumulation", paramList);
 				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
@@ -1013,5 +1018,6 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 	  }
+		
   }
 }

@@ -33,13 +33,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string MiddleInitial { get; set; }
 		public string Department { get; set; }
 		public DateTime HireDate { get; set; }
+		public DateTime BirthDate { get; set; }
+		public string BirthDateString { get; set; }
+		public string HireDateString { get; set; }
 		public int EmpPayType { get; set; }
 		public EmployeeType PayType{get
 			{
 				return (EmployeeType) EmpPayType;
 			}}
 		public CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
-
+		public List<CompanyDeduction> CompanyDeductions { get; set; }
 		public string ContactStr { get; set; }
 		public Contact Contact { 
 			get
@@ -308,17 +311,30 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string C1095Line14All { get; set; }
 		public string C1095Line15All { get; set; }
 		public string C1095Line16All { get; set; }
-		public void BuildC1095Months(Company company)
+		public void BuildC1095Months(Company company, decimal c1095Limit)
 		{
 			C1095Months = new List<C1095Month>();
-			
+			HireDateString = HireDate.ToString("MM-dd-yyyy");
+			BirthDateString = BirthDate==DateTime.MinValue ? string.Empty :  BirthDate.ToString("MM-dd-yyyy");
 			var months = PayCheck1095Summaries.GroupBy(pc => pc.PayDay.Month).ToList();
-			months.ForEach(m => C1095Months.Add(new C1095Month
+			months.ForEach(m =>
 			{
-				Month = m.Key, IsFullTime = getIsFullTime(m.ToList(), company.MinWage), IsNonNewHire = getIsNonNewHire(m.ToList()),Value = m.ToList().SelectMany(pc=>pc.Deductions).Sum(d=>d.Amount), Checks = m.Count(),
-				IsEnrolled = company.Deductions.Any(d=>d.DeductionType.Id==10) && m.ToList().Any(pc=>pc.Deductions.Any()),
-				Code14 = m.ToList().Any() ? "1E" : "1H"
-			}));
+				var monthVal = new C1095Month
+				{
+					Month = m.Key,
+					IsFullTime = getIsFullTime(m.ToList(), company.MinWage),
+					IsNonNewHire = getIsNonNewHire(m.ToList()),
+					Value = m.ToList().SelectMany(pc => pc.Deductions).Sum(d => d.Amount),
+					Checks = m.Count(),
+					IsEnrolled = m.ToList().Any(pc => pc.Deductions.Any()),
+					Code14 = m.ToList().Any() ? "1E" : "1H"
+				};
+				var capValue = Math.Round(m.ToList().Sum(d => d.GrossWage)*c1095Limit/100, 2, MidpointRounding.AwayFromZero);
+				if (monthVal.Value > capValue)
+					monthVal.Value = capValue;
+
+				C1095Months.Add(monthVal);
+			});
 			for (var i = 1; i <= 12; i++)
 			{
 				if (C1095Months.All(c => c.Month != i))
@@ -338,7 +354,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 			}
 			C1095Line14All = C1095Months.Select(c=>c.Code14).Distinct().Count()==1 ? C1095Months[0].Code14 : string.Empty;
-			C1095Line15All = C1095Months.Select(c => c.Value).Distinct().Count() == 1 ? C1095Months[0].Value.ToString("##,###.00") : string.Empty;
+			C1095Line15All = C1095Months.Select(c => c.Value).Distinct().Count() == 1 ? C1095Months[0].Value.ToString("##,##0.00") : string.Empty;
 			C1095Line16All = C1095Months.Select(c => c.Code16).Distinct().Count() == 1 ? C1095Months[0].Code16 : string.Empty;
 		}
 

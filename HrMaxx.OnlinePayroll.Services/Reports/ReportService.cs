@@ -126,6 +126,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetFederal944(request);
 				else if (request.ReportName.Equals("C1095"))
 					return GetC1095Report(request);
+				
 				else if (request.ReportName.Equals("W2Employee"))
 					return GetW2Report(request, true);
 				else if (request.ReportName.Equals("W2Employer"))
@@ -204,6 +205,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetPaperless940(request);
 				else if (request.ReportName.Equals("SSAW2Magnetic"))
 					return GetSSAMagnetic(request);
+				else if (request.ReportName.Equals("SSAW2MagneticReport"))
+					return GetSSAMagneticReport(request);
+				else if (request.ReportName.Equals("C1095"))
+					return GetC1095Extract(request);
+				else if (request.ReportName.Equals("C1095Report"))
+					return GetC1095ExtractReport(request);
 				else if (request.ReportName.Equals("Report1099"))
 					return Get1099Extract(request);
 				else if (request.ReportName.Equals("Federal940"))
@@ -281,7 +288,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetHostWCReport(ReportRequest request)
 		{
-			var data = GetExtractResponseHostWC(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
+			var data = GetExtractResponseHostWC(request, buildCompanyEmployeeAccumulation: true);
 
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = true;
@@ -292,7 +299,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetHostWCReportRedated(ReportRequest request)
 		{
-			var data = GetExtractResponseHostWCRedated(request, buildEmployeeAccumulations: true, buildCompanyEmployeeAccumulation: true);
+			var data = GetExtractResponseHostWCRedated(request, buildCompanyEmployeeAccumulation: true);
 			request.ReportName = "HostWCReport";
 			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
 			request.AllowFiling = true;
@@ -541,7 +548,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/PositivePayReport.xslt", "txt", request.Description + ".txt");
 		}
-		private ExtractResponse GetExtractResponseGarnishment(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily = false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
+		private ExtractResponse GetExtractResponseGarnishment(ReportRequest request, bool buildCounts = false, bool buildDaily = false, bool buildGarnishments = false)
 		{
 			var data = _readerService.GetExtractResponse(request);
 
@@ -570,16 +577,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				h.PayChecks.AddRange(payChecks);
 				h.CredChecks.AddRange(voidedPayChecks);
 
-				if (buildEmployeeAccumulations)
-					h.EmployeeAccumulations = getEmployeeAccumulations(payChecks);
-
 				h.Companies.ForEach(c =>
 				{
 					c.Accumulation = new ExtractAccumulation() { ExtractType = request.ExtractType };
 					c.Accumulation.Initialize(c.PayChecks, c.VoidedPayChecks, new List<VendorCustomer>(), false, false, false, request.Year, request.Quarter);
 
-					if (buildCompanyEmployeeAccumulation)
-						c.EmployeeAccumulations = getEmployeeAccumulations(c.PayChecks);
 					c.PayChecks = new List<PayCheck>();
 					c.VoidedPayChecks = new List<PayCheck>();
 				});
@@ -595,7 +597,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return data;
 		}
 
-		private ExtractResponse GetExtractResponseHostWC(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily = false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
+		private ExtractResponse GetExtractResponseHostWC(ReportRequest request, bool buildCompanyEmployeeAccumulation = false)
 		{
 			var data = _readerService.GetExtractResponse(request);
 
@@ -641,7 +643,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return data;
 		}
 
-		private ExtractResponse GetExtractResponseHostWCRedated(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily = false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false)
+		private ExtractResponse GetExtractResponseHostWCRedated(ReportRequest request, bool buildCompanyEmployeeAccumulation = false)
 		{
 			var data = _readerService.GetExtractResponseSpecial(request);
 
@@ -727,12 +729,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return data;
 		}
 
-		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildCounts = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool getCompanyDeposits = false, bool buildGarnishments = false, bool includeTaxes = true, bool includeCompensaitons = false, bool includeDeductions=false, bool includeWorkerCompensations = false, bool includePayCodes= false)
+		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool includeTaxes = true, bool includeCompensaitons = false, bool includeDeductions=false, bool includeWorkerCompensations = false, bool includePayCodes= false, bool includeC1095 = false)
 		{
 			//var data = _reportRepository.GetExtractReport(request);
 			//var data = _readerService.GetExtractResponse(request);
+			
+			Log.Info(string.Format("starting time {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
 				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory);
+			Log.Info(string.Format("extracted accumulation {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			if (request.ReportName.Contains("1099"))
 			{
 				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
@@ -756,9 +761,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayCheckAccumulation!=null && c.PayCheckAccumulation.PayCheckWages!=null && c.PayCheckAccumulation.PayCheckWages.GrossWage>0)).ToList();
 				}
 			}
-			var garnishmentAgencies = new List<VendorCustomer>();
-			if (buildGarnishments)
-				garnishmentAgencies = _metaDataRepository.GetGarnishmentAgencies();
+			
 			data.Hosts.ForEach(h =>
 			{
 				if (!request.ReportName.Contains("1099"))
@@ -766,6 +769,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					h.Companies = h.Companies.Where(c => c.PayCheckAccumulation != null && c.PayCheckAccumulation.PayCheckWages != null && c.PayCheckAccumulation.PayCheckWages.GrossWage > 0).ToList();
 					h.PayCheckAccumulation = new Accumulation(){ExtractType = request.ExtractType, Year=request.Year, Quarter=request.Quarter,PayCheckWages=new PayCheckWages(), PayCheckList=new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes=new List<PayCheckTax>(), Deductions=new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(),WorkerCompensations=new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>()};
 					h.EmployeeAccumulationList = new List<Accumulation>();
+					if (buildEmployeeAccumulations)
+					{
+
+						var ea = _readerService.GetTaxAccumulations(company: h.HostCompany.Id, startdate: request.StartDate,
+							enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeWorkerCompensations: includeWorkerCompensations, includePayTypeAccumulation: false, includeTaxes: includeTaxes, includedCompensations: includeCompensaitons, includedDeductions: includeDeductions, report: request.ReportName, includeHistory: request.IncludeHistory);
+
+						h.EmployeeAccumulationList =
+							ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+
+
+					}
 					h.Companies.ForEach(c =>
 					{
 						c.PayCheckAccumulation.ExtractType = request.ExtractType;
@@ -781,18 +795,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 							
 						c.PayCheckAccumulation.PayCheckList = new List<PayCheckSummary>();
 						
-						if (buildEmployeeAccumulations)
-						{
-							
-							var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: request.StartDate,
-								enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes:false, includeWorkerCompensations:includeWorkerCompensations, includePayTypeAccumulation:false, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, report: request.ReportName, includeHistory: request.IncludeHistory);
-							if (buildCompanyEmployeeAccumulation)
-								c.EmployeeAccumulationList = ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
-							h.EmployeeAccumulationList.AddRange(ea.Where(ea1=>ea1.PayCheckWages!=null && ea1.PayCheckWages.GrossWage>0));
-						}
+						
 					});
 
-				
+					Log.Info(string.Format("extracted accumulation {0} at {1}", h.HostCompany.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 
 				}
 				else
@@ -808,11 +814,41 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}	
 			
 			});
-			if (buildGarnishments)
-			{
-				data.Hosts = data.Hosts.Where(h => h.Accumulation.GarnishmentAgencies.Any(ga=>ga.Total>0)).ToList();
-			}
+			Log.Info(string.Format("extracted returned {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			return data;
+		}
+		private ExtractResponse GetExtractResponseC1095(ReportRequest request)
+		{
+			//var data = _reportRepository.GetExtractReport(request);
+			//var data = _readerService.GetExtractResponse(request);
+			var config = _taxationService.GetApplicationConfig();
+			var c1095limit = config.C1095Limits.Any(c => c.Key == request.StartDate.Year)
+				? config.C1095Limits.First(c => c.Key == request.StartDate.Year).Value
+				: (decimal)9.65;
+			Log.Info(string.Format("starting time {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate, includeVoids: false, includeHistory: request.IncludeHistory, includeC1095: true);
+			Log.Info(string.Format("extracted accumulation {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			
+			
+			data.Hosts.ForEach(h =>
+			{
+				
+					h.PayCheckAccumulation = new Accumulation() { ExtractType = request.ExtractType, Year = request.Year, Quarter = request.Quarter, PayCheckWages = new PayCheckWages(), PayCheckList = new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes = new List<PayCheckTax>(), Deductions = new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(), WorkerCompensations = new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>() };
+					h.EmployeeAccumulationList = new List<Accumulation>();
+					
+
+						h.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: h.HostCompany.Id, startdate: request.StartDate,
+							enddate: request.EndDate, type: AccumulationType.Employee, includeVoids: false, report: request.ReportName, includeHistory: request.IncludeHistory, includeC1095: true);
+
+						h.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(h.HostCompany, c1095limit));
+					
+					
+					Log.Info(string.Format("extracted accumulation C1095 {0} at {1}", h.HostCompany.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+
+				
+
+			});
+			Log.Info(string.Format("extracted returned {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			return data;
 		}
 		private Extract Federal940(ReportRequest request)
@@ -1065,7 +1101,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Paperless 941 for {0} (Quarter={1})", request.Year, request.Quarter);
 			request.AllowFiling = false;
-			var data = GetExtractResponse(request, buildCounts:true, buildDaily:true, includeCompensaitons:true);
+			var data = GetExtractResponse(request, buildDaily:true, includeCompensaitons:true);
 			
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("quarter",  request.Quarter.ToString()));
@@ -1093,6 +1129,63 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
 			
 		}
+		private Extract GetSSAMagneticReport(ReportRequest request)
+		{
+			request.Description = string.Format("SSA W2 Employee Report for {0} ", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request, buildEmployeeAccumulations: true, includeCompensaitons: true, includeDeductions: true, includePayCodes: true);
+
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			
+			
+			var extract = new Extract()
+			{
+				Report = request,
+				Data = data,
+				Template = string.Format("{0}{1}", _templatePath, "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt"),
+				ArgumentList = JsonConvert.SerializeObject(argList),
+				FileName = request.Description,
+				Extension = ".pdf"
+			};
+			extract.File = GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt");
+			return extract;
+		}
+		private Extract GetC1095Extract(ReportRequest request)
+		{
+			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponseC1095(request);
+
+			
+			var argList = new List<KeyValuePair<string, string>>();
+			
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/C1095-" + request.Year + ".xslt", "xls", string.Format("Federal C1095 Extract-{0}.xls", request.Year));
+
+		}
+		private Extract GetC1095ExtractReport(ReportRequest request)
+		{
+			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponseC1095(request);
+
+			var argList = new XsltArgumentList();
+			argList.AddParam("selectedYear", "", request.Year);
+			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			var extract = new Extract()
+			{
+				Report = request,
+				Data = data,
+				Template = string.Format("{0}{1}", _templatePath, "transformers/reports/C1095/C1095-" + request.Year + ".xslt"),
+				ArgumentList = JsonConvert.SerializeObject(argList),
+				FileName = request.Description,
+				Extension = ".pdf"
+			};
+			extract.File =  GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/C1095PDF-" + request.Year + ".xslt");
+			return extract;
+		}
 		private Extract GetExtractTransformed(ReportRequest request, ExtractResponse data, List<KeyValuePair<string,string>> argList, string template, string extension, string filename)
 		{
 			var extract = new Extract()
@@ -1114,6 +1207,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public Extract GetExtractTransformedWithFile(Extract extract)
 		{
+			Log.Info(string.Format("transformation started at {0}",  DateTime.Now.ToString("hh:mm:ss:fff")));
 			var xml = GetXml<ExtractResponse>(extract.Data);
 
 			var args = extract.ArgumentList!=null ? JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList) : new List<KeyValuePair<string, string>>();
@@ -1156,8 +1250,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					MimeType = "application/octet-stream"
 				};
 			}
-			
-			
+
+			Log.Info(string.Format("transformation finished at {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			return extract;
 			
 		}
@@ -1696,13 +1790,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private FileDto GetC1095Report(ReportRequest request)
 		{
 			var response = new ReportResponse();
+			var config = _taxationService.GetApplicationConfig();
+			var c1095limit = config.C1095Limits.Any(c => c.Key == request.StartDate.Year)
+				? config.C1095Limits.First(c => c.Key == request.StartDate.Year).Value
+				: (decimal)9.65;
 			response.Company = GetCompany(request.CompanyId);
-			if (!response.Company.Deductions.Any(d => d.Type.Id == 10))
-			{
-				throw new Exception(NoData + " The company does not offer Obamacare Medical.");
-			}
+
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: false, includeTaxes: false, includePayTypeAccumulation: false, includedDeductions: false, includedCompensations: false, includeWorkerCompensations: false, includeHistory: request.IncludeHistory, includeC1095: true).ToList();
-			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company));
+			//if (!response.Company.Deductions.Any(d => d.Type.Id == 10) && response.EmployeeAccumulationList.All(ea=>!ea.PayCheck1095Summaries.Any(pc=>pc.Deductions.Any())))
+			//{
+			//	throw new Exception(NoData + " The company does not offer Obamacare Medical.");
+			//}
+			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
 			response.Host = GetHost(response.Company.HostId);
 			if (response.Company.FileUnderHost)
 				response.Company = response.Host.Company;
@@ -2037,9 +2136,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 		
-		private FileDto GetReportTransformedAndPrinted(ReportRequest request, ReportResponse response, XsltArgumentList argList, string template)
+		private FileDto GetReportTransformedAndPrinted<T>(ReportRequest request, T response, XsltArgumentList argList, string template)
 		{
-			var xml = GetXml<ReportResponse>(response);
+			var xml = GetXml<T>(response);
 			
 
 			var transformed = TransformXml(xml,

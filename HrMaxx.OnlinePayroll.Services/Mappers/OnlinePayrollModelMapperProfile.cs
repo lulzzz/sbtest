@@ -612,7 +612,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src=>src.Id))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src=>src.CompanyName))
 				.ForMember(dest => dest.DepositSchedule, opt => opt.MapFrom(src => src.DepositSchedule941))
-				.ForMember(dest => dest.MinWage, opt => opt.Ignore())
+				
 				.ForMember(dest => dest.AllowTaxPayments, opt => opt.MapFrom(src=>src.ManageTaxPayment))
 				.ForMember(dest => dest.AllowEFileFormFiling, opt => opt.MapFrom(src=>src.ManageEFileForms))
 				.ForMember(dest => dest.LastPayrollDate, opt => opt.Ignore())
