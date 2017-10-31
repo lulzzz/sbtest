@@ -25,10 +25,45 @@
 		</ReportTransformed>
 	</xsl:template>
 	<xsl:template match="ExtractResponse">
-		<xsl:apply-templates select="Hosts/ExtractHost/EmployeeAccumulationList/Accumulation">
-			<xsl:sort select="FirstName"/>
+		<xsl:apply-templates select="Hosts/ExtractHost">
+			
 		</xsl:apply-templates>
 	
+	</xsl:template>
+	<xsl:template match="ExtractHost">
+		<Report>
+			<TemplatePath></TemplatePath>
+			<Template></Template>
+			<ReportType>Html</ReportType>
+			<HtmlData>
+				<html>
+					<body>
+						<div align="center">
+							<h3>
+								<xsl:value-of select="translate(HostCompany/TaxFilingName,$smallcase,$uppercase)"/>
+							</h3>
+							<br/>
+							<h4>
+								<xsl:value-of select="translate(HostCompany/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
+							</h4>
+							<h4>
+								<xsl:value-of select="translate(concat(HostCompany/BusinessAddress/City,', ',HostCompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', HostCompany/BusinessAddress/Zip),$smallcase,$uppercase)"/>
+							</h4>
+							<br/>
+							<br/>
+							<h5>
+								C1095 Forms: <xsl:value-of select="count(EmployeeAccumulationList/Accumulation)"/>
+							</h5>
+						</div>
+					</body>
+				</html>
+
+			</HtmlData>
+
+		</Report>
+		<xsl:apply-templates select="EmployeeAccumulationList/Accumulation">
+			<xsl:sort select="FirstName"/>
+		</xsl:apply-templates>
 	</xsl:template>
 	<xsl:template match="Accumulation">
 

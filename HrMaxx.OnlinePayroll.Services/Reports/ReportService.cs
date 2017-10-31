@@ -734,10 +734,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			//var data = _reportRepository.GetExtractReport(request);
 			//var data = _readerService.GetExtractResponse(request);
 			
-			Log.Info(string.Format("starting time {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			//Log.Info(string.Format("starting time {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
 				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory);
-			Log.Info(string.Format("extracted accumulation {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			//Log.Info(string.Format("extracted accumulation {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			if (request.ReportName.Contains("1099"))
 			{
 				if (request.ReportName.Contains("1099") && data.Hosts.All(h => h.Companies.All(c => !c.Vendors.Any(v => v.Amount > 0))))
@@ -798,7 +798,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						
 					});
 
-					Log.Info(string.Format("extracted accumulation {0} at {1}", h.HostCompany.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					//Log.Info(string.Format("extracted accumulation {0} at {1}", h.HostCompany.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 
 				}
 				else
@@ -814,7 +814,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}	
 			
 			});
-			Log.Info(string.Format("extracted returned {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			//Log.Info(string.Format("extracted returned {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			return data;
 		}
 		private ExtractResponse GetExtractResponseC1095(ReportRequest request)
@@ -825,9 +825,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var c1095limit = config.C1095Limits.Any(c => c.Key == request.StartDate.Year)
 				? config.C1095Limits.First(c => c.Key == request.StartDate.Year).Value
 				: (decimal)9.65;
-			Log.Info(string.Format("starting time {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			//Log.Info(string.Format("starting time {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate, includeVoids: false, includeHistory: request.IncludeHistory, includeC1095: true);
-			Log.Info(string.Format("extracted accumulation {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			//Log.Info(string.Format("extracted accumulation {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			
 			
 			data.Hosts.ForEach(h =>
@@ -843,7 +843,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						h.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(h.HostCompany, c1095limit));
 					
 					
-					Log.Info(string.Format("extracted accumulation C1095 {0} at {1}", h.HostCompany.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					//Log.Info(string.Format("extracted accumulation C1095 {0} at {1}", h.HostCompany.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 
 				
 

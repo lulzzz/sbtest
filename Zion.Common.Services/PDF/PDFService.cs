@@ -343,13 +343,15 @@ namespace HrMaxx.Common.Services.PDF
 			{
 				var objPDF = new PdfManager();
 				var counter = 0;
-				PdfDocument objDoc = objPDF.CreateDocument();
+				PdfDocument objDoc;
 				var docs = new List<FileDto>();
 				foreach (var report in pdfModels.Reports)
 				{
-					
+					counter++;
 					if (!string.IsNullOrWhiteSpace(report.ReportType) && report.ReportType.ToLower().Equals("html"))
 					{
+						objDoc = objPDF.CreateDocument();
+						objDoc.Title = counter.ToString();
 						objDoc.ImportFromUrl(report.HtmlData.OuterXml);
 					}
 					else

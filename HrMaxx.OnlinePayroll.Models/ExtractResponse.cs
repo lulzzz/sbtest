@@ -236,7 +236,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<Accumulation> Accumulations { get; set; }
 		public List<Accumulation> VoidedAccumulations { get; set; } 
 		public List<ExtractVendor> Vendors { get; set; }
-		public List<CompanyTaxRate> CompanyTaxRates { get; set; } 
+		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
+		public List<CompanyDeduction> Deductions { get; set; }
 	}
 
 	public class ExtractVendor

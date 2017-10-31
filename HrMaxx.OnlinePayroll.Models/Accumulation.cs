@@ -326,7 +326,7 @@ namespace HrMaxx.OnlinePayroll.Models
 					IsNonNewHire = getIsNonNewHire(m.ToList()),
 					Value = m.ToList().SelectMany(pc => pc.Deductions).Sum(d => d.Amount),
 					Checks = m.Count(),
-					IsEnrolled = m.ToList().Any(pc => pc.Deductions.Any()),
+					IsEnrolled = ((company.FileUnderHost && company.IsHostCompany) || (!company.FileUnderHost && company.Deductions.Any(d=>d.DeductionType.Id==10))) && m.ToList().Any(pc => pc.Deductions.Any()),
 					Code14 = m.ToList().Any() ? "1E" : "1H"
 				};
 				var capValue = Math.Round(m.ToList().Sum(d => d.GrossWage)*c1095Limit/100, 2, MidpointRounding.AwayFromZero);
