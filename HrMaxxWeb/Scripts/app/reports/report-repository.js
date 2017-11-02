@@ -269,6 +269,33 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			printExtractBatch: function (file) {
+				var deferred = $q.defer();
+				$http.post(zionAPI.URL + "Reports/PrintExtractBatch", file, { responseType: "arraybuffer" }).then(
+					function (response) {
+						var type = response.headers('Content-Type');
+						var disposition = response.headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([response.data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName,
+							data: response.data
+						});
+
+					}, function (data) {
+						var e = data.statusText;
+						deferred.reject(e);
+					});
+
+				return deferred.promise;
+			},
 			getExtractDocument: function (request) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Reports/ExtractDocumentReport", request, { responseType: "arraybuffer" }).then(

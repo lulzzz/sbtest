@@ -34,5 +34,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void DeleteExtract(int extractId);
 		MasterExtract ConfirmExtract(MasterExtract extract);
 		CPAReport GetCPAReport(ReportRequest request);
+		FileDto GetExtractTransformedAndPrinted(Extract extract);
 	}
 }

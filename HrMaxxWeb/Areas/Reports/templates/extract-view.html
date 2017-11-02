@@ -1,5 +1,5 @@
 ﻿<div class="row">
-	<div class="panel panel-inverse panel-with-tabs hidden-print" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'">
+	<div class="panel panel-inverse panel-with-tabs hidden-print" data-sortable-id="ui-unlimited-tabs-1" ng-if="!masterExtract.extract.report.isBatchPrinting && masterExtract.extract.report.reportName!=='CommissionsReport'">
 		<div class="panel-heading p-5">
 			<!-- begin nav-tabs -->
 			<div class="tab-overflow">
@@ -384,5 +384,27 @@
 				<td>{{invoice.commission | currency:'$'}}</td>
 			</tr>
 		</table>
+	</div>
+	
+	<div class="panel panel-inverse panel-with-tabs hidden-print" data-sortable-id="ui-unlimited-tabs-1" ng-if="masterExtract.extract.report.isBatchPrinting">
+		<div class="col-sm-12">
+			<div class="col-sm-4">
+				<div class="form-group">
+					<label for="companies">UnPrinted Filing Companies</label>
+					<button class="btn btn-primary" ng-show="selectedPrintHosts.length>0" ng-click="printBatch()"><i class="fa fa-print"></i> print ({{selectedPrintHosts.length}}) - {{formsToPrint}} Employees</button>
+					<div class="col-sm-12" ng-dropdown-multiselect="" options="data.hosts" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true,scrollable: true, enableSearch: true}" selected-model="selectedPrintHosts" events="batchPrintingEvents"></div>
+				</div>
+				
+			</div>
+			<div class="col-sm-8" ng-if="printedHosts.length>0">
+				<h4>Printed</h4>
+				<div class="col-sm-4">
+					<div class="row" ng-repeat="host in printedHosts">
+						<button class="btn btn-xs m-t-5" ng-class="{'btn-info' : selectedHost.hostCompany.id===host.hostCompany.id}" ng-click="set(host)">{{host.title}}</button>
+					</div>
+				</div>
+			</div>
+			
+		</div>
 	</div>
 </div>

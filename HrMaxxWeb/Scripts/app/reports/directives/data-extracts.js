@@ -395,14 +395,17 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
 					}
 					$scope.getReportW2EmployeeReport = function () {
-						getReport('SSAW2MagneticReport', 'Federal W2 Employee Report', dataSvc.filterW2.year, null, null, null, null, null, null, false, dataSvc.filterW2.includeHistory);
+						getReport('SSAW2MagneticReport', 'Federal W2 Employee Report', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
+					}
+					$scope.getReportW2EmployerReport = function () {
+						getReport('SSAW2MagneticEmployerReport', 'Federal W2 Employer Report', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
 					}
 
 					$scope.getReportC1095 = function () {
 						getReport('C1095', 'Federal 1095-C File', dataSvc.filterC1095.year, null, null, null, null, null, null, false, dataSvc.filterC1095.includeHistory);
 					}
 					$scope.getReportC1095Report = function () {
-						getReport('C1095Report', 'Federal 1095-C File Report', dataSvc.filterC1095.year, null, null, null, null, null, null, false, dataSvc.filterC1095.includeHistory);
+						getReport('C1095Report', 'Federal 1095-C File Report', dataSvc.filterC1095.year, null, null, null, null, null, null, true, dataSvc.filterC1095.includeHistory);
 					}
 					
 					$scope.getReport940Q = function () {

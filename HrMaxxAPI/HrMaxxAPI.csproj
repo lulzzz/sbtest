@@ -362,6 +362,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\extracts\SSAW2PDF-2017.xslt" />
+    <Content Include="templates\transformers\extracts\SSAW2PDF-Employer-2017.xslt" />
     <Content Include="templates\transformers\other\monthlyquarterannualtaxsummary.xslt">
       <SubType>Designer</SubType>
     </Content>

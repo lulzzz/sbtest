@@ -60,9 +60,9 @@
 	</xsl:template>
 	
 <xsl:template match="Accumulation">
-	<xsl:variable name="fein" select="concat(substring(/../../HostCompany/FederalEIN,1,2),'-',substring(../../HostCompany/FederalEIN,3,7))"/>
+	<xsl:variable name="fein" select="concat(substring(../../HostCompany/FederalEIN,1,2),'-',substring(../../HostCompany/FederalEIN,3,7))"/>
 	<xsl:variable name="compDetails" select="translate(concat(../../HostCompany/TaxFilingName,'\n',../../HostCompany/BusinessAddress/AddressLine1,'\n',../../HostCompany/BusinessAddress/City,', ','CA',', ',../../HostCompany/BusinessAddress/Zip,'-',../../HostCompany/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
-	<xsl:variable name="sein" select="concat('CA',' ', substring(../../HostCompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring(../../HostCompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring(../../HostCompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
+	<xsl:variable name="sein" select="concat('CA',' ', substring(../../States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring(../../States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring(../../States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
 
 	<xsl:variable name="ssn" select="concat(substring(SSNVal,1,3),'-',substring(SSNVal,4,2),'-',substring(SSNVal,6,4))"/>
 	<xsl:variable name="empDetails" select="translate(concat(FirstName, ' ', LastName,'\n',Contact/Address/AddressLine1,'\n',Contact/Address/AddressLine2),$smallcase,$uppercase)"/>

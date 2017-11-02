@@ -10,11 +10,25 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/extract-view.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter',
-				function($scope, $element, $location, $filter) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository',
+				function ($scope, $element, $location, $filter, reportRepository) {
+
+					var addAlert = function (message, status) {
+						$scope.$parent.$parent.alerts = [];
+						$scope.$parent.$parent.alerts.push({
+							message: message,
+							status: status
+						});
+					}
 					$scope.data = $scope.masterExtract.extract.data;
 					$scope.history = $scope.masterExtract.extract.data.history;
 					$scope.report = $scope.masterExtract.extract.report;
+
+					$scope.availableHosts = [];
+					$scope.selectedPrintHosts = [];
+					$scope.selectedBatchHosts = [];
+					$scope.printedHosts = [];
+
 					$scope.selectedHost = null;
 					$scope.selectedCompany = null;
 					$scope.selectedAgency = null;
@@ -23,6 +37,7 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.selectedRep = null;
 					$scope.selectedCompanyFilings = [];
 					$scope.viewMode = null;
+					$scope.formsToPrint = 0;
 					
 					$scope.set = function(host) {
 						$scope.selectedHost = host;
@@ -88,6 +103,53 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						$scope.data.hosts.splice($scope.data.hosts.indexOf(host), 1);
 					}
+
+					$scope.printBatch = function() {
+						var extract = {
+							report: $scope.masterExtract.extract.report,
+							data: {
+								hosts: angular.copy($scope.selectedBatchHosts),
+								history: []
+							},
+							template: $scope.masterExtract.extract.template,
+							argumentList: $scope.masterExtract.extract.argumentList,
+							fileName: $scope.masterExtract.extract.fileName,
+							extension: $scope.masterExtract.extract.extension
+						};
+
+						reportRepository.printExtractBatch(extract).then(function (data) {
+							extract = null;
+							$.each($scope.selectedBatchHosts, function(i, h) {
+								$scope.printedHosts.push(h);
+								$scope.data.hosts.splice($scope.data.hosts.indexOf(h),1);
+							});
+							$scope.selectedPrintHosts = [];
+							$scope.selectedBatchHosts = [];
+							$scope.formsToPrint = 0;
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+						}, function (erorr) {
+							addAlert('Failed to download batch print ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+						});
+					}
+					$scope.batchPrintingEvents = {
+						onItemSelect: function (item) {
+							var h = $filter('filter')($scope.data.hosts, { id: item.id })[0];
+							$scope.formsToPrint = $scope.formsToPrint + h.employeeAccumulationList.length;
+							$scope.selectedBatchHosts.push(h);
+
+						},
+						onItemDeselect: function (item) {
+							var h = $filter('filter')($scope.data.hosts, { id: item.id })[0];
+							$scope.formsToPrint = $scope.formsToPrint - h.employeeAccumulationList.length;
+							$scope.selectedBatchHosts.splice($scope.selectedBatchHosts.indexOf(h), 1);
+
+						}
+					};
 
 					$scope.getGarnishmentCheckEmployeeName  =function(checkId) {
 						var check = $filter('filter')($scope.selectedHost.payChecks, { id: checkId },  true)[0];
@@ -224,21 +286,24 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						handlePageLoadTabFocus();
 					};
 					var _init = function () {
-						if ($scope.masterExtract.extract.report.reportName !== 'CommissionsReport') {
-							if ($scope.data && $scope.data.hosts.length > 0) {
-								$timeout(function() {
-									handleUnlimitedTabsRender();
-								}, 1);
-								$scope.set($scope.data.hosts[0]);
-							}
-						} else {
-							if ($scope.data && $scope.data.salesReps.length > 0) {
-								$timeout(function () {
-									handleUnlimitedTabsRender();
-								}, 1);
-								$scope.setRep($scope.data.salesReps[0]);
+						if (!$scope.masterExtract.extract.report.isBatchPrinting) {
+							if ($scope.masterExtract.extract.report.reportName !== 'CommissionsReport') {
+								if ($scope.data && $scope.data.hosts.length > 0) {
+									$timeout(function() {
+										handleUnlimitedTabsRender();
+									}, 1);
+									$scope.set($scope.data.hosts[0]);
+								}
+							} else {
+								if ($scope.data && $scope.data.salesReps.length > 0) {
+									$timeout(function() {
+										handleUnlimitedTabsRender();
+									}, 1);
+									$scope.setRep($scope.data.salesReps[0]);
+								}
 							}
 						}
+						
 							
 					}
 

@@ -144,6 +144,15 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 
 		[HttpPost]
+		[Route(ReportRoutes.PrintExtractBatch)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintExtractBatch(Extract extract)
+		{
+			var file = MakeServiceCall(() => _reportService.GetExtractTransformedAndPrinted(extract), string.Format("getting extract transformed and printed"));
+			return Printed(file);
+		}
+
+		[HttpPost]
 		[Route(ReportRoutes.GetDashBoardReport)]
 		[DeflateCompression]
 		public List<DashboardData> GetDashboardData(DashboardRequestResource request)

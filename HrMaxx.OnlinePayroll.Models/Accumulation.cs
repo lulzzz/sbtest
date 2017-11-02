@@ -75,7 +75,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal EmployeeTaxes { get { return Math.Round( Taxes.Where(t => t.IsEmployeeTax).Sum(t => t.YTD),2,MidpointRounding.AwayFromZero); } }
 		public decimal EmployerTaxes { get { return Math.Round( Taxes.Where(t => !t.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } }
-		public decimal CashRequirement { get { return Math.Round(PayCheckWages.GrossWage + EmployerTaxes, 2, MidpointRounding.AwayFromZero); } }
+		public decimal CashRequirement { get { return Math.Round((PayCheckWages!=null ? PayCheckWages.GrossWage : 0) + EmployerTaxes, 2, MidpointRounding.AwayFromZero); } }
 		public decimal EmployeeDeductions { get { return Math.Round(Deductions.Sum(d => d.YTD), 2, MidpointRounding.AwayFromZero); } }
 		public decimal WorkerCompensationAmount { get { return Math.Round(WorkerCompensations.Sum(w=>w.YTD), 2, MidpointRounding.AwayFromZero); } }
 		public decimal IRS940 { 

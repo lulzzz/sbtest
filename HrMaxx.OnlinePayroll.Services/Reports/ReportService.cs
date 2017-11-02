@@ -207,6 +207,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetSSAMagnetic(request);
 				else if (request.ReportName.Equals("SSAW2MagneticReport"))
 					return GetSSAMagneticReport(request);
+				else if (request.ReportName.Equals("SSAW2MagneticEmployerReport"))
+					return GetSSAMagneticEmployerReport(request);
 				else if (request.ReportName.Equals("C1095"))
 					return GetC1095Extract(request);
 				else if (request.ReportName.Equals("C1095Report"))
@@ -512,6 +514,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public FileDto GetExtractTransformedAndPrinted(Extract extract)
+		{
+			var args = extract.ArgumentList != null ? JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList) : new List<KeyValuePair<string, string>>();
+			var argList = new XsltArgumentList();
+			args.ForEach(a => argList.AddParam(a.Key,string.Empty, a.Value));
+			return GetReportTransformedAndPrinted<ExtractResponse>(extract.Report, extract.Data, argList, extract.Template);
 		}
 
 		public Extract GetPositivePayReport(ReportRequest request)
@@ -1133,29 +1143,55 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("SSA W2 Employee Report for {0} ", request.Year);
 			request.AllowFiling = false;
+			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request, buildEmployeeAccumulations: true, includeCompensaitons: true, includeDeductions: true, includePayCodes: true);
 
 			var config = _taxationService.GetApplicationConfig();
-			var argList = new XsltArgumentList();
-			argList.AddParam("selectedYear", "", request.Year);
 			
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
 			var extract = new Extract()
 			{
 				Report = request,
 				Data = data,
-				Template = string.Format("{0}{1}", _templatePath, "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt"),
+				Template = "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt",
 				ArgumentList = JsonConvert.SerializeObject(argList),
 				FileName = request.Description,
 				Extension = ".pdf"
 			};
-			extract.File = GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt");
+			//extract.File = GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt");
+			return extract;
+		}
+		private Extract GetSSAMagneticEmployerReport(ReportRequest request)
+		{
+			request.Description = string.Format("SSA W2 Employer Report for {0} ", request.Year);
+			request.AllowFiling = false;
+			request.IsBatchPrinting = true;
+			var data = GetExtractResponse(request, buildEmployeeAccumulations: true, includeCompensaitons: true, includeDeductions: true, includePayCodes: true);
+
+			var config = _taxationService.GetApplicationConfig();
+
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+
+			var extract = new Extract()
+			{
+				Report = request,
+				Data = data,
+				Template = "transformers/extracts/SSAW2PDF-Employer-" + request.Year + ".xslt",
+				ArgumentList = JsonConvert.SerializeObject(argList),
+				FileName = request.Description,
+				Extension = ".pdf"
+			};
+			//extract.File = GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt");
 			return extract;
 		}
 		private Extract GetC1095Extract(ReportRequest request)
 		{
 			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
 			request.AllowFiling = false;
+			
 			var data = GetExtractResponseC1095(request);
 
 			
@@ -1169,21 +1205,23 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
 			request.AllowFiling = false;
+			request.IsBatchPrinting = true;
 			var data = GetExtractResponseC1095(request);
 
-			var argList = new XsltArgumentList();
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("todaydate", DateTime.Today.ToString("MM/dd/yyyy")));
+			
 			var extract = new Extract()
 			{
 				Report = request,
 				Data = data,
-				Template = string.Format("{0}{1}", _templatePath, "transformers/reports/C1095/C1095-" + request.Year + ".xslt"),
+				Template = "transformers/extracts/C1095PDF-" + request.Year + ".xslt",
 				ArgumentList = JsonConvert.SerializeObject(argList),
 				FileName = request.Description,
 				Extension = ".pdf"
 			};
-			extract.File =  GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/C1095PDF-" + request.Year + ".xslt");
+			//extract.File =  GetReportTransformedAndPrinted<ExtractResponse>(request, data, argList, "transformers/extracts/C1095PDF-" + request.Year + ".xslt");
 			return extract;
 		}
 		private Extract GetExtractTransformed(ReportRequest request, ExtractResponse data, List<KeyValuePair<string,string>> argList, string template, string extension, string filename)

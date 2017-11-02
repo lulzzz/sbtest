@@ -92,7 +92,8 @@
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Review</button>
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2EmployeeReport()" ng-disabled="!data.filterW2.year">PDF</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportW2EmployeeReport()" ng-disabled="!data.filterW2.year">PDF - Employee</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportW2EmployerReport()" ng-disabled="!data.filterW2.year">PDF - Employer</button>
 						</div>
 
 					</div>
@@ -705,7 +706,7 @@
 			<i class="pull-right fa fa-lg fa-times-circle-o" ng-click="dismiss()"/>
 			</h3><br />
 			<h5><u><i><strong>Date Range: {{masterExtract.extract.report.startDate | date:'MM/dd/yyyy'}} - {{masterExtract.extract.report.endDate | date:'MM/dd/yyyy'}}</strong></i></u></h5>
-			<h5><u><i><strong>Confirmation No: {{masterExtract.confirmationNo}} </strong></i></u><span ng-show="masterExtract.confirmationNo">({{masterExtract.confirmationNoUser}} at {{masterExtract.confirmationNoTS | date:'MM/dd/yyyy hh:mm:ss a'}})</span></h5>
+			<h5 ng-show="!masterExtract.extract.report.isBatchPrinting"><u><i><strong>Confirmation No: {{masterExtract.confirmationNo}} </strong></i></u><span ng-show="masterExtract.confirmationNo">({{masterExtract.confirmationNoUser}} at {{masterExtract.confirmationNoTS | date:'MM/dd/yyyy hh:mm:ss a'}})</span></h5>
 			<div class="alert" ng-if="alerts.length>0" ng-class="'alert-' + alerts[0].status">
 				{{alerts[0].message}}
 			</div>
@@ -713,15 +714,15 @@
 		<div class="modal-body" ng-if="masterExtract">
 			<div class=" row m-b-5 p-b-5 hidden-print">
 				<span ng-show="masterExtract.extract.report.allowFiling && masterExtract.extract.report.depositDate"><u><i><strong>Deposit Date: {{masterExtract.extract.report.depositDate | date:'MM/dd/yyyy'}}</strong></i></u></span>
-				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File & Save</button>
-				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.salesReps.length>0" ng-click="payCommissions()">Pay & Save</button>
-				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0" ng-click="downloadFile()">View File</button>
-				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.extract.report.reportName!=='CommissionsReport' && masterExtract.extract.report.reportName!=='HostWCReport'" ng-click=" regeneratefile()">Regenerate File</button>
-				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0" ng-click="printExtract()">Print Checks</button>
-				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.report.reportName==='CommissionsReport'" ng-click="print()"><i class="fa fa-print"></i> print</button>
+				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName!=='CommissionsReport'  && !masterExtract.extract.report.isBatchPrinting" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.hosts.length>0" ng-click="fileTaxes()">File & Save</button>
+				<button class="btn btn-sm btn-info" ng-if="masterExtract.extract.report.reportName==='CommissionsReport'  && !masterExtract.extract.report.isBatchPrinting" ng-show="masterExtract.extract.report.allowFiling && !masterExtract.id && masterExtract.extract.data.salesReps.length>0" ng-click="payCommissions()">Pay & Save</button>
+				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.data.hosts.length>0  && !masterExtract.extract.report.isBatchPrinting" ng-click="downloadFile()">View File</button>
+				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.extract.report.reportName!=='CommissionsReport' && masterExtract.extract.report.reportName!=='HostWCReport'  && !masterExtract.extract.report.isBatchPrinting" ng-click=" regeneratefile()">Regenerate File</button>
+				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0  && !masterExtract.extract.report.isBatchPrinting" ng-click="printExtract()">Print Checks</button>
+				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.report.reportName==='CommissionsReport'  && !masterExtract.extract.report.isBatchPrinting" ng-click="print()"><i class="fa fa-print"></i> print</button>
 			</div>
-			<extract-view master-extract="masterExtract"  />
-								
+			<extract-view master-extract="masterExtract" />
+
 
 		</div>
 	</script>

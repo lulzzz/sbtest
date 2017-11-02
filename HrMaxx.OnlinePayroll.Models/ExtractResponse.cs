@@ -65,7 +65,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheck> CredChecks { get; set; } 
 		public List<Journal> Journals { get; set; }
 		public List<Account> Accounts { get; set; }
-		public List<ACHTransaction> ACHTransactions { get; set; } 
+		public List<ACHTransaction> ACHTransactions { get; set; }
+
+		public string Title { get { return string.Format("{0} ({1})", HostCompany.Name, EmployeeAccumulationList.Count); } }
+		public Guid Id { get { return HostCompany.Id; } }
 	}
 	[Serializable()]
 	[XmlRoot("ExtractResponseDB")]
