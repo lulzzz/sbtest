@@ -104,6 +104,7 @@
 								<option value=""> select year</option>
 							</select>
 						</div>
+						<div class="col-sm-3"></div>
 						<div class="col-sm-2 form-group">
 
 							<label for="fp944history" class="switch">
@@ -120,7 +121,7 @@
 							</label>
 
 						</div>
-						<div class="col-sm-2"></div>
+						<div class="col-sm-2">
 						
 							<button class="btn btn-sm btn-primary" ng-click="getReport944()" ng-disabled="!data.filter944.year">Display 944</button>
 						</div>
@@ -139,8 +140,8 @@
 								<option value=""> select year</option>
 							</select>
 						</div>
-						
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-3"></div>
+						<div class="col-sm-2 form-group">
 
 							<label for="w2history" class="switch">
 								Include History?
@@ -148,7 +149,7 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3 form-group" ng-if="showincludeclients">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
 
 							<label for="fw2clients" class="switch">
 								Include Clients?
@@ -156,9 +157,9 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Display W2 - Employee</button>
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">Display W2 - Employer</button>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
+							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">W2 - Employer</button>
 						</div>
 
 					</div>
@@ -211,7 +212,9 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-6">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-2"></div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Display 1099</button>
 						</div>
 
@@ -229,8 +232,8 @@
 								<option value=""> select year</option>
 							</select>
 						</div>
-
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-3"></div>
+						<div class="col-sm-2 form-group">
 
 							<label for="c1095history" class="switch">
 								Include History?
@@ -246,7 +249,7 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
 						</div>
 
