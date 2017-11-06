@@ -24,10 +24,9 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.history = $scope.masterExtract.extract.data.history;
 					$scope.report = $scope.masterExtract.extract.report;
 
-					$scope.availableHosts = [];
-					$scope.selectedPrintHosts = [];
-					$scope.selectedBatchHosts = [];
-					$scope.printedHosts = [];
+					$scope.selectedPrintCompanies = [];
+					$scope.selectedBatchCompanies = [];
+					$scope.printedCompanies = [];
 
 					$scope.selectedHost = null;
 					$scope.selectedCompany = null;
@@ -108,7 +107,8 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 						var extract = {
 							report: $scope.masterExtract.extract.report,
 							data: {
-								hosts: angular.copy($scope.selectedBatchHosts),
+								hosts: $scope.data.hosts,
+								companies: angular.copy($scope.selectedBatchCompanies),
 								history: []
 							},
 							template: $scope.masterExtract.extract.template,
@@ -119,12 +119,12 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 
 						reportRepository.printExtractBatch(extract).then(function (data) {
 							extract = null;
-							$.each($scope.selectedBatchHosts, function(i, h) {
-								$scope.printedHosts.push(h);
-								$scope.data.hosts.splice($scope.data.hosts.indexOf(h),1);
+							$.each($scope.selectedBatchCompanies, function (i, h) {
+								$scope.printedCompanies.push(h);
+								$scope.data.companies.splice($scope.data.companies.indexOf(h),1);
 							});
-							$scope.selectedPrintHosts = [];
-							$scope.selectedBatchHosts = [];
+							$scope.selectedPrintCompanies = [];
+							$scope.selectedBatchCompanies = [];
 							$scope.formsToPrint = 0;
 							var a = document.createElement('a');
 							a.href = data.file;
@@ -138,15 +138,15 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.batchPrintingEvents = {
 						onItemSelect: function (item) {
-							var h = $filter('filter')($scope.data.hosts, { id: item.id })[0];
-							$scope.formsToPrint = $scope.formsToPrint + h.employeeAccumulationList.length;
-							$scope.selectedBatchHosts.push(h);
+							var c = $filter('filter')($scope.data.companies, { id: item.id })[0];
+							$scope.formsToPrint = $scope.formsToPrint + c.employeeAccumulationList.length;
+							$scope.selectedBatchCompanies.push(c);
 
 						},
 						onItemDeselect: function (item) {
-							var h = $filter('filter')($scope.data.hosts, { id: item.id })[0];
-							$scope.formsToPrint = $scope.formsToPrint - h.employeeAccumulationList.length;
-							$scope.selectedBatchHosts.splice($scope.selectedBatchHosts.indexOf(h), 1);
+							var c = $filter('filter')($scope.data.companies, { id: item.id })[0];
+							$scope.formsToPrint = $scope.formsToPrint - c.employeeAccumulationList.length;
+							$scope.selectedBatchCompanies.splice($scope.selectedBatchCompanies.indexOf(c), 1);
 
 						}
 					};

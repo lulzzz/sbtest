@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string HomePage { get; set; }
 		public string Contact { get; set; }
 		public bool IsHostAllowsDirectDebit { get; set; }
+		public bool IsPeoHost { get; set; }
 	}
 
 	public class CompanyListItem

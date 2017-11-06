@@ -41,6 +41,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			GC.WaitForFullGCComplete();
 		}
+
+		public List<ExtractCompany> Companies { get; set; } 
 	}
 	public class ACHResponse
 	{
@@ -69,6 +71,8 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string Title { get { return string.Format("{0} ({1})", HostCompany.Name, EmployeeAccumulationList.Count); } }
 		public Guid Id { get { return HostCompany.Id; } }
+
+		 
 	}
 	[Serializable()]
 	[XmlRoot("ExtractResponseDB")]
@@ -144,6 +148,9 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public Accumulation PayCheckAccumulation { get; set; }
 		public Accumulation VoidedAccumulation { get; set; }
+
+		public string Title { get { return string.Format("{0} ({1})", Company.DescriptiveName, EmployeeAccumulationList!=null ? EmployeeAccumulationList.Count : 0); } }
+		public Guid Id { get { return Company.Id; } }
 	}
 
 	public class VendorAccumulation
@@ -205,6 +212,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class ExtractDBCompany
 	{
 		public System.Guid Id { get; set; }
+		public System.Guid HostId { get; set; }
 		public string CompanyName { get; set; }
 		public string CompanyNo { get; set; }
 		public int StatusId { get; set; }

@@ -102,10 +102,16 @@
 				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
 				<i class="pull-right fa fa-lg fa-print" ng-click="print()"></i>
 			</h4>
+			<div class="alert alert-danger" ng-if="mainData.selectedCompany.fileUnderHost && !mainData.selectedCompany.isHostCompany">
+				This is a Leasing Company. This data is just a subset under the company.
+			</div>
+			<div class="alert alert-danger" ng-if="mainData.selectedCompany.parentId">
+				This is a location. This data is just a subset under the company.
+			</div>
 		</div>
 		<div class="panel-body text">
 			<div class="row hidden-print">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="true"/>
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="true" show-include-clients="showincludeclients" />
 			</div>
 			<div ng-show="data.response.employeeAccumulationList.length===0" class="table table-bordered">
 				No results found

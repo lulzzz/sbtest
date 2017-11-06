@@ -27,7 +27,7 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="fp940history" class="switch">
 								Include History?
@@ -35,7 +35,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="fp940clients" class="switch">
+								Include Clients?
+								<input id="fp940clients" type="checkbox" ng-model="data.filter940.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Display 940</button>
 						</div>
 						
@@ -62,7 +70,7 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="fp941history" class="switch">
 								Include History?
@@ -70,7 +78,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="fp941clients" class="switch">
+								Include Clients?
+								<input id="fp941clients" type="checkbox" ng-model="data.filter941.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.filter941.year || !data.filter941.quarter">Display 941</button>
 						</div>
 
@@ -88,7 +104,7 @@
 								<option value=""> select year</option>
 							</select>
 						</div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="fp944history" class="switch">
 								Include History?
@@ -96,7 +112,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3"></div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="fp944clients" class="switch">
+								Include Clients?
+								<input id="fp944clients" type="checkbox" ng-model="data.filter944.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2"></div>
 						
 							<button class="btn btn-sm btn-primary" ng-click="getReport944()" ng-disabled="!data.filter944.year">Display 944</button>
 						</div>
@@ -124,7 +148,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-3 form-group" ng-if="showincludeclients">
+
+							<label for="fw2clients" class="switch">
+								Include Clients?
+								<input id="fw2clients" type="checkbox" ng-model="data.filterW2.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Display W2 - Employee</button>
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">Display W2 - Employer</button>
 						</div>
@@ -144,7 +176,7 @@
 							</select>
 						</div>
 						<div class="col-sm-3"></div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="w3history" class="switch">
 								Include History?
@@ -152,7 +184,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="fw3clients" class="switch">
+								Include Clients?
+								<input id="fw3clients" type="checkbox" ng-model="data.filterW3.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW3()" ng-disabled="!data.filterW3.year">Display W3</button>
 						</div>
 
@@ -198,7 +238,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-6">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="fc1095clients" class="switch">
+								Include Clients?
+								<input id="fc1095clients" type="checkbox" ng-model="data.filterC1095.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
 						</div>
 
@@ -224,7 +272,7 @@
 						<div class="col-sm-3">
 							
 						</div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="de7history" class="switch">
 								Include History?
@@ -232,7 +280,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="de7clients" class="switch">
+								Include Clients?
+								<input id="de7clients" type="checkbox" ng-model="data.filterde7.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE7()" ng-disabled="!data.filterde7.year">Display DE-7</button>
 						</div>
 
@@ -259,7 +315,7 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="de6history" class="switch">
 								Include History?
@@ -267,7 +323,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="de6clients" class="switch">
+								Include Clients?
+								<input id="de6clients" type="checkbox" ng-model="data.filterde6.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE6()" ng-disabled="!data.filterde6.year || !data.filterde6.quarter">Display DE-6</button>
 						</div>
 
@@ -293,7 +357,7 @@
 								<option value="4"> Fourth Quarter</option>
 							</select>
 						</div>
-						<div class="col-sm-3 form-group">
+						<div class="col-sm-2 form-group">
 
 							<label for="de9history" class="switch">
 								Include History?
@@ -301,7 +365,15 @@
 							</label>
 
 						</div>
-						<div class="col-sm-3">
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="de9clients" class="switch">
+								Include Clients?
+								<input id="de9clients" type="checkbox" ng-model="data.filterde9.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE9()" ng-disabled="!data.filterde9.year || !data.filterde9.quarter">Display DE-9</button>
 						</div>
 

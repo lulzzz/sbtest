@@ -538,7 +538,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src=>false));
 
 
-			CreateMap<Models.ExtractResponseDB, Models.ExtractResponse>();
+			CreateMap<Models.ExtractResponseDB, Models.ExtractResponse>()
+				.ForMember(dest => dest.Companies, opt => opt.Ignore());
 			CreateMap<Models.ExtractHostDB, Models.ExtractHost>()
 				.ForMember(dest => dest.Host, opt => opt.MapFrom(src => src))
 				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.States))
@@ -608,7 +609,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.CompanyAddress)))
 				.ForMember(dest => dest.FederalEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalEIN)))
 				.ForMember(dest => dest.FederalPin, opt => opt.MapFrom(src => Crypto.Decrypt(src.FederalPin)))
-				.ForMember(dest => dest.HostId, opt => opt.Ignore())
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src=>src.Id))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src=>src.CompanyName))
 				.ForMember(dest => dest.DepositSchedule, opt => opt.MapFrom(src => src.DepositSchedule941))

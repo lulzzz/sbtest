@@ -22,6 +22,8 @@ namespace HrMaxxAPI.Resources.Reports
 		public decimal YearlyLimit { get; set; }
 		public decimal QuarterlyLimit { get; set; }
 		public bool IncludeHistory { get; set; }
+		public bool IncludeClients { get; set; }
+		public bool IsBatchPrinting { get; set; }
 	}
 
 	public class CommissionsReportRequestResource

@@ -12,6 +12,7 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 				showPeriods: "=?showPeriods",
 				defaultsProvided: "=?defaultsProvided",
 				showHistory: "=?showHistory",
+				showIncludeClients: "=?showIncludeClients",
 				showActive: "=?showActive"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/report-filter.html?v=' + version,
@@ -100,6 +101,7 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 						dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
 					}
 					dataSvc.filter.includeHistory = false;
+					dataSvc.filter.includeClients = false;
 					_init();
 				}]
 		}

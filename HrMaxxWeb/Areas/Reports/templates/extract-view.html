@@ -391,16 +391,16 @@
 			<div class="col-sm-4">
 				<div class="form-group">
 					<label for="companies">UnPrinted Filing Companies</label>
-					<button class="btn btn-primary" ng-show="selectedPrintHosts.length>0" ng-click="printBatch()"><i class="fa fa-print"></i> print ({{selectedPrintHosts.length}}) - {{formsToPrint}} Employees</button>
-					<div class="col-sm-12" ng-dropdown-multiselect="" options="data.hosts" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true,scrollable: true, enableSearch: true}" selected-model="selectedPrintHosts" events="batchPrintingEvents"></div>
+					<button class="btn btn-primary" ng-show="selectedPrintCompanies.length>0" ng-click="printBatch()"><i class="fa fa-print"></i> print ({{selectedPrintCompanies.length}}) - {{formsToPrint}} Employees</button>
+					<div class="col-sm-12" ng-dropdown-multiselect="" options="data.companies" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true,scrollable: true, enableSearch: true}" selected-model="selectedPrintCompanies" events="batchPrintingEvents"></div>
 				</div>
 				
 			</div>
-			<div class="col-sm-8" ng-if="printedHosts.length>0">
+			<div class="col-sm-8" ng-if="printedCompanies.length>0">
 				<h4>Printed</h4>
 				<div class="col-sm-4">
-					<div class="row" ng-repeat="host in printedHosts">
-						<button class="btn btn-xs m-t-5" ng-class="{'btn-info' : selectedHost.hostCompany.id===host.hostCompany.id}" ng-click="set(host)">{{host.title}}</button>
+					<div class="row" ng-repeat="company in printedCompanies">
+						<button class="btn btn-xs m-t-5" ng-click="set(host)">{{company.title}}</button>
 					</div>
 				</div>
 			</div>

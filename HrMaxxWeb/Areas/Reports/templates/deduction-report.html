@@ -3,10 +3,13 @@
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
 		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Payroll Register<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+			<div class="alert alert-danger" ng-if="mainData.selectedCompany.fileUnderHost && !mainData.selectedCompany.isHostCompany">
+				This is a Leasing Company. This data is just a subset under the company.
+			</div>
 		</div>
 		<div class="panel-body" >
 			<div class="row">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" />	
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" />	
 			</div>
 			<div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.deductions.length===0" class="table table-bordered">
 				No deductions found

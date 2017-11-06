@@ -60,6 +60,20 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
 
+		public string DescriptiveName
+		{
+			get
+			{
+				if (FileUnderHost && !IsHostCompany)
+					return string.Format("{0} (Leasing)", Name);
+				else
+				{
+					return Name;
+				}
+
+			}
+		}
+
 		public bool IsLocation
 		{
 			get { return ParentId.HasValue; }

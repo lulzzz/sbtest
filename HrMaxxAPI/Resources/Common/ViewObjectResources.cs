@@ -25,6 +25,7 @@ namespace HrMaxxAPI.Resources.Common
 		public HostHomePage HomePage { get; set; }
 		public Contact Contact { get; set; }
 		public bool IsHostAllowsDirectDebit { get; set; }
+		public bool IsPeoHost { get; set; }
 	}
 	
 	public class CompanyListItemResource

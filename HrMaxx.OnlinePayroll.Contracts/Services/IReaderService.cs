@@ -70,9 +70,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Accumulation> GetAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, string ssns = null);
 
 		List<Accumulation> GetTaxAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
-			bool includeVoids = false, bool includeTaxes = true,
-			bool includedDeductions = true, bool includedCompensations = true, bool includeWorkerCompensations = true,
-			bool includePayCodes = true, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true, string report = null, bool includeHistory = false, bool includeC1095 = false);
+			bool includeVoids = false, bool includeTaxes = false,
+			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false);
 
 		
 	}
