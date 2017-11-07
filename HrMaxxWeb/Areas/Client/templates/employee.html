@@ -57,7 +57,7 @@
 										</div>
 										<div class="col-sm-4">
 											<div class="form-group">
-												<label>SSN</label>
+												<label>SSN <button class="btn btn-info btn-sm" ng-disabled="!selected.ssn" ng-click="checkSSN()"><i class="fa fa-eye"></i></button></label>
 												<input type="text" name="ssn" class="form-control" ng-model="selected.ssn" ui-mask="899-99-9999" required data-parsley-group="wizard-step-1" />
 											</div>
 										</div>
@@ -552,6 +552,45 @@
 			</div>
 		</div>
 	</div>
-	
+	<script type="text/ng-template" id="popover/ssnlist.html">
+
+		<div class="modal-header">
+			<h2 class="modal-title">SSN Details</h2>
+		</div>
+		<div class="modal-body">
+			<div class="row">
+				<table class="table table-bordered table-condensed" ng-show="list.length>0">
+					<thead>
+						<tr>
+							<th>Host</th>
+							<th>Company</th>
+							<th>Name</th>
+							
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="ctx in list track by $index">
+							<td>
+								{{ctx.host}}
+							</td>
+							<td>
+								{{ctx.company}}
+							</td>
+							<td>
+								{{ctx.name}}
+							</td>
+							
+						</tr>
+					</tbody>
+				</table>
+				<span ng-show="list.length===0">No results found</span>
+			</div>
+			
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-xs btn-default" ng-click="cancel()">close</button>
+		</div>
+		
+	</script>
 	
 </div>

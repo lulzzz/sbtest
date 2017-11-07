@@ -9,6 +9,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
@@ -734,6 +735,20 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "updating wc rates" + e.Message);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
+			}
+		}
+
+		public List<EmployeeSSNCheck> CheckSSN(string ssn)
+		{
+			try
+			{
+				return _companyRepository.CheckSSN(Crypto.Encrypt(ssn));
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "ssn values" + e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
 			}

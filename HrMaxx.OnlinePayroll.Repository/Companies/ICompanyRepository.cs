@@ -45,5 +45,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		Employee GetEmployeeById(Guid id);
 
 		void SaveEmployeeSickLeaveAndCarryOver(Employee employee);
+		List<EmployeeSSNCheck> CheckSSN(string ssn);
 	}
 }

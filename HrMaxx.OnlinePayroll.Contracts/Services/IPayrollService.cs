@@ -64,5 +64,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void SaveClaimDelivery(InvoiceDeliveryClaim claim);
 		PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId);
 		Payroll DeletePayroll(Payroll mappedResource);
+		Models.Payroll UpdatePayrollCheckNumbers(Payroll mappedResource);
 	}
 }

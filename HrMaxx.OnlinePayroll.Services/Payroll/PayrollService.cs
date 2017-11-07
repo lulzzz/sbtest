@@ -3389,5 +3389,37 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public Models.Payroll UpdatePayrollCheckNumbers(Models.Payroll payroll)
+		{
+			try
+			{
+				var canUpdate = _payrollRepository.CanUpdateCheckNumbers(payroll.Id, payroll.StartingCheckNumber,
+					payroll.PayChecks.Count);
+				if (!canUpdate)
+				{
+					throw new Exception();
+				}
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var counter = payroll.StartingCheckNumber;
+					payroll.PayChecks.OrderBy(pc => pc.CheckNumber).ToList().ForEach(pc =>
+					{
+						pc.CheckNumber = counter++;
+					});
+					_payrollRepository.UpdatePayrollCheckNumbers(payroll);
+					txn.Complete();
+					
+					return payroll;
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Check numbers cannot be updated on this payroll as they are being used.");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

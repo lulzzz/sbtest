@@ -663,5 +663,12 @@ namespace HrMaxxAPI.Controllers.Companies
 		{
 			MakeServiceCall(() => _companyService.RaiseMinWage(minWage), "Raise Min Wage "+ minWage);
 		}
+
+	  [HttpGet]
+	  [Route(CompanyRoutes.SSNCheck)]
+	  public List<EmployeeSSNCheck> SsnCheck(string ssn)
+	  {
+			return MakeServiceCall(() => _companyService.CheckSSN(ssn), "check ssn ", true);
+	  } 
   }
 }

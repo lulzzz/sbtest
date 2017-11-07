@@ -721,5 +721,27 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 				
 			}
 		}
+
+		public bool CanUpdateCheckNumbers(Guid id, int startingCheckNumber, int count)
+		{
+			const string query = @"select Id from PayrollPayCheck where CompanyId=(select CompanyId from Payroll where Id=@PayrollId) and CheckNumber between @Start and @End;";
+			using (var conn = GetConnection())
+			{
+				var paychecks = conn.Query<int>(query, new { PayrollId = id, Start = startingCheckNumber, End = startingCheckNumber + count - 1 }).ToList();
+				if (paychecks.Count > 0)
+					return false;
+				return true;
+
+			}
+		}
+
+		public void UpdatePayrollCheckNumbers(Models.Payroll payroll)
+		{
+			const string query = @"update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@Id;update Journal set CheckNumber=@CheckNumber where PayrollPayCheckId=@Id;";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(query, payroll.PayChecks);
+			}
+		}
 	}
 }

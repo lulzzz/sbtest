@@ -236,6 +236,15 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							});
 						});
 					}
+					$scope.updateCheckNumbers = function () {
+						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to change check numbers for this payroll?', 'warning', function () {
+							payrollRepository.updateCheckNumber($scope.item).then(function () {
+								$scope.$parent.$parent.updateListAndItem($scope.item.id);
+							}, function (error) {
+								addAlert(error.statusText, 'danger');
+							});
+						});
+					}
 					$scope.voidcheck = function (listitem) {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to mark this check Void?', 'info', function () {
 							var checkQuarter = getQuarter(moment(listitem.payDay).format("MM"));
@@ -332,7 +341,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							return true;
 					}
 					var init = function () {
-						if ($scope.item.status > 2 && $scope.item.status !== 6 && $scope.mainData.userRole === 'Master') {
+						$scope.originalStartingCheckNumber = $scope.item.startingCheckNumber;
+						if ($scope.item.status > 2 && $scope.item.status !== 6) {
 							$scope.item.startDate = moment($scope.item.startDate).toDate();
 							$scope.item.endDate = moment($scope.item.endDate).toDate();
 						}

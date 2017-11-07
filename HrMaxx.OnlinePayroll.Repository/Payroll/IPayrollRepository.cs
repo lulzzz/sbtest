@@ -45,5 +45,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void UpdateInvoiceDeliveryData(List<InvoiceDeliveryClaim> claims);
 		void UpdateEmployeeChecksForLeaveCycle(Guid employeeId, DateTime oldHireDate, DateTime newHireDate);
 		void DeletePayroll(Guid id);
+		bool CanUpdateCheckNumbers(Guid id, int startingCheckNumber, int count);
+		void UpdatePayrollCheckNumbers(Models.Payroll payroll);
 	}
 }

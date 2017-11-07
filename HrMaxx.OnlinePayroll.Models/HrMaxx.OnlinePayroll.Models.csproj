@@ -223,6 +223,7 @@
     </Compile>
     <Compile Include="DeductionType.cs" />
     <Compile Include="Employee.cs" />
+    <Compile Include="EmployeeSSNCheck.cs" />
     <Compile Include="Enum\OPEnums.cs" />
     <Compile Include="ExtractAccumulation.cs" />
     <Compile Include="ExtractResponse.cs" />

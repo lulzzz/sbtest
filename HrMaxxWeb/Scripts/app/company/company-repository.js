@@ -397,7 +397,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			checkSSN: function (ssn) {
+				var deferred = $q.defer();
+				companyServer.one('SSNCheck/' + ssn).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
 
+				return deferred.promise;
+			},
 
 
 		};

@@ -710,5 +710,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				conn.Execute(update, new { SickLeaveHireDate=mapped.SickLeaveHireDate, CarryOver=mapped.CarryOver, SSN=mapped.SSN, HostId=company.HostId, IsPeo=company.FileUnderHost, Company=employee.CompanyId});
 			}
 		}
+
+		public List<EmployeeSSNCheck> CheckSSN(string ssn)
+		{
+			const string query =
+				"select e.Id as Id, h.FirmName as Host, c.CompanyName as Company, FirstName, MiddleInitial, LastName from employee e, company c, host h where e.companyId=c.Id and c.HostId=h.Id and e.ssn=@SSN;";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<EmployeeSSNCheck>(query, new { SSN = ssn }).ToList();
+				
+			}
+		}
 	}
 }

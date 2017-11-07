@@ -373,6 +373,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			MakeServiceCall(() => _payrollService.UpdatePayrollDates(mappedResource), string.Format("update payroll dates for id={0}", resource.Id));
 			return HttpStatusCode.OK;
 		}
+		[HttpPost]
+		[Route(PayrollRoutes.UpdatePayrollCheckNumbers)]
+		[DeflateCompression]
+		public PayrollResource UpdatePayrollCheckNumbers(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+
+			var payroll = MakeServiceCall(() => _payrollService.UpdatePayrollCheckNumbers(mappedResource), string.Format("update payroll check numbers for id={0} to {1}", resource.Id, resource.StartingCheckNumber));
+			return Mapper.Map<Payroll, PayrollResource>(payroll);
+		}
 
 		[HttpPost]
 		[Route(PayrollRoutes.UpdateAccumulation)]

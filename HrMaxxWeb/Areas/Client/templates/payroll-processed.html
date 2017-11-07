@@ -5,12 +5,12 @@
 			<label>Pay Period</label>
 			<button class="btn btn-sm btn-success" ng-show="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status>2 && item.status!==6" ng-click="updatePayrollDates()"><i class="fa fa-save">update pay period</i></button>
 		</div>
-		<div class="col-sm-2 form-group" ng-if="mainData.userRole==='SuperUser' || mainData.userRole!=='Master' || item.status===2 || item.status===6">
+		<div class="col-sm-2 form-group" ng-if="!(mainData.userRole==='SuperUser' || mainData.userRole!=='Master') || item.status===2 || item.status===6">
 			<label class="control-label">Start Date: </label>
 			<span>{{item.startDate | date: 'MM/dd/yyyy'}}</span>
 
 		</div>
-		<div class="col-sm-2" ng-if="mainData.userRole==='SuperUser' || mainData.userRole!=='Master' || item.status===2 || item.status===6">
+		<div class="col-sm-2" ng-if="!(mainData.userRole==='SuperUser' || mainData.userRole!=='Master') || item.status===2 || item.status===6">
 			<label class="control-label" ng-show="mainData.userRole==='SuperUser' || mainData.userRole!=='Master' || item.status===2 || item.status===6" ">End Date: </label>
 			<span>{{item.endDate | date: 'MM/dd/yyyy'}}</span>
 
@@ -28,10 +28,18 @@
 			<span>{{item.payDay | date: 'MM/dd/yyyy'}}</span>
 			
 		</div>
-		<div class="col-sm-2">
+		<div class="col-sm-2" ng-if="!(mainData.userRole==='SuperUser' || mainData.userRole!=='Master') || item.status===2 || item.status===6 || mainData.selectedCompany.contract.invoiceSetup.invoiceType!==2">
 			<label class="control-label">Starting Check Number: </label>
 			<span>{{item.startingCheckNumber}}</span>
-			
+
+		</div>
+		<div class="col-sm-2" ng-if="(mainData.userRole==='SuperUser' || item.status===2 || item.status===6) && mainData.selectedCompany.contract.invoiceSetup.invoiceType===2">
+			<label class="control-label">Starting Check Number: </label><button class="btn btn-sm btn-info" ng-show="originalStartingCheckNumber!==item.startingCheckNumber" ng-click="updateCheckNumbers()"><i class="fa fa-check"></i></button>
+			<div class="input-group date">
+				<input type="number" ng-model="item.startingCheckNumber" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,9}$/" data-parsley-type="number" step="1" />
+
+			</div>
+
 		</div>
 		<div class="col-sm-2" ng-class="{'show-red':!canConfirm()}">
 			<label class="control-label">Tax Pay Date: </label>

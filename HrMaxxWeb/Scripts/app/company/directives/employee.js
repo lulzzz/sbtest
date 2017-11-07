@@ -1,7 +1,7 @@
 ﻿'use strict';
 
-common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uibModal',
+	function (zionAPI, $timeout, $window, version, $modal) {
 		return {
 			restrict: 'E',
 			replace: true,
@@ -269,6 +269,26 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 						
 						
 					}
+					$scope.checkSSN = function () {
+						companyRepository.checkSSN($scope.selected.ssn).then(function (data) {
+							var modalInstance = $modal.open({
+								templateUrl: 'popover/ssnlist.html',
+								controller: 'ssnListCtrl',
+								size: 'lg',
+								windowClass: 'my-modal-popup',
+								resolve: {
+									list: function () {
+										return data;
+									},
+									modal: function() {
+										return $modal;
+									}
+								}
+							});
+						}, function (erorr) {
+							addAlert('error checking for ssn existance', 'danger');
+						});
+					}
 					var saveEmpployee = function () {
 						$scope.selected.hireDate = moment($scope.selected.hireDate).format("MM/DD/YYYY");
 						$scope.selected.sickLeaveHireDate = moment($scope.selected.sickLeaveHireDate).format("MM/DD/YYYY");
@@ -432,3 +452,12 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
+common.controller('ssnListCtrl', function ($scope, $uibModalInstance, list) {
+	$scope.list = list;
+	
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+	
+	
+});
