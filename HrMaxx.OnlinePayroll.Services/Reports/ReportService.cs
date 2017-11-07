@@ -175,20 +175,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp || e.Message.StartsWith(NoData))
+				if (e.Message == NoPayrollData || e.Message.StartsWith(NoData))
 				{
 					message = e.Message;
+				}
+				else if (e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+					Log.Error(message, e);
 				}
 				else if (e.Message.ToLower().StartsWith("could not find file"))
 				{
 					message = ReportNotAvailable;
+					Log.Error(message, e);
 				}
 				else
 				{
 					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+					Log.Error(message, e);
 				}
-
-				Log.Error(message, e);
+				
 				throw new HrMaxxApplicationException(message, e);
 			}
 			
@@ -258,20 +264,27 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoData || e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				if (e.Message == NoData || e.Message == NoPayrollData)
 				{
 					message = e.Message;
+				}
+				else if (e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+					Log.Error(message, e);
 				}
 				else if (e.Message.ToLower().StartsWith("could not find file"))
 				{
 					message = ReportNotAvailable;
+					Log.Error(message, e);
 				}
 				else
 				{
 					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+					Log.Error(message, e);
 				}
 
-				Log.Error(message, e);
+				
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
@@ -863,7 +876,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					});
 
 			});
-			Log.Info(string.Format("extracted returned {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			
 			return data;
 		}
 		private Extract Federal940(ReportRequest request)
@@ -1265,7 +1278,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public Extract GetExtractTransformedWithFile(Extract extract)
 		{
-			Log.Info(string.Format("transformation started at {0}",  DateTime.Now.ToString("hh:mm:ss:fff")));
+			
 			var xml = GetXml<ExtractResponse>(extract.Data);
 
 			var args = extract.ArgumentList!=null ? JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList) : new List<KeyValuePair<string, string>>();
@@ -1309,7 +1322,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				};
 			}
 
-			Log.Info(string.Format("transformation finished at {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			
 			return extract;
 			
 		}
@@ -1463,20 +1476,27 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoData || e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				if (e.Message == NoData || e.Message == NoPayrollData)
 				{
 					message = e.Message;
+				}
+				else if (e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+					Log.Error(message, e);
 				}
 				else if (e.Message.ToLower().StartsWith("could not find file"))
 				{
 					message = ReportNotAvailable;
+					Log.Error(message, e);
 				}
 				else
 				{
 					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", request.StartDate.ToString(), request.EndDate.ToString()));
+					Log.Error(message, e);
 				}
 
-				Log.Error(message, e);
+				
 				throw new HrMaxxApplicationException(message, e);
 			}
 			
@@ -1520,20 +1540,27 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoData || e.Message == NoPayrollData || e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				if (e.Message == NoData || e.Message == NoPayrollData )
 				{
 					message = e.Message;
+				}
+				else if (e.Message == ReportNotAvailable || e.Message == HostContactNA || e.Message == HostNotSetUp)
+				{
+					message = e.Message;
+					Log.Error(message, e);
 				}
 				else if (e.Message.ToLower().StartsWith("could not find file"))
 				{
 					message = ReportNotAvailable;
+					Log.Error(message, e);
 				}
 				else
 				{
 					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+					Log.Error(message, e);
 				}
 
-				Log.Error(message, e);
+				
 				throw new HrMaxxApplicationException(message, e);
 			}
 			

@@ -24,6 +24,9 @@ namespace HrMaxxAPI.Controllers
 		public ILog Logger { get; set; }
 		public IBus Bus { get; set; }
 
+		private const string NoData = "No Data exists for this time period and company";
+		private const string NoPayrollData = "No Payroll Data exists for this time period and company";
+
 		public HrMaxxUser CurrentUser
 		{
 			get { return new HrMaxxUser(User as ClaimsPrincipal); }
@@ -80,11 +83,7 @@ namespace HrMaxxAPI.Controllers
 			}
 			try
 			{
-				//HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
-				//	(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName, Request.Headers.Host,
-				//	(Request.Headers.Referrer == null || string.IsNullOrWhiteSpace(Request.Headers.Referrer.AbsoluteUri))
-				//		? "Mobile"
-				//		: Request.Headers.Referrer.AbsoluteUri);
+				
 				if (!traceMessage.Equals(string.Empty))
 					HrMaxxTrace.PerfTrace(() => result = callToMake(), PerfTraceType.BusinessLayerCall, GetType(), traceMessage);
 
@@ -93,10 +92,8 @@ namespace HrMaxxAPI.Controllers
 			}
 			catch (Exception e)
 			{
-				HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
-					(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName,
-					Request.Headers.UserAgent.ToString());
-				Logger.Error(!traceMessage.Equals(string.Empty) ? traceMessage : "Make Business Layer Call", e);
+				if(e.Message!=NoData && e.Message!=NoPayrollData)
+					Logger.Error(!traceMessage.Equals(string.Empty) ? traceMessage : "Make Business Layer Call", e);
 
 				throw new HttpResponseException(new HttpResponseMessage
 				{
@@ -156,11 +153,7 @@ namespace HrMaxxAPI.Controllers
 			}
 			try
 			{
-				//HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
-				//	(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName, Request.Headers.Host,
-				//	(Request.Headers.Referrer == null || string.IsNullOrWhiteSpace(Request.Headers.Referrer.AbsoluteUri))
-				//		? "Mobile"
-				//		: Request.Headers.Referrer.AbsoluteUri);
+				
 				if (!traceMessage.Equals(string.Empty))
 					HrMaxxTrace.PerfTrace(callToMake, PerfTraceType.BusinessLayerCall, GetType(), traceMessage);
 				else
@@ -170,10 +163,8 @@ namespace HrMaxxAPI.Controllers
 			}
 			catch (Exception e)
 			{
-				HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
-					(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName,
-					Request.Headers.UserAgent.ToString());
-				Logger.Error(!traceMessage.Equals(string.Empty) ? traceMessage : "Make Business Layer Call", e);
+				if (e.Message != NoData && e.Message != NoPayrollData)
+					Logger.Error(!traceMessage.Equals(string.Empty) ? traceMessage : "Make Business Layer Call", e);
 
 				throw new HttpResponseException(new HttpResponseMessage
 				{
