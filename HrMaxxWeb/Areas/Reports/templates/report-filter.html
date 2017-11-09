@@ -58,6 +58,17 @@
 								</label>
 
 							</div>
+							<div class="col-sm-3 form-group" ng-if="showIncludeTaxDelayed">
+
+								<label for="bydatetaxdelayed" class="switch">
+									Include Tax Delayed?
+									<input id="bydatetaxdelayed" type="checkbox" ng-model="data.filter.includeTaxDelayed" /><i></i>
+								</label>
+
+							</div>
+							
+						</div>
+						<div class="col-sm-12">
 							<div class="col-sm-6">
 								<button class="btn btn-xs btn-success pull-right" ng-click="filterByDateRange()">Go</button>
 							</div>
@@ -124,7 +135,18 @@
 							</label>
 
 						</div>
-						<div class="col-sm-1"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
+						
+					</div>
+					<div class="row">
+						<div class="col-sm-3 form-group" ng-if="showIncludeTaxDelayed">
+
+							<label for="byqmtaxdelayed" class="switch">
+								Include Tax Delayed?
+								<input id="byqmtaxdelayed" type="checkbox" ng-model="data.filter.includeTaxDelayed" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-3"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
 					</div>
 
 				</td>

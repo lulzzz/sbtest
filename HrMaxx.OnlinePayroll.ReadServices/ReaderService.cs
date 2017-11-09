@@ -916,7 +916,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		public List<Accumulation> GetTaxAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
-			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true, string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false)
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true,
+			string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false)
 		{
 			try
 			{
@@ -985,6 +986,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (includeClients)
 				{
 					paramList.Add(new FilterParam { Key = "includeClients", Value = includeClients.ToString() });
+				}
+				if (includeTaxDelayed)
+				{
+					paramList.Add(new FilterParam { Key = "includeTaxDelayed", Value = includeTaxDelayed.ToString() });
 				}
 
 				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(

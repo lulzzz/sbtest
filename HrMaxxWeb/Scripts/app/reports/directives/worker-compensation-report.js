@@ -42,7 +42,8 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 							startDate: m.reportFilter.filterStartDate,
 							endDate: m.reportFilter.filterEndDate,
 							includeHistory: m.reportFilter.filter.includeHistory,
-							includeClients: m.reportFilter.filter.includeClients
+							includeClients: m.reportFilter.filter.includeClients,
+							includeTaxDelayed: m.reportFilter.filter.includeTaxDelayed
 						}
 						reportRepository.getReport(request).then(function (data) {
 							dataSvc.response = data;

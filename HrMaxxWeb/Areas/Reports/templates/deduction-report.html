@@ -9,7 +9,7 @@
 		</div>
 		<div class="panel-body" >
 			<div class="row">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" />	
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="true" />	
 			</div>
 			<div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.deductions.length===0" class="table table-bordered">
 				No deductions found
@@ -27,7 +27,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr ng-repeat="ded in data.response.companyAccumulations.deductions" ng-class="{'success' : (selected && ded.deduction.id===selected.deduction.id)}">
+						<tr ng-repeat="ded in data.response.companyAccumulations.deductions" ng-class="{'success' : (selected && ded.companyDeductionId===selected.companyDeductionId)}">
 							<td>{{ded.companyDeduction.deductionType.name}}</td>
 							<td>{{ded.companyDeduction.description}}</td>
 							<td><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.ytd | currency:'$'}}</a></td>
