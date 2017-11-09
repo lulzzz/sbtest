@@ -139,13 +139,13 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.batchPrintingEvents = {
 						onItemSelect: function (item) {
 							var c = $filter('filter')($scope.data.companies, { id: item.id })[0];
-							$scope.formsToPrint = $scope.formsToPrint + c.employeeAccumulationList.length;
+							//$scope.formsToPrint = $scope.formsToPrint + c.employeeAccumulationList.length;
 							$scope.selectedBatchCompanies.push(c);
 
 						},
 						onItemDeselect: function (item) {
 							var c = $filter('filter')($scope.data.companies, { id: item.id })[0];
-							$scope.formsToPrint = $scope.formsToPrint - c.employeeAccumulationList.length;
+							//$scope.formsToPrint = $scope.formsToPrint - c.employeeAccumulationList.length;
 							$scope.selectedBatchCompanies.splice($scope.selectedBatchCompanies.indexOf(c), 1);
 
 						}

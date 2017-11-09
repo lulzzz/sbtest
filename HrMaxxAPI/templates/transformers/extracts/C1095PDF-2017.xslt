@@ -32,7 +32,6 @@
 	</xsl:template>
 	<xsl:template match="ExtractCompany">
 		<xsl:variable name="comphostid" select="Company/HostId"/>
-		<xsl:variable name="hostcompany" select="/ExtractResponse/Hosts/ExtractHost[Host/Id=$comphostid]/HostCompany"/>
 		<Report>
 			<TemplatePath></TemplatePath>
 			<Template></Template>
@@ -42,14 +41,14 @@
 					<body>
 						<div align="center">
 							<h3>
-								<xsl:value-of select="translate($hostcompany/TaxFilingName,$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(Company/TaxFilingName,$smallcase,$uppercase)"/>
 							</h3>
 							<br/>
 							<h4>
-								<xsl:value-of select="translate($hostcompany/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(Company/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
 							</h4>
 							<h4>
-								<xsl:value-of select="translate(concat($hostcompany/BusinessAddress/City,', ',$hostcompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', $hostcompany/BusinessAddress/Zip),$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(concat(Company/BusinessAddress/City,', ',Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
 							</h4>
 							<br/>
 							<br/>

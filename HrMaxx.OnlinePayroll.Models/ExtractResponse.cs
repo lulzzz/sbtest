@@ -69,7 +69,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<Account> Accounts { get; set; }
 		public List<ACHTransaction> ACHTransactions { get; set; }
 
-		public string Title { get { return string.Format("{0} ({1})", HostCompany.Name, EmployeeAccumulationList.Count); } }
+		public string Title { get { return string.Format("{0}", HostCompany.Name); } }
 		public Guid Id { get { return HostCompany.Id; } }
 
 		 
@@ -149,7 +149,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Accumulation PayCheckAccumulation { get; set; }
 		public Accumulation VoidedAccumulation { get; set; }
 
-		public string Title { get { return string.Format("{0} ({1})", Company.DescriptiveName, EmployeeAccumulationList!=null ? EmployeeAccumulationList.Count : 0); } }
+		public string Title { get { return string.Format("{0}", Company.DescriptiveName); } }
 		public Guid Id { get { return Company.Id; } }
 	}
 
