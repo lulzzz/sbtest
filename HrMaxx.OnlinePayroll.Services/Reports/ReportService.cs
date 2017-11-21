@@ -1827,7 +1827,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.Company = GetCompany(request.CompanyId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
-				
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
@@ -1849,7 +1852,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.Company = GetCompany(request.CompanyId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
-
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 			argList.AddParam("quarter", "", request.Quarter);
 			argList.AddParam("selectedYear", "", request.Year);
@@ -1871,7 +1877,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.Company = GetCompany(request.CompanyId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 			response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
-
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
@@ -1886,6 +1895,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.Company = GetCompany(request.CompanyId);
+			if (response.Company.FileUnderHost)
+			{
+				response.Host = GetHost(response.Company.HostId);
+				response.Company = response.Host.Company;
+			}
+				
 			
 
 			var argList = new XsltArgumentList();
@@ -1925,7 +1940,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).First();
 			response.Company = GetCompany(request.CompanyId);
-
+			if (response.Company.FileUnderHost)
+			{
+				response.Host = GetHost(response.Company.HostId);
+				response.Company = response.Host.Company;
+			}
 
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
@@ -1968,7 +1987,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var total = type == 1
 				? response.CompanyAccumulations.IRS940
 				: response.CompanyAccumulations.IRS941;
-			
+			if (response.Company.FileUnderHost)
+			{
+				response.Host = GetHost(response.Company.HostId);
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 			argList.AddParam("type", "", type);
 			argList.AddParam("month", "", request.EndDate.Month);
@@ -2025,6 +2048,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includePayTypeAccumulation: false, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).First();
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 			
 			argList.AddParam("selectedYear", "", request.Year);
@@ -2046,6 +2073,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var quarterEndDate = new DateTime(request.Year, request.Quarter*3,
 				DateTime.DaysInMonth(request.Year, request.Quarter*3));
 			var dueDate = quarterEndDate.AddDays(1);
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 
 			argList.AddParam("selectedYear", "", request.Year);
@@ -2068,6 +2099,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
 			var dueDate = quarterEndDate.AddDays(1);
 			var dueDate2 = quarterEndDate.AddMonths(1);
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 
 			argList.AddParam("selectedYear", "", request.Year);
@@ -2090,7 +2125,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.Host = GetHost(request.HostId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
 
-			
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
 			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
 				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
 			var dueDate = quarterEndDate.AddDays(1);
@@ -2132,6 +2170,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					? response.CompanyAccumulations.CaliforniaEmployerTaxes
 					: response.CompanyAccumulations.CaliforniaEmployeeTaxes;
 			var totalstr = Math.Round(total,2, MidpointRounding.AwayFromZero).ToString("00000000.00").Replace(".", string.Empty);
+			if (response.Company.FileUnderHost)
+			{
+				response.Host = GetHost(response.Company.HostId);
+				response.Company = response.Host.Company;
+			}
 			var argList = new XsltArgumentList();
 			argList.AddParam("type", "", type);
 			argList.AddParam("month", "", request.EndDate.Month);
