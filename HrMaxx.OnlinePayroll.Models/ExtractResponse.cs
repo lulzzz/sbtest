@@ -136,6 +136,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	}
 	public class ExtractCompany
 	{
+		public Guid HostCompanyId { get; set; }
 		public Company Company { get; set; }
 		public List<PayCheck> PayChecks { get; set; }
 		public List<PayCheck> VoidedPayChecks { get; set; }

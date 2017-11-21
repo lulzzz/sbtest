@@ -68,7 +68,10 @@
 	</xsl:template>
 	<xsl:template match="Accumulation">
 		<xsl:variable name="comphostid" select="../../Company/HostId"/>
-		<xsl:variable name="hostcompany" select="/ExtractResponse/Hosts/ExtractHost[Host/Id=$comphostid]/HostCompany"/>
+		<xsl:variable name="hostcompanyid" select="../../HostCompanyId"/>
+
+		<xsl:variable name="host" select="/ExtractResponse/Hosts/ExtractHost[HostCompany/Id=$hostcompanyid]"/>
+		<xsl:variable name="hostcompany" select="$host/HostCompany"/>
 		<xsl:variable name="ein" select="concat(substring($hostcompany/FederalEIN,1,2),'-',substring($hostcompany/FederalEIN,3,7))"/>
 		<xsl:variable name="compname" select="translate($hostcompany/TaxFilingName,$smallcase,$uppercase)"/>
 		<xsl:variable name="compaddress" select="translate($hostcompany/BusinessAddress/AddressLine1,$smallcase, $uppercase)"/>

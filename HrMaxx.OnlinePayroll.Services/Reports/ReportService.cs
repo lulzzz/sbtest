@@ -1182,7 +1182,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			//	c.EmployeeAccumulationList =
 			//		ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
 			//}));
-
+			data.Hosts.ForEach(h=> h.Companies.ForEach(c=>c.HostCompanyId=h.HostCompany.Id));
 			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c=>c.Company.Name).ToList();
 			data.Hosts.ForEach(h => h.Companies = new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();
@@ -1214,6 +1214,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			//	c.EmployeeAccumulationList =
 			//		ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
 			//}));
+			data.Hosts.ForEach(h => h.Companies.ForEach(c => c.HostCompanyId = h.HostCompany.Id));
 			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c => c.Company.Name).ToList();
 			data.Hosts.ForEach(h => h.Companies = new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();
@@ -1251,6 +1252,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponseC1095(request);
+			data.Hosts.ForEach(h => h.Companies.ForEach(c => c.HostCompanyId = h.HostCompany.Id));
 			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c => c.Company.Name).ToList();
 			data.Hosts.ForEach(h=>h.Companies=new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();

@@ -19,16 +19,18 @@
 		<ReportTransformed>
 			<Name>FilledFormW2EmployerBatch</Name>
 			<Reports>
-				<xsl:apply-templates select="Hosts/ExtractHost"/>
+				<xsl:apply-templates select="Companies/ExtractCompany"/>
 
 			</Reports>
 		</ReportTransformed>
 	</xsl:template>
-	<xsl:template match="ExtractHost">
+	<xsl:template match="ExtractCompany">
+		<xsl:variable name="comphostid" select="Company/HostId"/>
+
 		<Report>
 			<TemplatePath></TemplatePath>
 			<Template>
-				W2Employer<xsl:value-of select="translate(HostCompany/TaxFilingName,$smallcase,$uppercase)"/>
+				W2Employee<xsl:value-of select="translate(Company/TaxFilingName,$smallcase,$uppercase)"/>
 			</Template>
 			<ReportType>Html</ReportType>
 			<HtmlData>
@@ -36,14 +38,14 @@
 					<body>
 						<div align="center">
 							<h3>
-								<xsl:value-of select="translate(HostCompany/TaxFilingName,$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(Company/TaxFilingName,$smallcase,$uppercase)"/>
 							</h3>
 							<br/>
 							<h4>
-								<xsl:value-of select="translate(HostCompany/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(Company/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
 							</h4>
 							<h4>
-								<xsl:value-of select="translate(concat(HostCompany/BusinessAddress/City,', ',HostCompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', HostCompany/BusinessAddress/Zip),$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(concat(Company/BusinessAddress/City,', ',Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
 							</h4>
 							<br/>
 							<br/>
@@ -57,15 +59,24 @@
 			</HtmlData>
 
 		</Report>
-		<xsl:apply-templates select="HostCompany"/>
-	
+		<xsl:variable name="hostcompanyid" select="HostCompanyId"/>
+		
+		<xsl:call-template name="Report">
+			<xsl:with-param name="starter" select="1"/>
+			<xsl:with-param name="host" select="/ExtractResponse/Hosts/ExtractHost[HostCompany/Id=$hostcompanyid]"/>
+			<xsl:with-param name="company" select="current()"/>
+			<xsl:with-param name="empCount" select="count(EmployeeAccumulationList/Accumulation)"/>
+		</xsl:call-template>
+		
 	</xsl:template>
+	
 	
 
 
 <xsl:template name="Report">
 	<xsl:param name="starter"/>
 	<xsl:param name="host"/>
+	<xsl:param name="company"/>
 	<xsl:param name="empCount"/>
 	<xsl:variable name="fein" select="concat(substring($host/HostCompany/FederalEIN,1,2),'-',substring($host/HostCompany/FederalEIN,3,7))"/>
 	<xsl:variable name="compDetails" select="translate(concat($host/HostCompany/TaxFilingName,'\n',$host/HostCompany/BusinessAddress/AddressLine1,'\n',$host/HostCompany/BusinessAddress/City,', ','CA',', ',$host/HostCompany/BusinessAddress/Zip,'-',$host/HostCompany/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
@@ -78,44 +89,44 @@
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'year1'"/><xsl:with-param name="val1" select="$selectedYear"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'year11'"/><xsl:with-param name="val1" select="$selectedYear"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'year111'"/><xsl:with-param name="val1" select="$selectedYear"/></xsl:call-template>
-			<xsl:if test="$host/EmployeeAccumulationList/Accumulation[position()=$starter]">
+			<xsl:if test="$company/EmployeeAccumulationList/Accumulation[position()=$starter]">
 				<xsl:call-template name="companySection">
 					<xsl:with-param name="empNum" select="$starter mod 3"/>
 					<xsl:with-param name="fein" select="$fein"/>
 					<xsl:with-param name="compDetails" select="$compDetails"/>
 					<xsl:with-param name="compStateDetails" select="$compStateDetails"/>
 				</xsl:call-template>
-				<xsl:apply-templates select="$host/EmployeeAccumulationList/Accumulation[position()=$starter]">
+				<xsl:apply-templates select="$company/EmployeeAccumulationList/Accumulation[position()=$starter]">
 					<xsl:with-param name="index" select="$starter"/>
 					<xsl:with-param name="fein" select="$fein"/>
 					<xsl:with-param name="compDetails" select="$compDetails"/>
 					<xsl:with-param name="compStateDetails" select="$compStateDetails"/>
 				</xsl:apply-templates>		
 			</xsl:if>
-			<xsl:if test="$host/EmployeeAccumulationList/Accumulation[position()=$starter+1]">
+			<xsl:if test="$company/EmployeeAccumulationList/Accumulation[position()=$starter+1]">
 				<xsl:call-template name="companySection">
 					<xsl:with-param name="empNum" select="($starter+1) mod 3"/>
 					<xsl:with-param name="fein" select="$fein"/>
 					<xsl:with-param name="compDetails" select="$compDetails"/>
 					<xsl:with-param name="compStateDetails" select="$compStateDetails"/>
 				</xsl:call-template>
-				<xsl:apply-templates select="$host/EmployeeAccumulationList/Accumulation[position()=$starter+1]">
+				<xsl:apply-templates select="$company/EmployeeAccumulationList/Accumulation[position()=$starter+1]">
 					<xsl:with-param name="index" select="$starter+1"/>
 					<xsl:with-param name="fein" select="$fein"/>
 					<xsl:with-param name="compDetails" select="$compDetails"/>
 					<xsl:with-param name="compStateDetails" select="$compStateDetails"/>
 				</xsl:apply-templates>		
 			</xsl:if>
-			<xsl:if test="$host/EmployeeAccumulationList/Accumulation[position()=$starter+2]">
+			<xsl:if test="$company/EmployeeAccumulationList/Accumulation[position()=$starter+2]">
 				<xsl:call-template name="companySection">
 					<xsl:with-param name="empNum" select="($starter+2) mod 3"/>
 					<xsl:with-param name="fein" select="$fein"/>
 					<xsl:with-param name="compDetails" select="$compDetails"/>
 					<xsl:with-param name="compStateDetails" select="$compStateDetails"/>
 				</xsl:call-template>
-				<xsl:apply-templates select="$host/EmployeeAccumulationList/Accumulation[position()=$starter+2]">
+				<xsl:apply-templates select="$company/EmployeeAccumulationList/Accumulation[position()=$starter+2]">
 					<xsl:with-param name="index" select="$starter+2"/>
-				<xsl:with-param name="fein" select="$fein"/>
+					<xsl:with-param name="fein" select="$fein"/>
 					<xsl:with-param name="compDetails" select="$compDetails"/>
 					<xsl:with-param name="compStateDetails" select="$compStateDetails"/>
 				</xsl:apply-templates>		
@@ -128,6 +139,7 @@
 		<xsl:call-template name="Report">
 			<xsl:with-param name="starter" select="$starter+3"/>
 			<xsl:with-param name="host" select="$host"/>
+			<xsl:with-param name="company" select="$company"/>
 			<xsl:with-param name="empCount" select="$empCount"/>
 		</xsl:call-template>
 	</xsl:if>
@@ -219,28 +231,28 @@
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12a'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:if test="position()=2">
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12b'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:if test="position()=3">
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12c'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:if test="position()=4">
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12d'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	

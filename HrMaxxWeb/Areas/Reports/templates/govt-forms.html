@@ -130,133 +130,134 @@
 
 				
 				
-				<div class="col-sm-12">
 					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Wage and Tax Statement – Form W2</em></span></h5>
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Wage and Tax Statement – Form W2</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearW2" ng-model="data.filterW2.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2 form-group">
+
+								<label for="w2history" class="switch">
+									Include History?
+									<input id="w2history" type="checkbox" ng-model="data.filterW2.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+								<label for="fw2clients" class="switch">
+									Include Clients?
+									<input id="fw2clients" type="checkbox" ng-model="data.filterW2.includeClients" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
+								<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">W2 - Employer</button>
+							</div>
+
+						</div>
+
 					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-3">
-							<select name="yearW2" ng-model="data.filterW2.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-3"></div>
-						<div class="col-sm-2 form-group">
-
-							<label for="w2history" class="switch">
-								Include History?
-								<input id="w2history" type="checkbox" ng-model="data.filterW2.includeHistory" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-2 form-group" ng-if="showincludeclients">
-
-							<label for="fw2clients" class="switch">
-								Include Clients?
-								<input id="fw2clients" type="checkbox" ng-model="data.filterW2.includeClients" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-2">
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
-							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">W2 - Employer</button>
-						</div>
-
-					</div>
-
-				</div>
 				
-				<div class="col-sm-12">
 					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Transmittal of Wage and Tax Statements – Form W3</em></span></h5>
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Transmittal of Wage and Tax Statements – Form W3</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearw3" ng-model="data.filterW3.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2 form-group">
+
+								<label for="w3history" class="switch">
+									Include History?
+									<input id="w3history" type="checkbox" ng-model="data.filterW3.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+								<label for="fw3clients" class="switch">
+									Include Clients?
+									<input id="fw3clients" type="checkbox" ng-model="data.filterW3.includeClients" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReportW3()" ng-disabled="!data.filterW3.year">Display W3</button>
+							</div>
+
+						</div>
+
 					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-3">
-							<select name="yearw3" ng-model="data.filterW3.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-3"></div>
-						<div class="col-sm-2 form-group">
-
-							<label for="w3history" class="switch">
-								Include History?
-								<input id="w3history" type="checkbox" ng-model="data.filterW3.includeHistory" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-2 form-group" ng-if="showincludeclients">
-
-							<label for="fw3clients" class="switch">
-								Include Clients?
-								<input id="fw3clients" type="checkbox" ng-model="data.filterW3.includeClients" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-2">
-							<button class="btn btn-sm btn-primary" ng-click="getReportW3()" ng-disabled="!data.filterW3.year">Display W3</button>
-						</div>
-
-					</div>
-
-				</div>
 				
-				<div class="col-sm-12">
 					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Non-wage Payment Statement – Form 1099</em></span></h5>
-					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-3">
-							<select name="year1099" ng-model="data.filter1099.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Non-wage Payment Statement – Form 1099</em></span></h5>
 						</div>
-						<div class="col-sm-3"></div>
-						<div class="col-sm-2"></div>
-						<div class="col-sm-2"></div>
-						<div class="col-sm-2">
-							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Display 1099</button>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="year1099" ng-model="data.filter1099.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2"></div>
+							<div class="col-sm-2" ng-if="showincludeclients"></div>
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Display 1099</button>
+							</div>
+
 						</div>
 
 					</div>
-
-				</div>
 				
-				<div class="col-sm-12" ng-if="mainData.selectedCompany.isFiler1095">
-					<div class="col-sm-12">
-						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Medical Obamacare – Form 1095-C</em></span></h5>
+					<div class="col-sm-12" ng-if="mainData.selectedCompany.isFiler1095">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Medical Obamacare – Form 1095-C</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearC1095" ng-model="data.filterC1095.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2 form-group">
+
+								<label for="c1095history" class="switch">
+									Include History?
+									<input id="c1095history" type="checkbox" ng-model="data.filterC1095.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+								<label for="fc1095clients" class="switch">
+									Include Clients?
+									<input id="fc1095clients" type="checkbox" ng-model="data.filterC1095.includeClients" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
+							</div>
+
+						</div>
+
 					</div>
-					<div class="col-sm-12">
-						<div class="col-sm-3">
-							<select name="yearC1095" ng-model="data.filterC1095.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-3"></div>
-						<div class="col-sm-2 form-group">
-
-							<label for="c1095history" class="switch">
-								Include History?
-								<input id="c1095history" type="checkbox" ng-model="data.filterC1095.includeHistory" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-2 form-group" ng-if="showincludeclients">
-
-							<label for="fc1095clients" class="switch">
-								Include Clients?
-								<input id="fc1095clients" type="checkbox" ng-model="data.filterC1095.includeClients" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-2">
-							<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
-						</div>
-
-					</div>
-
-				</div>
 				
+				</div>
 			</div>
 			<div class="col-sm-6" ng-if="hasCalifornia()"> 
 				<div class="row">

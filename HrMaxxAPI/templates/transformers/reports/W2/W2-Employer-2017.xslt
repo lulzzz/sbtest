@@ -151,28 +151,28 @@
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12a'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:if test="position()=2">
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12b'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:if test="position()=3">
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12c'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:if test="position()=4">
 		<xsl:call-template name="W2Repeater">
 			<xsl:with-param name="prefix" select="'12d'"/>
 			<xsl:with-param name="val" select="concat(CompanyDeduction/DeductionType/W2_12,' ',format-number(YTD,'###0.00'))"/>
-			<xsl:with-param name="iter" select="3"/>
+			<xsl:with-param name="iter" select="$iterVal"/>
 		</xsl:call-template>
 	</xsl:if>
 	
