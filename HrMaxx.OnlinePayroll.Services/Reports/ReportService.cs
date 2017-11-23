@@ -887,7 +887,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					});
 
 			});
-			
+			if(data.Hosts.All(h=>h.Companies.All(c=>c.EmployeeAccumulationList.All(e=>e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))))
+				throw new Exception(NoData);
 			return data;
 		}
 		private Extract Federal940(ReportRequest request)
@@ -1919,8 +1920,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.Company = GetCompany(request.CompanyId);
 
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeHistory: request.IncludeHistory, includeC1095: true, includeClients: request.IncludeClients).ToList();
-			
+			if (response.EmployeeAccumulationList.All(e => e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))
+			{
+				throw new Exception(NoData);
+			}
 			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
+			
 			response.Host = GetHost(response.Company.HostId);
 			if (response.Company.FileUnderHost)
 				response.Company = response.Host.Company;
