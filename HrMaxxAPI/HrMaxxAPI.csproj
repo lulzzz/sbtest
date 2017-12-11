@@ -503,6 +503,10 @@
     <Content Include="templates\transformers\PaySlip.pdf" />
     <Content Include="templates\PaySlip.pdf" />
     <Content Include="templates\GovtForms\C1095\C1095-2017.pdf" />
+    <Content Include="templates\GovtForms\1099\f1096-2017.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099div-2017.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099int-2017.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099msc-2017.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
