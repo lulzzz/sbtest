@@ -1570,11 +1570,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				}
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd", prwytd.ToString("C")));
-				if (payCheck.Employee.PayType == EmployeeType.PieceWork)
-				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
-				}
+				
+			}
+			//if (payCheck.Employee.PayType == EmployeeType.PieceWork)
+			{
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
 			}
 
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
@@ -1965,13 +1966,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				}
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd", prwytd.ToString("C")));
-				if (payCheck.Employee.PayType == EmployeeType.PieceWork)
-				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
-				}
+				
 			}
-
+			//if (payCheck.Employee.PayType == EmployeeType.PieceWork)
+			{
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
+			}
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
 			var compCounter = 1;
 			foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
