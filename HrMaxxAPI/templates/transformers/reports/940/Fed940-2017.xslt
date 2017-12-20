@@ -48,6 +48,7 @@
 	</ReportTransformed>	
 </xsl:template>
 <xsl:template match="CompanyAccumulations">
+	
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1_018(0)'"/>
 		<xsl:with-param name="field2" select="'f1_019(0)'"/>
@@ -88,6 +89,7 @@
 			<xsl:with-param name="val1" select="'On'"/>
 		</xsl:call-template>
 	</xsl:if>
+
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1_033(0)'"/>
 		<xsl:with-param name="field2" select="'f1_032(0)'"/>
@@ -124,6 +126,7 @@
 		<xsl:with-param name="field2" select="'f1_037(0)'"/>
 		<xsl:with-param name="val" select="$line13"/>
 	</xsl:call-template>
+	
 	<xsl:choose>
 		<xsl:when test="$line12>$line13">
 			<xsl:call-template name="DecimalFieldTemplate">
@@ -148,7 +151,7 @@
 			</xsl:call-template>
 		</xsl:when>
 	</xsl:choose>
-
+	
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f2_001(0)'"/>
 		<xsl:with-param name="field2" select="'f2_002(0)'"/>
@@ -178,6 +181,7 @@
 		<xsl:with-param name="name1" select="'c2_01(0)'"/>
 		<xsl:with-param name="val1" select="'Yes'"/>
 	</xsl:call-template>
+	
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2_011(0)'"/>
 		<xsl:with-param name="val1" select="translate(/ReportResponse/Host/DesigneeName940941,$smallcase,$uppercase)"/>

@@ -104,7 +104,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src=>src.ClientNo))
 				.ForMember(dest => dest.InsuranceGroup, opt => opt.MapFrom(src=>src.InsuranceGroup))
-				.ForMember(dest => dest.Contact, opt => opt.Ignore());
+				.ForMember(dest => dest.Contact, opt => opt.Ignore())
+				.ForMember(dest => dest.HasLocations, opt => opt.Ignore());
 
 
 			CreateMap<Models.Company, Models.DataModel.Company>()
@@ -568,6 +569,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayCheckAccumulation, opt => opt.MapFrom(src=>src.Accumulations.Any() ? src.Accumulations.First() : default(Accumulation)))
 				.ForMember(dest => dest.VoidedAccumulation, opt => opt.MapFrom(src => src.VoidedAccumulations.Any() ? src.VoidedAccumulations.First() : default(Accumulation)))
 				.ForMember(dest => dest.Payments, opt => opt.Ignore())
+
+				.ForMember(dest => dest.HostCompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.Vendors, opt => opt.MapFrom(src => src.Vendors.Where(v=>v.Amount>0).ToList()));
 
 			CreateMap<Models.ExtractVendor, Models.CompanyVendor>()
@@ -632,7 +635,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.Ignore())
 				.ForMember(dest => dest.PayrollMessage, opt => opt.Ignore())
 				.ForMember(dest => dest.Contact, opt => opt.Ignore())
-				.ForMember(dest => dest.IsFiler1095, opt => opt.Ignore());
+				.ForMember(dest => dest.IsFiler1095, opt => opt.Ignore())
+				.ForMember(dest => dest.HasLocations, opt => opt.Ignore());
 
 
 			CreateMap<Models.ExtractDBCompany, Common.Models.InsuranceGroupDto>()

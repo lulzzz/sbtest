@@ -49,6 +49,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Notes { get; set; }
 		public string PayrollMessage { get; set; }
 		public string Contact { get; set; }
+		public bool HasLocations { get; set; }
 
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 

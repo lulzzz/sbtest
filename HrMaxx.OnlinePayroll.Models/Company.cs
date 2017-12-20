@@ -59,7 +59,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<CompanyPayCode> PayCodes { get; set; }
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
-
+		public bool HasLocations { get; set; }
 		public string DescriptiveName
 		{
 			get

@@ -73,6 +73,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public Guid? ParentId { get; set; }
 
 		public bool IsLocation { get; set; }
+		public bool HasLocations { get; set; }
 
 		public string GetTextForStatus
 		{

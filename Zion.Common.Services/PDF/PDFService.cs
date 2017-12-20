@@ -388,7 +388,7 @@ namespace HrMaxx.Common.Services.PDF
 									}
 									else
 									{
-										if (!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes")))
+										if (!string.IsNullOrWhiteSpace(field.Value) && (field.Value.ToLower().Equals("on") || field.Value.ToLower().Equals("yes") || field.Value.ToLower().Equals("no")))
 										{
 											objField.SetFieldValue(objField.FieldOnValue, null);
 										}
@@ -400,7 +400,8 @@ namespace HrMaxx.Common.Services.PDF
 
 						}
 					}
-					docs.Add(new FileDto{Data= objDoc.SaveToMemory()});
+					var d = objDoc.SaveToMemory();
+					docs.Add(new FileDto{Data= d});
 					
 					objDoc.Close();
 					objDoc.Dispose();
