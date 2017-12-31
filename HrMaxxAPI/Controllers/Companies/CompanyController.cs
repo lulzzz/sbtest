@@ -374,7 +374,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.ImportEmployees)]
-		[DeflateCompression]
+		
 		public async Task<HttpResponseMessage> ImportEmployees()
 		{
 			var filename = string.Empty;
@@ -386,6 +386,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				var importedRows = _excelServce.ImportFromExcel(fileUploadObj.file, 3);
 				var employees = new List<EmployeeResource>();
 				var error = string.Empty;
+				
 				importedRows.ForEach(er =>
 				{
 					try
@@ -396,7 +397,7 @@ namespace HrMaxxAPI.Controllers.Companies
 					}
 					catch (Exception ex)
 					{
-						error += ex.Message + "<br>";
+						error += "Row #: " + er.Row + ": " +ex.Message + "<br>";
 					}
 				});
 				if (!string.IsNullOrWhiteSpace(error))
@@ -417,12 +418,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			catch (Exception e)
 			{
 				Logger.Error("Error importing employees", e);
-
-				throw new HttpResponseException(new HttpResponseMessage
-				{
-					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
-				});
+				throw;
+				
 			}
 			finally
 			{

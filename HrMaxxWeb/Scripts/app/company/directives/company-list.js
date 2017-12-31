@@ -111,7 +111,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							}
 						};
 						if ($scope.mainData.selectedHost.isPeoHost) {
-							selectedCompany.depositSchedule = $scope.mainData.selectedHost.company.depositSchedule;
+							var hostCompany = $filter('filter')($scope.mainData.hostCompanies, { isHostCompany: true })[0];
+							selectedCompany.depositSchedule = hostCompany.depositSchedule;
 						}
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
 						

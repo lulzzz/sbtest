@@ -291,6 +291,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 			});
 			var year = rates.First().TaxYear;
 			var dbRates = _dbContext.CompanyTaxRates.Where(t => t.TaxYear == year).ToList();
+			dbRates = dbRates.Where(ctr => rates.Any(r => r.CompanyId == ctr.CompanyId)).ToList();
 			_dbContext.CompanyTaxRates.RemoveRange(dbRates);
 			_dbContext.CompanyTaxRates.AddRange(mapped);
 			_dbContext.SaveChanges();

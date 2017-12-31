@@ -65,5 +65,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		PayCheckPayTypeAccumulation UpdateEmployeeAccumulation(PayCheckPayTypeAccumulation mapped, DateTime newFiscalStart, DateTime newFiscalEnd, Guid employeeId);
 		Payroll DeletePayroll(Payroll mappedResource);
 		Models.Payroll UpdatePayrollCheckNumbers(Payroll mappedResource);
+		void FixPayrollYTD(Guid payrollId);
 	}
 }

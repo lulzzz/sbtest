@@ -150,7 +150,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			{
 				error += "Employee No, ";
 			}
-			if (!Regex.IsMatch(er.Value("wc job class"), @"^\d{4}$") || !company.WorkerCompensations.Any(wc=>wc.Code==Convert.ToInt32(er.Value("wc job class"))))
+			if (!Regex.IsMatch(er.Value("wc job class"), @"^\d{1,4}$") || !company.WorkerCompensations.Any(wc=>wc.Code==Convert.ToInt32(er.Value("wc job class"))))
 			{
 				error += "WC Job Class, ";
 			}
@@ -175,14 +175,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			{
 				error += "Federal Exemptions, ";
 			}
-			if (string.IsNullOrWhiteSpace(er.Value("federal additional amount")) && !Regex.IsMatch(er.Value("federal additional amount"), @"^[0-9]+(\.[0-9]{1,2})?$"))
-			{
-				error += "Federal Additional Amount, ";
-			}
-			if (!IsValidState(er.Value("state")))
-			{
-				error += "Tax State, ";
-			}
+			
+			
 			if (string.IsNullOrWhiteSpace(er.Value("state filing status")))
 			{
 				error += "State Filing Status, ";
@@ -191,11 +185,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			{
 				error += "State Exemptions, ";
 			}
-			if (string.IsNullOrWhiteSpace(er.Value("state additional amount")) && !Regex.IsMatch(er.Value("state additional amount"), @"^[0-9]+(\.[0-9]{1,2})?$"))
-			{
-				error += "state Additional Amount, ";
-			}
 			
+			if (!string.IsNullOrWhiteSpace(error))
+			{
+				throw new Exception(error);
+			}
 			CompanyId = company.Id.Value;
 			SSN = er.Value("ssn").Replace("-", string.Empty);
 			Contact = new Contact
@@ -277,15 +271,15 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 			FederalStatus = GetFederalStatus(er.Value("federal filing status"));
 			FederalExemptions = Convert.ToInt32(er.Value("federal exemptions"));
-			FederalAdditionalAmount = Convert.ToDecimal(er.Value("federal additional amount"));
+			FederalAdditionalAmount = Convert.ToDecimal(string.IsNullOrWhiteSpace(er.Value("federal additional amount")) ? "0" : er.Value("federal additional amount"));
 
-			var state = StateId(er.Value("state"));
+			var state = string.IsNullOrWhiteSpace( er.Value("state") ) ? 1 : StateId(er.Value("state"));
 			State = new EmployeeStateResource
 			{
 				State = company.States.First(s=>s.State.StateId==state).State,
 				TaxStatus = GetFederalStatus(er.Value("state filing status")),
 				Exemptions = Convert.ToInt32(er.Value("state exemptions")),
-				AdditionalAmount = Convert.ToDecimal(er.Value("state additional amount")),
+				AdditionalAmount = Convert.ToDecimal(string.IsNullOrWhiteSpace(er.Value("state additional amount")) ? "0" : er.Value("state additional amount")),
 			};
 			if (FederalExemptions < 0 || FederalExemptions > 10)
 				error += "Federal Exemptions, ";
@@ -296,7 +290,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				error = "Employee at row# " + er.Row + " has invalid " + error;
 				throw new Exception(error);
 			}
-			
+			SickLeaveHireDate = HireDate;
 			return this;
 
 		}

@@ -30,7 +30,7 @@ namespace HrMaxxAPI.Resources.Common
 			var ett = er.ValueFromContains("ett");
 
 			var company =
-				companies.FirstOrDefault(c => c.StatusId==StatusOption.Active && c.States.Any(s => s.CountryId == 1 && s.State.StateId == 1 && s.StateEIN.Equals(Edd)));
+				companies.FirstOrDefault(c => c.StatusId==StatusOption.Active && c.States.Any(s => s.CountryId == 1 && s.State.StateId == 1 && s.StateEIN.Equals(Edd.Replace("-",string.Empty))));
 
 			var uiVal = (decimal)0;
 			var ettVal = (decimal)0;

@@ -673,6 +673,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.FixPayrollYTD)]
+		[DeflateCompression]
+		public HttpStatusCode FixPayrollYTD(Guid payrollId)
+		{
+			
+			MakeServiceCall(() => _payrollService.FixPayrollYTD(payrollId), "Fix Payroll YTD for " + payrollId);
+			return HttpStatusCode.OK;
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.EmployeeChecks)]
 		[DeflateCompression]
 		public List<PayCheck> GetEmployeeChecks(Guid companyId, Guid employeeId)

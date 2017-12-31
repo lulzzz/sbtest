@@ -70,6 +70,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
 							addAlert('successfully imported ' + employees.length + 'employees', 'success');
+							$scope.getEmployees($scope.mainData.selectedCompany.id);
 						}, function (error) {
 							addAlert('error in importing employees: ' + error, 'danger');
 

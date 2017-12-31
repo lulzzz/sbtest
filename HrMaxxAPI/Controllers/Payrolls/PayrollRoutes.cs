@@ -53,5 +53,6 @@
 		public const string PrintPayCheckPaySlip = "Payroll/PrintPayCheckPaySlip/{payrollId:guid}/{checkId:int}";
 		public const string SaveEmployeeAccumulation = "Payroll/EmployeeAccumulation";
 		public const string CompanyPayrolls = "Payroll/CompanyPayrolls/{companyId:guid}";
+		public const string FixPayrollYTD = "Payroll/FixPayrollYTD/{payrollId:guid}";
 	}
 }

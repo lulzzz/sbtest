@@ -315,7 +315,7 @@ common.factory('companyRepository', [
 
 				})
 				.error(function (data, status, statusText, headers, config) {
-					deferred.reject(statusText);
+					deferred.reject(data.exceptionMessage);
 				});
 				return deferred.promise;
 			},

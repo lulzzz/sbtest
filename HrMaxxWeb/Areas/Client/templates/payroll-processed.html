@@ -69,6 +69,7 @@
 	</pre>
 	<div class="col-sm-12 text-center">
 		<button class="btn btn-sm btn-success" ng-click="showTaxes=!showTaxes">{{showTaxes? 'Show Rates' : 'Show Taxes'}}</button>
+		<button class="btn btn-sm btn-success" ng-click="fixPayrollYTD()" ng-show="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && (item.status>2 && item.status!==6)">Fix YTD</button>
 	</div>
 	<div class="col-sm-12">
 		

@@ -3422,5 +3422,87 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void FixPayrollYTD(Guid payrollId)
+		{
+			try
+			{
+				var updateList = new List<PayCheck>();
+				var originalList = new List<PayCheck>();
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					
+						var payroll = _readerService.GetPayroll(payrollId);
+						var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
+						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
+						var thispayrollchecks = 0;
+						payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
+						{
+							originalList.Add(JsonConvert.DeserializeObject<PayCheck>(JsonConvert.SerializeObject(pc)));
+							var ea = employeeAccumulations.First(e => e.EmployeeId.Value == pc.Employee.Id);
+							pc.Taxes.ForEach(t =>
+							{
+								var t2 = ea.Taxes.First(t3 => t3.Tax.Code.Equals(t.Tax.Code));
+								t.YTDTax = t2.YTD;
+								t.YTDWage = t2.YTDWage;
+							});
+							pc.Deductions.ForEach(d =>
+							{
+								var d2 = ea.Deductions.First(d3 => d3.CompanyDeductionId == d.Deduction.Id);
+								d.YTD = d2.YTD;
+								d.YTDWage = d2.YTDWage;
+							});
+							pc.Compensations.ForEach(c =>
+							{
+								var c2 = ea.Compensations.First(c3 => c3.PayTypeId == c.PayType.Id);
+								c.YTD = c2.YTD;
+							});
+							pc.Accumulations.ForEach(a =>
+							{
+								var a2 = ea.Accumulations.First(a3 => a3.PayTypeId == a.PayType.PayType.Id);
+								a.YTDFiscal = a2.YTDFiscal;
+								a.YTDUsed = a2.YTDUsed;
+							});
+							pc.PayCodes.ForEach(p =>
+							{
+								var p2 = ea.PayCodes.First(p3 => p3.PayCodeId == p.PayCode.Id);
+								p.YTD = p2.YTDAmount;
+								p.YTDOvertime = p2.YTDOvertime;
+							});
+							if (pc.WorkerCompensation != null)
+								pc.WorkerCompensation.YTD =
+									ea.WorkerCompensations.Where(w2 => w2.WorkerCompensationId == pc.WorkerCompensation.WorkerCompensation.Id)
+										.Sum(w2 => w2.YTD);
+
+							pc.YTDGrossWage = ea.PayCheckWages.GrossWage;
+							pc.YTDNetWage = ea.PayCheckWages.NetWage;
+							pc.YTDSalary = ea.PayCheckWages.Salary;
+
+							updateList.Add(pc);
+
+							
+						});
+
+					
+					if (updateList.Any())
+					{
+						updateList.ForEach(pc => _payrollRepository.UpdatePayCheckYTD(pc));
+						
+						txn.Complete();
+						
+					}
+
+
+
+
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Error in fixing YTD for Payroll {0}.", payrollId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }
