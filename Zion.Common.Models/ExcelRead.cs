@@ -13,17 +13,17 @@ namespace HrMaxx.Common.Models
 
 		public string Value(string key)
 		{
-			return Values.Any(v => v.Key.ToLower().Equals(key.ToLower())) ? Values.First(v=>v.Key.ToLower().Equals(key.ToLower())).Value : string.Empty;
+			return Values.Any(v => v.Key.ToLower().Equals(key.ToLower())) ? Values.First(v=>v.Key.ToLower().Equals(key.ToLower())).Value.Trim() : string.Empty;
 		}
 
 		public string ValueFromContains(string key)
 		{
-			return Values.Any(v => v.Key.ToLower().Contains(key.ToLower())) ? Values.First(v => v.Key.ToLower().Contains(key.ToLower())).Value : string.Empty;
+			return Values.Any(v => v.Key.ToLower().Contains(key.ToLower())) ? Values.First(v => v.Key.ToLower().Contains(key.ToLower())).Value.Trim() : string.Empty;
 		}
 
 		public string ValueAtIndex(int index)
 		{
-			return Values[index].Value;
+			return Values[index].Value.Trim();
 		}
 	}
 

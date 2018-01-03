@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -225,6 +226,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			PayType = er.Value("pay type").ToLower().Equals("salary")
 				? EmployeeType.Salary
 				: (er.Value("pay type").ToLower().Equals("hourly") ? EmployeeType.Hourly : EmployeeType.PieceWork);
+			var baseSalary = er.Value("base salary").Replace("$", string.Empty);
+			var tmpRate = (decimal) 0;
+			bool convt = decimal.TryParse(baseSalary, NumberStyles.Currency,
+						CultureInfo.CurrentCulture.NumberFormat, out tmpRate);
+			
 			if (PayType == EmployeeType.Hourly)
 			{
 				PayCodes = new List<CompanyPayCodeResource>();
@@ -233,13 +239,15 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 					if(!string.IsNullOrWhiteSpace(er.Value(code.Description.ToLower())))
 						PayCodes.Add(code);
 				}
-				if (string.IsNullOrWhiteSpace(er.Value("base salary")) && !Regex.IsMatch(er.Value("base salary"), @"^[0-9]+(\.[0-9]{1,2})?$"))
+
+				if (string.IsNullOrWhiteSpace(baseSalary) || !convt)
 				{
-					error += "PayCode/Base salary, ";
+					error += "Base salary, ";
 				}
 				else
 				{
-					Rate = Convert.ToDecimal(er.Value("base salary"));
+					
+					Rate = Convert.ToDecimal(tmpRate);
 					PayCodes.Add(new CompanyPayCodeResource
 					{
 						Id=0, CompanyId = company.Id.Value, Code="Default", Description = "Base Rate", HourlyRate = Rate
@@ -248,11 +256,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			}
 			else if (PayType == EmployeeType.Salary)
 			{
-				if (string.IsNullOrWhiteSpace(er.Value("base salary")) && !Regex.IsMatch(er.Value("base salary"), @"^[0-9]+(\.[0-9]{1,2})?$"))
+				if (string.IsNullOrWhiteSpace(baseSalary) || !convt)
 					error += "Base Salary, ";
 				else
 				{
-					Rate = Convert.ToDecimal(er.Value("base salary"));
+					Rate = Convert.ToDecimal(tmpRate);
 				}
 			}
 
@@ -291,6 +299,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				throw new Exception(error);
 			}
 			SickLeaveHireDate = HireDate;
+			CompanyEmployeeNo = string.IsNullOrWhiteSpace(er.Value("company employee no")) ? er.Row - 2 : Convert.ToInt32(er.Value("company employee no"));
 			return this;
 
 		}

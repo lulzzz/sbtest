@@ -403,13 +403,13 @@ namespace HrMaxxAPI.Controllers.Companies
 				if (!string.IsNullOrWhiteSpace(error))
 					throw new Exception(error);
 
-				var employeeList = _readerService.GetEmployees(company:company.Id.Value);
-				if (employeeList.Any(e=>employees.Any(e1=>e1.SSN==e.SSN)))
-				{
-					var exists = employeeList.Where(e=>employees.Any(e1=>e1.SSN==e.SSN)).Aggregate(string.Empty, (current, emp) => current + (emp.SSN + ", "));
-					if(!string.IsNullOrWhiteSpace(exists))
-						throw new Exception("Employees already exist with these SSNs " + exists + "<br>");
-				}
+				//var employeeList = _readerService.GetEmployees(company:company.Id.Value);
+				//if (employeeList.Any(e=>employees.Any(e1=>e1.SSN==e.SSN)))
+				//{
+				//	var exists = employeeList.Where(e=>employees.Any(e1=>e1.SSN==e.SSN)).Aggregate(string.Empty, (current, emp) => current + (emp.SSN + ", "));
+				//	if(!string.IsNullOrWhiteSpace(exists))
+				//		throw new Exception("Employees already exist with these SSNs " + exists + "<br>");
+				//}
 				
 				var mappedResource = Mapper.Map<List<EmployeeResource>, List<Employee>>(employees);
 				var savedEmployees = _companyService.SaveEmployees(mappedResource);

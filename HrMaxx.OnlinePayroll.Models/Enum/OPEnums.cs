@@ -218,8 +218,11 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 
 	public enum GenderType
 	{
+		[HrMaxxSecurity(DbName = "NA")]
 		NA=0,
+		[HrMaxxSecurity(DbName = "Male")]
 		Male=1,
+		[HrMaxxSecurity(DbName = "Female")]
 		Female=2
 	}
 
