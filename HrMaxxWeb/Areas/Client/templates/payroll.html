@@ -179,7 +179,7 @@
 					<div class="row" ng-repeat="paytype in paycheck.compensations track by $index">
 						<div class="col-sm-6">{{paytype.payType.description}}</div>
 						<div class="col-sm-2">
-							<span ng-show="paytype.payType.isAccumulable && original.employee.accumulations.length>0">{{calculateWage(paytype.payType)}}</span>						
+							<span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span>						
 						</div>
 						<div class="col-sm-3">
 							<input class="form-control"
@@ -196,7 +196,7 @@
 							</select>
 						</div>
 						<div class="col-sm-2">
-							<span ng-show="paytype.payType.isAccumulable && original.employee.accumulations.length>0">{{calculateWage(paytype.payType)}}</span>						
+							<span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span>						
 
 						</div>
 						<div class="col-sm-3">

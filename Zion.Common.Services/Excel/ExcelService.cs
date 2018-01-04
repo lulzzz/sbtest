@@ -40,7 +40,7 @@ namespace HrMaxx.Common.Services.Excel
 			try
 			{
 				var company = _readerService.GetCompany(companyId);
-				var columnList = new List<string> {"SSN", "Company Employee No", "First Name", "Middle Initial", "Last Name", "Email", "Phone", "Mobile", "Fax", "Address", "City", "Address State", "Zip", "Zip Extension", "Gender", "Birth Date", "Hire Date", "Department", "Employee No", "WC Job Class"};
+				var columnList = new List<string> {"SSN", "Company Employee No", "First Name", "Middle Initial", "Last Name", "Email", "Phone", "Mobile", "Fax", "Address", "City", "Address State", "Zip", "Zip Extension", "Gender", "Birth Date", "Hire Date", "Sick Leave Hire Date", "Sick Leave CarryOver", "Department", "Employee No", "WC Job Class"};
 				columnList.AddRange(new List<string>{"Payroll Schedule", "Pay Type", "Base Salary"});
 				company.PayCodes.ForEach(pc=>columnList.Add(pc.Description));
 				columnList.AddRange(new List<string>{"Tax Status", "Federal Filing Status", "Federal Exemptions", "Federal Additional Amount", "State", "State Filing Status", "State Exemptions", "State Additional Amount"});
@@ -71,13 +71,15 @@ namespace HrMaxx.Common.Services.Excel
 						e.Gender.GetDbName(),
 						e.BirthDate.HasValue ? e.BirthDate.Value.ToString("MM/dd/yyyy") : string.Empty,
 						e.HireDate.ToString("MM/dd/yyyy"),
+						e.SickLeaveHireDate.ToString("MM/dd/yyyy"),
+						e.CarryOver.ToString(),
 						e.Department,
 						e.EmployeeNo.ToString(),
 						e.WorkerCompensation.Code.ToString(),
 						e.PayrollSchedule.GetDbName(),e.PayType.GetDbName(), e.Rate.ToString() 
 					};
 					e.PayCodes.Where(pc=>pc.Id!=0).ToList().ForEach(pc=>row.Add(pc.HourlyRate.ToString()));
-					row.Add(e.TaxCategory.GetDbName());
+					row.Add(((int)e.TaxCategory).ToString());
 					row.Add(((int)e.FederalStatus).ToString());
 					row.Add(e.FederalExemptions.ToString());
 					row.Add(e.FederalAdditionalAmount.ToString());

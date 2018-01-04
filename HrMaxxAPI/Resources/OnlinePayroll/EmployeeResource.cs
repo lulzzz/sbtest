@@ -215,9 +215,9 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			};
 			Gender = er.Value("gender").ToLower().Equals("male") ? GenderType.Male : GenderType.Female;
 			if(! string.IsNullOrWhiteSpace(er.Value("birth date")))
-				BirthDate = Convert.ToDateTime(er.Value("birth date"));
+				BirthDate = DateTime.ParseExact(er.Value("birth date"), "MM/dd/yyyy", CultureInfo.InvariantCulture);
 
-			HireDate = Convert.ToDateTime(er.Value("hire date"));
+			HireDate = DateTime.ParseExact(er.Value("hire date"), "MM/dd/yyyy", CultureInfo.InvariantCulture);
 
 			Department = er.Value("department");
 			EmployeeNo = er.Value("employee no");
@@ -298,7 +298,10 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				error = "Employee at row# " + er.Row + " has invalid " + error;
 				throw new Exception(error);
 			}
-			SickLeaveHireDate = HireDate;
+			SickLeaveHireDate = string.IsNullOrWhiteSpace(er.Value("Sick Leave Hire Date")) ? HireDate : DateTime.ParseExact(er.Value("Sick Leave Hire Date"), "MM/dd/yyyy", CultureInfo.InvariantCulture);
+			CarryOver = string.IsNullOrWhiteSpace(er.Value("Sick Leave CarryOver"))
+				? 0
+				: Convert.ToDecimal(er.Value("Sick Leave CarryOver"));
 			CompanyEmployeeNo = string.IsNullOrWhiteSpace(er.Value("company employee no")) ? er.Row - 2 : Convert.ToInt32(er.Value("company employee no"));
 			return this;
 
