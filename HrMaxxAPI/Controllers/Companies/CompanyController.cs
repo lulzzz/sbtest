@@ -91,12 +91,13 @@ namespace HrMaxxAPI.Controllers.Companies
 			return MakeServiceCall(() => _metaDataService.GetEmployeeMetaData(), "Get employee meta data", true);
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(CompanyRoutes.PayrollMetaData)]
 		[DeflateCompression]
-		public object GetPayrollMetaData(Guid companyId)
+		public object GetPayrollMetaData(CheckBookMetaDataRequestResource request)
 		{
-			return MakeServiceCall(() => _metaDataService.GetPayrollMetaData(companyId), "Get payroll meta data", true);
+			var r = Mapper.Map<CheckBookMetaDataRequestResource, CheckBookMetaDataRequest>(request);
+			return MakeServiceCall(() => _metaDataService.GetPayrollMetaData(r), "Get payroll meta data", true);
 		}
 
 		[HttpGet]

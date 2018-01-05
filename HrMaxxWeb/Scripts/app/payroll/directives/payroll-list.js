@@ -440,8 +440,14 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version',
 							return false;
 						}
 					}
-					var getCompanyPayrollMetaData = function(companyId) {
-						companyRepository.getPayrollMetaData(companyId).then(function (data) {
+					var getCompanyPayrollMetaData = function (companyId) {
+						var request = {
+							companyId: $scope.mainData.selectedCompany.id,
+							hostId: $scope.mainData.selectedHost.id,
+							invoiceSetup: $scope.mainData.selectedCompany.contract.invoiceSetup,
+							hostCompanyId: $scope.mainData.selectedHost.companyId
+						}
+						companyRepository.getPayrollMetaData(request).then(function (data) {
 							dataSvc.payTypes = data.payTypes;
 							dataSvc.payrollAccount = data.payrollAccount;
 							dataSvc.hostPayrollAccount = data.hostPayrollAccount;

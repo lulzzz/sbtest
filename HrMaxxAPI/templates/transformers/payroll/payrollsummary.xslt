@@ -219,6 +219,14 @@
 					</tr>
 					<tr>
 						<td style="width:50%; text-align:left;">
+							<strong>Employee #:</strong>
+						</td>
+						<td style="width:50%; text-align:right;">
+							<xsl:value-of select="Employee/CompanyEmployeeNo"/>
+						</td>
+					</tr>
+					<tr>
+						<td style="width:50%; text-align:left;">
 							<strong>SSN:</strong>
 						</td>
 						<td style="width:50%; text-align:right;">

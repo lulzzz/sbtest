@@ -15,7 +15,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetCompanyMetaData();
 		object GetAccountsMetaData();
 		object GetEmployeeMetaData();
-		object GetPayrollMetaData(Guid companyId);
+		object GetPayrollMetaData(CheckBookMetaDataRequest companyId);
 
 		object GetJournalMetaData(Guid companyId);
 		object GetInvoiceMetaData(Guid companyId);

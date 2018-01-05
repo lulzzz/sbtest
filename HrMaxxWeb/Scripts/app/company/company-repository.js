@@ -33,9 +33,9 @@ common.factory('companyRepository', [
 				return deferred.promise;
 			},
 
-			getPayrollMetaData: function (companyId) {
+			getPayrollMetaData: function (request) {
 				var deferred = $q.defer();
-				companyServer.one('PayrollMetaData').one(companyId).get().then(function (data) {
+				companyServer.all('PayrollMetaData').post(request).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

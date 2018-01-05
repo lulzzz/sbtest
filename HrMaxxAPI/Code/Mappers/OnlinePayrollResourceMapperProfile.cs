@@ -312,6 +312,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId))
 				.ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
 				.ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.ProposedRate));
+
+			CreateMap<CheckBookMetaDataRequestResource, CheckBookMetaDataRequest>();
 		}
 	}
 }

@@ -115,13 +115,13 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxCheckNumber(Guid companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from Journal with (nolock) where TransactionType=@TransactionType and CompanyId=@CompanyId and IsVoid=0";
+			const string sql = "select CheckNumber as maxnumber from CompanyMaxCheckNumber with (nolock) where TransactionType=@TransactionType and CompanyId=@CompanyId";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
 					conn.Query(sql, new { CompanyId = companyId, TransactionType=(int)TransactionType.PayCheck }).FirstOrDefault();
 
-				if (result.maxnumber != null)
+				if (result!=null && result.maxnumber != null)
 				{
 
 					var max = result.maxnumber + 1;
@@ -179,13 +179,13 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxAdjustmenetNumber(Guid companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from Journal with (nolock) where CompanyId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select CheckNumber as maxnumber from CompanyMaxCheckNumber with (nolock) where CompanyId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
 					conn.Query(sql, new { CompanyId = companyId, TransactionType = (int)TransactionType.Adjustment }).FirstOrDefault();
 
-				if (result.maxnumber != null)
+				if (result!=null && result.maxnumber != null)
 				{
 					return result.maxnumber + 1;
 				}
@@ -355,13 +355,13 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxRegularCheckNumber(Guid companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from Journal with (nolock) where CompanyId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select CheckNumber as maxnumber from CompanyMaxCheckNumber with (nolock) where CompanyId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
 					conn.Query(sql, new {CompanyId = companyId, TransactionType = (int) TransactionType.RegularCheck}).FirstOrDefault();
 
-				if (result.maxnumber != null)
+				if (result!=null && result.maxnumber != null)
 				{
 					return result.maxnumber + 1;
 				}

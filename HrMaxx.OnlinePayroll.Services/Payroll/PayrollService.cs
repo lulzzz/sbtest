@@ -684,6 +684,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					//Log.Info("saved deductionss: " + (int)(DateTime.Now - t1).TotalMilliseconds);
 					// t1 = DateTime.Now;
 					//PEO/ASO Co Check
+					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 					    payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 					{
@@ -695,6 +696,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
 							pc.CheckNumber = j.CheckNumber;
 						});
+						_journalService.UpdateCompanyMaxCheckNumber(companyIdForPayrollAccount, TransactionType.PayCheck);
 					}
 					
 					//var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPayroll.Company.Id, savedPayroll.PayDay);
@@ -795,7 +797,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
 					}
 
-
+					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 					
 					txn.Complete();
 					
@@ -846,8 +848,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							journal1.IsVoid = true;
 							_journalService.UnVoidJournal(journal1.Id, TransactionType.PayCheck, name, new Guid(user));
+							_journalService.UpdateCompanyMaxCheckNumber(journal1.CompanyId, TransactionType.PayCheck);
 						}
-
+						
 					}
 
 					foreach (var employeeFutureCheck in employeeFutureChecks)
@@ -856,7 +859,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
 					}
 
-
+					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 
 					txn.Complete();
 
@@ -922,6 +925,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								journal1.IsVoid = true;
 								_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, userName, new Guid(userId));
 							}
+							
 
 						}
 
@@ -934,7 +938,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					});
-
+					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
+					if (payroll.PEOASOCoCheck)
+					{
+						_journalService.UpdateCompanyMaxCheckNumber(journals.First().CompanyId, TransactionType.PayCheck);
+					}
 					txn.Complete();
 					
 				}
@@ -3409,6 +3417,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						pc.CheckNumber = counter++;
 					});
 					_payrollRepository.UpdatePayrollCheckNumbers(payroll);
+					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 					txn.Complete();
 					
 					return payroll;

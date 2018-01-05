@@ -27,5 +27,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void CreateDepositTickets(Extract extract, string name, string fullName);
 		List<Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate);
 		void DeleteExtract(int extractId);
+		void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType);
 	}
 }

@@ -26,7 +26,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string EmployeeMetaData = "Company/EmployeeMetaData";
 		public const string EmployeeDeduction = "Company/EmployeeDeduction";
 		public const string DeleteEmployeeDeduction = "Company/DeleteEmployeeDeduction/{deductionId:int}";
-		public const string PayrollMetaData = "Company/PayrollMetaData/{companyId:guid}";
+		public const string PayrollMetaData = "Company/PayrollMetaData";
 		public const string InvoiceMetaData = "Company/InvoiceMetaData/{companyId:guid}";
 		public const string GetEmployeeImportTemplate = "Company/EmployeeImport/{companyId:guid}";
 		public const string ImportEmployees = "Company/ImportEmployees";

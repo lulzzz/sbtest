@@ -75,7 +75,7 @@ namespace HrMaxx.Common.Services.Excel
 						e.CarryOver.ToString(),
 						e.Department,
 						e.EmployeeNo.ToString(),
-						e.WorkerCompensation.Code.ToString(),
+						e.WorkerCompensation!=null ? e.WorkerCompensation.Code.ToString() :string.Empty,
 						e.PayrollSchedule.GetDbName(),e.PayType.GetDbName(), e.Rate.ToString() 
 					};
 					e.PayCodes.Where(pc=>pc.Id!=0).ToList().ForEach(pc=>row.Add(pc.HourlyRate.ToString()));

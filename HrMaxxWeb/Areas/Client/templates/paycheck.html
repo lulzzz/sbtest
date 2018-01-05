@@ -60,9 +60,9 @@
 				<td class="text-right">{{comp.ytd | currency: '$'}}</td>
 			</tr>
 			<tr>
-				<td colspan="3">Total</td>
-				<td class="text-right">{{ check.calculatedSalary + check.compensationTaxableAmount | currency:'$' }}</td>
-				<td class="text-right">{{ check.calculatedSalaryYTD + check.compensationTaxableYTD | currency:'$' }}</td>
+				<td colspan="3">Gross Wage</td>
+				<td class="text-right">{{ check.grossWage | currency:'$' }}</td>
+				<td class="text-right">{{ check.ytdGrossWage | currency:'$' }}</td>
 			</tr>
 			<tr ng-show="check.notes">
 				<td>Notes</td>

@@ -318,6 +318,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			}
 		}
 
+		public void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType)
+		{
+			var sql = "if exists(select 'x' from CompanyMaxCheckNumber where CompanyId=@CompanyId and TransactionType=@TransactionType) Update CompanyMaxCheckNumber set CheckNumber=(select max(CheckNumber) from Journal Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))) where CompanyId=@CompanyId and TransactionType=@TransactionType else insert into CompanyMaxCheckNumber values (@CompanyId, @TransactionType, (select max(CheckNumber) from Journal Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))));";
+			using (var conn = GetConnection())
+			{
+				
+				conn.Execute(sql, new { CompanyId = companyId, TransactionType=(int)transactionType });
+				
+			}
+		}
+
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)
 		{
 			

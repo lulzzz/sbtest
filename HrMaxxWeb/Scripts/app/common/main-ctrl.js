@@ -166,26 +166,18 @@
 				$scope.getCompanies(null);
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
 				if (dataSvc.selectedCompany1) {
-					$scope.companySelected();
-					if (url)
-						$window.location.href = url;
-				}
-				//hostRepository.getHost(hostId).then(function (data) {
-				//	dataSvc.selectedHost = angular.copy(data);
+					$scope.companySelected(url);
 					
-				//	$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
-				//}, function (erorr) {
-				//	addAlert('error getting host details', 'danger');
-				//});
+				}
+				
 				
 			} else if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
 				dataSvc.selectedCompany = null;
 				dataSvc.selectedCompany1 = null;
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
 				if (dataSvc.selectedCompany1) {
-					$scope.companySelected();
-					if (url)
-						$window.location.href = url;
+					$scope.companySelected(url);
+					
 				}
 			} else {
 				if (url)
@@ -247,11 +239,13 @@
 				addAlert('error getting host details', 'danger');
 			});
 		}
-		$scope.companySelected = function ($item, $model, $label, $event) {
+		$scope.companySelected = function(url) {
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
 				dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
 				companyRepository.getCompany(dataSvc.selectedCompany.id).then(function (comp) {
 					dataSvc.selectedCompany = angular.copy(comp);
+					if (url)
+						$window.location.href = url;
 				}, function (error) {
 					$scope.addAlert('error getting company details', 'danger');
 				});

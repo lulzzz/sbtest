@@ -149,7 +149,7 @@
 								</select>
 							</div>
 							<div class="col-sm-4 hidden-print">
-								<input type="text" class="form-control" placeholder="Type Company Name" ng-show="data.showCompanies" ng-disabled="data.hostCompanies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null;$viewValue=null" ng-mouseleave="data.selectedCompany1=null;$viewValue=null" typeahead-show-hint="true" typeahead-on-select="companySelected($item, $model, $label, $event)" uib-typeahead="company as company.name for company in data.hostCompanies | filter:{name:$viewValue}">
+								<input type="text" class="form-control" placeholder="Type Company Name" ng-show="data.showCompanies" ng-disabled="data.hostCompanies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null;$viewValue=null" ng-mouseleave="data.selectedCompany1=null;$viewValue=null" typeahead-show-hint="true" typeahead-on-select="companySelected()" uib-typeahead="company as company.name for company in data.hostCompanies | filter:{name:$viewValue}">
 							</div>
 							<div class="col-sm-4 hidden-print" ng-show="data.selectedCompany && data.selectedCompany.id"><h5 class="pull-right"><em>You are viewing company: {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span></em></h5></div>
 

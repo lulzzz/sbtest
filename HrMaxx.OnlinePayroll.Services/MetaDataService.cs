@@ -83,23 +83,21 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public object GetPayrollMetaData(Guid companyId)
+		public object GetPayrollMetaData(CheckBookMetaDataRequest request)
 		{
 			try
 			{
-				var company = _readerService.GetCompany(companyId);
-				var host = _hostService.GetHost(company.HostId);
 				var paytypes = _metaDataRepository.GetAllPayTypes();
-				var bankAccount = _metaDataRepository.GetPayrollAccount(companyId);
-				var hostAccount = _metaDataRepository.GetPayrollAccount(host.Company.Id);
-				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((company.Contract.BillingOption==BillingOptions.Invoice && company.Contract.InvoiceSetup!=null && company.Contract.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck) ? host.Company.Id : companyId);
-				var importMap = _metaDataRepository.GetCompanyTsImportMap(companyId);
+				var bankAccount = _metaDataRepository.GetPayrollAccount(request.CompanyId);
+				var hostAccount = _metaDataRepository.GetPayrollAccount(request.HostCompanyId);
+				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup!=null && request.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck) ?request.HostCompanyId : request.CompanyId);
+				var importMap = _metaDataRepository.GetCompanyTsImportMap(request.CompanyId);
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
 				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies };
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Payroll for company " + companyId);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Payroll for company " + request.CompanyId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
