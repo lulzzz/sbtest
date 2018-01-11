@@ -158,54 +158,47 @@ namespace SiteInspectionStatus_Utility
 				var payrollService = scope.Resolve<IPayrollService>();
 				var readerservice = scope.Resolve<IReaderService>();
 
-				var compList = new List<Guid>();
-				compList.Add(new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E"));
-				compList.Add(new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B"));
+				//var compList = new List<Guid>();
+				//compList.Add(new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E"));
+				//compList.Add(new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B"));
 				var payChecks = new List<int>();
 				var counter = (int) 0;
-				compList.ForEach(c =>
-				{
-					var company = readerservice.GetCompany(c);
-					var employees = readerservice.GetEmployees(company: c);
-					var payrolls = readerservice.GetPayrolls(c);
-					payrolls.Where(p=>!p.IsHistory).OrderBy(p=>p.PayDay).ToList().ForEach(p =>
+				var employees = readerservice.GetEmployees();
+				var payrolls = readerservice.GetPayrolls(null, startDate: new DateTime(2018, 1, 1).Date);
+				
+					payrolls.Where(p=>!p.IsHistory && p.Company.AccumulatedPayTypes.Any() && !p.Company.AccumulatedPayTypes.First().CompanyManaged).OrderBy(p=>p.PayDay).ToList().ForEach(p =>
 					{
 						var empList = employees.Where(e => p.PayChecks.Any(pc => pc.Employee.Id == e.Id)).ToList();
 						var employeeAccumulations = readerservice.GetAccumulations(company: p.Company.Id,
 						startdate: new DateTime(p.PayDay.Year, 1, 1), enddate: p.PayDay, ssns: empList.Select(pc => pc.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
 						p.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
 						{
-							var slVal = pc.Accumulations!=null && pc.Accumulations.Any(a => a.PayType.PayType.Id == 6) ? pc.Accumulations.First(a => a.PayType.PayType.Id == 6).AccumulatedValue : 0;
-							var ytd = pc.Accumulations != null && pc.Accumulations.Any(a => a.PayType.PayType.Id == 6) ? pc.Accumulations.First(a => a.PayType.PayType.Id == 6).YTDFiscal : 0;
+							var ssns = empList.Select(e => e.SSN)
+								.Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ",");
+							var sl = pc.Accumulations.First(a => a.PayType.PayType.Id == 6);
+							
 							var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == pc.Employee.Id);
 							if (employeeAccumulation.Accumulations.Any(a => a.PayTypeId == 6))
 							{
-								employeeAccumulation.Accumulations.First(a => a.PayTypeId == 6).YTDFiscal -= slVal;
+								employeeAccumulation.Accumulations.First(a => a.PayTypeId == 6 && a.FiscalStart==sl.FiscalStart && a.FiscalEnd==sl.FiscalEnd).YTDFiscal -= sl.AccumulatedValue;
+								employeeAccumulation.Accumulations.First(a => a.PayTypeId == 6 && a.FiscalStart == sl.FiscalStart && a.FiscalEnd == sl.FiscalEnd).YTDUsed -= sl.Used;
 							}
-							pc.Employee = employees.First(e => e.Id == pc.Employee.Id);
-							var accums = ProcessAccumulations(pc, company.AccumulatedPayTypes,
+							//pc.Employee = employees.First(e => e.Id == pc.Employee.Id);
+							var accums = ProcessAccumulations(pc, p.Company.AccumulatedPayTypes,
 								employeeAccumulation);
 							var shouldbe = accums.First(a => a.PayType.PayType.Id == 6);
-							
-							if (shouldbe.AccumulatedValue != slVal || shouldbe.YTDFiscal!=ytd)
+
+							if (shouldbe.Available != sl.Available)
 							{
-								var sl = pc.Accumulations.FirstOrDefault(a => a.PayType.PayType.Id == 6);
-								if (sl == null)
-								{
-									sl = shouldbe;
-								}
-								else
-								{
-									sl.AccumulatedValue = shouldbe.AccumulatedValue;
-									sl.YTDFiscal = shouldbe.YTDFiscal;
-								}
+								Console.WriteLine(string.Format("{0}--{8}--{9}--{1}--{2}--{3}--{4}--{5}--{6}--{7}", pc.Id, pc.PayDay.ToString("MM/dd/yyyy"), sl.AccumulatedValue, shouldbe.AccumulatedValue, sl.YTDFiscal, shouldbe.YTDFiscal, sl.Available, shouldbe.Available, p.Company.Name, pc.Employee.FullName));
+								sl = shouldbe;
 								payrollService.UpdatePayCheckAccumulation(pc.Id, sl, "System", Guid.Empty.ToString());
-								Console.WriteLine(string.Format("{0}--{1}--{2}--{3}--{4}--{5}", pc.Id, pc.PayDay.ToString("MM/dd/yyyy"), slVal, shouldbe.AccumulatedValue, ytd, shouldbe.YTDFiscal));
+								
 								counter++;
 							}
 						});
 					});
-				});
+			
 				
 				Console.WriteLine("Checks Updated " + counter);
 
@@ -871,7 +864,7 @@ namespace SiteInspectionStatus_Utility
 								}
 								else
 								{
-									a.FiscalStart = CalculateFiscalStartDate(employee.SickLeaveHireDate.Date, p.PayDay).Date;
+									//a.FiscalStart = CalculateFiscalStartDate(employee.SickLeaveHireDate.Date, p.PayDay).Date;
 									a.FiscalEnd = a.FiscalStart.AddYears(1).AddDays(-1).Date;
 								}
 								
@@ -1603,39 +1596,59 @@ namespace SiteInspectionStatus_Utility
 		private static List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes, Accumulation employeeAccumulation)
 		{
 			var result = new List<PayTypeAccumulation>();
-			var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay);
-			var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+
 
 
 
 			foreach (var payType in accumulatedPayTypes)
 			{
+				var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, payType);
+				var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+
 				if (!payType.CompanyManaged)
 				{
+
+					var currentAccumulaiton = employeeAccumulation.Accumulations != null &&
+																		employeeAccumulation.Accumulations.Any(
+																			ac =>
+																				ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
+																				ac.FiscalEnd == fiscalEndDate)
+						? employeeAccumulation.Accumulations.Where(
+							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate && ac.FiscalEnd == fiscalEndDate)
+							.OrderBy(ac => ac.FiscalStart)
+							.Last()
+						: null;
+					var previousAccumulations = employeeAccumulation.Accumulations != null &&
+																		employeeAccumulation.Accumulations.Any(
+																			ac =>
+																				ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate &&
+																				ac.FiscalEnd < fiscalEndDate)
+						? employeeAccumulation.Accumulations.Where(
+							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate && ac.FiscalEnd < fiscalEndDate)
+							.ToList()
+						: null;
+
+
+					var carryOver = paycheck.Employee.CarryOver;
+					carryOver += previousAccumulations != null
+						? previousAccumulations.Sum(ac => ac.YTDFiscal - ac.YTDUsed)
+						: 0;
+
 					var ytdAccumulation = (decimal)0;
 					var ytdUsed = (decimal)0;
 
-					var carryover = (decimal) (decimal)0;
-
-					if (employeeAccumulation.Accumulations != null && employeeAccumulation.Accumulations.Any(ac => ac.PayTypeId == payType.PayType.Id))
+					if (currentAccumulaiton != null)
 					{
-						var accum = employeeAccumulation.Accumulations.First(ac => ac.PayTypeId == payType.PayType.Id);
-						ytdAccumulation = accum.YTDFiscal;
-						ytdUsed = accum.YTDUsed;
-						carryover = (decimal) accum.CarryOver;
+						ytdAccumulation = currentAccumulaiton.YTDFiscal;
+						ytdUsed = currentAccumulaiton.YTDUsed;
+						//carryOver = accum.CarryOver;
 
 					}
-					else if (employeeAccumulation.PreviousAccumulations != null && employeeAccumulation.PreviousAccumulations.Any(ac => ac.PayTypeId == payType.PayType.Id))
-					{
-						carryover = (decimal) employeeAccumulation.PreviousAccumulations.First(ac => ac.PayTypeId == payType.PayType.Id).Available;
 
-					}
-					else
-					{
-						carryover = (decimal) paycheck.Employee.CarryOver;
-					}
+					if (ytdAccumulation > payType.AnnualLimit)
+						ytdAccumulation = payType.AnnualLimit;
 
-					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType.RatePerHour);
+					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
 						? CalculatePayTypeUsage(paycheck.Employee,
 							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
@@ -1648,6 +1661,8 @@ namespace SiteInspectionStatus_Utility
 						accumulationValue = thisCheckValue;
 					}
 
+
+
 					result.Add(new PayTypeAccumulation
 					{
 						PayType = payType,
@@ -1657,7 +1672,7 @@ namespace SiteInspectionStatus_Utility
 						FiscalEnd = fiscalEndDate,
 						Used = Math.Round(thisCheckUsed, 2, MidpointRounding.AwayFromZero),
 						YTDUsed = Math.Round(ytdUsed + thisCheckUsed, 2, MidpointRounding.AwayFromZero),
-						CarryOver = (decimal) Math.Round(carryover, 2, MidpointRounding.AwayFromZero)
+						CarryOver = Math.Round(carryOver, 2, MidpointRounding.AwayFromZero)
 					});
 				}
 				else if (paycheck.Accumulations.Any(apt => apt.PayType.Id == payType.Id))
@@ -1687,7 +1702,7 @@ namespace SiteInspectionStatus_Utility
 				else if (employee.PayrollSchedule == PayrollSchedule.Monthly)
 					quotient = (employee.Rate * 12) / (40 * 52);
 			}
-			else if (employee.PayType == EmployeeType.PieceWork)
+			else if (employee.PayType == EmployeeType.PieceWork || employee.PayType == EmployeeType.JobCost)
 			{
 				quotient = employee.Rate;
 			}
@@ -1703,17 +1718,22 @@ namespace SiteInspectionStatus_Utility
 			return quotient == 0 ? 0 : Convert.ToDecimal(Math.Round(compnesaitonAmount / quotient, 2, MidpointRounding.AwayFromZero));
 		}
 
-		private static decimal CalculatePayTypeAccumulation(PayCheck paycheck, decimal ratePerHour)
+		private static decimal CalculatePayTypeAccumulation(PayCheck paycheck, AccumulatedPayType payType, decimal ytd)
 		{
+			if (payType.IsLumpSum)
+			{
+				return payType.AnnualLimit - ytd;
+			}
+
 			if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWork)
 			{
-				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours) * ratePerHour;
+				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours) * payType.RatePerHour;
 			}
 			else
 			{
 				if (paycheck.Employee.Rate <= 0)
 					return 0;
-				var val = (paycheck.Salary / paycheck.Employee.Rate) * (40 * 52 / 365) * ratePerHour;
+				var val = (paycheck.Salary / paycheck.Employee.Rate) * (40 * 52 / 365) * payType.RatePerHour;
 				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
 					return 7 * val;
 				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
@@ -1729,8 +1749,10 @@ namespace SiteInspectionStatus_Utility
 			}
 		}
 
-		private static DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay)
+		private static DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay, AccumulatedPayType payType)
 		{
+			if (payType.IsLumpSum)
+				return new DateTime(payDay.Year, 1, 1).Date;
 			DateTime result;
 			var accumulationBaseDate = new DateTime(2015, 7, 1);
 			if (hireDate <= accumulationBaseDate)
@@ -1752,7 +1774,6 @@ namespace SiteInspectionStatus_Utility
 			}
 			return result;
 		}
-		
 
 		public class MissingSL
 		{

@@ -574,7 +574,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update max check number for company" + companyId + " transaction type " + (int)transactionType);
+				Log.Error(message, e);
 				throw;
 			}
 		}

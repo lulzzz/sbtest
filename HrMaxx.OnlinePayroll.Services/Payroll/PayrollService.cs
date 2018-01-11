@@ -1061,12 +1061,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
 					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
 				}
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
+				
 					if (payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && payroll.PayChecks.Any(pc=>!pc.IsVoid && pc.Status!=PaycheckStatus.Printed && pc.Status!=PaycheckStatus.PrintedAndPaid)))
 						_payrollRepository.MarkPayrollPrinted(payroll.Id);
-					txn.Complete();
-				}
+					//txn.Complete();
+				
 				return returnFile;
 				
 			}

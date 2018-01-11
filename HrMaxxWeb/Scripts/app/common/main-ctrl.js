@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal', 'commonRepository',
-	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal, commonRepository) {
+	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal', 'commonRepository', '$location',
+	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal, commonRepository, $location) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
@@ -305,7 +305,8 @@
 			else if (result.sourceTypeId === 3) {
 				dataSvc.fromSearch = true;
 				dataSvc.showemployee = result.sourceId;
-				$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Employees/" + +(new Date().getTime()));
+				var currentLocation = $window.location.href;
+				$scope.setHostandCompany(result.hostId, result.companyId, (currentLocation.indexOf( "#!/Client/Employees/")===-1 ?"#!/Client/Employees/" + +(new Date().getTime()) : null));
 			}
 			
 		});

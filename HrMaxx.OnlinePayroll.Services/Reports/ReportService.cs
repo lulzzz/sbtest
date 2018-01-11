@@ -1141,7 +1141,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Paperless 941 for {0} (Quarter={1})", request.Year, request.Quarter);
 			request.AllowFiling = false;
-			var data = GetExtractResponse(request, buildDaily:true, includeCompensaitons:true);
+			var data = GetExtractResponse(request, buildDaily: true, includeCompensaitons: true, includeTaxes: true);
 			
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("quarter",  request.Quarter.ToString()));

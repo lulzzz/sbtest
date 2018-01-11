@@ -111,7 +111,7 @@
 				</script>
 			</div>
 			<div class="row">
-				<button class="btn btn-sm btn-primary" ng-show="canRunPayroll()" ng-click="add()">Add</button>
+				<button class="btn btn-sm btn-primary" ng-show="canRunPayroll()" id="test" ng-click="add()">Add</button>
 				<pre class="alert alert-danger" ng-if="data && mainData.selectedCompany && mainData.selectedCompany.contract.billingOption===3 && !mainData.selectedCompany.contract.invoiceSetup">This company is set up to be invoiced but there are no configurations available.</pre>
 				<pre class="alert alert-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresCompanyPayrollAccount()">Please set a Payroll Account in COA secton</pre>
 				<pre class="alert alert-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresHostPayrollAccount()">Please set a Payroll Account in COA secton for the Host. this is a PEO/ASO Co Check Client</pre>

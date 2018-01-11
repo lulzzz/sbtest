@@ -362,6 +362,7 @@ namespace HrMaxx.Common.Services.PDF
 						// Obtain font.
 						var objFont = objDoc.Fonts["Helvetica"];
 						//objDoc.Form.RemoveXFA();
+						objDoc.Title = counter.ToString();
 						foreach (var field in report.Fields)
 						{
 							if (field.Type.Equals("Bullet") && !string.IsNullOrWhiteSpace(field.Value) && !string.IsNullOrWhiteSpace(field.Name))
@@ -398,6 +399,21 @@ namespace HrMaxx.Common.Services.PDF
 							}
 
 
+						}
+
+						for (var mfc = 1; mfc < objDoc.Form.Fields.Count; mfc++)
+						{
+							var mf = objDoc.Form.Fields[mfc];
+							if (!report.Fields.Any(f => f.Name.Equals(mf.FieldName)))
+							{
+								
+								if (!mf.FieldType.Equals("Btn"))
+								{
+									mf.SetFieldValue(string.Empty, objFont);
+									//mf.SetFieldValue(mf.FieldDefaultValue, null);
+
+								}
+							}
 						}
 					}
 					var d = objDoc.SaveToMemory();

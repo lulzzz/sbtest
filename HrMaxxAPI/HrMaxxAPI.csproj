@@ -347,6 +347,7 @@
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />
     <Content Include="templates\transformers\extracts\InternalPositivePayReport.xslt" />
     <Content Include="templates\transformers\extracts\Paperless940-2017.xslt" />
+    <Content Include="templates\transformers\extracts\Paperless941-2018.xslt" />
     <Content Include="templates\transformers\extracts\Paperless941-2017.xslt" />
     <Content Include="templates\transformers\extracts\PositivePayReport.xslt" />
     <Content Include="templates\transformers\extracts\CAPITEFTPS.xslt" />

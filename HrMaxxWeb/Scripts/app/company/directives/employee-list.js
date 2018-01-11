@@ -15,7 +15,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
-						isBodyOpen: true
+						isBodyOpen: true,
+						employeesLoadedFor: null
 						
 					}
 					
@@ -304,31 +305,36 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						});
 					}
 					
-					$scope.getEmployees = function(companyId) {
-						companyRepository.getEmployees(companyId).then(function (data) {
-							$scope.list = data;
-							$scope.tableParams.reload();
-							$scope.tableParamsNew.reload();
-							$scope.fillTableData($scope.tableParams);
-							
-							if ($scope.mainData.fromSearch && $scope.mainData.showemployee) {
-								var exists = $filter('filter')($scope.list, { id: $scope.mainData.showemployee })[0];
-								if (exists) {
-									$scope.set(exists);
+					$scope.getEmployees = function (companyId) {
+						if (!dataSvc.employeesLoadedFor || dataSvc.employeesLoadedFor != companyId) {
+							dataSvc.employeesLoadedFor = companyId;
+							companyRepository.getEmployees(companyId).then(function (data) {
+								
+								$scope.list = data;
+								$scope.tableParams.reload();
+								$scope.tableParamsNew.reload();
+								$scope.fillTableData($scope.tableParams);
+
+								if ($scope.mainData.fromSearch && $scope.mainData.showemployee) {
+									var exists = $filter('filter')($scope.list, { id: $scope.mainData.showemployee })[0];
+									if (exists) {
+										$scope.set(exists);
+									}
+									$scope.mainData.fromSearch = false;
+									$scope.mainData.showemployee = null;
 								}
-								$scope.mainData.fromSearch = false;
-								$scope.mainData.showemployee = null;
-							}
-							else if ($scope.mainData.userEmployee) {
-								var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userEmployee })[0];
-								if (exists1) {
-									$scope.mainData.selectedEmployee = exists1;
-									$scope.set(exists1);
+								else if ($scope.mainData.userEmployee) {
+									var exists1 = $filter('filter')($scope.list, { id: $scope.mainData.userEmployee })[0];
+									if (exists1) {
+										$scope.mainData.selectedEmployee = exists1;
+										$scope.set(exists1);
+									}
 								}
-							}
-						}, function (erorr) {
-							addAlert('error getting employee list', 'danger');
-						});
+							}, function (erorr) {
+								addAlert('error getting employee list', 'danger');
+							});
+						}
+						
 					}
 
 					$scope.$watch('mainData.selectedCompany',

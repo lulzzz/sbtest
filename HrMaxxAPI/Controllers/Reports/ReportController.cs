@@ -118,7 +118,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
 			{
-				FileName = document.Filename
+				FileName = document.Filename + document.DocumentExtension
 			};
 			return response;
 		}

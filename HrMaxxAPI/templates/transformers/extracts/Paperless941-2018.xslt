@@ -203,24 +203,12 @@
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<Interior/>
-					<NumberFormat ss:Format="@"/>
+					<NumberFormat ss:Format="#,##0.00_);\(#,##0.00\)"/>
 				</Style>
 				<Style ss:ID="s81">
-					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
-					<Borders>
-						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-					</Borders>
-					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<NumberFormat ss:Format="#,##0.00_);\(#,##0.00\)"/>
 				</Style>
 				<Style ss:ID="s82">
-					<NumberFormat ss:Format="#,##0.00_);\(#,##0.00\)"/>
-				</Style>
-				<Style ss:ID="s83">
 					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight" ss:Rotate="30"
 					 ss:WrapText="1"/>
 					<Borders>
@@ -232,18 +220,18 @@
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<NumberFormat ss:Format="@"/>
 				</Style>
-				<Style ss:ID="s85">
+				<Style ss:ID="s84">
 					<Borders/>
 					<Interior/>
 					<NumberFormat ss:Format="Currency"/>
 				</Style>
-				<Style ss:ID="s86">
+				<Style ss:ID="s85">
 					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);\(&quot;$&quot;#,##0.00\)"/>
 				</Style>
-				<Style ss:ID="s87">
+				<Style ss:ID="s86">
 					<NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>
 				</Style>
-				<Style ss:ID="s88">
+				<Style ss:ID="s87">
 					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight" ss:Rotate="30"
 					 ss:WrapText="1"/>
 					<Borders>
@@ -255,8 +243,21 @@
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);\(&quot;$&quot;#,##0.00\)"/>
 				</Style>
-				<Style ss:ID="s89">
+				<Style ss:ID="s88">
 					<Borders/>
+					<Interior/>
+					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);\(&quot;$&quot;#,##0.00\)"/>
+				</Style>
+				<Style ss:ID="s89">
+					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight" ss:Rotate="30"
+					 ss:WrapText="1"/>
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<Interior/>
 					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);\(&quot;$&quot;#,##0.00\)"/>
 				</Style>
@@ -271,11 +272,10 @@
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<Interior/>
-					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);\(&quot;$&quot;#,##0.00\)"/>
+					<NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>
 				</Style>
 				<Style ss:ID="s91">
-					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight" ss:Rotate="30"
-					 ss:WrapText="1"/>
+					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -283,11 +283,9 @@
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<Interior/>
-					<NumberFormat ss:Format="&quot;$&quot;#,##0.00"/>
+					<NumberFormat/>
 				</Style>
 				<Style ss:ID="s92">
-					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -301,22 +299,12 @@
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<NumberFormat/>
 				</Style>
 				<Style ss:ID="s94">
-					<Borders>
-						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-					</Borders>
-					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<NumberFormat/>
-				</Style>
-				<Style ss:ID="s95">
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -327,7 +315,7 @@
 					<Interior/>
 					<NumberFormat/>
 				</Style>
-				<Style ss:ID="s96">
+				<Style ss:ID="s95">
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -336,13 +324,13 @@
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<NumberFormat/>
 				</Style>
-				<Style ss:ID="s97">
+				<Style ss:ID="s96">
 					<NumberFormat/>
 				</Style>
-				<Style ss:ID="s98">
+				<Style ss:ID="s97">
 					<Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
 				</Style>
-				<Style ss:ID="s99">
+				<Style ss:ID="s98">
 					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -351,8 +339,17 @@
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
-					<NumberFormat ss:Format="0"/>
+					<Interior/>
+					<NumberFormat ss:Format="00000"/>
+				</Style>
+				<Style ss:ID="s99">
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<NumberFormat ss:Format="@"/>
 				</Style>
 				<Style ss:ID="s100">
 					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
@@ -363,11 +360,9 @@
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<Interior/>
-					<NumberFormat ss:Format="0"/>
+					<NumberFormat ss:Format="@"/>
 				</Style>
 				<Style ss:ID="s101">
-					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -376,40 +371,9 @@
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<Interior/>
-					<NumberFormat ss:Format="00000"/>
+					<NumberFormat ss:Format="@"/>
 				</Style>
 				<Style ss:ID="s102">
-					<Borders>
-						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-					</Borders>
-					<NumberFormat ss:Format="@"/>
-				</Style>
-				<Style ss:ID="s103">
-					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
-					<Borders>
-						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-					</Borders>
-					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<NumberFormat ss:Format="@"/>
-				</Style>
-				<Style ss:ID="s104">
-					<Borders>
-						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-					</Borders>
-					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<Interior/>
-					<NumberFormat ss:Format="@"/>
-				</Style>
-				<Style ss:ID="s105">
 					<Alignment ss:Vertical="Bottom" ss:Rotate="45"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -420,7 +384,7 @@
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<Interior/>
 				</Style>
-				<Style ss:ID="s106">
+				<Style ss:ID="s103">
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -430,19 +394,10 @@
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<Interior/>
 				</Style>
-				<Style ss:ID="s107">
+				<Style ss:ID="s104">
 					<Interior/>
 				</Style>
-				<Style ss:ID="s108">
-					<Borders>
-						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
-						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
-					</Borders>
-					<Interior/>
-				</Style>
-				<Style ss:ID="s109">
+				<Style ss:ID="s105">
 					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -454,19 +409,108 @@
 					<Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
 					<NumberFormat ss:Format="00000"/>
 				</Style>
-				<Style ss:ID="s110">
+				<Style ss:ID="s106">
+					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
 					<Borders>
 						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
+					<Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+					<NumberFormat ss:Format="0"/>
+				</Style>
+				<Style ss:ID="s107">
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
 					<Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
 					<NumberFormat/>
 				</Style>
-				<Style ss:ID="s111">
-					<Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+				<Style ss:ID="s108">
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
+					<Interior/>
+					<NumberFormat/>
+				</Style>
+				<Style ss:ID="s109">
+					<Interior/>
 					<NumberFormat ss:Format="Currency"/>
+				</Style>
+				<Style ss:ID="s110">
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
+					<Interior/>
+					<NumberFormat/>
+				</Style>
+				<Style ss:ID="s111">
+					<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11" ss:Color="#FF0000"/>
+				</Style>
+				<Style ss:ID="s112">
+					<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11"/>
+				</Style>
+				<Style ss:ID="s113">
+					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
+					<Interior ss:Color="#FFFF00" ss:Pattern="Solid"/>
+					<NumberFormat ss:Format="@"/>
+				</Style>
+				<Style ss:ID="s114">
+					<Alignment ss:Vertical="Center" ss:Rotate="30" ss:WrapText="1"/>
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
+					<Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+					<NumberFormat ss:Format="@"/>
+				</Style>
+				<Style ss:ID="s115">
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11"/>
+					<Interior/>
+				</Style>
+				<Style ss:ID="s116">
+					<Font ss:FontName="Calibri" x:Family="Swiss" ss:Size="11"/>
+					<Interior/>
+				</Style>
+				<Style ss:ID="s117">
+					<Alignment ss:Vertical="Bottom" ss:Rotate="45"/>
+					<Borders>
+						<Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+					</Borders>
+					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FFFFFF"/>
+					<Interior ss:Color="#000000" ss:Pattern="Solid"/>
 				</Style>
 			</Styles>
   			<xsl:apply-templates/>
@@ -476,14 +520,14 @@
 
 	<xsl:template match="ExtractResponse">
 	
-		<Worksheet ss:Name="QEX 2017 Company Information">
+		<Worksheet ss:Name="QEX 2018 Company Information">
             <Table >
 							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="58.5"/>
 							<Column ss:AutoFitWidth="0" ss:Width="61.5"/>
 							<Column ss:AutoFitWidth="0" ss:Width="113.25"/>
 							<Column ss:AutoFitWidth="0" ss:Width="112.5"/>
 							<Column ss:AutoFitWidth="0" ss:Width="124.5"/>
-							<Column ss:StyleID="s107" ss:AutoFitWidth="0" ss:Width="114"/>
+							<Column ss:StyleID="s104" ss:AutoFitWidth="0" ss:Width="114"/>
 							<Column ss:AutoFitWidth="0" ss:Width="99.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="75"/>
 							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="68.25"/>
@@ -492,7 +536,7 @@
 							<Column ss:Index="14" ss:AutoFitWidth="0" ss:Width="61.5"/>
 							<Column ss:Index="17" ss:AutoFitWidth="0" ss:Width="72"/>
 							<Column ss:Index="19" ss:StyleID="s65" ss:Width="52.5"/>
-							<Column ss:Index="22" ss:StyleID="s107" ss:AutoFitWidth="0" ss:Width="46.5"/>
+							<Column ss:Index="22" ss:StyleID="s116" ss:AutoFitWidth="0" ss:Width="46.5"/>
 							<Column ss:AutoFitWidth="0" ss:Width="57.75"/>
 							<Row ss:AutoFitHeight="0" ss:Height="66">
 								<Cell ss:StyleID="s72">
@@ -510,7 +554,7 @@
 								<Cell ss:StyleID="s72">
 									<Data ss:Type="String">Address 1</Data>
 								</Cell>
-								<Cell ss:StyleID="s105">
+								<Cell ss:StyleID="s102">
 									<Data ss:Type="String">Address 2 -  The IRS cannot support use of this field.</Data>
 								</Cell>
 								<Cell ss:StyleID="s72">
@@ -558,8 +602,8 @@
 								<Cell ss:StyleID="s75">
 									<Data ss:Type="String">Online PIN ( For Indirect Filers Only)</Data>
 								</Cell>
-								<Cell ss:StyleID="s105">
-									<Data ss:Type="String">Address Change - Not Necessary for V2.1 and later</Data>
+								<Cell ss:StyleID="s117">
+									<Data ss:Type="String">Address Change - Removed</Data>
 								</Cell>
 								<Cell ss:StyleID="s76"/>
 							</Row>
@@ -579,7 +623,7 @@
 								<Cell ss:StyleID="s70">
 									<Data ss:Type="String">R</Data>
 								</Cell>
-								<Cell ss:StyleID="s106">
+								<Cell ss:StyleID="s103">
 									<Data ss:Type="String">Do Not Use</Data>
 								</Cell>
 								<Cell ss:StyleID="s70">
@@ -618,10 +662,10 @@
 								<Cell ss:StyleID="s78">
 									<Data ss:Type="String"> </Data>
 								</Cell>
-								<Cell ss:StyleID="s102"/>
+								<Cell ss:StyleID="s99"/>
 								<Cell ss:StyleID="s78"/>
 								<Cell ss:StyleID="s79"/>
-								<Cell ss:StyleID="s108"/>
+								<Cell ss:StyleID="s115"/>
 							</Row>
             
    <Row></Row>
@@ -651,25 +695,25 @@
 							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="72"/>
 							<Column ss:AutoFitWidth="0" ss:Width="60.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="75"/>
-							<Column ss:StyleID="s86" ss:AutoFitWidth="0" ss:Width="124.5"/>
-							<Column ss:StyleID="s86" ss:AutoFitWidth="0" ss:Width="104.25"/>
-							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="171.75"/>
-							<Column ss:StyleID="s86" ss:AutoFitWidth="0" ss:Width="85.5"/>
-							<Column ss:StyleID="s86" ss:AutoFitWidth="0" ss:Width="82.5" ss:Span="1"/>
-							<Column ss:Index="10" ss:StyleID="s87" ss:AutoFitWidth="0" ss:Width="80.25"/>
-							<Column ss:StyleID="s87" ss:AutoFitWidth="0" ss:Width="81.75"/>
+							<Column ss:StyleID="s85" ss:AutoFitWidth="0" ss:Width="124.5"/>
+							<Column ss:StyleID="s85" ss:AutoFitWidth="0" ss:Width="104.25"/>
+							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="195"/>
+							<Column ss:StyleID="s85" ss:AutoFitWidth="0" ss:Width="85.5"/>
+							<Column ss:StyleID="s85" ss:AutoFitWidth="0" ss:Width="82.5" ss:Span="1"/>
+							<Column ss:Index="10" ss:StyleID="s86" ss:AutoFitWidth="0" ss:Width="80.25"/>
+							<Column ss:StyleID="s86" ss:AutoFitWidth="0" ss:Width="81.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="56.25"/>
 							<Column ss:AutoFitWidth="0" ss:Width="82.5"/>
 							<Column ss:AutoFitWidth="0" ss:Width="74.25"/>
 							<Column ss:AutoFitWidth="0" ss:Width="115.5"/>
 							<Column ss:AutoFitWidth="0" ss:Width="116.25"/>
-							<Column ss:StyleID="s98" ss:AutoFitWidth="0" ss:Width="144"/>
-							<Column ss:AutoFitWidth="0" ss:Width="106.5"/>
-							<Column ss:AutoFitWidth="0" ss:Width="90"/>
+							<Column ss:StyleID="s104" ss:AutoFitWidth="0" ss:Width="144"/>
+							<Column ss:StyleID="s97" ss:AutoFitWidth="0" ss:Width="111"/>
+							<Column ss:StyleID="s97" ss:AutoFitWidth="0" ss:Width="99.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="96"/>
 							<Column ss:AutoFitWidth="0" ss:Width="80.25"/>
 							<Column ss:AutoFitWidth="0" ss:Width="133.5"/>
-							<Column ss:AutoFitWidth="0" ss:Width="96.75"/>
+							<Column ss:StyleID="s111" ss:AutoFitWidth="0" ss:Width="96.75"/>
 							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="72.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="81"/>
 							<Column ss:AutoFitWidth="0" ss:Width="90"/>
@@ -678,7 +722,7 @@
 							<Column ss:AutoFitWidth="0" ss:Width="120.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="107.25"/>
 							<Column ss:AutoFitWidth="0" ss:Width="99.75"/>
-							<Column ss:StyleID="s82" ss:AutoFitWidth="0" ss:Width="78.75"/>
+							<Column ss:StyleID="s81" ss:AutoFitWidth="0" ss:Width="78.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="81"/>
 							<Column ss:AutoFitWidth="0" ss:Width="69.75"/>
 							<Column ss:AutoFitWidth="0" ss:Width="73.5"/>
@@ -767,7 +811,7 @@
 							<Column ss:AutoFitWidth="0" ss:Width="62.25"/>
 							<Column ss:Width="63"/>
 							<Row ss:Height="67.5">
-								<Cell ss:StyleID="s83">
+								<Cell ss:StyleID="s82">
 									<Data ss:Type="String">EIN (EIN Number without dash)</Data>
 								</Cell>
 								<Cell ss:StyleID="s66">
@@ -776,28 +820,28 @@
 								<Cell ss:StyleID="s66">
 									<Data ss:Type="String">Employees (Positive Integer)</Data>
 								</Cell>
-								<Cell ss:StyleID="s88">
+								<Cell ss:StyleID="s87">
 									<Data ss:Type="String"> Total Wages (Currency) (Ignored for Return Types PR and SS)</Data>
 								</Cell>
-								<Cell ss:StyleID="s88">
+								<Cell ss:StyleID="s87">
 									<Data ss:Type="String">Total Tax Withheld (Currency)  (Ignored for Return Types PR and SS)</Data>
 								</Cell>
-								<Cell ss:StyleID="s103">
-									<Data ss:Type="String">Wages not Subject to SS/Medicare (Valid Values 1 for Yes, 0 for No)  If 1 or Yes, 5a through 5d will be ignored.</Data>
+								<Cell ss:StyleID="s113">
+									<Data ss:Type="String">Wages not Subject to SS/Medicare (Valid Values 1 for Yes, 0 for No)  If 1 or Yes, 5a through 5d will be ignored.  Use 2 for Schedule R Use.</Data>
 								</Cell>
-								<Cell ss:StyleID="s88">
+								<Cell ss:StyleID="s87">
 									<Data ss:Type="String">Taxable SS Wages (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s88">
+								<Cell ss:StyleID="s87">
 									<Data ss:Type="String">Taxable SS Tips (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s90">
+								<Cell ss:StyleID="s89">
 									<Data ss:Type="String">Taxable Medicare Wages (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s91">
+								<Cell ss:StyleID="s90">
 									<Data ss:Type="String">Additional Taxable Medicare wages and tips (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s91">
+								<Cell ss:StyleID="s90">
 									<Data ss:Type="String">Taxable Unreported Tips 3121q (Currency)</Data>
 								</Cell>
 								<Cell ss:StyleID="s71">
@@ -815,28 +859,28 @@
 								<Cell ss:StyleID="s67">
 									<Data ss:Type="String">Current Quarter's Adjustment for tips and Group-Term Life Insurance (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s109">
-									<Data ss:Type="String">Payroll Tax Credit - requires PDF attachment</Data>
+								<Cell ss:StyleID="s105">
+									<Data ss:Type="String">Payroll Tax Credit - A non zero entry will require completion of Form 8974 in the software.</Data>
 								</Cell>
-								<Cell ss:StyleID="s99">
+								<Cell ss:StyleID="s106">
+									<Data ss:Type="String">Used for the number of Schedule R Entries below the original EIN when applicable</Data>
+								</Cell>
+								<Cell ss:StyleID="s106">
+									<Data ss:Type="String">Type of Wages (A, B or C) Schedule R Only</Data>
+								</Cell>
+								<Cell ss:StyleID="s98">
 									<Data ss:Type="String">Not Used</Data>
 								</Cell>
-								<Cell ss:StyleID="s100">
-									<Data ss:Type="String">Not  Used</Data>
-								</Cell>
-								<Cell ss:StyleID="s101">
-									<Data ss:Type="String">Not Used</Data>
-								</Cell>
-								<Cell ss:StyleID="s101">
+								<Cell ss:StyleID="s98">
 									<Data ss:Type="String">Not Used</Data>
 								</Cell>
 								<Cell ss:StyleID="s69">
 									<Data ss:Type="String">Total Deposits (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s80">
+								<Cell ss:StyleID="s114">
 									<Data ss:Type="String">Return Type (Default is Form 941) (Values:PR,SS or Blank)</Data>
 								</Cell>
-								<Cell ss:StyleID="s103">
+								<Cell ss:StyleID="s100">
 									<Data ss:Type="String">Seasonal ( 1 for Yes, and 0 for No)</Data>
 								</Cell>
 								<Cell ss:StyleID="s67">
@@ -860,7 +904,7 @@
 								<Cell ss:StyleID="s67">
 									<Data ss:Type="String">Schedule B Month 1 Day 1 (Currency)</Data>
 								</Cell>
-								<Cell ss:StyleID="s81">
+								<Cell ss:StyleID="s80">
 									<Data ss:Type="String">Schedule B Month 1 Day 2</Data>
 								</Cell>
 								<Cell ss:StyleID="s67">
@@ -1138,175 +1182,176 @@
 								</Cell>
 								<Cell ss:StyleID="s70"/>
 							</Row>
-							<Row ss:StyleID="s97">
-								<Cell ss:StyleID="s92"/>
-								<Cell ss:StyleID="s92"/>
-								<Cell ss:StyleID="s92">
+							<Row ss:StyleID="s96">
+								<Cell ss:StyleID="s91"/>
+								<Cell ss:StyleID="s91"/>
+								<Cell ss:StyleID="s91">
 									<Data ss:Type="Number">1</Data>
 								</Cell>
-								<Cell ss:StyleID="s92">
+								<Cell ss:StyleID="s91">
 									<Data ss:Type="Number">2</Data>
 								</Cell>
-								<Cell ss:StyleID="s92">
+								<Cell ss:StyleID="s91">
 									<Data ss:Type="Number">3</Data>
 								</Cell>
 								<Cell ss:StyleID="s77">
 									<Data ss:Type="Number">4</Data>
 								</Cell>
-								<Cell ss:StyleID="s92">
+								<Cell ss:StyleID="s91">
 									<Data ss:Type="String">5a</Data>
 								</Cell>
-								<Cell ss:StyleID="s93">
+								<Cell ss:StyleID="s92">
 									<Data ss:Type="String">5b</Data>
 								</Cell>
-								<Cell ss:StyleID="s94">
+								<Cell ss:StyleID="s93">
 									<Data ss:Type="String">5c</Data>
 								</Cell>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s94">
 									<Data ss:Type="String">5d</Data>
 								</Cell>
-								<Cell ss:StyleID="s96">
+								<Cell ss:StyleID="s95">
 									<Data ss:Type="String">6a</Data>
 								</Cell>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s94">
 									<Data ss:Type="String">6b</Data>
 								</Cell>
-								<Cell ss:StyleID="s93">
+								<Cell ss:StyleID="s92">
 									<Data ss:Type="String">7a</Data>
 								</Cell>
-								<Cell ss:StyleID="s93">
+								<Cell ss:StyleID="s92">
 									<Data ss:Type="String">7b</Data>
 								</Cell>
-								<Cell ss:StyleID="s93">
+								<Cell ss:StyleID="s92">
 									<Data ss:Type="String">7c</Data>
 								</Cell>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s110"/>
-								<Cell ss:StyleID="s95"/>
-								<Cell ss:StyleID="s95"/>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s108"/>
+								<Cell ss:StyleID="s107"/>
+								<Cell ss:StyleID="s107"/>
+								<Cell ss:StyleID="s94">
 									<Data ss:Type="Number">9</Data>
 								</Cell>
-								<Cell ss:StyleID="s96">
+								<Cell ss:StyleID="s95">
 									<Data ss:Type="Number">11</Data>
 								</Cell>
-								<Cell ss:StyleID="s95"/>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s94"/>
+								<Cell ss:StyleID="s110">
 									<Data ss:Type="Number">18</Data>
 								</Cell>
-								<Cell ss:StyleID="s104">
+								<Cell ss:StyleID="s101">
 									<Data ss:Type="Number">17</Data>
 								</Cell>
-								<Cell ss:StyleID="s95"/>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s94"/>
+								<Cell ss:StyleID="s94">
 									<Data ss:Type="Number">16</Data>
 								</Cell>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s94">
 									<Data ss:Type="Number">16</Data>
 								</Cell>
-								<Cell ss:StyleID="s95">
+								<Cell ss:StyleID="s94">
 									<Data ss:Type="Number">16</Data>
 								</Cell>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93">
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92">
 									<Data ss:Type="String"> </Data>
 								</Cell>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93">
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92">
 									<Data ss:Type="String"> </Data>
 								</Cell>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
-								<Cell ss:StyleID="s93"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
+								<Cell ss:StyleID="s92"/>
 							</Row>
+							
    <Row></Row>
 							<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" mode="i941">
 								<xsl:sort select="HostCompany/TaxFilingName"/>
