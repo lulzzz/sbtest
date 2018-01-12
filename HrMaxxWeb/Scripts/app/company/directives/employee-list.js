@@ -11,8 +11,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'reportRepository',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, reportRepository) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
@@ -304,7 +304,28 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							}
 						});
 					}
-					
+					$scope.getCompanySickLeaveExport = function(mode) {
+						var request = {
+							reportName: 'CompanySickLeaveExport',
+							hostId: $scope.mainData.selectedHost.id,
+							companyId: $scope.mainData.selectedCompany.id
+							
+						}
+						if (mode === 1) {
+							request.employeeId = $scope.selected.id;
+						}
+						reportRepository.getReportDocument(request).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+						}, function (error) {
+							addAlert('Error getting Company Sick Leave Export. ' + error, 'danger');
+						});
+					}
 					$scope.getEmployees = function (companyId) {
 						if (!dataSvc.employeesLoadedFor || dataSvc.employeesLoadedFor != companyId) {
 							dataSvc.employeesLoadedFor = companyId;

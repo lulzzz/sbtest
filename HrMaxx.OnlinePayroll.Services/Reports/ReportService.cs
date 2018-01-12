@@ -170,6 +170,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetCaliforniaDE88(request);
 				else if (request.ReportName.StartsWith("Blank_"))
 					return GetBlankForms(request);
+				else if (request.ReportName.Equals("CompanySickLeaveExport"))
+					return GetCompanySickLeaveExport(request);
+				
 				return null;
 			}
 			catch (Exception e)
@@ -299,6 +302,65 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 
 			return GetExtractTransformed(request, data, argList, string.Empty, string.Empty, request.Description);
+		}
+		private FileDto GetCompanySickLeaveExport(ReportRequest request)
+		{
+			var company = _readerService.GetCompany(request.CompanyId);
+			if(company.AccumulatedPayTypes.First(ac=>ac.PayType.Id==6).CompanyManaged)
+				throw new Exception(NoData + ". This Company Manages their own Sick Leave");
+			var employees = _readerService.GetEmployees(company: request.CompanyId).Where(e=>(request.EmployeeId==Guid.Empty || (request.EmployeeId!=Guid.Empty && e.Id==request.EmployeeId)) && (e.StatusId==StatusOption.Active || e.StatusId==StatusOption.InActive)).ToList();
+			if (!employees.Any())
+				throw new Exception(NoData + ". No Employees found");
+			var result = new List<EmployeeSickLeave>();
+			employees.ForEach(e =>
+			{
+				var payChecks = _readerService.GetEmployeePayChecks(e.Id);
+				var empSL = new EmployeeSickLeave()
+				{
+					Id = e.Id,
+					Name = e.FullName,
+					CompanyEmployeeNo = e.CompanyEmployeeNo,
+					CarryOver = e.CarryOver,
+					HireDate = e.HireDate.ToString("MM/dd/yyyy"),
+					SickLeaveHireDate = e.SickLeaveHireDate.ToString("MM/dd/yyyy")
+				};
+				empSL.Accumulations =
+					payChecks.OrderBy(pc=>pc.PayDay).Select(
+						pc =>
+							new SickLeaveAccumulation
+							{
+								CheckNumber = pc.CheckNumber.Value,
+								Id = pc.Id,
+								PayDay = pc.PayDay.ToString("MM/dd/yyyy"),
+								FiscalEnd = pc.Accumulations.First().FiscalEnd.ToString("MM/dd/yyyy"),
+								FiscalStart = pc.Accumulations.First().FiscalStart.ToString("MM/dd/yyyy"),
+								AccumulatedValue = pc.Accumulations.First().AccumulatedValue,
+								Used = pc.Accumulations.First().Used,
+								CarryOver = pc.Accumulations.First().CarryOver,
+								YTDFiscal = pc.Accumulations.First().YTDFiscal,
+								YTDUsed = pc.Accumulations.First().YTDUsed,
+								Available = pc.Accumulations.First().YTDFiscal+pc.Accumulations.First().CarryOver-pc.Accumulations.First().YTDUsed
+							}).ToList();
+				result.Add(empSL);
+			});
+			result = result.Where(e => e.Accumulations.Any()).OrderBy(e=>e.CompanyEmployeeNo).ToList();
+			if (!result.Any())
+				throw new Exception(NoData);
+			request.Description = string.Format("{0} Sick Leave by Employee", company.Name);
+
+
+			var xml = GetXml(result);
+
+
+			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, "transformers/extracts/CompanySickLeave.xslt"), new XsltArgumentList());
+			return new FileDto
+				{
+					Data = Encoding.UTF8.GetBytes(transformed),
+					DocumentExtension = ".xls",
+					Filename = request.Description,
+					MimeType = "application/octet-stream"
+				};
+
 		}
 
 		private Extract GetHostWCReport(ReportRequest request)

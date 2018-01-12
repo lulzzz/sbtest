@@ -35,7 +35,9 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					};
 				
 					$scope.data = dataSvc;
-					
+					$scope.getCompanySickLeaveExport = function(mode) {
+						$scope.$parent.$parent.getCompanySickLeaveExport(mode);
+					}
 					$scope.cancel = function () {
 						if (!$scope.isPopup)
 							$scope.$parent.$parent.cancel();

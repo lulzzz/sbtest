@@ -12,6 +12,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ReportName { get; set; }
 		public Guid HostId { get; set; }
 		public Guid CompanyId { get; set; }
+		public Guid EmployeeId { get; set; }
 		public int Year { get; set; }
 		public int Quarter { get; set; }
 		public int Month { get; set; }
