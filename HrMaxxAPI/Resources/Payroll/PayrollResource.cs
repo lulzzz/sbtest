@@ -49,6 +49,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public Guid? MovedFrom { get; set; }
 		public bool CanDelete { get; set; }
 
+		public string Warnings { get; set; }
+
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }

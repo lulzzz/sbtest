@@ -127,6 +127,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
 				.ForMember(dest => dest.StartingCheckNumber, opt => opt.MapFrom(src => src.StartingCheckNumber))
 				.ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+				.ForMember(dest => dest.Warnings, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore());
 
 			CreateMap<Models.JsonDataModel.CompanyJson, Models.Company>()

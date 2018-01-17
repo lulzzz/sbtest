@@ -71,6 +71,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
+				payroll.Warnings = string.Empty;
 				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
 				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
@@ -292,7 +293,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						
 						var grossWage = GetGrossWage(paycheck);
 						paycheck.Compensations = ProcessCompensations(paycheck.Compensations, employeeAccumulation);
-						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll.Company.AccumulatedPayTypes, employeeAccumulation);
+						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll, employeeAccumulation);
 						grossWage = Math.Round(grossWage + paycheck.CompensationTaxableAmount, 2, MidpointRounding.AwayFromZero);
 
 						var host = _hostService.GetHost(payroll.Company.HostId);
@@ -356,14 +357,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, IEnumerable<AccumulatedPayType> accumulatedPayTypes, Accumulation employeeAccumulation)
+		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, Models.Payroll payroll, Accumulation employeeAccumulation)
 		{
 			var result = new List<PayTypeAccumulation>();
 			
 
 			
 			
-			foreach (var payType in accumulatedPayTypes)	
+			foreach (var payType in payroll.Company.AccumulatedPayTypes)	
 			{
 				var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, payType);
 				var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
@@ -390,7 +391,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate && ac.FiscalEnd < fiscalEndDate)
 							.ToList()
 						: null;
-					
+					if (payType.PayType.Id==6 && employeeAccumulation.Accumulations != null &&
+					    employeeAccumulation.Accumulations.Count(
+						    ac =>
+							    ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
+							    ac.FiscalEnd == fiscalEndDate) > 1)
+					{
+						payroll.Warnings += string.Format("Employee #{0}, {1} has multiple leave cycles for this Pay Day<br/>", paycheck.Employee.CompanyEmployeeNo, paycheck.Employee.FullName);
+					}
 
 					var carryOver = paycheck.Employee.CarryOver;
 					carryOver += previousAccumulations!=null
@@ -424,9 +432,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						accumulationValue = thisCheckValue;
 					}
 
-					
 
-					result.Add(new PayTypeAccumulation
+					var acc = new PayTypeAccumulation
 					{
 						PayType = payType,
 						AccumulatedValue = Math.Round(accumulationValue, 2, MidpointRounding.AwayFromZero),
@@ -436,7 +443,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						Used = Math.Round(thisCheckUsed, 2, MidpointRounding.AwayFromZero),
 						YTDUsed = Math.Round(ytdUsed + thisCheckUsed, 2, MidpointRounding.AwayFromZero),
 						CarryOver = Math.Round(carryOver, 2, MidpointRounding.AwayFromZero)
-					});
+					};
+					if (acc.PayType.PayType.Id==6 && acc.Available < 0)
+					{
+						payroll.Warnings += string.Format("Employee #{0}, {1} available Sick Leave is negative<br/>", paycheck.Employee.CompanyEmployeeNo, paycheck.Employee.FullName);
+					}
+					result.Add(acc);
 				}
 				else if(paycheck.Accumulations.Any(apt=>apt.PayType.Id==payType.Id))
 				{

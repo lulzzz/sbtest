@@ -71,6 +71,10 @@
 		<button class="btn btn-sm btn-success" ng-click="showTaxes=!showTaxes">{{showTaxes? 'Show Rates' : 'Show Taxes'}}</button>
 		<button class="btn btn-sm btn-success" ng-click="fixPayrollYTD()" ng-show="(mainData.userRole==='SuperUser' || mainData.userRole==='Master') && (item.status>2 && item.status!==6)">Fix YTD</button>
 	</div>
+	<div class="col-sm-12 text-center alert alert-warning" ng-if="(item.status===2 || item.status===6) && item.warnings" ng-bind-html="item.warnings">
+
+	</div>
+
 	<div class="col-sm-12">
 		
 		<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/nopager" >

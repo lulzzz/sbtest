@@ -37,7 +37,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? CopiedFrom { get; set; }
 		public Guid? MovedFrom { get; set; }
 		public bool CanDelete { get; set; }
-
+		public string Warnings { get; set; }
 		public decimal TotalGrossWage
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }
