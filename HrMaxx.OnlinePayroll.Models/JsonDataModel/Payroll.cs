@@ -40,6 +40,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? MovedFrom { get; set; }
 
 		public bool CanDelete { get; set; }
+		public bool IsPrinted { get; set; }
+		public bool IsVoid { get; set; }
 	}
 	[Serializable]
 	[XmlRoot("PayrollMinifiedList")]

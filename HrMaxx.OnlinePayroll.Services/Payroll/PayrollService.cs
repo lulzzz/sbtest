@@ -791,14 +791,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, name);
 
 					journal.IsVoid = true;
-					var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, name, new Guid(user));
+					var savedJournal = _journalService.VoidJournal(journal, TransactionType.PayCheck, name, new Guid(user));
 					if (paycheck.PEOASOCoCheck)
 					{
 						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
 						if (journal1 != null)
 						{
 							journal1.IsVoid = true;
-							_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, name, new Guid(user));
+							_journalService.VoidJournal(journal1, TransactionType.PayCheck, name, new Guid(user));
 						}
 
 					}
@@ -852,14 +852,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var savedPaycheck = _payrollRepository.UnVoidPayCheck(paycheck, name);
 
 					journal.IsVoid = true;
-					var savedJournal = _journalService.UnVoidJournal(journal.Id, TransactionType.PayCheck, name, new Guid(user));
+					var savedJournal = _journalService.UnVoidJournal(journal, TransactionType.PayCheck, name, new Guid(user));
 					if (paycheck.PEOASOCoCheck)
 					{
 						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
 						if (journal1 != null)
 						{
 							journal1.IsVoid = true;
-							_journalService.UnVoidJournal(journal1.Id, TransactionType.PayCheck, name, new Guid(user));
+							_journalService.UnVoidJournal(journal1, TransactionType.PayCheck, name, new Guid(user));
 							_journalService.UpdateCompanyMaxCheckNumber(journal1.CompanyId, TransactionType.PayCheck);
 						}
 						
@@ -902,6 +902,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
+				Log.Info("Void payroll startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var affectedChecks = new List<PayCheck>();
 				var payroll = _readerService.GetPayroll(payroll1.Id);
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll1.Company.Id, startDate: payroll1.PayDay, year: payroll1.PayDay.Year, isvoid: 0);
@@ -913,9 +914,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 				var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
 				var peoJournals = _journalService.GetPayrollJournals(payroll.Id, !payroll.PEOASOCoCheck);
+				Log.Info("read finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-
 					if (payroll.InvoiceId.HasValue && invoice != null && (invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
 						DeletePayrollInvoice(payroll.InvoiceId.Value);
 					
@@ -928,14 +929,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, userName);
 
 						journal.IsVoid = true;
-						var savedJournal = _journalService.VoidJournal(journal.Id, TransactionType.PayCheck, userName, new Guid(userId));
+						var savedJournal = _journalService.VoidJournal(journal, TransactionType.PayCheck, userName, new Guid(userId));
 						if (paycheck.PEOASOCoCheck)
 						{
 							var journal1 = peoJournals.First(j => j.PayrollPayCheckId == paycheck.Id && j.PEOASOCoCheck == !paycheck.PEOASOCoCheck); //_journalService.GetPayCheckJournal(paycheck.Id, !paycheck.PEOASOCoCheck);
 							if (journal1 != null)
 							{
 								journal1.IsVoid = true;
-								_journalService.VoidJournal(journal1.Id, TransactionType.PayCheck, userName, new Guid(userId));
+								_journalService.VoidJournal(journal1, TransactionType.PayCheck, userName, new Guid(userId));
 							}
 							
 
@@ -950,11 +951,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					});
+					Log.Info("Checks Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 					if (payroll.PEOASOCoCheck)
 					{
 						_journalService.UpdateCompanyMaxCheckNumber(journals.First().CompanyId, TransactionType.PayCheck);
 					}
+					Log.Info("Updated Company Max Check Number" + DateTime.Now.ToString("hh:mm:ss:fff"));
+					_payrollRepository.VoidPayroll(payroll.Id);
 					txn.Complete();
 					
 				}
@@ -972,7 +976,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = userName
 					});	
 				}
-				
+				Log.Info("Void Payroll Finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 
 				return payroll1;
 
@@ -980,7 +984,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Payroll");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1074,7 +1078,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
 				}
 				
-					if (payroll.Status == PayrollStatus.Committed || (payroll.Status == PayrollStatus.Printed && payroll.PayChecks.Any(pc=>!pc.IsVoid && pc.Status!=PaycheckStatus.Printed && pc.Status!=PaycheckStatus.PrintedAndPaid)))
+					if (!payroll.IsPrinted)
 						_payrollRepository.MarkPayrollPrinted(payroll.Id);
 					//txn.Complete();
 				
@@ -3399,12 +3403,18 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				_payrollRepository.DeletePayroll(payroll.Id);
-				return payroll;
+				
+					Log.Info("Delete startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
+					_payrollRepository.DeletePayroll(payroll);
+					Log.Info("delete ended" + DateTime.Now.ToString("hh:mm:ss:fff"));
+					
+					return payroll;	
+				
+				
 			}
 			catch (Exception e)
 			{
-				var message = string.Format("This Payroll cannot be deleted because it does not meet the criteria");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX,e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

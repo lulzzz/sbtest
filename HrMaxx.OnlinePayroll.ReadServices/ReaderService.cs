@@ -312,7 +312,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-		public List<PayrollMinified> GetMinifiedPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids = 0)
+		public List<PayrollMinified> GetMinifiedPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids = 0, bool? isprinted = null)
 		{
 			try
 			{
@@ -342,6 +342,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (excludeVoids > 0)
 				{
 					paramList.Add(new FilterParam { Key = "void", Value = excludeVoids.ToString() });
+				}
+				if (isprinted!=null)
+				{
+					paramList.Add(new FilterParam { Key = "isprinted", Value = isprinted.ToString() });
 				}
 				var payrolls = _reader.GetDataFromStoredProc1<List<PayrollMinified>>("GetMinifiedPayrolls", paramList, new XmlRootAttribute("PayrollMinifiedList"));
 				

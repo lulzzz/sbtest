@@ -25,7 +25,7 @@
 </xsl:template>
 	<xsl:template match="ExtractCompany">
 		<xsl:variable name="comphostid" select="Company/HostId"/>
-		
+		<xsl:variable name="host" select ="../Hosts[ExtractHost/Id=$comphostid]/ExtractHost"/>
 		<Report>
 			<TemplatePath></TemplatePath>
 			<Template>W2Employee<xsl:value-of select="translate(Company/TaxFilingName,$smallcase,$uppercase)"/></Template>
@@ -42,7 +42,7 @@
 								<xsl:value-of select="translate(Company/BusinessAddress/AddressLine1,$smallcase,$uppercase)"/>
 							</h4>
 							<h4>
-								<xsl:value-of select="translate(concat(Company/BusinessAddress/City,', ',Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
+								<xsl:value-of select="translate(concat(Company/BusinessAddress/City,', ',$host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,', ', Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
 							</h4>
 							<br/>
 							<br/>

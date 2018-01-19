@@ -12,6 +12,7 @@ using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
+using log4net;
 using Newtonsoft.Json;
 using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
 using InvoiceDeliveryClaim = HrMaxx.OnlinePayroll.Models.InvoiceDeliveryClaim;
@@ -24,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
+		public ILog Log { get; set; }
 		
 		public PayrollRepository(IMapper mapper, OnlinePayrollEntities dbContext, DbConnection connection):base(connection)
 		{
@@ -35,18 +37,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		{
 			var mapped = _mapper.Map<Models.Payroll, Models.DataModel.Payroll>(payroll);
 			mapped.PayrollPayChecks.ToList().ForEach(pc=>pc.CompanyId = payroll.Company.Id);
-			//const string psql =
-			//	"insert into Payroll (Id,CompanyId,StartDate,EndDate,PayDay,StartingCheckNumber,Status,Company,LastModified,LastModifiedBy,InvoiceId,PEOASOCoCheck,Notes,TaxPayDay,IsHistory,CopiedFrom,MovedFrom) values(@Id,@CompanyId,@StartDate,@EndDate,@PayDay,@StartingCheckNumber,@Status,@Company,@LastModified,@LastModifiedBy,@InvoiceId,@PEOASOCoCheck,@Notes,@TaxPayDay,@IsHistory,@CopiedFrom,@MovedFrom);";
-			//const string pcsql = "insert into PayrollPayCheck(PayrollId,CompanyId,EmployeeId,Employee,GrossWage,NetWage,WCAmount,Compensations,Deductions,Taxes,Accumulations,Salary,YTDSalary,PayCodes,DeductionAmount,EmployeeTaxes,EmployerTaxes,Status,IsVoid,PayrmentMethod,PrintStatus,StartDate,EndDate,PayDay,CheckNumber,PaymentMethod,Notes,YTDGrossWage,YTDNetWage,LastModified,LastModifiedBy,WorkerCompensation,PEOASOCoCheck,InvoiceId,VoidedOn,CreditInvoiceId,TaxPayDay,IsHistory,IsReIssued,OriginalCheckNumber,ReIssuedDate) values(@PayrollId,@CompanyId,@EmployeeId,@Employee,@GrossWage,@NetWage,@WCAmount,@Compensations,@Deductions,@Taxes,@Accumulations,@Salary,@YTDSalary,@PayCodes,@DeductionAmount,@EmployeeTaxes,@EmployerTaxes,@Status,@IsVoid,@PayrmentMethod,@PrintStatus,@StartDate,@EndDate,@PayDay,@CheckNumber,@PaymentMethod,@Notes,@YTDGrossWage,@YTDNetWage,@LastModified,@LastModifiedBy,@WorkerCompensation,@PEOASOCoCheck,@InvoiceId,@VoidedOn,@CreditInvoiceId,@TaxPayDay,@IsHistory,@IsReIssued,@OriginalCheckNumber,@ReIssuedDate);select cast(Scope_Identity() as int)";
-			//using (var conn = GetConnection())
-			//{
-			//	conn.Execute(psql, mapped);
-			//	mapped.PayrollPayChecks.ToList().ForEach(pc =>
-			//	{
-			//		pc.PayrollId = mapped.Id;
-			//		pc.Id = conn.Query<int>(pcsql, pc).Single();
-			//	});
-			//}
+			
 			var dbPayroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == mapped.Id);
 			if (dbPayroll == null)
 			{
@@ -80,35 +71,24 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				const string updateaccumulation =
 					"update PayCheckPayTypeAccumulation set CarryOver=@CarryOver where PayCheckId=@PayCheckId and PayTypeId=@PayTypeId";
 				pc.Accumulations.ForEach(ac => conn.Execute(updateaccumulation, new {PayCheckId=pc.Id, PayTypeId=ac.PayType.PayType.Id, CarryOver=ac.CarryOver}));
-				//var dbPayCheck = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == pc.Id);
-				//if (dbPayCheck != null)
-				//{
-				//	dbPayCheck.PayCodes = JsonConvert.SerializeObject(pc.PayCodes);
-				//	dbPayCheck.Compensations = JsonConvert.SerializeObject(pc.Compensations);
-				//	dbPayCheck.Taxes = JsonConvert.SerializeObject(pc.Taxes);
-				//	dbPayCheck.Deductions = JsonConvert.SerializeObject(pc.Deductions);
-				//	dbPayCheck.Accumulations = JsonConvert.SerializeObject(pc.Accumulations);
-				//	dbPayCheck.YTDSalary = pc.YTDSalary;
-				//	dbPayCheck.YTDGrossWage = pc.YTDGrossWage;
-				//	dbPayCheck.YTDNetWage = pc.YTDNetWage;
-				//	_dbContext.SaveChanges();
-				//}
+			
 			}
 		}
 
 		public PayCheck VoidPayCheck(PayCheck paycheck, string name)
 		{
-			var pc = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == paycheck.Id);
-			if (pc != null)
+			using (var conn = GetConnection())
 			{
-				pc.IsVoid = paycheck.IsVoid;
-				pc.Status = (int)paycheck.Status;
-				pc.VoidedOn = DateTime.Now;
-				pc.LastModified = DateTime.Now;
-				pc.LastModifiedBy = name;
-				_dbContext.SaveChanges();
+				const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				conn.Execute(updatepayroll, new { Status = (int)PaycheckStatus.Void, Id = paycheck.Id, LastModifiedBy = name });
 			}
-			return _mapper.Map<PayrollPayCheck, PayCheck>(pc);
+			paycheck.IsVoid = true;
+			paycheck.Status = PaycheckStatus.Void;
+			paycheck.LastModifiedBy = name;
+			paycheck.VoidedOn = DateTime.Now;
+			paycheck.LastModified = DateTime.Now;
+			
+			return paycheck;
 		}
 
 		public PayCheck UnVoidPayCheck(PayCheck paycheck, string name)
@@ -139,11 +119,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			using (var conn = GetConnection())
 			{
 				//const string updatecheck = @"update PayrollPayCheck set Status=case status when 3 then 4 when 5 then 6 else status end Where PayrollId=@PayrollId";
-				const string updatecheck = @"update PayrollPayCheck set Status=4 Where PayrollId=@PayrollId and Status=3;update PayrollPayCheck set Status=6 Where PayrollId=@PayrollId and Status=5;";
-				const string updatepayroll = @"update Payroll set Status=@Status Where Id=@Id";
+				//const string updatecheck = @"update PayrollPayCheck set Status=4 Where PayrollId=@PayrollId and Status=3;update PayrollPayCheck set Status=6 Where PayrollId=@PayrollId and Status=5;";
+				const string updatepayroll = @"update Payroll set Status=@Status, IsPrinted=1 Where Id=@Id";
 
 				conn.Execute(updatepayroll, new {Status = (int) PayrollStatus.Printed, Id = payrollId});
-				conn.Execute(updatecheck, new { PayrollId = payrollId });
+				//conn.Execute(updatecheck, new { PayrollId = payrollId });
 				
 			}
 
@@ -226,8 +206,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
 		{
-			const string pisql = "select * from PayrollInvoice where Id=@Id or PayrollId=@PayrollId";
-			const string pipaysql = "select * from InvoicePayment where InvoiceId=@Id";
+			
+			const string pisql = "select * from PayrollInvoice with (nolock) where Id=@Id or PayrollId=@PayrollId";
+			const string pipaysql = "select * from InvoicePayment  with (nolock) where InvoiceId=@Id";
 			const string insertsql =
 						"insert into PayrollInvoice(Id,CompanyId,PayrollId,PeriodStart,PeriodEnd,InvoiceSetup,GrossWages,EmployerTaxes,InvoiceDate,NoOfChecks,Deductions,WorkerCompensations,EmployeeContribution,EmployerContribution,AdminFee,EnvironmentalFee,MiscCharges,Total,Status,SubmittedOn,SubmittedBy,DeliveredOn,DeliveredBy,LastModified,LastModifiedBy,Courier,EmployeeTaxes,Notes,ProcessedBy,Balance,ProcessedOn,PayChecks,VoidedCreditChecks,ApplyWCMinWageLimit,DeliveryClaimedBy,DeliveryClaimedOn,NetPay,CheckPay,DDPay,SalesRep,Commission) values(@Id,@CompanyId,@PayrollId,@PeriodStart,@PeriodEnd,@InvoiceSetup,@GrossWages,@EmployerTaxes,@InvoiceDate,@NoOfChecks,@Deductions,@WorkerCompensations,@EmployeeContribution,@EmployerContribution,@AdminFee,@EnvironmentalFee,@MiscCharges,@Total,@Status,@SubmittedOn,@SubmittedBy,@DeliveredOn,@DeliveredBy,@LastModified,@LastModifiedBy,@Courier,@EmployeeTaxes,@Notes,@ProcessedBy,@Balance,@ProcessedOn,@PayChecks,@VoidedCreditChecks,@ApplyWCMinWageLimit,@DeliveryClaimedBy,@DeliveryClaimedOn,@NetPay,@CheckPay,@DDPay,@SalesRep,@Commission); select cast(scope_identity() as int)";
 			const string updatepayrollsql =
@@ -243,7 +224,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						.FirstOrDefault();
 				if (pi == null)
 				{
-
+					Log.Info("Save New Invoice Started: " + DateTime.Now + " PayrollId: " + payrollInvoice.PayrollId);
 					payrollInvoice.InvoiceNumber = conn.Query<int>(insertsql, mapped).Single();
 
 					conn.Execute(updatepayrollsql,
@@ -263,10 +244,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 								CreditChecks = payrollInvoice.VoidedCreditedChecks
 							});
 					}
+					Log.Info("Save New Invoice Ended: " + DateTime.Now);
 					return payrollInvoice;
 				}
 				else
 				{
+					Log.Info("Save Existing Invoice Started: " + DateTime.Now + " Id: " + payrollInvoice.Id);
 					pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
 					const string updatepisql =
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
@@ -276,7 +259,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);
-					
+					Log.Info("Invoice Update Started: " + DateTime.Now);
 					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
 						const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
@@ -285,6 +268,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						{
 							conn.Execute(updatecreditcheckssql,new { Id = mapped.Id, CreditChecks = payrollInvoice.VoidedCreditedChecks });
 						}
+						Log.Info("Credit Checks Handled: " + DateTime.Now);
 					}
 					
 					const string removepayment = "delete from InvoicePayment where Id=@Id;";
@@ -306,7 +290,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 					{
 						p.Id = conn.Query<int>(insertpayment, p).Single();
 					});
-					
+					Log.Info("Invoice Updated Ended " + DateTime.Now);
 						
 					//var dbPayrollInvoice = conn.Query<Models.DataModel.PayrollInvoice>(pisql, new { Id = mapped.Id, PayrollId = mapped.PayrollId }).First();
 					//dbPayrollInvoice.InvoicePayments =
@@ -321,16 +305,22 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		
 		public void DeletePayrollInvoice(Guid invoiceId)
 		{
-			var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);
-			if (db != null)
+			const string delete =
+				"update payroll set invoiceid=null where invoiceId=@Id;update payrollpaycheck set creditinvoiceid=null where creditinvoiceid=@Id;update payrollpaycheck set invoiceid=null where invoiceid=@Id;delete from payrollinvoice where Id=@Id; ";
+			using (var conn = GetConnection())
 			{
-				var creditInvoices = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == invoiceId).ToList();
-				creditInvoices.ForEach(ci=>ci.CreditInvoiceId=null);
-				db.Payroll.InvoiceId = null;
-				db.PayrollPayChecks.ToList().ForEach(pc=>pc.InvoiceId=null);
-				_dbContext.PayrollInvoices.Remove(db);
-				_dbContext.SaveChanges();
+				conn.Execute(delete, new { Id =invoiceId });
 			}
+			//var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);
+			//if (db != null)
+			//{
+			//	var creditInvoices = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == invoiceId).ToList();
+			//	creditInvoices.ForEach(ci=>ci.CreditInvoiceId=null);
+			//	db.Payroll.InvoiceId = null;
+			//	db.PayrollPayChecks.ToList().ForEach(pc=>pc.InvoiceId=null);
+			//	_dbContext.PayrollInvoices.Remove(db);
+			//	_dbContext.SaveChanges();
+			//}
 		}
 
 		public void SavePayCheck(PayCheck pc)
@@ -712,12 +702,47 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
-		public void DeletePayroll(Guid id)
+		public void DeletePayroll(Models.Payroll payroll)
 		{
 			const string delete = @"if dbo.CanDeletePayroll(@PayrollId)=1 begin delete from PaxolArchive.Common.Memento where MementoId in (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(pc.Id, 12), SPACE(1), '0')) as uniqueidentifier) from PayrollPayCheck pc where PayrollId=@PayrollId); delete from journal where PayrollPayCheckId in (select id from PayrollPayCheck where PayrollId=@PayrollId);delete from PayrollPayCheck where PayrollId=@PayrollId; delete from Payroll where Id=@PayrollId;end else raiserror('This Payroll cannot be delete',16,1);";
+			const string checkCanDelete = "select dbo.CanDeletePayroll(@PayrollId) as candelete";
+			const string deletememento =
+				"delete from PaxolArchive.Common.Memento where MementoId = (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(@Id, 12), SPACE(1), '0')) as uniqueidentifier));";
+			const string deletejournals = "delete from journal where PayrollPayCheckId = @Id;";
+			const string deletepaycheckcomps = "delete from PayCheckCompensation where PayCheckId=@Id; ";
+			const string deletepaycheckdeds = "delete from PayCheckDeduction where PayCheckId=@Id; ";
+			const string deletepaycheckextract = "delete from PayCheckExtract where PayrollPayCheckId=@Id; ";
+			const string deletepaycheckpaycodes = "delete from PayCheckPayCode where PayCheckId=@Id; ";
+			const string deletepaycheckaccum = "delete from PayCheckPayTypeAccumulation where PayCheckId=@Id; ";
+			const string deletepaychecktaxes = "delete from PayCheckTax where PayCheckId=@Id; ";
+			const string deletepaycheckworkercomps = "delete from PayCheckWorkerCompensation where PayCheckId=@Id; ";
+			const string deletepaychecks = "delete from PayrollPayCheck where PayrollId=@Id; ";
+			const string deletepayroll = "delete from Payroll where Id=@Id;";
 			using (var conn = GetConnection())
 			{
-				conn.Execute(delete, new {PayrollId=id});
+				Log.Info("delete payroll started " + DateTime.Now);
+				dynamic candelete =
+					conn.Query(checkCanDelete, new { PayrollId = payroll.Id }).FirstOrDefault();
+				if (candelete != null && candelete.candelete)
+				{
+					conn.Execute(deletememento, payroll.PayChecks);
+					Log.Info("deleted mementos " + DateTime.Now);
+					conn.Execute(deletejournals, payroll.PayChecks);
+					Log.Info("deleted journals " + DateTime.Now);
+					conn.Execute(deletepaycheckcomps, payroll.PayChecks);
+					conn.Execute(deletepaycheckdeds, payroll.PayChecks);
+					conn.Execute(deletepaycheckextract, payroll.PayChecks);
+					conn.Execute(deletepaycheckpaycodes, payroll.PayChecks);
+					conn.Execute(deletepaychecktaxes, payroll.PayChecks);
+					conn.Execute(deletepaycheckworkercomps, payroll.PayChecks);
+					conn.Execute(deletepaycheckaccum, payroll.PayChecks);
+					conn.Execute(deletepaychecks, new { Id = payroll.Id });
+					Log.Info("deleted checks " + DateTime.Now);
+					
+					conn.Execute(deletepayroll, new {Id = payroll.Id});
+					Log.Info("deleted payroll " + DateTime.Now);
+				}
+				
 				
 			}
 		}
@@ -741,6 +766,15 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(query, payroll.PayChecks);
+			}
+		}
+
+		public void VoidPayroll(Guid id)
+		{
+			const string query = @"update Payroll set IsVoid=1 where Id=@Id;";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(query, new {Id = id});
 			}
 		}
 	}

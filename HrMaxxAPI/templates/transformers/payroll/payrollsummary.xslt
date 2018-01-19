@@ -296,7 +296,7 @@
 								<strong>SL Avail</strong>
 							</td>
 							<td style="width:50%; text-align:right;">
-								<xsl:value-of select="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDFiscal + Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/CarryOver - Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDUsed"/>
+								<xsl:value-of select="format-number(Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDFiscal + Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/CarryOver - Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDUsed, '###.00')"/>
 							</td>
 						</tr>
 

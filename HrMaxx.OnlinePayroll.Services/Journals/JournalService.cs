@@ -95,11 +95,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public Journal VoidJournal(int id, TransactionType transactionType, string name, Guid userId)
+		public Journal VoidJournal(Journal journal, TransactionType transactionType, string name, Guid userId)
 		{
 			try
 			{
-				var j = _journalRepository.VoidJournal(id, transactionType, name);
+				var j = _journalRepository.VoidJournal(journal, transactionType, name);
 				if (transactionType != TransactionType.PayCheck)
 				{
 					var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, name, string.Format("Check voided"), userId);
@@ -110,17 +110,17 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Journal with id=" + id);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Journal with id=" + journal.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
 
-		public Journal UnVoidJournal(int id, TransactionType transactionType, string name, Guid userId)
+		public Journal UnVoidJournal(Journal journal, TransactionType transactionType, string name, Guid userId)
 		{
 			try
 			{
-				var j = _journalRepository.UnVoidJournal(id, transactionType, name);
+				var j = _journalRepository.UnVoidJournal(journal, transactionType, name);
 				if (transactionType != TransactionType.PayCheck)
 				{
 					var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, name, string.Format("Check un-voided"), userId);
@@ -131,7 +131,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Journal with id=" + id);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "Un-Void Journal with id=" + journal.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -277,7 +277,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				var j = _journalRepository.VoidJournal(mapped.Id, mapped.TransactionType, mapped.LastModifiedBy);
+				var j = _journalRepository.VoidJournal(mapped, mapped.TransactionType, mapped.LastModifiedBy);
 				UpdateCompanyMaxCheckNumber(mapped.CompanyId, mapped.TransactionType);
 				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy, string.Format("{0} voided {1}", mapped.EntityType.ToString(), mapped.CheckNumber), userId);
 				_mementoDataService.AddMementoData(memento);

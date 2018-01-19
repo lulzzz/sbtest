@@ -37,6 +37,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? CopiedFrom { get; set; }
 		public Guid? MovedFrom { get; set; }
 		public bool CanDelete { get; set; }
+		public bool IsPrinted { get; set; }
+		public bool IsVoid { get; set; }
 		public string Warnings { get; set; }
 		public decimal TotalGrossWage
 		{

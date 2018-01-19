@@ -156,7 +156,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				error += "WC Job Class, ";
 			}
 			DateTime date;
-			if (!DateTime.TryParse(er.Value("hire date"), out date))
+			if (!DateTime.TryParseExact(er.Value("hire date"), "MM/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
 			{
 				error += "Hire Date, ";
 			}
