@@ -556,18 +556,25 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var affectedChecks = new List<PayCheck>();
 			try
 			{
-				//var // t1 = DateTime.Now;
-				//Log.Info("Confirm Payroll Starting: " + DateTime.Now.ToString("fff"));
-
+				
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
-				//Log.Info("company future checks: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-				// t1 = DateTime.Now;
+				
 				var companyIdForPayrollAccount = payroll.Company.Id;
 				var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+				Models.Host host = null;
+				if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+				{
+					host = _hostService.GetHost(payroll.Company.HostId);
+					payroll.HostCompanyId = host.Company.Id;
+				}
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					payroll.TaxPayDay = payroll.PayDay;
 					payroll.Status = PayrollStatus.Committed;
+					payroll.IsPrinted = false;
+					payroll.IsVoid = false;
+					
 					payroll.PayChecks.ForEach(pc => { 
 						pc.Status = PaycheckStatus.Saved;
 						pc.IsHistory = payroll.IsHistory;
@@ -580,11 +587,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					});
 
 
-					//Log.Info("Save Payroll starting: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					savedPayroll = _payrollRepository.SavePayroll(payroll);
-					//Log.Info("Save Payroll ending: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					var ptaccums = new List<PayCheckPayTypeAccumulation>();
 					var pttaxes = new List<PayCheckTax>();
 					var ptcomps = new List<PayCheckCompensation>();
@@ -675,32 +680,25 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						pc.CheckNumber = j.CheckNumber;
 
 					});
-					//Log.Info("saved first journal: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
-					//Log.Info("saved accumulation: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					_payrollRepository.SavePayCheckTaxes(pttaxes);
-					//Log.Info("saved taxes: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					_payrollRepository.SavePayCheckWorkerCompensations(ptwcs);
-					//Log.Info("saved worker comps: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					_payrollRepository.SavePayCheckPayCodes(ptcodes);
-					//Log.Info("saved pay codes: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					_payrollRepository.SavePayCheckCompensations(ptcomps);
-					//Log.Info("saved compensations: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					_payrollRepository.SavePayCheckDeductions(ptdeds);
-					//Log.Info("saved deductionss: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					//PEO/ASO Co Check
-					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
+					
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 					    payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 					{
-						var host = _hostService.GetHost(payroll.Company.HostId);
+						
 						companyIdForPayrollAccount = host.Company.Id;
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
 						savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
@@ -708,13 +706,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
 							pc.CheckNumber = j.CheckNumber;
 						});
-						_journalService.UpdateCompanyMaxCheckNumber(companyIdForPayrollAccount, TransactionType.PayCheck);
+						_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
 					}
 					
-					//var companyPayChecks = _payrollRepository.GetPayChecksPostPayDay(savedPayroll.Company.Id, savedPayroll.PayDay);
-
-					//Log.Info("Save journals: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					foreach (var paycheck in savedPayroll.PayChecks)
 					{
 						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay>paycheck.PayDay && p.Id!=paycheck.Id).ToList();
@@ -725,8 +720,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					}
-					//Log.Info("future checks updated: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+					
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
 						var inv = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
@@ -735,14 +729,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						savedPayroll.InvoiceStatus = inv.Status;
 						savedPayroll.Total = inv.Total;
 					}
-					//Log.Info("invoice created: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-					// t1 = DateTime.Now;
+				
 					var draftPayroll =
 							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
 					if (draftPayroll != null)
 					{
 						_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
 					}
+					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 					txn.Complete();
 				}
 			}
@@ -780,42 +774,29 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var payroll = _readerService.GetPayroll(payrollId);
 				var paycheck = payroll.PayChecks.First(pc => pc.Id == payCheckId);
-				var journal = _journalService.GetPayCheckJournal(payCheckId, paycheck.PEOASOCoCheck);
-				var companyPayChecks = _readerService.GetPayChecks(companyId: paycheck.Employee.CompanyId, startDate: paycheck.PayDay, year: paycheck.PayDay.Year, isvoid: 0);
-				var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id != paycheck.Id).ToList();
+
+				var companyPayChecks = _readerService.GetPayChecks(companyId: paycheck.Employee.CompanyId, employeeId: paycheck.Employee.Id, startDate: paycheck.PayDay, year: paycheck.PayDay.Year, isvoid: 0);
+				var employeeFutureChecks = companyPayChecks.Where(p => p.Id != paycheck.Id).ToList();
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					
 					paycheck.Status = PaycheckStatus.Void;
 					paycheck.IsVoid = true;
-					var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, name);
+					paycheck.LastModified = DateTime.Now;
+					paycheck.LastModifiedBy = name;
+					_payrollRepository.VoidPayChecks(new List<PayCheck>{paycheck}, name);
 
-					journal.IsVoid = true;
-					var savedJournal = _journalService.VoidJournal(journal, TransactionType.PayCheck, name, new Guid(user));
-					if (paycheck.PEOASOCoCheck)
-					{
-						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
-						if (journal1 != null)
-						{
-							journal1.IsVoid = true;
-							_journalService.VoidJournal(journal1, TransactionType.PayCheck, name, new Guid(user));
-						}
-
-					}
-				
 					foreach (var employeeFutureCheck in employeeFutureChecks)
 					{
 						employeeFutureCheck.SubtractFromYTD(paycheck);
 						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
 					}
 
-					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
-					
 					txn.Complete();
 					
 					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
 					{
-						SavedObject = savedPaycheck,
+						SavedObject = paycheck,
 						HostId = payroll.Company.HostId,
 						UserId = new Guid(user),
 						TimeStamp = DateTime.Now,
@@ -841,37 +822,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var payroll = _readerService.GetPayroll(payrollId);
 				var paycheck = payroll.PayChecks.First(pc => pc.Id == payCheckId);
-				var journal = _journalService.GetPayCheckJournal(payCheckId, paycheck.PEOASOCoCheck);
+				
 				var companyPayChecks = _readerService.GetPayChecks(companyId: paycheck.Employee.CompanyId, startDate: paycheck.PayDay, year: paycheck.PayDay.Year, isvoid: 0);
 				var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id != paycheck.Id).ToList();
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-
-					paycheck.Status = PaycheckStatus.Saved;
 					paycheck.IsVoid = false;
+					paycheck.Status = PaycheckStatus.Saved;
+					paycheck.VoidedOn = null;
+					paycheck.LastModified = DateTime.Now;
+					paycheck.LastModifiedBy = name;
 					var savedPaycheck = _payrollRepository.UnVoidPayCheck(paycheck, name);
-
-					journal.IsVoid = true;
-					var savedJournal = _journalService.UnVoidJournal(journal, TransactionType.PayCheck, name, new Guid(user));
-					if (paycheck.PEOASOCoCheck)
-					{
-						var journal1 = _journalService.GetPayCheckJournal(payCheckId, !paycheck.PEOASOCoCheck);
-						if (journal1 != null)
-						{
-							journal1.IsVoid = true;
-							_journalService.UnVoidJournal(journal1, TransactionType.PayCheck, name, new Guid(user));
-							_journalService.UpdateCompanyMaxCheckNumber(journal1.CompanyId, TransactionType.PayCheck);
-						}
-						
-					}
 
 					foreach (var employeeFutureCheck in employeeFutureChecks)
 					{
 						employeeFutureCheck.AddToYTD(paycheck);
 						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
 					}
-
-					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 
 					txn.Complete();
 
@@ -912,37 +879,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					invoice = _readerService.GetPayrollInvoice(payroll.InvoiceId.Value);
 					
 				}
-				var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
-				var peoJournals = _journalService.GetPayrollJournals(payroll.Id, !payroll.PEOASOCoCheck);
+				
 				Log.Info("read finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					if (payroll.InvoiceId.HasValue && invoice != null && (invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
 						DeletePayrollInvoice(payroll.InvoiceId.Value);
-					
-						
+
+					_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
 					payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(paycheck =>
 					{
-						var journal = journals.First(j => j.PayrollPayCheckId == paycheck.Id && j.PEOASOCoCheck == paycheck.PEOASOCoCheck); //_journalService.GetPayCheckJournal(paycheck.Id, paycheck.PEOASOCoCheck);
-						paycheck.Status = PaycheckStatus.Void;
-						paycheck.IsVoid = true;
-						var savedPaycheck = _payrollRepository.VoidPayCheck(paycheck, userName);
-
-						journal.IsVoid = true;
-						var savedJournal = _journalService.VoidJournal(journal, TransactionType.PayCheck, userName, new Guid(userId));
-						if (paycheck.PEOASOCoCheck)
-						{
-							var journal1 = peoJournals.First(j => j.PayrollPayCheckId == paycheck.Id && j.PEOASOCoCheck == !paycheck.PEOASOCoCheck); //_journalService.GetPayCheckJournal(paycheck.Id, !paycheck.PEOASOCoCheck);
-							if (journal1 != null)
-							{
-								journal1.IsVoid = true;
-								_journalService.VoidJournal(journal1, TransactionType.PayCheck, userName, new Guid(userId));
-							}
-							
-
-						}
-
-						
 						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id!=paycheck.Id).ToList();
 						foreach (var employeeFutureCheck in employeeFutureChecks)
 						{
@@ -953,9 +899,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					});
 					Log.Info("Checks Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
-					if (payroll.PEOASOCoCheck)
+					if (payroll.PEOASOCoCheck && payroll.HostCompanyId.HasValue)
 					{
-						_journalService.UpdateCompanyMaxCheckNumber(journals.First().CompanyId, TransactionType.PayCheck);
+						_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
 					}
 					Log.Info("Updated Company Max Check Number" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_payrollRepository.VoidPayroll(payroll.Id);
@@ -1689,7 +1635,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			return pdf;
 		}
 
-		private PDFModel GetPdfModel(Models.Payroll payroll, PayCheck payCheck, Journal journal, Company company,
+		private PDFModel GetPdfModel(Models.Payroll payroll, PayCheck payCheck, Models.Journal journal, Company company,
 			Company nameCompany, Company company1, Account bankcoa, DocumentDto signature)
 		{
 			var pdf = new PDFModel
@@ -2078,7 +2024,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			return pdf;
 		}
 
-		private PDFModel GetPdfModelJobCost(Models.Payroll payroll, PayCheck payCheck, Journal journal, Company company,
+		private PDFModel GetPdfModelJobCost(Models.Payroll payroll, PayCheck payCheck, Models.Journal journal, Company company,
 			Company nameCompany, Company company1, Account bankcoa, DocumentDto signature)
 		{
 			var pdf = new PDFModel
@@ -2269,7 +2215,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("16-3", payCheck.YTDGrossWage.ToString("C")));
 			return pdf;
 		}
-		private FileDto PrintPayCheck(Models.Payroll payroll, List<PayCheck> payChecks, List<Journal> journals)
+		private FileDto PrintPayCheck(Models.Payroll payroll, List<PayCheck> payChecks, List<Models.Journal> journals)
 		{
 			try
 			{
@@ -3403,12 +3349,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
 					Log.Info("Delete startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_payrollRepository.DeletePayroll(payroll);
 					Log.Info("delete ended" + DateTime.Now.ToString("hh:mm:ss:fff"));
-					
+					txn.Complete();
 					return payroll;	
+				}
+					
 				
 				
 			}

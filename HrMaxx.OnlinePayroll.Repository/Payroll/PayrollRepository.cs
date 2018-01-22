@@ -75,36 +75,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			}
 		}
 
-		public PayCheck VoidPayCheck(PayCheck paycheck, string name)
-		{
-			using (var conn = GetConnection())
-			{
-				const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
-				conn.Execute(updatepayroll, new { Status = (int)PaycheckStatus.Void, Id = paycheck.Id, LastModifiedBy = name });
-			}
-			paycheck.IsVoid = true;
-			paycheck.Status = PaycheckStatus.Void;
-			paycheck.LastModifiedBy = name;
-			paycheck.VoidedOn = DateTime.Now;
-			paycheck.LastModified = DateTime.Now;
-			
-			return paycheck;
-		}
-
-		public PayCheck UnVoidPayCheck(PayCheck paycheck, string name)
-		{
-			var pc = _dbContext.PayrollPayChecks.FirstOrDefault(p => p.Id == paycheck.Id);
-			if (pc != null)
-			{
-				pc.IsVoid = paycheck.IsVoid;
-				pc.Status = (int)paycheck.Status;
-				pc.VoidedOn = DateTime.Now;
-				pc.LastModified = DateTime.Now;
-				pc.LastModifiedBy = name;
-				_dbContext.SaveChanges();
-			}
-			return _mapper.Map<PayrollPayCheck, PayCheck>(pc);
-		}
+		
+		
 
 		public void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed)
 		{
@@ -129,80 +101,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 			
 		}
-
-		//public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
-		//{
-		//	var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
-		//	var dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id || pi.PayrollId == payrollInvoice.PayrollId);
-		//	var dbPayroll = _dbContext.Payrolls.First(p => p.Id == payrollInvoice.PayrollId);
-		//	var dbPayChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.PayChecks.Any(pc1 => pc1 == pc.Id)).ToList();
-		//	var dbCreditedChecks = _dbContext.PayrollPayChecks.Where(pc => payrollInvoice.VoidedCreditedChecks.Any(vpc => vpc == pc.Id) && pc.IsVoid && pc.InvoiceId.HasValue).ToList();
-		//	if (dbPayrollInvoice == null)
-		//	{
-		//		_dbContext.PayrollInvoices.Add(mapped);
-		//		dbPayroll.InvoiceId = mapped.Id;
-		//		dbPayChecks.ForEach(pc => pc.InvoiceId = mapped.Id);
-		//		dbCreditedChecks.ForEach(pc => pc.CreditInvoiceId = mapped.Id);
-		//	}
-		//	else
-		//	{
-		//		var linkedVoidedChecks = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == dbPayrollInvoice.Id).ToList();
-		//		linkedVoidedChecks.ForEach(lvc => lvc.CreditInvoiceId = null);
-		//		dbCreditedChecks.ForEach(pc => pc.CreditInvoiceId = dbPayrollInvoice.Id);
-
-
-		//		dbPayrollInvoice.MiscCharges = mapped.MiscCharges;
-		//		dbPayrollInvoice.Total = mapped.Total;
-		//		dbPayrollInvoice.LastModified = mapped.LastModified;
-		//		dbPayrollInvoice.LastModifiedBy = mapped.LastModifiedBy;
-		//		dbPayrollInvoice.Status = mapped.Status;
-		//		dbPayrollInvoice.SubmittedBy = mapped.SubmittedBy;
-		//		dbPayrollInvoice.SubmittedOn = mapped.SubmittedOn;
-		//		dbPayrollInvoice.DeliveredBy = mapped.DeliveredBy;
-		//		dbPayrollInvoice.DeliveredOn = mapped.DeliveredOn;
-		//		dbPayrollInvoice.InvoiceDate = mapped.InvoiceDate;
-		//		dbPayrollInvoice.Deductions = mapped.Deductions;
-		//		dbPayrollInvoice.Courier = mapped.Courier;
-		//		dbPayrollInvoice.Notes = mapped.Notes;
-		//		dbPayrollInvoice.Balance = mapped.Balance;
-		//		dbPayrollInvoice.WorkerCompensations = mapped.WorkerCompensations;
-		//		dbPayrollInvoice.ApplyWCMinWageLimit = mapped.ApplyWCMinWageLimit;
-		//		dbPayrollInvoice.VoidedCreditChecks = mapped.VoidedCreditChecks;
-		//		dbPayrollInvoice.NetPay = mapped.NetPay;
-		//		dbPayrollInvoice.DDPay = mapped.DDPay;
-		//		dbPayrollInvoice.CheckPay = mapped.CheckPay;
-		//		dbPayrollInvoice.SalesRep = mapped.SalesRep;
-		//		dbPayrollInvoice.Commission = mapped.Commission;
-		//		var removeCounter = 0;
-		//		for (removeCounter = 0; removeCounter < dbPayrollInvoice.InvoicePayments.Count; removeCounter++)
-		//		{
-		//			var existingPayment = dbPayrollInvoice.InvoicePayments.ToList()[removeCounter];
-		//			if (mapped.InvoicePayments.All(ip => ip.Id != existingPayment.Id))
-		//			{
-		//				_dbContext.InvoicePayments.Remove(existingPayment);
-		//				removeCounter--;
-		//			}
-		//		}
-
-		//		foreach (var p in dbPayrollInvoice.InvoicePayments.Where(dip => mapped.InvoicePayments.Any(mip => dip.Id == mip.Id) && payrollInvoice.InvoicePayments.Any(pip => pip.Id == dip.Id && pip.HasChanged)))
-		//		{
-		//			var matching = mapped.InvoicePayments.First(mip => mip.Id == p.Id);
-		//			p.Amount = matching.Amount;
-		//			p.CheckNumber = matching.CheckNumber;
-		//			p.Method = matching.Method;
-		//			p.Notes = matching.Notes;
-		//			p.PaymentDate = matching.PaymentDate;
-		//			p.Status = (int)matching.Status;
-		//			p.LastModified = mapped.LastModified;
-		//			p.LastModifiedBy = mapped.LastModifiedBy;
-		//		}
-		//		_dbContext.InvoicePayments.AddRange(mapped.InvoicePayments.Where(mip => mip.Id == 0));
-
-		//	}
-		//	_dbContext.SaveChanges();
-		//	dbPayrollInvoice = _dbContext.PayrollInvoices.FirstOrDefault(pi => pi.Id == payrollInvoice.Id);
-		//	return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(dbPayrollInvoice);
-		//}
 
 		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
 		{
@@ -292,9 +190,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 					});
 					Log.Info("Invoice Updated Ended " + DateTime.Now);
 						
-					//var dbPayrollInvoice = conn.Query<Models.DataModel.PayrollInvoice>(pisql, new { Id = mapped.Id, PayrollId = mapped.PayrollId }).First();
-					//dbPayrollInvoice.InvoicePayments =
-					//	conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = mapped.Id }).ToList();
+					
 					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);
 				}
 
@@ -311,16 +207,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			{
 				conn.Execute(delete, new { Id =invoiceId });
 			}
-			//var db = _dbContext.PayrollInvoices.FirstOrDefault(i => i.Id == invoiceId);
-			//if (db != null)
-			//{
-			//	var creditInvoices = _dbContext.PayrollPayChecks.Where(pc => pc.CreditInvoiceId == invoiceId).ToList();
-			//	creditInvoices.ForEach(ci=>ci.CreditInvoiceId=null);
-			//	db.Payroll.InvoiceId = null;
-			//	db.PayrollPayChecks.ToList().ForEach(pc=>pc.InvoiceId=null);
-			//	_dbContext.PayrollInvoices.Remove(db);
-			//	_dbContext.SaveChanges();
-			//}
+			
 		}
 
 		public void SavePayCheck(PayCheck pc)
@@ -348,25 +235,13 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 
 		public void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date)
 		{
-			var dbPayroll = _dbContext.Payrolls.FirstOrDefault(p => p.Id == payrollId);
-			
-			if (dbPayroll != null)
+			using (var conn = GetConnection())
 			{
-				var originalDate = dbPayroll.PayDay;
-				dbPayroll.TaxPayDay = date.Date;
-				var dbPayChecks = dbPayroll.PayrollPayChecks.Where(pc => payChecks.Contains(pc.Id)).ToList();
-				dbPayChecks.ForEach(pc => pc.TaxPayDay = date.Date);
-				//var dbJournals = _dbContext.Journals.Where(j => payChecks.Contains(j.PayrollPayCheckId.Value)).ToList();
-				//dbJournals.ForEach(j =>
-				//{
-				//	j.TransactionDate = date.Date;
-				//	if (!j.OriginalDate.HasValue && DateTime.Today > originalDate)
-				//	{
-				//		j.OriginalDate = originalDate;
-				//	}
-				//});
-				_dbContext.SaveChanges();
+				const string updatesql = @"Update PayrollPayCheck set TaxPayDay=@TaxPayDay Where Id in @PayCheckIds; Update Payroll set TaxPayDay=@TaxPayDay where Id=@PayrollId";
+				conn.Execute(updatesql, new { TaxPayDay = date.Date, PayrollId=payrollId, PayCheckIds=payChecks });
+				
 			}
+			
 
 		}
 
@@ -776,6 +651,34 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			{
 				conn.Execute(query, new {Id = id});
 			}
+		}
+
+		public void VoidPayChecks(List<PayCheck> payChecks, string userName)
+		{
+			payChecks.ForEach(pc =>
+			{
+				pc.LastModifiedBy = userName;
+				pc.Status=PaycheckStatus.Void;
+			});
+			using (var conn = GetConnection())
+			{
+				const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				const string updatejournal = @"update Journal set IsVoid=1, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
+				conn.Execute(updatejournal, payChecks);
+				conn.Execute(updatepayroll, payChecks);
+			}
+		}
+		public PayCheck UnVoidPayCheck(PayCheck payCheck, string name)
+		{
+			using (var conn = GetConnection())
+			{
+				const string updatepayroll = @"update PayrollPayCheck set IsVoid=@IsVoid, Status=@Status, VoidedOn=@VoidedOn, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				const string updatejournal = @"update Journal set IsVoid=0, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
+				conn.Execute(updatejournal, payCheck);
+				conn.Execute(updatepayroll, payCheck);
+			}
+			
+			return payCheck;
 		}
 	}
 }

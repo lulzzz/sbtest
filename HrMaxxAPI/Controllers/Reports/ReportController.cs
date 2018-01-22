@@ -258,14 +258,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		}
 
-		[HttpGet]
-		[Route(ReportRoutes.ACHExtractList)]
-		[DeflateCompression]
-		public List<ACHMasterExtract> ACHExtractList()
-		{
-			return MakeServiceCall(() => _reportService.GetACHExtractList(), "ACH Extract list for Report ", true);
-
-		}
+		
 
 		[HttpPost]
 		[Route(ReportRoutes.GetSearchResults)]

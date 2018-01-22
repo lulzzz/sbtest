@@ -15,10 +15,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		Models.Payroll SavePayroll(Models.Payroll payroll);
 		void MarkPayrollPrinted(Guid payrollId);
 		void UpdatePayrollPayDay(Guid payrollId, List<int> payChecks, DateTime date);
+		void DeletePayroll(Models.Payroll id);
+		bool CanUpdateCheckNumbers(Guid id, int startingCheckNumber, int count);
+		void UpdatePayrollCheckNumbers(Models.Payroll payroll);
+		void VoidPayroll(Guid id);
 		//PayChecks
 		void SavePayCheck(PayCheck pc);
 		void UpdatePayCheckYTD(PayCheck employeeFutureCheck);
-		PayCheck VoidPayCheck(PayCheck paycheck, string name);
+		void VoidPayChecks(List<PayCheck> payChecks, string userName);
 		PayCheck UnVoidPayCheck(PayCheck paycheck, string name);
 		void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed);
 		//Invoices
@@ -40,13 +44,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void FixPayCheckTaxes(List<PayCheck> taxupdate);
 		void FixPayCheckAccumulations(List<PayCheck> accupdate);
 		void ReIssueCheck(int payCheckId);
-		void MovePayrolls(List<Models.Payroll> payrolls, List<Journal> affectedJournals, List<PayrollInvoice> invoices, Guid guid, Guid source);
+		void MovePayrolls(List<Models.Payroll> payrolls, List<Models.Journal> affectedJournals, List<PayrollInvoice> invoices, Guid guid, Guid source);
 		void DeleteAllPayrolls(Guid target);
 		void UpdateInvoiceDeliveryData(List<InvoiceDeliveryClaim> claims);
 		void UpdateEmployeeChecksForLeaveCycle(Guid employeeId, DateTime oldHireDate, DateTime newHireDate);
-		void DeletePayroll(Models.Payroll id);
-		bool CanUpdateCheckNumbers(Guid id, int startingCheckNumber, int count);
-		void UpdatePayrollCheckNumbers(Models.Payroll payroll);
-		void VoidPayroll(Guid id);
+		
+		
 	}
 }

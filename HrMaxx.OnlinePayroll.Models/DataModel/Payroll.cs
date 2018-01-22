@@ -40,6 +40,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.Guid> MovedFrom { get; set; }
         public bool IsPrinted { get; set; }
         public bool IsVoid { get; set; }
+        public Nullable<System.Guid> HostCompanyId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }

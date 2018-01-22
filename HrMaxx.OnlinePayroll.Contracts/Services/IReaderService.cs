@@ -37,6 +37,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<PayCheck> GetEmployeePayChecks(Guid employeeId);
 		PayCheck GetPaycheck(int payCheckId);
 
+		//Journals
+		List<Models.Journal> GetJournals(Guid? companyId = null, Guid? payrollId = null, int? payCheckId = null, DateTime? startDate = null, DateTime? endDate = null, int transactionType = 0, int? isvoid = null, int? year = null, int accountId = 0, bool? PEOASOCoCheck = null, int id = 0);
+
 		//Companies
 		List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = null);
 		Company GetCompany(Guid companyId);

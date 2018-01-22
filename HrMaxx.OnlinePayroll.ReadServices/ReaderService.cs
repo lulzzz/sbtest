@@ -486,6 +486,74 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
+		public List<Journal> GetJournals(Guid? companyId = null, Guid? payrollId = null, int? payCheckId = null, DateTime? startDate = null,
+		  DateTime? endDate = null,
+			int transactionType = 0, int? isvoid = null, int? year = null, int accountId = 0, bool? PEOASOCoCheck = null, int id=0)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				if (companyId.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "company", Value = companyId.Value.ToString()});
+				}
+				if (payrollId.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "payrollid", Value = payrollId.Value.ToString() });
+				}
+				if (payCheckId.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "paycheck", Value = payCheckId.Value.ToString()});
+				}
+
+				if (startDate.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "startdate", Value = startDate.Value.Date.ToString("MM/dd/yyyy")});
+				}
+				if (endDate.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "enddate", Value = endDate.Value.Date.ToString("MM/dd/yyyy")});
+				}
+
+				if (transactionType > 0)
+				{
+					paramList.Add(new FilterParam {Key = "transactiontype", Value = transactionType.ToString()});
+				}
+				if (accountId > 0)
+				{
+					paramList.Add(new FilterParam {Key = "accountid", Value = accountId.ToString()});
+				}
+				if (isvoid.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "void", Value = isvoid.Value.ToString()});
+				}
+				if (PEOASOCoCheck.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "PEOASOCoCheck", Value = PEOASOCoCheck.Value.ToString() });
+				}
+
+				if (year.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "year", Value = year.ToString()});
+				}
+				if (id>0)
+				{
+					paramList.Add(new FilterParam { Key = "id", Value = id.ToString() });
+				}
+				var journals = GetDataFromStoredProc<List<Journal>, List<Models.JsonDataModel.JournalJson>>(
+					"GetJournals", paramList, new XmlRootAttribute("JournalList"));
+
+				return journals;
+			}
+
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Pay Check list through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
 	  public List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = null)
 	  {
 			try

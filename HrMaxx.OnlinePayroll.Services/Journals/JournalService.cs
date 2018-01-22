@@ -72,7 +72,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				return _journalRepository.GetPayCheckJournal(payCheckId, PEOASOCoCheck);
+				var j = _readerService.GetJournals(payCheckId: payCheckId, PEOASOCoCheck: PEOASOCoCheck);
+				return j.First();
 			}
 			catch (Exception e)
 			{
@@ -85,7 +86,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				return _journalRepository.GetPayrollJournals(payrollId, PEOASOCoCheck);
+				var j1 = _readerService.GetJournals(payrollId: payrollId, PEOASOCoCheck: PEOASOCoCheck);
+				return j1;
 			}
 			catch (Exception e)
 			{
@@ -142,8 +144,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			try
 			{
 				var coa = _companyService.GetComanyAccounts(companyId).First(c=>c.Id==accountId);
-				var journals = _journalRepository.GetJournalList(companyId, accountId, startDate, endDate);
-				var alljournals = _journalRepository.GetJournalList(companyId, accountId, null, DateTime.Today.Date);
+				
+				var journals = _readerService.GetJournals(companyId: companyId, accountId: accountId, startDate: startDate,
+					endDate: endDate);
+				
+				var alljournals = _readerService.GetJournals(companyId: companyId, accountId: accountId, endDate: DateTime.Today.Date);
 				var openingBalance = (decimal)0;
 				if (!startDate.HasValue && !endDate.HasValue)
 					openingBalance = coa.OpeningBalance;
@@ -154,9 +159,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					openingBalance = coa.OpeningBalance;
 				}
 				var journalDetails = alljournals.Where(j=>!j.IsVoid).SelectMany(j=>j.JournalDetails.Where(jd=>jd.AccountId==accountId)).ToList();
+				
 				var credits = journalDetails.Where(jd => !jd.IsDebit).Sum(jd => jd.Amount);
 				var debits = journalDetails.Where(jd => jd.IsDebit).Sum(jd => jd.Amount);
-				
+
 				return new JournalList
 				{
 					Account = coa,
@@ -178,7 +184,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				var dbcoas = _companyService.GetComanyAccounts(companyId);
 				var coas = Mapper.Map<List<Account>, List<AccountWithJournal >> (dbcoas);
-				var journals = _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
+				var journals = _readerService.GetJournals(companyId: companyId, startDate: startDate, endDate: endDate);
 				coas.ForEach(coa =>
 				{
 					coa.MakeRegister(journals.Where(j => j.MainAccountId == coa.Id || j.JournalDetails.Any(jd => jd.AccountId == coa.Id)).ToList(), dbcoas);
@@ -494,7 +500,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				var models = new List<PDFModel>();
 				journals.ForEach(j =>
 				{
-					var journal = _journalRepository.GetJournalById(j);
+					var journal = _readerService.GetJournals(id:j).First();
 					var company = _readerService.GetCompany(journal.CompanyId);
 					var coas = _companyService.GetComanyAccounts(journal.CompanyId);
 						
@@ -590,11 +596,12 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					throw new Exception("No Bank Account set up for Invoice Deposit");
 				var allpayments =
 					host.Companies.SelectMany(c => c.Payments.Where(p => p.Method != InvoicePaymentMethod.ACH).Select(p => p)).ToList();
-				var invoiceDeposits = _journalRepository.GetCompanyJournals(host.HostCompany.Id,
-					masterExtract.Extract.Report.StartDate, masterExtract.Extract.Report.StartDate);
+				var invoiceDeposits = _readerService.GetJournals(companyId: host.HostCompany.Id,
+					startDate: masterExtract.Extract.Report.StartDate, endDate: masterExtract.Extract.Report.StartDate,
+					transactionType: (int)TransactionType.InvoiceDeposit); //_journalRepository.GetCompanyJournals(host.HostCompany.Id,masterExtract.Extract.Report.StartDate, masterExtract.Extract.Report.StartDate);
 				var journal = new Journal
 				{
-					Id = invoiceDeposits.Any(j=>j.TransactionType==TransactionType.InvoiceDeposit) ? invoiceDeposits.First(j=>j.TransactionType==TransactionType.InvoiceDeposit).Id : 0,
+					Id = invoiceDeposits.Any() ? invoiceDeposits.First().Id : 0,
 					CompanyId = host.HostCompany.Id,
 					Amount = Math.Round(allpayments.Sum(p=>p.Amount), 2, MidpointRounding.AwayFromZero),
 					CheckNumber = -1,
@@ -653,7 +660,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				var dbcoas = _companyService.GetComanyAccounts(companyId);
 				var coas = Mapper.Map<List<Account>, List<AccountWithJournal>>(dbcoas).Where(c => accountTypes.Any(at => at == c.Type)).ToList();
-				var journals = _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
+				var journals = _readerService.GetJournals(companyId:companyId, startDate: startDate,endDate: endDate);
 				coas.ForEach(coa =>
 				{
 					coa.MakeRegister(journals.Where(j => j.MainAccountId == coa.Id || j.JournalDetails.Any(jd => jd.AccountId == coa.Id)).ToList(), dbcoas);
@@ -684,8 +691,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				var journals = _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
-				return journals.Where(j => !j.IsVoid && j.TransactionType == TransactionType.RegularCheck).ToList();
+				var journals = _readerService.GetJournals(companyId: companyId,startDate: startDate,endDate: endDate, transactionType:(int)TransactionType.RegularCheck, isvoid:0);
+				return journals;//.Where(j => !j.IsVoid && j.TransactionType == TransactionType.RegularCheck).ToList();
 			}
 			catch (Exception e)
 			{
@@ -851,22 +858,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public List<Journal> GetJournalListByDate(Guid? companyId, DateTime startDate, DateTime endDate)
-		{
-			try
-			{
-				return _journalRepository.GetCompanyJournals(companyId, startDate, endDate);
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " journal list by company and startDate");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
 		
-
 		private Journal CreateJournalEntryTP(List<Account> coaList, string userName,  Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);

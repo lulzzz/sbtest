@@ -72,6 +72,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\Maintenance\SchemaChanges\009R2_Separations of archive and real.sql" />
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011T_changing paycheck constrains no cascade delete.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\011S2_void payroll flag.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

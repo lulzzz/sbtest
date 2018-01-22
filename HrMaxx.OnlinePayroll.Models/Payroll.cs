@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class Payroll : BaseEntityDto, IOriginator<Payroll>
 	{
+		public Guid? HostCompanyId { get; set; }
 		public Company Company { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }

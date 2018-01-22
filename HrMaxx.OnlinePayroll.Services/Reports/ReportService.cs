@@ -1643,19 +1643,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 		}
 
-		public List<ACHMasterExtract> GetACHExtractList()
-		{
-			try
-			{
-				return _reportRepository.GetACHExtractList();
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH extract list for "));
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
+	
 
 		public FileDto PrintPayrollWithoutSummary(Models.Payroll payroll, List<Guid> documents)
 		{

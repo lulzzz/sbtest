@@ -223,14 +223,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			}
 			
 		}
-		public List<ACHMasterExtract> GetACHExtractList()
-		{
-			var list = 
-				_dbContext.MasterExtracts.Where(r => r.ExtractName.Equals("ACH"))
-					.ToList();
-
-			return _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.ACHMasterExtract>>(list);
-		}
+		
 
 		public Models.MasterExtract SaveCommissionExtract(CommissionsExtract extract, string fullName)
 		{
@@ -272,18 +265,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 		}
 
 
-		public List<MasterExtract> GetExtractList(string report)
-		{
-			var extracts = _dbContext.MasterExtracts.Where(e => e.ExtractName.Equals(report)).ToList();
-			var returnList = _mapper.Map<List<Models.DataModel.MasterExtract>, List<Models.MasterExtract>>(extracts);
-			returnList.ForEach(me => me.Extract.Data.Hosts.ForEach(h =>
-			{
-				h.Accumulation.ExtractType = me.Extract.Report.ExtractType;
-				h.Companies.ForEach(c=>c.Accumulation.ExtractType=me.Extract.Report.ExtractType);
-			}));
-			return returnList;
-		}
-
+		
 		public SearchResults GetSearchResults(string criteria, string role, Guid host, Guid company)
 		{
 			using (var con = new SqlConnection(_sqlCon))

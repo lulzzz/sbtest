@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	{
 		public Guid Id { get; set; }
 		public Guid CompanyId { get; set; }
+		public Guid? HostCompanyId { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }

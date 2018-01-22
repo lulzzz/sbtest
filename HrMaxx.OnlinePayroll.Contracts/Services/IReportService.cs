@@ -21,7 +21,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company);
 		ACHExtract GetACHReport(ReportRequest request);
 		ACHExtract GetACHExtract(ACHExtract data, string fullName);
-		List<ACHMasterExtract> GetACHExtractList();
+		
 		FileDto PrintPayrollWithoutSummary(Payroll payroll, List<Guid> documents);
 		FileDto PrintPayrollTimesheet(Payroll payroll);
 		FileDto PrintPayrollWithoutSummary(Payroll payroll, List<FileDto> documents);

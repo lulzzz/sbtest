@@ -439,6 +439,7 @@
           <Property Name="MovedFrom" Type="uniqueidentifier" />
           <Property Name="IsPrinted" Type="bit" Nullable="false" />
           <Property Name="IsVoid" Type="bit" Nullable="false" />
+          <Property Name="HostCompanyId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="PayrollInvoice">
           <Key>
@@ -2241,6 +2242,7 @@
           <Property Name="MovedFrom" Type="Guid" />
           <Property Name="IsPrinted" Type="Boolean" Nullable="false" />
           <Property Name="IsVoid" Type="Boolean" Nullable="false" />
+          <Property Name="HostCompanyId" Type="Guid" />
         </EntityType>
         <Association Name="FK_Employee_CompanyWorkerCompensation">
           <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="0..1" />
@@ -3166,6 +3168,7 @@
           <EntitySetMapping Name="Payrolls">
             <EntityTypeMapping TypeName="HrMaxxModel.Payroll">
               <MappingFragment StoreEntitySet="Payroll">
+                <ScalarProperty Name="HostCompanyId" ColumnName="HostCompanyId" />
                 <ScalarProperty Name="IsVoid" ColumnName="IsVoid" />
                 <ScalarProperty Name="IsPrinted" ColumnName="IsPrinted" />
                 <ScalarProperty Name="MovedFrom" ColumnName="MovedFrom" />
