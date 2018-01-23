@@ -67,7 +67,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-
+	
 		public Journal GetPayCheckJournal(int payCheckId, bool PEOASOCoCheck = false)
 		{
 			try
@@ -256,7 +256,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						});
 						
 					}
-					var saved =  _journalRepository.SaveJournal(journal);
+					var saved =  _journalRepository.SaveCheckbookJournal(journal);
 					if (journal.TransactionType == TransactionType.InvoiceDeposit)
 					{
 						Bus.Publish<InvoiceDepositUpdateEvent>(new InvoiceDepositUpdateEvent()
@@ -585,6 +585,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				throw;
 			}
 		}
+
+		
 
 		private void CreateDepositTickets(string user, MasterExtract masterExtract, Guid userId)
 		{

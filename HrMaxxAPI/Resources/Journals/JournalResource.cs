@@ -22,6 +22,7 @@ namespace HrMaxxAPI.Resources.Journals
 		[Required]
 		public int CheckNumber { get; set; }
 		public int? PayrollPayCheckId { get; set; }
+		public Guid? PayrollId { get; set; }
 		[Required]
 		public EntityTypeEnum EntityType { get; set; }
 

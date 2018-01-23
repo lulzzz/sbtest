@@ -387,6 +387,7 @@
           <Property Name="IsReIssued" Type="bit" Nullable="false" />
           <Property Name="OriginalCheckNumber" Type="int" />
           <Property Name="ReIssuedDate" Type="datetime" />
+          <Property Name="PayrollId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="MasterExtracts">
           <Key>
@@ -2288,6 +2289,7 @@
           <Property Name="IsReIssued" Type="Boolean" Nullable="false" />
           <Property Name="OriginalCheckNumber" Type="Int32" />
           <Property Name="ReIssuedDate" Type="DateTime" Precision="3" />
+          <Property Name="PayrollId" Type="Guid" />
         </EntityType>
         <Association Name="FK_Journal_EntityType">
           <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
@@ -3194,6 +3196,7 @@
           <EntitySetMapping Name="Journals">
             <EntityTypeMapping TypeName="HrMaxxModel.Journal">
               <MappingFragment StoreEntitySet="Journal">
+                <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
                 <ScalarProperty Name="ReIssuedDate" ColumnName="ReIssuedDate" />
                 <ScalarProperty Name="OriginalCheckNumber" ColumnName="OriginalCheckNumber" />
                 <ScalarProperty Name="IsReIssued" ColumnName="IsReIssued" />

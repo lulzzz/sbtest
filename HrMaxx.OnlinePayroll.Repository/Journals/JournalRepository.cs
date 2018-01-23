@@ -28,14 +28,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 
 		public Models.Journal SaveJournal(Models.Journal journal, bool isPEOCheck = false, bool peoPayroll = false)
 		{
-			const string insertjournal = "insert into Journal(CompanyId,TransactionType,PaymentMethod,CheckNumber,PayrollPayCheckId,EntityType,PayeeId,PayeeName,Amount,Memo,IsDebit,IsVoid,MainAccountId,TransactionDate,LastModified,LastModifiedBy,JournalDetails,DocumentId,PEOASOCoCheck,OriginalDate,IsReIssued,OriginalCheckNumber,ReIssuedDate) values(@CompanyId,@TransactionType,@PaymentMethod,@CheckNumber,@PayrollPayCheckId,@EntityType,@PayeeId,@PayeeName,@Amount,@Memo,@IsDebit,@IsVoid,@MainAccountId,@TransactionDate,@LastModified,@LastModifiedBy,@JournalDetails,@DocumentId,@PEOASOCoCheck,@OriginalDate,@IsReIssued,@OriginalCheckNumber,@ReIssuedDate); select cast(scope_identity() as int)";
+			const string insertjournal = "insert into Journal(CompanyId,TransactionType,PaymentMethod,CheckNumber,PayrollPayCheckId,EntityType,PayeeId,PayeeName,Amount,Memo,IsDebit,IsVoid,MainAccountId,TransactionDate,LastModified,LastModifiedBy,JournalDetails,DocumentId,PEOASOCoCheck,OriginalDate,IsReIssued,OriginalCheckNumber,ReIssuedDate, PayrollId) values(@CompanyId,@TransactionType,@PaymentMethod,@CheckNumber,@PayrollPayCheckId,@EntityType,@PayeeId,@PayeeName,@Amount,@Memo,@IsDebit,@IsVoid,@MainAccountId,@TransactionDate,@LastModified,@LastModifiedBy,@JournalDetails,@DocumentId,@PEOASOCoCheck,@OriginalDate,@IsReIssued,@OriginalCheckNumber,@ReIssuedDate, @PayrollId); select cast(scope_identity() as int)";
 			var mapped = _mapper.Map<Models.Journal, Journal>(journal);
 			using (var conn = GetConnection())
 			{
 				if (mapped.Id == 0)
 				{
-					if (journal.TransactionType == TransactionType.PayCheck)
-					{
+					
 
 						if (peoPayroll && isPEOCheck && mapped.CheckNumber > 0)
 						{
@@ -61,8 +60,44 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 							}
 
 						}
+					
+					
+
+					mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
+
+				}
+				else
+				{
+					const string jsq =
+					"select * from Journal with(nolock) where Id=@Id";
+					var dbj2 = conn.Query<Journal>(jsq, new { Id = mapped.Id }).ToList();
+
+					if (dbj2.Any())
+					{
+						const string updatejournal =
+							"update journal set Amount=@Amount, Memo=@Memo, TransactionDate=@TransactionDate, CheckNumber=@CheckNumber, IsVoid=@IsVoid, PayeeId=@PayeeId, PayeeName=@PayeeName, JournalDetails=@JournalDetails Where Id=@Id";
+						conn.Execute(updatejournal, mapped);
+
 					}
-					else if (journal.TransactionType == TransactionType.RegularCheck ||
+					else
+					{
+						mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
+					}
+				}
+			}
+			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(mapped);
+		}
+
+		
+		public Models.Journal SaveCheckbookJournal(Models.Journal journal, bool isPEOCheck = false, bool peoPayroll = false)
+		{
+			const string insertjournal = "insert into Journal(CompanyId,TransactionType,PaymentMethod,CheckNumber,PayrollPayCheckId,EntityType,PayeeId,PayeeName,Amount,Memo,IsDebit,IsVoid,MainAccountId,TransactionDate,LastModified,LastModifiedBy,JournalDetails,DocumentId,PEOASOCoCheck,OriginalDate,IsReIssued,OriginalCheckNumber,ReIssuedDate) values(@CompanyId,@TransactionType,@PaymentMethod,@CheckNumber,@PayrollPayCheckId,@EntityType,@PayeeId,@PayeeName,@Amount,@Memo,@IsDebit,@IsVoid,@MainAccountId,@TransactionDate,@LastModified,@LastModifiedBy,@JournalDetails,@DocumentId,@PEOASOCoCheck,@OriginalDate,@IsReIssued,@OriginalCheckNumber,@ReIssuedDate); select cast(scope_identity() as int)";
+			var mapped = _mapper.Map<Models.Journal, Journal>(journal);
+			using (var conn = GetConnection())
+			{
+				if (mapped.Id == 0)
+				{
+					if (journal.TransactionType == TransactionType.RegularCheck ||
 									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
 						const string js = "select * from Journal with (nolock) where CompanyId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
@@ -225,23 +260,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		{
 			var sql = "if exists(select 'x' from CompanyMaxCheckNumber where CompanyId=@CompanyId and TransactionType=@TransactionType) Update CompanyMaxCheckNumber set CheckNumber=(select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))) where CompanyId=@CompanyId and TransactionType=@TransactionType else insert into CompanyMaxCheckNumber values (@CompanyId, @TransactionType, (select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))));";
 			
-			var checkpeosql = "select host.CompanyId as HostCompanyId from Host, Company where Host.Id=Company.HostId and Company.FileUnderHost=1 and Company.Id=@CompanyId";
+			
 			using (var conn = GetConnection())
 			{
 				
 				conn.Execute(sql, new { CompanyId = companyId, TransactionType=(int)transactionType });
-				if (transactionType == TransactionType.PayCheck)
-				{
-					dynamic peoresult =
-					conn.Query(checkpeosql, new { CompanyId=companyId }).FirstOrDefault();
-					if (peoresult != null && peoresult.HostCompanyId != Guid.Empty)
-					{
-						conn.Execute(sql, new { CompanyId = peoresult.HostCompanyId, TransactionType = (int)transactionType });
-					}
-				}
+				
 				
 			}
 		}
+
+		
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)
 		{

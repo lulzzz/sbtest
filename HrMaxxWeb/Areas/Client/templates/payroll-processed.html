@@ -84,7 +84,7 @@
 					{{listitem.companyEmployeeNo}}
 				</td>
 				<td data-title=" 'Check #' " filter="{ 'checkNumber': 'text' }" sortable=" 'checkNumber' ">
-					{{listitem.checkNumber}}<span ng-show="listitem.isReIssued" class="show-red">({{listitem.originalCheckNumber}})</span>
+					{{listitem.paymentMethod===1 ? listitem.checkNumber : 'EFT'}}<span ng-show="listitem.isReIssued" class="show-red">({{listitem.paymentMethod===1 ? listitem.originalCheckNumber : 'EFT'}})</span>
 				</td>
 				<td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
 					{{listitem.name}}

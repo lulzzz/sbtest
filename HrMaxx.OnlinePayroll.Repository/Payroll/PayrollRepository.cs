@@ -122,7 +122,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						.FirstOrDefault();
 				if (pi == null)
 				{
-					Log.Info("Save New Invoice Started: " + DateTime.Now + " PayrollId: " + payrollInvoice.PayrollId);
 					payrollInvoice.InvoiceNumber = conn.Query<int>(insertsql, mapped).Single();
 
 					conn.Execute(updatepayrollsql,
@@ -142,7 +141,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 								CreditChecks = payrollInvoice.VoidedCreditedChecks
 							});
 					}
-					Log.Info("Save New Invoice Ended: " + DateTime.Now);
 					return payrollInvoice;
 				}
 				else
@@ -157,7 +155,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);
-					Log.Info("Invoice Update Started: " + DateTime.Now);
+					
 					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
 						const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
@@ -166,7 +164,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						{
 							conn.Execute(updatecreditcheckssql,new { Id = mapped.Id, CreditChecks = payrollInvoice.VoidedCreditedChecks });
 						}
-						Log.Info("Credit Checks Handled: " + DateTime.Now);
+						
 					}
 					
 					const string removepayment = "delete from InvoicePayment where Id=@Id;";
@@ -188,7 +186,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 					{
 						p.Id = conn.Query<int>(insertpayment, p).Single();
 					});
-					Log.Info("Invoice Updated Ended " + DateTime.Now);
+					
 						
 					
 					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);

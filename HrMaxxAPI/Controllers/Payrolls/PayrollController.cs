@@ -236,20 +236,6 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public HttpResponseMessage GetDocument(PayrollPrintRequest request)
 		{
-			if (_documentService.DocumentExists(request.DocumentId))
-			{
-				try
-				{
-					var document = MakeServiceCall(() => _documentService.GetDocument(request.DocumentId), "Get Document By ID",
-						true);
-					return Printed(document);
-				}
-				catch (Exception e)
-				{
-					
-				}
-			}
-			
 			var printedCheck = MakeServiceCall(() => _payrollService.PrintPayCheck(request.PayCheckId), "print check by payroll id and check id", true);
 			return Printed(printedCheck);	
 			

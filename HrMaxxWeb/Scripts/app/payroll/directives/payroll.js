@@ -25,6 +25,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						showingWarnings: false,
 						showingSelected: false,
 						showWCWarnings: false,
+						importInProgress: false
 					}
 					
 					$scope.list = [];
@@ -165,27 +166,29 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					
 					
 					$scope.process = function () {
-						
-						var payroll = angular.copy($scope.item);
-						payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
-						payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
-						payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
-						payroll.taxPayDay = payroll.payDay;
-						payrollRepository.processPayroll(payroll).then(function (data) {
-							$timeout(function () {
-								$scope.cancel();
-								$scope.$parent.$parent.set(data);
-							});
-							
-							
-						}, function (error) {
-							addAlert('Error processing payroll: ' + error.statusText, 'danger');
-						});
+						$scope.$parent.$parent.process($scope.item);
+						//var payroll = angular.copy($scope.item);
+						//$scope.cancel();
+						//payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
+						//payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
+						//payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
+						//payroll.taxPayDay = payroll.payDay;
+						//payrollRepository.processPayroll(payroll).then(function (data) {
+						//	$timeout(function () {
+
+						//		$scope.$parent.$parent.set(data);
+						//	});
+
+
+						//}, function (error) {
+						//	$scope.$parent.$parent.set(payroll);
+						//	addAlert('Error processing payroll: ' + error.statusText, 'danger');
+						//});
 					}
 					$scope.showList = function() {
 						if (moment($scope.item.endDate) < moment($scope.item.startDate) || moment($scope.item.payDay) < $scope.minPayDate)
 							return false;
-						else if ($scope.list.length > 0 && $scope.item.startDate && $scope.item.endDate && $scope.item.payDay && $scope.item.startingCheckNumber)
+						else if ($scope.list.length > 0 && $scope.item.startDate && $scope.item.endDate && $scope.item.payDay && $scope.item.startingCheckNumber && !dataSvc.importInProgress)
 							return true;
 						
 						else
@@ -407,6 +410,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					}
 
 					$scope.importTimesheet = function () {
+						dataSvc.importInProgress = true;
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/importtimesheet.html',
 							controller: 'importTimesheetCtrl',
@@ -450,8 +454,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								});
 								addAlert(warning, 'warning');
 							}
-							
+							dataSvc.importInProgress = false;
 						}, function () {
+							dataSvc.importInProgress = false;
 							return false;
 						});
 					}
@@ -1015,6 +1020,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 
 	}
 	$scope.cancel = function () {
+		
 		$uibModalInstance.dismiss();
 	};
 	$scope.showTable = function() {

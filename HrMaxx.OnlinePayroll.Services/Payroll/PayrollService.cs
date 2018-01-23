@@ -675,8 +675,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							};
 							ptwcs.Add(pt);
 						};
-						
-						var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName);
+
+						var j = CreateJournalEntry(payroll, pc, coaList);
 						pc.CheckNumber = j.CheckNumber;
 
 					});
@@ -695,17 +695,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 					//PEO/ASO Co Check
 					
+
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
 					    payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 					{
-						
+
 						companyIdForPayrollAccount = host.Company.Id;
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
-						savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
-						{
-							var j = CreateJournalEntry(payroll.Company, pc, coaList, payroll.UserName, true, companyIdForPayrollAccount);
-							pc.CheckNumber = j.CheckNumber;
-						});
+						savedPayroll.PayChecks
+							.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList()
+							.ForEach(pc =>
+							{
+								var j = CreateJournalEntry(payroll, pc, coaList, true, companyIdForPayrollAccount);
+								pc.CheckNumber = j.CheckNumber;
+							});
+
+						
 						_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
 					}
 					
@@ -1016,16 +1021,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
+				Log.Info(string.Format("Starting Print {0} - {1}", payrollId, DateTime.Now.ToString("hh:mm:ss:fff")));
 				var payroll = _readerService.GetPayroll(payrollId);
+				Log.Info(string.Format("Payroll fetched {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 				var returnFile = new FileDto();
 				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
 				{
 					var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
+					Log.Info(string.Format("Journals fetched {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
 				}
-				
-					if (!payroll.IsPrinted)
-						_payrollRepository.MarkPayrollPrinted(payroll.Id);
+
+				if (!payroll.IsPrinted)
+				{
+					_payrollRepository.MarkPayrollPrinted(payroll.Id);
+					Log.Info(string.Format("Marked Printed {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+				}
+				Log.Info(string.Format("Finished printing {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 					//txn.Complete();
 				
 				return returnFile;
@@ -2249,12 +2261,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					
 				}
+				Log.Info(string.Format("Finished Modeling {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 				var fileName = payChecks.Count == 1
 					? string.Format("Pay Check {0}", payChecks.First().CheckNumber)
 					: string.Format("Payroll_{0}_{1}_{2}", payroll.StartDate.ToString("MMddyyyy"), payroll.EndDate.ToString("MMddyyyy"),
 						payroll.Id);
 				
-				return _pdfService.Print(fileName, pdfs);	
+				var file = _pdfService.Print(fileName, pdfs);
+				Log.Info(string.Format("File Ready {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+				return file;
 			}
 			catch (Exception e)
 			{
@@ -2288,7 +2303,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 		
-		private Journal CreateJournalEntry(Company company, PayCheck pc, List<Account> coaList, string userName, bool PEOASOCoCheck = false, Guid? companyId = null)
+		private Journal CreateJournalEntry(Models.Payroll payroll, PayCheck pc, List<Account> coaList, bool PEOASOCoCheck = false, Guid? companyId = null)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -2302,7 +2317,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				IsDebit = true,
 				IsVoid = false,
 				LastModified = DateTime.Now,
-				LastModifiedBy = userName,
+				LastModifiedBy = payroll.UserName,
 				Memo = string.Format("Pay Period {0} - {1}", pc.StartDate.ToString("d"), pc.EndDate.ToString("d")),
 				PaymentMethod = pc.PaymentMethod,
 				PayrollPayCheckId = pc.Id,
@@ -2312,23 +2327,24 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				MainAccountId = bankCOA.Id,
 				JournalDetails = new List<JournalDetail>(),
 				DocumentId =  CombGuid.Generate(),
-				PEOASOCoCheck = PEOASOCoCheck
+				PEOASOCoCheck = PEOASOCoCheck,
+				PayrollId = payroll.Id
 			};
 			//bank account debit
 			
 
-			journal.JournalDetails.Add(new JournalDetail{ AccountId = bankCOA.Id, AccountName= bankCOA.AccountName, IsDebit = true, Amount = pc.NetWage, LastModfied = journal.LastModified, LastModifiedBy = userName});
-			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PAYROLL_EXPENSES").Id, AccountName = coaList.First(c => c.TaxCode == "PAYROLL_EXPENSES").AccountName, IsDebit = false, Amount = pc.NetWage, LastModfied = journal.LastModified, LastModifiedBy = userName });
-			pc.Taxes.ForEach(t => journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == t.Tax.Code).Id, AccountName = coaList.First(c => c.TaxCode == t.Tax.Code).AccountName, IsDebit = false, Amount = t.Amount, LastModifiedBy = userName, LastModfied = journal.LastModified }));
+			journal.JournalDetails.Add(new JournalDetail{ AccountId = bankCOA.Id, AccountName= bankCOA.AccountName, IsDebit = true, Amount = pc.NetWage, LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName});
+			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PAYROLL_EXPENSES").Id, AccountName = coaList.First(c => c.TaxCode == "PAYROLL_EXPENSES").AccountName, IsDebit = false, Amount = pc.NetWage, LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
+			pc.Taxes.ForEach(t => journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == t.Tax.Code).Id, AccountName = coaList.First(c => c.TaxCode == t.Tax.Code).AccountName, IsDebit = false, Amount = t.Amount, LastModifiedBy = payroll.UserName, LastModfied = journal.LastModified }));
 			if(pc.CompensationNonTaxableAmount>0)
-				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "MOE").Id, AccountName = coaList.First(c => c.TaxCode == "MOE").AccountName, IsDebit = false, Amount = pc.CompensationNonTaxableAmount, LastModfied = journal.LastModified, LastModifiedBy = userName });
+				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "MOE").Id, AccountName = coaList.First(c => c.TaxCode == "MOE").AccountName, IsDebit = false, Amount = pc.CompensationNonTaxableAmount, LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
 			if (pc.DeductionAmount > 0)
 			{
-				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "ED").Id, AccountName = coaList.First(c => c.TaxCode == "ED").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = userName });
-				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = userName });
+				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "ED").Id, AccountName = coaList.First(c => c.TaxCode == "ED").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
+				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
 			}
-			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero), LastModfied = journal.LastModified, LastModifiedBy = userName });
-			return _journalService.SaveJournalForPayroll(journal, company);
+			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero), LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
+			return _journalService.SaveJournalForPayroll(journal, payroll.Company);
 		}
 
 		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, Accumulation employeeAccumulation)
@@ -3252,7 +3268,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								ptwcs.Add(pt);
 							};
 
-							var j = CreateJournalEntry(payroll.Company, pc, targetCOA, payroll.UserName);
+							var j = CreateJournalEntry(payroll, pc, targetCOA);
 							pc.CheckNumber = j.CheckNumber;
 
 						});
@@ -3267,7 +3283,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						{
 							savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 							{
-								var j = CreateJournalEntry(payroll.Company, pc, targetHostCOA, user, true, targetHost.Company.Id);
+								var j = CreateJournalEntry(payroll, pc, targetHostCOA, true, targetHost.Company.Id);
 								pc.CheckNumber = j.CheckNumber;
 								
 							});

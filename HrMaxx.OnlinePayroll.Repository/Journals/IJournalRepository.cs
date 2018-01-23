@@ -8,6 +8,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 	public interface IJournalRepository
 	{
 		Journal SaveJournal(Journal journal, bool isPEOCheck = false, bool peoPayroll = false);
+		Journal SaveCheckbookJournal(Journal journal, bool isPEOCheck = false, bool peoPayroll = false);
 		
 		Journal VoidJournal(Journal id, TransactionType transactionType, string name);
 		Journal UnVoidJournal(Journal id, TransactionType transactionType, string name);
@@ -21,5 +22,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		void FixMasterExtractPayCheckMapping(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
 		void DeleteJournals(int journals);
 		void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType);
+		
 	}
 }

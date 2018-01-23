@@ -32,7 +32,7 @@
 			});
 			
 		};
-		$scope.confirmDialog = function(message, type, callback) {
+		$scope.confirmDialog = function(message, type, callback, nocallback) {
 			var modalInstance = $modal.open({
 				templateUrl: 'popover/confirm.html',
 				controller: 'confirmDialogCtrl',
@@ -52,7 +52,14 @@
 			modalInstance.result.then(function (result) {
 				if (result)
 					callback();
+				else {
+					if (nocallback)
+						nocallback();
+
+				}
 			}, function () {
+				if (nocallback)
+					nocallback();
 				return false;
 			});
 		}

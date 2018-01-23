@@ -110,18 +110,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						return zionAPI.URL + 'Payroll/Print/'  + check.documentId + '/' + check.payrollId + '/' + check.id ;
 					};
 					$scope.save = function () {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to Confirm this Payroll? # of check=' + $scope.totalChecks + '. Gross Wage=' + $filter('currency')($scope.item.totalGrossWage,'$') , 'warning', function() {
-							$scope.item.payChecks = $filter('filter')($scope.item.payChecks, { included: true });
-
-							payrollRepository.commitPayroll($scope.item).then(function(data) {
-								if (!$scope.mainData.selectedCompany.lastPayrollDate || moment($scope.mainData.selectedCompany.lastPayrollDate) < moment($scope.item.payDay))
-									$scope.mainData.selectedCompany.lastPayrollDate = moment($scope.item.payDay).toDate();
-								$scope.$parent.$parent.updateListAndItem($scope.item.id);
-
-							}, function(error) {
-								addAlert('error committing payroll', 'danger');
-							});
-						});
+						$scope.$parent.$parent.save($scope.item, $scope.totalChecks);
 					}
 					$scope.saveStaging = function () {
 						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to save this Payroll as Draft? Draft Payrolls are not included in reporting figures', 'danger', function() {

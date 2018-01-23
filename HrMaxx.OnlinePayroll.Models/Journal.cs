@@ -17,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeePaymentMethod PaymentMethod { get; set; }
 		public int CheckNumber { get; set; }
 		public int? PayrollPayCheckId { get; set; }
+		public Guid? PayrollId { get; set; }
 		public EntityTypeEnum EntityType { get; set; }
 		public Guid PayeeId { get; set; }
 		public string PayeeName { get; set; }
