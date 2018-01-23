@@ -1021,23 +1021,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				Log.Info(string.Format("Starting Print {0} - {1}", payrollId, DateTime.Now.ToString("hh:mm:ss:fff")));
+				
 				var payroll = _readerService.GetPayroll(payrollId);
-				Log.Info(string.Format("Payroll fetched {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+				
 				var returnFile = new FileDto();
 				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
 				{
 					var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
-					Log.Info(string.Format("Journals fetched {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+					
 					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
 				}
 
 				if (!payroll.IsPrinted)
 				{
 					_payrollRepository.MarkPayrollPrinted(payroll.Id);
-					Log.Info(string.Format("Marked Printed {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+					
 				}
-				Log.Info(string.Format("Finished printing {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+				
 					//txn.Complete();
 				
 				return returnFile;

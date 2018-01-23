@@ -578,7 +578,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					cpareport.T1Value = Math.Round(payrollInvoices.Sum(pi => pi.AdminFee + pi.EnvironmentalFee), 2, MidpointRounding.AwayFromZero);
+					cpareport.T1Value = Math.Round(payrollInvoices.Sum(pi => pi.AdminFee + pi.EnvironmentalFee + pi.WorkerCompensationCharges), 2, MidpointRounding.AwayFromZero);
 				}
 				return cpareport;
 
@@ -949,8 +949,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					});
 
 			});
-			if(data.Hosts.All(h=>h.Companies.All(c=>c.EmployeeAccumulationList.All(e=>e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))))
-				throw new Exception(NoData);
+			//if(data.Hosts.All(h=>h.Companies.All(c=>c.EmployeeAccumulationList.All(e=>e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))))
+			//	throw new Exception(NoData);
 			return data;
 		}
 		private Extract Federal940(ReportRequest request)

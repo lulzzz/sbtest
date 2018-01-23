@@ -145,7 +145,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				}
 				else
 				{
-					Log.Info("Save Existing Invoice Started: " + DateTime.Now + " Id: " + payrollInvoice.Id);
+					
 					pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
 					const string updatepisql =
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 

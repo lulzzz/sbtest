@@ -1290,7 +1290,7 @@
 					<Cell ss:StyleID="s71"/>
 					<Cell ss:StyleID="s71"/>
 				</Row>
-				<xsl:apply-templates select="Hosts/ExtractHost/EmployeeAccumulationList/Accumulation">
+				<xsl:apply-templates select="Hosts/ExtractHost/Companies/ExtractCompany/EmployeeAccumulationList/Accumulation">
 					<xsl:sort select="FirstName"/>
 				</xsl:apply-templates>
 
