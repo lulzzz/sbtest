@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		void FixMasterExtractPayCheckMapping(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
 		void DeleteJournals(int journals);
 		void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType);
-		
+
+		decimal GetJournalBalance(int accountId);
 	}
 }

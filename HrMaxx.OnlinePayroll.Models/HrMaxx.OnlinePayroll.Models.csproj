@@ -251,6 +251,7 @@
     <Compile Include="JsonDataModel\Company.cs" />
     <Compile Include="JsonDataModel\CompanyPayrollCube.cs" />
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
+    <Compile Include="JsonDataModel\ExtractInvoicePaymentJson.cs" />
     <Compile Include="JsonDataModel\Journal.cs" />
     <Compile Include="JsonDataModel\JournalPayeeJson.cs" />
     <Compile Include="JsonDataModel\MasterExtractJson.cs" />

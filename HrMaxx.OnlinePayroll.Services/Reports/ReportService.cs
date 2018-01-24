@@ -389,13 +389,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract GetDailyDepositReport(ReportRequest request)
 		{
 			request.EndDate = request.StartDate.Date.AddHours(24);
-			var invoices = _readerService.GetPayrollInvoices(Guid.Empty);
-			var invoicePayments = invoices.SelectMany(i => i.InvoicePayments.Select(p => new ExtractInvoicePayment
-			{
-				PaymentId	= p.Id, InvoiceId = i.Id, CompanyId = i.CompanyId, PaymentDate = p.PaymentDate, Amount = p.Amount, CheckNumber = p.CheckNumber, Method = p.Method, Status = p.Status
-			})).ToList();
-			var filtered =
-				invoicePayments.Where(p => p.PaymentDate >= request.StartDate && p.PaymentDate < request.EndDate).ToList();
+			
+			var filtered = _readerService.GetInvoicePayments(request.StartDate, request.EndDate);
 			if (!filtered.Any())
 				throw new Exception(NoData);
 			var hosts = _hostService.GetHostList(Guid.Empty);
@@ -1676,22 +1671,26 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportResponse GetIncomeStatementReport(ReportRequest request)
 		{
 
+			var companyJournals = _readerService.GetJournals(request.CompanyId, startDate: request.StartDate,
+				endDate: request.EndDate);
 			var coas = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, request.StartDate,
-				request.EndDate, new List<AccountType> {AccountType.Income, AccountType.Expense});
+				request.EndDate, new List<AccountType> {AccountType.Income, AccountType.Expense}, companyJournals);
 
 			return GetAccountJournalReport(coas);
 		}
 
 		private ReportResponse GetBalanceSheet(ReportRequest request)
 		{
-
+			Log.Info("Balance Sheet started " + DateTime.Now.ToString("hh:mm:ss t z"));
+			var companyJournals = _readerService.GetJournals(request.CompanyId, isvoid:0);
+			Log.Info("journals fetched " + DateTime.Now.ToString("hh:mm:ss t z"));
 			var coas = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, null,
-				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> {AccountType.Assets, AccountType.Liability});
+				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> {AccountType.Assets, AccountType.Liability}, companyJournals);
 			var coasall = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, null,
-				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> { AccountType.Income, AccountType.Expense });
+				null, new List<AccountType> { AccountType.Income, AccountType.Expense }, companyJournals);
 			var coasty = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, new DateTime(DateTime.Now.Year, 1, 1),
-				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> { AccountType.Income, AccountType.Expense });
-
+				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> { AccountType.Income, AccountType.Expense }, companyJournals);
+			Log.Info("registers made " + DateTime.Now.ToString("hh:mm:ss t z"));
 			var allIncome = coasall.Where(c => c.Type == AccountType.Income).Sum(c => c.AccountBalance);
 			var thisyearIncome = coasty.Where(c => c.Type == AccountType.Income).Sum(c => c.AccountBalance);
 			var allExpense = coasall.Where(c => c.Type == AccountType.Expense).Sum(c => c.AccountBalance);
@@ -1735,7 +1734,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			var returnVal = GetAccountJournalReport(coas);
 			returnVal.AccountDetails.Add(equity);
-
+			Log.Info("Balance Sheet finished " + DateTime.Now.ToString("hh:mm:ss t z"));
 			return returnVal;
 
 		}

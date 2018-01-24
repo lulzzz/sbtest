@@ -218,7 +218,9 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Accumulation, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<PayrollAccumulation>(src.Accumulation)));
 
 			CreateMap<Models.JsonDataModel.JournalJson, Models.Journal>()
-				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails))); 
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
+
+			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();
 		}
 	}
 }

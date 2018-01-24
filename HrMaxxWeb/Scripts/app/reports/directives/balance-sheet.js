@@ -56,8 +56,8 @@ common.directive('balanceSheet', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.$watch('mainData.selectedCompany',
 						 function (newValue, oldValue) {
 						 	if (newValue !== oldValue) {
-								if($scope.mainData.reportFilter.filterStartDate)
-						 			$scope.getReport();
+								//if($scope.mainData.reportFilter.filterStartDate)
+						 			//$scope.getReport();
 						 	}
 
 						 }, true

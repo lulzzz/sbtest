@@ -18,7 +18,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		Journal SaveCheckbookEntry(Journal mapped, Guid guid);
 		Journal VoidCheckbookEntry(Journal mapped, Guid guid);
 		FileDto Print(Journal mapped);
-		List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes);
+		List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes, List<Journal> companyJournals);
 		List<Journal> GetJournalList(Guid companyId, DateTime startDate, DateTime endDate);
 		MasterExtract FileTaxes(Extract extract, string fullName);
 		

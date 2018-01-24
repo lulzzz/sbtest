@@ -246,7 +246,11 @@
 				addAlert('error getting host details', 'danger');
 			});
 		}
-		$scope.companySelected = function(url) {
+		$scope.companySelected = function (url) {
+			if (!url){
+				url = $window.location.href;
+			}
+			$window.location.href = "#!/temp";
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
 				dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
 				companyRepository.getCompany(dataSvc.selectedCompany.id).then(function (comp) {

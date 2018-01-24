@@ -258,7 +258,34 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-		public List<Payroll> GetPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids = 0)
+	  public List<ExtractInvoicePayment> GetInvoicePayments(DateTime? startDate, DateTime? endDate)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				
+				
+				if (startDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "startdate", Value = startDate.Value.ToString("MM/dd/yyyy") });
+				}
+				if (endDate.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Value.ToString("MM/dd/yyyy") });
+				}
+				
+				return GetDataFromStoredProc<List<ExtractInvoicePayment>, List<Models.JsonDataModel.ExtractInvoicePaymentJson>>(
+					"GetInvoicePayments", paramList, new XmlRootAttribute("InvoicePaymentList"));
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Invoice Payments through JSON");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
+	  public List<Payroll> GetPayrolls(Guid? companyId, DateTime? startDate = null, DateTime? endDate = null, bool includeDrafts = false, Guid? invoiceId = null, int status = 0, int excludeVoids = 0)
 	  {
 			try
 			{
@@ -548,7 +575,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Pay Check list through XML");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Journal list through XML");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

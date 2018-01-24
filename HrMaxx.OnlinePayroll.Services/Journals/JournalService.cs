@@ -148,7 +148,6 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				var journals = _readerService.GetJournals(companyId: companyId, accountId: accountId, startDate: startDate,
 					endDate: endDate);
 				
-				var alljournals = _readerService.GetJournals(companyId: companyId, accountId: accountId, endDate: DateTime.Today.Date);
 				var openingBalance = (decimal)0;
 				if (!startDate.HasValue && !endDate.HasValue)
 					openingBalance = coa.OpeningBalance;
@@ -158,15 +157,12 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				{
 					openingBalance = coa.OpeningBalance;
 				}
-				var journalDetails = alljournals.Where(j=>!j.IsVoid).SelectMany(j=>j.JournalDetails.Where(jd=>jd.AccountId==accountId)).ToList();
+				var journalBalance = _journalRepository.GetJournalBalance(accountId);
 				
-				var credits = journalDetails.Where(jd => !jd.IsDebit).Sum(jd => jd.Amount);
-				var debits = journalDetails.Where(jd => jd.IsDebit).Sum(jd => jd.Amount);
-
 				return new JournalList
 				{
 					Account = coa,
-					AccountBalance = Math.Round(openingBalance + credits - debits, 2, MidpointRounding.AwayFromZero),
+					AccountBalance = Math.Round(openingBalance + journalBalance, 2, MidpointRounding.AwayFromZero),
 					Journals = journals
 				};
 			}
@@ -656,13 +652,17 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 			});		
 		}
-		public List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes)
+		public List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes, List<Journal> companyJournals)
 		{
 			try
 			{
 				var dbcoas = _companyService.GetComanyAccounts(companyId);
 				var coas = Mapper.Map<List<Account>, List<AccountWithJournal>>(dbcoas).Where(c => accountTypes.Any(at => at == c.Type)).ToList();
-				var journals = _readerService.GetJournals(companyId:companyId, startDate: startDate,endDate: endDate);
+				var journals =
+					companyJournals.Where(
+						j =>
+							((startDate.HasValue && j.TransactionDate >= startDate.Value.Date) || !startDate.HasValue) &&
+							((endDate.HasValue && j.TransactionDate <= endDate.Value.Date) || !endDate.HasValue)).ToList();
 				coas.ForEach(coa =>
 				{
 					coa.MakeRegister(journals.Where(j => j.MainAccountId == coa.Id || j.JournalDetails.Any(jd => jd.AccountId == coa.Id)).ToList(), dbcoas);

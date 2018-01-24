@@ -72,14 +72,23 @@
 		<xsl:variable name="comphostid" select="../../Company/HostId"/>
 		<xsl:variable name="hostcompanyid" select="../../HostCompanyId"/>
 
-		<xsl:variable name="host" select="/ExtractResponse/Hosts/ExtractHost[HostCompany/Id=$hostcompanyid]"/>
+		<xsl:variable name="host" select="/ExtractResponse/Hosts[ExtractHost/Host/Id=$comphostid]/ExtractHost"/>
+		<xsl:variable name="compstateid" select="../../Company/BusinessAddress/StateId"/>
 		<xsl:variable name="hostcompany" select="$host/HostCompany"/>
 		<xsl:variable name="ein" select="concat(substring($hostcompany/FederalEIN,1,2),'-',substring($hostcompany/FederalEIN,3,7))"/>
 		<xsl:variable name="compname" select="translate($hostcompany/TaxFilingName,$smallcase,$uppercase)"/>
 		<xsl:variable name="compaddress" select="translate($hostcompany/BusinessAddress/AddressLine1,$smallcase, $uppercase)"/>
 		<xsl:variable name="compcity" select="translate($hostcompany/BusinessAddress/City,$smallcase, $uppercase)"/>
 		<xsl:variable name="compzip" select="translate($hostcompany/BusinessAddress/Zip,$smallcase, $uppercase)"/>
-		<xsl:variable name="compstate" select="translate($hostcompany/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,$smallcase, $uppercase)"/>
+		<xsl:variable name="compstate" select="translate($host/States[CompanyTaxState/State/StateId=$compstateid]/CompanyTaxState/State/Abbreviation,$smallcase, $uppercase)"/>
+		<xsl:variable name="phone">
+			<xsl:choose>
+				<xsl:when test="$host/Contact">
+					<xsl:value-of select="concat(substring($host/Contact/Phone,1,3),'-',substring($host/Contact/Phone,4,3),'-',substring($host/Contact/Phone,6,4))"/>
+				</xsl:when>
+				<xsl:otherwise></xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 		
 		<xsl:variable name="ssn" select="concat(substring(SSNVal,1,3),'-',substring(SSNVal,4,2),'-',substring(SSNVal,6,4))"/>
 		<xsl:variable name="empname" select="translate(concat(FirstName, ' ', LastName),$smallcase,$uppercase)"/>
@@ -142,6 +151,10 @@
 				<xsl:call-template name="FieldTemplate">
 					<xsl:with-param name="name1" select="'compzip'"/>
 					<xsl:with-param name="val1" select="$compzip"/>
+				</xsl:call-template>
+				<xsl:call-template name="FieldTemplate">
+					<xsl:with-param name="name1" select="'phone'"/>
+					<xsl:with-param name="val1" select="$phone"/>
 				</xsl:call-template>
 
 

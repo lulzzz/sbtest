@@ -100,13 +100,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 					if (journal.TransactionType == TransactionType.RegularCheck ||
 									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
-						const string js = "select * from Journal with (nolock) where CompanyId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
+						const string js = "select CheckNumber from Journal with (nolock) where CompanyId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
 						var dbj1 =
-							conn.Query<Models.DataModel.Journal>(js, new { CheckNumber = mapped.CheckNumber, RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyId }).ToList();
+							conn.Query<int>(js, new { CheckNumber = mapped.CheckNumber, RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyId }).ToList();
 						if (mapped.CheckNumber > 0 &&
 								dbj1.Any())
 						{
-							mapped.CheckNumber = dbj1.Max(j => j.CheckNumber) + 1;
+							mapped.CheckNumber = dbj1.Max(j => j) + 1;
 
 						}
 					}
@@ -117,8 +117,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				else
 				{
 					const string jsq =
-					"select * from Journal with(nolock) where Id=@Id";
-					var dbj2 = conn.Query<Journal>(jsq, new { Id = mapped.Id }).ToList();
+					"select Id from Journal with(nolock) where Id=@Id";
+					var dbj2 = conn.Query<int>(jsq, new { Id = mapped.Id }).ToList();
 
 					if (dbj2.Any())
 					{
@@ -270,7 +270,25 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			}
 		}
 
-		
+		public decimal GetJournalBalance(int accountId)
+		{
+			var sql = "select dbo.GetJournalBalance(@AccountId) as balance";
+
+
+			using (var conn = GetConnection())
+			{
+				dynamic result =
+					conn.Query(sql, new { AccountId = accountId }).FirstOrDefault();
+				if (result != null)
+					return result.balance;
+
+
+
+			}
+			return 0;
+			
+		}
+
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)
 		{

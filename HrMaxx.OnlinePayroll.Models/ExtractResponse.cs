@@ -138,6 +138,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public Guid HostCompanyId { get; set; }
 		public Company Company { get; set; }
+
 		public List<PayCheck> PayChecks { get; set; }
 		public List<PayCheck> VoidedPayChecks { get; set; }
 		public List<CompanyVendor> Vendors { get; set; }
@@ -243,6 +244,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string InsuranceGroupName { get; set; }
 		public Guid? ParentId { get; set; }
 		public decimal MinWage { get; set; }
+		
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }
 		public List<Accumulation> Accumulations { get; set; }
