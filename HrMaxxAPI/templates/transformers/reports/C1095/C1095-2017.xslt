@@ -73,7 +73,7 @@
 	<xsl:variable name="phone">
 		<xsl:choose>
 			<xsl:when test="/ReportResponse/Contact">
-				<xsl:value-of select="concat('(',substring(/ReportResponse/Contact/Phone,1,3),') ',substring(/ReportResponse/Contact/Phone,4,3),'-',substring(/ReportResponse/Contact/Phone,6,4))"/>
+				<xsl:value-of select="concat('(',substring(/ReportResponse/Contact/Phone,1,3),') ',substring(/ReportResponse/Contact/Phone,4,3),'-',substring(/ReportResponse/Contact/Phone,7,4))"/>
 			</xsl:when>
 			<xsl:otherwise></xsl:otherwise>
 		</xsl:choose>
