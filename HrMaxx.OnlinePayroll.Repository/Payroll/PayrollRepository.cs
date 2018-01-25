@@ -510,7 +510,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			const string updatejournals = @"update journal set CompanyId=@CompanyId, JournalDetails=@JournalDetails, MainAccountId=@MainAccountId, PayeeId=@PayeeId Where Id=@Id";
 			const string updateInvoices = @"update PayrollInvoice set CompanyId=@CompanyId, WorkerCompensations = @WorkerCompensations where Id=@Id";
 			const string updatepayrolldate = @"update employee set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where EmployeeId=Employee.Id and isvoid=0) where companyid=@CompanyId";
-			const string updatesource = "update Company set LastPayrollDate=null where Id=@SourceCompanyId;update Employee set LastPayrollDate=null where CompanyId=@CompanyId";
+			const string updatesource = "update Company set LastPayrollDate=(select max(PayDay) from Payroll where CompanyId=@SourceCompanyId) where Id=@SourceCompanyId;update Employee set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where EmployeeId=Employee.Id) where CompanyId=@CompanyId";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(updatepayroll, dbPayrolls);

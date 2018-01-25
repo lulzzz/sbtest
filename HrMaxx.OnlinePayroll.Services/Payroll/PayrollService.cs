@@ -3083,6 +3083,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				});
 				var invoices = _readerService.GetPayrollInvoices(companyId: source);
+				if (!moveAll)
+				{
+					invoices = invoices.Where(i => payrollsToCopy.Any(p => p == i.PayrollId)).ToList();
+				}
 				invoices.ForEach(i =>
 				{
 					i.Company = targetCompany;
