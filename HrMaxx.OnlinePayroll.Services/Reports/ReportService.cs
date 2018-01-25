@@ -1981,6 +1981,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			if (response.Company.FileUnderHost)
 				response.Company = response.Host.Company;
 
+			response.Contact = getContactForEntity(EntityTypeEnum.Company, response.Company.Id);
+			
 			
 
 			var argList = new XsltArgumentList();

@@ -16,7 +16,6 @@
 	<xsl:variable name="compaddress" select="translate(/ReportResponse/Company/BusinessAddress/AddressLine1,$smallcase, $uppercase)"/>
 	<xsl:variable name="compcity" select="translate(/ReportResponse/Company/BusinessAddress/City,$smallcase, $uppercase)"/>
 	<xsl:variable name="compzip" select="translate(/ReportResponse/Company/BusinessAddress/Zip,$smallcase, $uppercase)"/>
-	<xsl:variable name="compstate" select="translate(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/State/Abbreviation,$smallcase, $uppercase)"/>
 	
 	
 <xsl:output method="xml" indent="yes"/>
@@ -25,6 +24,36 @@
 	<ReportTransformed>
 		<Name>FilledFormC1095</Name>
 		<Reports>
+			<Report>
+				<TemplatePath></TemplatePath>
+				<Template></Template>
+				<ReportType>Html</ReportType>
+				<HtmlData>
+					<html>
+						<body>
+							<div align="center">
+								<h3>
+									<xsl:value-of select="translate($compname,$smallcase,$uppercase)"/>
+								</h3>
+								<br/>
+								<h4>
+									<xsl:value-of select="translate($compaddress,$smallcase,$uppercase)"/>
+								</h4>
+								<h4>
+									<xsl:value-of select="translate(concat($compcity,', CA',', ', $compzip),$smallcase,$uppercase)"/>
+								</h4>
+								<br/>
+								<br/>
+								<h5>
+									C1095 Forms: <xsl:value-of select="count(EmployeeAccumulationList/Accumulation)"/>
+								</h5>
+							</div>
+						</body>
+					</html>
+
+				</HtmlData>
+
+			</Report>
 			<xsl:apply-templates select="EmployeeAccumulationList/Accumulation">
 				<xsl:sort select="FirstName"/>
 			</xsl:apply-templates>
@@ -40,7 +69,15 @@
 	<xsl:variable name="city" select="translate(Contact/Address/City,$smallcase,$uppercase)"/>
 	<xsl:variable name="state" select="translate('CA',$smallcase,$uppercase)"/>
 	<xsl:variable name="zip" select="translate(Contact/Address/Zip,$smallcase,$uppercase)"/>
-	
+	<xsl:variable name="compstate" select="translate('CA',$smallcase, $uppercase)"/>
+	<xsl:variable name="phone">
+		<xsl:choose>
+			<xsl:when test="/ReportResponse/Contact">
+				<xsl:value-of select="concat('(',substring(/ReportResponse/Contact/Phone,1,3),') ',substring(/ReportResponse/Contact/Phone,4,3),'-',substring(/ReportResponse/Contact/Phone,6,4))"/>
+			</xsl:when>
+			<xsl:otherwise></xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
 	
 	<Report>
 		<TemplatePath>GovtForms\C1095\</TemplatePath>
@@ -87,8 +124,11 @@
 				<xsl:with-param name="name1" select="'compzip'"/>
 				<xsl:with-param name="val1" select="$compzip"/>
 			</xsl:call-template>
-			
-				
+
+			<xsl:call-template name="FieldTemplate">
+				<xsl:with-param name="name1" select="'phone'"/>
+				<xsl:with-param name="val1" select="$phone"/>
+			</xsl:call-template>
 			
 			<xsl:choose>
 				<xsl:when test="C1095Line14All=''">
