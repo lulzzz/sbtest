@@ -434,7 +434,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 
 						}, function (error) {
 							$scope.set(payroll);
-							addAlert('Error processing payroll: ' + error.statusText, 'danger');
+							$scope.addAlert('Error processing payroll: ' + error.statusText, 'danger');
 						});
 					}
 					$scope.save = function (item, checks) {
@@ -446,9 +446,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								if (!$scope.mainData.selectedCompany.lastPayrollDate || moment($scope.mainData.selectedCompany.lastPayrollDate) < moment(item.payDay))
 									$scope.mainData.selectedCompany.lastPayrollDate = moment(item.payDay).toDate();
 								$scope.updateListAndItem(item.id);
-
+								$scope.addAlert('successfuly saved payroll', 'success');
 							}, function (error) {
-								addAlert('error committing payroll', 'danger');
+								$scope.set(item);
+								$scope.addAlert('error committing payroll', 'danger');
 							});
 						}, function() {
 							$scope.set(item);
@@ -523,6 +524,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								dataSvc.importMap = data.importMap;
 								dataSvc.agencies = data.agencies;
 								dataSvc.metaDataLoaded = true;
+								if ($scope.selected && !$scope.selected.startingCheckNumber) {
+									$scope.selected.startingCheckNumber = dataSvc.startingCheckNumber;
+								}
 							}, function (error) {
 								$scope.addAlert('error getting payroll meta data', 'danger');
 							});

@@ -1306,10 +1306,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetC1095ExtractReport(ReportRequest request)
 		{
+			Log.Info(string.Format("started C1095 PDF {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponseC1095(request);
+			Log.Info(string.Format("extracted C1095 PDF {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			data.Hosts.ForEach(h => h.Companies.ForEach(c => c.HostCompanyId = h.HostCompany.Id));
 			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c => c.Company.Name).ToList();
 			data.Hosts.ForEach(h=>h.Companies=new List<ExtractCompany>());
@@ -1326,7 +1328,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				FileName = request.Description,
 				Extension = ".pdf"
 			};
-			
+			Log.Info(string.Format("returned C1095 PDF {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 			return extract;
 		}
 		private Extract GetExtractTransformed(ReportRequest request, ExtractResponse data, List<KeyValuePair<string,string>> argList, string template, string extension, string filename)
@@ -1969,10 +1971,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.Company = GetCompany(request.CompanyId);
 
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeHistory: request.IncludeHistory, includeC1095: true, includeClients: request.IncludeClients).ToList();
-			if (response.EmployeeAccumulationList.All(e => e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))
-			{
-				throw new Exception(NoData);
-			}
+			//if (response.EmployeeAccumulationList.All(e => e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))
+			//{
+			//	throw new Exception(NoData);
+			//}
 			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
 			
 			response.Host = GetHost(response.Company.HostId);

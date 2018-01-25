@@ -115,7 +115,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxCheckNumber(Guid companyId)
 		{
-			const string sql = "select CheckNumber as maxnumber from CompanyMaxCheckNumber with (nolock) where TransactionType=@TransactionType and CompanyId=@CompanyId";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyId=@CompanyId and TransactionType=@TransactionType ";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
@@ -179,7 +179,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxAdjustmenetNumber(Guid companyId)
 		{
-			const string sql = "select CheckNumber as maxnumber from CompanyMaxCheckNumber with (nolock) where CompanyId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
@@ -355,7 +355,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxRegularCheckNumber(Guid companyId)
 		{
-			const string sql = "select CheckNumber as maxnumber from CompanyMaxCheckNumber with (nolock) where CompanyId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =

@@ -207,6 +207,76 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
+		private Journal SaveCheckbookEntryNoTran(Journal journal, Guid userId)
+		{
+			try
+			{
+				
+					journal.PayrollPayCheckId = null;
+
+					if (journal.TransactionType == TransactionType.RegularCheck && journal.PayeeId == Guid.Empty)
+					{
+						if (journal.EntityType == EntityTypeEnum.Vendor)
+						{
+							var vc = new VendorCustomer();
+							vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, journal.PayeeName,
+								journal.EntityType == EntityTypeEnum.Vendor, journal.LastModifiedBy);
+							var savedVC = _companyService.SaveVendorCustomers(vc);
+							journal.PayeeId = savedVC.Id;
+							journal.PayeeName = savedVC.Name;
+						}
+					}
+					else if ((journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit) && journal.JournalDetails.Any(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty))
+					{
+						var newVendors = new List<JournalPayee>();
+						var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();
+						jds.ForEach(p =>
+						{
+							if (newVendors.Any(v => v.PayeeName.Equals(p.Payee.PayeeName)))
+							{
+								p.Payee = newVendors.First(v => v.PayeeName.Equals(p.Payee.PayeeName));
+							}
+							else
+							{
+								var vc = new VendorCustomer();
+								vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, p.Payee.PayeeName,
+									true, journal.LastModifiedBy);
+								var savedVC = _companyService.SaveVendorCustomers(vc);
+								p.Payee.Id = savedVC.Id;
+								p.Payee.PayeeType = EntityTypeEnum.Vendor;
+								newVendors.Add(p.Payee);
+							}
+
+
+						});
+
+					}
+					var saved = _journalRepository.SaveCheckbookJournal(journal);
+					if (journal.TransactionType == TransactionType.InvoiceDeposit)
+					{
+						Bus.Publish<InvoiceDepositUpdateEvent>(new InvoiceDepositUpdateEvent()
+						{
+							Journal = saved,
+							UserId = userId,
+							UserName = saved.LastModifiedBy,
+							TimeStamp = DateTime.Now
+						});
+					}
+					UpdateCompanyMaxCheckNumber(journal.CompanyId, journal.TransactionType);
+					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);
+					_mementoDataService.AddMementoData(memento);
+					
+					return saved;
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal No Tran");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public Journal SaveCheckbookEntry(Journal journal, Guid userId)
 		{
 			try
@@ -529,9 +599,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				};
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					Log.Info("Started Deposit Ticketing " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					CreateDepositTickets(fullName, masterExtract, new Guid(user));
 					
 					txn.Complete();
+					Log.Info("Finished Deposit Ticketing " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				}
 				
 			}
@@ -588,15 +660,18 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			masterExtract.Extract.Data.Hosts.Where(h=>h.Companies.Any(c=>c.Payments.Any())).ToList().ForEach(host =>
 			{
+				Log.Info(string.Format("Started Host {0} ", host.Host.FirmName));
 				var coaList = _companyService.GetComanyAccounts(host.HostCompany.Id); 
 				var bankCOA = coaList.FirstOrDefault(c => c.UsedInInvoiceDeposit);
 				if(bankCOA==null)
 					throw new Exception("No Bank Account set up for Invoice Deposit");
+				Log.Info(string.Format("Fetched bank and coa for Host {0} ", host.Host.FirmName));
 				var allpayments =
 					host.Companies.SelectMany(c => c.Payments.Where(p => p.Method != InvoicePaymentMethod.ACH).Select(p => p)).ToList();
-				var invoiceDeposits = _readerService.GetJournals(companyId: host.HostCompany.Id,
+				var invoiceDeposits = _readerService.GetJournals(companyId: host.HostCompany.Id, accountId:bankCOA.Id,
 					startDate: masterExtract.Extract.Report.StartDate, endDate: masterExtract.Extract.Report.StartDate,
 					transactionType: (int)TransactionType.InvoiceDeposit); //_journalRepository.GetCompanyJournals(host.HostCompany.Id,masterExtract.Extract.Report.StartDate, masterExtract.Extract.Report.StartDate);
+				Log.Info(string.Format("fetched Host {0} journals {1} {2}", host.Host.FirmName, invoiceDeposits.Count, DateTime.Now.ToString("hh:mm:ss:fff")));
 				var journal = new Journal
 				{
 					Id = invoiceDeposits.Any() ? invoiceDeposits.First().Id : 0,
@@ -647,9 +722,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						PaymentId = p.PaymentId
 
 					}));
-				SaveCheckbookEntry(journal, userId);
+				Log.Info(string.Format("saving Host {0} invoice deposit", host.Host.FirmName));
+				SaveCheckbookEntryNoTran(journal, userId);
 
-
+				Log.Info(string.Format("Finished Host {0} journals {1}", host.Host.FirmName, DateTime.Now.ToString("hh:mm:ss:fff")));
 			});		
 		}
 		public List<AccountWithJournal> GetCompanyAccountsWithJournalsForTypes(Guid companyId, DateTime? startDate, DateTime? endDate, List<AccountType> accountTypes, List<Journal> companyJournals)

@@ -36,31 +36,36 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				{
 					
 
-						if (peoPayroll && isPEOCheck && mapped.CheckNumber > 0)
-						{
-							const string sql =
-							 "if exists(select 'z' from Journal with(nolock) Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal with (nolock) where PEOASOCoCheck=1; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
-							dynamic result =
-								conn.Query(sql, new { CheckNumber = mapped.CheckNumber, PayrollPayCheckId = mapped.PayrollPayCheckId }).FirstOrDefault();
-							if (result.checknumber != null)
-							{
-								mapped.CheckNumber = result.checknumber;
-							}
+						//if (peoPayroll && isPEOCheck && mapped.CheckNumber > 0)
+						//{
+						//	//const string sql =
+						//	// "if exists(select 'z' from Journal with(nolock) Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal with (nolock) where PEOASOCoCheck=1; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
 
-						}
-						if (!peoPayroll && !isPEOCheck && mapped.CheckNumber > 0)
-						{
-							const string sql =
-							 "if exists(select 'z' from Journal  with(nolock) Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId and CompanyId=@CompanyId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal with (nolock) where CompanyId=@CompanyId; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
-							dynamic result =
-								conn.Query(sql, new { CheckNumber = mapped.CheckNumber, PayrollPayCheckId = mapped.PayrollPayCheckId, CompanyId=mapped.CompanyId }).FirstOrDefault();
-							if (result.checknumber != null)
-							{
-								mapped.CheckNumber = result.checknumber;
-							}
+							
 
+						//}
+						//if (!peoPayroll && !isPEOCheck && mapped.CheckNumber > 0)
+						//{
+						//	const string sql =
+						//	 "if exists(select 'z' from Journal  with(nolock) Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId and CompanyId=@CompanyId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal with (nolock) where CompanyId=@CompanyId; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
+						//	dynamic result =
+						//		conn.Query(sql, new { CheckNumber = mapped.CheckNumber, PayrollPayCheckId = mapped.PayrollPayCheckId, CompanyId=mapped.CompanyId }).FirstOrDefault();
+						//	if (result.checknumber != null)
+						//	{
+						//		mapped.CheckNumber = result.checknumber;
+						//	}
+
+						//}
+					if (mapped.CheckNumber > 0)
+					{
+						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber); if @NewCheckNumber<>@CheckNumber begin update PayrollPayCheck set CheckNumber=@NewCheckNumber where Id=@PayrollPayCheckId; if @PEOASOCoCheck=1 begin update Journal set CheckNumber=@NewCheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end end select @NewCheckNumber as checknumber";
+						dynamic result =
+							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, TransactionType=(int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck }).FirstOrDefault();
+						if (result.checknumber != null)
+						{
+							mapped.CheckNumber = result.checknumber;
 						}
-					
+					}
 					
 
 					mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
@@ -100,9 +105,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 					if (journal.TransactionType == TransactionType.RegularCheck ||
 									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
-						const string js = "select CheckNumber from Journal with (nolock) where CompanyId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
+						const string js = "select CheckNumber from dbo.CompanyJournal where CompanyId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
 						var dbj1 =
-							conn.Query<int>(js, new { CheckNumber = mapped.CheckNumber, RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyId }).ToList();
+							conn.Query<int>(js, new { RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyId }).ToList();
 						if (mapped.CheckNumber > 0 &&
 								dbj1.Any())
 						{
@@ -258,16 +263,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 
 		public void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType)
 		{
-			var sql = "if exists(select 'x' from CompanyMaxCheckNumber where CompanyId=@CompanyId and TransactionType=@TransactionType) Update CompanyMaxCheckNumber set CheckNumber=(select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))) where CompanyId=@CompanyId and TransactionType=@TransactionType else insert into CompanyMaxCheckNumber values (@CompanyId, @TransactionType, (select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))));";
+			//var sql = "if exists(select 'x' from CompanyMaxCheckNumber where CompanyId=@CompanyId and TransactionType=@TransactionType) Update CompanyMaxCheckNumber set CheckNumber=(select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))) where CompanyId=@CompanyId and TransactionType=@TransactionType else insert into CompanyMaxCheckNumber values (@CompanyId, @TransactionType, (select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))));";
 			
 			
-			using (var conn = GetConnection())
-			{
+			//using (var conn = GetConnection())
+			//{
 				
-				conn.Execute(sql, new { CompanyId = companyId, TransactionType=(int)transactionType });
+			//	conn.Execute(sql, new { CompanyId = companyId, TransactionType=(int)transactionType });
 				
 				
-			}
+			//}
 		}
 
 		public decimal GetJournalBalance(int accountId)

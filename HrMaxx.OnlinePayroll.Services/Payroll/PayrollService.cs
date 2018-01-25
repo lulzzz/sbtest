@@ -74,10 +74,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				payroll.Warnings = string.Empty;
 				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
-				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
-				//Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -556,7 +556,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var affectedChecks = new List<PayCheck>();
 			try
 			{
-				
+				Log.Info(string.Format("Started Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
 				
 				var companyIdForPayrollAccount = payroll.Company.Id;
@@ -743,6 +743,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
 					txn.Complete();
+					Log.Info(string.Format("Finished Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
 				}
 			}
 			catch (Exception e)
