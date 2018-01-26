@@ -774,6 +774,266 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			
 		}
 
+		public Models.Payroll ReProcessReConfirmPayroll(Models.Payroll payroll)
+		{
+			Models.Payroll savedPayroll;
+			var affectedChecks = new List<PayCheck>();
+			try
+			{
+				payroll = ProcessPayroll(payroll);
+				Log.Info(string.Format("Started ReConfirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
+
+				var companyIdForPayrollAccount = payroll.Company.Id;
+				var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+				Models.Host host = null;
+				if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+				{
+					host = _hostService.GetHost(payroll.Company.HostId);
+					payroll.HostCompanyId = host.Company.Id;
+				}
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					payroll.TaxPayDay = payroll.PayDay;
+					payroll.Status = PayrollStatus.Committed;
+					payroll.IsPrinted = false;
+					payroll.IsVoid = false;
+
+					payroll.PayChecks.ForEach(pc =>
+					{
+						pc.Status = PaycheckStatus.Saved;
+						pc.IsHistory = payroll.IsHistory;
+						if (pc.IsHistory)
+						{
+							var netwage = pc.NetWage;
+							pc.NetWage = Math.Round(pc.GrossWage - pc.DeductionAmount - pc.EmployeeTaxes + pc.CompensationNonTaxableAmount, 2, MidpointRounding.AwayFromZero);
+							pc.YTDNetWage = Math.Round(pc.YTDNetWage - netwage + pc.NetWage, MidpointRounding.AwayFromZero);
+						}
+					});
+
+					_payrollRepository.UpdatePayroll(payroll);
+
+					var ptaccums = new List<PayCheckPayTypeAccumulation>();
+					var pttaxes = new List<PayCheckTax>();
+					var ptcomps = new List<PayCheckCompensation>();
+					var ptdeds = new List<PayCheckDeduction>();
+					var ptcodes = new List<PayCheckPayCode>();
+					var ptwcs = new List<PayCheckWorkerCompensation>();
+					var payrollJournals = _readerService.GetJournals(payrollId: payroll.Id);
+					payroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
+					{
+
+						pc.Accumulations.ForEach(a =>
+						{
+							var ptaccum = new PayCheckPayTypeAccumulation
+							{
+								PayCheckId = pc.Id,
+								PayTypeId = a.PayType.PayType.Id,
+								FiscalEnd = a.FiscalEnd,
+								FiscalStart = a.FiscalStart,
+								AccumulatedValue = a.AccumulatedValue,
+								Used = a.Used,
+								CarryOver = a.CarryOver
+							};
+							ptaccums.Add(ptaccum);
+						});
+						pc.Taxes.ForEach(t =>
+						{
+							var pt = new PayCheckTax()
+							{
+								PayCheckId = pc.Id,
+								TaxId = t.Tax.Id,
+								TaxableWage = t.TaxableWage,
+								Amount = t.Amount
+							};
+							pttaxes.Add(pt);
+						});
+						pc.Compensations.ForEach(t =>
+						{
+							var pt = new PayCheckCompensation()
+							{
+								PayCheckId = pc.Id,
+								PayTypeId = t.PayType.Id,
+								Amount = t.Amount
+							};
+							ptcomps.Add(pt);
+						});
+						pc.Deductions.ForEach(t =>
+						{
+							var pt = new PayCheckDeduction()
+							{
+								PayCheckId = pc.Id,
+								EmployeeDeductionId = t.EmployeeDeduction.Id,
+								CompanyDeductionId = t.Deduction.Id,
+								EmployeeDeductionFlat = JsonConvert.SerializeObject(t.EmployeeDeduction),
+								Method = t.Method,
+								Rate = t.Rate,
+								AnnualMax = t.AnnualMax,
+								Amount = t.Amount,
+								Wage = t.Wage
+							};
+							ptdeds.Add(pt);
+						});
+						pc.PayCodes.ForEach(t =>
+						{
+							var pt = new PayCheckPayCode()
+							{
+								PayCheckId = pc.Id,
+								PayCodeId = t.PayCode.Id,
+								PayCodeFlat = JsonConvert.SerializeObject(t.PayCode),
+								Amount = t.Amount,
+								Overtime = t.OvertimeAmount
+							};
+							ptcodes.Add(pt);
+						});
+						if (pc.WorkerCompensation != null)
+						{
+							var pt = new PayCheckWorkerCompensation()
+							{
+								PayCheckId = pc.Id,
+								WorkerCompensationId = pc.WorkerCompensation.WorkerCompensation.Id,
+								WorkerCompensationFlat = JsonConvert.SerializeObject(pc.WorkerCompensation.WorkerCompensation),
+								Amount = pc.WorkerCompensation.Amount,
+								Wage = pc.WorkerCompensation.Wage
+							};
+							ptwcs.Add(pt);
+						};
+
+						
+						var journal = payrollJournals.First(j => j.PayrollPayCheckId == pc.Id && !j.PEOASOCoCheck);
+						journal.Amount = pc.NetWage;
+						journal.LastModified = DateTime.Now;
+						journal.LastModifiedBy = payroll.UserName;
+						var bankCOA = coaList.First(c => c.UseInPayroll);
+						journal.JournalDetails.First(jd => jd.AccountId == bankCOA.Id).Amount = pc.NetWage;
+						journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "PAYROLL_EXPENSES").Id).Amount = pc.NetWage;
+
+						pc.Taxes.ForEach(t =>journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == t.Tax.Code).Id).Amount = t.Amount);
+						if(pc.CompensationNonTaxableAmount>0)
+							journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "MOE").Id).Amount = pc.CompensationNonTaxableAmount;
+						else if(journal.JournalDetails.Any(jd=>jd.AccountId==coaList.First(c => c.TaxCode == "MOE").Id))
+						{
+
+							journal.JournalDetails.Remove(
+								journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "MOE").Id));
+						}
+	
+						if (pc.DeductionAmount > 0)
+						{
+							journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "ED").Id).Amount = pc.DeductionAmount;
+							journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "PD").Id).Amount = pc.DeductionAmount;
+						}
+						journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "TP").Id).Amount =Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
+						_journalService.SaveJournalForPayroll(journal, payroll.Company);
+
+					});
+					Log.Info("Stating associations ");
+					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
+
+					_payrollRepository.SavePayCheckTaxes(pttaxes);
+
+					_payrollRepository.SavePayCheckWorkerCompensations(ptwcs);
+
+					_payrollRepository.SavePayCheckPayCodes(ptcodes);
+
+					_payrollRepository.SavePayCheckCompensations(ptcomps);
+
+					_payrollRepository.SavePayCheckDeductions(ptdeds);
+					Log.Info("finished associations ");
+					//PEO/ASO Co Check
+
+
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+					{
+
+						companyIdForPayrollAccount = host.Company.Id;
+						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+						payroll.PayChecks
+							.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList()
+							.ForEach(pc =>
+							{
+								var journal = payrollJournals.First(j => j.PayrollPayCheckId == pc.Id && j.PEOASOCoCheck);
+								journal.Amount = pc.NetWage;
+								journal.LastModified = DateTime.Now;
+								journal.LastModifiedBy = payroll.UserName;
+								var bankCOA = coaList.First(c => c.UseInPayroll);
+								journal.JournalDetails.First(jd => jd.AccountId == bankCOA.Id).Amount = pc.NetWage;
+								journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "PAYROLL_EXPENSES").Id).Amount = pc.NetWage;
+
+								pc.Taxes.ForEach(t =>journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == t.Tax.Code).Id).Amount = t.Amount);
+								if(pc.CompensationNonTaxableAmount>0)
+									journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "MOE").Id).Amount = pc.CompensationNonTaxableAmount;
+								else if(journal.JournalDetails.Any(jd=>jd.AccountId==coaList.First(c => c.TaxCode == "MOE").Id))
+								{
+
+									journal.JournalDetails.Remove(
+										journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "MOE").Id));
+								}
+	
+								if (pc.DeductionAmount > 0)
+								{
+									journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "ED").Id).Amount = pc.DeductionAmount;
+									journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "PD").Id).Amount = pc.DeductionAmount;
+								}
+								journal.JournalDetails.First(jd => jd.AccountId == coaList.First(c => c.TaxCode == "TP").Id).Amount =Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
+								_journalService.SaveJournalForPayroll(journal, payroll.Company);
+								
+							});
+
+
+						
+					}
+					else if (payrollJournals.Any(j => j.PEOASOCoCheck))
+					{
+						_journalService.DeleteJournals(payrollJournals.Where(j => j.PEOASOCoCheck).ToList());
+					}
+
+
+					foreach (var paycheck in payroll.PayChecks)
+					{
+						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay > paycheck.PayDay && p.Id != paycheck.Id).ToList();
+						foreach (var employeeFutureCheck in employeeFutureChecks)
+						{
+							employeeFutureCheck.AddToYTD(paycheck);
+							_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+							affectedChecks.Add(employeeFutureCheck);
+						}
+					}
+
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
+					{
+						var inv = RecreateInvoice(payroll.InvoiceId.Value, payroll.UserName, payroll.UserId);// CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
+						payroll.InvoiceId = inv.Id;
+						payroll.InvoiceNumber = inv.InvoiceNumber;
+						payroll.InvoiceStatus = inv.Status;
+						payroll.Total = inv.Total;
+					}
+
+					
+					txn.Complete();
+					Log.Info(string.Format("Finished ReConfirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+
+
+			return payroll;
+
+
+
+
+
+		}
+
+		
+
 		public Models.Payroll VoidPayCheck(Guid payrollId, int payCheckId, string name, string user)
 		{
 			try
@@ -871,7 +1131,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public Models.Payroll VoidPayroll(Models.Payroll payroll1, string userName, string userId)
+		public Models.Payroll VoidPayroll(Models.Payroll payroll1, string userName, string userId, bool forceDelete = false)
 		{
 			try
 			{
@@ -889,7 +1149,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				Log.Info("read finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					if (payroll.InvoiceId.HasValue && invoice != null && (invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
+					if (payroll.InvoiceId.HasValue && invoice != null && (forceDelete || invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
 						DeletePayrollInvoice(payroll.InvoiceId.Value);
 
 					_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
@@ -2348,6 +2608,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			return _journalService.SaveJournalForPayroll(journal, payroll.Company);
 		}
 
+		
 		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, Accumulation employeeAccumulation)
 		{
 			var previousComps = employeeAccumulation.Compensations ?? new List<PayCheckCompensation>();
@@ -2980,44 +3241,44 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				var payrolls = _readerService.GetPayrolls(companyId: source);
+				var payrolls = _readerService.GetPayrolls(companyId: source, excludeVoids:1);
+				payrolls = payrolls.Where(p => !p.IsHistory && (!p.InvoiceId.HasValue || (int)p.InvoiceStatus < 4)).ToList();
 				if (!moveAll && payrollsToCopy.Any())
 				{
 					payrolls = payrolls.Where(p => payrollsToCopy.Contains(p.Id)).ToList();
 				}
+
 				try
 				{
 					_companyService.CopyEmployees(source, target, new List<Guid>(), user, true);
 				}
 				catch (Exception)
 				{
-					
+
 				}
-				
+
 				var sourceCompany = _readerService.GetCompany(source);
 				var targetCompany = _readerService.GetCompany(target);
-				var sourceHost = _hostService.GetHost(sourceCompany.HostId);
-				var targetHost = _hostService.GetHost(targetCompany.HostId);
-				var sourceEmployees = _readerService.GetEmployees(company:source);
-				var targetEmployees = _readerService.GetEmployees(company:target);
-				
-				var sourceCOA = _companyRepository.GetCompanyAccounts(source);
-				var targetCOA = _companyRepository.GetCompanyAccounts(target);
-				var sourceHostCOA = _companyRepository.GetCompanyAccounts(sourceHost.Company.Id);
-				var targetHostCOA = _companyRepository.GetCompanyAccounts(targetHost.Company.Id);
-				var affectedJournals = new List<Journal>();
 
-				
+				var targetEmployees = _readerService.GetEmployees(company: target);
 
-				payrolls.OrderBy(p => p.LastModified).ToList().ForEach(payroll =>
+
+				var Originals = new List<Models.Payroll>();
+				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var original = Utilities.GetCopy(payroll);
-					payroll.IsHistory = ashistory || payroll.IsHistory;
-					payroll.MovedFrom = source;
-					payroll.Company = targetCompany;
-					payroll.PayChecks.ForEach(paycheck =>
+
+					payrolls.OrderBy(p => p.LastModified).ToList().ForEach(payroll =>
 					{
-						paycheck.IsHistory = payroll.IsHistory;
+						Originals.Add(Utilities.GetCopy(payroll));
+						payroll.IsHistory = ashistory || payroll.IsHistory;
+						payroll.MovedFrom = source;
+						payroll.Id = CombGuid.Generate();
+						payroll.Company = targetCompany;
+						payroll.UserId = userId;
+						payroll.UserName = user;
+						payroll.PayChecks.ForEach(paycheck =>
+						{
+							paycheck.IsHistory = payroll.IsHistory;
 							paycheck.Employee = targetEmployees.First(e => e.SSN.Equals(paycheck.Employee.SSN));
 							paycheck.PayCodes.ForEach(pc =>
 							{
@@ -3036,76 +3297,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							if (paycheck.WorkerCompensation != null)
 								paycheck.WorkerCompensation.WorkerCompensation =
 									targetCompany.WorkerCompensations.First(wc => wc.Code.Equals(paycheck.WorkerCompensation.WorkerCompensation.Code));
-							paycheck.Accumulations.ForEach(a=>a.PayType.CompanyId = target);
+							paycheck.Accumulations.ForEach(a => a.PayType.CompanyId = target);
 
 						}
-					
-					);
-					
-					var normaljournals = _journalService.GetPayrollJournals(payroll.Id, false);
-					normaljournals.ForEach(j =>
-					{
-						j.CompanyId = target;
-						j.PayeeId = targetEmployees.First(te => te.SSN.Equals(sourceEmployees.First(se => se.Id == j.PayeeId).SSN)).Id;
-						var scm = sourceCOA.First(ca => ca.Id == j.MainAccountId);
-						j.MainAccountId = targetCOA.First(ta => ta.Type == scm.Type && ta.SubType == scm.SubType && ta.UseInPayroll == scm.UseInPayroll && ta.TemplateId==scm.TemplateId).Id;
-						j.JournalDetails.ForEach(jd =>
-						{
-							var sc = sourceCOA.First(ca => ca.Id == jd.AccountId);
-							var tc =
-								targetCOA.First(ta => ta.Type == sc.Type && ta.SubType == sc.SubType && ta.UseInPayroll == sc.UseInPayroll && ta.TemplateId == sc.TemplateId);
-							jd.AccountId = tc.Id;
-							jd.AccountName = tc.AccountName;
-						});
-					});
-					affectedJournals.AddRange(normaljournals);
-					if (payroll.PEOASOCoCheck)
-					{
-						var peojournals = _journalService.GetPayrollJournals(payroll.Id, true);
-						peojournals.ForEach(j =>
-						{
-							j.CompanyId = targetHost.Company.Id;
-							j.PayeeId = targetEmployees.First(te => te.SSN.Equals(sourceEmployees.First(se => se.Id == j.PayeeId).SSN)).Id;
-							var scm = sourceHostCOA.First(ca => ca.Id == j.MainAccountId);
-							j.MainAccountId = targetHostCOA.First(ta => ta.Type == scm.Type && ta.SubType == scm.SubType && ta.UseInPayroll == scm.UseInPayroll && ta.TemplateId == scm.TemplateId).Id;
-							j.JournalDetails.ForEach(jd =>
-							{
-								var sc = sourceHostCOA.First(ca => ca.Id == jd.AccountId);
-								var tc =
-									targetHostCOA.First(ta => ta.Type == sc.Type && ta.SubType == sc.SubType && ta.UseInPayroll == sc.UseInPayroll && ta.TemplateId == sc.TemplateId);
-								jd.AccountId = tc.Id;
-								jd.AccountName = tc.AccountName;
-							});
-							
-						});
-						affectedJournals.AddRange(peojournals);
-					}
 
-				});
-				var invoices = _readerService.GetPayrollInvoices(companyId: source);
-				if (!moveAll)
-				{
-					invoices = invoices.Where(i => payrollsToCopy.Any(p => p == i.PayrollId)).ToList();
-				}
-				invoices.ForEach(i =>
-				{
-					i.Company = targetCompany;
-					i.CompanyId = target;
-					i.WorkerCompensations.ForEach(wc =>
-					{
-						wc.WorkerCompensation = targetCompany.WorkerCompensations.First(wc1 => wc1.Code == wc.WorkerCompensation.Code);
+						);
+						payroll = ProcessPayroll(payroll);
+						payroll = ConfirmPayroll(payroll);
+
 					});
-				});
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
-					//_payrollRepository.DeleteAllPayrolls(target);
-					_payrollRepository.MovePayrolls(payrolls, affectedJournals, invoices, source, target);
+
+					Originals.ForEach(p => VoidPayroll(p, user, userId.ToString(), true));
 					txn.Complete();
 				}
 			}
 			catch (Exception e)
 			{
-				var message = string.Format("Failed to migrate payrolls during copy. Please make sure that the target host is set up with COA and a payroll bank account.");
+				var message = string.Format("Failed to migrate payrolls during copy. ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -3115,7 +3323,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			try
 			{
-				var payrolls = _readerService.GetPayrolls(companyId: source);
+				var payrolls = _readerService.GetPayrolls(companyId: source, excludeVoids: 1);
+				payrolls = payrolls.Where(p => !p.IsHistory && (!p.InvoiceId.HasValue || (int)p.InvoiceStatus < 4)).ToList();
 				if (!moveAll && payrollsToCopy.Any())
 				{
 					payrolls = payrolls.Where(p => payrollsToCopy.Contains(p.Id)).ToList();
@@ -3141,7 +3350,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					_payrollRepository.DeleteAllPayrolls(target);
+					//_payrollRepository.DeleteAllPayrolls(target);
 					payrolls.OrderBy(p => p.LastModified).ToList().ForEach(payroll =>
 					{
 						payroll.IsHistory = ashistory || payroll.IsHistory;
@@ -3185,126 +3394,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							pc.IsHistory = payroll.IsHistory;
 						});
 						var companyIdForPayrollAccount = payroll.Company.Id;
+						payroll = ProcessPayroll(payroll);
+						payroll = ConfirmPayroll(payroll);
 						//Log.Info("Save Payroll starting: " + DateTime.Now.ToString("fff"));
-						var savedPayroll = _payrollRepository.SavePayroll(payroll); 
-						//Log.Info("Save Payroll ending: " + DateTime.Now.ToString("fff"));
-						var ptaccums = new List<PayCheckPayTypeAccumulation>();
-						var pttaxes = new List<PayCheckTax>();
-						var ptcomps = new List<PayCheckCompensation>();
-						var ptdeds = new List<PayCheckDeduction>();
-						var ptcodes = new List<PayCheckPayCode>();
-						var ptwcs = new List<PayCheckWorkerCompensation>();
-						savedPayroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
-						{
-
-							pc.Accumulations.ForEach(a =>
-							{
-								var ptaccum = new PayCheckPayTypeAccumulation
-								{
-									PayCheckId = pc.Id,
-									PayTypeId = a.PayType.PayType.Id,
-									FiscalEnd = a.FiscalEnd,
-									FiscalStart = a.FiscalStart,
-									AccumulatedValue = a.AccumulatedValue,
-									Used = a.Used,
-									CarryOver = a.CarryOver
-								};
-								ptaccums.Add(ptaccum);
-							});
-							pc.Taxes.ForEach(t =>
-							{
-								var pt = new PayCheckTax()
-								{
-									PayCheckId = pc.Id,
-									TaxId = t.Tax.Id,
-									TaxableWage = t.TaxableWage,
-									Amount = t.Amount
-								};
-								pttaxes.Add(pt);
-							});
-							pc.Compensations.ForEach(t =>
-							{
-								var pt = new PayCheckCompensation()
-								{
-									PayCheckId = pc.Id,
-									PayTypeId = t.PayType.Id,
-									Amount = t.Amount
-								};
-								ptcomps.Add(pt);
-							});
-							pc.Deductions.ForEach(t =>
-							{
-								var pt = new PayCheckDeduction()
-								{
-									PayCheckId = pc.Id,
-									EmployeeDeductionId = t.EmployeeDeduction.Id,
-									CompanyDeductionId = t.Deduction.Id,
-									EmployeeDeductionFlat = JsonConvert.SerializeObject(t.EmployeeDeduction),
-									Method = t.Method,
-									Rate = t.Rate,
-									AnnualMax = t.AnnualMax,
-									Amount = t.Amount,
-									Wage = t.Wage
-								};
-								ptdeds.Add(pt);
-							});
-							pc.PayCodes.ForEach(t =>
-							{
-								var pt = new PayCheckPayCode()
-								{
-									PayCheckId = pc.Id,
-									PayCodeId = t.PayCode.Id,
-									PayCodeFlat = JsonConvert.SerializeObject(t.PayCode),
-									Amount = t.Amount,
-									Overtime = t.OvertimeAmount
-								};
-								ptcodes.Add(pt);
-							});
-							if (pc.WorkerCompensation != null)
-							{
-								var pt = new PayCheckWorkerCompensation()
-								{
-									PayCheckId = pc.Id,
-									WorkerCompensationId = pc.WorkerCompensation.WorkerCompensation.Id,
-									WorkerCompensationFlat = JsonConvert.SerializeObject(pc.WorkerCompensation.WorkerCompensation),
-									Amount = pc.WorkerCompensation.Amount,
-									Wage = pc.WorkerCompensation.Wage
-								};
-								ptwcs.Add(pt);
-							};
-
-							var j = CreateJournalEntry(payroll, pc, targetCOA);
-							pc.CheckNumber = j.CheckNumber;
-
-						});
-						_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
-						_payrollRepository.SavePayCheckTaxes(pttaxes);
-						_payrollRepository.SavePayCheckWorkerCompensations(ptwcs);
-						_payrollRepository.SavePayCheckPayCodes(ptcodes);
-						_payrollRepository.SavePayCheckCompensations(ptcomps);
-						_payrollRepository.SavePayCheckDeductions(ptdeds);
-						if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
-							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
-						{
-							savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
-							{
-								var j = CreateJournalEntry(payroll, pc, targetHostCOA, true, targetHost.Company.Id);
-								pc.CheckNumber = j.CheckNumber;
-								
-							});
-						}
-						savedPayroll.PayChecks.Where(px=>px.IsVoid).ToList().ForEach(pc => VoidPayCheck(savedPayroll.Id, pc.Id, user, userId.ToString()));
-						Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
-						{
-							SavedObject = savedPayroll,
-							TimeStamp = DateTime.Now,
-							EventType = NotificationTypeEnum.Created,
-							AffectedChecks = new List<PayCheck>(),
-							UserName = savedPayroll.UserName,
-							UserId = payroll.UserId
-						});
 					});
-				
 					
 					txn.Complete();
 				}

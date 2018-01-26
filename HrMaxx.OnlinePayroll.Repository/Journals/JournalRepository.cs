@@ -74,8 +74,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				else
 				{
 					const string jsq =
-					"select * from Journal with(nolock) where Id=@Id";
-					var dbj2 = conn.Query<Journal>(jsq, new { Id = mapped.Id }).ToList();
+					"select Id from Journal with(nolock) where Id=@Id";
+					var dbj2 = conn.Query<int>(jsq, new { Id = mapped.Id }).ToList();
 
 					if (dbj2.Any())
 					{
@@ -292,6 +292,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			}
 			return 0;
 			
+		}
+
+		public void DeletePayrollJournals(List<Models.Journal> toList)
+		{
+			const string sql = "delete from Journal where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, toList);
+			}
 		}
 
 

@@ -48,7 +48,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void DeleteAllPayrolls(Guid target);
 		void UpdateInvoiceDeliveryData(List<InvoiceDeliveryClaim> claims);
 		void UpdateEmployeeChecksForLeaveCycle(Guid employeeId, DateTime oldHireDate, DateTime newHireDate);
-		
-		
+
+
+		void UpdatePayroll(Models.Payroll payroll);
 	}
 }

@@ -337,7 +337,7 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 
 	$scope.loadPayrolls = function() {
 		if (!$scope.payrollsLoaded) {
-			payrollRepository.getCompanyPayrollList($scope.company.id).then(function (result) {
+			payrollRepository.getCompanyPayrollListForRelocation($scope.company.id).then(function (result) {
 				$scope.payrollsLoaded = true;
 				$scope.payrolls = result;
 

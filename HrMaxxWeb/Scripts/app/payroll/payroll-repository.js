@@ -23,9 +23,29 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			getCompanyPayrollListForRelocation: function (companyId) {
+				var deferred = $q.defer();
+				payrollServer.one('CompanyPayrollsForRelocation').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			savePayroll: function(payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('Payroll').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			reProcessReConfirmPayroll: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('ReProcessReConfirmPayroll').post(payroll).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

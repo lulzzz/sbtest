@@ -40,7 +40,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public Guid? CopiedFrom { get; set; }
 		public Guid? MovedFrom { get; set; }
 
-		public bool CanDelete { get; set; }
+		public bool HasExtracts { get; set; }
+		public bool HasACH { get; set; }
 		public bool IsPrinted { get; set; }
 		public bool IsVoid { get; set; }
 	}

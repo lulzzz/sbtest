@@ -24,5 +24,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType);
 
 		decimal GetJournalBalance(int accountId);
+		void DeletePayrollJournals(List<Journal> toList);
 	}
 }

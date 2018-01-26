@@ -654,7 +654,11 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		
+		public void DeleteJournals(List<Journal> toList)
+		{
+			_journalRepository.DeletePayrollJournals(toList);
+		}
+
 
 		private void CreateDepositTickets(string user, MasterExtract masterExtract, Guid userId)
 		{

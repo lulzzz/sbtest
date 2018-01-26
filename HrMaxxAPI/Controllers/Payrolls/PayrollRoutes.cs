@@ -5,6 +5,7 @@
 		public const string UnPrintedPayrolls = "Payroll/UnPrintedPayrolls";
 		public const string Payrolls = "Payroll/Payrolls";
 		public const string ProcessPayroll = "Payroll/Process";
+		public const string ReProcessReConfirmPayroll = "Payroll/ReProcessReConfirmPayroll";
 		public const string CommitPayroll = "Payroll/Commit";
 		public const string VoidPayCheck = "Payroll/VoidPayCheck/{payrollId:guid}/{payCheckId:int}";
 		public const string UnVoidPayCheck = "Payroll/UnVoidPayCheck/{payrollId:guid}/{payCheckId:int}";
@@ -53,6 +54,7 @@
 		public const string PrintPayCheckPaySlip = "Payroll/PrintPayCheckPaySlip/{payrollId:guid}/{checkId:int}";
 		public const string SaveEmployeeAccumulation = "Payroll/EmployeeAccumulation";
 		public const string CompanyPayrolls = "Payroll/CompanyPayrolls/{companyId:guid}";
+		public const string CompanyPayrollsForRelocation = "Payroll/CompanyPayrollsForRelocation/{companyId:guid}";
 		public const string FixPayrollYTD = "Payroll/FixPayrollYTD/{payrollId:guid}";
 	}
 }

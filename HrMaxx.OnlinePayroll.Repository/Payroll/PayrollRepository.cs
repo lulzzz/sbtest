@@ -575,6 +575,18 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
+		public void UpdatePayroll(Models.Payroll payroll)
+		{
+			const string updatePayroll = "update payroll set PEOASOCoCheck=@PEOASOCoCheck where Id=@Id";
+			const string updatePayChecks = "update payrollpaycheck set GrossWage=@GrossWage, NetWage=@NetWage, WCAmount=@WCAmount, DeductionAmount=@DeductionAmount, EmployeeTaxes=@EmployeeTaxes, EmployerTaxes=@EmployerTaxes, PEOASOCOCheck=@PEOASOCOCheck, Taxes=@Taxes, PayCodes=@PayCodes, Compensations=@Compensations, Deductions=@Deductions, Accumulations=@Accumulations, YTDSalary=@YTDSalary, YTDGrossWage=@YTDGrossWage, YTDNetWage=@YTDNetWage, WorkerCompensation=@WorkerCompensation where Id=@Id";
+			var mapped = _mapper.Map<Models.Payroll, Models.DataModel.Payroll>(payroll);
+			using (var conn = GetConnection())
+			{
+				conn.Execute(updatePayroll, mapped);
+				conn.Execute(updatePayChecks, mapped.PayrollPayChecks);
+			}
+		}
+
 		public void DeletePayroll(Models.Payroll payroll)
 		{
 			const string delete = @"if dbo.CanDeletePayroll(@PayrollId)=1 begin delete from PaxolArchive.Common.Memento where MementoId in (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(pc.Id, 12), SPACE(1), '0')) as uniqueidentifier) from PayrollPayCheck pc where PayrollId=@PayrollId); delete from journal where PayrollPayCheckId in (select id from PayrollPayCheck where PayrollId=@PayrollId);delete from PayrollPayCheck where PayrollId=@PayrollId; delete from Payroll where Id=@PayrollId;end else raiserror('This Payroll cannot be delete',16,1);";

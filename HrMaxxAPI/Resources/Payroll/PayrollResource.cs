@@ -48,10 +48,23 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public Guid? CopiedFrom { get; set; }
 		public Guid? MovedFrom { get; set; }
-		public bool CanDelete { get; set; }
+		
 		public bool IsPrinted { get; set; }
 		public bool IsVoid { get; set; }
 		public string Warnings { get; set; }
+
+		public bool HasExtracts { get; set; }
+		public bool HasACH { get; set; }
+
+		public bool CanDelete
+		{
+			get { return IsVoid && !HasExtracts && !HasACH && !InvoiceId.HasValue; }
+		}
+
+		public bool CanReConfirm
+		{
+			get { return !IsVoid && !HasExtracts && !HasACH && (!InvoiceId.HasValue || (int)InvoiceStatus<4) ; }
+		}
 
 		public string StatusText
 		{

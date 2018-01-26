@@ -334,6 +334,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.CompanyPayrollsForRelocation)]
+		[DeflateCompression]
+		public List<PayrollMinifiedResource> CompanyPayrollsForRelocation(Guid companyId)
+		{
+			var payrolls = MakeServiceCall(() => _readerService.GetMinifiedPayrolls(companyId: companyId, excludeVoids:1));
+			payrolls = payrolls.Where(p => !p.IsHistory && (!p.InvoiceId.HasValue || p.InvoiceStatus < 4)).ToList();
+			return Mapper.Map<List<PayrollMinified>, List<PayrollMinifiedResource>>(payrolls);
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.UnPrintedPayrolls)]
 		[DeflateCompression]
 		public List<PayrollMinifiedResource> GetUnPrintedPayrolls()
@@ -411,6 +421,23 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				p.LastModifiedBy = CurrentUser.FullName;
 			});
 			var processed = MakeServiceCall(() => _payrollService.ConfirmPayroll(mappedResource), string.Format("commit payrolls for company={0}", resource.Company.Id));
+			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.ReProcessReConfirmPayroll)]
+		[DeflateCompression]
+		public PayrollResource ReProcessReConfirmPayroll(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+			mappedResource.UserName = CurrentUser.FullName;
+			mappedResource.UserId = new Guid(CurrentUser.UserId);
+			mappedResource.PayChecks.ForEach(p =>
+			{
+				p.LastModified = DateTime.Now;
+				p.LastModifiedBy = CurrentUser.FullName;
+			});
+			var processed = MakeServiceCall(() => _payrollService.ReProcessReConfirmPayroll(mappedResource), string.Format("re process and re confirm payrolls for company={0}", resource.Company.Id));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 		[HttpPost]

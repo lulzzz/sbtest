@@ -28,5 +28,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate);
 		void DeleteExtract(int extractId);
 		void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType);
+		void DeleteJournals(List<Journal> toList);
 	}
 }
