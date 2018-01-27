@@ -516,7 +516,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							return false;
 					}
 
-					$scope.viewPayrolls = function(host, company) {
+					$scope.viewPayrolls = function (host, company) {
+						$scope.mainData.fromPayrollsWithoutInvoice = true;
 						$scope.$parent.$parent.setHostandCompany(host, company, "#!/Client/Payrolls#invoice");
 					}
 

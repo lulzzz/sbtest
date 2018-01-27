@@ -321,6 +321,10 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public List<PayrollResource> GetPayrolls(PayrollFilterResource filter)
 		{
 			var payrolls = MakeServiceCall(() => _readerService.GetPayrolls(filter.CompanyId, filter.StartDate, filter.EndDate, true), string.Format("get list of payrolls for company={0}", filter.CompanyId));
+			if (filter.WithoutInvoice.HasValue)
+			{
+				payrolls = payrolls.Where(p => !p.IsHistory && !p.IsVoid && ( !p.InvoiceId.HasValue || p.InvoiceStatus == InvoiceStatus.Draft)).ToList();
+			}
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 
@@ -612,7 +616,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.DeletePayrollInvoice)]
 		public void DeletePayrollInvoice(Guid invoiceId)
 		{
-			MakeServiceCall(() => _payrollService.DeletePayrollInvoice(invoiceId), string.Format("delete invoice with id={0}", invoiceId));
+			MakeServiceCall(() => _payrollService.DeletePayrollInvoice(invoiceId, new Guid(CurrentUser.UserId), CurrentUser.FullName), string.Format("delete invoice with id={0}", invoiceId));
 			
 		}
 		[HttpGet]

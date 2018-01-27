@@ -14,6 +14,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
+		public bool? WithoutInvoice { get; set; }
 	}
 
 	public class PayrollPrintRequest

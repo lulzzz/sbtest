@@ -187,9 +187,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						
 						event.stopPropagation();
 						confirmCopyDialog('Please select an option to continue', 'warning', function (option) {
-							load($scope.mainData.selectedCompany.id).then(function () {
-								$scope.refresh(payroll, 0, option);
-							});
+							$scope.refresh(payroll, 0, option);
+							
 
 
 						});
@@ -230,6 +229,34 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								status: 1,
 								notes: payroll.notes
 							};
+							if (!selected.startDate && !selected.endDate && $scope.list.length > 0) {
+								var sorted = $filter('orderBy')($scope.list, 'endDate', true);
+								selected.startDate = moment(sorted[0].endDate).add(1, 'day').toDate();
+
+								if ($scope.mainData.selectedCompany.payrollSchedule === 1) {
+									selected.endDate = moment(selected.startDate).add(1, 'week').add(-1, 'day').toDate();
+									//selected.payDay = moment(sorted[0].payDay).add(1, 'week').toDate();
+								}
+								else if ($scope.mainData.selectedCompany.payrollSchedule === 2) {
+									selected.endDate = moment(selected.startDate).add(2, 'week').add(-1, 'day').toDate();
+									//selected.payDay = moment(sorted[0].payDay).add(2, 'week').toDate();
+								}
+								else if ($scope.mainData.selectedCompany.payrollSchedule === 3) {
+									if (moment(selected.startDate).date() === 1) {
+										selected.endDate = moment(selected.startDate).add(14, 'day').toDate();
+										//selected.payDay = moment(sorted[0].payDay).add(15, 'day').toDate();
+									} else {
+										selected.endDate = moment(selected.startDate).endOf('month').toDate();
+										//selected.payDay = moment(sorted[0].startDate).endOf('month').toDate();
+									}
+
+								} else {
+									selected.endDate = moment(selected.startDate).endOf('month').toDate();
+									//selected.payDay = moment(sorted[0].payDay).add(1, 'month').toDate();
+								}
+
+
+							}
 							$.each(dataSvc.employees, function (index, employee) {
 								var matching = $filter('filter')(payroll.payChecks, { employee: { id: employee.id } })[0];
 								var paycheck = {
@@ -336,6 +363,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							});
 						
 							$scope.set(selected);
+							
 						
 						});
 					}
@@ -539,24 +567,39 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						$scope.tableData = [];
 						$scope.selected = null;
 						$scope.committed = null;
-						payrollRepository.getPayrollList(companyId, startDate, endDate).then(function (data) {
-							$scope.list = data;
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-							$scope.selected = null;
-							if (selectedItemId) {
-								var match = $filter('filter')($scope.list, { id: selectedItemId })[0];
-								if (match)
-									$scope.set(match);
-								else {
+						if ($scope.mainData.fromPayrollsWithoutInvoice) {
+							dataSvc.loadedForPayrollsWithoutInvoice = true;
+							payrollRepository.getPayrollList(companyId, null, null, true).then(function (data) {
+								$scope.list = data;
+								$scope.tableParams.reload();
+								$scope.fillTableData($scope.tableParams);
+								$scope.selected = null;
+								$scope.mainData.fromPayrollsWithoutInvoice = false;
+							}, function (error) {
+								$scope.addAlert('error getting payrolls without invoice', 'danger');
+							});
+						} else {
+							dataSvc.loadedForPayrollsWithoutInvoice = false;
+							payrollRepository.getPayrollList(companyId, startDate, endDate).then(function (data) {
+								$scope.list = data;
+								$scope.tableParams.reload();
+								$scope.fillTableData($scope.tableParams);
+								$scope.selected = null;
+								if (selectedItemId) {
+									var match = $filter('filter')($scope.list, { id: selectedItemId })[0];
+									if (match)
+										$scope.set(match);
+									else {
+										$scope.set(null);
+									}
+								} else {
 									$scope.set(null);
 								}
-							} else {
-								$scope.set(null);
-							}
-						}, function (error) {
-							$scope.addAlert('error getting payrolls', 'danger');
-						});
+							}, function (error) {
+								$scope.addAlert('error getting payrolls', 'danger');
+							});
+						}
+						
 					}
 					$scope.getPayrollList = function (selectedItemId) {
 						getPayrolls($scope.mainData.selectedCompany.id, dataSvc.reportFilter.filterStartDate ? moment(dataSvc.reportFilter.filterStartDate).format('MM/DD/YYYY') : null, dataSvc.reportFilter.filterEndDate ? moment(dataSvc.reportFilter.filterEndDate).format('MM/DD/YYYY') : null, selectedItemId);

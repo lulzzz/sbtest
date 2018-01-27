@@ -1150,7 +1150,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					if (payroll.InvoiceId.HasValue && invoice != null && (forceDelete || invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
-						DeletePayrollInvoice(payroll.InvoiceId.Value);
+						DeletePayrollInvoice(payroll.InvoiceId.Value, new Guid(userId), userName, string.Format("Invoice Deleted for Void Payroll {0}", forceDelete ? " - Move Payroll" : string.Empty));
 
 					_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
 					payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(paycheck =>
@@ -1421,6 +1421,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, UserId = userId, LastModified = DateTime.Now, ProcessedBy = payroll.UserName, InvoiceNumber = invoice.InvoiceNumber};
 					_payrollRepository.DeletePayrollInvoice(invoiceId);
 					var recreated = CreateInvoice(payroll, payrollInvoice, true);
+					var memento = Memento<PayrollInvoice>.Create(recreated, EntityTypeEnum.Invoice, recreated.UserName, string.Format("Invoice Re-Created"), recreated.UserId);
+					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 
 					return recreated;
@@ -1567,11 +1569,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void DeletePayrollInvoice(Guid invoiceId)
+		public void DeletePayrollInvoice(Guid invoiceId, Guid userId, string userName, string comment = "Invoice Deleted")
 		{
 			try
 			{
+				var invoice = _readerService.GetPayrollInvoice(invoiceId);
 				_payrollRepository.DeletePayrollInvoice(invoiceId);
+				var memento = Memento<PayrollInvoice>.Create(invoice, EntityTypeEnum.Invoice, userName, comment, userId);
+				_mementoDataService.AddMementoData(memento);
 			}
 			catch (Exception e)
 			{

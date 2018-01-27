@@ -39,7 +39,10 @@
 			<div ng-show="list.length===0 && !selected && !processed && !committed" class="table table-bordered">
 				No payrolls found
 			</div>
-			<div ng-show="list.length>0" class="row text-center p-5">
+			<div  ng-if="data.loadedForPayrollsWithoutInvoice" class="row text-center p-5">
+				<strong><em>Payrolls Without or With Draft Invoice</em></strong>
+			</div>
+			<div ng-show="list.length>0" ng-if="!data.loadedForPayrollsWithoutInvoice" class="row text-center p-5">
 				<strong><em>Payrolls <span ng-show="data.reportFilter.filterStartDate || data.reportFilter.filterEndDate"> ({{data.reportFilter.filterEndDate ? '' : 'From'}} {{data.reportFilter.filterStartDate? (data.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{data.reportFilter.filterEndDate? ' - ' + (data.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
 			</div>
 			<div class="row" ng-show="list.length>0">
