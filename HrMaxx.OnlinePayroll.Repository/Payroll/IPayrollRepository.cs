@@ -51,5 +51,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 
 		void UpdatePayroll(Models.Payroll payroll);
+		void UpdateLastPayrollDateCompany(Guid id, DateTime payDay);
+		void UpdateLastPayrollDateAndPayRateEmployee(Guid id, DateTime payDay, decimal rate);
+		void UpdateLastPayrollDateAndPayRateEmployee(Guid id,  decimal rate);
+		void UnQueuePayroll(Guid id);
+		void ConfirmFailed(Guid id);
+
+		void FixMovedInvoice(Guid id, Guid companyId, string wc);
 	}
 }

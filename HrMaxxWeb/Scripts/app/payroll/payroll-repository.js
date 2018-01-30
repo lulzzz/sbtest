@@ -23,6 +23,26 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			isPayrollConfirmed: function (payrollId) {
+				var deferred = $q.defer();
+				payrollServer.one('IsPayrollConfirmed').one(payrollId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			reQueuePayroll: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('ReQueuePayroll').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getCompanyPayrollListForRelocation: function (companyId) {
 				var deferred = $q.defer();
 				payrollServer.one('CompanyPayrollsForRelocation').one(companyId).getList().then(function (data) {
@@ -511,9 +531,9 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			printPayrollChecks: function (payroll) {
+			printPayrollChecks: function (payroll, reprint) {
 				var deferred = $q.defer();
-				$http.get(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll, { responseType: "arraybuffer" }).success(
+				$http.get(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll + "/" + reprint, { responseType: "arraybuffer" }).success(
 					function (data, status, headers) {
 						var type = headers('Content-Type');
 						var disposition = headers('Content-Disposition');

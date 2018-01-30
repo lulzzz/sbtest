@@ -14,6 +14,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using log4net;
 using Newtonsoft.Json;
+using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
 using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
 using InvoiceDeliveryClaim = HrMaxx.OnlinePayroll.Models.InvoiceDeliveryClaim;
 using Journal = HrMaxx.OnlinePayroll.Models.Journal;
@@ -689,6 +690,98 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 			
 			return payCheck;
+		}
+		public void UpdateLastPayrollDateCompany(Guid id, DateTime payDay)
+		{
+			var sql = "update Company set LastPayrollDate=case when LastPayrollDate is null or LastPayrollDate<@PayDay then @PayDay else LastPayrollDate end where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new {Id = id, PayDay = payDay});
+			}
+			
+		}
+
+		public void UpdateLastPayrollDateAndPayRateEmployee(Guid id, DateTime payDay, decimal rate)
+		{
+			
+			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
+			if (dbEmployee != null)
+			{
+				if (!dbEmployee.LastPayrollDate.HasValue || dbEmployee.LastPayrollDate.Value<payDay)
+				{
+					dbEmployee.LastPayrollDate = payDay;
+				}
+				
+				if (dbEmployee.Rate != rate)
+				{
+					dbEmployee.Rate = rate;
+					if (dbEmployee.PayType == (int)EmployeeType.Hourly)
+					{
+						var pcodes = JsonConvert.DeserializeObject<List<CompanyPayCode>>(dbEmployee.PayCodes);
+						var def = pcodes.FirstOrDefault(pc => pc.Id == 0);
+						if (def != null)
+							def.HourlyRate = rate;
+						dbEmployee.PayCodes = JsonConvert.SerializeObject(pcodes);
+					}
+				}
+				_dbContext.SaveChanges();
+			}
+		}
+		public void UpdateLastPayrollDateAndPayRateEmployee(Guid id, decimal rate)
+		{
+
+			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
+			if (dbEmployee != null)
+			{
+				if (_dbContext.PayrollPayChecks.Any(pc=>pc.EmployeeId==id))
+				{
+					dbEmployee.LastPayrollDate = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == id && !pc.IsVoid).Max(pc=>pc.PayDay);
+				}
+				else
+				{
+					dbEmployee.LastPayrollDate = default (DateTime?);
+				}
+
+				if (dbEmployee.Rate != rate)
+				{
+					dbEmployee.Rate = rate;
+					if (dbEmployee.PayType == (int)EmployeeType.Hourly)
+					{
+						var pcodes = JsonConvert.DeserializeObject<List<CompanyPayCode>>(dbEmployee.PayCodes);
+						var def = pcodes.FirstOrDefault(pc => pc.Id == 0);
+						if (def != null)
+							def.HourlyRate = rate;
+						dbEmployee.PayCodes = JsonConvert.SerializeObject(pcodes);
+					}
+				}
+				_dbContext.SaveChanges();
+			}
+		}
+
+		public void UnQueuePayroll(Guid id)
+		{
+			const string sql = "update payroll set isqueued=0, confirmedtime=getdate(), isconfirmfailed=0  where id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new {Id = id});
+			}
+		}
+
+		public void ConfirmFailed(Guid id)
+		{
+			const string sql = "update payroll set isqueued=1, confirmedtime=null, isconfirmfailed=1 where id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new { Id = id });
+			}
+		}
+		public void FixMovedInvoice(Guid id, Guid companyId, string wc)
+		{
+			var sql = "update PayrollInvoice set CompanyId=@CompanyId, WorkerCompensations=@WorkerCompensations where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new {Id = id, CompanyId = companyId, WorkerCompensations = wc});
+			}
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Configuration;
+using System.IO;
 using Autofac;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
@@ -33,8 +35,12 @@ namespace HrMaxx.TestSupport
 
 		protected void CreateHrMaxxDatabase()
 		{
-			string arguments = "INTEGRATION_TEST";
-			TestInfrastructure.RunDatabaseScript(arguments);
+			if (Convert.ToBoolean(ConfigurationSettings.AppSettings["IsIntegrationTest"]))
+			{
+				string arguments = "INTEGRATION_TEST";
+				TestInfrastructure.RunDatabaseScript(arguments);
+			}
+			
 		}
 
 		protected virtual void CreateDatabase()

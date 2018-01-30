@@ -18,7 +18,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						
 					}
 					$scope.cols = [
-						{ field: "companyNumber", title: "No", show: true, filter: { companyNumber: "number" }, sortable: "companyNumber" },
+						{ field: "companyNumber", title: "No", show: true, filter: { companyIntId: "number" }, sortable: "companyIntId" },
 						{ field: "name", title: "Name", show: true, filter: { name: "text" }, sortable: "name" },
 						{ field: "companyNo", title: "Legacy No", show: true, filter: { companyNo: "text" }, sortable: "companyNo" },
 						{ field: "lastPayrollDate", title: "Last Payroll", show: true, isdate: true, sortable: "lastPayrollDate" },
@@ -81,7 +81,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						var selectedCompany = {
 							hostId: $scope.mainData.selectedHost.id,
 							statusId: 1,
-							companyNumber:0,
+							companyIntId: 0,
 							isAddressSame: true,
 							isVisibleToHost: true,
 							fileUnderHost: $scope.mainData.selectedHost.isPeoHost,

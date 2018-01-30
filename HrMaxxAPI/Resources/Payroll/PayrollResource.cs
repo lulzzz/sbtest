@@ -56,6 +56,11 @@ namespace HrMaxxAPI.Resources.Payroll
 		public bool HasExtracts { get; set; }
 		public bool HasACH { get; set; }
 
+		public bool IsQueued { get; set; }
+		public DateTime? QueuedTime { get; set; }
+		public DateTime? ConfirmedTime { get; set; }
+		public bool IsConfirmFailed { get; set; }
+
 		public bool CanDelete
 		{
 			get { return IsVoid && !HasExtracts && !HasACH && !InvoiceId.HasValue; }
@@ -124,6 +129,7 @@ namespace HrMaxxAPI.Resources.Payroll
 	{
 		public Guid PayrollId { get; set; }
 		public Guid CompanyId { get; set; }
+		public int CompanyIntId { get; set; }
 		public int? Id { get; set; }
 		[Required]
 		public EmployeeResource Employee { get; set; }

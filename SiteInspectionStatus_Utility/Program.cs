@@ -100,11 +100,109 @@ namespace SiteInspectionStatus_Utility
 				case 18:
 					ChangeEmployeesToHourly(container);
 					break;
+				case 189:
+					FixMovedInvoices(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+
+		private static void FixMovedInvoices(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
+				var readerservice = scope.Resolve<IReaderService>();
+				var companies = readerservice.GetCompanies();
+
+				var list = new List<InvoiceFix>();
+				list.Add(new InvoiceFix { Id = new Guid("5EFEE771-2392-485B-82E8-A6F20115EE75"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("1FF3CAEE-BD53-4E6B-9CEB-A6F600AC4752"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("73AC5B7F-973F-479A-B96E-A6F900E0E10F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("A8A6BDEF-94D9-45DA-97E7-A6FD00B22F11"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("FE14DB98-4204-4548-BB6B-A70000EFAFAF"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("8F0356A0-A180-49A3-91F5-A70000F7D01E"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("CF7CAC0B-C82E-419A-83C6-A70100C2D2DE"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("B7542640-403B-4BE7-B8EA-A70700DF2782"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("1C93A7AE-1BDA-463C-9BD7-A70700EB0080"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("3212D259-5AAE-46BF-977A-A70B00AB2F70"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("0D8EBF95-D7A5-46F5-AFBD-A70E00CFF67F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("ABF4DB33-4708-4324-882C-A71500CFAB3F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("D5461A73-849C-41C2-9C35-A71500D12DEA"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("84206134-2437-494D-A310-A71900A86B73"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("93CCF940-C738-43D1-97B9-A71C00FD36AB"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("6F2CE812-131F-4162-A617-A71C01020E18"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("B68DB5F4-2F86-4652-85E9-A721009B0DAA"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("D5BC6B90-8625-4F0C-BCB9-A72300E62217"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("71CF527C-31C3-4831-9A66-A72700C58AB5"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("E816C9BE-2B5F-4720-A76F-A72B00CDB9CB"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("9BD5E224-7484-42AF-AD0A-A72E009FCB61"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("D67DEFCD-2311-4CCE-B3D9-A73200D5CA24"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("2FB984C3-BC24-4B76-8BEE-A73500A6ACA5"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("77AA8D08-4665-4132-95B9-A73500C8E9DD"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("EB89EA52-888D-476A-9072-A73900D8951D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("AC755239-6138-401F-81BE-A73C00B6A5CF"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("B93D0A13-687B-4F39-BE37-A74000D32622"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("C2BCEE4F-AB9C-493A-A04D-A74300C60679"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("ACE0F807-25EC-4DF7-8A72-A74600B7E4AD"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("E344711C-F5B9-4543-9CF7-A74700977827"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("71854711-476C-4518-BD20-A74E00F0B37D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("CE8AB069-4C7A-4923-A13B-A74E00F45286"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("5F7EDAFC-B2D5-4AF6-BA4C-A75500B3494C"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("BDEAE96D-BBAC-423A-AD8D-A75C00D9C0A9"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("361E2220-C9AC-45BE-A452-A76300CD898A"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("192EA7D7-A03A-4670-B946-A76A00C3DBD1"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("22DE7C01-7C6D-4430-909C-A77100B45C4C"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("2E0B0988-BBD0-4EB1-9C22-A77800B5BE32"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("3E28A3C6-ADFF-4260-8078-A77B00AB35A8"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("47696CE7-EB7E-467B-803E-A77E00BFEB6E"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("0E818E0D-C694-429C-BCAA-A78600B50359"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("A4BDE2B3-D14A-465F-938C-A78B00AAF6F6"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("1BBF1D36-CB41-402E-A24B-A79400B59F5C"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("01809F18-D52C-437D-BEB2-A79B00BF8DA2"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("2239F4C5-D6E2-4E9C-AF34-A7A200B205FC"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("114784D3-FA47-430E-8154-A7A700975179"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
+				list.Add(new InvoiceFix { Id = new Guid("D4115B6E-BF41-4D04-9E6F-A7A900B1096F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("1A287465-FB83-48E6-8386-A7B000AFBDDD"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("B639F2F3-3A98-4B3A-B2BC-A7B700AFE391"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("3C390DE8-5557-478B-855C-A7BE00AE25D5"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("7AC3B65E-53C5-42C7-AD96-A7C500B89814"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("E7C9FB40-71DF-4E39-B194-A7CC00C2CD10"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("33EF301C-FD04-48BB-90ED-A7D3009267F4"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("65229EEC-A3E2-47FB-9FAA-A7DA00BBA6EA"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("B24EA969-688A-49E4-BF81-A7E100B1355B"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("B7A78412-028F-47FF-A739-A7E800C10AA7"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("1358128B-2994-4F51-BCDA-A7EF00C7B301"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("69D52E2F-FBF1-4025-90CB-A7EF00C82405"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("97B5ACA5-DC6B-4530-BCBC-A7F500A5C4BF"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("08217F25-0055-466B-9C23-A7F600BA94D6"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("C5BE47A9-722D-49DC-B6CC-A7FD00B58140"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("AD762749-82C9-4414-BF7B-A80000A1668D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("067600AD-3270-4A6A-BDE8-A80400B2FE0B"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("C3BC3961-4BBD-4D00-BCF6-A80B00A9BCCF"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("65F95D21-FA00-4C0D-B3F9-A81000AE3F82"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("8F089358-0848-4E7F-B770-A81900A21AB0"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("37DA3132-E722-4ED4-A008-A82700895F6D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("A3CF89FA-D9F9-4591-A7E4-A82E00D15AA3"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("D2E88E25-1B71-4418-BDF8-A831009B7D52"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+				list.Add(new InvoiceFix { Id = new Guid("DEC8C72A-E448-49D1-AC1C-A838009ED7E2"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+
+				list.ForEach(p =>
+				{
+					var comp = companies.First(c => c.Id == p.SourceCompany);
+					var i = readerservice.GetPayrollInvoice(p.Id);
+					i.WorkerCompensations.ForEach(wc =>
+					{
+						wc.WorkerCompensation = comp.WorkerCompensations.First(wc1 => wc1.Code == wc.WorkerCompensation.Code);
+					});
+					payrollRepository.FixMovedInvoice(i.Id, comp.Id, JsonConvert.SerializeObject(i.WorkerCompensations));
+				});
+
+			}
 		}
 		private static void ChangeEmployeesToHourly(IContainer container)
 		{
@@ -1804,6 +1902,12 @@ namespace SiteInspectionStatus_Utility
 		{
 			public int empno { get; set; }
 			public decimal carryover { get; set; }
+		}
+
+		public class InvoiceFix 
+		{
+			public Guid Id { get; set; }
+			public Guid SourceCompany { get; set; }
 		}
 	}
 }

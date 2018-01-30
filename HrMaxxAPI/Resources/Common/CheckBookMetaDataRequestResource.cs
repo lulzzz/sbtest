@@ -17,5 +17,9 @@ namespace HrMaxxAPI.Resources.Common
 		public InvoiceSetupResource InvoiceSetup { get; set; }
 		[Required]
 		public Guid HostCompanyId { get; set; }
+		[Required]
+		public int CompanyIntId { get; set; }
+		[Required]
+		public int HostCompanyIntId { get; set; }
 	}
 }

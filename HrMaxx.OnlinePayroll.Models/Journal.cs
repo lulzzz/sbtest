@@ -13,6 +13,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public int Id { get; set; }
 		public Guid CompanyId { get; set; }
+		public int CompanyIntId { get; set; }
 		public TransactionType TransactionType { get; set; }
 		public EmployeePaymentMethod PaymentMethod { get; set; }
 		public int CheckNumber { get; set; }

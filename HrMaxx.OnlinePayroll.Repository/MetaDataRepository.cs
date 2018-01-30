@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
 using Dapper;
@@ -113,40 +114,67 @@ namespace HrMaxx.OnlinePayroll.Repository
 			//return _mapper.Map<CompanyAccount, Account>(account);
 		}
 
-		public int GetMaxCheckNumber(Guid companyId)
+		public int GetMaxCheckNumber(int companyId, bool isPeo)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyId=@CompanyId and TransactionType=@TransactionType ";
-			using (var conn = GetConnection())
+			//const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where (( @IsPEO=0 and PEOASOCOCHECK=0 and CompanyIntId=@CompanyId and TransactionType=@TransactionType) or (@IsPEO=1 and PEOASOCoCheck=1))";
+			string peosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyJournal where TransactionType=1 and PEOASOCOCHECK=1";
+			string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" +companyId + ";";
+			
+
+			using (var con = new SqlConnection(_dbContext.Database.Connection.ConnectionString))
 			{
-				dynamic result =
-					conn.Query(sql, new { CompanyId = companyId, TransactionType=(int)TransactionType.PayCheck }).FirstOrDefault();
-
-				if (result!=null && result.maxnumber != null)
+				using (var cmd = new SqlCommand(isPeo?peosql:nonpeosql))
 				{
+					cmd.Connection = con;
+					con.Open();
+					var result = (int)cmd.ExecuteScalar();
+					
+						var max = result + 1;
+						if (isPeo && max < 100001)
+						{
+							max = 100001 + max;
+						}
+						else
+						{
+							if (max < 1001)
+								max = 1001;
+						}
 
-					var max = result.maxnumber + 1;
-					if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
-					{
-						max = 100001 + max;
-					}
-					else
-					{
-						if (max < 1001)
-							max = 1001;
-					}
-
-					return max;
-				}
-				else
-				{
-					if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
-					{
-						return 100001;
-					}
-					else
-						return 1001;
+						return max;
+					
 				}
 			}
+			//using (var conn = GetConnection())
+			//{
+			//	dynamic result =
+			//		conn.Query(sql, new { CompanyId = companyId, TransactionType=(int)TransactionType.PayCheck, IsPEO = isPeo }).FirstOrDefault();
+
+			//	if (result!=null && result.maxnumber != null)
+			//	{
+
+			//		var max = result.maxnumber + 1;
+			//		if (isPeo && max < 100001)
+			//		{
+			//			max = 100001 + max;
+			//		}
+			//		else
+			//		{
+			//			if (max < 1001)
+			//				max = 1001;
+			//		}
+
+			//		return max;
+			//	}
+			//	else
+			//	{
+			//		if (isPeo)
+			//		{
+			//			return 100001;
+			//		}
+			//		else
+			//			return 1001;
+			//	}
+			//}
 			
 			//var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid && p.TransactionType==(int)TransactionType.PayCheck).Select(j=>j.CheckNumber).ToList();
 			//if (journals.Any())
@@ -177,9 +205,9 @@ namespace HrMaxx.OnlinePayroll.Repository
 			
 		}
 
-		public int GetMaxAdjustmenetNumber(Guid companyId)
+		public int GetMaxAdjustmenetNumber(int companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
@@ -353,9 +381,9 @@ namespace HrMaxx.OnlinePayroll.Repository
 			
 		}
 
-		public int GetMaxRegularCheckNumber(Guid companyId)
+		public int GetMaxRegularCheckNumber(int companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =

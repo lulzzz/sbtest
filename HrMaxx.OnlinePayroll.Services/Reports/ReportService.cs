@@ -940,6 +940,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 							startdate: request.StartDate,
 							enddate: request.EndDate, type: AccumulationType.Employee, report: request.ReportName,
 							includeHistory: request.IncludeHistory, includeC1095: true);
+						c.EmployeeAccumulationList = c.EmployeeAccumulationList.Where(ea => ea.PayCheck1095Summaries.Any()).ToList();
 						c.EmployeeAccumulationList.ForEach(e=>e.BuildC1095Months(h.HostCompany, c1095limit));
 					});
 
@@ -1975,6 +1976,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			//{
 			//	throw new Exception(NoData);
 			//}
+			response.EmployeeAccumulationList =
+				response.EmployeeAccumulationList.Where(ea => ea.PayCheck1095Summaries.Any())
+					.ToList();
 			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
 			
 			response.Host = GetHost(response.Company.HostId);

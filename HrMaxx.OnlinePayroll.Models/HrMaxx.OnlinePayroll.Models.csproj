@@ -67,6 +67,7 @@
     <Compile Include="CompanyPayrollCube.cs" />
     <Compile Include="CompanySUIRate.cs" />
     <Compile Include="CompanyTax.cs" />
+    <Compile Include="ConfirmPayrollLogItem.cs" />
     <Compile Include="CPAReport.cs" />
     <Compile Include="DashboardData.cs" />
     <Compile Include="DataModel\AccountTemplate.cs">

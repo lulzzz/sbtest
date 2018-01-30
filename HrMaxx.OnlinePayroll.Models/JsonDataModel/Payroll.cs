@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	{
 		public Guid Id { get; set; }
 		public Guid CompanyId { get; set; }
+		public int CompanyIntId { get; set; }
 		public Guid? HostCompanyId { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
@@ -44,6 +45,11 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool HasACH { get; set; }
 		public bool IsPrinted { get; set; }
 		public bool IsVoid { get; set; }
+
+		public bool IsQueued { get; set; }
+		public DateTime? QueuedTime { get; set; }
+		public DateTime? ConfirmedTime { get; set; }
+		public bool IsConfirmFailed { get; set; }
 	}
 	[Serializable]
 	[XmlRoot("PayrollMinifiedList")]

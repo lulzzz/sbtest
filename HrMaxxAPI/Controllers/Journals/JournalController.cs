@@ -75,9 +75,9 @@ namespace HrMaxxAPI.Controllers.Journals
 
 		[HttpGet]
 		[Route(JournalRoutes.GetJournalMetaData)]
-		public object GetJournalMetaData(Guid companyId)
+		public object GetJournalMetaData(Guid companyId, int companyIntId)
 		{
-			return MakeServiceCall(() => _metaDataService.GetJournalMetaData(companyId), "Get journal meta data", true);
+			return MakeServiceCall(() => _metaDataService.GetJournalMetaData(companyId, companyIntId), "Get journal meta data", true);
 		}
 
 		[HttpPost]

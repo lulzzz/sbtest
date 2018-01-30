@@ -85,12 +85,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					payroll.CompanyIntId = payroll.Company.CompanyIntId;
 					payroll.TaxPayDay = payroll.PayDay;
 					
 					var payCheckCount = 0;
 					
 					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included).OrderBy(pc=>pc.Employee.CompanyEmployeeNo))
 					{
+						paycheck.CompanyIntId = payroll.Company.CompanyIntId;
 						paycheck.TaxPayDay = payroll.TaxPayDay;
 						paycheck.IsHistory = payroll.IsHistory;
 						var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == paycheck.Employee.Id);
@@ -553,11 +555,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		public Models.Payroll ConfirmPayroll(Models.Payroll payroll)
 		{
 			Models.Payroll savedPayroll;
+			var journals = new List<Journal>();
+			var peoJournals = new List<Journal>();
 			var affectedChecks = new List<PayCheck>();
 			try
 			{
-				Log.Info(string.Format("Started Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
-				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
+				//Log.Info(string.Format("Started Confirm Payroll {0} - {3} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff"), payroll.Company.Name));
+				
 				
 				var companyIdForPayrollAccount = payroll.Company.Id;
 				var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
@@ -568,8 +572,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					host = _hostService.GetHost(payroll.Company.HostId);
 					payroll.HostCompanyId = host.Company.Id;
 				}
+				
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					payroll.IsQueued = true;
+					payroll.QueuedTime = DateTime.Now;
+					
 					payroll.TaxPayDay = payroll.PayDay;
 					payroll.Status = PayrollStatus.Committed;
 					payroll.IsPrinted = false;
@@ -596,7 +604,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var ptdeds = new List<PayCheckDeduction>();
 					var ptcodes = new List<PayCheckPayCode>();
 					var ptwcs = new List<PayCheckWorkerCompensation>();
+
 					
+
 					savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 					{
 						
@@ -676,8 +686,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							ptwcs.Add(pt);
 						};
 
-						var j = CreateJournalEntry(payroll, pc, coaList);
-						pc.CheckNumber = j.CheckNumber;
+						//var j = CreateJournalEntry(payroll, pc, coaList);
+						journals.Add(CreateJournalEntry(payroll, pc, coaList));
+						//pc.CheckNumber = j.CheckNumber;
 
 					});
 					
@@ -704,20 +715,235 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
 						savedPayroll.PayChecks
 							.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList()
+							.ForEach(pc => peoJournals.Add(CreateJournalEntry(payroll, pc, coaList, true, companyIdForPayrollAccount, host.Company.CompanyIntId)));
+
+						
+						//_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
+					}
+
+					
+					
+					//if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
+					//{
+					//	var inv = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
+					//	savedPayroll.InvoiceId = inv.Id;
+					//	savedPayroll.InvoiceNumber = inv.InvoiceNumber;
+					//	savedPayroll.InvoiceStatus = inv.Status;
+					//	savedPayroll.Total = inv.Total;
+					//}
+				
+					var draftPayroll =
+							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
+					if (draftPayroll != null)
+					{
+						_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
+					}
+					//_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
+					txn.Complete();
+					//Log.Info(string.Format("Finished Confirm Payroll {0} - {3} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff"), payroll.Company.Name));
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			_taxationService.AddToConfirmPayrollQueue(new ConfirmPayrollLogItem()
+			{
+				PayrollId = savedPayroll.Id, CompanyId = savedPayroll.Company.Id, CompanyIntId = savedPayroll.CompanyIntId, QueuedTime = DateTime.Now
+			});
+			Bus.Publish<ConfirmPayrollEvent>(new ConfirmPayrollEvent()
+			{
+				Payroll = savedPayroll,
+				Journals = journals, PeoJournals = peoJournals
+			});
+				
+
+				
+		
+			return savedPayroll;
+			
+				
+				
+
+			
+		}
+		public Models.Payroll OldConfirmPayroll(Models.Payroll payroll)
+		{
+			Models.Payroll savedPayroll;
+			var affectedChecks = new List<PayCheck>();
+			try
+			{
+				Log.Info(string.Format("Started Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
+
+				var companyIdForPayrollAccount = payroll.Company.Id;
+				var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+				Models.Host host = null;
+				if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+				{
+					host = _hostService.GetHost(payroll.Company.HostId);
+					payroll.HostCompanyId = host.Company.Id;
+				}
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					payroll.TaxPayDay = payroll.PayDay;
+					payroll.Status = PayrollStatus.Committed;
+					payroll.IsPrinted = false;
+					payroll.IsVoid = false;
+					payroll.IsConfirmFailed = false;
+					payroll.IsQueued = false;
+					payroll.QueuedTime = DateTime.Now;
+					payroll.ConfirmedTime = DateTime.Now;
+
+					payroll.PayChecks.ForEach(pc =>
+					{
+						pc.Status = PaycheckStatus.Saved;
+						pc.IsHistory = payroll.IsHistory;
+						if (pc.IsHistory)
+						{
+							var netwage = pc.NetWage;
+							pc.NetWage = Math.Round(pc.GrossWage - pc.DeductionAmount - pc.EmployeeTaxes + pc.CompensationNonTaxableAmount, 2, MidpointRounding.AwayFromZero);
+							pc.YTDNetWage = Math.Round(pc.YTDNetWage - netwage + pc.NetWage, MidpointRounding.AwayFromZero);
+						}
+					});
+
+
+
+					savedPayroll = _payrollRepository.SavePayroll(payroll);
+
+					var ptaccums = new List<PayCheckPayTypeAccumulation>();
+					var pttaxes = new List<PayCheckTax>();
+					var ptcomps = new List<PayCheckCompensation>();
+					var ptdeds = new List<PayCheckDeduction>();
+					var ptcodes = new List<PayCheckPayCode>();
+					var ptwcs = new List<PayCheckWorkerCompensation>();
+
+					savedPayroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
+					{
+
+						pc.Accumulations.ForEach(a =>
+						{
+							var ptaccum = new PayCheckPayTypeAccumulation
+							{
+								PayCheckId = pc.Id,
+								PayTypeId = a.PayType.PayType.Id,
+								FiscalEnd = a.FiscalEnd,
+								FiscalStart = a.FiscalStart,
+								AccumulatedValue = a.AccumulatedValue,
+								Used = a.Used,
+								CarryOver = a.CarryOver
+							};
+							ptaccums.Add(ptaccum);
+						});
+						pc.Taxes.ForEach(t =>
+						{
+							var pt = new PayCheckTax()
+							{
+								PayCheckId = pc.Id,
+								TaxId = t.Tax.Id,
+								TaxableWage = t.TaxableWage,
+								Amount = t.Amount
+							};
+							pttaxes.Add(pt);
+						});
+						pc.Compensations.ForEach(t =>
+						{
+							var pt = new PayCheckCompensation()
+							{
+								PayCheckId = pc.Id,
+								PayTypeId = t.PayType.Id,
+								Amount = t.Amount
+							};
+							ptcomps.Add(pt);
+						});
+						pc.Deductions.ForEach(t =>
+						{
+							var pt = new PayCheckDeduction()
+							{
+								PayCheckId = pc.Id,
+								EmployeeDeductionId = t.EmployeeDeduction.Id,
+								CompanyDeductionId = t.Deduction.Id,
+								EmployeeDeductionFlat = JsonConvert.SerializeObject(t.EmployeeDeduction),
+								Method = t.Method,
+								Rate = t.Rate,
+								AnnualMax = t.AnnualMax,
+								Amount = t.Amount,
+								Wage = t.Wage
+							};
+							ptdeds.Add(pt);
+						});
+						pc.PayCodes.ForEach(t =>
+						{
+							var pt = new PayCheckPayCode()
+							{
+								PayCheckId = pc.Id,
+								PayCodeId = t.PayCode.Id,
+								PayCodeFlat = JsonConvert.SerializeObject(t.PayCode),
+								Amount = t.Amount,
+								Overtime = t.OvertimeAmount
+							};
+							ptcodes.Add(pt);
+						});
+						if (pc.WorkerCompensation != null)
+						{
+							var pt = new PayCheckWorkerCompensation()
+							{
+								PayCheckId = pc.Id,
+								WorkerCompensationId = pc.WorkerCompensation.WorkerCompensation.Id,
+								WorkerCompensationFlat = JsonConvert.SerializeObject(pc.WorkerCompensation.WorkerCompensation),
+								Amount = pc.WorkerCompensation.Amount,
+								Wage = pc.WorkerCompensation.Wage
+							};
+							ptwcs.Add(pt);
+						};
+
+						var j = CreateJournalEntry(payroll, pc, coaList);
+						j = _journalService.SaveJournalForPayroll(j, payroll.Company);
+						pc.CheckNumber = j.CheckNumber;
+
+					});
+
+					_payrollRepository.SavePayCheckPayTypeAccumulations(ptaccums);
+
+					_payrollRepository.SavePayCheckTaxes(pttaxes);
+
+					_payrollRepository.SavePayCheckWorkerCompensations(ptwcs);
+
+					_payrollRepository.SavePayCheckPayCodes(ptcodes);
+
+					_payrollRepository.SavePayCheckCompensations(ptcomps);
+
+					_payrollRepository.SavePayCheckDeductions(ptdeds);
+
+					//PEO/ASO Co Check
+
+
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+					{
+
+						companyIdForPayrollAccount = host.Company.Id;
+						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+						savedPayroll.PayChecks
+							.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList()
 							.ForEach(pc =>
 							{
 								var j = CreateJournalEntry(payroll, pc, coaList, true, companyIdForPayrollAccount);
+								j = _journalService.SaveJournalForPayroll(j, payroll.Company);
 								pc.CheckNumber = j.CheckNumber;
 							});
 
-						
+
 						_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
 					}
-					
-					
+
+
 					foreach (var paycheck in savedPayroll.PayChecks)
 					{
-						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay>paycheck.PayDay && p.Id!=paycheck.Id).ToList();
+						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay > paycheck.PayDay && p.Id != paycheck.Id).ToList();
 						foreach (var employeeFutureCheck in employeeFutureChecks)
 						{
 							employeeFutureCheck.AddToYTD(paycheck);
@@ -725,7 +951,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					}
-					
+
 					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
 						var inv = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
@@ -734,7 +960,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						savedPayroll.InvoiceStatus = inv.Status;
 						savedPayroll.Total = inv.Total;
 					}
-				
+
 					var draftPayroll =
 							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
 					if (draftPayroll != null)
@@ -752,28 +978,27 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
-			
-				
-				Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
-				{
-					SavedObject = savedPayroll,
-					TimeStamp = DateTime.Now,
-					EventType = NotificationTypeEnum.Created,
-					AffectedChecks = affectedChecks,
-					UserName = savedPayroll.UserName,
-					UserId = payroll.UserId
-				});
 
-				
-		
+
+			Bus.Publish<PayrollSavedEvent>(new PayrollSavedEvent
+			{
+				SavedObject = savedPayroll,
+				TimeStamp = DateTime.Now,
+				EventType = NotificationTypeEnum.Created,
+				AffectedChecks = affectedChecks,
+				UserName = savedPayroll.UserName,
+				UserId = payroll.UserId
+			});
+
+
+
 			return savedPayroll;
-			
-				
-				
 
-			
+
+
+
+
 		}
-
 		public Models.Payroll ReProcessReConfirmPayroll(Models.Payroll payroll)
 		{
 			Models.Payroll savedPayroll;
@@ -1189,7 +1414,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					});	
 				}
 				Log.Info("Void Payroll Finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
-
+				_fileRepository.DeleteDestinationFile(payroll.Id + ".pdf");
 				return payroll1;
 
 
@@ -1309,6 +1534,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Print Payrolls for id=" + payrollId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void PrintAndSavePayroll(Models.Payroll payroll, List<Journal> journals)
+		{
+			if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
+			{
+				journals = journals.Where(j=>j.PEOASOCoCheck==payroll.PEOASOCoCheck).ToList();
+
+				var returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList(), journals);
+				if (returnFile != null)
+				{
+					_fileRepository.SaveFile(payroll.Id, "pdf", returnFile.Data);
+				}
 			}
 		}
 
@@ -2569,13 +2808,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 		
-		private Journal CreateJournalEntry(Models.Payroll payroll, PayCheck pc, List<Account> coaList, bool PEOASOCoCheck = false, Guid? companyId = null)
+		private Journal CreateJournalEntry(Models.Payroll payroll, PayCheck pc, List<Account> coaList, bool PEOASOCoCheck = false, Guid? companyId = null, int? companyIntId = null)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
 			{
 				Id = 0,
 				CompanyId = companyId.HasValue ? companyId.Value : pc.Employee.CompanyId,
+				CompanyIntId = companyIntId.HasValue ? companyIntId.Value : pc.CompanyIntId,
 				Amount = Math.Round(pc.NetWage, 2, MidpointRounding.AwayFromZero),
 				CheckNumber = pc.PaymentMethod == EmployeePaymentMethod.Check ? pc.CheckNumber.Value : -1,
 				EntityType = EntityTypeEnum.Employee,
@@ -2610,7 +2850,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "PD").Id, AccountName = coaList.First(c => c.TaxCode == "PD").AccountName, IsDebit = false, Amount = pc.DeductionAmount, LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
 			}
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero), LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
-			return _journalService.SaveJournalForPayroll(journal, payroll.Company);
+			return journal; //_journalService.SaveJournalForPayroll(journal, payroll.Company);
 		}
 
 		
@@ -3602,5 +3842,81 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void ReQueuePayroll(Models.Payroll payroll)
+		{
+			Models.Payroll savedPayroll;
+			var journals = new List<Journal>();
+			var peoJournals = new List<Journal>();
+			
+			try
+			{
+				
+
+
+				var companyIdForPayrollAccount = payroll.Company.Id;
+				var coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+				Models.Host host = null;
+				if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+				{
+					host = _hostService.GetHost(payroll.Company.HostId);
+					payroll.HostCompanyId = host.Company.Id;
+				}
+
+				
+					
+					payroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc => journals.Add(CreateJournalEntry(payroll, pc, coaList)));
+
+					
+					//PEO/ASO Co Check
+
+
+					if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice &&
+							payroll.Company.Contract.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+					{
+
+						companyIdForPayrollAccount = host.Company.Id;
+						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
+						payroll.PayChecks
+							.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList()
+							.ForEach(pc => peoJournals.Add(CreateJournalEntry(payroll, pc, coaList, true, companyIdForPayrollAccount, host.Company.CompanyIntId)));
+
+					}
+
+
+
+				
+			
+				_taxationService.AddToConfirmPayrollQueue(new ConfirmPayrollLogItem()
+				{
+					PayrollId = payroll.Id,
+					CompanyId = payroll.Company.Id,
+					CompanyIntId = payroll.CompanyIntId,
+					QueuedTime = DateTime.Now
+				});
+				Bus.Publish<ConfirmPayrollEvent>(new ConfirmPayrollEvent()
+				{
+					Payroll = payroll,
+					Journals = journals,
+					PeoJournals = peoJournals
+				});
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Re-queue Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+
+		}
+
+		public void MarkPayrollPrinted(Guid payrollId)
+		{
+			_payrollRepository.MarkPayrollPrinted(payrollId);
+		}
+
+		
 	}
 }

@@ -115,7 +115,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
 				.ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Name))
 				.ForMember(dest => dest.CompanyNo, opt => opt.MapFrom(src => src.CompanyNo))
-				.ForMember(dest => dest.CompanyNumber, opt => opt.Ignore())
 				.ForMember(dest => dest.TaxFilingName, opt => opt.MapFrom(src => src.TaxFilingName))
 				.ForMember(dest => dest.ManageEFileForms, opt => opt.MapFrom(src => src.AllowEFileFormFiling))
 				.ForMember(dest => dest.ManageTaxPayment, opt => opt.MapFrom(src => src.AllowTaxPayments))
@@ -629,7 +628,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.Created, opt => opt.Ignore())
-				.ForMember(dest => dest.CompanyNumber, opt => opt.Ignore())
+				
 				.ForMember(dest => dest.Locations, opt => opt.Ignore())
 				.ForMember(dest => dest.InsuranceGroup, opt => opt.MapFrom(src=>src))
 				.ForMember(dest => dest.InsuranceClientNo, opt => opt.MapFrom(src => src.ClientNo))
@@ -669,7 +668,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.MapFrom(src=>src.PEOASOCoCheck))
 				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
 				.ForMember(dest => dest.VoidedOn, opt => opt.Ignore())
-				
+				.ForMember(dest => dest.CompanyIntId, opt => opt.Ignore())
 				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())
 				
 				.ForMember(dest => dest.Included, opt => opt.Ignore());

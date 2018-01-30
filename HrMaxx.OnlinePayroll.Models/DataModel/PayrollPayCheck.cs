@@ -63,6 +63,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool IsReIssued { get; set; }
         public Nullable<int> OriginalCheckNumber { get; set; }
         public Nullable<System.DateTime> ReIssuedDate { get; set; }
+        public Nullable<int> CompanyIntId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }

@@ -2,9 +2,9 @@ common.factory('journalRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', 'journalServer', 
 	function ($http, zionAPI, zionPaths, $q, journalServer) {
 		return {
-			getJournalMetaData: function (companyId) {
+			getJournalMetaData: function (companyId, companyIntId) {
 				var deferred = $q.defer();
-				journalServer.one('MetaData').one(companyId).get().then(function (data) {
+				journalServer.one('MetaData').one(companyId, companyIntId).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

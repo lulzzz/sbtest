@@ -186,7 +186,8 @@
 		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print timesheet</button>
 		<button class="btn btn-sm btn-success" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print report</button>
-		<button class="btn btn-sm btn-success" ng-click="printPayrollChecks(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> print checks</button>
+		<button class="btn btn-sm btn-success" ng-click="printPayrollChecks(item, false)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> print checks</button>
+		<button class="btn btn-sm btn-danger" ng-click="printPayrollChecks(item, true)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> re-print checks</button>
 		<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 	</div>
 	

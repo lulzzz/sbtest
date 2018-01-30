@@ -15,8 +15,8 @@ namespace HrMaxx.OnlinePayroll.Repository
 		IList<PayType> GetAllPayTypes();
 		IList<TaxByYear> GetAllTaxes();
 		Account GetPayrollAccount(Guid companyId);
-		int GetMaxCheckNumber(Guid companyId);
-		int GetMaxAdjustmenetNumber(Guid companyId);
+		int GetMaxCheckNumber(int companyId, bool b);
+		int GetMaxAdjustmenetNumber(int companyId);
 		List<Models.Payroll> GetUnInvoicedPayrolls(Guid companyId);
 		string GetMaxInvoiceNumber(Guid companyId);
 		object GetMetaDataForUser(Guid? host, Guid? company, Guid? employee);
@@ -29,6 +29,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		void UpdateSearchTable(SearchResult searchResult);
 		ImportMap GetCompanyTsImportMap(Guid companyId);
 		List<VendorCustomer> GetGarnishmentAgencies();
-		int GetMaxRegularCheckNumber(Guid companyId);
+		int GetMaxRegularCheckNumber(int companyId);
 	}
 }

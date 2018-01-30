@@ -116,7 +116,7 @@ namespace HrMaxxAPI.Controllers.Companies
 			//var companies =  MakeServiceCall(() => _companyService.GetAllCompanies(), "Get companies for hosts", true);
 			var companies = MakeServiceCall(() => _readerService.GetCompanies(), "Get companies for hosts", true);
 			
-			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c => c.CompanyNumber).ToList());
+			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c => c.CompanyIntId).ToList());
 		}
 		[HttpGet]
 		[Route(CompanyRoutes.MinifiedCompanyList)]
@@ -187,7 +187,7 @@ namespace HrMaxxAPI.Controllers.Companies
 			{
 				companies = companies.Where(c => !(c.HostId==appConfig.RootHostId.Value && c.IsHostCompany)).ToList();
 			}
-			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c=>c.CompanyNumber).ToList());
+			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c=>c.CompanyIntId).ToList());
 		}
 		[HttpGet]
 		[Route(CompanyRoutes.Company)]

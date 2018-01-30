@@ -14,10 +14,11 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class Company : BaseEntityDto, IOriginator<Company>
 	{
+		public int CompanyIntId { get; set; }
 		public Guid HostId { get; set; }
 		public string Name { get; set; }
 		public string CompanyNo { get; set; }
-		public int CompanyNumber { get; set; }
+		
 		public Address CompanyAddress { get; set; }
 		public bool IsVisibleToHost { get; set; }
 		public StatusOption StatusId { get; set; }

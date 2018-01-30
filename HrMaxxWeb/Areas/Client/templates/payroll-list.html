@@ -81,16 +81,16 @@
 							{{item.userName}} ({{item.lastModified | date:'MM/dd/yyyy hh:mm a'}})
 						</td>
 						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
-							{{item.statusText}} <i class="fa fa-dollar" style="color:green" ng-if="item.hasACH"></i>&nbsp;<i class="fa fa-upload" style="color:green" ng-if="item.hasExtracts"></i>
+							{{item.isQueued ? "Queued" : item.statusText}} <i class="fa fa-dollar" style="color:green" ng-if="item.hasACH"></i>&nbsp;<i class="fa fa-upload" style="color:green" ng-if="item.hasExtracts"></i>
 						</td>
 						<td class="col-sm-1 text-right" ng-if="showInvoices()">
 							<button class="btn btn-xs btn-danger" ng-click="deleteDraftPayroll($event, item)" ng-show="item.status===6" title="Delete"><i class="fa fa-lg fa-fire"></i></button>
-							<button class="btn btn-xs btn-info" ng-click="reProcessReConfirmPayroll($event, item)" ng-show="item.canReConfirm && item.totalGrossWage>0 && (mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status!==6 && item.status>2" title="re-process payroll"><i class="fa fa-lg fa-recycle"></i></button>
+							<button class="btn btn-xs btn-info" ng-click="reProcessReConfirmPayroll($event, item)" ng-show="!item.isQueued && item.canReConfirm && item.totalGrossWage>0 && (mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status!==6 && item.status>2" title="re-process payroll"><i class="fa fa-lg fa-recycle"></i></button>
 							<button class="btn btn-xs btn-danger" ng-click="deletePayroll($event, item)" ng-show="item.status!==6 && item.canDelete && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" title="Delete"><i class="fa fa-lg fa-remove"></i></button>
-							<button class="btn btn-xs btn-danger" ng-click="voidPayroll($event, item)" ng-show="item.totalGrossWage>0 && (mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status!==6 && item.status>2" title="void payroll"><i class="fa fa-lg fa-ban"></i></button>
+							<button class="btn btn-xs btn-danger" ng-click="voidPayroll($event, item)" ng-show="!item.isQueued && item.totalGrossWage>0 && (mainData.userRole==='SuperUser' || mainData.userRole==='Master') && item.status!==6 && item.status>2" title="void payroll"><i class="fa fa-lg fa-ban"></i></button>
 
 							<button class="btn btn-xs btn-info" ng-click="viewInvoice($event, item)" ng-show="item.invoiceId" title="view invoice"><i class="fa fa-lg fa-eye"></i></button>
-							<button class="btn btn-xs btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoiceId && item.totalGrossWage>0 && item.status>2 && item.status!==6" title="create invoice"><i class="fa fa-lg fa-edit"></i></button>
+							<button class="btn btn-xs btn-warning" ng-click="createInvoice($event, item)" ng-show="!mainData.userCompany && !item.invoiceId &&!item.isQueued && item.totalGrossWage>0 && item.status>2 && item.status!==6" title="create invoice"><i class="fa fa-lg fa-edit"></i></button>
 							<button class="btn btn-xs btn-success" ng-click="copyPayroll($event, item)" ng-show="canRunPayroll()" title="copy to new"><i class="fa fa-lg fa-copy"></i></button>
 						</td>
 					</tr>

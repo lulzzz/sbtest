@@ -853,7 +853,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						var journal = CreateJournalEntryTP(accounts, fullName, host.HostCompany.Id, amount,
 							globalVendors.First(
 								v => (masterExtract.IsFederal && v.Name.Contains("941") || (!masterExtract.IsFederal && v.Name.Contains("CA")))),
-							extract.Report.Description, extract.Report.DepositDate.Value);
+							extract.Report.Description, extract.Report.DepositDate.Value, host.HostCompany.CompanyIntId);
 						journalList.Add(journal);
 						journals.Add(journal.Id);
 						payCheckIds.AddRange(host.PayCheckAccumulation.PayCheckList.Select(pc=>pc.Id));
@@ -916,7 +916,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 										.Sum(d => d.Amount);
 								var journal = CreateJournalEntryPD(accounts, fullName, comp.Id, amount,
 										garnishmentAgency.Agency,
-										extract.Report.Description, extract.Report.DepositDate.Value, check.Employee.FullName, check.Deductions.First(d=>d.EmployeeDeduction.AgencyId==garnishmentAgency.Agency.Id).EmployeeDeduction.AccountNo );
+										extract.Report.Description, extract.Report.DepositDate.Value, check.Employee.FullName, check.Deductions.First(d=>d.EmployeeDeduction.AgencyId==garnishmentAgency.Agency.Id).EmployeeDeduction.AccountNo, comp.CompanyIntId );
 								journals.Add(journal.Id);
 								journalList.Add(journal);
 								payCheckIds.AddRange(garnishmentAgency.PayCheckIds);
@@ -941,7 +941,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		}
 
 		
-		private Journal CreateJournalEntryTP(List<Account> coaList, string userName,  Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date)
+		private Journal CreateJournalEntryTP(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date, int companyIntId)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -964,8 +964,9 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				PayeeName = vendor.Name,
 				MainAccountId = bankCOA.Id,
 				JournalDetails = new List<JournalDetail>(),
-				DocumentId = CombGuid.Generate(),
-				PEOASOCoCheck = false
+				DocumentId = Guid.Empty,
+				PEOASOCoCheck = false,
+				CompanyIntId = companyIntId
 			};
 			//bank account debit
 
@@ -975,7 +976,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			
 			return journal;
 		}
-		private Journal CreateJournalEntryPD(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date, string employee, string account)
+		private Journal CreateJournalEntryPD(List<Account> coaList, string userName, Guid companyId, decimal amount, VendorCustomer vendor, string report, DateTime date, string employee, string account, int companyIntId)
 		{
 			var bankCOA = coaList.First(c => c.UseInPayroll);
 			var journal = new Journal
@@ -998,8 +999,9 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				PayeeName = vendor.Name,
 				MainAccountId = bankCOA.Id,
 				JournalDetails = new List<JournalDetail>(),
-				DocumentId = CombGuid.Generate(),
-				PEOASOCoCheck = false
+				DocumentId = Guid.Empty,
+				PEOASOCoCheck = false,
+				CompanyIntId = companyIntId
 			};
 			//bank account debit
 

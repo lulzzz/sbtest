@@ -15,6 +15,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Url { get; set; }
 		public DateTime EffectiveDate { get; set; }
 		public Guid? CompanyId { get; set; }
+		public int CompanyIntId { get; set; }
 		public string HomePage { get; set; }
 		public string Contact { get; set; }
 		public bool IsHostAllowsDirectDebit { get; set; }

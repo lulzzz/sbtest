@@ -32,7 +32,7 @@ namespace SiteInspectionStatus_Utility
 				.ForMember(dest => dest.AllowEFileFormFiling, opt => opt.MapFrom(src => src.ManageEFileForms.Equals("1")))
 				.ForMember(dest => dest.AllowTaxPayments, opt => opt.MapFrom(src => src.ManageTaxPayment.Equals("1")))
 				.ForMember(dest => dest.CompanyNo, opt => opt.MapFrom(src => src.CompanyNo))
-				.ForMember(dest => dest.CompanyNumber, opt => opt.MapFrom(src => 0))
+				
 				.ForMember(dest => dest.Created, opt => opt.MapFrom(src => DateTime.Now))
 				.ForMember(dest => dest.DepositSchedule, opt => opt.MapFrom(src => src.DepositSchedule941))
 				.ForMember(dest => dest.DirectDebitPayer, opt => opt.MapFrom(src => false))

@@ -10,8 +10,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', '$uibModal','anchorSmoothScroll',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, $modal, anchorSmoothScroll) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', '$uibModal','anchorSmoothScroll', '$interval',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, $modal, anchorSmoothScroll, $interval) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
@@ -24,6 +24,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						agencies:[],
 						startingCheckNumber: 0,
 						importMap: null,
+						queuedPayroll: null,
 						reportFilter: {
 							filterStartDate: moment().add(-2, 'week').toDate(),
 							filterEndDate: null,
@@ -473,8 +474,21 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							payrollRepository.commitPayroll(item).then(function (data) {
 								if (!$scope.mainData.selectedCompany.lastPayrollDate || moment($scope.mainData.selectedCompany.lastPayrollDate) < moment(item.payDay))
 									$scope.mainData.selectedCompany.lastPayrollDate = moment(item.payDay).toDate();
-								$scope.updateListAndItem(item.id);
-								$scope.addAlert('successfuly saved payroll', 'success');
+								if (data.isQueued) {
+									//$scope.updateListAndItem(item.id);
+									var exists = $filter('filter')($scope.list, { id: data.id });
+									if (exists.length > 0) {
+										$scope.list.splice($scope.list.indexOf(exists[0]), 1);
+									}
+									$scope.list.push(data);
+									$scope.tableParams.reload();
+									$scope.fillTableData($scope.tableParams);
+									$scope.addAlert('successfuly saved payroll', 'info');
+								} else {
+									$scope.updateListAndItem(item.id);
+									$scope.addAlert('successfuly saved payroll', 'success');
+								}
+								
 							}, function (error) {
 								$scope.set(item);
 								$scope.addAlert('error committing payroll', 'danger');
@@ -485,23 +499,27 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 
 					$scope.set = function (item) {
-						
-						$scope.selected = null;
-						$scope.processed = null;
-						$scope.committed = null;
-						$scope.selectedPayCodes = [];
-						if (item) {
-							
-							$timeout(function () {
-								if(item.status===1)
-									$scope.selected = item;
-								else if (item.status === 2 || item.status===6)
-									$scope.processed = angular.copy(item);
-								else if (item.status > 2)
-									$scope.committed = angular.copy(item);
-							
-							}, 1);
+						if (item.isQueued) {
+							$scope.addAlert('This item is still queued for confirmation', 'danger');
+						} else {
+							$scope.selected = null;
+							$scope.processed = null;
+							$scope.committed = null;
+							$scope.selectedPayCodes = [];
+							if (item) {
+
+								$timeout(function () {
+									if (item.status === 1)
+										$scope.selected = item;
+									else if (item.status === 2 || item.status === 6)
+										$scope.processed = angular.copy(item);
+									else if (item.status > 2)
+										$scope.committed = angular.copy(item);
+
+								}, 1);
+							}
 						}
+					
 
 					}
 					
@@ -516,7 +534,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							return false;
 						else {
 							var draftPayroll = $filter('filter')($scope.list, { statusText: 'Draft' });
-							return draftPayroll.length > 0 ? false : true;
+							var queuedPayroll = $filter('filter')($scope.list, { isQueued: true });
+							if (queuedPayroll.length > 0)
+								dataSvc.queuedPayroll = queuedPayroll[0].id;
+							return draftPayroll.length > 0 || queuedPayroll.length>0 ? false : true;
 						}
 					}
 					$scope.requiresHostPayrollAccount = function () {
@@ -542,7 +563,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								companyId: $scope.mainData.selectedCompany.id,
 								hostId: $scope.mainData.selectedHost.id,
 								invoiceSetup: $scope.mainData.selectedCompany.invoiceSetup ? $scope.mainData.selectedCompany.invoiceSetup : $scope.mainData.selectedCompany.contract.invoiceSetup,
-								hostCompanyId: $scope.mainData.selectedHost.companyId
+								hostCompanyId: $scope.mainData.selectedHost.companyId,
+								companyIntId: $scope.mainData.selectedCompany.companyIntId,
+								hostCompanyIntId: $scope.mainData.selectedHost.companyIntId
 							}
 							companyRepository.getPayrollMetaData(request).then(function (data) {
 								dataSvc.payTypes = data.payTypes;
@@ -781,8 +804,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						getEmployees($scope.mainData.selectedCompany.id);
 					}
 					$scope.minPayDate = null;
-					$scope.getClass = function(item) {
-						if ($scope.committed && $scope.committed.id === item.id)
+					$scope.getClass = function (item) {
+						if (item.isQueued) {
+							return 'danger';
+						}
+						else if ($scope.committed && $scope.committed.id === item.id)
 							return 'success';
 						else if (item.status === 6) {
 							if (moment(item.payDay).toDate() < $scope.minPayDate)
@@ -794,6 +820,32 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							return 'default';
 						}
 					}
+
+					$scope.checkQueued = function () {
+						if (dataSvc.queuedPayroll) {
+							payrollRepository.isPayrollConfirmed(dataSvc.queuedPayroll).then(function (data) {
+								if (data && !data.isQueued && data.confirmedTime) {
+									$scope.list.splice($scope.list.indexOf($filter('filter')($scope.list, { id: dataSvc.queuedPayroll })[0]), 1);
+									$scope.list.push(data);
+									$scope.tableParams.reload();
+									$scope.fillTableData($scope.tableParams);
+									$scope.processed = null;
+									dataSvc.queuedPayroll = null;
+									dataSvc.queuedConfirmFailed = false;
+									$scope.addAlert('Payroll Confirmation finished. Ready for printing - ' + moment(data.payDay).format("MM/DD/YYYY"), 'success');
+								} else if (data && data.isQueued && data.isConfirmFailed) {
+									payrollRepository.reQueuePayroll(data).then(function (data1) {
+										
+									}, function (erorr) {
+										$scope.addAlert('error: ' + erorr.statusText, 'danger');
+									});
+
+								}
+							}, function (erorr) {
+								//$scope.addAlert('error: ' + erorr.statusText, 'danger');
+							});
+						}
+					};
 					var init = function () {
 						
 						if ($scope.mainData.selectedCompany) {
@@ -811,7 +863,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 					
 					init();
-
+					$interval($scope.checkQueued, 30000);
+					
 
 				}]
 		}

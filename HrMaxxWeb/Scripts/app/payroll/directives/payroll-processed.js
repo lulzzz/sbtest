@@ -164,18 +164,19 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('error fixing payroll ytd', 'danger');
 						});
 					}
-					$scope.printPayrollChecks = function (payroll) {
-						payrollRepository.printPayrollChecks(payroll.id).then(function (data) {
+					
+					$scope.printPayrollChecks = function (payroll, reprint) {
+						payrollRepository.printPayrollChecks(payroll.id, reprint).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
 							a.download = data.name;
 							document.body.appendChild(a);
 							a.click();
-							if(payroll.status>2)
+							if (payroll.status > 2)
 								$scope.$parent.$parent.updatePrintStatus();
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+							addAlert('error printing payroll', 'danger');
 						});
 					}
 					

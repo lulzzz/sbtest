@@ -18,9 +18,10 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public Guid HostId { get; set; }
 		[Required]
 		public string Name { get; set; }
+		public int CompanyIntId { get; set; }
 		
 		public string CompanyNo { get; set; }
-		public int CompanyNumber { get; set; }
+		
 		[Required]
 		public AddressResource CompanyAddress { get; set; }
 		public bool IsVisibleToHost { get; set; }

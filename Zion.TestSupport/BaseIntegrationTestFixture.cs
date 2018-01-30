@@ -14,10 +14,7 @@ namespace HrMaxx.TestSupport
 			get { return _testLifetimeScopeScope; }
 		}
 
-		protected SqlConnection Connection
-		{
-			get { return TestLifetimeScope.ResolveNamed<SqlConnection>("readConnection"); }
-		}
+		
 
 		[TestFixtureSetUp]
 		protected void BaseFixtureSetUp()

@@ -2,6 +2,7 @@
 using HrMaxx.Bus;
 using HrMaxx.Bus.Contracts;
 using MassTransit;
+using MassTransit.Advanced;
 using MassTransit.Log4NetIntegration;
 
 namespace HrMaxxAPI.Code.IOC
@@ -18,7 +19,7 @@ namespace HrMaxxAPI.Code.IOC
 				sbc.UseJsonSerializer();
 				sbc.DisablePerformanceCounters();
 				sbc.UseLog4Net();
-
+				sbc.SetConcurrentConsumerLimit(1);
 				/*
 					* At this point, the command handlers are alrady registered with this lifetimescope 
 					* in the CommandHandlersModule. 

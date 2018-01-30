@@ -189,6 +189,7 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<PayrollResource, Payroll>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : CombGuid.Generate()))
+				.ForMember(dest => dest.CompanyIntId, opt => opt.MapFrom(src => src.Company.CompanyIntId))
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.Date))
 				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.Date))
 				.ForMember(dest => dest.PayDay, opt => opt.MapFrom(src => src.PayDay.Date))
@@ -239,7 +240,7 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<Journal, JournalResource>();
 			CreateMap<JournalResource, Journal>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id : 0))
-				.ForMember(dest => dest.DocumentId, opt => opt.MapFrom(src => src.DocumentId.HasValue ? src.DocumentId.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.DocumentId, opt => opt.MapFrom(src => src.DocumentId.HasValue ? src.DocumentId.Value : Guid.Empty))
 				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => Math.Round(src.Amount, 2, MidpointRounding.AwayFromZero)));
 			CreateMap<JournalDetail, JournalDetailResource>();
 			CreateMap<JournalDetailResource, JournalDetail>()

@@ -90,7 +90,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var bankAccount = _metaDataRepository.GetPayrollAccount(request.CompanyId);
 				var hostAccount = _metaDataRepository.GetPayrollAccount(request.HostCompanyId);
-				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup!=null && request.InvoiceSetup.InvoiceType==CompanyInvoiceType.PEOASOCoCheck) ?request.HostCompanyId : request.CompanyId);
+				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck) ? request.HostCompanyIntId : request.CompanyIntId, (request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck));
 				var importMap = _metaDataRepository.GetCompanyTsImportMap(request.CompanyId);
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
 				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies };
@@ -103,14 +103,14 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public object GetJournalMetaData(Guid companyId)
+		public object GetJournalMetaData(Guid companyId, int companyIntId)
 		{
 			try
 			{
 				var companyAccounts = _companyService.GetComanyAccounts(companyId);
 				var payees = _readerService.GetJournalPayees(companyId);
-				var maxCheckNumber = _metaDataRepository.GetMaxRegularCheckNumber(companyId);
-				var maxAdjustmentNumber = _metaDataRepository.GetMaxAdjustmenetNumber(companyId);
+				var maxCheckNumber = _metaDataRepository.GetMaxRegularCheckNumber(companyIntId);
+				var maxAdjustmentNumber = _metaDataRepository.GetMaxAdjustmenetNumber(companyIntId);
 				return new { Accounts = companyAccounts, Payees = payees, startingCheckNumber = maxCheckNumber, StartingAdjustmentNumber = maxAdjustmentNumber };
 			}
 			catch (Exception e)

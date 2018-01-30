@@ -14,6 +14,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
@@ -32,12 +33,13 @@ namespace HrMaxxAPI.Controllers.Payrolls
 	{
 		private readonly IPayrollService _payrollService;
 		private readonly IDocumentService _documentService;
+		private readonly IFileRepository _fileRepository;
 		private readonly ITaxationService _taxationService;
 		private readonly ICompanyService _companyService;
 		private readonly IExcelService _excelService;
 		private readonly IReaderService _readerService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService, IReaderService readerService)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService, IReaderService readerService, IFileRepository fileRepository)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
@@ -45,6 +47,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			_companyService = companyService;
 			_excelService = excelService;
 			_readerService = readerService;
+			_fileRepository = fileRepository;
 		}
 
 		[HttpGet]
@@ -264,8 +267,21 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[HttpGet]
 		[Route(PayrollRoutes.PrintPayrollChecks)]
 		[DeflateCompression]
-		public HttpResponseMessage PrintPayrollChecks(Guid payrollId)
+		public HttpResponseMessage PrintPayrollChecks(Guid payrollId, bool reprint)
 		{
+			if (!reprint && _documentService.DocumentExists(payrollId))
+			{
+				_payrollService.MarkPayrollPrinted(payrollId);
+				return Printed(new FileDto()
+					{
+						DocumentId = payrollId,
+						Data = _fileRepository.GetFile(payrollId + ".pdf"),
+						Filename = payrollId.ToString(),
+						DocumentExtension = ".pdf",
+						MimeType = "application/pdf"
+					});
+				
+			}
 			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId), "print all check for payroll with id " + payrollId, true);
 			return Printed(printed);
 		}
@@ -326,6 +342,23 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				payrolls = payrolls.Where(p => !p.IsHistory && !p.IsVoid && ( !p.InvoiceId.HasValue || p.InvoiceStatus == InvoiceStatus.Draft)).ToList();
 			}
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
+		}
+
+		[HttpGet]
+		[Route(PayrollRoutes.IsPayrollConfirmed)]
+		[DeflateCompression]
+		public PayrollResource IsPayrollConfirmed(Guid payrollId)
+		{
+			var queueItem = _taxationService.GetConfirmPayrollQueueItem(payrollId);
+			if(queueItem!=null && !queueItem.ConfirmedTime.HasValue)
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.NoContent,
+					ReasonPhrase = "Queued for Processing"
+				});
+			var payrolls = MakeServiceCall(() => _readerService.GetPayroll(payrollId), string.Format("get payroll with id={0}", payrollId));
+			
+			return Mapper.Map<Payroll, PayrollResource>(payrolls);
 		}
 
 		[HttpGet]
@@ -426,6 +459,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			});
 			var processed = MakeServiceCall(() => _payrollService.ConfirmPayroll(mappedResource), string.Format("commit payrolls for company={0}", resource.Company.Id));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
+		}
+		[HttpPost]
+		[Route(PayrollRoutes.ReQueuePayroll)]
+		[DeflateCompression]
+		public HttpStatusCode ReQueuePayroll(PayrollResource resource)
+		{
+			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
+			
+			MakeServiceCall(() => _payrollService.ReQueuePayroll(mappedResource), string.Format("requeue payrolls for id={0}", resource.Id));
+			return HttpStatusCode.OK;
 		}
 
 		[HttpPost]

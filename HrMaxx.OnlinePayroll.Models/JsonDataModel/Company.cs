@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	public class CompanyJson
 	{
 		public Guid Id { get; set; }
+		public int CompanyIntId { get; set; }
 		public string CompanyName { get; set; }
 		public string CompanyNo { get; set; }
 		public Guid HostId { get; set; }
@@ -45,7 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string ClientNo { get; set; }
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
-		public int CompanyNumber { get; set; }
+		
 		public string Notes { get; set; }
 		public string PayrollMessage { get; set; }
 		public string Contact { get; set; }

@@ -285,7 +285,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						
 					}
 					var getMetaData = function (companyId) {
-						journalRepository.getJournalMetaData(companyId).then(function (data) {
+						journalRepository.getJournalMetaData(companyId, $scope.mainData.selectedCompany.companyIntId).then(function (data) {
 							dataSvc.companyAccounts = data.accounts;
 							var bankAccounts = $filter('filter')(dataSvc.companyAccounts, { isBank: true });
 							dataSvc.bankAccounts = $filter('orderBy')(bankAccounts, 'userInPayroll', true );
@@ -321,7 +321,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					$scope.add = function(transactionType, paymentMethod) {
 						var newItem = {
 							id : 0,
-							companyId : $scope.mainData.selectedCompany.id,
+							companyId: $scope.mainData.selectedCompany.id,
+							companyIntId: $scope.mainData.selectedCompany.companyIntId,
 							transactionType: transactionType,
 							paymentMethod : paymentMethod,
 							checkNumber : paymentMethod? -1 :dataSvc.startingCheckNumber,

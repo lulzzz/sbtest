@@ -18,9 +18,11 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						approachingPayrolls: [],
 						filteredApproachingPayrolls: [],
 						payrollsWithoutInvoice: [],
+						payrollsWithDraftInvoice: [],
 						companiesWithoutPayroll: [],
 						filterApproachingPayroll: '',
-						sortApproachingPayrolls:1,
+						sortApproachingPayrolls: 1,
+						viewingChart: 0,
 						myNews: [],
 						reportData: [],
 						tab:1
@@ -42,9 +44,10 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.selectedChart = null;
 						var element = angular.element(document.querySelector('#ncDetailedCriteriaForProject'));
 						element.html('');
-						$scope.drawPayrollWithoutInvoiceChart();
-						$scope.drawCompaniesWithApproachingPayrolls();
-						$scope.drawCompaniesWithoutPayrollChart();
+						//$scope.drawPayrollWithoutInvoiceChart();
+						//$scope.drawPayrollWithDraftInvoiceChart();
+						//$scope.drawCompaniesWithApproachingPayrolls();
+						//$scope.drawCompaniesWithoutPayrollChart();
 						//reportRepository.getDashboardData('GetUserDashboard', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
 						//	dataSvc.reportData = data;
 						//	$scope.chartData = [];
@@ -363,7 +366,19 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 							var data = data1[0];
 							if (data) {
 								dataSvc.payrollsWithoutInvoice = data.data;
-								
+								dataSvc.viewingChart = 3;
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+					};
+					$scope.drawPayrollWithDraftInvoiceChart = function () {
+						reportRepository.getDashboardData('GetPayrollsWithDraftInvoice', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								dataSvc.payrollsWithDraftInvoice = data.data;
+								dataSvc.viewingChart = 4;
 							}
 
 						}, function (error) {
@@ -375,8 +390,9 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						reportRepository.getDashboardData('GetCompaniesWithoutPayroll', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, null, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
 							var data = data1[0];
 							if (data) {
+								dataSvc.viewingChart = 1;
 								var d = data.data;
-								$.each(d, function (ind, ap) {
+								$.each(d, function(ind, ap) {
 									if (ind > 0) {
 										var salesRepJson = ap[4] ? JSON.parse(ap[4]) : '';
 										dataSvc.companiesWithoutPayroll.push({
@@ -390,6 +406,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 									}
 
 								});
+
+								dataSvc.viewingChart = 1;
 
 							}
 
@@ -418,6 +436,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 									}
 
 								});
+
+								dataSvc.viewingChart = 2;
 								dataSvc.filteredApproachingPayrolls = angular.copy(filtered);
 								$scope.tableParams.reload();
 								$scope.fillTableData($scope.tableParams);

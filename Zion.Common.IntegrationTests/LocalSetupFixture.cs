@@ -9,10 +9,10 @@ namespace HrMaxx.Common.IntegrationTests
 	[SetUpFixture]
 	public class LocalSetupFixture : SetupFixture
 	{
-		protected override void CreateDatabase()
-		{
-			base.CreateDatabase();
-		}
+		//protected override void CreateDatabase()
+		//{
+		//	base.CreateDatabase();
+		//}
 
 		protected override void ConfigureIOC(ContainerBuilder extBuilder = null)
 		{

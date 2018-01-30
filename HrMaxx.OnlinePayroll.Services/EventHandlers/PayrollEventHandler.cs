@@ -43,23 +43,24 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		}
 		public void Consume(PayrollSavedEvent event1)
 		{
+
 			try
 			{
 				foreach (var paycheck in event1.SavedObject.PayChecks)
 				{
 					if (!paycheck.Employee.LastPayrollDate.HasValue || paycheck.Employee.LastPayrollDate < event1.SavedObject.PayDay)
-						_companyRepository.UpdateLastPayrollDateAndPayRateEmployee(paycheck.Employee.Id, paycheck.Employee.Rate);
+						_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(paycheck.Employee.Id, paycheck.Employee.Rate);
 				}
 				if (!event1.SavedObject.Company.LastPayrollDate.HasValue ||
 						event1.SavedObject.Company.LastPayrollDate < event1.SavedObject.PayDay)
 				{
-					_companyRepository.UpdateLastPayrollDateCompany(event1.SavedObject.Company.Id, event1.SavedObject.PayDay);
+					_payrollRepository.UpdateLastPayrollDateCompany(event1.SavedObject.Company.Id, event1.SavedObject.PayDay);
 				}
 				foreach (var pc in event1.SavedObject.PayChecks)
 				{
 					var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName, "Pay Check Created", event1.UserId);
 					_mementoDataService.AddMementoData(memento);
-					
+
 				}
 
 				foreach (var pc in event1.AffectedChecks)
@@ -76,7 +77,6 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				Log.Error(message1, e);
 				throw new HrMaxxApplicationException(message1, e);
 			}
-			
 		}
 
 		public void Consume(PayCheckVoidedEvent event1)
@@ -86,7 +86,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				var memento = Memento<PayCheck>.Create(event1.SavedObject, EntityTypeEnum.PayCheck, event1.UserName, "PayCheck voided",event1.UserId);
 				_mementoDataService.AddMementoData(memento);
 				if (!event1.SavedObject.Employee.LastPayrollDate.HasValue || event1.SavedObject.Employee.LastPayrollDate == event1.SavedObject.PayDay)
-					_companyRepository.UpdateLastPayrollDateAndPayRateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.Employee.Rate);
+					_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.Employee.Rate);
 				foreach (var pc in event1.AffectedChecks)
 				{
 					var mem = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.UserName, string.Format("YTD affected because of voiding of Check {0}", event1.SavedObject.CheckNumber), event1.UserId);

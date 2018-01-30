@@ -214,6 +214,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class ExtractDBCompany
 	{
 		public System.Guid Id { get; set; }
+		public int CompanyIntId { get; set; }
 		public System.Guid HostId { get; set; }
 		public string CompanyName { get; set; }
 		public string CompanyNo { get; set; }

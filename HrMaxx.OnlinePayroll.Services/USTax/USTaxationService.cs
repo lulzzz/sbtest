@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
@@ -24,11 +25,14 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		private readonly IMetaDataRepository _metaDataRepository;
 		private USTaxTables TaxTables;
 		public ApplicationConfig Configurations { get; set; }
+		public List<ConfirmPayrollLogItem> ConfirmPayrollQueue { get; set; } 
+
 		public USTaxationService(ITaxationRepository taxationRepository, IMetaDataRepository metaDataRepository)
 		{
 			_taxationRepository = taxationRepository;
 			_metaDataRepository = metaDataRepository;
 			FillTaxTables();
+			ConfirmPayrollQueue = new List<ConfirmPayrollLogItem>();
 		}
 
 		private void FillTaxTables()
@@ -187,6 +191,25 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public void AddToConfirmPayrollQueue(ConfirmPayrollLogItem item)
+		{
+			ConfirmPayrollQueue.Add(item);
+		}
+
+		public void UpdateConfirmPayrollQueueItem(Guid payrollId)
+		{
+			if (ConfirmPayrollQueue.Any(c => c.PayrollId == payrollId))
+				ConfirmPayrollQueue.First(c => c.PayrollId == payrollId).ConfirmedTime = DateTime.Now;
+		}
+
+		public ConfirmPayrollLogItem GetConfirmPayrollQueueItem(Guid payrollId)
+		{
+			var item = ConfirmPayrollQueue.FirstOrDefault(c => c.PayrollId == payrollId);
+			if (item != null && item.ConfirmedTime.HasValue)
+				ConfirmPayrollQueue.Remove(item);
+			return item;
 		}
 
 		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, TaxByYear tax, Company hostCompany, Accumulation employeeAccumulation)

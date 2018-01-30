@@ -504,54 +504,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				
 		}
 
-		public void UpdateLastPayrollDateCompany(Guid id, DateTime payDay)
-		{
-			var dbCompany = _dbContext.Companies.FirstOrDefault(c => c.Id == id);
-			if (dbCompany != null)
-			{
-				if (_dbContext.PayrollPayChecks.Any(p => p.CompanyId == dbCompany.Id && !p.IsVoid))
-				{
-					var maxPayDay = _dbContext.PayrollPayChecks.Where(p => p.CompanyId == dbCompany.Id && !p.IsVoid).Max(p => p.PayDay);
-					dbCompany.LastPayrollDate = maxPayDay;
-				}
-				else
-				{
-					dbCompany.LastPayrollDate = default(DateTime?);
-				}
-				dbCompany.LastPayrollDate = payDay;
-				_dbContext.SaveChanges();
-			}
-		}
-
-		public void UpdateLastPayrollDateAndPayRateEmployee(Guid id, decimal rate)
-		{
-			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
-			if (dbEmployee != null)
-			{
-				if (_dbContext.PayrollPayChecks.Any(p => p.EmployeeId == id && !p.IsVoid))
-				{
-					var maxPayDay = _dbContext.PayrollPayChecks.Where(p => p.EmployeeId == id && !p.IsVoid).Max(p => p.PayDay);
-					dbEmployee.LastPayrollDate = maxPayDay;
-				}
-				else
-				{
-					dbEmployee.LastPayrollDate = default(DateTime?);
-				}
-				if (dbEmployee.Rate != rate)
-				{
-					dbEmployee.Rate = rate;
-					if (dbEmployee.PayType == (int) EmployeeType.Hourly)
-					{
-						var pcodes = JsonConvert.DeserializeObject<List<CompanyPayCode>>(dbEmployee.PayCodes);
-						var def = pcodes.FirstOrDefault(pc => pc.Id == 0);
-						if (def != null)
-							def.HourlyRate = rate;
-						dbEmployee.PayCodes = JsonConvert.SerializeObject(pcodes);
-					}
-				}
-				_dbContext.SaveChanges();
-			}
-		}
+	
 
 		public CompanyTaxRate SaveCompanyTaxRate(CompanyTaxRate taxrate)
 		{

@@ -16,6 +16,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public Guid? HostCompanyId { get; set; }
 		public Company Company { get; set; }
+		public int CompanyIntId { get; set; }
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 		public DateTime PayDay { get; set; }
@@ -42,6 +43,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsPrinted { get; set; }
 		public bool IsVoid { get; set; }
 		public string Warnings { get; set; }
+
+		public bool IsQueued { get; set; }
+		public DateTime? QueuedTime { get; set; }
+		public DateTime? ConfirmedTime { get; set; }
+		public bool IsConfirmFailed { get; set; }
+
 		public decimal TotalGrossWage
 		{
 			get { return Math.Round(PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.GrossWage), 2, MidpointRounding.AwayFromZero); }
@@ -82,6 +89,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class PayCheck : IOriginator<PayCheck>
 	{
 		public Guid CompanyId { get; set; }
+		public int CompanyIntId { get; set; }
 		public Guid PayrollId { get; set; }
 		public int Id { get; set; }
 		public Employee Employee { get; set; }

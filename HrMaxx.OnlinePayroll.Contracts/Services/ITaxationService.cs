@@ -20,5 +20,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		USTaxTables GetTaxTablesByContext();
 		USTaxTables SaveTaxTables(int year, USTaxTables taxTables);
 		USTaxTables CreateTaxes(int year);
+
+		void AddToConfirmPayrollQueue(ConfirmPayrollLogItem item);
+		void UpdateConfirmPayrollQueueItem(Guid payrollId);
+		ConfirmPayrollLogItem GetConfirmPayrollQueueItem(Guid payrollId);
 	}
 }

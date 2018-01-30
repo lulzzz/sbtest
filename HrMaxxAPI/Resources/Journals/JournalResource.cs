@@ -15,6 +15,7 @@ namespace HrMaxxAPI.Resources.Journals
 		public int? Id { get; set; }
 		[Required]
 		public Guid CompanyId { get; set; }
+		public int CompanyIntId { get; set; }
 		[Required]
 		public TransactionType TransactionType { get; set; }
 		[Required]
