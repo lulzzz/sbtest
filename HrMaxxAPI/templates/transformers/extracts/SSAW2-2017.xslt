@@ -90,7 +90,8 @@ RT<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(Em
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="15"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="15"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="15"/></xsl:call-template>
-$$spaces100$$$$spaces10$$$$spaces2$$$$spaces1$$
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="15"/></xsl:call-template>
+$$spaces5$$$$spaces2$$$$spaces1$$
 
 <xsl:text>$$n</xsl:text>
 </xsl:template>
@@ -127,7 +128,8 @@ $$spaces10$$$$spaces1$$
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>
 <xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>
-<xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>$$spaces10$$$$spaces2$$0$$spaces1$$
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>
+<xsl:call-template name="padLeft"><xsl:with-param name="data" select="0"/><xsl:with-param name="count" select="11"/></xsl:call-template>$$spaces1$$0$$spaces1$$
 <xsl:choose><xsl:when test="sum(Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/W2_13R])>0">1</xsl:when><xsl:otherwise>0</xsl:otherwise></xsl:choose>
 0$$spaces20$$$$spaces2$$$$spaces1$$
 <xsl:text>$$n</xsl:text>

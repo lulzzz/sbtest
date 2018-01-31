@@ -733,7 +733,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
 			if (dbEmployee != null)
 			{
-				if (_dbContext.PayrollPayChecks.Any(pc=>pc.EmployeeId==id))
+				if (_dbContext.PayrollPayChecks.Any(pc => pc.EmployeeId == id && !pc.IsVoid))
 				{
 					dbEmployee.LastPayrollDate = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == id && !pc.IsVoid).Max(pc=>pc.PayDay);
 				}

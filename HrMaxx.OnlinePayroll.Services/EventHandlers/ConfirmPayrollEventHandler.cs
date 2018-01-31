@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
@@ -42,11 +43,30 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 
 		public void Consume(ConfirmPayrollEvent event1)
 		{
-			Log.Info(string.Format("Staring Confirm for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+			int counter = 0;
+			bool result = false;
+			while (counter < 2 && !result)
+			{
+				result = RunConfirmPayrollEvent(event1, counter++);
+				
+			}
+			
+			if (!result)
+			{
+				_taxationService.RemoveFromConfirmPayrollQueueItem(event1.Payroll.Id);
+				_payrollRepository.ConfirmFailed(event1.Payroll.Id);
+				Log.Info("Removed from Queue and marked failed - " + DateTime.Now.ToString("hh:mm:ss:fff"));
+			}
+				
+
+		}
+
+		private bool RunConfirmPayrollEvent(ConfirmPayrollEvent event1, int retry)
+		{
+			Log.Info(string.Format("Staring Confirm for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
 			try
 			{
-
-			
+				
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					foreach (var journal in event1.Journals)
@@ -63,8 +83,8 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						journal.CheckNumber = j.CheckNumber;
 						event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
 					}
-					
-				
+
+
 					Log.Info(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					if (event1.Payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
@@ -115,15 +135,18 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					Log.Info(string.Format("finished transactions for payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					txn.Complete();
 				}
+				_payrollService.PrintAndSavePayroll(event1.Payroll, event1.Payroll.PEOASOCoCheck ? event1.PeoJournals : event1.Journals);
+				Log.Info(string.Format("Finished Confirm and Print for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
+				return true;
 			}
 			catch (Exception e)
 			{
 				Log.Error(string.Format("Erorr in Confirming Payroll {0} - {1} - {2}", event1.Payroll.Id, event1.Payroll.Company.Name, e.Message));
-				_payrollRepository.ConfirmFailed(event1.Payroll.Id);
+				return false;
 			}
-			_payrollService.PrintAndSavePayroll(event1.Payroll, event1.Payroll.PEOASOCoCheck ? event1.PeoJournals : event1.Journals);
-		
-			Log.Info(string.Format("Finished Confirm for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+
+
+
 
 		}
 

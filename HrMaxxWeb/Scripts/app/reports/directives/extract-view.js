@@ -6,7 +6,8 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 			restrict: 'E',
 			replace: true,
 			scope: {
-				masterExtract: "=masterExtract"
+				masterExtract: "=masterExtract",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/extract-view.html?v=' + version,
 
@@ -101,6 +102,40 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selectedAgency = null;
 						}
 						$scope.data.hosts.splice($scope.data.hosts.indexOf(host), 1);
+					}
+
+					$scope.printAll = function() {
+						var extract = {
+							report: $scope.masterExtract.extract.report,
+							data: {
+								hosts: $scope.data.hosts,
+								companies: angular.copy($scope.data.companies),
+								history: []
+							},
+							template: $scope.masterExtract.extract.template,
+							argumentList: $scope.masterExtract.extract.argumentList,
+							fileName: $scope.masterExtract.extract.fileName,
+							extension: $scope.masterExtract.extract.extension
+						};
+
+						reportRepository.printExtractBatchAll(extract).then(function (data) {
+							extract = null;
+							$.each($scope.data.companies, function (i, h) {
+								$scope.printedCompanies.push(h);
+								$scope.data.companies.splice($scope.data.companies.indexOf(h), 1);
+							});
+							$scope.selectedPrintCompanies = [];
+							$scope.selectedBatchCompanies = [];
+							$scope.formsToPrint = 0;
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+						}, function (erorr) {
+							addAlert('Failed to download batch print for all' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+						});
 					}
 
 					$scope.printBatch = function() {

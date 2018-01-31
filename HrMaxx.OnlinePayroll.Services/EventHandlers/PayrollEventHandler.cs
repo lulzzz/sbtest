@@ -98,7 +98,6 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			{
 				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Payroll Voided Event PayrollEventHandler", event1.SavedObject.Id);
 				Log.Error(message1, e);
-				throw new HrMaxxApplicationException(message1, e);
 			}
 			
 		}
@@ -129,7 +128,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			{
 				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Invoice Created Event PayrollEventHandler", event1.SavedObject.Id);
 				Log.Error(message1, e);
-				throw new HrMaxxApplicationException(message1, e);
+				
 			}
 			
 
@@ -159,7 +158,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			{
 				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Invoice Created Event PayrollEventHandler", event1.Journal.Id);
 				Log.Error(message1, e);
-				throw new HrMaxxApplicationException(message1, e);
+				
 			}
 
 

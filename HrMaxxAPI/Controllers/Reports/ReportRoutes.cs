@@ -21,6 +21,7 @@
 		public const string GetSearchResults = "Reports/SearchResults";
 		public const string DownloadExtract = "Reports/DownloadExtract";
 		public const string PrintExtractBatch = "Reports/PrintExtractBatch";
+		public const string PrintExtractBatchAll = "Reports/PrintExtractBatchAll";
 		public const string Extract = "Reports/Extract/{id:int}";
 		public const string CommissionExtract = "Reports/CommissionExtract/{id:int}";
 		public const string ExtractDocumentReport = "Reports/ExtractDocumentReport";

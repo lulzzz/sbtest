@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		void AddToConfirmPayrollQueue(ConfirmPayrollLogItem item);
 		void UpdateConfirmPayrollQueueItem(Guid payrollId);
+		void RemoveFromConfirmPayrollQueueItem(Guid payrollId);
 		ConfirmPayrollLogItem GetConfirmPayrollQueueItem(Guid payrollId);
 	}
 }

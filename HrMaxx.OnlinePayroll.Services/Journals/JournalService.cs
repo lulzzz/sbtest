@@ -262,7 +262,6 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							TimeStamp = DateTime.Now
 						});
 					}
-					UpdateCompanyMaxCheckNumber(journal.CompanyId, journal.TransactionType);
 					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);
 					_mementoDataService.AddMementoData(memento);
 					
@@ -330,7 +329,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							Journal = saved, UserId = userId, UserName = saved.LastModifiedBy, TimeStamp = DateTime.Now
 						});
 					}
-					UpdateCompanyMaxCheckNumber(journal.CompanyId, journal.TransactionType);
+					
 					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
@@ -350,7 +349,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			try
 			{
 				var j = _journalRepository.VoidJournal(mapped, mapped.TransactionType, mapped.LastModifiedBy);
-				UpdateCompanyMaxCheckNumber(mapped.CompanyId, mapped.TransactionType);
+				
 				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy, string.Format("{0} voided {1}", mapped.EntityType.ToString(), mapped.CheckNumber), userId);
 				_mementoDataService.AddMementoData(memento);
 				return j;

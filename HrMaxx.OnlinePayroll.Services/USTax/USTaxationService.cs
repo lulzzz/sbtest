@@ -195,7 +195,13 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 		public void AddToConfirmPayrollQueue(ConfirmPayrollLogItem item)
 		{
-			ConfirmPayrollQueue.Add(item);
+			var exists = ConfirmPayrollQueue.FirstOrDefault(q => q.PayrollId == item.PayrollId);
+			if(exists==null)
+				ConfirmPayrollQueue.Add(item);
+			else
+			{
+				exists.QueuedTime = item.QueuedTime;
+			}
 		}
 
 		public void UpdateConfirmPayrollQueueItem(Guid payrollId)
@@ -206,10 +212,12 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 		public ConfirmPayrollLogItem GetConfirmPayrollQueueItem(Guid payrollId)
 		{
-			var item = ConfirmPayrollQueue.FirstOrDefault(c => c.PayrollId == payrollId);
-			if (item != null && item.ConfirmedTime.HasValue)
-				ConfirmPayrollQueue.Remove(item);
-			return item;
+			return ConfirmPayrollQueue.FirstOrDefault(c => c.PayrollId == payrollId);
+		}
+
+		public void RemoveFromConfirmPayrollQueueItem(Guid payrollId)
+		{
+			ConfirmPayrollQueue.RemoveAll(q => q.PayrollId == payrollId);
 		}
 
 		private PayrollTax CalculateTax(Company company, PayCheck payCheck, DateTime payDay, decimal grossWage, TaxByYear tax, Company hostCompany, Accumulation employeeAccumulation)

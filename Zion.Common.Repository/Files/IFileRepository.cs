@@ -28,5 +28,6 @@ namespace HrMaxx.Common.Repository.Files
 		void DeleteTargetFile(string file);
 		void SaveFile(Guid id, string documentExtension, byte[] file);
 		void SaveFile(string directory, string name, string extension, string content);
+		void SaveFile(string directory, string name, string extension, byte[] file);
 	}
 }

@@ -937,7 +937,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							});
 
 
-						_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
+						
 					}
 
 
@@ -967,7 +967,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						_stagingDataService.DeleteStagingData<PayrollStaging>(draftPayroll.MementoId);
 					}
-					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
+					
 					txn.Complete();
 					Log.Info(string.Format("Finished Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
 				}
@@ -1389,12 +1389,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						}
 					});
 					Log.Info("Checks Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
-					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
-					if (payroll.PEOASOCoCheck && payroll.HostCompanyId.HasValue)
-					{
-						_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
-					}
-					Log.Info("Updated Company Max Check Number" + DateTime.Now.ToString("hh:mm:ss:fff"));
+					
+					
 					_payrollRepository.VoidPayroll(payroll.Id);
 					txn.Complete();
 					
@@ -3746,7 +3742,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						pc.CheckNumber = counter++;
 					});
 					_payrollRepository.UpdatePayrollCheckNumbers(payroll);
-					_journalService.UpdateCompanyMaxCheckNumber(payroll.Company.Id, TransactionType.PayCheck);
+					
 					txn.Complete();
 					
 					return payroll;

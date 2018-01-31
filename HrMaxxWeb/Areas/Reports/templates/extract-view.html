@@ -392,6 +392,7 @@
 				<div class="form-group">
 					<label for="companies">UnPrinted Filing Companies</label>
 					<button class="btn btn-primary" ng-show="selectedPrintCompanies.length>0" ng-click="printBatch()"><i class="fa fa-print"></i> print ({{selectedPrintCompanies.length}})</button>
+					<button class="btn btn-primary" ng-show="mainData.userRole==='SuperUser'" ng-click="printAll()"><i class="fa fa-print"></i> print all</button>
 					<div class="col-sm-12" ng-dropdown-multiselect="" options="data.companies" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: false, showUncheckAll: false,scrollable: true, enableSearch: true}" selected-model="selectedPrintCompanies" events="batchPrintingEvents"></div>
 				</div>
 				

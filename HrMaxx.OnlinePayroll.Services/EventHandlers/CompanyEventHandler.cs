@@ -69,7 +69,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			{
 				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Company Update Event", event1.SavedObject.Id);
 				Log.Error(message1, e);
-				throw new HrMaxxApplicationException(message1, e);
+				
 			}
 
 
@@ -108,7 +108,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			{
 				var message1 = string.Format("{0} payroll id={1}", "Employee Update event", event1.SavedObject.Id);
 				Log.Error(message1, e);
-				throw new HrMaxxApplicationException(message1, e);
+				
 			}
 
 

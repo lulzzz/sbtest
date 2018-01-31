@@ -721,7 +721,7 @@
 				<button class="btn btn-sm btn-info pull-right" ng-show="masterExtract.id && masterExtract.journals.length>0  && !masterExtract.extract.report.isBatchPrinting" ng-click="printExtract()">Print Checks</button>
 				<button class="btn btn-sm btn-primary pull-right" ng-show="masterExtract.extract.report.reportName==='CommissionsReport'  && !masterExtract.extract.report.isBatchPrinting" ng-click="print()"><i class="fa fa-print"></i> print</button>
 			</div>
-			<extract-view master-extract="masterExtract" />
+			<extract-view master-extract="masterExtract" main-data="mainData" />
 
 
 		</div>

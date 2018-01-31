@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Cache;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
@@ -15,6 +16,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
@@ -592,8 +594,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				extract.Data.Companies.ForEach(c =>
 				{
+					
 					var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: extract.Report.StartDate,
-										enddate: extract.Report.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: extract.Report.ReportName, includeHistory: extract.Report.IncludeHistory);
+						enddate: extract.Report.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: extract.Report.ReportName, includeHistory: extract.Report.IncludeHistory, includeClients: !c.Company.IsHostCompany);
 
 					c.EmployeeAccumulationList =
 						ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();					
@@ -605,6 +608,53 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted<ExtractResponse>(extract.Report, extract.Data, argList, extract.Template);
 		}
 
+		public FileDto GetExtractTransformedAndPrintedZip(Extract extract)
+		{
+			var dir =
+				_documentService.CreateDirectory(string.Format("{0}-{1}", extract.Report.ReportName,
+					DateTime.Now.ToString("MM-dd-yyyy")));
+			var companies = Utilities.GetCopy( extract.Data.Companies );
+			extract.Data.Companies = new List<ExtractCompany>();
+			var completedCompanies = new List<Guid>();
+			for (var i=0;i< companies.Count;i++)
+			{
+				GetExractTransformedAndSaved(extract, companies[i], dir);
+			}
+			
+			var zipFile = _documentService.ZipDirectory(dir, extract.Report.ReportName);
+			return new FileDto
+			{
+				Data = zipFile,
+				Filename = extract.Report.ReportName + ".zip",
+				DocumentExtension = ".zip",
+				MimeType = "application/octet-stream"
+			}; ;
+		}
+
+		private void GetExractTransformedAndSaved(Extract extract, ExtractCompany company, string dir)
+		{
+			extract.Data.Companies = new List<ExtractCompany>() { company };
+			if (extract.Report.ReportName.StartsWith("SSAW2"))
+			{
+				extract.Data.Companies.ForEach(c =>
+				{
+
+					var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: extract.Report.StartDate,
+						enddate: extract.Report.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: extract.Report.ReportName, includeHistory: extract.Report.IncludeHistory, includeClients: !c.Company.IsHostCompany);
+
+					c.EmployeeAccumulationList =
+						ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+				});
+			}
+
+			var args = extract.ArgumentList != null ? JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList) : new List<KeyValuePair<string, string>>();
+			var argList = new XsltArgumentList();
+			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
+			var file = GetReportTransformedAndPrinted<ExtractResponse>(extract.Report, extract.Data, argList, extract.Template);
+			_fileRepository.SaveFile(dir, company.Company.Name, file.DocumentExtension, file.Data);
+			Log.Info("Finished Company " + company.Company.Name);
+			
+		}
 		public Extract GetPositivePayReport(ReportRequest request)
 		{
 			var host = _hostService.GetHost(request.HostId);
@@ -1233,16 +1283,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request);
-			//data.Hosts.ForEach(h => h.Companies.ForEach(c =>
-			//{
-			//	var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: request.StartDate,
-			//		enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: request.ReportName, includeHistory: request.IncludeHistory);
-
-			//	c.EmployeeAccumulationList =
-			//		ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
-			//}));
+			
 			data.Hosts.ForEach(h=> h.Companies.ForEach(c=>c.HostCompanyId=h.HostCompany.Id));
-			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c=>c.Company.Name).ToList();
+			data.Companies = data.Hosts.SelectMany(h => h.Companies).Where(c=>!c.Company.IsLocation).OrderBy(c=>c.Company.Name).ToList();
 			data.Hosts.ForEach(h => h.Companies = new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
@@ -1265,16 +1308,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request);
-			//data.Hosts.ForEach(h => h.Companies.ForEach(c =>
-			//{
-			//	var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: request.StartDate,
-			//		enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: request.ReportName, includeHistory: request.IncludeHistory);
-
-			//	c.EmployeeAccumulationList =
-			//		ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
-			//}));
+			
 			data.Hosts.ForEach(h => h.Companies.ForEach(c => c.HostCompanyId = h.HostCompany.Id));
-			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c => c.Company.Name).ToList();
+			data.Companies = data.Hosts.SelectMany(h => h.Companies).Where(c => !c.Company.IsLocation).OrderBy(c => c.Company.Name).ToList();
 			data.Hosts.ForEach(h => h.Companies = new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));

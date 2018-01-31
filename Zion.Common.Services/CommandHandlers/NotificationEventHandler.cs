@@ -51,7 +51,7 @@ namespace HrMaxx.Common.Services.CommandHandlers
 			{
 				var message1 = string.Format("{0} payroll id={1}", "Error in Consuming Notification Event NotificationEventHandler", event1.SavedObject.Id);
 				Log.Error(message1, e);
-				throw new HrMaxxApplicationException(message1, e);
+				
 			}
 			
 			

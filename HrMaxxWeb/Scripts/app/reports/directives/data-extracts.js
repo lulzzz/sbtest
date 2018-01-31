@@ -392,7 +392,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					$scope.getReportW2Employee = function () {
-						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
+						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, false, dataSvc.filterW2.includeHistory);
 					}
 					$scope.getReportW2EmployeeReport = function () {
 						getReport('SSAW2MagneticReport', 'Federal W2 Employee Report', dataSvc.filterW2.year, null, null, null, null, null, null, true, dataSvc.filterW2.includeHistory);
@@ -502,6 +502,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							resolve: {
 								extract: function () {
 									return extract;
+								},
+								mainData: function() {
+									return $scope.mainData;
 								},
 								item: function () {
 									return {
@@ -757,8 +760,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 		}
 	}
 ]);
-common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, reportRepository, item, $window) {
-	
+common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, mainData, reportRepository, item, $window) {
+	$scope.mainData = mainData;
 	$scope.alerts = [];
 	var addAlert = function(message, status) {
 		$scope.alerts = [];

@@ -35,5 +35,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		MasterExtract ConfirmExtract(MasterExtract extract);
 		CPAReport GetCPAReport(ReportRequest request);
 		FileDto GetExtractTransformedAndPrinted(Extract extract);
+		FileDto GetExtractTransformedAndPrintedZip(Extract extract);
 	}
 }

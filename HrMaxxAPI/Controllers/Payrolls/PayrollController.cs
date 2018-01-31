@@ -346,7 +346,6 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.IsPayrollConfirmed)]
-		[DeflateCompression]
 		public PayrollResource IsPayrollConfirmed(Guid payrollId)
 		{
 			var queueItem = _taxationService.GetConfirmPayrollQueueItem(payrollId);
@@ -357,7 +356,6 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					ReasonPhrase = "Queued for Processing"
 				});
 			var payrolls = MakeServiceCall(() => _readerService.GetPayroll(payrollId), string.Format("get payroll with id={0}", payrollId));
-			
 			return Mapper.Map<Payroll, PayrollResource>(payrolls);
 		}
 
