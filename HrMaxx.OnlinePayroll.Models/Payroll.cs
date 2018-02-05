@@ -48,6 +48,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? QueuedTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }
 		public bool IsConfirmFailed { get; set; }
+		public int QueuePosition { get; set; }
 
 		public decimal TotalGrossWage
 		{

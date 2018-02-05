@@ -111,10 +111,18 @@
 							</tr>
 						</thead>
 						<tbody>
-							<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
-								<xsl:sort select="Employee/CompanyEmployeeNo" data-type="number"/>
-							</xsl:apply-templates>
-							
+							<xsl:choose>
+								<xsl:when test="Company/CompanyCheckPrintOrder='CompanyEmployeeNo'">
+									<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
+										<xsl:sort select="Employee/CompanyEmployeeNo" data-type="number"/>
+									</xsl:apply-templates>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
+										<xsl:sort select="Employee/LastName" data-type="text"/>
+									</xsl:apply-templates>
+								</xsl:otherwise>
+							</xsl:choose>
 						</tbody>
 					</table>
 					<br/>

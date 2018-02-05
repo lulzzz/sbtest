@@ -46,6 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsFiler944 { get; set; }
 		public bool IsFiler1095 { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
+		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
 
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }

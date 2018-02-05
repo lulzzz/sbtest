@@ -33,7 +33,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					$scope.data = dataSvc;
 					$scope.cancel = function() {
 						$scope.$parent.$parent.selected = null;
-						$scope.datasvc.isBodyOpen = true;
+						$scope.$parent.$parent.data.isBodyOpen = true;
 					}
 
 					var addAlert = function (error, type) {

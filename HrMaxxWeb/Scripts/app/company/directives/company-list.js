@@ -90,6 +90,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							isHostCompany: false,
 							payrollDaysInPast: 0,
 							payCheckStock: 3,
+							companyCheckPrintOrder: 1,
 							companyAddress: {},
 							states: [],
 							companyTaxRates: [],

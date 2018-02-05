@@ -48,16 +48,15 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			while (counter < 2 && !result)
 			{
 				result = RunConfirmPayrollEvent(event1, counter++);
-				
 			}
-			
+			_taxationService.RemoveFromConfirmPayrollQueueItem(event1.Payroll.Id);
 			if (!result)
 			{
-				_taxationService.RemoveFromConfirmPayrollQueueItem(event1.Payroll.Id);
+				
 				_payrollRepository.ConfirmFailed(event1.Payroll.Id);
 				Log.Info("Removed from Queue and marked failed - " + DateTime.Now.ToString("hh:mm:ss:fff"));
 			}
-				
+			
 
 		}
 

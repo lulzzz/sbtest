@@ -245,6 +245,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string InsuranceGroupName { get; set; }
 		public Guid? ParentId { get; set; }
 		public decimal MinWage { get; set; }
+		public int CompanyCheckPrintOrder { get; set; }
 		
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }

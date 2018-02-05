@@ -193,15 +193,18 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
-		public void AddToConfirmPayrollQueue(ConfirmPayrollLogItem item)
+		public int AddToConfirmPayrollQueue(ConfirmPayrollLogItem item)
 		{
 			var exists = ConfirmPayrollQueue.FirstOrDefault(q => q.PayrollId == item.PayrollId);
-			if(exists==null)
+			if (exists == null)
+			{
 				ConfirmPayrollQueue.Add(item);
+			}
 			else
 			{
 				exists.QueuedTime = item.QueuedTime;
 			}
+			return ConfirmPayrollQueue.IndexOf(item) + 1;
 		}
 
 		public void UpdateConfirmPayrollQueueItem(Guid payrollId)
@@ -213,6 +216,21 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		public ConfirmPayrollLogItem GetConfirmPayrollQueueItem(Guid payrollId)
 		{
 			return ConfirmPayrollQueue.FirstOrDefault(c => c.PayrollId == payrollId);
+		}
+
+		public int GetConfirmPayrollQueueItemIndex(ConfirmPayrollLogItem item)
+		{
+			return ConfirmPayrollQueue.IndexOf(item) + 1;
+		}
+
+		public int GetConfirmPayrollQueueItemIndex(Guid itemId)
+		{
+			var item =  ConfirmPayrollQueue.FirstOrDefault(c => c.PayrollId == itemId);
+			if (item != null)
+				return GetConfirmPayrollQueueItemIndex(item);
+			else
+				return 0;
+			
 		}
 
 		public void RemoveFromConfirmPayrollQueueItem(Guid payrollId)

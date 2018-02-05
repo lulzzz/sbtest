@@ -166,7 +166,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					}
 					
 					$scope.printPayrollChecks = function (payroll, reprint) {
-						payrollRepository.printPayrollChecks(payroll.id, reprint).then(function (data) {
+						payrollRepository.printPayrollChecks(payroll.id, reprint, $scope.company.companyCheckPrintOrder).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
@@ -176,11 +176,12 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							if (payroll.status > 2)
 								$scope.$parent.$parent.updatePrintStatus();
 						}, function (error) {
-							addAlert('error printing payroll', 'danger');
+							addAlert('Error: ' + error, 'danger');
 						});
 					}
 					
 					$scope.printPayrollReport = function (payroll) {
+						payroll.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;
 						payrollRepository.printPayrollReport(payroll).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
@@ -195,6 +196,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						});
 					}
 					$scope.printPayrollTimesheet = function (payroll) {
+						payroll.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;
 						payrollRepository.printPayrollTimesheet(payroll).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;

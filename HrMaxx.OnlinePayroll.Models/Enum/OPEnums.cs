@@ -490,4 +490,11 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Garnishment=2
 	}
 
+	public enum CompanyCheckPrintOrder
+	{
+		[HrMaxxSecurity(DbId = 1)]
+		CompanyEmployeeNo=1,
+		[HrMaxxSecurity(DbId = 2)]
+		EmployeeLastName=2
+	}
 }

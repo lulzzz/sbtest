@@ -75,6 +75,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public bool IsLocation { get; set; }
 		public bool HasLocations { get; set; }
+		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
 
 		public string GetTextForStatus
 		{

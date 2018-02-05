@@ -89,8 +89,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					payroll.TaxPayDay = payroll.PayDay;
 					
 					var payCheckCount = 0;
-					
-					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included).OrderBy(pc=>pc.Employee.CompanyEmployeeNo))
+
+					if (payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)
+						payroll.PayChecks = payroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList();
+					else
+						payroll.PayChecks = payroll.PayChecks.OrderBy(pc => pc.Employee.LastName).ToList();
+					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included))
 					{
 						paycheck.CompanyIntId = payroll.Company.CompanyIntId;
 						paycheck.TaxPayDay = payroll.TaxPayDay;
@@ -605,9 +609,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var ptcodes = new List<PayCheckPayCode>();
 					var ptwcs = new List<PayCheckWorkerCompensation>();
 
-					
+					if (savedPayroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)
+						savedPayroll.PayChecks = savedPayroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList();
+					else
+					{
+						savedPayroll.PayChecks = savedPayroll.PayChecks.OrderBy(pc => pc.Employee.LastName).ToList();
+					}
 
-					savedPayroll.PayChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
+					savedPayroll.PayChecks.ForEach(pc =>
 					{
 						
 						pc.Accumulations.ForEach(a =>
@@ -713,25 +722,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 						companyIdForPayrollAccount = host.Company.Id;
 						coaList = _companyService.GetCompanyPayrollAccounts(companyIdForPayrollAccount);
-						savedPayroll.PayChecks
-							.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList()
-							.ForEach(pc => peoJournals.Add(CreateJournalEntry(payroll, pc, coaList, true, companyIdForPayrollAccount, host.Company.CompanyIntId)));
+						savedPayroll.PayChecks.ForEach(pc => peoJournals.Add(CreateJournalEntry(payroll, pc, coaList, true, companyIdForPayrollAccount, host.Company.CompanyIntId)));
 
-						
-						//_journalService.UpdateCompanyMaxCheckNumber(payroll.HostCompanyId.Value, TransactionType.PayCheck);
 					}
 
-					
-					
-					//if (payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
-					//{
-					//	var inv = CreatePayrollInvoice(savedPayroll, payroll.UserName, payroll.UserId, false);
-					//	savedPayroll.InvoiceId = inv.Id;
-					//	savedPayroll.InvoiceNumber = inv.InvoiceNumber;
-					//	savedPayroll.InvoiceStatus = inv.Status;
-					//	savedPayroll.Total = inv.Total;
-					//}
-				
 					var draftPayroll =
 							_stagingDataService.GetMostRecentStagingData<PayrollStaging>(payroll.Company.Id);
 					if (draftPayroll != null)
@@ -749,7 +743,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
-			_taxationService.AddToConfirmPayrollQueue(new ConfirmPayrollLogItem()
+			savedPayroll.QueuePosition = _taxationService.AddToConfirmPayrollQueue(new ConfirmPayrollLogItem()
 			{
 				PayrollId = savedPayroll.Id, CompanyId = savedPayroll.Company.Id, CompanyIntId = savedPayroll.CompanyIntId, QueuedTime = DateTime.Now
 			});
@@ -1499,19 +1493,21 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public FileDto PrintPayrollChecks(Guid payrollId)
+		public FileDto PrintPayrollChecks(Guid payrollId, int companyCheckPrintOrder)
 		{
 			try
 			{
 				
 				var payroll = _readerService.GetPayroll(payrollId);
-				
+				payroll.Company.CompanyCheckPrintOrder = (CompanyCheckPrintOrder)companyCheckPrintOrder;
 				var returnFile = new FileDto();
 				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
 				{
 					var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
 					
-					returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
+					//returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ToList(), journals);
+					returnFile = PrintAndSavePayroll(payroll, journals);
+					
 				}
 
 				if (!payroll.IsPrinted)
@@ -1533,18 +1529,27 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void PrintAndSavePayroll(Models.Payroll payroll, List<Journal> journals)
+		public FileDto PrintAndSavePayroll(Models.Payroll payroll, List<Journal> journals)
 		{
 			if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
 			{
 				journals = journals.Where(j=>j.PEOASOCoCheck==payroll.PEOASOCoCheck).ToList();
-
-				var returnFile = PrintPayCheck(payroll, payroll.PayChecks.Where(pc => !pc.IsVoid).OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList(), journals);
+				var payChecks = payroll.PayChecks.Where(pc => !pc.IsVoid);
+				if (payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)
+					payChecks = payChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo);
+				else
+				{
+					payChecks = payChecks.OrderBy(pc => pc.Employee.LastName);
+				}
+				var returnFile = PrintPayCheck(payroll, payChecks.ToList(), journals);
 				if (returnFile != null)
 				{
 					_fileRepository.SaveFile(payroll.Id, "pdf", returnFile.Data);
 				}
+				return returnFile;
 			}
+			return null;
+			
 		}
 
 		public FileDto PrintPayrollPayslips(Guid payrollId)
@@ -2752,7 +2757,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						company.Id);
 				var signature = companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
 				var pdfs = new List<PDFModel>();
-				foreach (var payCheck in payChecks.OrderBy(pc=>pc.Employee.CompanyEmployeeNo).ThenBy(pc=>pc.CheckNumber))
+				foreach (var payCheck in payChecks)
 				{
 					if(payCheck.Employee.PayType==EmployeeType.JobCost)
 						pdfs.Add(GetPdfModelJobCost(payroll, payCheck, journals.First(j=>j.PayrollPayCheckId==payCheck.Id), company, nameCompany, company1, bankcoa, signature));
@@ -3839,7 +3844,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void ReQueuePayroll(Models.Payroll payroll)
+		public Models.Payroll ReQueuePayroll(Models.Payroll payroll)
 		{
 			Models.Payroll savedPayroll;
 			var journals = new List<Journal>();
@@ -3884,7 +3889,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				
 			
-				_taxationService.AddToConfirmPayrollQueue(new ConfirmPayrollLogItem()
+				payroll.QueuePosition = _taxationService.AddToConfirmPayrollQueue(new ConfirmPayrollLogItem()
 				{
 					PayrollId = payroll.Id,
 					CompanyId = payroll.Company.Id,
@@ -3897,6 +3902,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					Journals = journals,
 					PeoJournals = peoJournals
 				});
+				return payroll;
 
 			}
 			catch (Exception e)

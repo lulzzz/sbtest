@@ -6,7 +6,7 @@
 		public const string Payrolls = "Payroll/Payrolls";
 		public const string ProcessPayroll = "Payroll/Process";
 		public const string ReProcessReConfirmPayroll = "Payroll/ReProcessReConfirmPayroll";
-		public const string IsPayrollConfirmed = "Payroll/IsPayrollConfirmed/{payrollId:guid}";
+		public const string IsPayrollConfirmed = "Payroll/IsPayrollConfirmed";
 		public const string ReQueuePayroll = "Payroll/ReQueuePayroll";
 		public const string CommitPayroll = "Payroll/Commit";
 		public const string VoidPayCheck = "Payroll/VoidPayCheck/{payrollId:guid}/{payCheckId:int}";
@@ -19,7 +19,7 @@
 		public const string ReIssuePayCheck = "Payroll/ReIssueCheck/{payCheckId:int}";
 		public const string PrintPayrollReport = "Payroll/PrintPayrollReport";
 		public const string PrintPayrollTimesheet = "Payroll/PrintPayrollTimesheet";
-		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks/{payrollId:guid}/{reprint}";
+		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks/{payrollId:guid}/{reprint}/{companyCheckPrintOrder:int}";
 		public const string FixCompanyCubes = "Payroll/FixCompanyCubes/{year:int}";
 		public const string CreatePayrollInvoice = "Payroll/CreatePayrollInvoice";
 

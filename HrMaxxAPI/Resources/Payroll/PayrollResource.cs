@@ -60,6 +60,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime? QueuedTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }
 		public bool IsConfirmFailed { get; set; }
+		public int QueuePosition { get; set; }
 
 		public bool CanDelete
 		{

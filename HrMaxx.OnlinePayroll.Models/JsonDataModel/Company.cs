@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using HrMaxx.OnlinePayroll.Models.DataModel;
+using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
@@ -46,6 +47,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string ClientNo { get; set; }
 		public DateTime Created { get; set; }
 		public Guid? ParentId { get; set; }
+		public int CompanyCheckPrintOrder { get; set; }
 		
 		public string Notes { get; set; }
 		public string PayrollMessage { get; set; }

@@ -112,6 +112,7 @@
           <Property Name="PayrollMessage" Type="varchar(max)" />
           <Property Name="IsFiler1095" Type="bit" Nullable="false" />
           <Property Name="CompanyIntId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyCheckPrintOrder" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1701,6 +1702,7 @@
           <Property Name="PayrollMessage" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="IsFiler1095" Type="Boolean" Nullable="false" />
           <Property Name="CompanyIntId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyCheckPrintOrder" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2889,6 +2891,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="CompanyCheckPrintOrder" ColumnName="CompanyCheckPrintOrder" />
                 <ScalarProperty Name="CompanyIntId" ColumnName="CompanyIntId" />
                 <ScalarProperty Name="IsFiler1095" ColumnName="IsFiler1095" />
                 <ScalarProperty Name="PayrollMessage" ColumnName="PayrollMessage" />

@@ -68,6 +68,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string PayrollMessage { get; set; }
         public bool IsFiler1095 { get; set; }
         public int CompanyIntId { get; set; }
+        public int CompanyCheckPrintOrder { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

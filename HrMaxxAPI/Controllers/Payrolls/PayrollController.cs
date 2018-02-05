@@ -267,8 +267,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[HttpGet]
 		[Route(PayrollRoutes.PrintPayrollChecks)]
 		[DeflateCompression]
-		public HttpResponseMessage PrintPayrollChecks(Guid payrollId, bool reprint)
+		public HttpResponseMessage PrintPayrollChecks(Guid payrollId, bool reprint, int companyCheckPrintOrder)
 		{
+			var queueItem = _taxationService.GetConfirmPayrollQueueItem(payrollId);
+			if(queueItem!=null)
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = "The PDF file is not ready for this payroll. Please try again later"
+				});
+			
 			if (!reprint && _documentService.DocumentExists(payrollId))
 			{
 				_payrollService.MarkPayrollPrinted(payrollId);
@@ -282,7 +290,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					});
 				
 			}
-			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId), "print all check for payroll with id " + payrollId, true);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId, companyCheckPrintOrder), "print all check for payroll with id " + payrollId, true);
 			return Printed(printed);
 		}
 
@@ -341,21 +349,30 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			{
 				payrolls = payrolls.Where(p => !p.IsHistory && !p.IsVoid && ( !p.InvoiceId.HasValue || p.InvoiceStatus == InvoiceStatus.Draft)).ToList();
 			}
+			if (payrolls.Any(p => p.IsQueued))
+			{
+				var p = payrolls.First(p1=>p1.IsQueued);
+				p.QueuePosition = _taxationService.GetConfirmPayrollQueueItemIndex(p.Id);
+			}
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(PayrollRoutes.IsPayrollConfirmed)]
-		public PayrollResource IsPayrollConfirmed(Guid payrollId)
+		public PayrollResource IsPayrollConfirmed(PayrollResource payroll)
 		{
-			var queueItem = _taxationService.GetConfirmPayrollQueueItem(payrollId);
-			if(queueItem!=null && !queueItem.ConfirmedTime.HasValue)
-				throw new HttpResponseException(new HttpResponseMessage
-				{
-					StatusCode = HttpStatusCode.NoContent,
-					ReasonPhrase = "Queued for Processing"
-				});
-			var payrolls = MakeServiceCall(() => _readerService.GetPayroll(payrollId), string.Format("get payroll with id={0}", payrollId));
+			var queueItem = _taxationService.GetConfirmPayrollQueueItem(payroll.Id.Value);
+			if (queueItem != null && !queueItem.ConfirmedTime.HasValue)
+			{
+				payroll.QueuePosition = _taxationService.GetConfirmPayrollQueueItemIndex(queueItem);
+				return payroll;
+			}
+				
+			var payrolls = MakeServiceCall(() => _readerService.GetPayroll(payroll.Id.Value), string.Format("get payroll with id={0}", payroll.Id));
+			if (payrolls.IsQueued)
+			{
+				payrolls.QueuePosition = _taxationService.GetConfirmPayrollQueueItemIndex(payrolls.Id);
+			}
 			return Mapper.Map<Payroll, PayrollResource>(payrolls);
 		}
 
@@ -461,12 +478,13 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[HttpPost]
 		[Route(PayrollRoutes.ReQueuePayroll)]
 		[DeflateCompression]
-		public HttpStatusCode ReQueuePayroll(PayrollResource resource)
+		public PayrollResource ReQueuePayroll(PayrollResource resource)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			
-			MakeServiceCall(() => _payrollService.ReQueuePayroll(mappedResource), string.Format("requeue payrolls for id={0}", resource.Id));
-			return HttpStatusCode.OK;
+			var requeued = MakeServiceCall(() => _payrollService.ReQueuePayroll(mappedResource), string.Format("requeue payrolls for id={0}", resource.Id));
+			return Mapper.Map<Payroll, PayrollResource>(requeued);
+
 		}
 
 		[HttpPost]

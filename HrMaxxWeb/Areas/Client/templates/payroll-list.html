@@ -81,7 +81,7 @@
 							{{item.userName}} ({{item.lastModified | date:'MM/dd/yyyy hh:mm a'}})
 						</td>
 						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
-							{{item.isQueued ? "Queued" : item.statusText}} <i class="fa fa-dollar" style="color:green" ng-if="item.hasACH"></i>&nbsp;<i class="fa fa-upload" style="color:green" ng-if="item.hasExtracts"></i>
+							{{item.isQueued ? "Queued ( #" + item.queuePosition + " )" : item.statusText}} <i class="fa fa-dollar" style="color:green" ng-if="item.hasACH"></i>&nbsp;<i class="fa fa-upload" style="color:green" ng-if="item.hasExtracts"></i>
 						</td>
 						<td class="col-sm-1 text-right" ng-if="showInvoices()">
 							<button class="btn btn-xs btn-danger" ng-click="deleteDraftPayroll($event, item)" ng-show="item.status===6" title="Delete"><i class="fa fa-lg fa-fire"></i></button>

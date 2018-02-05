@@ -23,9 +23,9 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			isPayrollConfirmed: function (payrollId) {
+			isPayrollConfirmed: function (payroll) {
 				var deferred = $q.defer();
-				payrollServer.one('IsPayrollConfirmed').one(payrollId).get().then(function (data) {
+				payrollServer.all('IsPayrollConfirmed').post(payroll).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);
@@ -531,28 +531,27 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			printPayrollChecks: function (payroll, reprint) {
+			printPayrollChecks: function (payroll, reprint, companyCheckPrintOrder) {
 				var deferred = $q.defer();
-				$http.get(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll + "/" + reprint, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
+				$http.get(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll + "/" + reprint + "/" + companyCheckPrintOrder, { responseType: "arraybuffer" }).then(
+					function (result) {
+						var type = result.headers('Content-Type');
+						var disposition = result.headers('Content-Disposition');
 						if (disposition) {
 							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
 							if (match[1])
 								defaultFileName = match[1];
 						}
 						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
+						var blob = new Blob([result.data], { type: type });
 						var fileURL = URL.createObjectURL(blob);
 						deferred.resolve({
 							file: fileURL,
 							name: defaultFileName
 						});
 
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
+					},function (error) {
+						deferred.reject(error.statusText);
 					});
 
 				return deferred.promise;
@@ -578,7 +577,7 @@ common.factory('payrollRepository', [
 
 					}).error(function (data, status) {
 						var e = /* error */
-						deferred.reject(e);
+						deferred.reject(data);
 					});
 
 				return deferred.promise;

@@ -138,6 +138,14 @@
 														<label>Minimum Wage</label>
 														<input type="text" name="minwage" class="form-control" required data-parsley-group="wizard-step-2" data-parsley-type="number" data-parsley-min="10" ng-model="selectedCompany.minWage" />
 													</div>
+													<div class="form-group">
+														<label>Check Print Order</label>
+														<select ng-model="selectedCompany.companyCheckPrintOrder" name="printorder" class="form-control" data-parsley-group="wizard-step-2" required="" convert-to-number>
+															<option value="1">Company Employee No</option>
+															<option value="2">Employee Last Name</option>
+															
+														</select>
+													</div>
 												</div>
 												<div class="col-sm-4">
 													<div class="form-group">

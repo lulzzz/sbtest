@@ -178,6 +178,9 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 										extract: function() {
 											return data.extract;
 										},
+										mainData: function() {
+											return $scope.mainData;
+										},
 										item: function() {
 											return data;
 										},
@@ -205,6 +208,9 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 									resolve: {
 										extract: function () {
 											return data;
+										},
+										mainData: function () {
+											return $scope.mainData;
 										},
 										item: function () {
 											return ext;
