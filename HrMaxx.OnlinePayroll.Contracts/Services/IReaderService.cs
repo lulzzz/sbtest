@@ -75,8 +75,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Accumulation> GetTaxAccumulations(Guid? company = null, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
-			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false, 
-			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false);
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null);
 
 		
 	}

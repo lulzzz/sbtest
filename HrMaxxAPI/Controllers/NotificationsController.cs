@@ -41,5 +41,13 @@ namespace HrMaxxAPI.Controllers
 		{
 			MakeServiceCall(() => _notificationService.ClearAllUserNotifications(CurrentUser.UserId), "Clear all user notificaitons for " + CurrentUser.UserId);
 		}
+
+		[HttpGet]
+		[AllowAnonymous]
+		[Route(HrMaxxRoutes.DeleteOldNotifications)]
+		public void DeleteOldNotifications()
+		{
+			MakeServiceCall(() => _notificationService.DeleteOldNotifications(), "delete notifications older than 7 days");
+		}
 	}
 }

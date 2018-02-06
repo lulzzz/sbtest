@@ -13,16 +13,32 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'payrollRepository', 'EntityTypes',
-				function ($scope, $element, $location, $filter, companyRepository, payrollRepository, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'payrollRepository', 'EntityTypes', 'reportRepository',
+				function ($scope, $element, $location, $filter, companyRepository, payrollRepository, EntityTypes, reportRepository) {
 					var dataSvc = {
 						payCodes: [],
 						companyStates: [],
 						compensations: [],
 						employeeMetaData: null,
 						sourceTypeId: EntityTypes.Employee,
-						openedRack:1
+						openedRack: 1,
+						filter: {
+							years: []
+						},
+						filterW2: {
+							year: 0,
+							includeHistory: true
+						},
+						filterC1095: {
+							year: 0,
+							includeHistory: true
+						},
+						payrollSummary: {
+							year: 0,
+							includeHistory: true
+						}
 					}
+					$scope.showincludeclients = false;
 					$scope.tab = 1;
 					$scope.alert = null;
 					$scope.addAlert = function (error, type) {
@@ -325,6 +341,11 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					}
 
 					var init = function () {
+						var currentYear = new Date().getFullYear();
+						for (var i = currentYear - 4; i <= currentYear; i++) {
+							if (i >= 2017)
+								dataSvc.filter.years.push(i);
+						}
 						companyRepository.getEmployeeMetaData().then(function (data) {
 							$.each(data.payTypes, function (index, paytype) {
 								paytype.used = 0;
@@ -447,6 +468,68 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							return true;
 					}
 					//Bank Account Handling
+					$scope.getReportW2Employee = function () {
+						getReport('W2Employee', 'Federal W2 (Employee version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory);
+					}
+					$scope.getReportW2Employer = function () {
+						getReport('W2Employer', 'Federal W2 (Employer version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory);
+					}
+					$scope.getReportC1095 = function () {
+						getReport('C1095', 'Federal 1095-C', dataSvc.filterC1095.year, null, dataSvc.filterC1095.includeHistory);
+					}
+					$scope.getReportPayrollSummary = function () {
+						//getReport('PayrollSummary', 'Payroll Summary', dataSvc.payrollSummary.year, null, dataSvc.payrollSummary.includeHistory);
+						var m = $scope.mainData;
+						var request = {
+							reportName: 'PayrollSummary',
+							hostId: m.selectedHost.id,
+							companyId: m.selectedCompany.id,
+							employeeId: $scope.selected.id,
+							year: dataSvc.payrollSummary.year,
+							quarter: null,
+							month: null,
+							startDate: moment('01/01/' + dataSvc.payrollSummary.year).format('MM/DD/YYYY'),
+							endDate: moment('12/31/' + dataSvc.payrollSummary.year).format('MM/DD/YYYY'),
+							includeHistory: dataSvc.payrollSummary.includeHistory,
+							includeClients: true
+						}
+						reportRepository.getReport(request).then(function (data) {
+							dataSvc.payrollSummaryReport = data;
+
+						}, function (error) {
+							dataSvc.payrollSummaryReport = null;
+							$scope.addAlert('error getting report payroll summary report ' + error.statusText, 'danger');
+						});
+					}
+					var getReport = function (reportName, desc, year, quarter, includeHistory) {
+						var m = $scope.mainData;
+						var request = {
+							reportName: reportName,
+							hostId: m.selectedHost.id,
+							companyId: m.selectedCompany.id,
+							employeeId: $scope.selected.id,
+							year: year,
+							quarter: quarter,
+							month: null,
+							startDate: null,
+							endDate: null,
+							includeHistory: includeHistory,
+							includeClients: true
+						}
+						reportRepository.getReportDocument(request).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+
+						}, function (erorr) {
+							$scope.addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+						});
+					}
+
+
 					init();
 
 

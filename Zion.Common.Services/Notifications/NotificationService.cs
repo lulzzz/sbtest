@@ -73,5 +73,19 @@ namespace HrMaxx.Common.Services.Notifications
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void DeleteOldNotifications()
+		{
+			try
+			{
+				_notificationRepository.DeleteOldNotifications();
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, "Delete All notifications older than 7 days");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

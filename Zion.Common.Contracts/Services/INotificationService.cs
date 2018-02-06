@@ -10,5 +10,6 @@ namespace HrMaxx.Common.Contracts.Services
 		void NotificationRead(Guid NotificationId);
 		void CreateNotifications(List<NotificationDto> notificationList);
 		void ClearAllUserNotifications(string userId);
+		void DeleteOldNotifications();
 	}
 }

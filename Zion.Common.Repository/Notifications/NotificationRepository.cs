@@ -58,5 +58,13 @@ namespace HrMaxx.Common.Repository.Notifications
 			notifications.ForEach(n=>n.IsVisible=false);
 			_dbContext.SaveChanges();
 		}
+
+		public void DeleteOldNotifications()
+		{
+			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7);
+			var notifications = _dbContext.Notifications.Where(n => n.CreatedOn <= sevenDaysBefore.Date);
+			_dbContext.Notifications.RemoveRange(notifications);
+			_dbContext.SaveChanges();
+		}
 	}
 }

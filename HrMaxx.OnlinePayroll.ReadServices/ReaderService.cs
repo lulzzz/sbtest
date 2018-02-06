@@ -1016,7 +1016,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true,
-			string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false)
+			string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null)
 		{
 			try
 			{
@@ -1025,6 +1025,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (company.HasValue)
 				{
 					paramList.Add(new FilterParam { Key = "company", Value = company.ToString() });
+				}
+				if (employee.HasValue && employee.Value!=Guid.Empty)
+				{
+					paramList.Add(new FilterParam { Key = "employee", Value = employee.ToString() });
 				}
 				if (startdate.HasValue)
 				{

@@ -82,7 +82,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 					
 					
 					$scope.printPayroll = function (payroll) {
-						payrollRepository.printPayrollChecks(payroll.id, false).then(function (data) {
+						payrollRepository.printPayrollChecks(payroll.id, false, 1).then(function (data) {
 							var a = document.createElement('a');
 							a.href = data.file;
 							a.target = '_blank';
@@ -97,7 +97,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 								listItem.statusText = 'Printed';
 							}
 						}, function (error) {
-							$scope.addAlert('error printing pay check', 'danger');
+							$scope.addAlert('Error: ' + error, 'danger');
 						});
 					}
 					

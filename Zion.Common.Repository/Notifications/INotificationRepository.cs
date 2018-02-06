@@ -11,5 +11,6 @@ namespace HrMaxx.Common.Repository.Notifications
 
 		void NotificationRead(Guid notificationId);
 		void ClearAllNotiifications(string userId);
+		void DeleteOldNotifications();
 	}
 }

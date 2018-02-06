@@ -20,7 +20,9 @@
 	<ReportTransformed>
 		<Name>FilledFormW2Employee</Name>
 		<Reports>
-			<xsl:apply-templates select="EmployeeAccumulationList/Accumulation"/>
+			<xsl:apply-templates select="EmployeeAccumulationList/Accumulation">
+				<xsl:sort select="FirstName" data-type="text"/>
+			</xsl:apply-templates>
 			<Report>
 				<TemplatePath>GovtForms\W2\</TemplatePath>
 				<Template>W2-page2.pdf</Template>

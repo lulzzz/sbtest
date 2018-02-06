@@ -554,6 +554,167 @@
 				</div>
 			</div>
 		</div>
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">
+						<i class="fa fa-plus-circle pull-right"></i>
+						Reports
+					</a>
+				</h3>
+			</div>
+			<div id="collapseFour" class="panel-collapse collapse">
+				<div class="panel-body">
+					
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Wage and Tax Statement – Form W2</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearW2" ng-model="data.filterW2.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2 form-group">
+
+								<label for="w2history" class="switch">
+									Include History?
+									<input id="w2history" type="checkbox" ng-model="data.filterW2.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+								<label for="fw2clients" class="switch">
+									Include Clients/locations?
+									<input id="fw2clients" type="checkbox" ng-model="data.filterW2.includeClients" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
+								<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">W2 - Employer</button>
+							</div>
+
+						</div>
+
+					</div>
+
+					
+					<div class="col-sm-12" ng-if="mainData.selectedCompany.isFiler1095">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Medical Obamacare – Form 1095-C</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearC1095" ng-model="data.filterC1095.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2 form-group">
+
+								<label for="c1095history" class="switch">
+									Include History?
+									<input id="c1095history" type="checkbox" ng-model="data.filterC1095.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+								<label for="fc1095clients" class="switch">
+									Include Clients/locations?
+									<input id="fc1095clients" type="checkbox" ng-model="data.filterC1095.includeClients" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
+							</div>
+
+						</div>
+
+					</div>
+					
+					<div class="col-sm-12" >
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-excel-o fa-lg" /><span class="m-l-10"><em>Payroll Summary for year</em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select name="yearC1095" ng-model="data.payrollSummary.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2 form-group">
+
+								<label for="payrollsummaryhistory" class="switch">
+									Include History?
+									<input id="payrollsummaryhistory" type="checkbox" ng-model="data.payrollSummary.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							
+							<div class="col-sm-2">
+								<button class="btn btn-sm btn-primary" ng-click="getReportPayrollSummary()" ng-disabled="!data.payrollSummary.year">Show</button>
+							</div>
+
+						</div>
+						<div class="col-sm-12" ng-if="data.payrollSummaryReport">
+							<table class="table table-condensed table-bordered">
+								<thead>
+									<tr>
+										<th class="col-sm-2 text-center">Employee</th>
+										<th class="col-sm-1 text-center">Wage Type</th>
+										<th class="col-sm-1 text-center">Total Wages</th>
+										<th class="col-sm-1 text-center">Taxes</th>
+										<th class="col-sm-1 text-center">Wage</th>
+										<th class="col-sm-1 text-center">Tax</th>
+										<th class="col-sm-1 text-center">Deduction</th>
+										<th class="col-sm-1 text-center">Amount</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat="pc in data.payrollSummaryReport.employeeAccumulationList">
+										<td>
+											<div id="pc.id" ng-model="pc" ng-include="'employee.html'" class="row"></div>
+											<!--<div class="row" ng-include="'paytype.html'" ng-repeat="pt in pc" id="pt.id"></div>-->
+										</td>
+										<td colspan="2">
+											<div ng-model="pc" ng-include="'wages.html'" class="row"></div>
+										</td>
+										<td colspan="3">
+											<div class="col-sm-12"><strong>Employee:</strong></div>
+											<div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in pc.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'"></div>
+											<div class="col-sm-12">
+												<div class="col-sm-4 col-sm-offset-4">
+													<strong><em>Total:       {{pc.employeeTaxes | currency:'$'}}</em></strong>
+												</div>
+											</div>
+											<div class="col-sm-12"><strong>Employer:</strong></div>
+											<div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in pc.taxes | filter:{isEmployeeTax:false} | orderBy:'tax.id'"></div>
+											<div class="col-sm-12">
+												<div class="col-sm-4 col-sm-offset-4">
+													<strong><em>Total:       {{pc.employerTaxes | currency:'$'}}</em></strong>
+												</div>
+											</div>
+										</td>
+										<td colspan="2">
+											<div ng-repeat="ded in pc.deductions" ng-include="'ded.html'" class="row"></div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+					</div>
+					
+				</div>
+			</div>
+		</div>
 	</div>
 	<script type="text/ng-template" id="popover/ssnlist.html">
 

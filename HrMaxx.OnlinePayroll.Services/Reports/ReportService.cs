@@ -1849,11 +1849,17 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId,
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: false, 
 				includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory, 
-				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
-			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
-				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: false, 
-				includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory, 
-				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).First();
+				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, employee: request.EmployeeId).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			if (request.EmployeeId == Guid.Empty)
+			{
+				response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
+					startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includePayCodes: true,
+					includeTaxes: true, includePayTypeAccumulation: false,
+					includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true,
+					includeHistory: request.IncludeHistory,
+					includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).First();
+			}
+			
 			return response;
 		}
 
@@ -1982,7 +1988,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId).Where(e => e.PayCheckWages.GrossWage > 0).OrderBy(e=>e.FullName).ToList();
+			
 			response.Company = GetCompany(request.CompanyId);
 			if (response.Company.FileUnderHost)
 			{
@@ -2007,7 +2014,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				: (decimal)9.65;
 			response.Company = GetCompany(request.CompanyId);
 
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeHistory: request.IncludeHistory, includeC1095: true, includeClients: request.IncludeClients).ToList();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeHistory: request.IncludeHistory, includeC1095: true, includeClients: request.IncludeClients, employee: request.EmployeeId).ToList();
 			//if (response.EmployeeAccumulationList.All(e => e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))
 			//{
 			//	throw new Exception(NoData);
@@ -2015,6 +2022,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.EmployeeAccumulationList =
 				response.EmployeeAccumulationList.Where(ea => ea.PayCheck1095Summaries.Any())
 					.ToList();
+			
 			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
 			
 			response.Host = GetHost(response.Company.HostId);

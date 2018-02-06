@@ -61,6 +61,97 @@
 				</div>
 
 			</script>
+			<script type="text/ng-template" id="employee.html">
+				<div class="col-sm-12 text-center">
+					<strong>{{pc.fullName}}</strong>
+				</div>
+				<div class="col-sm-12"></div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>SSN:</strong></div>
+					<div class="col-sm-6 text-right">***-**-{{pc.ssnVal.substr(pc.ssnVal.length-4)}}</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Dept:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.department}}</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Hired:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.hireDate | date:'MM/dd/yyyy'}}</div>
+				</div>
+
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Pay Type:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.payType===1? 'Hourly' : pc.payType===2? 'Salary' : 'Piece-wise'}}</div>
+				</div>
+
+			</script>
+			<script type="text/ng-template" id="paytype.html">
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>{{pt.payType.payType.name}}</strong></div>
+					<div class="col-sm-6 text-right">{{pt.accumulatedValue}}</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-right">used:</div>
+					<div class="col-sm-6 text-left">{{pt.ytdUsed}}hrs</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-right">c.o:</div>
+					<div class="col-sm-6 text-left">{{pt.carryOver}}hrs</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-right">net:</div>
+					<div class="col-sm-6 text-left">{{pt.available}}hrs</div>
+				</div>
+			</script>
+			<script type="text/ng-template" id="wages.html">
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Gross Wage:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.payCheckWages.grossWage | currency:'$'}}</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Salary:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.payCheckWages.salary | currency:'$'}}</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>OT:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.overtime | currency:'$'}}</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left">&nbsp;</div>
+					<div class="col-sm-6 text-right">&nbsp;</div>
+				</div>
+				<div class="col-sm-12" ng-include="'comp.html'" ng-repeat="comp in pc.compensations"></div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left">&nbsp;</div>
+					<div class="col-sm-6 text-right">&nbsp;</div>
+				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Net Wage:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.payCheckWages.netWage | currency:'$'}}</div>
+				</div>
+			</script>
+			<script type="text/ng-template" id="comp.html">
+
+				<div class="col-sm-6 text-left"><strong>{{comp.payTypeName}}:</strong></div>
+				<div class="col-sm-6 text-right">{{comp.ytd | currency:'$'}}</div>
+
+
+			</script>
+			<script type="text/ng-template" id="tax.html">
+
+				<div class="col-sm-4 text-left"><strong>{{tax.tax.code}}:</strong></div>
+				<div class="col-sm-4 text-right">{{tax.ytdWage | currency:'$'}}</div>
+				<div class="col-sm-4 text-right">{{tax.ytd | currency:'$'}}</div>
+
+
+			</script>
+			<script type="text/ng-template" id="ded.html">
+
+				<div class="col-sm-6 text-left"><strong>{{ded.companyDeduction.deductionType.name}}:</strong></div>
+				<div class="col-sm-6 text-right">{{ded.ytd | currency:'$'}}</div>
+
+
+			</script>
 			<script type="text/ng-template" id="popover/memento.html">
 
 				<div class="modal-header">
