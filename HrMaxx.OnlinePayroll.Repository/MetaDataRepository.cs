@@ -90,7 +90,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public Account GetPayrollAccount(Guid companyId)
 		{
-			const string sql = "select * from CompanyAccount where CompanyId=@CompanyId and Type=@Type and SubType=@SubType";
+			const string sql = "select * from CompanyAccount where CompanyId=@CompanyId and Type=@Type and SubType=@SubType and UsedInPayroll=1";
 			const string sql2 = "select * from BankAccount where Id=@Id";
 			using (var conn = GetConnection())
 			{

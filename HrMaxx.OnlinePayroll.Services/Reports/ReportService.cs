@@ -599,7 +599,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						enddate: extract.Report.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: extract.Report.ReportName, includeHistory: extract.Report.IncludeHistory, includeClients: !c.Company.IsHostCompany);
 
 					c.EmployeeAccumulationList =
-						ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();					
+						ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0 && ea1.LastCheckCompany.HasValue && ea1.LastCheckCompany.Value==c.Company.Id).ToList();					
 				});
 			}
 			var args = extract.ArgumentList != null ? JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(extract.ArgumentList) : new List<KeyValuePair<string, string>>();
@@ -643,7 +643,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						enddate: extract.Report.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedCompensations: true, includedDeductions: true, report: extract.Report.ReportName, includeHistory: extract.Report.IncludeHistory, includeClients: !c.Company.IsHostCompany);
 
 					c.EmployeeAccumulationList =
-						ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+						ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0 && ea1.PayCheckWages.GrossWage > 0 && ea1.LastCheckCompany.HasValue && ea1.LastCheckCompany.Value == c.Company.Id).ToList();
 				});
 			}
 
@@ -1285,7 +1285,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var data = GetExtractResponse(request);
 			
 			data.Hosts.ForEach(h=> h.Companies.ForEach(c=>c.HostCompanyId=h.HostCompany.Id));
-			data.Companies = data.Hosts.SelectMany(h => h.Companies).Where(c=>!c.Company.IsLocation).OrderBy(c=>c.Company.Name).ToList();
+			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c=>c.Company.Name).ToList();
 			data.Hosts.ForEach(h => h.Companies = new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
@@ -1310,7 +1310,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var data = GetExtractResponse(request);
 			
 			data.Hosts.ForEach(h => h.Companies.ForEach(c => c.HostCompanyId = h.HostCompany.Id));
-			data.Companies = data.Hosts.SelectMany(h => h.Companies).Where(c => !c.Company.IsLocation).OrderBy(c => c.Company.Name).ToList();
+			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c => c.Company.Name).ToList();
 			data.Hosts.ForEach(h => h.Companies = new List<ExtractCompany>());
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
@@ -1988,7 +1988,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId).Where(e => e.PayCheckWages.GrossWage > 0).OrderBy(e=>e.FullName).ToList();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId).Where(e => e.PayCheckWages.GrossWage > 0 && e.LastCheckCompany.HasValue && e.LastCheckCompany.Value==request.CompanyId).OrderBy(e=>e.FullName).ToList();
 			
 			response.Company = GetCompany(request.CompanyId);
 			if (response.Company.FileUnderHost)

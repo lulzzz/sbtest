@@ -169,22 +169,41 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 
 					$scope.add = function () {
 						load($scope.mainData.selectedCompany.id).then(function () {
+							if ($scope.canRunPayroll2()) {
+								$timeout(function() {
+									var selected = addNew();
+									$scope.set(selected);
+
+								}, 1);
+							} else {
+								$scope.cancel();
+							}
 							
-								var selected = addNew();
-								$scope.set(selected);
-							
+								
 							
 						});
 
 					}
 					var load = function(companyId) {
 						var deferred = $q.defer();
-						getCompanyPayrollMetaData(companyId);
-						getEmployees(companyId).then(function() {
+						var promises = [];
+						promises.push(getCompanyPayrollMetaData(companyId));
+						promises.push(getEmployees(companyId));
+						$q.all(promises).then(function () {
 							deferred.resolve();
 						}, function (error) {
 							deferred.reject(error);
 						});
+						//getCompanyPayrollMetaData(companyId).then(function () {
+						//	getEmployees(companyId).then(function () {
+						//		deferred.resolve();
+						//	}, function (error) {
+						//		deferred.reject(error);
+						//	});
+						//}, function (error) {
+						//	deferred.reject(error);
+						//});
+						
 
 						return deferred.promise;
 					}
@@ -223,6 +242,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 					$scope.refresh = function (payroll, copydates, option) {
 						load($scope.mainData.selectedCompany.id).then(function () {
+							if ($scope.canRunPayroll2()) {
+								
 							
 								var selected = {
 									company: $scope.mainData.selectedCompany,
@@ -368,7 +389,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								});
 						
 								$scope.set(selected);
-							
+							}
 						
 						});
 					}
@@ -541,7 +562,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						
 						if (draftPayroll.length > 0 || queuedPayroll.length > 0)
 							return false;
-						if (!dataSvc.metaDataLoaded || !dataSvc.employeesLoaded)
+						if (dataSvc.metaDataLoaded || !dataSvc.employeesLoaded)
 							return true;
 						
 						else if ($scope.selected || $scope.processed || $scope.committed || !dataSvc.payrollAccount || dataSvc.employees.length == 0 || (c.contract.billingOption === 3 && !c.contract.invoiceSetup) || (c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount))
@@ -552,6 +573,34 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						
 
 					}
+					$scope.canRunPayroll2 = function () {
+						var c = $scope.mainData.selectedCompany;
+
+						var draftPayroll = $filter('filter')($scope.list, { statusText: 'Draft' });
+						var queuedPayroll = $filter('filter')($scope.list, { isQueued: true });
+						if (queuedPayroll.length > 0) {
+							dataSvc.queuedPayroll = queuedPayroll[0];
+
+						}
+
+						if (draftPayroll.length > 0 || queuedPayroll.length > 0)
+							return false;
+						
+						else if ($scope.selected || $scope.processed || $scope.committed || dataSvc.employees.length == 0)
+							return false;
+						else if ($scope.requiresCompanyPayrollAccount())
+							return false;
+						else if (c.contract.billingOption === 3 && c.contract.invoiceSetup && c.contract.invoiceSetup.invoiceType === 1 && !dataSvc.hostPayrollAccount)
+							return false;
+						else if (c.contract.billingOption === 3 && !c.contract.invoiceSetup)
+							return false;
+						else {
+							return true;
+						}
+
+
+					}
+
 					$scope.requiresHostPayrollAccount = function () {
 						var c = $scope.mainData.selectedCompany;
 
@@ -570,6 +619,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						}
 					}
 					var getCompanyPayrollMetaData = function (companyId) {
+						var deferred = $q.defer();
 						if (!dataSvc.metaDataLoaded) {
 							var request = {
 								companyId: $scope.mainData.selectedCompany.id,
@@ -579,7 +629,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								companyIntId: $scope.mainData.selectedCompany.companyIntId,
 								hostCompanyIntId: $scope.mainData.selectedHost.companyIntId
 							}
-							companyRepository.getPayrollMetaData(request).then(function (data) {
+							companyRepository.getPayrollMetaData(request).then(function(data) {
 								dataSvc.payTypes = data.payTypes;
 								dataSvc.payrollAccount = data.payrollAccount;
 								dataSvc.hostPayrollAccount = data.hostPayrollAccount;
@@ -590,11 +640,18 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								if ($scope.selected && !$scope.selected.startingCheckNumber) {
 									$scope.selected.startingCheckNumber = dataSvc.startingCheckNumber;
 								}
-							}, function (error) {
-								$scope.addAlert('error getting payroll meta data', 'danger');
+								
+								console.log("loaded meta data");
+								deferred.resolve();
+							}, function(error) {
+								
+								$scope.addAlert('error getting payroll meta data: ' + error, 'danger');
+								deferred.reject(error);
 							});
+						} else {
+							deferred.resolve();
 						}
-						
+						return deferred.promise;
 					}
 
 					var getPayrolls = function (companyId, startDate, endDate, selectedItemId) {
@@ -720,6 +777,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								dataSvc.employees = $filter('filter')(data, { statusId: '!' + 3 });
 								dataSvc.employeesLoaded = true;
 								deferred.resolve();
+								console.log("loaded employees");
 							}, function(erorr) {
 								$scope.addAlert('error getting employee list', 'danger');
 								deferred.reject(error);
