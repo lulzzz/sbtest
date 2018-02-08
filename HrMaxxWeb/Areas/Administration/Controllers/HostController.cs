@@ -25,7 +25,7 @@ namespace HrMaxxWeb.Areas.Administration.Controllers
 				return View();
 	    }
 
-	    public ActionResult Profile()
+	    public ActionResult Profiles()
 	    {
 				if (!CurrentUser.IsInRole("Host"))
 					return RedirectToAction("AccessDenied", "Home", new { area = "" });

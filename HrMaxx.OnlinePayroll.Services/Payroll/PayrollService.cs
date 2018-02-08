@@ -995,7 +995,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 		public Models.Payroll ReProcessReConfirmPayroll(Models.Payroll payroll)
 		{
-			Models.Payroll savedPayroll;
 			var affectedChecks = new List<PayCheck>();
 			try
 			{
@@ -2911,7 +2910,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			else
 			{
-				const decimal overtimequotiant = (decimal)1.5;
 				payCodes.ForEach(pc =>
 				{
 					pc.YTD = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2, MidpointRounding.AwayFromZero);
@@ -3774,7 +3772,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						var payroll = _readerService.GetPayroll(payrollId);
 						var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
-						var thispayrollchecks = 0;
+						
 						payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
 						{
 							originalList.Add(JsonConvert.DeserializeObject<PayCheck>(JsonConvert.SerializeObject(pc)));
@@ -3846,7 +3844,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		public Models.Payroll ReQueuePayroll(Models.Payroll payroll)
 		{
-			Models.Payroll savedPayroll;
+			
 			var journals = new List<Journal>();
 			var peoJournals = new List<Journal>();
 			

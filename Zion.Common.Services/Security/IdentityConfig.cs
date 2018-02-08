@@ -43,7 +43,7 @@ namespace HrMaxx.Common.Services.Security
 				mail.Subject = message.Subject;
 				mail.Body = message.Body;
 				client.Send(mail);
-
+				await Task.FromResult(0);
 
 			}
     }

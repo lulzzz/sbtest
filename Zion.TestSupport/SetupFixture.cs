@@ -35,7 +35,7 @@ namespace HrMaxx.TestSupport
 
 		protected void CreateHrMaxxDatabase()
 		{
-			if (Convert.ToBoolean(ConfigurationSettings.AppSettings["IsIntegrationTest"]))
+			if (Convert.ToBoolean(ConfigurationManager.AppSettings["IsIntegrationTest"]))
 			{
 				string arguments = "INTEGRATION_TEST";
 				TestInfrastructure.RunDatabaseScript(arguments);

@@ -11,8 +11,7 @@ namespace HrMaxx.Common.Repository.Notifications
 	{
 		private readonly CommonEntities _dbContext;
 		private readonly IMapper _mapper;
-		private readonly string _baseUrl;
-
+		
 		public NotificationRepository(IMapper mapper, CommonEntities commonEntities)
 		{
 			_mapper = mapper;

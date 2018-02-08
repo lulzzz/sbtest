@@ -45,6 +45,7 @@ namespace HrMaxx.Common.Services.Email
 				if (_emailService)
 					client.Send(mail);
 				Log.Info("Email sent to " + MessageTo + ". Subject " + MessageSubject);
+				await Task.FromResult(0);
 			}
 			catch (Exception e)
 			{

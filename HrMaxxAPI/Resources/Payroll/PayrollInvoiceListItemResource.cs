@@ -68,7 +68,7 @@ namespace HrMaxxAPI.Resources.Payroll
 			get
 			{
 				var penalty = (decimal)0;
-				var rate = (decimal)0;
+				
 				if (DaysOverdue <= 0 || TaxPaneltyConfig == null || !TaxPaneltyConfig.Any())
 					return 0;
 				var configRow = TaxPaneltyConfig.FirstOrDefault(t => t.DaysFrom <= DaysOverdue && t.DaysTo >= DaysOverdue);

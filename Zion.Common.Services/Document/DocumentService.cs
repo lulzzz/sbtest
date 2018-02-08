@@ -287,7 +287,7 @@ namespace HrMaxx.Common.Services.Document
 				
 				
 			}
-			catch (Exception e)
+			catch (Exception )
 			{
 				
 				throw;

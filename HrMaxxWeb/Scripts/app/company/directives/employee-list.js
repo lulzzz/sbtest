@@ -64,11 +64,6 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 					};
 					var uploadDocument = function () {
 						companyRepository.importEmployees($scope.files[0]).then(function (employees) {
-							$.each(employees, function(ind, emp) {
-								$scope.list.push(emp);
-							});
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
 							addAlert('successfully imported ' + employees.length + 'employees', 'success');
 							$scope.getEmployees($scope.mainData.selectedCompany.id);

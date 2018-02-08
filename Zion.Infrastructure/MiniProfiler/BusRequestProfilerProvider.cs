@@ -39,7 +39,7 @@ namespace HrMaxx.Infrastructure.MiniProfiler
 		/// </summary>
 		public override StackExchange.Profiling.MiniProfiler Start(ProfileLevel level, string sessionName = null)
 		{
-			var result = new StackExchange.Profiling.MiniProfiler("bus", level);
+			var result = new StackExchange.Profiling.MiniProfiler("bus");
 			Current = result;
 
 			SetProfilerActive(result);

@@ -877,7 +877,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					try
 					{
 						var timesheet = new TimesheetResource();
-						timesheet.FillFromImportWithMap(er, company, fileUploadObj.PayTypes, fileUploadObj.ImportMap);
+						timesheet.FillFromImportWithMap(er, company, fileUploadObj.PayTypes, fileUploadObj.ImportMap, Mapper);
 						timesheets.Add(timesheet);
 					}
 					catch (Exception ex)

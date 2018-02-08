@@ -606,7 +606,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				}
 				
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 
 				throw;
@@ -619,7 +619,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				return _journalRepository.GetJournalListForPositivePay(companyId, startDate, endDate);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				
 				throw;
@@ -632,7 +632,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				_journalRepository.DeleteJournals(extractId);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 
 				throw;
@@ -820,7 +820,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				}
 				return masterExtract;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				
 				throw;

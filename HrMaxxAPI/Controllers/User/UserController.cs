@@ -174,7 +174,7 @@ namespace HrMaxxAPI.Controllers.User
 
 				if (userExists != null)
 				{
-					if (model.UserId.HasValue)
+					if (model.UserId!=Guid.Empty)
 					{
 						userExists.FirstName = model.FirstName;
 						userExists.LastName = model.LastName;

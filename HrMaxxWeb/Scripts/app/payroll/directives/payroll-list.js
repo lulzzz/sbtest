@@ -576,17 +576,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.canRunPayroll2 = function () {
 						var c = $scope.mainData.selectedCompany;
 
-						var draftPayroll = $filter('filter')($scope.list, { statusText: 'Draft' });
-						var queuedPayroll = $filter('filter')($scope.list, { isQueued: true });
-						if (queuedPayroll.length > 0) {
-							dataSvc.queuedPayroll = queuedPayroll[0];
-
-						}
-
-						if (draftPayroll.length > 0 || queuedPayroll.length > 0)
-							return false;
 						
-						else if ($scope.selected || $scope.processed || $scope.committed || dataSvc.employees.length == 0)
+						if (dataSvc.employees.length == 0)
 							return false;
 						else if ($scope.requiresCompanyPayrollAccount())
 							return false;

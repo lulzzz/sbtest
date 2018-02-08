@@ -404,15 +404,19 @@ namespace HrMaxxAPI.Controllers.Companies
 				if (!string.IsNullOrWhiteSpace(error))
 					throw new Exception(error);
 
-				//var employeeList = _readerService.GetEmployees(company:company.Id.Value);
-				//if (employeeList.Any(e=>employees.Any(e1=>e1.SSN==e.SSN)))
-				//{
-				//	var exists = employeeList.Where(e=>employees.Any(e1=>e1.SSN==e.SSN)).Aggregate(string.Empty, (current, emp) => current + (emp.SSN + ", "));
-				//	if(!string.IsNullOrWhiteSpace(exists))
-				//		throw new Exception("Employees already exist with these SSNs " + exists + "<br>");
-				//}
-				
+				var existingEmployees = _readerService.GetEmployees(company: company.Id);
 				var mappedResource = Mapper.Map<List<EmployeeResource>, List<Employee>>(employees);
+				mappedResource.ForEach(e1 =>
+				{
+					var exists = existingEmployees.FirstOrDefault(e2 => e2.Id == e1.Id || e2.SSN.Equals(e1.SSN));
+					if (exists != null)
+					{
+						e1.PaymentMethod = exists.PaymentMethod;
+						e1.BankAccounts = exists.BankAccounts;
+						e1.DirectDebitAuthorized = exists.DirectDebitAuthorized;
+						e1.Compensations = exists.Compensations;
+					}
+				});
 				var savedEmployees = _companyService.SaveEmployees(mappedResource);
 				return this.Request.CreateResponse(HttpStatusCode.OK, Mapper.Map<List<Employee>, List<EmployeeResource>>(savedEmployees));
 			}

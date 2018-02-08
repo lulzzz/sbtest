@@ -162,7 +162,7 @@ namespace HrMaxx.Common.Services.Mementos
 
 				return result;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				
 				throw;

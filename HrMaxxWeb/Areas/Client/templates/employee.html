@@ -10,7 +10,7 @@
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right" id="companytabs">
 					<li ng-class="{'active':tab!==6}" ng-click="tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-					<li ng-class="{'active':tab===6}" ng-show=" selected.id && showControls && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
+					<li ng-class="{'active':tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 				</ul>
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
@@ -472,7 +472,7 @@
 						</div>
 					</form>
 				</div>
-				<div class="tab-pane fade in" id="versions" ng-if="selected.id && tab===6" ng-class="{'active':tab===6}">
+				<div class="tab-pane fade in" id="versions" ng-if="selected.id && !isPopup && tab===6" ng-class="{'active':tab===6}">
 					<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="selected.id" heading="'Employee Versions'" />
 				</div>
 			</div>
@@ -495,7 +495,7 @@
 			</div>
 		</div>
 		
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && && !isPopup">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
@@ -533,14 +533,14 @@
 								<div class="col-sm-12">
 									<div class="col-sm-5"><date-ctrl name="fsd" required="true" model="pt.newFiscalStart" disabled="false" /></div>
 									<div class="col-sm-2 text-center">-</div>
-									<div class="col-sm-5"><date-ctrl name="fse" required="true" model="pt.newFiscalEnd" disabled="false" /></div>	
+									<div class="col-sm-5"><date-ctrl name="fse" required="true" model="pt.newFiscalEnd" disabled="false" /></div>
 								</div>
-								
+
 							</td>
 							<td class="text-right">{{pt.ytdUsed}}</td>
 							<td class="text-right">{{pt.ytdFiscal}}</td>
 							<td class="text-right" ng-show="!selectedAccumulation || selectedAccumulationIndex!==$index">{{pt.carryOver}}</td>
-							<td class="text-right" ng-show="selectedAccumulation && selectedAccumulationIndex===$index"><input name="cao" class="form-control" ng-model="pt.carryOver" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal/></td>
+							<td class="text-right" ng-show="selectedAccumulation && selectedAccumulationIndex===$index"><input name="cao" class="form-control" ng-model="pt.carryOver" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal /></td>
 							<td class="text-right">{{pt.available}}</td>
 							<td class="text-right">{{calculateAvailableWage(pt) | currency:'$'}}</td>
 							<td ng-show=" mainData.userRole==='Master' || mainData.userRole==='SuperUser'">
@@ -554,7 +554,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && && !isPopup">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">
@@ -565,7 +565,7 @@
 			</div>
 			<div id="collapseFour" class="panel-collapse collapse">
 				<div class="panel-body">
-					
+
 					<div class="col-sm-12">
 						<div class="col-sm-12">
 							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Wage and Tax Statement – Form W2</em></span></h5>
@@ -602,7 +602,7 @@
 
 					</div>
 
-					
+
 					<div class="col-sm-12" ng-if="mainData.selectedCompany.isFiler1095">
 						<div class="col-sm-12">
 							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Medical Obamacare – Form 1095-C</em></span></h5>
@@ -637,8 +637,8 @@
 						</div>
 
 					</div>
-					
-					<div class="col-sm-12" >
+
+					<div class="col-sm-12">
 						<div class="col-sm-12">
 							<h5><i class=" fa fa-file-excel-o fa-lg" /><span class="m-l-10"><em>Payroll Summary for year</em></span></h5>
 						</div>
@@ -657,7 +657,7 @@
 								</label>
 
 							</div>
-							
+
 							<div class="col-sm-2">
 								<button class="btn btn-sm btn-primary" ng-click="getReportPayrollSummary()" ng-disabled="!data.payrollSummary.year">Show</button>
 							</div>
@@ -711,7 +711,7 @@
 						</div>
 
 					</div>
-					
+
 				</div>
 			</div>
 		</div>

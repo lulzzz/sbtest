@@ -9,6 +9,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxxAPI.Resources.OnlinePayroll;
@@ -30,7 +31,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<PayrollPayCodeResource> PayCodes { get; set; }
 		public List<PayrollPayCodeResource> JobCostCodes { get; set; }
 		public List<PayrollPayTypeResource> Compensations { get; set; }
-		public List<PayTypeAccumulationResource> Accumulations { get; set; } 
+		public List<PayTypeAccumulationResource> Accumulations { get; set; }
+		public List<PayrollDeductionResource> Deductions { get; set; } 
 
 		public void FillFromImport(ExcelRead er, CompanyResource company, List<PayType> payTypes)
 		{
@@ -238,7 +240,7 @@ namespace HrMaxxAPI.Resources.Payroll
 			
 		}
 
-		public void FillFromImportWithMap(ExcelRead er, CompanyResource company, List<PayType> payTypes, ImportMap importMap)
+		public void FillFromImportWithMap(ExcelRead er, CompanyResource company, List<PayType> payTypes, ImportMap importMap, IMapper mapper)
 		{
 			var style = NumberStyles.Number | NumberStyles.AllowCurrencySymbol;
 			var culture = CultureInfo.CreateSpecificCulture("en-US");
@@ -246,6 +248,7 @@ namespace HrMaxxAPI.Resources.Payroll
 			PayCodes = new List<PayrollPayCodeResource>();
 			Compensations = new List<PayrollPayTypeResource>();
 			Accumulations = new List<PayTypeAccumulationResource>();
+			Deductions = new List<PayrollDeductionResource>();
 			var error = string.Empty;
 			foreach (var col in importMap.ColumnMap)
 			{
@@ -384,6 +387,24 @@ namespace HrMaxxAPI.Resources.Payroll
 						PayType = comp,
 						Amount = dval
 					});
+				}
+				else if (company.Deductions.Any(d => col.Key.StartsWith(string.Format("{0} - {1}: {2}", d.Type.CategoryText, d.Type.Name, d.DeductionName))))
+				{
+					var ded = company.Deductions.First(d=>col.Key.StartsWith(string.Format("{0} - {1}: {2}", d.Type.CategoryText, d.Type.Name, d.DeductionName)));
+					var dval = (decimal)0;
+					decimal.TryParse(val, style, culture, out dval);
+					if (dval < 0)
+						dval *= -1;
+					if (dval > 0)
+					{
+						Deductions.Add(new PayrollDeductionResource()
+						{
+							Deduction = mapper.Map<CompanyDeductionResource, CompanyDeduction>(ded),
+							Rate = dval,
+							Method = !col.Key.EndsWith("Amount") ? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount")
+						});
+					}
+					
 				}
 				
 				 

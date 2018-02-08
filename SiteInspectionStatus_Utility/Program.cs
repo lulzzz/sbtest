@@ -1269,7 +1269,7 @@ namespace SiteInspectionStatus_Utility
 
 				var checksWithFUTAWageIssue = 0;
 				var checksProcessed = 0;
-				var ytdIssue = 0;
+				
 				var payrollsWithIssue = 0;
 				var accumissue = 0;
 				
@@ -1309,13 +1309,13 @@ namespace SiteInspectionStatus_Utility
 							var sbsuiwage = suitax.TaxableWage;
 							var uiwage = pc.Taxes.First(t => t.Tax.Code.Equals("SUI")).TaxableWage;
 
-							var updateTaxes = false;
+							
 							var updateAccumulation = false;
 
 
 							if (sbfutawage != futawage || ettwage != sbettwage || sbsuiwage != uiwage)
 							{
-								updateTaxes = true;
+								
 								pc.Taxes.First(t => t.Tax.Code.Equals("SUI")).TaxableWage = suitax.TaxableWage;
 								pc.Taxes.First(t => t.Tax.Code.Equals("SUI")).Amount = suitax.Amount;
 								pc.Taxes.First(t => t.Tax.Code.Equals("ETT")).TaxableWage = etttax.TaxableWage;
@@ -1605,7 +1605,7 @@ namespace SiteInspectionStatus_Utility
 						var payroll = _readerService.GetPayroll(p1);
 						var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
-						var thispayrollchecks = 0;
+						
 						payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
 						{
 							originalList.Add(JsonConvert.DeserializeObject<PayCheck>(JsonConvert.SerializeObject(pc)));

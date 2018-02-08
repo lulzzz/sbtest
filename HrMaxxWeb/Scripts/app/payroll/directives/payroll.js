@@ -994,6 +994,34 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 						$.each(t.compensations, function(cind, comp) {
 							pc.compensations.push(comp);
 						});
+						
+						$.each(t.deductions, function (dind, dd) {
+							var edd = $filter('filter')(pc.deductions, { deduction: { id: dd.deduction.id } })[0];
+							if (edd) {
+								edd.rate = dd.rate;
+								edd.method = dd.method;
+								edd.employeeDeduction.method = dd.method;
+								edd.employeeDeduction.rate = dd.rate;
+								dd.employeeDeduction = edd;
+							} else {
+								var selectedded = {
+									id: 0,
+									employeeId: pc.employee.id,
+									deduction: dd.deduction,
+									method: dd.method,
+									rate: dd.rate,
+									annualMax: null,
+									limit: null,
+									ceilingPerCheck: null,
+									ceilingMethod: 1
+
+								};
+								dd.employeeDeduction = selectedded;
+								pc.deductions.push(dd);
+							}
+							
+							
+						});
 						pc.notes = t.notes ? t.notes : '';
 						if (t.accumulations.length > 0)
 							pc.accumulations = t.accumulations;
@@ -1177,6 +1205,13 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 				$scope.importMap.selfManagedPayTypes.push(apt1);
 			}
 			
+
+		});
+
+		$.each(company.deductions, function (i, d) {
+			var dedname = d.type.categoryText + ' - ' + d.type.name + ': ' + d.deductionName;
+			requiredColumns.push(dedname + ' Amount');
+			requiredColumns.push(dedname + ' Percentage');
 
 		});
 		

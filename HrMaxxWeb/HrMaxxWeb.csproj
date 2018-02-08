@@ -1533,7 +1533,7 @@
     <Content Include="Areas\Administration\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Administration\Views\News\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Host\Users.cshtml" />
-    <Content Include="Areas\Administration\Views\Host\Profile.cshtml" />
+    <Content Include="Areas\Administration\Views\Host\Profiles.cshtml" />
     <Content Include="Areas\Client\Views\web.config" />
     <Content Include="Areas\Client\Views\Company\Index.cshtml" />
     <Content Include="Areas\Reports\Views\web.config" />

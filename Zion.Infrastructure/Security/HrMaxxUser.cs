@@ -82,7 +82,7 @@ namespace HrMaxx.Infrastructure.Security
 		}
 
 		
-		public bool HasClaim(string claimType, string claimValue)
+		public override bool HasClaim(string claimType, string claimValue)
 		{
 			return HasClaim(claim => claim.Type == claimType && claim.Value == claimValue);
 		}
