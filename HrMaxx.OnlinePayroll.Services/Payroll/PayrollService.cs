@@ -120,6 +120,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else if (paycheck.Employee.PayType == EmployeeType.Salary)
 						{
 							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+							paycheck.Employee.Rate = paycheck.Salary;
 							paycheck.PayCodes = new List<PayrollPayCode>();
 						}
 						else if (paycheck.Employee.PayType == EmployeeType.JobCost)
@@ -2832,7 +2833,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				PayeeName = pc.Employee.FullName,
 				MainAccountId = bankCOA.Id,
 				JournalDetails = new List<JournalDetail>(),
-				DocumentId =  CombGuid.Generate(),
+				DocumentId =  Guid.Empty,
 				PEOASOCoCheck = PEOASOCoCheck,
 				PayrollId = payroll.Id
 			};

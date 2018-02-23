@@ -989,14 +989,19 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						c.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: c.Company.Id,
 							startdate: request.StartDate,
 							enddate: request.EndDate, type: AccumulationType.Employee, report: request.ReportName,
-							includeHistory: request.IncludeHistory, includeC1095: true);
+							includeHistory: request.IncludeHistory, includeC1095: true).Where(ea=>ea.PayCheck1095Summaries.Any()).ToList();
 						c.EmployeeAccumulationList = c.EmployeeAccumulationList.Where(ea => ea.PayCheck1095Summaries.Any()).ToList();
 						c.EmployeeAccumulationList.ForEach(e=>e.BuildC1095Months(h.HostCompany, c1095limit));
 					});
+				h.Companies = h.Companies.Where(c => c.EmployeeAccumulationList.Any()).ToList();
 
 			});
+			data.Hosts = data.Hosts.Where(h => h.Companies.Any()).ToList();
+			if(!data.Hosts.Any())
+				throw new Exception(NoData);
 			//if(data.Hosts.All(h=>h.Companies.All(c=>c.EmployeeAccumulationList.All(e=>e.PayCheck1095Summaries.All(pc=>!pc.Deductions.Any())))))
 			//	throw new Exception(NoData);
+
 			return data;
 		}
 		private Extract Federal940(ReportRequest request)
@@ -1336,7 +1341,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			
 			var argList = new List<KeyValuePair<string, string>>();
-			
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/C1095-" + request.Year + ".xslt", "xls", string.Format("Federal C1095 Extract-{0}.xls", request.Year));
 
@@ -2023,6 +2028,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				response.EmployeeAccumulationList.Where(ea => ea.PayCheck1095Summaries.Any())
 					.ToList();
 			
+			if(!response.EmployeeAccumulationList.Any())
+				throw new Exception(NoData);
 			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
 			
 			response.Host = GetHost(response.Company.HostId);

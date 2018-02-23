@@ -52,12 +52,11 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			_taxationService.RemoveFromConfirmPayrollQueueItem(event1.Payroll.Id);
 			if (!result)
 			{
-				
+
 				_payrollRepository.ConfirmFailed(event1.Payroll.Id);
 				Log.Info("Removed from Queue and marked failed - " + DateTime.Now.ToString("hh:mm:ss:fff"));
 			}
 			
-
 		}
 
 		private bool RunConfirmPayrollEvent(ConfirmPayrollEvent event1, int retry)
@@ -114,11 +113,8 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						_mementoDataService.AddMementoData(memento);
 
 					}
-					foreach (var paycheck in event1.Payroll.PayChecks)
-					{
-						if (!paycheck.Employee.LastPayrollDate.HasValue || paycheck.Employee.LastPayrollDate < event1.Payroll.PayDay)
-							_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(paycheck.Employee.Id, paycheck.PayDay, paycheck.Employee.Rate);
-					}
+					_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(event1.Payroll.PayChecks);
+					
 					if (!event1.Payroll.Company.LastPayrollDate.HasValue ||
 							event1.Payroll.Company.LastPayrollDate < event1.Payroll.PayDay)
 					{

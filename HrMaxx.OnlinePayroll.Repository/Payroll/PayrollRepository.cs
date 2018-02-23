@@ -701,30 +701,13 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			
 		}
 
-		public void UpdateLastPayrollDateAndPayRateEmployee(Guid id, DateTime payDay, decimal rate)
+		public void UpdateLastPayrollDateAndPayRateEmployee(List<PayCheck> payChecks)
 		{
-			
-			var dbEmployee = _dbContext.Employees.FirstOrDefault(c => c.Id == id);
-			if (dbEmployee != null)
+			var sql =
+				"update Employee set LastPayrollDate=case when LastPayrollDate is null or LastPayrollDate<@PayDay then @PayDay else LastPayrollDate end, Rate = case when PayType in (1,2) and Rate<>@EmployeeRate then @EmployeeRate else Rate end where Id=@EmployeeId";
+			using (var conn = GetConnection())
 			{
-				if (!dbEmployee.LastPayrollDate.HasValue || dbEmployee.LastPayrollDate.Value<payDay)
-				{
-					dbEmployee.LastPayrollDate = payDay;
-				}
-				
-				if (dbEmployee.Rate != rate)
-				{
-					dbEmployee.Rate = rate;
-					if (dbEmployee.PayType == (int)EmployeeType.Hourly)
-					{
-						var pcodes = JsonConvert.DeserializeObject<List<CompanyPayCode>>(dbEmployee.PayCodes);
-						var def = pcodes.FirstOrDefault(pc => pc.Id == 0);
-						if (def != null)
-							def.HourlyRate = rate;
-						dbEmployee.PayCodes = JsonConvert.SerializeObject(pcodes);
-					}
-				}
-				_dbContext.SaveChanges();
+				conn.Execute(sql, payChecks);
 			}
 		}
 		public void UpdateLastPayrollDateAndPayRateEmployee(Guid id, decimal rate)

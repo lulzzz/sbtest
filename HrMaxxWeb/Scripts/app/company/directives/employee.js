@@ -16,6 +16,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'payrollRepository', 'EntityTypes', 'reportRepository',
 				function ($scope, $element, $location, $filter, companyRepository, payrollRepository, EntityTypes, reportRepository) {
 					var dataSvc = {
+						tab: 1,
 						payCodes: [],
 						companyStates: [],
 						compensations: [],

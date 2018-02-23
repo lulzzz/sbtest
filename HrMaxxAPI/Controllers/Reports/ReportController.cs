@@ -202,6 +202,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public HttpStatusCode CreateDepositTickets(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
+			request.AllowExclude = true;
 			var extract = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract for request{0}", request.ReportName));
 			MakeServiceCall(() => _journalService.CreateDepositTickets(extract, CurrentUser.FullName, CurrentUser.UserId), string.Format("creating deposit tickets for {0}-{1}-{2}", request.ReportName, request.StartDate, request.EndDate));
 			return HttpStatusCode.OK;

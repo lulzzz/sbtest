@@ -9,8 +9,8 @@
 			<div class="panel-heading">
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right" id="companytabs">
-					<li ng-class="{'active':tab!==6}" ng-click="tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-					<li ng-class="{'active':tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
+					<li ng-class="{'active':data.tab!==6}" ng-click="data.tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
+					<li ng-class="{'active':data.tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" ng-click="data.tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 				</ul>
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
@@ -19,7 +19,7 @@
 				</h3>
 			</div>
 			<div id="collapseOne" class="panel-collapse collapse in  tab-content">
-				<div class="tab-pane fade in" id="info" ng-class="{'active':tab!==6}">
+				<div class="tab-pane fade in" id="info" ng-class="{'active':data.tab!==6}">
 					<form data-parsley-validate="true" name="employee">
 						<div id="wizard">
 							<ol>
@@ -136,7 +136,7 @@
 											</div>
 										</div>
 										<div class="col-sm-4">
-											<div class="form-group" >
+											<div class="form-group">
 												<label>Employee No (Company)</label>
 												<input type="text" name="empno1" placeholder="Employee No" class="form-control" ng-model="selected.companyEmployeeNo" />
 											</div>
@@ -472,7 +472,7 @@
 						</div>
 					</form>
 				</div>
-				<div class="tab-pane fade in" id="versions" ng-if="selected.id && !isPopup && tab===6" ng-class="{'active':tab===6}">
+				<div class="tab-pane fade in" id="versions" ng-if="selected.id && !isPopup && data.tab===6" ng-class="{'active':data.tab===6}">
 					<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="selected.id" heading="'Employee Versions'" />
 				</div>
 			</div>
@@ -495,7 +495,7 @@
 			</div>
 		</div>
 		
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && && !isPopup">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
@@ -554,7 +554,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && && !isPopup">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">

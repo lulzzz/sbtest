@@ -285,107 +285,124 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								}
 								$.each(dataSvc.employees, function (index, employee) {
 									var matching = $filter('filter')(payroll.payChecks, { employee: { id: employee.id } })[0];
-									var paycheck = {
-										id: matching ? matching.id : 0,
-										employeeNo: employee.employeeNo,
-										companyEmployeeNo: employee.companyEmployeeNo,
-										name: employee.name,
-										payType: employee.payType,
-										department: employee.department ? employee.department : '',
-										employee: employee,
-										payCodes: [],
-										salary: employee.payType === 2 || employee.payType===4? (matching && option===2 ? matching.salary : employee.rate) : 0,
-										compensations: [],
-										deductions: [],
-										isVoid: false,
-										status: 1,
-										memo: '',
-										notes: matching ? matching.notes : '',
-										included: matching ? matching.included : false,
-										hasError: false,
-										hasWarning: false,
-										inLastPayroll: inLastPayroll(employee.id),
-										hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
-										paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
-									};
-									if (employee.payType < 4) {
-										$.each(employee.payCodes, function(index1, paycode) {
-											var pc = {
-												payCode: angular.copy(paycode),
-												screenHours: 0,
-												screenOvertime: 0,
-												hours: 0,
-												overtimeHours: 0,
-												pwAmount: 0
-											};
-											if (matching) {
-												var matchingpc = $filter('filter')(matching.payCodes, { payCode: { id: paycode.id } })[0];
-												if (matchingpc) {
-													pc.screenHours = matchingpc.screenHours;
-													pc.screenOvertime = matchingpc.screenOvertime;
-													pc.hours = matchingpc.hours;
-													pc.overtimeHours = matchingpc.overtimeHours;
-													pc.pwAmount = matchingpc.pwAmount;
-													if (pc.payCode.id >= 0 && option === 2) {
-														pc.payCode.hourlyRate = matchingpc.payCode.hourlyRate;
+										var paycheck = {
+											id: matching ? matching.id : 0,
+											employeeNo: employee.employeeNo,
+											companyEmployeeNo: employee.companyEmployeeNo,
+											name: employee.name,
+											payType: employee.payType,
+											department: employee.department ? employee.department : '',
+											employee: employee,
+											payCodes: [],
+											salary: employee.payType === 2 || employee.payType === 4 ? (matching && option === 2 ? matching.salary : employee.rate) : 0,
+											compensations: [],
+											deductions: [],
+											isVoid: false,
+											status: 1,
+											memo: '',
+											notes: matching ? matching.notes : '',
+											included: matching ? matching.included : false,
+											hasError: false,
+											hasWarning: false,
+											inLastPayroll: inLastPayroll(employee.id),
+											hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
+											paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
+										};
+										if (employee.payType < 4) {
+											$.each(employee.payCodes, function(index1, paycode) {
+												var pc = {
+													payCode: angular.copy(paycode),
+													screenHours: 0,
+													screenOvertime: 0,
+													hours: 0,
+													overtimeHours: 0,
+													pwAmount: 0
+												};
+												if (matching) {
+													var matchingpc = $filter('filter')(matching.payCodes, { payCode: { id: paycode.id } })[0];
+													if (matchingpc) {
+														pc.screenHours = matchingpc.screenHours;
+														pc.screenOvertime = matchingpc.screenOvertime ? matchingpc.screenOvertime : 0;
+														pc.hours = matchingpc.hours;
+														pc.overtimeHours = matchingpc.overtimeHours;
+														pc.pwAmount = matchingpc.pwAmount;
+														if (pc.payCode.id >= 0 && option === 2) {
+															pc.payCode.hourlyRate = matchingpc.payCode.hourlyRate;
 
-													} else {
-														pc.payCode.hourlyRate = paycode.hourlyRate;
+														} else {
+															pc.payCode.hourlyRate = paycode.hourlyRate;
+														}
 													}
 												}
-											}
-											paycheck.payCodes.push(pc);
-										});
-									} 
-							
-									if (matching) {
-										if (employee.payType === 4)
-											paycheck.payCodes = angular.copy(matching.payCodes);
-										paycheck.compensations = angular.copy(matching.compensations);
-										paycheck.deductions = angular.copy(matching.deductions);
-										$.each(paycheck.deductions, function (id, d) {
-											var compDed = $filter('filter')($scope.mainData.selectedCompany.deductions, { id: d.deduction.id })[0];
-											if (compDed) {
-												d.deduction = compDed;
-												d.employeeDeduction.deduction = compDed;
-											}
-											d.accountNo = d.employeeDeduction.accountNo;
-											d.agencyId = d.employeeDeduction.agencyId;
-											d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
-											d.ceilingMethod = d.employeeDeduction.ceilingMethod;
-											d.priority = d.employeeDeduction.priority;
-											d.limit = d.employeeDeduction.limit;
-										});
-									} else {
-										$.each(employee.compensations, function (index2, comp) {
-											var pt = {
-												payType: comp.payType,
-												amount: comp.amount,
-												ytd: 0
-											}
-											paycheck.compensations.push(pt);
-										});
-										$.each(employee.deductions, function (index3, ded) {
-											ded.employeeId = employee.id;
-											paycheck.deductions.push({
-												deduction: ded.deduction,
-												employeeDeduction: ded,
-												rate: ded.rate,
-												annualMax: ded.annualMax,
-												method: ded.method,
-												amount: 0,
-												ytd: 0,
-												ceilingPerCheck: ded.ceilingPerCheck,
-												ceilingMethod: ded.ceilingMethod,
-												accountNo: ded.accountNo,
-												agencyId: ded.agencyId,
-												limit: ded.limit,
-												priority: ded.priority
+												paycheck.payCodes.push(pc);
 											});
-										});
-									}
-							
-									selected.payChecks.push(paycheck);
+											if (matching) {
+												$.each(matching.payCodes, function(index4, paycode4) {
+													var exists = $filter('filter')(paycheck.payCodes, { payCode: { id: paycode4.payCode.id } })[0];
+													if (!exists) {
+														var pc4 = {
+															payCode: angular.copy(paycode4.payCode),
+															screenHours: paycode4.screenHours,
+															screenOvertime: paycode4.screenOvertime ? paycode4.screenOvertime : 0,
+															hours: paycode4.hours,
+															overtimeHours: paycode4.overtimeHours,
+															pwAmount: paycode4.pwAmount
+														};
+														paycheck.payCodes.push(pc4);
+													}
+												});
+											}
+										}
+
+										if (matching) {
+											if (employee.payType === 4)
+												paycheck.payCodes = angular.copy(matching.payCodes);
+											paycheck.compensations = angular.copy(matching.compensations);
+											paycheck.deductions = angular.copy(matching.deductions);
+											$.each(paycheck.deductions, function(id, d) {
+												var compDed = $filter('filter')($scope.mainData.selectedCompany.deductions, { id: d.deduction.id })[0];
+												if (compDed) {
+													d.deduction = compDed;
+													d.employeeDeduction.deduction = compDed;
+												}
+												d.accountNo = d.employeeDeduction.accountNo;
+												d.agencyId = d.employeeDeduction.agencyId;
+												d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
+												d.ceilingMethod = d.employeeDeduction.ceilingMethod;
+												d.priority = d.employeeDeduction.priority;
+												d.limit = d.employeeDeduction.limit;
+											});
+										} else {
+											$.each(employee.compensations, function(index2, comp) {
+												var pt = {
+													payType: comp.payType,
+													amount: comp.amount,
+													ytd: 0
+												}
+												paycheck.compensations.push(pt);
+											});
+											$.each(employee.deductions, function(index3, ded) {
+												ded.employeeId = employee.id;
+												paycheck.deductions.push({
+													deduction: ded.deduction,
+													employeeDeduction: ded,
+													rate: ded.rate,
+													annualMax: ded.annualMax,
+													method: ded.method,
+													amount: 0,
+													ytd: 0,
+													ceilingPerCheck: ded.ceilingPerCheck,
+													ceilingMethod: ded.ceilingMethod,
+													accountNo: ded.accountNo,
+													agencyId: ded.agencyId,
+													limit: ded.limit,
+													priority: ded.priority
+												});
+											});
+										}
+
+										selected.payChecks.push(paycheck);
+									
 								});
 						
 								$scope.set(selected);

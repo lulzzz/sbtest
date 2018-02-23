@@ -696,7 +696,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					PayeeName = string.Empty,
 					MainAccountId = bankCOA.Id,
 					JournalDetails = new List<JournalDetail>(),
-					DocumentId = CombGuid.Generate(),
+					DocumentId = Guid.Empty,
 					PEOASOCoCheck = false
 				};
 				//bank account debit

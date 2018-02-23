@@ -140,6 +140,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal CheckPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? NetWage : 0; } }
 		public decimal DDPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? 0 : NetWage; } }
 
+		public decimal EmployeeRate
+		{
+			get { return Employee.Rate; }
+		}
+
+		public Guid EmployeeId
+		{
+			get { return Employee.Id; }
+		}
+
 		public decimal Cost
 		{
 			get { return Math.Round(GrossWage + EmployerTaxes, 2, MidpointRounding.AwayFromZero); }
