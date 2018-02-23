@@ -49,3 +49,5 @@ _ReSharper*/
 [Nn][Dd]epend[Oo]ut*/
 Ankh.NoLoad
 
+/HrMaxxAPI/logs
+/HrMaxxWeb/logs
