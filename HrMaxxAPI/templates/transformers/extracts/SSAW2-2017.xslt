@@ -12,7 +12,7 @@
   
   
   <xsl:template match="/">
-RA4622623133XGHCH43$$spaces5$$$$spaces2$$$$spaces2$$0$$spaces5$$$$spaces1$$98
+RA462262313<xsl:value-of select="$MagFileUserId"/>$$spaces5$$$$spaces2$$$$spaces2$$0$$spaces5$$$$spaces1$$98
 CORPORATE BENEFITS CORP$$spaces20$$$$spaces10$$$$spaces2$$$$spaces2$$
 2750 N BELLFLOWER BLVDLONG BEACH #200$$spaces10$$$$spaces10$$$$spaces5$$$$spaces2$$$$spaces2$$CA90815$$spaces5$$$$spaces2$$$$spaces2$$
 $$spaces20$$$$spaces20$$

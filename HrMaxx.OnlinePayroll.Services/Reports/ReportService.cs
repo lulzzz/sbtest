@@ -1276,7 +1276,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			var config = _taxationService.GetApplicationConfig();
 			var argList = new List<KeyValuePair<string, string>>();
-			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.BatchFilerId));
+			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.SsaBsoW2MagneticFileId));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
