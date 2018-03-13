@@ -9,6 +9,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Security;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Models
@@ -68,7 +69,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<Journal> Journals { get; set; }
 		public List<Account> Accounts { get; set; }
 		public List<ACHTransaction> ACHTransactions { get; set; }
-
+		
 		public string Title { get { return string.Format("{0}", HostCompany.Name); } }
 		public Guid Id { get { return HostCompany.Id; } }
 
@@ -147,12 +148,30 @@ namespace HrMaxx.OnlinePayroll.Models
 		public VendorAccumulation VendorAccumulation { get; set; }
 		public List<EmployeeAccumulation> EmployeeAccumulations { get; set; }
 		public List<ExtractInvoicePayment> Payments { get; set; }
-
+		
 		public Accumulation PayCheckAccumulation { get; set; }
 		public Accumulation VoidedAccumulation { get; set; }
 
 		public string Title { get { return string.Format("{0}", Company.DescriptiveName); } }
 		public Guid Id { get { return Company.Id; } }
+		public List<PayrollSummary> Summaries { get; set; } 
+		
+	}
+
+	public class PayrollSummary
+	{
+		public Guid Id { get; set; }
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
+		public DateTime PayDay { get; set; }
+		public DateTime TaxPayDay { get; set; }
+		public decimal GrossWage { get; set; }
+		public decimal Total941 { get; set; }
+		public decimal Total940 { get; set; }
+		public decimal TotalUi { get; set; }
+		public decimal TotalEtt { get; set; }
+		public decimal TotalFederal { get; set; }
+		public decimal TotalState { get; set; }
 	}
 
 	public class VendorAccumulation

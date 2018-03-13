@@ -92,7 +92,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			}
 			return _mapper.Map<Models.DataModel.Journal, Models.Journal>(mapped);
 		}
-
 		
 		public Models.Journal SaveCheckbookJournal(Models.Journal journal, bool isPEOCheck = false, bool peoPayroll = false)
 		{
@@ -105,34 +104,22 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 					if (journal.TransactionType == TransactionType.RegularCheck ||
 									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
-						const string js = "select CheckNumber from dbo.CompanyJournal where CompanyIntId=@CompanyId and (TransactionType=@RC or TransactionType=@DP)";
-						var dbj1 =
-							conn.Query<int>(js, new { RC = (int)TransactionType.RegularCheck, DP = (int)TransactionType.DeductionPayment, CompanyId = mapped.CompanyIntId }).ToList();
-						if (mapped.CheckNumber > 0 &&
-								dbj1.Any())
+						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber); select @NewCheckNumber as checknumber";
+						dynamic result =
+							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType = (int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck }).FirstOrDefault();
+						if (result.checknumber != null)
 						{
-							mapped.CheckNumber = dbj1.Max(j => j) + 1;
-
+							mapped.CheckNumber = result.checknumber;
 						}
 					}
-
 					mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
-
 				}
 				else
 				{
-					const string jsq =
-					"select Id from Journal with(nolock) where Id=@Id";
-					var dbj2 = conn.Query<int>(jsq, new { Id = mapped.Id }).ToList();
-
-					if (dbj2.Any())
-					{
-						const string updatejournal =
+					const string updatejournal =
 							"update journal set Amount=@Amount, Memo=@Memo, TransactionDate=@TransactionDate, CheckNumber=@CheckNumber, IsVoid=@IsVoid, PayeeId=@PayeeId, PayeeName=@PayeeName, JournalDetails=@JournalDetails Where Id=@Id";
-						conn.Execute(updatejournal, mapped);
-
-					}
-					else
+					var rowsUpdated = conn.Execute(updatejournal, mapped);
+					if (rowsUpdated == 0)
 					{
 						mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
 					}
@@ -259,20 +246,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				conn.Execute(deleteextract, new {MasterExtractId = extractId});
 				conn.Execute(deleteextractdetails, new { MasterExtractId = extractId });
 			}
-		}
-
-		public void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType)
-		{
-			//var sql = "if exists(select 'x' from CompanyMaxCheckNumber where CompanyId=@CompanyId and TransactionType=@TransactionType) Update CompanyMaxCheckNumber set CheckNumber=(select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))) where CompanyId=@CompanyId and TransactionType=@TransactionType else insert into CompanyMaxCheckNumber values (@CompanyId, @TransactionType, (select isnull(max(CheckNumber),0) from Journal with (nolock) Where CompanyId=@CompanyId and TransactionType=@TransactionType and ((@TransactionType=1 and IsVoid=0) or (@TransactionType>1))));";
-			
-			
-			//using (var conn = GetConnection())
-			//{
-				
-			//	conn.Execute(sql, new { CompanyId = companyId, TransactionType=(int)transactionType });
-				
-				
-			//}
 		}
 
 		public decimal GetJournalBalance(int accountId)

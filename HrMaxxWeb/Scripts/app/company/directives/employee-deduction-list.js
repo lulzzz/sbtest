@@ -69,6 +69,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				
 				$scope.save = function (item) {
 					if ($scope.saveToServer) {
+						item.employeeId = $scope.employeeId;
 						companyRepository.saveEmployeeDeduction(item).then(function(deduction) {
 							item.id = deduction.id;
 							$scope.selected = null;

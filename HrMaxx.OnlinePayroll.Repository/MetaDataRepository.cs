@@ -117,7 +117,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		public int GetMaxCheckNumber(int companyId, bool isPeo)
 		{
 			//const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where (( @IsPEO=0 and PEOASOCOCHECK=0 and CompanyIntId=@CompanyId and TransactionType=@TransactionType) or (@IsPEO=1 and PEOASOCoCheck=1))";
-			string peosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyJournal where TransactionType=1 and PEOASOCOCHECK=1";
+			string peosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyJournal where PEOASOCOCHECK=1";
 			string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" +companyId + ";";
 			
 
@@ -207,7 +207,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxAdjustmenetNumber(int companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
@@ -383,7 +383,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxRegularCheckNumber(int companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
 			using (var conn = GetConnection())
 			{
 				dynamic result =

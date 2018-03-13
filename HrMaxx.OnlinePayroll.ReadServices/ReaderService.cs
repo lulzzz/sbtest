@@ -581,6 +581,31 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
+	  public List<int> GetJournalIds(Guid companyId, int accountId, DateTime startDate, DateTime endDate, int transactionType)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
+				paramList.Add(new FilterParam { Key = "startdate", Value = startDate.Date.ToString("MM/dd/yyyy") });
+				paramList.Add(new FilterParam { Key = "enddate", Value = endDate.Date.ToString("MM/dd/yyyy") });
+				paramList.Add(new FilterParam { Key = "transactiontype", Value = transactionType.ToString() });
+				paramList.Add(new FilterParam { Key = "accountid", Value = accountId.ToString() });
+				
+				var journals = GetDataFromStoredProc<List<Models.JsonDataModel.JournalJson>, List<Models.JsonDataModel.JournalJson>>(
+					"GetJournalIds", paramList, new XmlRootAttribute("JournalList"));
+
+				return journals.Select(j=>j.Id).ToList();
+			}
+
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Journal list through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
 	  public List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = null)
 	  {
 			try

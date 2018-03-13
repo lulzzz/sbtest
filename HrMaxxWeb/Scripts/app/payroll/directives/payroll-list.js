@@ -56,7 +56,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						if ($scope.list.length === 0)
 							return false;
 						else {
-							return $filter('filter')($scope.list[0].payChecks, { employee: { id: employeeId } }).length > 0;
+							var lastPayroll = $filter('orderBy')($scope.list, 'payDay', true)[0];
+							var exists = $filter('filter')(lastPayroll.payChecks, { employee: { id: employeeId } });
+							return exists.length > 0;
 						}
 
 					}

@@ -571,7 +571,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayCheckAccumulation, opt => opt.MapFrom(src=>src.Accumulations.Any() ? src.Accumulations.First() : default(Accumulation)))
 				.ForMember(dest => dest.VoidedAccumulation, opt => opt.MapFrom(src => src.VoidedAccumulations.Any() ? src.VoidedAccumulations.First() : default(Accumulation)))
 				.ForMember(dest => dest.Payments, opt => opt.Ignore())
-
+				.ForMember(dest => dest.Summaries, opt => opt.Ignore())
 				.ForMember(dest => dest.HostCompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.Vendors, opt => opt.MapFrom(src => src.Vendors.Where(v=>v.Amount>0).ToList()));
 

@@ -451,7 +451,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				var ed = _companyRepository.SaveEmployeeDeduction(deduction);
 				var returnCompany = _readerService.GetEmployee(ed.EmployeeId);
-				var memento = Memento<Employee>.Create(returnCompany, EntityTypeEnum.Employee, user);
+				var memento = Memento<Employee>.Create(returnCompany, EntityTypeEnum.Employee, user, "Deduction Updated");
 				_mementoDataService.AddMementoData(memento, true);
 				return ed;
 			}

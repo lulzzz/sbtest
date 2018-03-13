@@ -390,6 +390,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.getReport941 = function () {
 						getReport('Paperless941', 'Paperless 941', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, true, dataSvc.paperless941.includeHistory);
 					}
+					$scope.getReportHostClientSummary = function () {
+						getReport('HostClientSummary', 'Host Client Summary', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, false, dataSvc.paperless941.includeHistory);
+					}
 					
 					$scope.getReportW2Employee = function () {
 						getReport('SSAW2Magnetic', 'Federal SSA W2 Magnetic File', dataSvc.filterW2.year, null, null, null, null, null, null, false, dataSvc.filterW2.includeHistory);

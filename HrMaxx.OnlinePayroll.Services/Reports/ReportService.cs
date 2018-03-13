@@ -59,6 +59,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private const string ReportNotAvailable = "The report template(s) are not available yet";
 		private const string HostNotSetUp = "Please set up the Host properly to proceed";
 		private const string HostContactNA = "Please add at-least one contact for the Host";
+		private const string LastCheckInAnotherCompany = "Employee's Last Check is for another company";
 		
 		public IBus Bus { get; set; }
 
@@ -180,7 +181,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			catch (Exception e)
 			{
 				var message = string.Empty;
-				if (e.Message == NoPayrollData || e.Message.StartsWith(NoData))
+				if (e.Message == NoPayrollData || e.Message.StartsWith(NoData) || e.Message.StartsWith(LastCheckInAnotherCompany))
 				{
 					message = e.Message;
 				}
@@ -212,6 +213,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				CalculateDates(ref request);
 				if (request.ReportName.Equals("Paperless941"))
 					return GetPaperless941(request);
+				else if (request.ReportName.Equals("HostClientSummary"))
+					return GetHostClientSummary(request);
 				else if (request.ReportName.Equals("Paperless940"))
 					return GetPaperless940(request);
 				else if (request.ReportName.Equals("SSAW2Magnetic"))
@@ -294,10 +297,44 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		private Extract GetHostClientSummary(ReportRequest request)
+		{
+			request.Description = string.Format("Host Client Summary for {0} ", request.Year);
+			request.AllowFiling = false;
+			var data = GetExtractResponse(request);
+			
+			data.Hosts.ForEach(h =>
+			{
+				h.Companies.ForEach(c =>
+				{
+					var companyPayrolls = _readerService.GetPayrolls(c.Id, request.StartDate, request.EndDate, excludeVoids:1).Where(p => p.Company.Id == c.Id && p.TotalGrossWage>0).ToList();
+					c.Summaries = new List<PayrollSummary>();
+					companyPayrolls.ForEach(p => c.Summaries.Add(new PayrollSummary
+					{
+						Id=p.Id, StartDate = p.StartDate, EndDate = p.EndDate, PayDay = p.PayDay, TaxPayDay = p.TaxPayDay,
+						GrossWage = p.TotalGrossWage,
+						Total940 = Math.Round(p.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Taxes.Where(t=>t.Tax.Code.Equals("FUTA")).Sum(t=>t.Amount)), 2, MidpointRounding.AwayFromZero),
+						Total941 = Math.Round(p.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Taxes.Where(t => !t.Tax.StateId.HasValue && !t.Tax.Code.Equals("FUTA")).Sum(t => t.Amount)), 2, MidpointRounding.AwayFromZero),
+						TotalEtt = Math.Round(p.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Taxes.Where(t => t.Tax.Code.Equals("ETT")).Sum(t => t.Amount)), 2, MidpointRounding.AwayFromZero),
+						TotalUi = Math.Round(p.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Taxes.Where(t => t.Tax.Code.Equals("SUI")).Sum(t => t.Amount)), 2, MidpointRounding.AwayFromZero),
+						TotalFederal = Math.Round(p.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Taxes.Where(t => !t.Tax.StateId.HasValue).Sum(t => t.Amount)), 2, MidpointRounding.AwayFromZero),
+						TotalState = Math.Round(p.PayChecks.Where(pc => !pc.IsVoid).Sum(pc => pc.Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value==1).Sum(t => t.Amount)), 2, MidpointRounding.AwayFromZero)
+					}));
+				});
+				h.Companies = h.Companies.Where(c => c.Summaries.Any()).ToList();
+			});
+			data.Hosts = data.Hosts.Where(h => h.Companies.Any()).ToList();
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostClientSummary.xslt", "xls", string.Format("Host Client Summary Report-{0}.xls", request.Year));
+			
+		}
+
 		private Extract GetSemiWeeklyEligibilityReport(ReportRequest request)
 		{
 			var data = GetExtractResponseSemiWeeklyEligibility(request);
-
+			
 			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
 			request.AllowExclude = true;
 
@@ -1993,8 +2030,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId).Where(e => e.PayCheckWages.GrossWage > 0 && e.LastCheckCompany.HasValue && e.LastCheckCompany.Value==request.CompanyId).OrderBy(e=>e.FullName).ToList();
-			
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId);
+			if (request.EmployeeId != Guid.Empty && response.EmployeeAccumulationList.First().LastCheckCompany.HasValue && response.EmployeeAccumulationList.First().LastCheckCompany.Value!=request.CompanyId)
+			{
+				throw new Exception(LastCheckInAnotherCompany);
+			}
+			response.EmployeeAccumulationList =
+				response.EmployeeAccumulationList.Where(
+					e => e.PayCheckWages.GrossWage > 0 && e.LastCheckCompany.HasValue && e.LastCheckCompany.Value == request.CompanyId)
+					.OrderBy(e => e.FullName)
+					.ToList();
 			response.Company = GetCompany(request.CompanyId);
 			if (response.Company.FileUnderHost)
 			{

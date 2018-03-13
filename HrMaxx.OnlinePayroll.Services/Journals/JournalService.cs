@@ -270,7 +270,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal No Tran");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal No Tran " + journal.Id + ", CheckNumber=" + journal.CheckNumber + ", TransactionType=" + (int)journal.TransactionType );
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -330,7 +330,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						});
 					}
 					
-					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", journal.CheckNumber), userId);
+					var memento = Memento<Journal>.Create(saved, (EntityTypeEnum)saved.EntityType1, saved.LastModifiedBy, string.Format("Check updated {0}", saved.CheckNumber), userId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
 					return saved;
@@ -338,7 +338,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Journal  " + journal.Id + ", CheckNumber=" + journal.CheckNumber + ", TransactionType=" + (int)journal.TransactionType);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -350,7 +350,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			{
 				var j = _journalRepository.VoidJournal(mapped, mapped.TransactionType, mapped.LastModifiedBy);
 				
-				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy, string.Format("{0} voided {1}", mapped.EntityType.ToString(), mapped.CheckNumber), userId);
+				var memento = Memento<Journal>.Create(j, (EntityTypeEnum)j.EntityType1, mapped.LastModifiedBy, string.Format("{0} voided {1}", mapped.TransactionType.GetDbName(), mapped.CheckNumber), userId);
 				_mementoDataService.AddMementoData(memento);
 				return j;
 			}
@@ -639,20 +639,6 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
-		public void UpdateCompanyMaxCheckNumber(Guid companyId, TransactionType transactionType)
-		{
-			try
-			{
-				_journalRepository.UpdateCompanyMaxCheckNumber(companyId, transactionType);
-			}
-			catch (Exception e)
-			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update max check number for company" + companyId + " transaction type " + (int)transactionType);
-				Log.Error(message, e);
-				throw;
-			}
-		}
-
 		public void DeleteJournals(List<Journal> toList)
 		{
 			_journalRepository.DeletePayrollJournals(toList);
@@ -671,13 +657,13 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				Log.Info(string.Format("Fetched bank and coa for Host {0} ", host.Host.FirmName));
 				var allpayments =
 					host.Companies.SelectMany(c => c.Payments.Where(p => p.Method != InvoicePaymentMethod.ACH).Select(p => p)).ToList();
-				var invoiceDeposits = _readerService.GetJournals(companyId: host.HostCompany.Id, accountId:bankCOA.Id,
+				var invoiceDeposits = _readerService.GetJournalIds(companyId: host.HostCompany.Id, accountId:bankCOA.Id,
 					startDate: masterExtract.Extract.Report.StartDate, endDate: masterExtract.Extract.Report.StartDate,
 					transactionType: (int)TransactionType.InvoiceDeposit); //_journalRepository.GetCompanyJournals(host.HostCompany.Id,masterExtract.Extract.Report.StartDate, masterExtract.Extract.Report.StartDate);
 				Log.Info(string.Format("fetched Host {0} journals {1} {2}", host.Host.FirmName, invoiceDeposits.Count, DateTime.Now.ToString("hh:mm:ss:fff")));
 				var journal = new Journal
 				{
-					Id = invoiceDeposits.Any() ? invoiceDeposits.First().Id : 0,
+					Id = invoiceDeposits.Any() ? invoiceDeposits.First() : 0,
 					CompanyId = host.HostCompany.Id,
 					Amount = Math.Round(allpayments.Sum(p=>p.Amount), 2, MidpointRounding.AwayFromZero),
 					CheckNumber = -1,

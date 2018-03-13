@@ -39,6 +39,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//Journals
 		List<Models.Journal> GetJournals(Guid? companyId = null, Guid? payrollId = null, int? payCheckId = null, DateTime? startDate = null, DateTime? endDate = null, int transactionType = 0, int? isvoid = null, int? year = null, int accountId = 0, bool? PEOASOCoCheck = null, int id = 0);
+		List<int> GetJournalIds(Guid companyId, int accountId, DateTime startDate, DateTime endDate, int transactionType);
 
 		//Companies
 		List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = null);
@@ -77,6 +78,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
 			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null);
+
 
 		
 	}
