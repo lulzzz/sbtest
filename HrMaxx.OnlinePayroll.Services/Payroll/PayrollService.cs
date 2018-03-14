@@ -1259,37 +1259,44 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var payroll = _readerService.GetPayroll(payrollId);
 				var paycheck = payroll.PayChecks.First(pc => pc.Id == payCheckId);
-
-				var companyPayChecks = _readerService.GetPayChecks(companyId: paycheck.Employee.CompanyId, employeeId: paycheck.Employee.Id, startDate: paycheck.PayDay, year: paycheck.PayDay.Year, isvoid: 0);
-				var employeeFutureChecks = companyPayChecks.Where(p => p.Id != paycheck.Id).ToList();
-				using (var txn = TransactionScopeHelper.Transaction())
+				if (payroll.PayChecks.Count(pc=>!pc.IsVoid) == 1 && !paycheck.IsVoid)
 				{
-					
-					paycheck.Status = PaycheckStatus.Void;
-					paycheck.IsVoid = true;
-					paycheck.LastModified = DateTime.Now;
-					paycheck.LastModifiedBy = name;
-					_payrollRepository.VoidPayChecks(new List<PayCheck>{paycheck}, name);
-
-					foreach (var employeeFutureCheck in employeeFutureChecks)
-					{
-						employeeFutureCheck.SubtractFromYTD(paycheck);
-						_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
-					}
-
-					txn.Complete();
-					
-					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
-					{
-						SavedObject = paycheck,
-						HostId = payroll.Company.HostId,
-						UserId = new Guid(user),
-						TimeStamp = DateTime.Now,
-						EventType = NotificationTypeEnum.Updated,
-						AffectedChecks = employeeFutureChecks,
-						UserName = name
-					});
+					VoidPayroll(payroll, name, user);
 				}
+				else
+				{
+					var companyPayChecks = _readerService.GetPayChecks(companyId: paycheck.Employee.CompanyId, employeeId: paycheck.Employee.Id, startDate: paycheck.PayDay, year: paycheck.PayDay.Year, isvoid: 0);
+					var employeeFutureChecks = companyPayChecks.Where(p => p.Id != paycheck.Id).ToList();
+					using (var txn = TransactionScopeHelper.Transaction())
+					{
+
+						paycheck.Status = PaycheckStatus.Void;
+						paycheck.IsVoid = true;
+						paycheck.LastModified = DateTime.Now;
+						paycheck.LastModifiedBy = name;
+						_payrollRepository.VoidPayChecks(new List<PayCheck> { paycheck }, name);
+
+						foreach (var employeeFutureCheck in employeeFutureChecks)
+						{
+							employeeFutureCheck.SubtractFromYTD(paycheck);
+							_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+						}
+
+						txn.Complete();
+
+						Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
+						{
+							SavedObject = paycheck,
+							HostId = payroll.Company.HostId,
+							UserId = new Guid(user),
+							TimeStamp = DateTime.Now,
+							EventType = NotificationTypeEnum.Updated,
+							AffectedChecks = employeeFutureChecks,
+							UserName = name
+						});
+					}
+				}
+				
 				return _readerService.GetPayroll(payrollId);
 
 

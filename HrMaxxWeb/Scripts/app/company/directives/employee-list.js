@@ -66,6 +66,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						companyRepository.importEmployees($scope.files[0]).then(function (employees) {
 							$scope.selected = null;
 							addAlert('successfully imported ' + employees.length + 'employees', 'success');
+							dataSvc.employeesLoadedFor = null;
 							$scope.getEmployees($scope.mainData.selectedCompany.id);
 						}, function (error) {
 							addAlert('error in importing employees: ' + error, 'danger');

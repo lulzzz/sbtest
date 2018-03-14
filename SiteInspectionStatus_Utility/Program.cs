@@ -105,13 +105,60 @@ namespace SiteInspectionStatus_Utility
 				case 189:
 					FixMovedInvoices(container);
 					break;
+				case 19:
+					ChangeEmployeesToFiscalYear(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+		private static void ChangeEmployeesToFiscalYear(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var companyservice = scope.Resolve<ICompanyService>();
+				var payrollService = scope.Resolve<IPayrollService>();
+				var readerservice = scope.Resolve<IReaderService>();
 
+				//var compList = new List<Guid>();
+				//compList.Add(new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E"));
+				//compList.Add(new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B"));
+				var payChecks = new List<int>();
+				var counter = (int)0;
+				var company = readerservice.GetCompany(new Guid("307CFF5E-8BF6-47F7-AD03-A6ED014C1126"));
+				var employees = readerservice.GetEmployees(company: company.Id);
+				employees.ForEach(e =>
+				{
+					
+					if (e.SickLeaveHireDate != e.HireDate || e.CarryOver>0)
+					{
+						e.SickLeaveHireDate = e.HireDate;
+						e.CarryOver = 0;
+						companyservice.SaveEmployee(e, false);
+					}
+					
+					var paychecks = readerservice.GetEmployeePayChecks(e.Id);
+					var checkCounter = (int)0;
+					paychecks.Where(pc=>!pc.IsVoid).OrderBy(pc=>pc.Id).ToList().ForEach(pc =>
+					{
+						var employeeAccumulations = readerservice.GetAccumulations(company: e.CompanyId,startdate: new DateTime(pc.PayDay.Year, 1, 1), enddate: pc.PayDay, ssns: Crypto.Encrypt(e.SSN));
+						pc.Employee.SickLeaveHireDate = e.SickLeaveHireDate;
+						pc.Accumulations = ProcessAccumulations(pc, company.AccumulatedPayTypes, employeeAccumulations.First());
+						pc.Accumulations.ForEach(ac=>ac.CarryOver=0);
+						payrollService.UpdatePayCheckAccumulation(pc.Id, pc.Accumulations.First(), "System", Guid.Empty.ToString());
+						checkCounter++;
+					});
+					Console.WriteLine(string.Format("Employee {0} - {1}", e.FullName, checkCounter));
+				});
+				
+
+
+				Console.WriteLine("Finished");
+
+			}
+		}
 		private static void FixMovedInvoices(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())

@@ -40,12 +40,12 @@ namespace HrMaxx.Common.Services.Excel
 			try
 			{
 				var company = _readerService.GetCompany(companyId);
-				var columnList = new List<string> {"SSN", "Company Employee No", "First Name", "Middle Initial", "Last Name", "Email", "Phone", "Mobile", "Fax", "Address", "City", "Address State", "Zip", "Zip Extension", "Gender", "Birth Date", "Hire Date", "Sick Leave Hire Date", "Sick Leave CarryOver", "Department", "Employee No", "WC Job Class"};
-				columnList.AddRange(new List<string>{"Payroll Schedule", "Pay Type", "Base Salary"});
+				var columnList = new List<string> {"SSN", "Company Employee No", "Employment Status", "First Name", "Middle Initial", "Last Name", "Email", "Phone", "Mobile", "Fax", "Address", "City", "Address State", "Zip", "Zip Extension", "Gender", "Birth Date", "Hire Date", "Sick Leave Hire Date", "Sick Leave CarryOver", "Department", "Employee No", "WC Job Class"};
+				columnList.AddRange(new List<string>{"Payroll Schedule", "Pay Type", "Base Salary", "Payment Method"});
 				company.PayCodes.ForEach(pc=>columnList.Add(pc.Description));
 				columnList.AddRange(new List<string>{"Tax Status", "Federal Filing Status", "Federal Exemptions", "Federal Additional Amount", "State", "State Filing Status", "State Exemptions", "State Additional Amount"});
-				var sampleRow = new List<string>() { "123-45-6789",string.Empty, string.Empty, string.Empty, string.Empty, "x@y.com", "949-555-1212 or 9495551212", "949-555-1212 or 9495551212", "949-555-1212 or 9495551212", string.Empty, string.Empty, "CA or California", "12345", "1234", string.Empty, "MM/DD/YYYY", "MM/DD/YYYY", string.Empty, string.Empty, string.Empty };
-				sampleRow.AddRange(new List<string>() { "1/2/3/4 OR Weekly/Bi-Weekly/Semi-Monthly/Monthly", "Salary/Hourly/Piece-Work", "0.00" });
+				var sampleRow = new List<string>() { "123-45-6789", string.Empty, "Active/Terminsated", string.Empty, string.Empty, string.Empty, "x@y.com", "949-555-1212 or 9495551212", "949-555-1212 or 9495551212", "949-555-1212 or 9495551212", string.Empty, string.Empty, "CA or California", "12345", "1234", string.Empty, "MM/DD/YYYY", "MM/DD/YYYY", "MM/DD/YYYY", string.Empty, string.Empty, string.Empty, string.Empty };
+				sampleRow.AddRange(new List<string>() { "1/2/3/4 OR Weekly/Bi-Weekly/Semi-Monthly/Monthly", "Salary/Hourly/Piece-Work", "0.00", "Check/EFT" });
 				company.PayCodes.ForEach(pc => sampleRow.Add(string.Empty));
 				sampleRow.AddRange(new List<string>(){"1 OR 2", "1/2/3 OR S/M/H", "1 - 10", "0.00", "CA or California", "1/2/3 OR S/M/H", "1 - 10", "0.00"});
 				var rows = new List<List<string>>() {sampleRow};
@@ -56,6 +56,7 @@ namespace HrMaxx.Common.Services.Excel
 					{
 						e.SSN.Insert(5, "-").Insert(3, "-"),
 						e.CompanyEmployeeNo.ToString(),
+						e.StatusId.GetDbName(),
 						e.FirstName,
 						e.MiddleInitial,
 						e.LastName,
@@ -76,9 +77,10 @@ namespace HrMaxx.Common.Services.Excel
 						e.Department,
 						e.EmployeeNo.ToString(),
 						e.WorkerCompensation!=null ? e.WorkerCompensation.Code.ToString() :string.Empty,
-						e.PayrollSchedule.GetDbName(),e.PayType.GetDbName(), e.Rate.ToString() 
+						e.PayrollSchedule.GetDbName(),e.PayType.GetDbName(), e.Rate.ToString(), 
+						e.PaymentMethod.GetDbName() 
 					};
-					e.PayCodes.Where(pc=>pc.Id!=0).ToList().ForEach(pc=>row.Add(pc.HourlyRate.ToString()));
+					e.PayCodes.Where(pc=>pc.Id>0).ToList().ForEach(pc=>row.Add(pc.HourlyRate.ToString()));
 					row.Add(((int)e.TaxCategory).ToString());
 					row.Add(((int)e.FederalStatus).ToString());
 					row.Add(e.FederalExemptions.ToString());

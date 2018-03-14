@@ -18,6 +18,7 @@ using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.OnlinePayroll;
+using Microsoft.Ajax.Utilities;
 
 namespace HrMaxxAPI.Controllers.Companies
 {
@@ -392,9 +393,13 @@ namespace HrMaxxAPI.Controllers.Companies
 				{
 					try
 					{
-						var empresource = new EmployeeResource().FillFromImport(er, company);
-						empresource.UserName = CurrentUser.FullName;
-						employees.Add(empresource);
+						if (!string.IsNullOrWhiteSpace(er.Value("SSN")))
+						{
+							var empresource = new EmployeeResource().FillFromImport(er, company);
+							empresource.UserName = CurrentUser.FullName;
+							employees.Add(empresource);
+						}
+						
 					}
 					catch (Exception ex)
 					{
@@ -415,6 +420,8 @@ namespace HrMaxxAPI.Controllers.Companies
 						e1.BankAccounts = exists.BankAccounts;
 						e1.DirectDebitAuthorized = exists.DirectDebitAuthorized;
 						e1.Compensations = exists.Compensations;
+						e1.Deductions = exists.Deductions;
+						
 					}
 				});
 				var savedEmployees = _companyService.SaveEmployees(mappedResource);

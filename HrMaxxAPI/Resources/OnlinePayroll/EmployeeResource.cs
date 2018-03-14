@@ -122,6 +122,10 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 			{
 				error += "SSN, ";
 			}
+			if (string.IsNullOrWhiteSpace(er.Value("Employment Status")))
+			{
+				error += "Employment Status, ";
+			}
 			if (string.IsNullOrWhiteSpace(er.Value("first name")))
 			{
 				error += "First Name, ";
@@ -264,8 +268,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				}
 			}
 
-			PaymentMethod = EmployeePaymentMethod.Check;
-			StatusId = StatusOption.Active;
+			PaymentMethod = er.Value("Payment Method").Equals("Check") ? EmployeePaymentMethod.Check : EmployeePaymentMethod.DirectDebit;
+			StatusId =  er.Value("Employment Status").Equals("Terminated") ? StatusOption.Terminated : StatusOption.Active;
 
 			if (!string.IsNullOrWhiteSpace(error))
 			{
@@ -346,27 +350,27 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string SLDates { 
 			get{
 			return Accumulations.Any()
-				? string.Format("{0} ({1} - {2})", Accumulations.First().PayTypeName, Accumulations.First().FiscalStart.ToString("MM/dd/yyyy"),
-					Accumulations.First().FiscalEnd.ToString("MM/dd/yyyy"))
+				? string.Format("{0} ({1} - {2})", Accumulations.OrderByDescending(ac=>ac.FiscalStart).First().PayTypeName, Accumulations.First().FiscalStart.ToString("MM/dd/yyyy"),
+					Accumulations.OrderByDescending(ac => ac.FiscalStart).First().FiscalEnd.ToString("MM/dd/yyyy"))
 				: string.Empty;
 			} 
 		}
 
 		public decimal SLUsed
 		{
-			get { return Accumulations.Any() ? Accumulations.First().YTDUsed : 0; }
+			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().YTDUsed : 0; }
 		}
 		public decimal SLAccumulated
 		{
-			get { return Accumulations.Any() ? Accumulations.First().YTDFiscal : 0; }
+			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().YTDFiscal : 0; }
 		}
 		public decimal SLCarryOver
 		{
-			get { return Accumulations.Any() ? Accumulations.First().CarryOver : 0; }
+			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().CarryOver : 0; }
 		}
 		public decimal SLAvailable
 		{
-			get { return Accumulations.Any() ? Accumulations.First().Available : 0; }
+			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().Available : 0; }
 		}
 	}
 	public class EmployeePayTypeResource
