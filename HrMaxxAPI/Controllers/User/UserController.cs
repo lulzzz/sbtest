@@ -99,7 +99,7 @@ namespace HrMaxxAPI.Controllers.User
 		{
 			try
 			{
-				var user = await UserManager.FindByNameAsync(resource.UserName);
+				var user = await UserManager.FindByNameAsync(resource.SubjectUserName);
 				if (user == null)
 				{
 					throw new HttpResponseException(new HttpResponseMessage
@@ -170,11 +170,11 @@ namespace HrMaxxAPI.Controllers.User
 		{
 			try
 			{
-				var userExists = await UserManager.FindByNameAsync(model.UserName);
+				var userExists = await UserManager.FindByNameAsync(model.SubjectUserName);
 
 				if (userExists != null)
 				{
-					if (model.UserId!=Guid.Empty)
+					if (model.SubjectUserId!=Guid.Empty)
 					{
 						userExists.FirstName = model.FirstName;
 						userExists.LastName = model.LastName;
@@ -200,6 +200,8 @@ namespace HrMaxxAPI.Controllers.User
 
 						var memento = Memento<ApplicationUser>.Create(userExists, EntityTypeEnum.Company, CurrentUser.FullName, "User Updated", new Guid(CurrentUser.UserId));
 						_mementoDataService.AddMementoData(memento);
+						model.UserId = model.SubjectUserId;
+						model.UserName = model.SubjectUserName;
 						return model;
 					}
 					else
@@ -213,12 +215,14 @@ namespace HrMaxxAPI.Controllers.User
 
 				}
 
-				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Employee = model.Employee, Active = model.Active, PhoneNumber = model.Phone };
+				var user = new ApplicationUser { UserName = model.SubjectUserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Employee = model.Employee, Active = model.Active, PhoneNumber = model.Phone };
 				var result = await UserManager.CreateAsync(user, "Paxol1234!");
 				if (result.Succeeded)
 				{
 					await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
 					model.UserId = new Guid(user.Id);
+					model.SubjectUserName = user.UserName;
+					model.SubjectUserId = model.UserId;
 					string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
 					var memento = Memento<ApplicationUser>.Create(user, EntityTypeEnum.Company, CurrentUser.FullName, "New User Created: username=" + user.UserName, new Guid(CurrentUser.UserId));
 					_mementoDataService.AddMementoData(memento);

@@ -43,5 +43,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
 		void UpdateWCRates(List<CompanyWorkerCompensation> rates, string fullName, Guid guid);
 		List<EmployeeSSNCheck> CheckSSN(string ssn);
+		void BulkTerminateEmployees(Guid companyId, string employees, string userId, string name);
+		
 	}
 }

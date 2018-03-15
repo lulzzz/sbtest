@@ -46,5 +46,6 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string CopyEmployees = "Company/CopyEmployees"; 
 		public const string UpdateWCRates = "Company/UpdateWCRates";
 		public const string SSNCheck = "Company/SSNCheck/{ssn}";
+		public const string BulkTerminateEmployees = "Company/BulkTerminateEmployees/{companyId:guid}/{employees}";
 	}
 }

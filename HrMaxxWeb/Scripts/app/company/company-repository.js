@@ -232,6 +232,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			bulkTerminateEmployees: function (companyId, employees) {
+				var deferred = $q.defer();
+				companyServer.one('BulkTerminateEmployees').one(companyId).one(employees).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveEmployee: function (employee) {
 				var deferred = $q.defer();
 				companyServer.all('Employee').post(employee).then(function (data) {

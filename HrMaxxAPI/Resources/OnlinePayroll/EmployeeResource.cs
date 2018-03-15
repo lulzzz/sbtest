@@ -76,6 +76,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public List<PayCheckPayTypeAccumulationResource> Accumulations { get; set; } 
 		public DateTime? LastPayrollDate { get; set; }
 
+		public bool IsTerminate { get { return false; } }
+
 		public string WcCode
 		{
 			get { return WorkerCompensation != null ? WorkerCompensation.Code.ToString() : string.Empty; }

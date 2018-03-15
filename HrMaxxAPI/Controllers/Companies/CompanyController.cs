@@ -353,6 +353,13 @@ namespace HrMaxxAPI.Controllers.Companies
 		}
 
 		[HttpGet]
+		[Route(CompanyRoutes.BulkTerminateEmployees)]
+		public void BulkTerminateEmployees(Guid companyId, string employees)
+		{
+			MakeServiceCall(() => _companyService.BulkTerminateEmployees(companyId, employees, CurrentUser.UserId, CurrentUser.FullName), string.Format("bulk terminate employees {0}", employees));
+		}
+
+		[HttpGet]
 		[Route(CompanyRoutes.GetEmployeeImportTemplate)]
 		[DeflateCompression]
 		public HttpResponseMessage GetEmployeeImportTemplate(Guid companyId)

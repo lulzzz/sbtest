@@ -171,6 +171,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						{ field: "slAccumulated", title: "SL YTD", show: false, sortable: "slAccumulated" },
 						{ field: "slCarryOver", title: "SL Carry over", show: false, sortable: "slCarryOver" },
 						{ field: "slAvailable", title: "SL Available", show: false, sortable: "slAvailable" },
+						{ field: "isTerminate", title: "Terminate?", show: false, sortable: "isTerminate" },
 						{ field: "controls", title: "", show: true }
 					];
 					
@@ -184,7 +185,30 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						{ id: 'wcCode' },
 						{ id: 'statusText' }
 					];
-					
+					$scope.empTerminate = function (employee, event) {
+						event.stopPropagation();
+					}
+					$scope.bulkTerminateEmployees = function () {
+						$scope.$parent.$parent.confirmDialog('Are you sure you want to terminate ' + $scope.bulkTerminateAvailable() + ' employees?', 'danger', function () {
+							var employees = '';
+							var list = $filter('filter')($scope.tableData, { isTerminated: true });
+							$.each(list, function(i, e) {
+								employees+=e.id + ',';
+							});
+
+							companyRepository.bulkTerminateEmployees($scope.mainData.selectedCompany.id, employees).then(function () {
+								dataSvc.employeesLoadedFor = null;
+								$scope.getEmployees($scope.mainData.selectedCompany.id);
+							}, function (error) {
+								addAlert('error in bulk terminating employees', 'danger');
+							});
+							
+						});
+					}
+
+					$scope.bulkTerminateAvailable = function () {
+						return $filter('filter')($scope.tableData, { isTerminated: true }).length;
+					}
 					$scope.refreshTable = function() {
 						$.each($scope.cols, function(ind, c) {
 							c.show = $filter('filter')($scope.selectedHeaders, { id: c.field }, true).length > 0 ? true : (c.field === 'controls' ? true : false);
@@ -279,7 +303,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						$scope.set(result);
 						addAlert('successfully saved employee', 'success');
 					}
-
+					
 					$scope.viewPayCheckList = function (employee, event) {
 						event.stopPropagation();
 						var modalInstance = $modal.open({

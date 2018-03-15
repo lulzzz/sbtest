@@ -84,6 +84,8 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<UserModel, UserResource>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
 				.ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+				.ForMember(dest => dest.SubjectUserId, opt => opt.MapFrom(src => src.UserId))
+				.ForMember(dest => dest.SubjectUserName, opt => opt.MapFrom(src => src.UserName))
 				.ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
 				.ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
 				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))

@@ -26,6 +26,8 @@ namespace HrMaxxAPI.Resources.Common
 		public Guid? Employee { get; set; }
 		public bool Active { get; set; }
 		public UserRole Role { get; set; }
+		public Guid SubjectUserId { get; set; }
+		public string SubjectUserName { get; set; }
 		
 		
 	}

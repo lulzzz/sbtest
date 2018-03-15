@@ -675,5 +675,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				
 			}
 		}
+
 	}
 }

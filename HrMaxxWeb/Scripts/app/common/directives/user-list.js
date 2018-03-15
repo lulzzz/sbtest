@@ -215,7 +215,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 				$scope.save = function () {
 					commonRepository.saveUser($scope.selectedUser).then(function (result) {
 						
-						var exists = $filter('filter')($scope.list, { userId:result.userId });
+						var exists = $filter('filter')($scope.list, { userId:result.subjectUserId });
 						if (exists.length === 0) {
 							$scope.list.push(result);
 						} else {
@@ -224,7 +224,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 						}
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
-						if($scope.selectedUser.userId)
+						if ($scope.selectedUser.subjectUserId)
 							addAlert('successfully saved user', 'success');
 						else
 							addAlert('successfully created a new user with default password. email has been sent to the user to confirm', 'success');

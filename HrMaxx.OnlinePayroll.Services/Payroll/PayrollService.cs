@@ -1546,7 +1546,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					payChecks = payChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo);
 				else
 				{
-					payChecks = payChecks.OrderBy(pc => pc.Employee.LastName);
+					payChecks = payChecks.OrderBy(pc => pc.Employee.LastName).ThenBy(pc=>pc.Employee.FirstName).ThenBy(pc=>pc.Employee.MiddleInitial);
 				}
 				var returnFile = PrintPayCheck(payroll, payChecks.ToList(), journals);
 				if (returnFile != null)

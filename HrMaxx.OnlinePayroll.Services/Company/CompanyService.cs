@@ -753,5 +753,31 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
 			}
 		}
+
+		public void BulkTerminateEmployees(Guid companyId, string employees, string userId, string name)
+		{
+			try
+			{
+				var empList = employees.Substring(0, employees.Length - 1).Split(',').Select(e=>new Guid(e)).ToList();
+				var emps = _readerService.GetEmployees(company: companyId);
+				var employeeList = new List<Employee>();
+				empList.ForEach(e =>
+				{
+					var employee = emps.First(e1 => e1.Id == e);
+					employee.StatusId = StatusOption.Terminated;
+					employee.LastModified = DateTime.Now;
+					employee.UserId = new Guid(userId);
+					employee.UserName = name;
+					employeeList.Add(employee);
+				});
+				SaveEmployees(employeeList);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " bulk terminate employees" + e.Message);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
+			}
+		}
 	}
 }
