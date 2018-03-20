@@ -69,6 +69,11 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return string.Format("{0}{2}{1}", FirstName, LastName, string.Format(" {0}",!string.IsNullOrWhiteSpace(MiddleInitial)? MiddleInitial.Substring(0,1) + " " : string.Empty) ); }
 		}
 
+		public string FullNameSpecial
+		{
+			get { return string.Format("{0}, {1} {2}", LastName, FirstName, string.Format(" {0}", !string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty)); }
+		}
+
 		public Guid MementoId
 		{
 			get { return Id; }

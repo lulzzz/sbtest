@@ -278,6 +278,7 @@
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Resources\BaseResource.cs" />
     <Compile Include="Resources\Common\AddressResource.cs" />
+    <Compile Include="Resources\Common\BulkTerminateEmployeesResource.cs" />
     <Compile Include="Resources\Common\CheckBookMetaDataRequestResource.cs" />
     <Compile Include="Resources\Common\CompanyTaxResource.cs" />
     <Compile Include="Resources\Common\CopyEmployeeResource.cs" />

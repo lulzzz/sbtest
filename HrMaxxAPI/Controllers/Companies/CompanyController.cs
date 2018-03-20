@@ -352,11 +352,11 @@ namespace HrMaxxAPI.Controllers.Companies
 			MakeServiceCall(() => _companyService.DeleteEmployeeDeduction(deductionId), string.Format("deleting deduction id {0}", deductionId));
 		}
 
-		[HttpGet]
+		[HttpPost]
 		[Route(CompanyRoutes.BulkTerminateEmployees)]
-		public void BulkTerminateEmployees(Guid companyId, string employees)
+		public void BulkTerminateEmployees(BulkTerminateEmployeesResource resource)
 		{
-			MakeServiceCall(() => _companyService.BulkTerminateEmployees(companyId, employees, CurrentUser.UserId, CurrentUser.FullName), string.Format("bulk terminate employees {0}", employees));
+			MakeServiceCall(() => _companyService.BulkTerminateEmployees(resource.CompanyId, resource.EmployeeList, CurrentUser.UserId, CurrentUser.FullName), string.Format("bulk terminate employees {0}", resource.EmployeeList.Aggregate(string.Empty, (current, m) => current + m + ", ")));
 		}
 
 		[HttpGet]

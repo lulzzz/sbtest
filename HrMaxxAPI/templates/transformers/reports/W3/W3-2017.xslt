@@ -7,12 +7,11 @@
 <xsl:param name="selectedYear"/>
 	
   <xsl:param name="todaydate"/>
-	<xsl:param name="c"/>
-  
-  <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
+	
+	<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 
-
+	<xsl:variable name="c" select="/ReportResponse/CompanyAccumulations/PayCheckWages/EmployeeCount"/>
 	<xsl:variable name="e" select="concat(substring(/ReportResponse/Company/FederalEIN,1,2),'-',substring(/ReportResponse/Company/FederalEIN,3,7))"/>
 	<xsl:variable name="f" select="translate(/ReportResponse/Company/TaxFilingName,$smallcase,$uppercase)"/>
 	<xsl:variable name="g" select="translate(concat(/ReportResponse/Company/BusinessAddress/AddressLine1,'\n',/ReportResponse/Company/BusinessAddress/City,', ','CA',', ',/ReportResponse/Company/BusinessAddress/Zip,'-',/ReportResponse/Company/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>

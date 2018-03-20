@@ -754,14 +754,13 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public void BulkTerminateEmployees(Guid companyId, string employees, string userId, string name)
+		public void BulkTerminateEmployees(Guid companyId, List<Guid> employees, string userId, string name)
 		{
 			try
 			{
-				var empList = employees.Substring(0, employees.Length - 1).Split(',').Select(e=>new Guid(e)).ToList();
 				var emps = _readerService.GetEmployees(company: companyId);
 				var employeeList = new List<Employee>();
-				empList.ForEach(e =>
+				employees.ForEach(e =>
 				{
 					var employee = emps.First(e1 => e1.Id == e);
 					employee.StatusId = StatusOption.Terminated;

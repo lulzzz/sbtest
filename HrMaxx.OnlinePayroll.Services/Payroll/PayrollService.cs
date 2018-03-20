@@ -1546,7 +1546,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					payChecks = payChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo);
 				else
 				{
-					payChecks = payChecks.OrderBy(pc => pc.Employee.LastName).ThenBy(pc=>pc.Employee.FirstName).ThenBy(pc=>pc.Employee.MiddleInitial);
+					payChecks = payChecks.OrderBy(pc => pc.Employee.FullNameSpecial);
 				}
 				var returnFile = PrintPayCheck(payroll, payChecks.ToList(), journals);
 				if (returnFile != null)
@@ -2202,7 +2202,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Bank", bankcoa.BankAccount.BankName));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("BankfractionId", bankcoa.BankAccount.FractionId));
-
+			
 
 			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name", nameCompany.Name));
 			if (payroll.Company.PayCheckStock == PayCheckStock.LaserMiddle)
@@ -2215,8 +2215,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", nameCompany.CompanyAddress.AddressLine1));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo ? payCheck.Employee.FullName : payCheck.Employee.FullNameSpecial));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo ? payCheck.Employee.FullName : payCheck.Employee.FullNameSpecial));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo", payroll.Company.Memo.Replace(Environment.NewLine, string.Empty).Replace("\n", string.Empty)));
 			if (payroll.Company.PayCheckStock == PayCheckStock.MICREncodedTop || payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
 			{

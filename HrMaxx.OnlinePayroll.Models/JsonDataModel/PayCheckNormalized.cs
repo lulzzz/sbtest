@@ -120,6 +120,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int Twelve1 { get; set; }
 		public int Twelve2 { get; set; }
 		public int Twelve3 { get; set; }
+
+		public int EmployeeCount { get; set; }
 	}
 
 	public class PayCheckSummary

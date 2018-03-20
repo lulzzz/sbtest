@@ -234,7 +234,7 @@ common.factory('companyRepository', [
 			},
 			bulkTerminateEmployees: function (companyId, employees) {
 				var deferred = $q.defer();
-				companyServer.one('BulkTerminateEmployees').one(companyId).one(employees).get().then(function () {
+				companyServer.all('BulkTerminateEmployees').post({companyId:companyId, employeeList: employees}).then(function () {
 					deferred.resolve();
 				}, function (error) {
 					deferred.reject(error);

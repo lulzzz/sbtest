@@ -190,10 +190,10 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 					}
 					$scope.bulkTerminateEmployees = function () {
 						$scope.$parent.$parent.confirmDialog('Are you sure you want to terminate ' + $scope.bulkTerminateAvailable() + ' employees?', 'danger', function () {
-							var employees = '';
+							var employees = [];
 							var list = $filter('filter')($scope.tableData, { isTerminated: true });
 							$.each(list, function(i, e) {
-								employees+=e.id + ',';
+								employees.push(e.id);
 							});
 
 							companyRepository.bulkTerminateEmployees($scope.mainData.selectedCompany.id, employees).then(function () {

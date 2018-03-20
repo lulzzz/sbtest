@@ -109,6 +109,8 @@
 								<xsl:otherwise>
 									<xsl:apply-templates select="PayChecks/PayCheck[IsVoid='false']">
 										<xsl:sort select="Employee/LastName" data-type="text"/>
+										<xsl:sort select="Employee/FirstName" data-type="text"/>
+										<xsl:sort select="Employee/MiddleInitial" data-type="text"/>
 									</xsl:apply-templates>
 								</xsl:otherwise>
 							</xsl:choose>
@@ -223,7 +225,14 @@
 					<tr>
 						<td style="width:100%;text-align:center;">
 							<strong>
-								<xsl:value-of select="concat(Employee/FirstName,' ',Employee/MiddleInitial, ' ', Employee/LastName)"/>
+								<xsl:choose>
+								<xsl:when test="Company/CompanyCheckPrintOrder='CompanyEmployeeNo'">
+									<xsl:value-of select="concat(Employee/FirstName,' ',Employee/MiddleInitial, ' ', Employee/LastName)"/>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="concat(Employee/LastName,', ',Employee/FirstName, ' ', Employee/MiddleInitial)"/>
+								</xsl:otherwise>
+								</xsl:choose>
 							</strong>
 						</td>
 					</tr>
