@@ -390,6 +390,7 @@
     <Content Include="templates\transformers\reports\940\Fed940-2015.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\reports\941\Fed941-2018.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2017.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944-2017.xslt" />
     <Content Include="templates\transformers\reports\C1095\C1095-2017.xslt">
@@ -512,6 +513,9 @@
     <Content Include="templates\GovtForms\1099\f1099div-2017.pdf" />
     <Content Include="templates\GovtForms\1099\f1099int-2017.pdf" />
     <Content Include="templates\GovtForms\1099\f1099msc-2017.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2018-part1.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2018-part2.pdf" />
+    <Content Include="templates\GovtForms\941\f941sb-2018.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
