@@ -107,6 +107,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var defPayCode = paycheck.PayCodes.FirstOrDefault(pc => pc.PayCode.Id == 0);
 							if (defPayCode != null)
 							{
+								if (paycheck.Employee.Rate != defPayCode.PayCode.HourlyRate)
+									paycheck.UpdateEmployeeRate = true;
 								paycheck.Employee.Rate = defPayCode.PayCode.HourlyRate;
 								var empDefCode = paycheck.Employee.PayCodes.FirstOrDefault(pc => pc.Id == 0);
 								if(empDefCode==null)
@@ -120,6 +122,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else if (paycheck.Employee.PayType == EmployeeType.Salary)
 						{
 							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+							if (paycheck.Employee.Rate != paycheck.Salary)
+								paycheck.UpdateEmployeeRate = true;
 							paycheck.Employee.Rate = paycheck.Salary;
 							paycheck.PayCodes = new List<PayrollPayCode>();
 						}
@@ -602,6 +606,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					
 					savedPayroll = _payrollRepository.SavePayroll(payroll);
+					payroll.PayChecks.Where(pc=>pc.UpdateEmployeeRate).ToList().ForEach(pc=>savedPayroll.PayChecks.First(pc1=>pc1.Employee.Id==pc.Employee.Id).UpdateEmployeeRate = true);
 					
 					var ptaccums = new List<PayCheckPayTypeAccumulation>();
 					var pttaxes = new List<PayCheckTax>();
@@ -3925,6 +3930,27 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_payrollRepository.MarkPayrollPrinted(payrollId);
 		}
 
-		
+		public void UpdateLastPayrollDateAndPayRateEmployee(List<PayCheck> payChecks)
+		{
+			try
+			{
+				if (payChecks.Any())
+				{
+					_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(payChecks);
+					payChecks.ForEach(pc =>
+					{
+						var memento = Memento<Employee>.Create(pc.Employee, EntityTypeEnum.Employee, "System", "Employee Rate updated through payroll", Guid.Empty);
+						_mementoDataService.AddMementoData(memento, true);
+					});
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Re-queue Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

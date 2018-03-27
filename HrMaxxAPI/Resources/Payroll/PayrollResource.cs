@@ -134,6 +134,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public int? Id { get; set; }
 		[Required]
 		public EmployeeResource Employee { get; set; }
+		public bool UpdateEmployeeRate { get; set; }
 		public List<PayrollPayCodeResource> PayCodes { get; set; }
 		public decimal Salary { get; set; }
 		public List<PayrollPayTypeResource> Compensations { get; set; }

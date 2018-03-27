@@ -71,6 +71,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void FixPayrollYTD(Guid payrollId);
 		Payroll ReQueuePayroll(Payroll mappedResource);
 		void MarkPayrollPrinted(Guid payrollId);
-		
+
+		void UpdateLastPayrollDateAndPayRateEmployee(List<PayCheck> payChecks);
 	}
 }

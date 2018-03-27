@@ -9,6 +9,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -94,6 +95,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid PayrollId { get; set; }
 		public int Id { get; set; }
 		public Employee Employee { get; set; }
+		public bool UpdateEmployeeRate { get; set; }
 		public List<PayrollPayCode> PayCodes { get; set; }
 		public decimal Salary { get; set; }
 		public List<PayrollPayType> Compensations { get; set; }
@@ -139,6 +141,11 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public decimal CheckPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? NetWage : 0; } }
 		public decimal DDPay { get { return PaymentMethod == EmployeePaymentMethod.Check ? 0 : NetWage; } }
+
+		public string EmployeePayCodes
+		{
+			get { return JsonConvert.SerializeObject(Employee.PayCodes); }
+		}
 
 		public decimal EmployeeRate
 		{

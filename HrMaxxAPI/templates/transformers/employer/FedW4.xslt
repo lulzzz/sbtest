@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl"
+    xmlns:msxsl="urn:schemas-microsoft-com:xslt"
     
 >
 <xsl:import href="../reports/Utils.xslt" />
-  
+	
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
@@ -16,12 +16,6 @@
 		<Name>FilledFormW4</Name>
 		<Reports>
 			<xsl:apply-templates select="Employees/Employee"/>
-			<Report>
-				<TemplatePath>GovtForms\EmployerForms\</TemplatePath>
-				<Template>fw4-page2.pdf</Template>
-				<Fields>
-				</Fields>
-			</Report>
 		</Reports>
 	</ReportTransformed>
 </xsl:template>
@@ -29,7 +23,7 @@
 <xsl:template match="Employee">
 	<Report>
 		<TemplatePath>GovtForms\EmployerForms\</TemplatePath>
-		<Template>fw4-page1.pdf</Template>
+		<Template>fw4.pdf</Template>
 		<Fields>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_09(0)'"/><xsl:with-param name="val1" select="translate(FirstName,$smallcase,$uppercase)"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_10(0)'"/><xsl:with-param name="val1" select="translate(LastName,$smallcase,$uppercase)"/></xsl:call-template>
@@ -75,12 +69,13 @@
 				<xsl:with-param name="val1" select="$compDetails"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
-				<xsl:with-param name="name1" select="'f1_21(0)'"/>
-				<xsl:with-param name="val1" select="substring(../Company/FederalEIN,1,2)"/>
+				<xsl:with-param name="name1" select="'f1_20(0)'"/>
+				<xsl:with-param name="val1" select="msxsl:format-date(HireDate, 'MM/dd/yyyy')"/>
 			</xsl:call-template>
+			
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f1_22(0)'"/>
-				<xsl:with-param name="val1" select="substring(../Company/FederalEIN,3,7)"/>
+				<xsl:with-param name="val1" select="concat(substring(../../Company/FederalEIN,1,2),'-',substring(../../Company/FederalEIN,3,7))"/>
 			</xsl:call-template>
 		</Fields>
 	</Report>

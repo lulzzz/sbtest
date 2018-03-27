@@ -704,7 +704,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		public void UpdateLastPayrollDateAndPayRateEmployee(List<PayCheck> payChecks)
 		{
 			var sql =
-				"update Employee set LastPayrollDate=case when LastPayrollDate is null or LastPayrollDate<@PayDay then @PayDay else LastPayrollDate end, Rate = case when PayType in (1,2) and Rate<>@EmployeeRate then @EmployeeRate else Rate end where Id=@EmployeeId";
+				"update Employee set LastPayrollDate=case when LastPayrollDate is null or LastPayrollDate<@PayDay then @PayDay else LastPayrollDate end, Rate = case when PayType in (1,2) and Rate<>@EmployeeRate then @EmployeeRate else Rate end, PayCodes = case when PayType in (1,2) then @EmployeePayCodes else PayCodes end where Id=@EmployeeId";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, payChecks);

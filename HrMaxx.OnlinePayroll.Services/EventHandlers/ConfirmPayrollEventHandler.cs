@@ -113,7 +113,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						_mementoDataService.AddMementoData(memento);
 
 					}
-					_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(event1.Payroll.PayChecks);
+					_payrollService.UpdateLastPayrollDateAndPayRateEmployee(event1.Payroll.PayChecks.Where(pc=>pc.UpdateEmployeeRate).ToList());
 					
 					if (!event1.Payroll.Company.LastPayrollDate.HasValue ||
 							event1.Payroll.Company.LastPayrollDate < event1.Payroll.PayDay)
