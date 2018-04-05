@@ -76,6 +76,59 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Monthly=4
 	}
 
+	public enum PayrollScheduleSubType
+	{
+		[HrMaxxSecurity(DbId = 0, DbName = "Select")]
+		NA = 0,
+		[HrMaxxSecurity(DbId = 1, DbName = "Weekly-Monday")]
+		WeeklyMonday = 1,
+		[HrMaxxSecurity(DbId = 2, DbName = "Weekly-Tuesday")]
+		WeeklyTuesday = 2,
+		[HrMaxxSecurity(DbId = 3, DbName = "Weekly-Wednesday")]
+		WeeklyWednesday = 3,
+		[HrMaxxSecurity(DbId = 4, DbName = "Weekly-Thursday")]
+		WeeklyThursday = 4,
+		[HrMaxxSecurity(DbId = 5, DbName = "Weekly-Friday")]
+		WeeklyFriday = 5,
+		[HrMaxxSecurity(DbId = 6, DbName = "Weekly-Saturday")]
+		WeeklySaturday = 6,
+		[HrMaxxSecurity(DbId = 7, DbName = "Weekly-Sunday")]
+		WeeklySunday = 7,
+		[HrMaxxSecurity(DbId = 8, DbName = "Bi-Weekly (1)-Monday")]
+		BiWeekly1Monday = 8,
+		[HrMaxxSecurity(DbId = 9, DbName = "Bi-Weekly (1)-Tuesday")]
+		BiWeekly1Tuesday = 9,
+		[HrMaxxSecurity(DbId = 10, DbName = "Bi-Weekly (1)-Wednesday")]
+		BiWeekly1Wednesday = 10,
+		[HrMaxxSecurity(DbId = 11, DbName = "Bi-Weekly (1)-Thursday")]
+		BiWeekly1Thursday = 11,
+		[HrMaxxSecurity(DbId = 12, DbName = "Bi-Weekly (1)-Friday")]
+		BiWeekly1Friday = 12,
+		[HrMaxxSecurity(DbId = 13, DbName = "Bi-Weekly (1)-Saturday")]
+		BiWeekly1Saturday = 13,
+		[HrMaxxSecurity(DbId = 14, DbName = "Bi-Weekly (1)-Sunday")]
+		BiWeekly1Sunday = 14,
+		[HrMaxxSecurity(DbId = 15, DbName = "Bi-Weekly (2)-Monday")]
+		BiWeekly2Monday = 15,
+		[HrMaxxSecurity(DbId = 16, DbName = "Bi-Weekly (2)-Tuesday")]
+		BiWeekly2Tuesday = 16,
+		[HrMaxxSecurity(DbId = 17, DbName = "Bi-Weekly (2)-Wednesday")]
+		BiWeekly2Wednesday = 17,
+		[HrMaxxSecurity(DbId = 18, DbName = "Bi-Weekly (2)-Thursday")]
+		BiWeekly2Thursday = 18,
+		[HrMaxxSecurity(DbId = 19, DbName = "Bi-Weekly (2)-Friday")]
+		BiWeekly2Friday = 19,
+		[HrMaxxSecurity(DbId = 20, DbName = "Bi-Weekly (2)-Saturday")]
+		BiWeekly2Saturday = 20,
+		[HrMaxxSecurity(DbId = 21, DbName = "Bi-Weekly (2)-Sunday")]
+		BiWeekly2Sunday = 21,
+		[HrMaxxSecurity(DbId = 22, DbName = "Semi-Monthly")]
+		SemiMonthly = 22,
+		[HrMaxxSecurity(DbId = 23, DbName = "Monthly")]
+		Monthly = 23
+		
+	}
+
 	public enum BillingOptions
 	{
 		None=0,

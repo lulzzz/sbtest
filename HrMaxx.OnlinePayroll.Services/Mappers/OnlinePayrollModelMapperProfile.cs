@@ -639,6 +639,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayrollMessage, opt => opt.Ignore())
 				.ForMember(dest => dest.Contact, opt => opt.Ignore())
 				.ForMember(dest => dest.IsFiler1095, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollScheduleDay, opt => opt.Ignore())
 				.ForMember(dest => dest.HasLocations, opt => opt.Ignore());
 
 

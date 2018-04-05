@@ -35,6 +35,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string FederalPin { get; set; }
 		public int DepositSchedule941 { get; set; }
 		public int PayrollSchedule { get; set; }
+		public int PayrollScheduleDay { get; set; }
 		public int PayCheckStock { get; set; }
 		public string LastModifiedBy { get; set; }
 		public DateTime LastModified { get; set; }

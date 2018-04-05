@@ -80,6 +80,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.PayCheckStock = dbMappedCompany.PayCheckStock;
 				dbCompany.PayrollDaysInPast = dbMappedCompany.PayrollDaysInPast;
 				dbCompany.PayrollSchedule = dbMappedCompany.PayrollSchedule;
+				dbCompany.PayrollScheduleDay = dbMappedCompany.PayrollScheduleDay;
 				dbCompany.StatusId = dbMappedCompany.StatusId;
 				dbCompany.TaxFilingName = dbMappedCompany.TaxFilingName;
 				dbCompany.MinWage = dbMappedCompany.MinWage;

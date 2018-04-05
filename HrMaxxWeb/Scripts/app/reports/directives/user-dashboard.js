@@ -25,9 +25,22 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						viewingChart: 0,
 						myNews: [],
 						reportData: [],
-						tab:1
+						tab: 1,
+						printOption:0
 					}
+					$scope.print = function(option) {
+						dataSvc.printOption = option;
+						$timeout(function() {
+							$window.print();
+						}, 1);
+						
+					}
+					$scope.payrollScheduleSubTypes = [
+						{ id: 0, title: 'Not Selected' }, { id: 1, title: 'Weekly-Monday' }, { id: 2, title: 'Weekly-Tuesday' }, { id: 3, title: 'Weekly-Wednesday' }, { id: 4, title: 'Weekly-Thursday' }, { id: 5, title: 'Weekly-Friday' }, { id: 6, title: 'Weekly-Saturday' }, { id: 7, title: 'Weekly-Sunday' }, { id: 8, title: 'Bi-Weekly (1)-Monday' }, { id: 9, title: 'Bi-Weekly (1)-Tuesday' }, { id: 10, title: 'Bi-Weekly (1)-Wednesday' }, { id: 11, title: 'Bi-Weekly (1)-Thursday' }, { id: 12, title: 'Bi-Weekly (1)-Friday' }, { id: 13, title: 'Bi-Weekly (1)-Saturday' }, { id: 14, title: 'Bi-Weekly (1)-Sunday' }, { id: 15, title: 'Bi-Weekly (2)-Monday' }, { id: 16, title: 'Bi-Weekly (2)-Tuesday' }, { id: 17, title: 'Bi-Weekly (2)-Wednesday' }, { id: 18, title: 'Bi-Weekly (2)-Thursday' }, { id: 19, title: 'Bi-Weekly (2)-Friday' }, { id: 20, title: 'Bi-Weekly (2)-Saturday' }, { id: 21, title: 'Bi-Weekly (2)-Sunday' }, { id: 22, title: 'Semi-Monthly' }, { id: 23, title: 'Monthly' },
 
+
+
+					];
 					$scope.zionAPI = zionAPI; 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;
@@ -35,9 +48,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 					$scope.chartData = [];
 					$scope.selectedChart = null;
-					$scope.print = function () {
-						$window.print();
-					}
+					
 					$scope.drawCharts = function () {
 
 						$scope.data.criteria = '';
@@ -449,7 +460,83 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						});
 						
 					};
+					$scope.selectedSchedules = [];
+				
+					$scope.drawCompanyScheduleChart = function () {
+						var result = [];
+						var criteria = null;
+						if ($scope.selectedSchedules.length > 0) {
+							criteria = '';
+							$.each($scope.selectedSchedules, function(index, i) {
+								criteria += i.id;
+								result.push({
+									schedule: i.id,
+									scheduleText: getReportingDayText(i.id),
+									minimized: false,
+									data: []
+								});
+								if (index < $scope.selectedSchedules.length - 1)
+									criteria += ',';
+							});
+						} 
+						
+						
+						reportRepository.getDashboardData('GetCompanyPayrollSchedules', null, null, criteria, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							var data = data1[0];
+							if (data) {
+								dataSvc.approachingPayrolls = data.data;
+								
+								$.each(data.data, function (ind, ap) {
+									if (ind > 0) {
+										var contactJson = ap[5] ? JSON.parse(ap[5]) : '';
+										var item = {
+											hostId: ap[0],
+											companyId: ap[1],
+											host: ap[2],
+											company: ap[3],
+											reportingDay: ap[4],
+											reportingDayText: getReportingDayText(ap[4]),
+											contactName: contactJson ? contactJson.FirstName + ' ' + contactJson.LastName : '',
+											contactNumber: contactJson ? (contactJson.Phone ? $scope.getPhone(contactJson.Phone) : $scope.getPhone(contactJson.Mobile)) : ''
+										};
+										var resultset = $filter('filter')(result, { schedule: ap[4] })[0];
+										if(resultset)
+											resultset.data.push(item);
+										else {
+											var j = {
+												schedule: ap[4],
+												scheduleText: getReportingDayText(ap[4]),
+												minimized: false,
+												data: []
+											};
+											j.data.push(item);
+											result.push(j);
+										}
+									}
 
+								});
+
+								dataSvc.viewingChart = 5;
+								dataSvc.companySchedules = angular.copy(result);
+								
+
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+
+					};
+					var getScheduleText = function(schedule) {
+						if (schedule === 1)
+							return 'Weekly';
+						else
+							return 'Bi-Weekly';
+					}
+					var getReportingDayText = function (day) {
+						return $filter('filter')($scope.payrollScheduleSubTypes, { id: day })[0].title;
+						
+					}
 					$scope.tableData = [];
 					$scope.tableParams = new ngTableParams({
 						page: 1,            // show first page
@@ -487,6 +574,50 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						}
 					};
 
+					$scope.tableDataCompanySchedule = [];
+					$scope.tableParamsCompanySchedules = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						sorting: {
+							due: 'asc'     // initial sorting
+						}
+					}, {
+						total: dataSvc.companySchedules ? data.companySchedules.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableDataSchedules(params);
+							return $scope.tableDataCompanySchedule;
+						}
+					});
+					if ($scope.tableParamsCompanySchedules.settings().$scope == null) {
+						$scope.tableParamsCompanySchedules.settings().$scope = $scope;
+					}
+					$scope.fillTableDataSchedules = function (params) {
+
+						// use build-in angular filter
+						if (dataSvc.companySchedules && dataSvc.companySchedules.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')(dataSvc.companySchedules, params.filter()) :
+																dataSvc.companySchedules;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParamsCompanySchedules = params;
+							$scope.tableDataCompanySchedule = orderedData;
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					$scope.getPhone = function (p) {
+						
+						if (p)
+							return '(' + p.substring(0, 3) + ') ' + p.substring(3, 6) + '-' + p.substring(6, 12);
+						else {
+							return '';
+						}
+					}
 					
 
 					$scope.filterCompaniesApproachingPayroll = function() {
