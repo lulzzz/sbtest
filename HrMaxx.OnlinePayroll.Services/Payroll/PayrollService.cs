@@ -122,9 +122,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else if (paycheck.Employee.PayType == EmployeeType.Salary)
 						{
 							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
-							if (paycheck.Employee.Rate != paycheck.Salary)
-								paycheck.UpdateEmployeeRate = true;
-							paycheck.Employee.Rate = paycheck.Salary;
+							//if (paycheck.Employee.Rate != paycheck.Salary)
+							//	paycheck.UpdateEmployeeRate = true;
+							//paycheck.Employee.Rate = paycheck.Salary;
 							paycheck.PayCodes = new List<PayrollPayCode>();
 						}
 						else if (paycheck.Employee.PayType == EmployeeType.JobCost)
