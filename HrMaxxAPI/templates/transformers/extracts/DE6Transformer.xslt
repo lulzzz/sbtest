@@ -88,7 +88,7 @@ $$spaces20$$$$spaces5$$$$spaces2$$$$spaces1$$
 <xsl:value-of select="substring(concat(Address/Zip,'                                                  '),1,5)"/>$$spaces100$$$$spaces10$$$$spaces5$$$$spaces2$$
 </xsl:template>
   <xsl:template match="Accumulation">
-<xsl:variable name="empState" select="Contact/Address/StateId"/>
+<xsl:variable name="empState" select="1"/>
 S<xsl:value-of select="translate(SSNVal,'-','')"/> <xsl:value-of select="substring(concat(translate(LastName,$smallcase,$uppercase),'                                                  '),1,20)"/>
 <xsl:value-of select="substring(concat(translate(FirstName,$smallcase,$uppercase),'                                                  '),1,12)"/>
 <xsl:value-of select="substring(concat(translate(MiddleInitial,$smallcase,$uppercase),'                                                  '),1,1)"/>06$$spaces10$$$$spaces5$$$$spaces2$$$$spaces1$$

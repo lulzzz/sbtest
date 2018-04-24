@@ -18,7 +18,10 @@ namespace HrMaxx.Common.Repository.Security
 			public Guid? Company { get; set; }
 			public Guid? Employee { get; set; }
 			public bool Active { get; set; }
-			
+			public int RoleVersion { get; set; }
+			public string LastModifiedBy { get; set; }
+			public DateTime? LastModified { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -28,6 +31,7 @@ namespace HrMaxx.Common.Repository.Security
 						userIdentity.AddClaim(new Claim(HrMaxxClaimTypes.UserID, this.Id));
 						userIdentity.AddClaim(new Claim(HrMaxxClaimTypes.Email, this.Email));
 						userIdentity.AddClaim(new Claim(HrMaxxClaimTypes.Name, string.Format("{0} {1}", this.FirstName, this.LastName)));
+						userIdentity.AddClaim(new Claim(HrMaxxClaimTypes.RoleVersion, this.RoleVersion.ToString()));
 						if(this.Host.HasValue)
 							userIdentity.AddClaim(new Claim(HrMaxxClaimTypes.Host, this.Host.Value.ToString()));
 						if(this.Company.HasValue)

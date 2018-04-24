@@ -51,6 +51,9 @@
           <Property Name="Company" Type="uniqueidentifier" />
           <Property Name="Active" Type="bit" Nullable="false" />
           <Property Name="Employee" Type="uniqueidentifier" />
+          <Property Name="RoleVersion" Type="int" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="nvarchar(max)" />
+          <Property Name="LastModified" Type="datetime" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
@@ -158,6 +161,9 @@
           <Property Name="Company" Type="Guid" />
           <Property Name="Active" Type="Boolean" Nullable="false" />
           <Property Name="Employee" Type="Guid" />
+          <Property Name="RoleVersion" Type="Int32" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="LastModified" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="UserModel.User" Multiplicity="1">
@@ -217,6 +223,9 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="UserModel.User">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="RoleVersion" ColumnName="RoleVersion" />
                 <ScalarProperty Name="Employee" ColumnName="Employee" />
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="Company" ColumnName="Company" />

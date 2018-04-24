@@ -11,8 +11,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-list.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'reportRepository',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, reportRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'reportRepository', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, reportRepository, ClaimTypes) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
@@ -23,7 +23,11 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
-
+					$scope.showBulkTerminate = $scope.mainData.hasClaim(ClaimTypes.EmployeeBulkTerminate, 1);
+					$scope.showSickLeaveExport = $scope.mainData.hasClaim(ClaimTypes.EmployeeSickLeaveExport,1);
+					$scope.showImportExport = $scope.mainData.hasClaim(ClaimTypes.EmployeeImportExport, 1);
+					$scope.showCopyEmployees = $scope.mainData.hasClaim(ClaimTypes.EmployeeCopy, 1);
+					$scope.showPayChecks = $scope.mainData.hasClaim(ClaimTypes.EmployeePayChecks, 1);
 
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);

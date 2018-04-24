@@ -27,5 +27,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ConfirmPayrollLogItem GetConfirmPayrollQueueItem(Guid payrollId);
 		int GetConfirmPayrollQueueItemIndex(ConfirmPayrollLogItem item);
 		int GetConfirmPayrollQueueItemIndex(Guid item);
+		string GetUserRoleVersion(string userId);
+		void UpdateUserRoleVersion(string id, int roleVersion);
 	}
 }

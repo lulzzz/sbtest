@@ -519,7 +519,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				if (paycheck.Employee.Rate <= 0)
 					return 0;
-				var val = (paycheck.Salary/paycheck.Employee.Rate)*(40*52/365)*payType.RatePerHour;
+				const decimal perDayQuotient = (decimal)5.70;
+				var val = (paycheck.Salary/paycheck.Employee.Rate)*perDayQuotient*payType.RatePerHour;
 				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
 					return 7*val;
 				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)

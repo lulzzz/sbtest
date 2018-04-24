@@ -13,11 +13,14 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/accumulated-pay-type-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$filter', 'companyRepository',
-				function ($scope, $rootScope, $filter, companyRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository', 'ClaimTypes',
+				function ($scope, $rootScope, $filter, companyRepository, ClaimTypes) {
 					
-				$scope.selected = null;
+					$scope.selected = null;
 					$scope.mainData = $scope.$parent.$parent.mainData;
+					$scope.enableIsCompanyManaged = $scope.mainData.hasClaim(ClaimTypes.CompanyAcumulatedPaytypesCompanyManaged, 1);
+					$scope.enableIsLumpSum = $scope.mainData.hasClaim(ClaimTypes.CompanyAccumulatedPayTypesLumpSum, 1);
+					
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};

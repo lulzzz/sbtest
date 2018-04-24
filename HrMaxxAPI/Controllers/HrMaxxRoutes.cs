@@ -51,5 +51,6 @@
 		public const string GetTaxes = "GetTaxes";
 		public const string SaveTaxes = "SaveTaxes";
 		public const string CreateTaxes = "CreateTaxes/{year:int}";
+		public const string AccessMetaData = "AccessMetaData";
 	}
 }

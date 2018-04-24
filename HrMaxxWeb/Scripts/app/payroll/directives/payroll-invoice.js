@@ -14,15 +14,21 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-invoice.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository',
-				function ($scope, $element, $location, $filter, EntityTypes, payrollRepository, commonRepository, hostRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'EntityTypes', 'payrollRepository', 'commonRepository', 'hostRepository', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, EntityTypes, payrollRepository, commonRepository, hostRepository, ClaimTypes) {
 					var dataSvc = {
 						hostContact: null,
 						companyContact: null,
 						hostHomePage: null,
 						config: null,
 						companyUpdated : false,
-						sourceTypeId: EntityTypes.Invoice
+						sourceTypeId: EntityTypes.Invoice,
+						showVersions: $scope.mainData.hasClaim(ClaimTypes.InvoiceVersions, 1),
+						showEditable: $scope.mainData.hasClaim(ClaimTypes.InvoiceEditable, 1),
+						showDelete: $scope.mainData.hasClaim(ClaimTypes.InvoiceDelete, 1),
+						showCommissions: $scope.mainData.hasClaim(ClaimTypes.InvoiceCommissions, 1),
+						showPayments: $scope.mainData.hasClaim(ClaimTypes.InvoicePayments, 1),
+						showDelivery: $scope.mainData.hasClaim(ClaimTypes.PayrollDelivery, 1)
 				}
 					
 					$scope.list = [];

@@ -1,6 +1,6 @@
 ﻿common.controller('mainCtrl', [
-	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal', 'commonRepository', '$location',
-	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal, commonRepository, $location) {
+	'$scope', '$rootScope', '$element', 'hostRepository', 'zionAPI', 'companyRepository', 'localStorageService', '$interval', '$filter', '$routeParams', '$document', '$window', '$uibModal', 'commonRepository', '$location', 'ClaimTypes',
+	function ($scope, $rootScope, $element, hostRepository, zionAPI, companyRepository, localStorageService, $interval, $filter, $routeParams, $document, $window, $modal, commonRepository, $location, ClaimTypes) {
 		$scope.alerts = [];
 		$scope.params = $routeParams;
 
@@ -99,7 +99,11 @@
 					quarter: 0
 				}
 			},
-			refreshedOn: null
+			refreshedOn: null,
+			hasClaim : function (type1, value) {
+				var match = $filter('filter')(this.userClaims, { Type: type1 }, true);
+				return match.length > 0;
+			}
 		};
 		$scope.data = dataSvc;
 		$scope.refreshHostAndCompanies = function() {
@@ -122,7 +126,6 @@
 			});
 		}
 		
-		
 		function _init() {
 			var auth = localStorageService.get('authorizationData');
 			if (auth) {
@@ -139,6 +142,10 @@
 				}
 				if (dataInput.employee !== '00000000-0000-0000-0000-000000000000') {
 					dataSvc.userEmployee = dataInput.employee;
+
+				}
+				if (dataInput.claims) {
+					dataSvc.userClaims = dataInput.claims;
 
 				}
 				$scope.refreshHostAndCompanies();
@@ -311,7 +318,11 @@
 			var result = args.result;
 			if (result.sourceTypeId === 2) {
 				dataSvc.fromSearch = true;
-				$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Payrolls/" + +(new Date().getTime()) + '#invoice');
+				if(dataSvc.hasClaim(ClaimTypes.PayrollProcess,1))
+					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Payrolls/" + +(new Date().getTime()) + '#invoice');
+				else {
+					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Company/" + +(new Date().getTime()));
+				}
 			}
 			else if (result.sourceTypeId === 3) {
 				dataSvc.fromSearch = true;

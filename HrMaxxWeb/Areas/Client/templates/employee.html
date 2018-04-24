@@ -10,7 +10,7 @@
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right" id="companytabs">
 					<li ng-class="{'active':data.tab!==6}" ng-click="data.tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-					<li ng-class="{'active':data.tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && (mainData.userRole==='SuperUser' || mainData.userRole==='Master')" ng-click="data.tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
+					<li ng-class="{'active':data.tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && data.viewVersions" ng-click="data.tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 				</ul>
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
@@ -57,7 +57,7 @@
 										</div>
 										<div class="col-sm-4">
 											<div class="form-group">
-												<label>SSN <button class="btn btn-info btn-sm" ng-disabled="!selected.ssn" ng-click="checkSSN()"><i class="fa fa-eye"></i></button></label>
+												<label>SSN <button class="btn btn-info btn-sm" ng-disabled="!selected.ssn" ng-click="checkSSN()" ng-show="data.showSSN"><i class="fa fa-eye"></i></button></label>
 												<input type="text" name="ssn" class="form-control" ng-model="selected.ssn" ui-mask="899-99-9999" required data-parsley-group="wizard-step-1" />
 											</div>
 										</div>
@@ -489,7 +489,7 @@
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
-					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" show-controls="showControls" agencies="data.employeeMetaData.agencies" />
+					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" show-controls="showControls && data.editableDeductions" agencies="data.employeeMetaData.agencies" />
 				</div>
 			</div>
 		</div>
@@ -506,7 +506,7 @@
 			<div id="collapseThree" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="row">
-						<button class="btn btn-sm btn-danger" ng-click="getCompanySickLeaveExport(1)">Sick Leave Export</button>
+						<button class="btn btn-sm btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport">Sick Leave Export</button>
 					</div>
 					<div class="row" ng-if="selected.accumulations.length===0">
 						no records found
@@ -542,7 +542,7 @@
 							<td class="text-right" ng-show="selectedAccumulation && selectedAccumulationIndex===$index"><input name="cao" class="form-control" ng-model="pt.carryOver" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal /></td>
 							<td class="text-right">{{pt.available}}</td>
 							<td class="text-right">{{calculateAvailableWage(pt) | currency:'$'}}</td>
-							<td ng-show=" mainData.userRole==='Master' || mainData.userRole==='SuperUser'">
+							<td ng-show="data.editableAccumulations">
 								<button class="btn btn-sm btn-primary" ng-show="!selectedAccumulation" ng-click="setSelectedAccumulation(pt, $index)"><i class="fa fa-pencil"></i></button>
 								<button class="btn btn-sm btn-success" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="saveEmployeeAccumulation(pt)"><i class="fa fa-save"></i></button>
 								<button class="btn btn-sm btn-default" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="cancelAccumulation(pt)"><i class="fa fa-remove"></i></button>
@@ -553,7 +553,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup && data.viewReports">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">

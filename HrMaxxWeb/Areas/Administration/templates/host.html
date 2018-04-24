@@ -19,7 +19,7 @@
 				Taxation
 				<small>Taxation Address and Federal and State details</small>
 			</li>
-			<li ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master' || mainData.userRole==='CorpStaff'">
+			<li ng-show="data2.viewContract">
 				Contract
 				<small>Details for billing and invoice</small>
 			</li>
@@ -63,7 +63,7 @@
 								<div>
 									<label for="ispeohost" class="switch">
 										PEO Host?
-										<input id="ispeohost" type="checkbox" ng-model="host.isPeoHost" ng-disabled="host.id && (mainData.userRole==='SuperUser' || mainData.userRole!=='Master')" /><i></i>
+										<input id="ispeohost" type="checkbox" ng-model="host.isPeoHost" ng-disabled="host.id && data2.disableIsPEO" /><i></i>
 									</label>
 								</div>
 							</div>
@@ -328,7 +328,7 @@
 			</fieldset>
 		</div>
 		<!-- end wizard step-4 -->
-		<div class="wizard-step-5" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master' || mainData.userRole==='CorpStaff'">
+		<div class="wizard-step-5" ng-show="data2.viewContract">
 			<fieldset>
 				<legend class="width-full">Contract</legend>
 				<!-- begin row -->

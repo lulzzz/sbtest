@@ -12,6 +12,7 @@ using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.Infrastructure.Tracing;
+using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Code.Filters;
 using log4net;
 
@@ -23,6 +24,7 @@ namespace HrMaxxAPI.Controllers
 		public IMapper Mapper { get; set; }
 		public ILog Logger { get; set; }
 		public IBus Bus { get; set; }
+		public ITaxationService _taxationService { get; set; }
 
 		private const string NoData = "No Data exists for this time period and company";
 		private const string NoPayrollData = "No Payroll Data exists for this time period and company";
@@ -57,6 +59,20 @@ namespace HrMaxxAPI.Controllers
 					HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
 						(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName,
 						"Invalid token version" + tokenVersionstr);
+					throw new HttpResponseException(new HttpResponseMessage
+					{
+						StatusCode = HttpStatusCode.Unauthorized
+					});
+				}
+				if (!CurrentUser.RoleVersion.Equals(_taxationService.GetUserRoleVersion(CurrentUser.UserId)))
+				{
+					Claim tokenVersion = CurrentUser.Claims.FirstOrDefault(c => c.Type == HrMaxxClaimTypes.RoleVersion);
+					string tokenVersionstr = "No Role Vesion";
+					if (tokenVersion != null)
+						tokenVersionstr = tokenVersion.Value;
+					HrMaxxTrace.LogRequest(PerfTraceType.BusinessLayerCall, GetType(), traceMessage,
+						(CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName,
+						"Invalid role version" + tokenVersionstr);
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.Unauthorized

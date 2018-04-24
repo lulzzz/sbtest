@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -182,19 +183,43 @@ namespace HrMaxxAPI.Controllers.User
 						userExists.Company = model.Company;
 						userExists.Employee = model.Employee;
 						userExists.PhoneNumber = model.Phone;
+						userExists.LastModified = DateTime.Now;
+						userExists.LastModifiedBy = model.UserName;
+
 						if (userExists.Email != model.Email)
 						{
 							userExists.Active = false;
 							userExists.EmailConfirmed = false;
 						}
 						userExists.Email = model.Email;
-
+						var removeClaims =
+							userExists.Claims.Where(c => model.Claims.All(mc => mc.ClaimType != c.ClaimType))
+								.Select(c => new Claim(c.ClaimType, c.ClaimValue))
+								.ToList();
+						var addclaims =
+							model.Claims.Where(c => userExists.Claims.All(mc => mc.ClaimType != c.ClaimType))
+								.Select(c => new Claim(c.ClaimType, c.ClaimValue))
+								.ToList();
+						if (removeClaims.Any() || addclaims.Any())
+						{
+							_userService.UpdateClaims(userExists.Id,
+							addclaims,
+							removeClaims);
+							userExists.RoleVersion++;
+							_taxationService.UpdateUserRoleVersion(userExists.Id, userExists.RoleVersion);
+						}
+						
 						await UserManager.UpdateAsync(userExists);
 						if (userExists.Roles.First().RoleId != model.Role.RoleId.ToString())
 						{
 							await UserManager.RemoveFromRoleAsync(userExists.Id, ((RoleTypeEnum)Convert.ToInt32(userExists.Roles.First().RoleId)).GetDbName());
 							await UserManager.AddToRoleAsync(userExists.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
 						}
+
+						
+						
+						
+						
 						if (!userExists.EmailConfirmed)
 							await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
 
@@ -215,11 +240,13 @@ namespace HrMaxxAPI.Controllers.User
 
 				}
 
-				var user = new ApplicationUser { UserName = model.SubjectUserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Employee = model.Employee, Active = model.Active, PhoneNumber = model.Phone };
+				var user = new ApplicationUser { UserName = model.SubjectUserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Employee = model.Employee, Active = model.Active, PhoneNumber = model.Phone, LastModified = DateTime.Now, LastModifiedBy = model.UserName};
 				var result = await UserManager.CreateAsync(user, "Paxol1234!");
 				if (result.Succeeded)
 				{
 					await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
+					_userService.UpdateClaims(user.Id, model.Claims.Select(c=>new Claim(c.ClaimType, "1")).ToList(), new List<Claim>());
+					_taxationService.UpdateUserRoleVersion(user.Id, user.RoleVersion);
 					model.UserId = new Guid(user.Id);
 					model.SubjectUserName = user.UserName;
 					model.SubjectUserId = model.UserId;

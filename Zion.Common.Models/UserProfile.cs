@@ -20,6 +20,9 @@ namespace HrMaxx.Common.Models
 		public Guid? Host { get; set; }
 		public Guid? Company { get; set; }
 		public bool Active { get; set; }
+		public int RoleVersion { get; set; }
+		public DateTime? LastModified { get; set; }
+		public string LastModifiedBy { get; set; }
 	}
 
 	public class UserRole

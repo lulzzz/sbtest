@@ -82,7 +82,10 @@ namespace HrMaxx.Common.Services.Mappers
 				.ForMember(dest => dest.Active, opt => opt.MapFrom(src => src.Active))
 				.ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
 				.ForMember(dest => dest.Employee, opt => opt.MapFrom(src => src.Employee))
+				.ForMember(dest => dest.Version, opt => opt.MapFrom(src => src.RoleVersion))
+				.ForMember(dest => dest.Claims, opt => opt.MapFrom(src => src.UserClaims))
 				.ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Roles.FirstOrDefault()));
+			CreateMap<Models.DataModel.UserClaim, Models.Dtos.UserClaim>();
 
 			CreateMap<Models.DataModel.InsuranceGroup, Models.InsuranceGroupDto>();
 			CreateMap<Models.InsuranceGroupDto, Models.DataModel.InsuranceGroup>();

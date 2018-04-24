@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
@@ -9,6 +10,7 @@ using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.Infrastructure.Transactions;
 using Newtonsoft.Json;
 
 namespace HrMaxx.Common.Services.Security
@@ -100,6 +102,27 @@ namespace HrMaxx.Common.Services.Security
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void UpdateClaims(string id, List<Claim> addClaims, List<Claim> removeClaims )
+		{
+			try
+			{
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_repository.UpdateUserClaims(id, addClaims, removeClaims);
+					txn.Complete();
+				}
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " user claim ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		
 	}
 
 	

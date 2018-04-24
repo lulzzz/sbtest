@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Serialization;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
@@ -233,6 +234,12 @@ namespace HrMaxx.OnlinePayroll.Services
 							SUIManagementRate = c.Contract.InvoiceSetup.SUIManagement,
 							Name = c.Name
 						}).ToList();
+		}
+
+		public List<Access> GetAccessMetaData()
+		{
+			return _readerService.GetDataFromStoredProc<List<Access>, List<Access>>(
+					"GetAccessMetaData", new List<FilterParam>(), new XmlRootAttribute("AccessList"));
 		}
 	}
 }

@@ -19,7 +19,17 @@ namespace HrMaxx.Common.Models.Dtos
 		public Guid? Company { get; set; }
 		public Guid? Employee { get; set; }
 		public UserRole Role { get; set; }
+		public List<UserClaim> Claims { get; set; } 
+		public int Version { get; set; }
+		public DateTime? LastModified { get; set; }
+		public string LastModifiedBy { get; set; }
 	}
 
+	public class UserClaim
+	{
+		public int Id { get; set; } 
+		public string ClaimType { get; set; }
+		public string ClaimValue { get; set; }
+	}
 	
 }

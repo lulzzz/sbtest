@@ -23,8 +23,8 @@
 					<tr ng-repeat="row in $data" class="mouse-over-pointer" ng-click="set(row)" ng-class="{'success':selected.id===row.id}">
 						<td ng-repeat="col in $columns" class="text-center" ng-class="{'hidden-print' : col.field==='controls'}">
 							{{ col.field!=='controls' && col.field!=='isTerminate' ? col.isdate? (row[col.field] | date:'MM/dd/yyyy') : col.ismoney ? (row[col.field] | currency:'$') : row[col.field] : ''}}
-							<input type="checkbox" name="empTerminate" ng-model="row.isTerminated" ng-click="empTerminate(row, $event)" ng-show="col.field==='isTerminate' && row.statusId===1" ng-value="''"/>
-							<button class="btn btn-xs btn-success" ng-click="viewPayCheckList(row, $event)" ng-show="row.lastPayrollDate && col.field==='controls'"><i class="fa fa-money"></i></button>
+							<input type="checkbox" name="empTerminate" ng-model="row.isTerminated" ng-click="empTerminate(row, $event)" ng-show="showBulkTerminate && col.field==='isTerminate' && row.statusId===1" ng-value="''" />
+							<button class="btn btn-xs btn-success" ng-click="viewPayCheckList(row, $event)" ng-show="showPayChecks && row.lastPayrollDate && col.field==='controls'"><i class="fa fa-money"></i></button>
 						</td>
 						<td title=" 'cheks' " class="hidden-print">
 							
@@ -55,16 +55,16 @@
 			<div class="row hidden-print" ng-if="mainData.userRole!=='Employee'">
 				<button class="btn btn-sm btn-primary pull-left" ng-show="mainData.selectedCompany && !selected" ng-click="add()">Add</button>
 				
-				<button class="btn btn-sm btn-danger pull-right" ng-click="bulkTerminateEmployees()" ng-if="bulkTerminateAvailable()>0">Bulk Terminate ({{bulkTerminateAvailable()}})</button>
-				<button class="btn btn-sm btn-info attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+				<button class="btn btn-sm btn-danger pull-right" ng-click="bulkTerminateEmployees()" ng-if="showBulkTerminate && bulkTerminateAvailable()>0">Bulk Terminate ({{bulkTerminateAvailable()}})</button>
+				<button class="btn btn-sm btn-info attach-button pull-right" ng-show="showImportExport" id=" attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 					<i class="fa fa-upload"></i>Import Employees
 				</button>
 				&nbsp;
-				<button class="btn btn-sm btn-warning pull-right"  ng-show="mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template/Export</button>
+				<button class="btn btn-sm btn-warning pull-right"  ng-show="showImportExport && mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template/Export</button>
 				&nbsp;
-				<button class="btn btn-sm btn-success pull-right" ng-if="mainData.userRole==='SuperUser' || mainData.userRole==='Master'" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
+				<button class="btn btn-sm btn-success pull-right" ng-show="showCopyEmployees" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
 				&nbsp;
-				<button class="btn btn-sm btn-danger" ng-click="getCompanySickLeaveExport(0)">Sick Leave Export</button>
+				<button class="btn btn-sm btn-danger" ng-click="getCompanySickLeaveExport(0)" ng-show="showSickLeaveExport">Sick Leave Export</button>
 			</div>
 
 			<!-- end panel -->

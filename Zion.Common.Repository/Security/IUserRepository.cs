@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
@@ -17,5 +18,8 @@ namespace HrMaxx.Common.Repository.Security
 		List<Guid> GetUserByRoleAndId(List<RoleTypeEnum> role, Guid? userId);
 		List<UserModel> GetUsers(Guid? hostId, Guid? companyId);
 		void SaveUser(UserModel usermodel);
+		void UpdateUserClaims(string id, List<Claim> addClaim, List<Claim> removeClaims);
+
+		List<UserRoleVersion> GetUserRoleVersions();
 	}
 }

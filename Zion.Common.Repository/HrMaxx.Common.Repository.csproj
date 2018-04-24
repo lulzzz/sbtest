@@ -122,6 +122,10 @@
     <Compile Include="Migrations\201607101159488_UserEmployeeField.Designer.cs">
       <DependentUpon>201607101159488_UserEmployeeField.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804110750485_20180411_UserRoleVersion.cs" />
+    <Compile Include="Migrations\201804110750485_20180411_UserRoleVersion.Designer.cs">
+      <DependentUpon>201804110750485_20180411_UserRoleVersion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Notifications\INotificationRepository.cs" />
     <Compile Include="Notifications\NotificationRepository.cs" />
@@ -171,6 +175,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201607101159488_UserEmployeeField.resx">
       <DependentUpon>201607101159488_UserEmployeeField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804110750485_20180411_UserRoleVersion.resx">
+      <DependentUpon>201804110750485_20180411_UserRoleVersion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

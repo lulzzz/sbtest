@@ -227,6 +227,16 @@ common.factory('commonRepository', [
 				});
 				return deferred.promise;
 			},
+			getAccessMetaData: function () {
+				var deferred = $q.defer();
+				var url = "AccessMetaData";
+				commonServer.one(url).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
 			saveUser: function(user) {
 				var deferred = $q.defer();
 				commonServer.all('SaveUser').post(user).then(function (data) {
@@ -347,6 +357,7 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
+
 
 		};
 	}

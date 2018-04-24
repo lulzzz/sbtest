@@ -26,8 +26,12 @@ namespace HrMaxxAPI.Resources.Common
 		public Guid? Employee { get; set; }
 		public bool Active { get; set; }
 		public UserRole Role { get; set; }
+		public List<UserClaim> Claims { get; set; } 
 		public Guid SubjectUserId { get; set; }
 		public string SubjectUserName { get; set; }
+		public int Version { get; set; }
+		public DateTime? LastModified { get; set; }
+		public string LastModifiedBy { get; set; }
 		
 		
 	}

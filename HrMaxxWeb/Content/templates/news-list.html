@@ -68,15 +68,15 @@
 							</div>
 							<div class="form-group col-sm-12">
 								<label for="scope">Scope</label>
-								<select id="scope" name="scope" class="form-control" ng-change="setTargetAudience(true)" ng-disabled="audienceTypeId>2" convert-to-number ng-model="selectedNewsItem.audienceScope">
-									<option value="1">All</option>
-									<option value="3">Host</option>
-									<option value="4">Company</option>
-									<option value="5">Employee</option>
+								<select id="scope" name="scope" class="form-control" ng-change="setTargetAudience(true)" ng-disabled="audienceTypeId<51" convert-to-number ng-model="selectedNewsItem.audienceScope">
+									<option value="90">All</option>
+									<option value="50">Host</option>
+									<option value="30">Company</option>
+									<option value="0">Employee</option>
 
 								</select>
 							</div>
-							<div class="form-group col-sm-12" ng-show="showAudienceList && selectedNewsItem.audienceScope>2">
+							<div class="form-group col-sm-12" ng-show="showAudienceList && selectedNewsItem.audienceScope<51">
 								<label for="audience">Audiences</label>
 								<div ng-dropdown-multiselect="" options="targetAudience" extra-settings="{displayProp: 'value', idProp: 'key', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedAudience" events="audienceEvents"></div>
 

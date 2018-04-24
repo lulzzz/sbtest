@@ -13,11 +13,15 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company.html?v=1.2' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes',
-				function ($scope, $rootScope, $element, $location, $filter, companyRepository, EntityTypes) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes', 'ClaimTypes',
+				function ($scope, $rootScope, $element, $location, $filter, companyRepository, EntityTypes, ClaimTypes) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Company,
-						companyMetaData: null
+						companyMetaData: null,
+						viewVersions: $scope.mainData.hasClaim(ClaimTypes.CompanyVersions, 1),
+						viewContract: $scope.mainData.hasClaim(ClaimTypes.CompanyContract, 1),
+						enablePayrollDaysInPast: $scope.mainData.hasClaim(ClaimTypes.CompanyPayrollDaysinPast, 1),
+
 					}
 
 					$scope.data = dataSvc;

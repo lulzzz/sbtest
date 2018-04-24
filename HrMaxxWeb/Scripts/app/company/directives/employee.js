@@ -13,8 +13,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee.html?v='+version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'payrollRepository', 'EntityTypes', 'reportRepository',
-				function ($scope, $element, $location, $filter, companyRepository, payrollRepository, EntityTypes, reportRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'payrollRepository', 'EntityTypes', 'reportRepository', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, companyRepository, payrollRepository, EntityTypes, reportRepository, ClaimTypes) {
 					var dataSvc = {
 						tab: 1,
 						payCodes: [],
@@ -37,8 +37,14 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						payrollSummary: {
 							year: 0,
 							includeHistory: true
-						}
-					}
+						},
+						viewVersions: $scope.mainData.hasClaim(ClaimTypes.EmployeeVersions, 1),
+						viewReports: $scope.mainData.hasClaim(ClaimTypes.EmployeeReports, 1),
+						editableDeductions: $scope.mainData.hasClaim(ClaimTypes.EmployeeDeductions, 1),
+						editableAccumulations: $scope.mainData.hasClaim(ClaimTypes.EmployeeEditableAccumulatatedPayTypes, 1),
+						showSSN: $scope.mainData.hasClaim(ClaimTypes.EmployeeManageEmployees, 1),
+						showSickLeaveExport: $scope.mainData.hasClaim(ClaimTypes.EmployeeSickLeaveExport,1)
+				}
 					$scope.showincludeclients = false;
 					$scope.tab = 1;
 					$scope.alert = null;

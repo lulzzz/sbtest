@@ -10,8 +10,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll-list.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', '$uibModal','anchorSmoothScroll', '$interval',
-				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, $modal, anchorSmoothScroll, $interval) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', '$anchorScroll', '$uibModal','anchorSmoothScroll', '$interval', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, $anchorScroll, $modal, anchorSmoothScroll, $interval, ClaimTypes) {
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
@@ -21,7 +21,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						payrollAccount: null,
 						hostPayrollAccount: null,
 						employees: [],
-						agencies:[],
+						agencies: [],
 						startingCheckNumber: 0,
 						importMap: null,
 						queuedPayroll: null,
@@ -37,8 +37,20 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								year: 0,
 								quarter: 0
 							}
-						}
-					}
+						},
+						showInvoice: $scope.mainData.hasClaim(ClaimTypes.InvoiceList, 1),
+						showVoidPayroll: $scope.mainData.hasClaim(ClaimTypes.PayrollVoid, 1),
+						showVoidPaycheck: $scope.mainData.hasClaim(ClaimTypes.PayrollVoidPayCheck, 1),
+						showUnVoidPaycheck: $scope.mainData.hasClaim(ClaimTypes.PayrollUnVoidCheck, 1),
+						showChangePayrollDates: $scope.mainData.hasClaim(ClaimTypes.PayrollUpdatePayCycleDates, 1),
+						showChangeCheckNumbers: $scope.mainData.hasClaim(ClaimTypes.PayrollChangeCheckNumberseries, 1),
+						showFixYTD: $scope.mainData.hasClaim(ClaimTypes.PayrollFixYTDs, 1),
+						showEditableTaxes: $scope.mainData.hasClaim(ClaimTypes.PayrollEditableTaxes, 1),
+						showDeletePayroll: $scope.mainData.hasClaim(ClaimTypes.PayrollDelete, 1),
+						canRunHistoryPayroll: $scope.mainData.hasClaim(ClaimTypes.PayrollHistoryPayroll, 1),
+						canConfirm: $scope.mainData.hasClaim(ClaimTypes.PayrollConfirm, 1),
+						canReProcessReConfirm: $scope.mainData.hasClaim(ClaimTypes.PayrollReProcessReConfirm, 1),
+				}
 					$scope.list = [];
 					
 

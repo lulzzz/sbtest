@@ -47,7 +47,7 @@
 					<NumberFormat ss:Format="Short Date"/>
 				</Style>
 				<Style ss:ID="s64">
-					<NumberFormat ss:Format="Currency"/>
+					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);[Red]\(&quot;$&quot;#,##0.00\)"/>
 				</Style>
 				<Style ss:ID="s65">
 					<NumberFormat ss:Format="@"/>
@@ -203,10 +203,10 @@
 						<Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
 					</Borders>
 					<Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#FF0000"/>
-					<NumberFormat ss:Format="#,##0.00_);\(#,##0.00\)"/>
+					<NumberFormat ss:Format="#,##0.00;\-#,##0.00"/>
 				</Style>
 				<Style ss:ID="s81">
-					<NumberFormat ss:Format="#,##0.00_);\(#,##0.00\)"/>
+					<NumberFormat ss:Format="#,##0.00;\-#,##0.00"/>
 				</Style>
 				<Style ss:ID="s82">
 					<Alignment ss:Vertical="Center" ss:ReadingOrder="LeftToRight" ss:Rotate="30"
@@ -223,7 +223,7 @@
 				<Style ss:ID="s84">
 					<Borders/>
 					<Interior/>
-					<NumberFormat ss:Format="Currency"/>
+					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);[Red]\(&quot;$&quot;#,##0.00\)"/>
 				</Style>
 				<Style ss:ID="s85">
 					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);\(&quot;$&quot;#,##0.00\)"/>
@@ -444,7 +444,7 @@
 				</Style>
 				<Style ss:ID="s109">
 					<Interior/>
-					<NumberFormat ss:Format="Currency"/>
+					<NumberFormat ss:Format="&quot;$&quot;#,##0.00_);[Red]\(&quot;$&quot;#,##0.00\)"/>
 				</Style>
 				<Style ss:ID="s110">
 					<Borders>
@@ -690,7 +690,7 @@
             </WorksheetOptions>
  
 		</Worksheet>
-		<Worksheet ss:Name="QEX 941 2017 Return Information">
+		<Worksheet ss:Name="QEX 941 2018 Return Information">
             <Table>
 							<Column ss:StyleID="s65" ss:AutoFitWidth="0" ss:Width="72"/>
 							<Column ss:AutoFitWidth="0" ss:Width="60.75"/>

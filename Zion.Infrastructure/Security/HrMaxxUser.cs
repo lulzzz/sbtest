@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using HrMaxx.Infrastructure.Enums;
 using HrMaxx.Infrastructure.Helpers;
+using Newtonsoft.Json;
 
 namespace HrMaxx.Infrastructure.Security
 {
@@ -81,12 +83,27 @@ namespace HrMaxx.Infrastructure.Security
 			get { return FindFirst(claim => claim.Type == HrMaxxClaimTypes.Email).Value; }
 		}
 
-		
+		public string RoleVersion
+		{
+			get
+			{
+				return HasClaim(claim => claim.Type == HrMaxxClaimTypes.RoleVersion)
+						? FindFirst(claim => claim.Type == HrMaxxClaimTypes.RoleVersion).Value
+						: String.Empty;
+			}
+		}
+
+
 		public override bool HasClaim(string claimType, string claimValue)
 		{
 			return HasClaim(claim => claim.Type == claimType && claim.Value == claimValue);
 		}
 
+		public bool HasClaim(string claimType)
+		{
+			return HasClaim(claim => claim.Type == claimType);
+		}
+		public string GetClaimsSerialized() { return JsonConvert.SerializeObject(Claims.Select(c=>new {Type = c.Type, Value=c.Value}).ToList()); }
 		
 	}
 }

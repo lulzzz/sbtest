@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
@@ -9,6 +10,8 @@ using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
+using UserClaim = HrMaxx.Common.Models.DataModel.UserClaim;
 
 namespace HrMaxx.Common.Repository.Security
 {
@@ -102,6 +105,19 @@ namespace HrMaxx.Common.Repository.Security
 			user.Company = usermodel.Company;
 			
 			_dbContext.SaveChanges();
+		}
+
+		public void UpdateUserClaims(string id, List<Claim> addClaim, List<Claim> removeClaims)
+		{
+			removeClaims.ForEach(r=>_dbContext.UserClaims.Remove(_dbContext.UserClaims.FirstOrDefault(u=>u.UserId==id && u.ClaimType.Equals(r.Type))));
+			addClaim.ForEach(a => _dbContext.UserClaims.Add(new UserClaim { UserId = id, ClaimType = a.Type, ClaimValue = a.Value }));
+			
+			_dbContext.SaveChanges();
+		}
+
+		public List<UserRoleVersion> GetUserRoleVersions()
+		{
+			return _dbContext.Users.Select(u => new UserRoleVersion {UserId = u.Id, RoleVersion = u.RoleVersion.ToString()}).ToList();
 		}
 	}
 }

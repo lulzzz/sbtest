@@ -64,6 +64,7 @@
     <Compile Include="ExcelRead.cs" />
     <Compile Include="FilterParam.cs" />
     <Compile Include="InsuranceGroup.cs" />
+    <Compile Include="PaxolFeature.cs" />
     <Compile Include="PDFModel.cs" />
     <Compile Include="DataModel\Country.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>

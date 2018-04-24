@@ -13,12 +13,14 @@ common.directive('host', ['zionAPI','localStorageService','version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/host.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes', function ($scope, $element, $location, $filter, companyRepository, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'ClaimTypes', function ($scope, $element, $location, $filter, companyRepository, ClaimTypes) {
 				$scope.data1 = {
 					
 				};
 				var dataSvc = {
-					companyMetaData: null
+					companyMetaData: null,
+					viewContract: $scope.mainData.hasClaim(ClaimTypes.HostContract, 1),
+					disableIsPEO: !$scope.mainData.hasClaim(ClaimTypes.HostPEOFlag, 1),
 				}
 				$scope.data2 = dataSvc;
 				$scope.selectedCompany = null;

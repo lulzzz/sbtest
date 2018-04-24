@@ -11,7 +11,7 @@
 				<label class="control-label">Start Date <span class="text-danger">*</span></label>
 				<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
 			</div>
-			<div class="form-group" ng-show="mainData.userRole==='SuperUser' || maindata.userRole==='Master'">
+			<div class="form-group" ng-show="datasvc.canRunHistoryPayroll">
 				<label></label>
 				<div>
 					<label for="ishistory" class="switch">

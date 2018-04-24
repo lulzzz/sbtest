@@ -30,7 +30,7 @@
 								<td data-title=" 'Active' " sortable=" 'active' " class="col-sm-1">
 									{{item.active? 'Active' : 'Not Active'}}
 								</td>
-								<td data-title=" 'Role' " sortable=" 'role.roleName' " class="col-sm-1">
+								<td data-title=" 'Access Level' " sortable=" 'role.roleName' " class="col-sm-1">
 									{{item.role.roleName}}
 								</td>
 								<td>
@@ -72,7 +72,7 @@
 							<tr>
 								<td class="field">User Name</td>
 								<td>
-									<a href="#" editable-text="selectedUser.userName" e-ng-maxlength="20" e-required e-ng-pattern="/^[a-zA-Z0-9]*$/">{{ selectedUser.userName || 'not set' }}</a>
+									<a href="#" editable-text="selectedUser.subjectUserName" e-ng-maxlength="20" e-required e-ng-pattern="/^[a-zA-Z0-9]*$/">{{ selectedUser.subjectUserName || 'not set' }}</a>
 								</td>
 							</tr>
 							<tr>
@@ -98,24 +98,24 @@
 								<td> <a href="#" editable-text="selectedUser.phone" e-ui-mask="(999) 999-9999">{{ selectedUser.phone || 'empty' }}</a></td>
 							</tr>
 							<tr>
-								<td class="field">Role <i class="fa fa-users"></i></td>
+								<td class="field">Access Level <i class="fa fa-users"></i></td>
 								<td>
 									<select id="roles" class="form-control" ng-change="roleChanged()" ng-model="selectedUser.role" ng-options="m.roleName for m in data.roles | filter:{show:true} track by m.roleId">
 										
 									</select>
 								</td>
 							</tr>
-							<tr ng-if="selectedUser.host || selectedUser.role.roleId>2">
+							<tr ng-if="selectedUser.host || selectedUser.role.roleId<51">
 								<td class="field">Host</td>
 								<td>
 									<select id="host" class="form-control" ng-change="hostSelected()" ng-model="data.selectedHost" ng-options="host1.name for host1 in data.hosts track by host1.id"></select>
 								</td>
 							</tr>
-							<tr ng-if="selectedUser.company || selectedUser.role.roleId===4 || selectedUser.role.roleId===5">
+							<tr ng-if="selectedUser.company || selectedUser.role.roleId<30">
 								<td class="field">Company</td>
 								<td><select id="company" class="form-control" ng-disabled="!data.selectedHost" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.filteredCompanies track by c.id"></select></td>
 							</tr>
-							<tr ng-if="selectedUser.company && selectedUser.role.roleId===5">
+							<tr ng-if="selectedUser.company && selectedUser.role.roleId===0">
 								<td class="field">Employee</td>
 								<td><select id="employee" class="form-control" ng-disabled="!data.selectedCompany" ng-change="employeeSelected()" ng-model="data.selectedEmployee" ng-options="c.name for c in data.filteredEmployees track by c.id"></select></td>
 							</tr>
@@ -138,8 +138,28 @@
 							<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="!validateUser()">Save</button>
 							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
 							<button type="button" class="btn btn-sm btn-danger" ng-click="resetPassword()" ng-show="showResetPassword && selectedUser.userId">Reset Password</button>
+							
 						</div>
 					</form>
+					<table class="table table-bordered table-condensed" ng-show="selectedUser.role">
+						<thead>
+							<tr>
+								<th colspan="3">User Accesses (*click on tick/cross to toggle access)</th>
+							</tr>
+							<tr>
+								<th>Feature</th>
+								<th>Access</th>
+								<th><button class="btn btn-sm btn-primary" ng-click="includeAll()">include all</button></th>
+							</tr>
+						</thead>
+						<tr ng-repeat="access in data.userAccessList">
+							<td>{{access.featureName}}</td>
+							<td>{{access.claimName}}</td>
+							<td>
+								<i class="fa fa-lg" ng-disabled="selectedUser.role.roleId<access.accessLevel" ng-click="access.hasAccess=!access.hasAccess" ng-class="{'fa-check': selectedUser.role.roleId>=access.accessLevel && access.hasAccess, 'fa-remove': selectedUser.role.roleId>=access.accessLevel && !access.hasAccess, 'fa-ban':access.accessLevel>selectedUser.role.roleId}" ng-style="(access.hasAccess && selectedUser.role.roleId>=access.accessLevel && {'color':'green'}) || (!access.hasAccess && selectedUser.role.roleId>=access.accessLevel && {'color': 'red'}) || (selectedUser.role.roleId<access.accessLevel && {'color': 'orange'})"></i>
+							</td>
+						</tr>
+					</table>
 				</div>
 				
 				

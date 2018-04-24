@@ -11,11 +11,12 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/company-list.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository',
-				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository', 'ClaimTypes',
+				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, ClaimTypes) {
 					var dataSvc = {
-						isBodyOpen: true
-						
+						isBodyOpen: true,
+						showCopy: $scope.mainData.hasClaim(ClaimTypes.CompanyCopy, 1),
+						showCopyPayrolls: $scope.mainData.hasClaim(ClaimTypes.CompanyCopyPayrolls, 1)
 					}
 					$scope.cols = [
 						{ field: "companyNumber", title: "No", show: true, filter: { companyIntId: "number" }, sortable: "companyIntId" },
@@ -310,7 +311,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 		}
 	}
 ]);
-common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, payrollRepository) {
+common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filter, company, mainData, companyRepository, payrollRepository, ClaimTypes) {
 	$scope.original = company;
 	$scope.company = angular.copy(company);
 	$scope.mainData = mainData;
@@ -331,6 +332,9 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.option = 0;
 	$scope.ashistory = false;
 	$scope.alerts = [];
+	$scope.showCopy = $scope.mainData.hasClaim(ClaimTypes.CompanyCopy, 1);
+	$scope.showCopyPayroll = $scope.mainData.hasClaim(ClaimTypes.CompanyCopyPayrolls, 1);
+	$scope.showCopyEmployees = $scope.mainData.hasClaim(ClaimTypes.EmployeeCopy, 1);
 	var addAlert = function(type, message) {
 		$scope.alerts = [];
 		$scope.alerts.push({ type: type, msg: message });

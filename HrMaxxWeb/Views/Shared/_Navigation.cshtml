@@ -37,34 +37,45 @@
 						<span>Administration</span>
 					</a>
 					<ul class="sub-menu">
-						@if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()))
+						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.ManageConfiguration))
 						{
 							<li><a href="#!/Admin/Config">Configuration</a></li>
-							
+							<li><a href="#!/Admin/UserList">Users</a></li>
+							<li><a href="#!/Admin/NewsList">News & Announcements</a></li>
+							<li><a href="#!/Admin/CompanyTaxes">Utilities & Rates</a></li>
+							<li><a href="#!/Admin/Taxes">Manage Taxes</a></li>
 						}
-						<li><a href="#!/Admin/HostList">Manage Host</a></li>
-
-						<li><a href="#!/Admin/UserList">Users</a></li>
-						<li><a href="#!/Admin/Invoices#invoice">Invoices</a></li>
-						<li><a href="#!/Admin/Extracts">Data Extracts</a></li>
-						<li><a href="#!/Admin/ACH">ACH</a></li>
-						<li><a href="#!/Admin/NewsList">News & Announcements</a></li>
-						<li><a href="#!/Admin/CompanyTaxes">Utilities & Rates</a></li>
-						<li><a href="#!/Admin/Taxes">Manage Taxes</a></li>
+						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.ManageHost))
+						{
+							<li><a href="#!/Admin/HostList">Manage Host</a></li>
+						}
+						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.InvoiceList))
+						{
+							<li><a href="#!/Admin/Invoices#invoice">Invoices</a></li>
+						}
+						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.DataExtracts))
+						{
+							<li><a href="#!/Admin/Extracts">Data Extracts</a></li>
+						}
+						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.ACH))
+						{
+							<li><a href="#!/Admin/ACH">ACH</a></li>
+						}
+						
 						
 						
 					</ul>
 				</li>
 			}
-			@if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
+			@if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollDelivery))
 			{
 				<li><a href="#!/Admin/InvoiceDelivery" data-toggle="tooltip" data-placement="right" title="Invoice Delivery"><i class="fa fa-truck"></i><span>Invoice Delivery</span></a></li>
 			}
-			@if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
+			@if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollAwaitingPrint))
 			{
 				<li><a href="#!/Admin/UnPrintedPayrolls" data-toggle="tooltip" data-placement="right" title="Awaiting Print"><i class="fa fa-print"></i><span>Un Printed Payrolls</span></a></li>
 			}
-			@if (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.HostStaff.GetDbName()))
+			@if (CurrentUser.HasClaim(HrMaxxClaimTypes.HostProfile) && (CurrentUser.IsInRole(RoleTypeEnum.Host.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.HostStaff.GetDbName())))
 			{
 				<li><a href="#!/Admin/Host" data-toggle="tooltip" data-placement="right" title="Host Profile"><i class="fa fa-home"></i><span>Host Profile</span></a></li>
 				<li><a href="#!/Admin/Invoices" data-toggle="tooltip" data-placement="right" title="Invoices"><i class="fa fa-envelope"></i><span>Invoices</span></a></li>
@@ -77,37 +88,58 @@
 			@if (!CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))
 			{
 				<li><a href="#" onclick=" this.href = '#!/Client/Company/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Company"><i class="fa fa-empire"></i><span>Company</span></a></li>
-				<li><a href="#" onclick=" this.href = '#!/Client/Employees/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Employee"><i class="fa fa-users"></i><span>Employee</span></a></li>
-				<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime()) +'#invoice'"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
-				if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.Company.GetDbName()))
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.EmployeeManageEmployees))
+				{
+					<li><a href="#" onclick=" this.href = '#!/Client/Employees/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Employee"><i class="fa fa-users"></i><span>Employee</span></a></li>
+				}
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollProcess))
+				{
+					<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime()) + '#invoice' "><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
+				}
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.CheckbookManage))
 				{
 					<li><a href="#!/Client/Checkbook" data-toggle="tooltip" data-placement="right" title="Checkbook"><i class="fa fa-bank"></i><span>Checkbook</span></a></li>
+				}
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.VendorsManage))
+				{
 					<li><a href="#!/Client/Vendors" data-toggle="tooltip" data-placement="right" title="Vendors"><i class="fa fa-building-o"></i><span>Vendors</span></a></li>
+				}
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.CustomersManage))
+				{
 					<li><a href="#!/Client/Customers" data-toggle="tooltip" data-placement="right" title="Customers"><i class="fa fa-user"></i><span>Customers</span></a></li>
+				}
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.COAManage))
+				{
 					<li><a href="#!/Client/Accounts" data-toggle="tooltip" data-placement="right" title="COA"><i class="fa fa-money"></i><span>COA</span></a></li>
 				}
-				<li class="has-sub">
-					<a href="javascript:;">
-						<b class="caret pull-right"></b>
-						<i class="fa fa-line-chart"></i>
-						<span>Reports</span>
-					</a>
-					<ul class="sub-menu">
-						<li><a href="#!/Reports/PayrollRegister">Payroll Register</a></li>
-						<li><a href="#!/Reports/PayrollSummary">Payroll Summary</a></li>
-						<li><a href="#!/Reports/Deductions">Deductions</a></li>
-						<li><a href="#!/Reports/WorkerCompensations">Worker Compensations</a></li>
-						<li><a href="#!/Reports/IncomeStatement">Income Statement</a></li>
-						<li><a href="#!/Reports/BalanceSheet">Balance Sheet</a></li>
-						<li><a href="#!/Reports/DepositCoupons">Deposit Coupons</a></li>
-						<li><a href="#!/Reports/GovtForms">Govt Forms</a></li>
-						<li><a href="#!/Reports/EmployerForms">Employer Forms</a></li>
-						<li><a href="#!/Reports/OtherForms">Other Forms</a></li>
-						<li><a href="#!/Reports/BlankGovtForms">Blank Govt Forms</a></li>
-						<li><a href="#!/Reports/CPAReport">CPA Report</a></li>
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.ReportsManage))
+				{
+					<li class="has-sub">
+						<a href="javascript:;">
+							<b class="caret pull-right"></b>
+							<i class="fa fa-line-chart"></i>
+							<span>Reports</span>
+						</a>
+						<ul class="sub-menu">
+							<li><a href="#!/Reports/PayrollRegister">Payroll Register</a></li>
+							<li><a href="#!/Reports/PayrollSummary">Payroll Summary</a></li>
+							<li><a href="#!/Reports/Deductions">Deductions</a></li>
+							<li><a href="#!/Reports/WorkerCompensations">Worker Compensations</a></li>
+							<li><a href="#!/Reports/IncomeStatement">Income Statement</a></li>
+							<li><a href="#!/Reports/BalanceSheet">Balance Sheet</a></li>
+							<li><a href="#!/Reports/DepositCoupons">Deposit Coupons</a></li>
+							<li><a href="#!/Reports/GovtForms">Govt Forms</a></li>
+							<li><a href="#!/Reports/EmployerForms">Employer Forms</a></li>
+							<li><a href="#!/Reports/OtherForms">Other Forms</a></li>
+							<li><a href="#!/Reports/BlankGovtForms">Blank Govt Forms</a></li>
+							@if (CurrentUser.HasClaim(HrMaxxClaimTypes.ReportsCPAReport))
+							{
+							<li><a href="#!/Reports/CPAReport">CPA Report</a></li>
+							}
 					
-					</ul>
-				</li>
+						</ul>
+					</li>
+				}
 			}
 			else
 			{

@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.2.73');
+common.constant('version', '1.0.2.74');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -82,6 +82,62 @@ common.constant('EntityTypes', {
 	HostHomePage: 17,
 	Adjustment: 18,
 	TaxPayment: 19
+});
+common.constant('ClaimTypes', {
+	ManageConfiguration: 'http://Paxol/ManageConfiguration',
+	ManageHost: 'http://Paxol/Host/Manage',
+	HostContract: 'http://Paxol/Host/Contract',
+	HostPEOFlag: 'http://Paxol/Host/PEOFlag',
+	HostProfile: 'http://Paxol/Host/HostProfile',
+	CompanyProfile: 'http://Paxol/Company/Profile',
+	CompanyVersions: 'http://Paxol/Company/Versions',
+	CompanyContract: 'http://Paxol/Company/Contract',
+	CompanyPayrollDaysinPast: 'http://Paxol/Company/PayrollDaysinPast',
+	CompanyAcumulatedPaytypesCompanyManaged: 'http://Paxol/Company/AcumulatedPaytypesCompanyManaged',
+	CompanyAccumulatedPayTypesLumpSum: 'http://Paxol/Company/AccumulatedPayTypesLumpSum',
+	CompanyCopy: 'http://Paxol/Company/Copy',
+	CompanyCopyPayrolls: 'http://Paxol/Company/CopyPayrolls',
+	EmployeeManageEmployees: 'http://Paxol/Employee/ManageEmployees',
+	EmployeeBulkTerminate: 'http://Paxol/Employee/BulkTerminate',
+	EmployeeSickLeaveExport: 'http://Paxol/Employee/SickLeaveExport',
+	EmployeeCopy: 'http://Paxol/Employee/Copy',
+	EmployeeImportExport: 'http://Paxol/Employee/ImportExport',
+	EmployeeVersions: 'http://Paxol/Employee/Versions',
+	EmployeeEditableAccumulatatedPayTypes: 'http://Paxol/Employee/EditableAccumulatatedPayTypes',
+	EmployeeProfile: 'http://Paxol/Employee/Profile',
+	EmployeePayChecks: 'http://Paxol/Employee/PayChecks',
+	EmployeeReports: 'http://Paxol/Employee/Reports',
+	EmployeeDeductions: 'http://Paxol/Employee/Deductions',
+	PayrollProcess: 'http://Paxol/Payroll/Process',
+	PayrollConfirm: 'http://Paxol/Payroll/Confirm',
+	PayrollVoid: 'http://Paxol/Payroll/Void',
+	PayrollDelete: 'http://Paxol/Payroll/Delete',
+	PayrollReProcessReConfirm: 'http://Paxol/Payroll/ReProcessReConfirm',
+	PayrollVoidPayCheck: 'http://Paxol/Payroll/VoidPayCheck',
+	PayrollUpdatePayCycleDates: 'http://Paxol/Payroll/UpdatePayCycleDates',
+	PayrollChangeCheckNumberseries: 'http://Paxol/Payroll/ChangeCheckNumberseries',
+	PayrollFixYTDs: 'http://Paxol/Payroll/FixYTDs',
+	PayrollEditableTaxes: 'http://Paxol/Payroll/EditableTaxes',
+	PayrollUnVoidCheck: 'http://Paxol/Payroll/UnVoidCheck',
+	PayrollHistoryPayroll: 'http://Paxol/Payroll/HistoryPayroll',
+	PayrollDelivery: 'http://Paxol/Payroll/Delivery',
+	PayrollAwaitingPrint: 'http://Paxol/Payroll/AwaitingPrint',
+	InvoiceList: 'http://Paxol/Invoice/List',
+	InvoiceCommissions: 'http://Paxol/Invoice/Commissions',
+	InvoiceDelete: 'http://Paxol/Invoice/Delete',
+	InvoiceVersions: 'http://Paxol/Invoice/Versions',
+	InvoiceEditable: 'http://Paxol/Invoice/Editable',
+	InvoicePayments: 'http://Paxol/Invoice/Payments',
+	CheckbookManage: 'http://Paxol/Checkbook/Manage',
+	COAManage: 'http://Paxol/COA/Manage',
+	VendorsManage: 'http://Paxol/Vendors/Manage',
+	CustomersManage: 'http://Paxol/Customers/Manage',
+	ReportsManage: 'http://Paxol/Reports/Manage',
+	ReportsCPAReport: 'http://Paxol/Reports/CPAReport',
+	DashboardCompanyLists: 'http://Paxol/Dashboard/CompanyLists',
+	DashboardAccountReceivable: 'http://Paxol/Dashboard/AccountReceivable',
+	DashboardPerformance: 'http://Paxol/Dashboard/Performance'
+
 });
 common.constant('AccountType', {
 	Assets: 1,

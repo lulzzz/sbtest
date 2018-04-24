@@ -25,5 +25,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTax> rates);
 		List<SearchResult> FillSearchTable();
 		List<CompanySUIRate> GetPEOCompanies();
+		List<Access> GetAccessMetaData();
 	}
 }

@@ -1,4 +1,5 @@
 ﻿@using HrMaxxWeb.Code.Helpers
+@using Newtonsoft.Json
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,7 +44,7 @@
 		}
 		<!-- end #sidebar -->
 		<!-- begin #content -->
-		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-employee="@CurrentUser.Employee" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName">
+		<div id="content" class="content" ng-controller="mainCtrl" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-employee="@CurrentUser.Employee" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName" data-claims="@CurrentUser.GetClaimsSerialized()">
 			<div id="page-loader1" class="fade in" ng-if="loading"><span class="spinner"></span></div>
 			<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
 			<script type="text/ng-template" id="popover/messages.html">

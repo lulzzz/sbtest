@@ -193,5 +193,12 @@ namespace HrMaxxAPI.Controllers
 		{
 			return MakeServiceCall(() => _taxationService.CreateTaxes(year), "create entries in Tax Tables for year " + year, true);
 		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.AccessMetaData)]
+		public List<Access> AccessMetaData()
+		{
+			return MakeServiceCall(() => _metaDataService.GetAccessMetaData(), "get access meta data", true);
+		}
 	}
 }

@@ -10,8 +10,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window', 'commonRepository', 'NgTableParams',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window, commonRepository, ngTableParams) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window', 'commonRepository', 'NgTableParams', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window, commonRepository, ngTableParams, ClaimTypes) {
 					var dataSvc = {
 						isBodyOpen: true,
 						response: null,
@@ -26,7 +26,10 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						myNews: [],
 						reportData: [],
 						tab: 1,
-						printOption:0
+						printOption: 0,
+						viewCompanyList: $scope.mainData.hasClaim(ClaimTypes.DashboardCompanyLists, 1),
+						viewAccountReceivables: $scope.mainData.hasClaim(ClaimTypes.DashboardAccountReceivable,1),
+						viewPerformance: $scope.mainData.hasClaim(ClaimTypes.DashboardPerformance,1)
 					}
 					$scope.print = function(option) {
 						dataSvc.printOption = option;
@@ -545,7 +548,10 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 						sorting: {
 							due: 'asc'     // initial sorting
 						}
-					}, {
+					},
+						
+						{
+							
 						total: $scope.filteredApproachingPayrolls ? $scope.filteredApproachingPayrolls.length : 0, // length of data
 						getData: function (params) {
 							$scope.fillTableData(params);

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
+using HrMaxx.Common.Models.DataModel;
+using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
@@ -23,16 +26,21 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 	{
 		private readonly ITaxationRepository _taxationRepository;
 		private readonly IMetaDataRepository _metaDataRepository;
+		private readonly IUserRepository _userRepository;
 		private USTaxTables TaxTables;
 		public ApplicationConfig Configurations { get; set; }
-		public List<ConfirmPayrollLogItem> ConfirmPayrollQueue { get; set; } 
+		public List<ConfirmPayrollLogItem> ConfirmPayrollQueue { get; set; }
+		public List<UserRoleVersion> UserRoleVersions { get; set; } 
 
-		public USTaxationService(ITaxationRepository taxationRepository, IMetaDataRepository metaDataRepository)
+		public USTaxationService(ITaxationRepository taxationRepository, IMetaDataRepository metaDataRepository, IUserRepository userRepository)
 		{
 			_taxationRepository = taxationRepository;
 			_metaDataRepository = metaDataRepository;
+			_userRepository = userRepository;
+			UserRoleVersions = new List<UserRoleVersion>();
 			FillTaxTables();
 			ConfirmPayrollQueue = new List<ConfirmPayrollLogItem>();
+			
 		}
 
 		private void FillTaxTables()
@@ -44,6 +52,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				TaxTables.Years = TaxTables.Taxes.Select(t => t.TaxYear).Distinct().ToList();
 
 				Configurations = _metaDataRepository.GetConfigurations();
+				UserRoleVersions = _userRepository.GetUserRoleVersions();
+
 			}
 			catch (Exception e)
 			{
@@ -231,6 +241,25 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			else
 				return 0;
 			
+		}
+
+		public string GetUserRoleVersion(string userId)
+		{
+			return UserRoleVersions.Any(urv => urv.UserId == userId)
+				? UserRoleVersions.First(urv => urv.UserId == userId).RoleVersion
+				: string.Empty;
+		}
+
+		public void UpdateUserRoleVersion(string id, int roleVersion)
+		{
+			if (UserRoleVersions.All(u => u.UserId != id))
+			{
+				UserRoleVersions.Add(new UserRoleVersion{UserId = id, RoleVersion = roleVersion.ToString()});
+			}
+			else
+			{
+				UserRoleVersions.First(u => u.UserId == id).RoleVersion = roleVersion.ToString();
+			}
 		}
 
 		public void RemoveFromConfirmPayrollQueueItem(Guid payrollId)

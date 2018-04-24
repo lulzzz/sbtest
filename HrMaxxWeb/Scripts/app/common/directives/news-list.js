@@ -34,7 +34,7 @@ common.directive('newsList', ['zionAPI', '$timeout', '$window','version',
 						audienceScope: $scope.audienceTypeId,
 						audience: []
 					};
-					if (parseInt($scope.selectedNewsItem.audienceScope) === 3 && $scope.audienceId) {
+					if (parseInt($scope.selectedNewsItem.audienceScope) === 50 && $scope.audienceId) {
 						var thisHost = $filter('filter')($scope.metadata.hosts, { key: $scope.audienceId })[0];
 						if(thisHost)
 							$scope.selectedNewsItem.audience.push(thisHost);
@@ -82,7 +82,7 @@ common.directive('newsList', ['zionAPI', '$timeout', '$window','version',
 						$scope.selectedAudience = [];
 					}
 						
-					if (parseInt($scope.selectedNewsItem.audienceScope) === 3) {
+					if (parseInt($scope.selectedNewsItem.audienceScope) === 50) {
 						$scope.targetAudience = angular.copy($scope.metadata.hosts);
 						$.each($scope.metadata.hosts, function (index, host) {
 							var exists = $filter('filter')($scope.selectedNewsItem.audience, { key: host.key })[0];
