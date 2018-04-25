@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -764,6 +765,15 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, new {Id = id, CompanyId = companyId, WorkerCompensations = wc});
+			}
+		}
+
+		public void EnsureCheckNumberIntegrity(Guid payrollId, bool peoasoCoCheck)
+		{
+			using (var conn = GetConnection())
+			{
+				conn.Execute("EnsureCheckNumberintegrity", new {PayrollId = payrollId, PEOASOCoCheck = peoasoCoCheck},
+					commandType: CommandType.StoredProcedure);
 			}
 		}
 	}

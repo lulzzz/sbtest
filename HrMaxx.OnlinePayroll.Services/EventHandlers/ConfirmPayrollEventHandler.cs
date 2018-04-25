@@ -80,10 +80,11 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						journal.Id = j.Id;
 						journal.CheckNumber = j.CheckNumber;
 						event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
+
 					}
-
-
 					Log.Info(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					_payrollRepository.EnsureCheckNumberIntegrity(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
+					Log.Info(string.Format("ensured check number integrity for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					if (event1.Payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
 						var inv = _payrollService.CreatePayrollInvoice(event1.Payroll, event1.Payroll.UserName, event1.Payroll.UserId, false);
@@ -130,7 +131,9 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					Log.Info(string.Format("finished transactions for payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					txn.Complete();
 				}
-				_payrollService.PrintAndSavePayroll(event1.Payroll, event1.Payroll.PEOASOCoCheck ? event1.PeoJournals : event1.Journals);
+				var payroll = _readerService.GetPayroll(event1.Payroll.Id);
+				var journals = _journalService.GetPayrollJournals(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
+				_payrollService.PrintAndSavePayroll(payroll, journals);
 				Log.Info(string.Format("Finished Confirm and Print for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
 				return true;
 			}

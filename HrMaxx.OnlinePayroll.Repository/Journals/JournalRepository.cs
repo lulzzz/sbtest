@@ -34,39 +34,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			{
 				if (mapped.Id == 0)
 				{
-					
-
-						//if (peoPayroll && isPEOCheck && mapped.CheckNumber > 0)
-						//{
-						//	//const string sql =
-						//	// "if exists(select 'z' from Journal with(nolock) Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal with (nolock) where PEOASOCoCheck=1; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
-
-							
-
-						//}
-						//if (!peoPayroll && !isPEOCheck && mapped.CheckNumber > 0)
-						//{
-						//	const string sql =
-						//	 "if exists(select 'z' from Journal  with(nolock) Where CheckNumber=@CheckNumber and PayrollPayCheckId<>@PayrollPayCheckId and CompanyId=@CompanyId) begin select @CheckNumber=isnull(max(checknumber),0)+1 from journal with (nolock) where CompanyId=@CompanyId; update PayrollPayCheck set CheckNumber=@CheckNumber where Id=@PayrollPayCheckId; update Journal set CheckNumber=@CheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end select @CheckNumber as checknumber";
-						//	dynamic result =
-						//		conn.Query(sql, new { CheckNumber = mapped.CheckNumber, PayrollPayCheckId = mapped.PayrollPayCheckId, CompanyId=mapped.CompanyId }).FirstOrDefault();
-						//	if (result.checknumber != null)
-						//	{
-						//		mapped.CheckNumber = result.checknumber;
-						//	}
-
-						//}
 					if (mapped.CheckNumber > 0)
 					{
-						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber); if @NewCheckNumber<>@CheckNumber begin update PayrollPayCheck set CheckNumber=@NewCheckNumber where Id=@PayrollPayCheckId; if @PEOASOCoCheck=1 begin update Journal set CheckNumber=@NewCheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end end select @NewCheckNumber as checknumber";
+						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll); if @NewCheckNumber<>@CheckNumber begin update PayrollPayCheck set CheckNumber=@NewCheckNumber where Id=@PayrollPayCheckId; if @PEOASOCoCheck=1 begin update Journal set CheckNumber=@NewCheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end end select @NewCheckNumber as checknumber";
+						//const string sql = "select dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll) as checknumber";
 						dynamic result =
-							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType=(int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck }).FirstOrDefault();
+							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType=(int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck, IsPEOPayroll = peoPayroll }).FirstOrDefault();
 						if (result.checknumber != null)
 						{
 							mapped.CheckNumber = result.checknumber;
 						}
 					}
-					
 
 					mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
 

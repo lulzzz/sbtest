@@ -74,10 +74,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				payroll.Warnings = string.Empty;
 				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
-				Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.Company.DescriptiveName);
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
-				Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff"));
+				Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.PayChecks.Count(pc => pc.Included));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -338,7 +338,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						paycheck.Status = PaycheckStatus.Processed;
 						paycheck.IsVoid = false;
 						paycheck.PaymentMethod = paycheck.Employee.PaymentMethod;
-						paycheck.CheckNumber = payroll.StartingCheckNumber + payCheckCount++;
+						paycheck.CheckNumber = paycheck.PaymentMethod == EmployeePaymentMethod.Check ? payroll.StartingCheckNumber + payCheckCount++ : -1;
 
 						paycheck.YTDGrossWage = Math.Round(employeeAccumulation.PayCheckWages.GrossWage + paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
 						paycheck.YTDNetWage = Math.Round(employeeAccumulation.PayCheckWages.NetWage + paycheck.NetWage, 2, MidpointRounding.AwayFromZero);
