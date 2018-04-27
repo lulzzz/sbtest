@@ -296,30 +296,33 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							journal.PayeeName = savedVC.Name;
 						}
 					}
-					else if ((journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit) && journal.JournalDetails.Any(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty))
+					else if (journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit)
 					{
-						var newVendors = new List<JournalPayee>();
-						var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();
-						jds.ForEach(p=>
+						if (journal.JournalDetails.Any(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty))
 						{
-							if (newVendors.Any(v => v.PayeeName.Equals(p.Payee.PayeeName)))
+							var newVendors = new List<JournalPayee>();
+							var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();
+							jds.ForEach(p =>
 							{
-								p.Payee = newVendors.First(v => v.PayeeName.Equals(p.Payee.PayeeName));
-							}
-							else
-							{
-								var vc = new VendorCustomer();
-								vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, p.Payee.PayeeName,
-									true, journal.LastModifiedBy);
-								var savedVC = _companyService.SaveVendorCustomers(vc);
-								p.Payee.Id = savedVC.Id;
-								p.Payee.PayeeType = EntityTypeEnum.Vendor;
-								newVendors.Add(p.Payee);
-							}
-							
-							
-						});
-						
+								if (newVendors.Any(v => v.PayeeName.Equals(p.Payee.PayeeName)))
+								{
+									p.Payee = newVendors.First(v => v.PayeeName.Equals(p.Payee.PayeeName));
+								}
+								else
+								{
+									var vc = new VendorCustomer();
+									vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, p.Payee.PayeeName,
+										true, journal.LastModifiedBy);
+									var savedVC = _companyService.SaveVendorCustomers(vc);
+									p.Payee.Id = savedVC.Id;
+									p.Payee.PayeeType = EntityTypeEnum.Vendor;
+									newVendors.Add(p.Payee);
+								}
+
+
+							});
+						}
+						journal.PayeeName = journal.JournalDetails.Count()==1 ? string.Empty : "Multiple";
 					}
 					var saved =  _journalRepository.SaveCheckbookJournal(journal);
 					if (journal.TransactionType == TransactionType.InvoiceDeposit)

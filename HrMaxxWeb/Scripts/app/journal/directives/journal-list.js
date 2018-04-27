@@ -96,8 +96,9 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						$scope.selected = null;
 						$timeout(function() {
 							$scope.selected = angular.copy(item);
+							$scope.selected.transactionDate = moment($scope.selected.transactionDate).toDate();
 							if ($scope.selected.transactionType > 1) {
-								$scope.selected.paymentMethod = $scope.selected.paymentMethod === 2;
+								//$scope.selected.paymentMethod = $scope.selected.paymentMethod === 2;
 								$.each($scope.selected.journalDetails, function (index, jd) {
 									if ($scope.selected.transactionType === 4 || !jd.account && jd.accountId) {
 										var account = $filter('filter')(dataSvc.companyAccounts, { id: jd.accountId })[0];
@@ -181,7 +182,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						var check = $scope.selected;
 
 						if (check.transactionType > 1) {
-							check.paymentMethod = check.paymentMethod ? 2 : 1;
+							//check.paymentMethod = check.paymentMethod ? 2 : 1;
 							check.transactionDate = moment(check.transactionDate).format("MM/DD/YYYY");
 							journalRepository.saveCheck(check).then(function (data) {
 								if ((check.transactionType === 2 || check.transactionType === 3) && data.paymentMethod === 1 && data.checkNumber >= dataSvc.startingCheckNumber) {
@@ -213,6 +214,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 								$scope.cancel();
 								$scope.set(data);
 							}, function (erorr) {
+								$scope.set(check);
+								
 								addAlert('error saving checkbook item: ' + erorr.statusText, 'danger');
 							});
 						}
@@ -324,7 +327,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							companyId: $scope.mainData.selectedCompany.id,
 							companyIntId: $scope.mainData.selectedCompany.companyIntId,
 							transactionType: transactionType,
-							paymentMethod : paymentMethod,
+							paymentMethod : paymentMethod ? 2 : 1,
 							checkNumber : paymentMethod? -1 :dataSvc.startingCheckNumber,
 							payrollPayCheckId : null,
 							entityType : null,

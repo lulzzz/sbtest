@@ -15,7 +15,7 @@
 			<div class="col-sm-4">
 				<div class="form-group">
 					<div class="col-sm-6"><label class="control-label">Check No.<span class="text-danger">*</span></label></div>
-					<div class="col-sm-6"><label ng-show="item.paymentMethod">EFT</label><input type="number" ng-model="item.checkNumber" ng-disabled="item.id" ng-show="!item.paymentMethod" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,5}$/" data-parsley-type="number" step="1" /></div>
+					<div class="col-sm-6"><label ng-show="item.paymentMethod===2">EFT</label><input type="number" ng-model="item.checkNumber" ng-disabled="item.id" ng-show="item.paymentMethod===1" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,5}$/" data-parsley-type="number" step="1" /></div>
 
 				</div>
 

@@ -82,9 +82,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 					if (journal.TransactionType == TransactionType.RegularCheck ||
 									 journal.TransactionType == TransactionType.DeductionPayment)
 					{
-						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber); select @NewCheckNumber as checknumber";
+						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll); select @NewCheckNumber as checknumber";
 						dynamic result =
-							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType = (int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck }).FirstOrDefault();
+							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType = (int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck, IsPEOPayroll = false }).FirstOrDefault();
 						if (result.checknumber != null)
 						{
 							mapped.CheckNumber = result.checknumber;

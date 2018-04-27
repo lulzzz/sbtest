@@ -383,11 +383,11 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxRegularCheckNumber(int companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType=@TransactionType";
+			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType in (2,6)";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
-					conn.Query(sql, new {CompanyId = companyId, TransactionType = (int) TransactionType.RegularCheck}).FirstOrDefault();
+					conn.Query(sql, new {CompanyId = companyId}).FirstOrDefault();
 
 				if (result!=null && result.maxnumber != null)
 				{

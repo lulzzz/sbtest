@@ -78,7 +78,7 @@ common.directive('regularCheck', ['zionAPI','version',
 					}
 					$scope.print = function () {
 						var j = angular.copy($scope.item);
-						j.paymentMethod = j.paymentMethod ? 2 : 1;
+						//j.paymentMethod = j.paymentMethod ? 2 : 1;
 						$scope.$parent.$parent.printJournal(j);
 					}
 					$scope.isJournalDetailValid = function(jd) {
