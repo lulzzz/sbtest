@@ -25,5 +25,6 @@ namespace HrMaxx.Common.Repository.Common
 
 		List<InsuranceGroupDto> GetInsuranceGroups();
 		InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto insuranceGroup);
+		void UpdateDBStats();
 	}
 }

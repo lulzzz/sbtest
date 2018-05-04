@@ -209,5 +209,16 @@ namespace HrMaxx.Common.Repository.Common
 			}
 			return _mapper.Map<Models.DataModel.InsuranceGroup, Models.InsuranceGroupDto>(mapped);
 		}
+
+		public void UpdateDBStats()
+		{
+			const string sql = "exec sp_updatestats";
+			const string archivesql = "exec paxolarchive.dbo.sp_updatestats";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql);
+				conn.Execute(archivesql);
+			}
+		}
 	}
 }

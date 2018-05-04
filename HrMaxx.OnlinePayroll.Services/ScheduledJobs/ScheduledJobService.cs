@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Repository.Common;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Services;
@@ -17,11 +19,13 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 		public readonly IPayrollService _payrollService;
 		public readonly IReaderService _readerService;
 		public readonly IACHService _achService;
-		public ScheduledJobService(IPayrollService payrollService, IACHService achService, IReaderService readerService)
+		public readonly ICommonRepository _commonRepository;
+		public ScheduledJobService(IPayrollService payrollService, IACHService achService, IReaderService readerService, ICommonRepository commonRepository)
 		{
 			_payrollService = payrollService;
 			_readerService = readerService;
 			_achService = achService;
+			_commonRepository = commonRepository;
 		}
 
 		public void UpdateInvoicePayments()
@@ -91,6 +95,22 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			catch (Exception e)
 			{
 				var message = "Failed to update ACH Data";
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void UpdateDBStats()
+		{
+			try
+			{
+				Log.Info("Updating DB Stats " + DateTime.Now);
+				_commonRepository.UpdateDBStats();
+				Log.Info("Updating DB stats finished" + DateTime.Now);
+			}
+			catch (Exception e)
+			{
+				var message = "Failed to update DB Stats";
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
