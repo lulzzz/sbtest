@@ -491,7 +491,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 								
 								$.each(data.data, function (ind, ap) {
 									if (ind > 0) {
-										var contactJson = ap[5] ? JSON.parse(ap[5]) : '';
+										var contactJson = ap[6] ? JSON.parse(ap[6]) : '';
 										var item = {
 											hostId: ap[0],
 											companyId: ap[1],
@@ -499,6 +499,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
 											company: ap[3],
 											reportingDay: ap[4],
 											reportingDayText: getReportingDayText(ap[4]),
+											dashboardNotes: ap[5],
 											contactName: contactJson ? contactJson.FirstName + ' ' + contactJson.LastName : '',
 											contactNumber: contactJson ? (contactJson.Phone ? $scope.getPhone(contactJson.Phone) : $scope.getPhone(contactJson.Mobile)) : ''
 										};

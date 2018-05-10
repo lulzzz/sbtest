@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
 using HrMaxx.Common.Models;
@@ -21,11 +23,14 @@ namespace HrMaxx.Common.Repository.Common
 	{
 		private readonly CommonEntities _dbContext;
 		private readonly IMapper _mapper;
+		private string _sqlCon;
 
-		public CommonRepository(IMapper mapper, CommonEntities dbContext, DbConnection connection) : base(connection)
+		public CommonRepository(IMapper mapper, CommonEntities dbContext, string sqlCon, DbConnection connection)
+			: base(connection)
 		{
 			_mapper = mapper;
 			_dbContext = dbContext;
+			_sqlCon = sqlCon;
 		}
 
 		public IList<T> GetEntityRelations<T>(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId)
@@ -212,12 +217,22 @@ namespace HrMaxx.Common.Repository.Common
 
 		public void UpdateDBStats()
 		{
-			const string sql = "exec sp_updatestats";
-			const string archivesql = "exec paxolarchive.dbo.sp_updatestats";
-			using (var conn = GetConnection())
+			const string sql = "exec sp_updatestats;";
+			const string archivesql = "exec paxolarchive.dbo.sp_updatestats;";
+			using (var con = new SqlConnection(_sqlCon))
 			{
-				conn.Execute(sql);
-				conn.Execute(archivesql);
+				using (var cmd = new SqlCommand(sql))
+				{
+					cmd.CommandTimeout = 0;
+					cmd.CommandType = CommandType.Text;
+					cmd.Connection = con;
+					con.Open();
+					cmd.ExecuteNonQuery();
+					cmd.CommandText = archivesql;
+					cmd.ExecuteNonQuery();
+					
+					con.Close();
+				}
 			}
 		}
 	}

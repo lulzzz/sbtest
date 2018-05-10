@@ -70,6 +70,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int CompanyIntId { get; set; }
         public int CompanyCheckPrintOrder { get; set; }
         public int PayrollScheduleDay { get; set; }
+        public string DashboardNotes { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

@@ -33,6 +33,8 @@ namespace HrMaxxAPI.Code.IOC.Common
 
 			string _uamUrl = ConfigurationManager.AppSettings["UAMUrl"];
 
+			var sqlCon = new NamedParameter("sqlCon", _connectionString);
+
 
 			_fileSourcePath = HttpContext.Current == null ? _fileSourcePath : HttpContext.Current.Server.MapPath(_fileSourcePath);
 
@@ -107,6 +109,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.PropertiesAutowired();
 
 			builder.RegisterType<CommonRepository>()
+				.WithParameter(sqlCon)
 				.WithParameter((param, cont) => param.Name == "connection",
 					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 			.As<ICommonRepository>()

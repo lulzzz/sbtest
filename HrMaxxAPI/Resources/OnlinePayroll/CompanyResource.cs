@@ -38,6 +38,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public PayrollScheduleSubType PayrollScheduleDay { get; set; }
 		public decimal MinWage { get; set; }
 		public string Memo { get; set; }
+		public string DashboardNotes { get; set; }
 		public string Notes { get; set; }
 		public string PayrollMessage { get; set; }
 		//Tax Setup
