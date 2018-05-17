@@ -88,6 +88,10 @@
         <EntityTypeShape EntityType="HrMaxxModel.CommissionExtract" Width="1.5" PointX="25.875" PointY="3.5" />
         <AssociationConnector Association="HrMaxxModel.FK_CommissionExtract_MasterExtracts" />
         <AssociationConnector Association="HrMaxxModel.FK_CommissionExtract_PayrollInvoice" />
+        <EntityTypeShape EntityType="HrMaxxModel.CheckbookJournal" Width="1.5" PointX="21.125" PointY="0.75" />
+        <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_Company" />
+        <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_CompanyAccount" />
+        <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_EntityType" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

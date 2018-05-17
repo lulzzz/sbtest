@@ -24,12 +24,15 @@ namespace HrMaxx.OnlinePayroll.Repository
 	public class MetaDataRepository : BaseDapperRepository, IMetaDataRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
-		private readonly IMapper _mapper;
-		
-		public MetaDataRepository(IMapper mapper, OnlinePayrollEntities dbContext, DbConnection connection):base(connection)
+		private readonly IMapper _mapper; 
+		private string _sqlCon;
+
+		public MetaDataRepository(IMapper mapper, OnlinePayrollEntities dbContext, string sqlCon, DbConnection connection)
+			: base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
+			_sqlCon = sqlCon;
 		}
 
 		public IList<TaxByYear> GetCompanyOverridableTaxes()
@@ -121,7 +124,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 			string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" +companyId + ";";
 			
 
-			using (var con = new SqlConnection(_dbContext.Database.Connection.ConnectionString))
+			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(isPeo?peosql:nonpeosql))
 				{

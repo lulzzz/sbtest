@@ -23,17 +23,18 @@ namespace HrMaxx.OnlinePayroll.Services
 	{
 		private readonly ICommonService _commonService;
 		private readonly ICompanyService _companyService;
-		private readonly IHostService _hostService;
+		
 		private readonly IMetaDataRepository _metaDataRepository;
 		private readonly IReaderService _readerService;
+		private readonly ITaxationService _taxationService;
 		
 
-		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IHostService hostService, IReaderService readerService)
+		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IReaderService readerService, ITaxationService taxationService)
 		{
 			_metaDataRepository = metaDataRepository;
 			_commonService = commonService;
 			_companyService = companyService;
-			_hostService = hostService;
+			_taxationService = taxationService;
 			_readerService = readerService;
 			
 		}
@@ -91,7 +92,23 @@ namespace HrMaxx.OnlinePayroll.Services
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var bankAccount = _metaDataRepository.GetPayrollAccount(request.CompanyId);
 				var hostAccount = _metaDataRepository.GetPayrollAccount(request.HostCompanyId);
-				var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck) ? request.HostCompanyIntId : request.CompanyIntId, (request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck));
+				var maxCheckNumber = (int) 0;
+				var maxPeoNumber = _taxationService.GetPEOMaxCheckNumber();
+				if (request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+				{
+					if (maxPeoNumber > 0)
+						maxCheckNumber = maxPeoNumber+1;
+					else
+					{
+						maxCheckNumber = _metaDataRepository.GetMaxCheckNumber(request.HostCompanyIntId, true);
+						_taxationService.SetPEOMaxCheckNumber(maxCheckNumber-1);
+					}
+				}
+				else
+				{
+					maxCheckNumber = _metaDataRepository.GetMaxCheckNumber(request.CompanyIntId, false);
+				}
+				//var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck) ? request.HostCompanyIntId : request.CompanyIntId, (request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck));
 				var importMap = _metaDataRepository.GetCompanyTsImportMap(request.CompanyId);
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
 				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies };

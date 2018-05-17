@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HrMaxx.Bus.Contracts;
+using HrMaxx.Common.Contracts.Messages.Events;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
@@ -1045,7 +1046,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var ptdeds = new List<PayCheckDeduction>();
 					var ptcodes = new List<PayCheckPayCode>();
 					var ptwcs = new List<PayCheckWorkerCompensation>();
-					var payrollJournals = _readerService.GetJournals(payrollId: payroll.Id);
+					var payrollJournals = _readerService.GetJournals(payrollId: payroll.Id, includePayrolls:true, includeDetails:true);
 					payroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList().ForEach(pc =>
 					{
 
@@ -1363,14 +1364,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public Models.Payroll VoidPayroll(Models.Payroll payroll1, string userName, string userId, bool forceDelete = false)
+		public Models.Payroll VoidPayroll(Models.Payroll payroll, string userName, string userId, bool forceDelete = false)
 		{
 			try
 			{
 				Log.Info("Void payroll startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var affectedChecks = new List<PayCheck>();
-				var payroll = _readerService.GetPayroll(payroll1.Id);
-				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll1.Company.Id, startDate: payroll1.PayDay, year: payroll1.PayDay.Year, isvoid: 0);
+				//var payroll = _readerService.GetPayroll(payroll1.Id);
+				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
 				var invoice = (PayrollInvoice)null;
 				if (payroll.InvoiceId.HasValue)
 				{
@@ -1402,13 +1403,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					txn.Complete();
 					
 				}
-				payroll1 = _readerService.GetPayroll(payroll1.Id);
-				foreach (var payCheck in payroll1.PayChecks)
+				payroll = _readerService.GetPayroll(payroll.Id);
+				foreach (var payCheck in payroll.PayChecks)
 				{
 					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
 					{
 						SavedObject = payCheck,
-						HostId = payroll1.Company.HostId,
+						HostId = payroll.Company.HostId,
 						UserId = new Guid(userId),
 						TimeStamp = DateTime.Now,
 						EventType = NotificationTypeEnum.Updated,
@@ -1418,7 +1419,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 				Log.Info("Void Payroll Finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				_fileRepository.DeleteDestinationFile(payroll.Id + ".pdf");
-				return payroll1;
+				return payroll;
 
 
 			}
@@ -1696,6 +1697,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				var dbIncvoice = _readerService.GetCompanyInvoices(invoice.CompanyId, id:invoice.Id).First();
+				var futureInvoices = _readerService.GetPayrollInvoices(Guid.Empty, companyId: invoice.CompanyId, invoiceNumber: invoice.InvoiceNumber);
 				
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
@@ -1722,7 +1724,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 									dbmc.RecurringChargeId > 0 &&
 									invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId &&  mc.Amount!=dbmc.Amount))
 								.ToList();
-						var futureInvoices = _readerService.GetPayrollInvoices(Guid.Empty, companyId: invoice.CompanyId, invoiceNumber: invoice.InvoiceNumber);
+						
 						futureInvoices.ForEach(fi=>
 						{
 							var update = false;
@@ -1809,7 +1811,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice updated"), invoice.UserId);
 					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
-
+					Bus.Publish(new CreateMementoEvent<PayrollInvoice>
+					{
+						List = new List<PayrollInvoice>{savedInvoice},
+						EntityType = EntityTypeEnum.Invoice,
+						Notes = "Invoice Updated",
+						UserId = invoice.UserId,
+						UserName = invoice.UserName,
+						LogNotes = string.Format("Mementos (Invoice) for payroll {0} - {1}", savedInvoice.Id, savedInvoice.Company.Name)
+					});
 					return savedInvoice;
 				}
 
@@ -3726,7 +3736,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					Log.Info("Delete startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_payrollRepository.DeletePayroll(payroll);
 					Log.Info("delete ended" + DateTime.Now.ToString("hh:mm:ss:fff"));
+					_taxationService.RefreshPEOMaxCheckNumber();
 					txn.Complete();
+					
 					return payroll;	
 				}
 					

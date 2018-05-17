@@ -20,6 +20,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		USTaxTables GetTaxTablesByContext();
 		USTaxTables SaveTaxTables(int year, USTaxTables taxTables);
 		USTaxTables CreateTaxes(int year);
+		int GetPEOMaxCheckNumber();
+		void SetPEOMaxCheckNumber(int n);
 
 		int AddToConfirmPayrollQueue(ConfirmPayrollLogItem item);
 		void UpdateConfirmPayrollQueueItem(Guid payrollId);
@@ -29,5 +31,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		int GetConfirmPayrollQueueItemIndex(Guid item);
 		string GetUserRoleVersion(string userId);
 		void UpdateUserRoleVersion(string id, int roleVersion);
+		void RefreshPEOMaxCheckNumber();
 	}
 }

@@ -532,7 +532,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" Pay Commissions for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1709,7 +1709,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH extract data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
 					Log.Error(message, e);
 				}
 
@@ -1753,7 +1753,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 
 			var companyJournals = _readerService.GetJournals(request.CompanyId, startDate: request.StartDate,
-				endDate: request.EndDate);
+				endDate: request.EndDate, includePayrolls: true);
 			var coas = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, request.StartDate,
 				request.EndDate, new List<AccountType> {AccountType.Income, AccountType.Expense}, companyJournals);
 
@@ -1763,7 +1763,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ReportResponse GetBalanceSheet(ReportRequest request)
 		{
 			Log.Info("Balance Sheet started " + DateTime.Now.ToString("hh:mm:ss t z"));
-			var companyJournals = _readerService.GetJournals(request.CompanyId, isvoid:0);
+			var companyJournals = _readerService.GetJournals(request.CompanyId, isvoid: 0, includePayrolls: true);
 			Log.Info("journals fetched " + DateTime.Now.ToString("hh:mm:ss t z"));
 			var coas = _journalService.GetCompanyAccountsWithJournalsForTypes(request.CompanyId, null,
 				new DateTime(DateTime.Now.Year, 12, 31), new List<AccountType> {AccountType.Assets, AccountType.Liability}, companyJournals);

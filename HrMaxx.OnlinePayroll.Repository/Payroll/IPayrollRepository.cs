@@ -58,6 +58,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void ConfirmFailed(Guid id);
 
 		void FixMovedInvoice(Guid id, Guid companyId, string wc);
-		void EnsureCheckNumberIntegrity(Guid payrollId, bool peoasoCoCheck);
+		List<PayCheckJournal> EnsureCheckNumberIntegrity(Guid payrollId, bool peoasoCoCheck);
 	}
 }

@@ -147,7 +147,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				}
 				else
 				{
-					
+					Log.Info("Starting Invoice Save " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
 					const string updatepisql =
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
@@ -157,7 +157,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);
-					
+					Log.Info("Updated Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
 						const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
@@ -168,7 +168,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						}
 						
 					}
-					
+					Log.Info("Updated Credit Invoice Checks " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					const string removepayment = "delete from InvoicePayment where Id=@Id;";
 					const string updatepayment =
 						@"update InvoicePayment set Amount=@Amount, CheckNumber=@CheckNumber, Method=@Method, Notes=@Notes, PaymentDate=@PaymentDate, Status=@Status, 
@@ -188,7 +188,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 					{
 						p.Id = conn.Query<int>(insertpayment, p).Single();
 					});
-					
+					Log.Info("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
 						
 					
 					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);
@@ -768,12 +768,12 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
-		public void EnsureCheckNumberIntegrity(Guid payrollId, bool peoasoCoCheck)
+		public List<PayCheckJournal> EnsureCheckNumberIntegrity(Guid payrollId, bool peoasoCoCheck)
 		{
 			using (var conn = GetConnection())
 			{
-				conn.Execute("EnsureCheckNumberintegrity", new {PayrollId = payrollId, PEOASOCoCheck = peoasoCoCheck},
-					commandType: CommandType.StoredProcedure);
+				return conn.Query<PayCheckJournal>("EnsureCheckNumberintegrity", new {PayrollId = payrollId, PEOASOCoCheck = peoasoCoCheck},
+					commandType: CommandType.StoredProcedure).ToList();
 			}
 		}
 	}

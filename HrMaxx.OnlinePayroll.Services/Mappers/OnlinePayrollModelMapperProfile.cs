@@ -499,6 +499,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.DataModel.Journal, Models.Journal>()
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
+			CreateMap<Models.DataModel.CheckbookJournal, Models.Journal>()
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
 
 			
 			CreateMap<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>()

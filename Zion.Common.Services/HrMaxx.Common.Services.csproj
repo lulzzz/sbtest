@@ -147,6 +147,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandHandlers\MementoEventHandler.cs" />
     <Compile Include="CommandHandlers\NotificationEventHandler.cs" />
     <Compile Include="CommandHandlers\UserEventLogHandler.cs" />
     <Compile Include="Document\DocumentService.cs" />

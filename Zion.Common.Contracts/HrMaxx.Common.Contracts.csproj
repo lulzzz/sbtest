@@ -44,6 +44,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\Events\CreateMementoEvent.cs" />
     <Compile Include="Messages\Events\NotificationEvent.cs" />
     <Compile Include="Messages\Events\UserEventLogEntry.cs" />
     <Compile Include="Services\ICommonService.cs" />

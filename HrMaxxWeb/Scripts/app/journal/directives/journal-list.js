@@ -24,6 +24,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						selectedTransactionType: 0,
 						selectedAccountBalance: 0,
 						selectedCheckBalance: 0,
+						includePayrolls: false,
 						reportFilter: {
 							filterStartDate: moment().add(-2, 'week').toDate(),
 							filterEndDate: null,
@@ -275,7 +276,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 					$scope.getJournalList = function () {
 						if (dataSvc.selectedAccount) {
 							var m = $scope.mainData;
-							journalRepository.getJournalList(m.selectedCompany.id, dataSvc.selectedAccount.id, dataSvc.reportFilter.filterStartDate, dataSvc.reportFilter.filterEndDate).then(function (data) {
+							journalRepository.getJournalList(m.selectedCompany.id, dataSvc.selectedAccount.id, dataSvc.reportFilter.filterStartDate, dataSvc.reportFilter.filterEndDate, dataSvc.includePayrolls).then(function (data) {
 								dataSvc.selectedAccountBalance = data.accountBalance;
 								$scope.list = data.journals;
 								$scope.tableParams.reload();

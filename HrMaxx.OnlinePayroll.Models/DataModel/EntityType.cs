@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         {
             this.BankAccounts = new HashSet<BankAccount>();
             this.Journals = new HashSet<Journal>();
+            this.CheckbookJournals = new HashSet<CheckbookJournal>();
         }
     
         public int EntityTypeId { get; set; }
@@ -28,5 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual ICollection<BankAccount> BankAccounts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CheckbookJournal> CheckbookJournals { get; set; }
     }
 }

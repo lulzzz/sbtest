@@ -18,6 +18,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public CompanyAccount()
         {
             this.Journals = new HashSet<Journal>();
+            this.CheckbookJournals = new HashSet<CheckbookJournal>();
         }
     
         public int Id { get; set; }
@@ -40,5 +41,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual Company Company { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Journal> Journals { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CheckbookJournal> CheckbookJournals { get; set; }
     }
 }

@@ -14,5 +14,6 @@ namespace HrMaxxAPI.Resources.Journals
 		public int AccountId { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
+		public bool IncludePayrolls { get; set; }
 	}
 }

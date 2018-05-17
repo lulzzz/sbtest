@@ -30,7 +30,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		private USTaxTables TaxTables;
 		public ApplicationConfig Configurations { get; set; }
 		public List<ConfirmPayrollLogItem> ConfirmPayrollQueue { get; set; }
-		public List<UserRoleVersion> UserRoleVersions { get; set; } 
+		public List<UserRoleVersion> UserRoleVersions { get; set; }
+		public int PEOMaxCheckNumber { get; set; }
 
 		public USTaxationService(ITaxationRepository taxationRepository, IMetaDataRepository metaDataRepository, IUserRepository userRepository)
 		{
@@ -53,7 +54,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 				Configurations = _metaDataRepository.GetConfigurations();
 				UserRoleVersions = _userRepository.GetUserRoleVersions();
-
+				RefreshPEOMaxCheckNumber();
 			}
 			catch (Exception e)
 			{
@@ -203,6 +204,16 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
+		public int GetPEOMaxCheckNumber()
+		{
+			return PEOMaxCheckNumber;
+		}
+
+		public void SetPEOMaxCheckNumber(int n)
+		{
+			PEOMaxCheckNumber = n;
+		}
+
 		public int AddToConfirmPayrollQueue(ConfirmPayrollLogItem item)
 		{
 			var exists = ConfirmPayrollQueue.FirstOrDefault(q => q.PayrollId == item.PayrollId);
@@ -260,6 +271,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			{
 				UserRoleVersions.First(u => u.UserId == id).RoleVersion = roleVersion.ToString();
 			}
+		}
+
+		public void RefreshPEOMaxCheckNumber()
+		{
+			PEOMaxCheckNumber = _metaDataRepository.GetMaxCheckNumber(0, true);
 		}
 
 		public void RemoveFromConfirmPayrollQueueItem(Guid payrollId)

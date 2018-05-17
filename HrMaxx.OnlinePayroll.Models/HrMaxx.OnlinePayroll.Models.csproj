@@ -85,6 +85,9 @@
     <Compile Include="DataModel\BankAccount.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CheckbookJournal.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CommissionExtract.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -261,6 +264,7 @@
     <Compile Include="JsonDataModel\PayrollInvoice.cs" />
     <Compile Include="JsonDataModel\PayrollInvoiceListItem.cs" />
     <Compile Include="JsonDataModel\PayrollPayCheck.cs" />
+    <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="InvoiceDeliveryClaim.cs" />

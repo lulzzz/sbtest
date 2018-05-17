@@ -515,7 +515,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 
 		public List<Journal> GetJournals(Guid? companyId = null, Guid? payrollId = null, int? payCheckId = null, DateTime? startDate = null,
 		  DateTime? endDate = null,
-			int transactionType = 0, int? isvoid = null, int? year = null, int accountId = 0, bool? PEOASOCoCheck = null, int id=0)
+			int transactionType = 0, int? isvoid = null, int? year = null, int accountId = 0, bool? PEOASOCoCheck = null, int id=0, bool includePayrolls = false, bool includeDetails = true)
 	  {
 			try
 			{
@@ -545,6 +545,14 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (transactionType > 0)
 				{
 					paramList.Add(new FilterParam {Key = "transactiontype", Value = transactionType.ToString()});
+				}
+				if (includePayrolls)
+				{
+					paramList.Add(new FilterParam { Key = "includePayrollJournals", Value = "1" });
+				}
+				if (!includeDetails)
+				{
+					paramList.Add(new FilterParam { Key = "includeDetails", Value = "0" });
 				}
 				if (accountId > 0)
 				{

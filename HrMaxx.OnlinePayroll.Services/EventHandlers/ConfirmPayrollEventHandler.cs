@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HrMaxx.Bus.Contracts;
+using HrMaxx.Common.Contracts.Messages.Events;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
@@ -64,7 +65,8 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			Log.Info(string.Format("Staring Confirm for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
 			try
 			{
-				
+				var affectedChecks = new List<PayCheck>();
+				var companyPayChecks = _readerService.GetPayChecks(companyId: event1.Payroll.Company.Id, startDate: event1.Payroll.PayDay, year: event1.Payroll.PayDay.Year, isvoid: 0);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					foreach (var journal in event1.Journals)
@@ -83,7 +85,14 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 
 					}
 					Log.Info(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
-					_payrollRepository.EnsureCheckNumberIntegrity(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
+					var payCheckJournals = _payrollRepository.EnsureCheckNumberIntegrity(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
+					payCheckJournals.ForEach(p =>
+					{
+						event1.Payroll.PayChecks.First(pc => pc.Id == p.PayCheckId).CheckNumber = p.CheckNumber;
+						event1.Journals.First(j => j.PayrollPayCheckId == p.PayCheckId).CheckNumber = p.CheckNumber;
+						if(event1.Payroll.PEOASOCoCheck)
+							event1.PeoJournals.First(j => j.PayrollPayCheckId == p.PayCheckId).CheckNumber = p.CheckNumber;
+					});
 					Log.Info(string.Format("ensured check number integrity for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					if (event1.Payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
@@ -96,8 +105,8 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					_taxationService.UpdateConfirmPayrollQueueItem(event1.Payroll.Id);
 					_payrollRepository.UnQueuePayroll(event1.Payroll.Id);
 					Log.Info(string.Format("created invoice for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
-					var companyPayChecks = _readerService.GetPayChecks(companyId: event1.Payroll.Company.Id, startDate: event1.Payroll.PayDay, year: event1.Payroll.PayDay.Year, isvoid: 0);
-					var affectedChecks = new List<PayCheck>();
+					
+					
 					foreach (var paycheck in event1.Payroll.PayChecks)
 					{
 						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.PayDay > paycheck.PayDay && p.Id != paycheck.Id).ToList();
@@ -108,12 +117,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					}
-					foreach (var pc in event1.Payroll.PayChecks)
-					{
-						var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.Payroll.UserName, "Pay Check Created", event1.Payroll.UserId);
-						_mementoDataService.AddMementoData(memento);
-
-					}
+					Log.Info(string.Format("Updated future checks {0} ", affectedChecks.Count.ToString()));
 					_payrollService.UpdateLastPayrollDateAndPayRateEmployee(event1.Payroll.PayChecks.Where(pc=>pc.UpdateEmployeeRate).ToList());
 					
 					if (!event1.Payroll.Company.LastPayrollDate.HasValue ||
@@ -121,20 +125,37 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					{
 						_payrollRepository.UpdateLastPayrollDateCompany(event1.Payroll.Company.Id, event1.Payroll.PayDay);
 					}
-
-
-					foreach (var pc in affectedChecks)
-					{
-						var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, event1.Payroll.UserName, string.Format("YTD affected because of Payroll ran on {0}", event1.Payroll.PayDay.ToString("MM/DD/YYYY")), event1.Payroll.UserId);
-						_mementoDataService.AddMementoData(memento, true);
-					}
+					
 					Log.Info(string.Format("finished transactions for payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					txn.Complete();
 				}
-				var payroll = _readerService.GetPayroll(event1.Payroll.Id);
-				var journals = _journalService.GetPayrollJournals(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
-				_payrollService.PrintAndSavePayroll(payroll, journals);
+				
+				if(event1.Payroll.PEOASOCoCheck)
+					_taxationService.SetPEOMaxCheckNumber(event1.PeoJournals.Max(j=>j.CheckNumber));
+				_payrollService.PrintAndSavePayroll(event1.Payroll, event1.Payroll.PEOASOCoCheck ? event1.PeoJournals : event1.Journals);
 				Log.Info(string.Format("Finished Confirm and Print for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
+				Bus.Publish<CreateMementoEvent<PayCheck>>(new CreateMementoEvent<PayCheck>
+				{
+					List = event1.Payroll.PayChecks,
+					EntityType = EntityTypeEnum.PayCheck,
+					Notes = "Pay Check Created",
+					UserId = event1.Payroll.UserId,
+					UserName = event1.Payroll.UserName,
+					LogNotes = string.Format("Mementos (PayChecks) for payroll {0} - {1}", event1.Payroll.Id, event1.Payroll.Company.Name)
+				});
+				if (affectedChecks.Any())
+				{
+					Bus.Publish<CreateMementoEvent<PayCheck>>(new CreateMementoEvent<PayCheck>
+					{
+						List = affectedChecks,
+						EntityType = EntityTypeEnum.PayCheck,
+						Notes = string.Format("YTD affected because of Payroll ran on {0}", event1.Payroll.PayDay.ToString("MM/DD/YYYY")),
+						UserId = event1.Payroll.UserId,
+						UserName = event1.Payroll.UserName,
+						LogNotes = string.Format("YTD Mementos (PayChecks) for payroll {0} - {1}", event1.Payroll.Id, event1.Payroll.Company.Name)
+					});
+				}
+				
 				return true;
 			}
 			catch (Exception e)

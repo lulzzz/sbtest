@@ -12,13 +12,14 @@ common.factory('journalRepository', [
 
 				return deferred.promise;
 			},
-			getJournalList: function (companyId, accountId, startDate, endDate) {
+			getJournalList: function (companyId, accountId, startDate, endDate, includePayChecks) {
 				var deferred = $q.defer();
 				journalServer.all('AccountJournals').post({
 					companyId: companyId,
 					accountId: accountId,
 					startDate: startDate,
-					endDate: endDate
+					endDate: endDate,
+					includePayrolls: includePayChecks
 				}).then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {

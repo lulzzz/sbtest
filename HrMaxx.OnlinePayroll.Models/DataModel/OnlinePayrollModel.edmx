@@ -65,6 +65,37 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="FractionId" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="CheckbookJournal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TransactionType" Type="int" Nullable="false" />
+          <Property Name="PaymentMethod" Type="int" Nullable="false" />
+          <Property Name="CheckNumber" Type="int" Nullable="false" />
+          <Property Name="PayrollPayCheckId" Type="int" />
+          <Property Name="EntityType" Type="int" Nullable="false" />
+          <Property Name="PayeeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PayeeName" Type="varchar(max)" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Memo" Type="varchar(max)" />
+          <Property Name="IsDebit" Type="bit" Nullable="false" />
+          <Property Name="IsVoid" Type="bit" Nullable="false" />
+          <Property Name="MainAccountId" Type="int" Nullable="false" />
+          <Property Name="TransactionDate" Type="datetime" Nullable="false" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+          <Property Name="JournalDetails" Type="varchar(max)" Nullable="false" />
+          <Property Name="DocumentId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PEOASOCoCheck" Type="bit" Nullable="false" />
+          <Property Name="OriginalDate" Type="datetime" />
+          <Property Name="IsReIssued" Type="bit" Nullable="false" />
+          <Property Name="OriginalCheckNumber" Type="int" />
+          <Property Name="ReIssuedDate" Type="datetime" />
+          <Property Name="PayrollId" Type="uniqueidentifier" />
+          <Property Name="CompanyIntId" Type="int" />
+        </EntityType>
         <EntityType Name="CommissionExtract">
           <Key>
             <PropertyRef Name="Id" />
@@ -667,6 +698,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CheckbookJournal_Company">
+          <End Role="Company" Type="Self.Company" Multiplicity="1" />
+          <End Role="CheckbookJournal" Type="Self.CheckbookJournal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CheckbookJournal">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CheckbookJournal_CompanyAccount">
+          <End Role="CompanyAccount" Type="Self.CompanyAccount" Multiplicity="1" />
+          <End Role="CheckbookJournal" Type="Self.CheckbookJournal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompanyAccount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CheckbookJournal">
+              <PropertyRef Name="MainAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CheckbookJournal_EntityType">
+          <End Role="EntityType" Type="Self.EntityType" Multiplicity="1" />
+          <End Role="CheckbookJournal" Type="Self.CheckbookJournal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EntityType">
+              <PropertyRef Name="EntityTypeId" />
+            </Principal>
+            <Dependent Role="CheckbookJournal">
+              <PropertyRef Name="EntityType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CommissionExtract_MasterExtracts">
           <End Role="MasterExtracts" Type="Self.MasterExtracts" Multiplicity="1" />
           <End Role="CommissionExtract" Type="Self.CommissionExtract" Multiplicity="*" />
@@ -1167,6 +1234,7 @@
           <EntitySet Name="ACHTransactionExtract" EntityType="Self.ACHTransactionExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ApplicationConfiguration" EntityType="Self.ApplicationConfiguration" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BankAccount" EntityType="Self.BankAccount" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CheckbookJournal" EntityType="Self.CheckbookJournal" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CommissionExtract" EntityType="Self.CommissionExtract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Company" EntityType="Self.Company" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyAccount" EntityType="Self.CompanyAccount" Schema="dbo" store:Type="Tables" />
@@ -1211,6 +1279,18 @@
           <AssociationSet Name="FK_BankAccount_EntityType" Association="Self.FK_BankAccount_EntityType">
             <End Role="EntityType" EntitySet="EntityType" />
             <End Role="BankAccount" EntitySet="BankAccount" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CheckbookJournal_Company" Association="Self.FK_CheckbookJournal_Company">
+            <End Role="Company" EntitySet="Company" />
+            <End Role="CheckbookJournal" EntitySet="CheckbookJournal" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CheckbookJournal_CompanyAccount" Association="Self.FK_CheckbookJournal_CompanyAccount">
+            <End Role="CompanyAccount" EntitySet="CompanyAccount" />
+            <End Role="CheckbookJournal" EntitySet="CheckbookJournal" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CheckbookJournal_EntityType" Association="Self.FK_CheckbookJournal_EntityType">
+            <End Role="EntityType" EntitySet="EntityType" />
+            <End Role="CheckbookJournal" EntitySet="CheckbookJournal" />
           </AssociationSet>
           <AssociationSet Name="FK_CommissionExtract_MasterExtracts" Association="Self.FK_CommissionExtract_MasterExtracts">
             <End Role="MasterExtracts" EntitySet="MasterExtracts" />
@@ -1611,6 +1691,19 @@
             <End Role="PayrollInvoice" EntitySet="PayrollInvoices" />
             <End Role="CommissionExtract" EntitySet="CommissionExtracts" />
           </AssociationSet>
+          <EntitySet Name="CheckbookJournals" EntityType="HrMaxxModel.CheckbookJournal" />
+          <AssociationSet Name="FK_CheckbookJournal_Company" Association="HrMaxxModel.FK_CheckbookJournal_Company">
+            <End Role="Company" EntitySet="Companies" />
+            <End Role="CheckbookJournal" EntitySet="CheckbookJournals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CheckbookJournal_CompanyAccount" Association="HrMaxxModel.FK_CheckbookJournal_CompanyAccount">
+            <End Role="CompanyAccount" EntitySet="CompanyAccounts" />
+            <End Role="CheckbookJournal" EntitySet="CheckbookJournals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CheckbookJournal_EntityType" Association="HrMaxxModel.FK_CheckbookJournal_EntityType">
+            <End Role="EntityType" EntitySet="EntityTypes" />
+            <End Role="CheckbookJournal" EntitySet="CheckbookJournals" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1707,6 +1800,7 @@
           <Property Name="CompanyCheckPrintOrder" Type="Int32" Nullable="false" />
           <Property Name="PayrollScheduleDay" Type="Int32" Nullable="false" />
           <Property Name="DashboardNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="Company" ToRole="CheckbookJournal" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2062,6 +2156,7 @@
           <Property Name="UsedInPayroll" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_CompanyAccount" FromRole="CompanyAccount" ToRole="Journal" />
           <Property Name="UsedInInvoiceDeposit" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_CompanyAccount" FromRole="CompanyAccount" ToRole="CheckbookJournal" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -2071,6 +2166,7 @@
           <Property Name="EntityTypeName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="BankAccounts" Relationship="HrMaxxModel.FK_BankAccount_EntityType" FromRole="EntityType" ToRole="BankAccount" />
           <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_EntityType" FromRole="EntityType" ToRole="Journal" />
+          <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_EntityType" FromRole="EntityType" ToRole="CheckbookJournal" />
         </EntityType>
         <Association Name="FK_CompanyAccount_AccountTemplate">
           <End Type="HrMaxxModel.AccountTemplate" Role="AccountTemplate" Multiplicity="0..1" />
@@ -2857,6 +2953,76 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="CheckbookJournal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CompanyId" Type="Guid" Nullable="false" />
+          <Property Name="TransactionType" Type="Int32" Nullable="false" />
+          <Property Name="PaymentMethod" Type="Int32" Nullable="false" />
+          <Property Name="CheckNumber" Type="Int32" Nullable="false" />
+          <Property Name="PayrollPayCheckId" Type="Int32" />
+          <Property Name="EntityType" Type="Int32" Nullable="false" />
+          <Property Name="PayeeId" Type="Guid" Nullable="false" />
+          <Property Name="PayeeName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Memo" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsDebit" Type="Boolean" Nullable="false" />
+          <Property Name="IsVoid" Type="Boolean" Nullable="false" />
+          <Property Name="MainAccountId" Type="Int32" Nullable="false" />
+          <Property Name="TransactionDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="JournalDetails" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DocumentId" Type="Guid" Nullable="false" />
+          <Property Name="PEOASOCoCheck" Type="Boolean" Nullable="false" />
+          <Property Name="OriginalDate" Type="DateTime" Precision="3" />
+          <Property Name="IsReIssued" Type="Boolean" Nullable="false" />
+          <Property Name="OriginalCheckNumber" Type="Int32" />
+          <Property Name="ReIssuedDate" Type="DateTime" Precision="3" />
+          <Property Name="PayrollId" Type="Guid" />
+          <Property Name="CompanyIntId" Type="Int32" />
+          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="CheckbookJournal" ToRole="Company" />
+          <NavigationProperty Name="CompanyAccount" Relationship="HrMaxxModel.FK_CheckbookJournal_CompanyAccount" FromRole="CheckbookJournal" ToRole="CompanyAccount" />
+          <NavigationProperty Name="EntityType1" Relationship="HrMaxxModel.FK_CheckbookJournal_EntityType" FromRole="CheckbookJournal" ToRole="EntityType" />
+        </EntityType>
+        <Association Name="FK_CheckbookJournal_Company">
+          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
+          <End Type="HrMaxxModel.CheckbookJournal" Role="CheckbookJournal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Company">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CheckbookJournal">
+              <PropertyRef Name="CompanyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CheckbookJournal_CompanyAccount">
+          <End Type="HrMaxxModel.CompanyAccount" Role="CompanyAccount" Multiplicity="1" />
+          <End Type="HrMaxxModel.CheckbookJournal" Role="CheckbookJournal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CompanyAccount">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="CheckbookJournal">
+              <PropertyRef Name="MainAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CheckbookJournal_EntityType">
+          <End Type="HrMaxxModel.EntityType" Role="EntityType" Multiplicity="1" />
+          <End Type="HrMaxxModel.CheckbookJournal" Role="CheckbookJournal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EntityType">
+              <PropertyRef Name="EntityTypeId" />
+            </Principal>
+            <Dependent Role="CheckbookJournal">
+              <PropertyRef Name="EntityType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3521,6 +3687,38 @@
               <MappingFragment StoreEntitySet="CommissionExtract">
                 <ScalarProperty Name="MasterExtractId" ColumnName="MasterExtractId" />
                 <ScalarProperty Name="PayrollInvoiceId" ColumnName="PayrollInvoiceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CheckbookJournals">
+            <EntityTypeMapping TypeName="HrMaxxModel.CheckbookJournal">
+              <MappingFragment StoreEntitySet="CheckbookJournal">
+                <ScalarProperty Name="CompanyIntId" ColumnName="CompanyIntId" />
+                <ScalarProperty Name="PayrollId" ColumnName="PayrollId" />
+                <ScalarProperty Name="ReIssuedDate" ColumnName="ReIssuedDate" />
+                <ScalarProperty Name="OriginalCheckNumber" ColumnName="OriginalCheckNumber" />
+                <ScalarProperty Name="IsReIssued" ColumnName="IsReIssued" />
+                <ScalarProperty Name="OriginalDate" ColumnName="OriginalDate" />
+                <ScalarProperty Name="PEOASOCoCheck" ColumnName="PEOASOCoCheck" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="JournalDetails" ColumnName="JournalDetails" />
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
+                <ScalarProperty Name="MainAccountId" ColumnName="MainAccountId" />
+                <ScalarProperty Name="IsVoid" ColumnName="IsVoid" />
+                <ScalarProperty Name="IsDebit" ColumnName="IsDebit" />
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="PayeeName" ColumnName="PayeeName" />
+                <ScalarProperty Name="PayeeId" ColumnName="PayeeId" />
+                <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="PayrollPayCheckId" ColumnName="PayrollPayCheckId" />
+                <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
+                <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
+                <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
+                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
