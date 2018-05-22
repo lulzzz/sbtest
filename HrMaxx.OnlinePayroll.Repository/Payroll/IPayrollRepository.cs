@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
@@ -26,7 +27,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		PayCheck UnVoidPayCheck(PayCheck paycheck, string name);
 		void ChangePayCheckStatus(int payCheckId, PaycheckStatus printed);
 		//Invoices
-		PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice);
+		PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice, ref StringBuilder strLog);
 		void DeletePayrollInvoice(Guid invoiceId);
 		List<PayrollInvoice> ClaimDelivery(List<Guid> invoices, string user);
 		void SaveInvoiceDeliveryClaim(InvoiceDeliveryClaim invoiceDeliveryClaim);
@@ -59,5 +60,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		void FixMovedInvoice(Guid id, Guid companyId, string wc);
 		List<PayCheckJournal> EnsureCheckNumberIntegrity(Guid payrollId, bool peoasoCoCheck);
+		void UpdateInvoiceRecurringCharges(List<Models.PayrollInvoiceMiscCharges> updatedList);
+		List<Models.PayrollInvoiceMiscCharges> GetFutureInvoicesMiscCharges(Guid companyId, int invoiceNumber);
+		void DelayPayrollInvoice(Guid id, bool taxesDelayed, DateTime lastModified, string userName);
 	}
 }

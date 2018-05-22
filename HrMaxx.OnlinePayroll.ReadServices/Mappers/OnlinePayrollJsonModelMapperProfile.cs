@@ -223,6 +223,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.JournalDetail>>(src.JournalDetails)));
 
 			CreateMap<Models.JsonDataModel.ExtractInvoicePaymentJson, Models.ExtractInvoicePayment>();
+			CreateMap<Models.JsonDataModel.PayrollInvoiceMiscCharges, Models.PayrollInvoiceMiscCharges>()
+				.ForMember(dest => dest.MiscCharges, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.MiscFee>>(src.MiscCharges)));
+			CreateMap<Models.PayrollInvoiceMiscCharges, Models.JsonDataModel.PayrollInvoiceMiscCharges>()
+				.ForMember(dest => dest.MiscCharges, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.MiscCharges)));
 		}
 	}
 }

@@ -61,7 +61,7 @@ namespace HrMaxxAPI.Controllers.Journals
 		[Route(JournalRoutes.JournalList)]
 		public JournalListResource GetJournalList(JournalFilterResource filter)
 		{
-			var journal = MakeServiceCall(() => _journalService.GetJournalListByCompanyAccount(filter.CompanyId, filter.AccountId, filter.StartDate, filter.EndDate, filter.IncludePayrolls), string.Format("get list of payrolls for company={0}", filter.CompanyId));
+			var journal = MakeServiceCall(() => _journalService.GetJournalListByCompanyAccount(filter.CompanyId, filter.AccountId, filter.StartDate, filter.EndDate, filter.IncludePayrolls), string.Format("get list of journals for company={0}", filter.CompanyId));
 			return Mapper.Map<JournalList, JournalListResource>(journal);
 		}
 
@@ -69,7 +69,7 @@ namespace HrMaxxAPI.Controllers.Journals
 		[Route(JournalRoutes.AccountWithJournalList)]
 		public List<AccountWithJournal> GetAccountJournalList(JournalFilterResource filter)
 		{
-			return MakeServiceCall(() => _journalService.GetCompanyAccountsWithJournals(filter.CompanyId, filter.AccountId, filter.StartDate, filter.EndDate), string.Format("get list of payrolls for company={0}", filter.CompanyId));
+			return MakeServiceCall(() => _journalService.GetCompanyAccountsWithJournals(filter.CompanyId, filter.AccountId, filter.StartDate, filter.EndDate), string.Format("get list of account journals for company={0}", filter.CompanyId));
 			
 		}
 

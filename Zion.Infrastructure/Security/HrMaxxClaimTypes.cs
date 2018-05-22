@@ -21,6 +21,7 @@
 
 		public const string ManageConfiguration = "http://Paxol/ManageConfiguration";
 		public const string DataExtracts = "http://Paxol/DataExtracts";
+		public const string MiscExtracts = "http://Paxol/MiscExtracts";
 		public const string ACH = "http://Paxol/ACH";
 		public const string ManageHost = "http://Paxol/Host/Manage";
 		public const string HostContract = "http://Paxol/Host/Contract";

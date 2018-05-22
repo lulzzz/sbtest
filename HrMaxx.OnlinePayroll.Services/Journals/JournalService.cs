@@ -568,7 +568,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				var models = new List<PDFModel>();
 				journals.ForEach(j =>
 				{
-					var journal = _readerService.GetJournals(id:j, includePayrolls:true, includeDetails:false).First();
+					var journal = _readerService.GetJournals(id:j, includePayrolls:false, includeDetails:false).First();
 					var company = _readerService.GetCompany(journal.CompanyId);
 					var coas = _companyService.GetComanyAccounts(journal.CompanyId);
 						

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.RegularExpressions;
 using Dapper;
 using HrMaxx.Infrastructure.Mapping;
@@ -20,6 +21,7 @@ using Invoice = HrMaxx.OnlinePayroll.Models.Invoice;
 using InvoiceDeliveryClaim = HrMaxx.OnlinePayroll.Models.InvoiceDeliveryClaim;
 using Journal = HrMaxx.OnlinePayroll.Models.Journal;
 using PayrollInvoice = HrMaxx.OnlinePayroll.Models.PayrollInvoice;
+using PayrollInvoiceMiscCharges = HrMaxx.OnlinePayroll.Models.PayrollInvoiceMiscCharges;
 
 namespace HrMaxx.OnlinePayroll.Repository.Payroll
 {
@@ -104,7 +106,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 			
 		}
 
-		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice)
+		public PayrollInvoice SavePayrollInvoice(PayrollInvoice payrollInvoice, ref StringBuilder strLog)
 		{
 			
 			const string pisql = "select * from PayrollInvoice with (nolock) where Id=@Id or PayrollId=@PayrollId";
@@ -125,7 +127,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				if (pi == null)
 				{
 					payrollInvoice.InvoiceNumber = conn.Query<int>(insertsql, mapped).Single();
-
+					strLog.AppendLine("Created Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					conn.Execute(updatepayrollsql,
 						new
 						{
@@ -133,6 +135,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 							PayrollId = mapped.PayrollId,
 							PayCheckIds = payrollInvoice.PayChecks
 						});
+					strLog.AppendLine("Updated Payroll " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					if (payrollInvoice.VoidedCreditedChecks.Any())
 					{
 
@@ -142,12 +145,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 								Id = mapped.Id,
 								CreditChecks = payrollInvoice.VoidedCreditedChecks
 							});
+						strLog.AppendLine("Updated Credit checks " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					}
 					return payrollInvoice;
 				}
 				else
 				{
-					Log.Info("Starting Invoice Save " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
 					const string updatepisql =
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
@@ -157,7 +160,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 																		where Id=@Id";
 					
 					conn.Execute(updatepisql, mapped);
-					Log.Info("Updated Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
+					strLog.AppendLine("Updated Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
 						const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
@@ -168,7 +171,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						}
 						
 					}
-					Log.Info("Updated Credit Invoice Checks " + DateTime.Now.ToString("hh:mm:ss:fff"));
+					
 					const string removepayment = "delete from InvoicePayment where Id=@Id;";
 					const string updatepayment =
 						@"update InvoicePayment set Amount=@Amount, CheckNumber=@CheckNumber, Method=@Method, Notes=@Notes, PaymentDate=@PaymentDate, Status=@Status, 
@@ -188,7 +191,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 					{
 						p.Id = conn.Query<int>(insertpayment, p).Single();
 					});
-					Log.Info("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
+					strLog.AppendLine("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
 						
 					
 					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);
@@ -774,6 +777,38 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			{
 				return conn.Query<PayCheckJournal>("EnsureCheckNumberintegrity", new {PayrollId = payrollId, PEOASOCoCheck = peoasoCoCheck},
 					commandType: CommandType.StoredProcedure).ToList();
+			}
+		}
+
+		public void UpdateInvoiceRecurringCharges(List<PayrollInvoiceMiscCharges> updatedList)
+		{
+			var mapped = _mapper.Map<List<Models.PayrollInvoiceMiscCharges>, List<Models.JsonDataModel.PayrollInvoiceMiscCharges>>(updatedList);
+			const string sql = "Update PayrollInvoice set MiscCharges=@MiscCharges where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, mapped);
+			}
+		}
+
+		public List<PayrollInvoiceMiscCharges> GetFutureInvoicesMiscCharges(Guid companyId, int invoiceNumber)
+		{
+			const string sql =
+				"select Id, MiscCharges from PayrollInvoice where CompanyId=@CompanyId and InvoiceNumber>@InvoiceNumber";
+			using (var conn = GetConnection())
+			{
+				var list = conn.Query<Models.JsonDataModel.PayrollInvoiceMiscCharges>(sql, new {CompanyId = companyId, InvoiceNumber=invoiceNumber}).ToList();
+				return
+					_mapper.Map<List<Models.JsonDataModel.PayrollInvoiceMiscCharges>, List<Models.PayrollInvoiceMiscCharges>>(list);
+			}
+		}
+
+		public void DelayPayrollInvoice(Guid id, bool taxesDelayed, DateTime lastModified, string userName)
+		{
+			const string sql =
+				"update PayrollInvoice set TaxesDelayed=@TaxesDelayed, LastModified=getdate(), LastModifiedBy=@User where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new {Id = id, TaxesDelayed = taxesDelayed, User = userName});
 			}
 		}
 	}

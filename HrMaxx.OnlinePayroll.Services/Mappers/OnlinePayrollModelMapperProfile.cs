@@ -151,6 +151,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Locations, opt => opt.Ignore())
 				.ForMember(dest => dest.Parent, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.CheckbookJournals, opt => opt.Ignore())
 				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src=>string.IsNullOrWhiteSpace(src.Memo) ? string.Empty: src.Memo))
 				.ForMember(dest => dest.PayrollInvoices, opt => opt.Ignore())
 				.ForMember(dest => dest.ClientNo, opt => opt.MapFrom(src => src.InsuranceClientNo))
@@ -288,6 +289,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Account, Models.DataModel.CompanyAccount>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.CheckbookJournals, opt => opt.Ignore())
 				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src => src.BankAccount))
 				.ForMember(dest => dest.AccountTemplate, opt => opt.Ignore())
 				.ForMember(dest => dest.UsedInPayroll, opt => opt.MapFrom(src => src.UseInPayroll))
@@ -322,6 +324,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.BankAccount, opt => opt.Ignore())
 				.ForMember(dest => dest.BankAccountId, opt => opt.Ignore())
 				.ForMember(dest => dest.Journals, opt => opt.Ignore())
+				.ForMember(dest => dest.CheckbookJournals, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now))
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.Ignore());
 

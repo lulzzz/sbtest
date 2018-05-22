@@ -81,4 +81,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	{
 		public List<PayrollInvoiceJson> ResultList { get; set; } 
 	}
+	public class PayrollInvoiceMiscCharges
+	{
+		public Guid Id { get; set; }
+		public string MiscCharges { get; set; }
+	}
 }

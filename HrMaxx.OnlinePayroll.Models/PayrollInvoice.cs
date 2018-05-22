@@ -111,7 +111,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			HandleVoidedChecks(prevInvoices, company, voidedPayChecks);
 			CalculateCASUTA(company, payroll.PayDay.Year);
 
-			EmployeeContribution = payroll.TotalGrossWage - payroll.TotalNetWage;
+			EmployeeContribution = EmployeeTaxes.Sum(pc=>pc.Amount) + Deductions.Sum(d=>d.Amount);
 			EmployerContribution = EmployerTaxes.Sum(pc => pc.Amount);
 			EnvironmentalFee = CompanyInvoiceSetup.ApplyEnvironmentalFee ? envFeePerCheck * NoOfChecks : 0;
 			CalculateTotal();
@@ -484,5 +484,11 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal OriginalWage { get; set; }
 		public decimal OriginalAmount { get; set; }
 
+	}
+
+	public class PayrollInvoiceMiscCharges
+	{
+		public Guid Id { get; set; }
+		public List<MiscFee> MiscCharges { get; set; }
 	}
 }

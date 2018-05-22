@@ -9,8 +9,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Reports/templates/data-extracts.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository', 'commonRepository',
-				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository, commonRepository) {
+			controller: ['$scope', '$element', '$location', '$filter', 'payrollRepository', 'reportRepository', 'hostRepository', 'commonRepository', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, payrollRepository, reportRepository, hostRepository, commonRepository, ClaimTypes) {
 					var dataSvc = {
 						isBodyOpen: false,
 						isBodyOpenExtract: false,
@@ -22,6 +22,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						hosts: [],
 						selectedHost: null,
 						selectedSalesRep: null,
+						viewMisc: $scope.mainData.hasClaim(ClaimTypes.MiscExtracts, 1),
+						viewAll: $scope.mainData.hasClaim(ClaimTypes.DataExtracts, 1),
 						filterPP: {
 							payDay: moment().startOf('day').toDate()
 						},

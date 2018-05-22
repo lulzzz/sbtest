@@ -95,7 +95,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				else
 				{
 					const string updatejournal =
-							"update chekcbookjournal set Amount=@Amount, Memo=@Memo, TransactionDate=@TransactionDate, CheckNumber=@CheckNumber, IsVoid=@IsVoid, PayeeId=@PayeeId, PayeeName=@PayeeName, JournalDetails=@JournalDetails Where Id=@Id";
+							"update checkbookjournal set Amount=@Amount, Memo=@Memo, TransactionDate=@TransactionDate, CheckNumber=@CheckNumber, IsVoid=@IsVoid, PayeeId=@PayeeId, PayeeName=@PayeeName, JournalDetails=@JournalDetails Where Id=@Id";
 					var rowsUpdated = conn.Execute(updatejournal, mapped);
 					if (rowsUpdated == 0)
 					{
@@ -288,7 +288,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				"insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type) values(@PayrollPayCheckId, @MasterExtractId, @Extract, @Type);";
 			const string insertJournals = "insert into CheckbookJournal( CompanyId, TransactionType, PaymentMethod, CheckNumber, PayrollPayCheckId, EntityType, PayeeId, PayeeName, Amount, Memo, IsDebit, IsVoid, MainAccountId, TransactionDate, LastModified, LastModifiedBy, JournalDetails, DocumentId, PEOASOCoCheck, OriginalDate, CompanyIntId) " +
 			                              "select @CompanyId, @TransactionType, @PaymentMethod, " +
-			                              "case when @TransactionType in (2,6) and exists(select 'x' from Journal where CompanyId=@CompanyId and TransactionType in (2,6)) then (select max(CheckNumber)+1 from Journal where CompanyId=@CompanyId and TransactionType in (2,6))" +
+																		"case when @TransactionType in (2,6) and exists(select 'x' from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyIntId and TransactionType in (2,6) and CheckNumber=@CheckNumber) then (select max(CheckNumber)+1 from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyIntId and TransactionType in (2,6))" +
 			                              " else @CheckNumber end, @PayrollPayCheckId, @EntityType, @PayeeId, @PayeeName, @Amount, @Memo, @IsDebit, @IsVoid, @MainAccountId, @TransactionDate, @LastModified, @LastModifiedBy, @JournalDetails, @DocumentId, @PEOASOCoCheck, @OriginalDate, @CompanyIntId;select cast(scope_identity() as int)";
 
 			using (var conn = GetConnection())

@@ -266,6 +266,8 @@ BEGIN
 	declare @where nvarchar(max) = ''
 	if @id is not null
 		set @where = @where + case when @where ='' then '' else ' and ' end  + 'Id=' + cast(@Id as varchar(max))
+	if @paycheck is not null
+		set @where = @where + case when @where ='' then '' else ' and ' end  + 'PayrollPayCheckId=' + cast(@paycheck as varchar(max))
 	if @payrollid is not null 
 		set @where = @where +case when @where ='' then '' else ' and ' end  + + 'PayrollId=''' + cast(@payrollid as varchar(max)) + ''''
 	if @accountid is not null 

@@ -62,9 +62,10 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 
 		private bool RunConfirmPayrollEvent(ConfirmPayrollEvent event1, int retry)
 		{
-			Log.Info(string.Format("Staring Confirm for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
+			var log = new StringBuilder();
 			try
 			{
+				Log.Info(string.Format("Staring Confirm for Payroll {0} - {1} - {2} - Go# {3}", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff"), retry));
 				var affectedChecks = new List<PayCheck>();
 				var companyPayChecks = _readerService.GetPayChecks(companyId: event1.Payroll.Company.Id, startDate: event1.Payroll.PayDay, year: event1.Payroll.PayDay.Year, isvoid: 0);
 				using (var txn = TransactionScopeHelper.Transaction())
@@ -84,7 +85,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
 
 					}
-					Log.Info(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					log.AppendLine(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					var payCheckJournals = _payrollRepository.EnsureCheckNumberIntegrity(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
 					payCheckJournals.ForEach(p =>
 					{
@@ -93,7 +94,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						if(event1.Payroll.PEOASOCoCheck)
 							event1.PeoJournals.First(j => j.PayrollPayCheckId == p.PayCheckId).CheckNumber = p.CheckNumber;
 					});
-					Log.Info(string.Format("ensured check number integrity for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					log.AppendLine(string.Format("ensured check number integrity for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					if (event1.Payroll.Company.Contract.BillingOption == BillingOptions.Invoice)
 					{
 						var inv = _payrollService.CreatePayrollInvoice(event1.Payroll, event1.Payroll.UserName, event1.Payroll.UserId, false);
@@ -104,7 +105,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					}
 					_taxationService.UpdateConfirmPayrollQueueItem(event1.Payroll.Id);
 					_payrollRepository.UnQueuePayroll(event1.Payroll.Id);
-					Log.Info(string.Format("created invoice for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					log.AppendLine(string.Format("created invoice for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					
 					
 					foreach (var paycheck in event1.Payroll.PayChecks)
@@ -117,7 +118,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 							affectedChecks.Add(employeeFutureCheck);
 						}
 					}
-					Log.Info(string.Format("Updated future checks {0} ", affectedChecks.Count.ToString()));
+					log.AppendLine(string.Format("Updated future checks {0} ", affectedChecks.Count.ToString()));
 					_payrollService.UpdateLastPayrollDateAndPayRateEmployee(event1.Payroll.PayChecks.Where(pc=>pc.UpdateEmployeeRate).ToList());
 					
 					if (!event1.Payroll.Company.LastPayrollDate.HasValue ||
@@ -126,7 +127,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 						_payrollRepository.UpdateLastPayrollDateCompany(event1.Payroll.Company.Id, event1.Payroll.PayDay);
 					}
 					
-					Log.Info(string.Format("finished transactions for payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
+					log.AppendLine(string.Format("finished transactions for payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					txn.Complete();
 				}
 				
@@ -160,6 +161,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			}
 			catch (Exception e)
 			{
+				Log.Info(log.ToString());
 				Log.Error(string.Format("Erorr in Confirming Payroll {0} - {1} - {2}", event1.Payroll.Id, event1.Payroll.Company.Name, e.Message));
 				return false;
 			}

@@ -87,22 +87,6 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  }
 	  }
 
-		//public List<PayrollInvoice> GetPayrollInvoices(Guid host)
-		//{
-		//	try
-		//	{
-		//		var paramList = new List<FilterParam> {new FilterParam() {Key = "host", Value = host.ToString()}};
-		//		return GetDataFromJsonStoredProc<List<PayrollInvoice>, List<Models.JsonDataModel.PayrollInvoiceJson>>(
-		//			"GetPayrollInvoices", paramList);
-		//	}
-		//	catch (Exception e)
-		//	{
-		//		var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Payroll invoices through JSON");
-		//		Log.Error(message, e);
-		//		throw new HrMaxxApplicationException(message, e);
-		//	}
-		//}
-
 		public List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null,  bool includeTaxesDelayed = false)
 		{
 			try
@@ -112,17 +96,17 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "host", Value = host.Value.ToString() });
 				}
-				if (status != null)
+				if (status != null && status.Any())
 				{
-					paramList.Add(new FilterParam { Key = "status", Value = status.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "status", Value = Utilities.GetCommaSeperatedList<InvoiceStatus>(status) });
 				}
-				if (paymentStatuses != null)
+				if (paymentStatuses != null && paymentStatuses.Any())
 				{
-					paramList.Add(new FilterParam { Key = "paymentstatus", Value = paymentStatuses.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "paymentstatus", Value = Utilities.GetCommaSeperatedList(paymentStatuses) });
 				}
-				if (paymentMethods != null)
+				if (paymentMethods != null && paymentMethods.Any())
 				{
-					paramList.Add(new FilterParam { Key = "paymentmethod", Value = paymentMethods.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "paymentmethod", Value = Utilities.GetCommaSeperatedList(paymentMethods) });
 				}
 				if (companyId.HasValue)
 				{
@@ -161,17 +145,17 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "host", Value = host.Value.ToString() });
 				}
-				if (status!=null)
+				if (status != null && status.Any())
 				{
-					paramList.Add(new FilterParam { Key = "status", Value = status.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "status", Value = Utilities.GetCommaSeperatedList<InvoiceStatus>(status) });
 				}
-				if (paymentStatuses != null)
+				if (paymentStatuses != null && paymentStatuses.Any())
 				{
-					paramList.Add(new FilterParam { Key = "paymentstatus", Value = paymentStatuses.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "paymentstatus", Value = Utilities.GetCommaSeperatedList(paymentStatuses) });
 				}
-				if (paymentMethods != null)
+				if (paymentMethods != null && paymentMethods.Any())
 				{
-					paramList.Add(new FilterParam { Key = "paymentmethod", Value = paymentMethods.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "paymentmethod", Value = Utilities.GetCommaSeperatedList(paymentMethods) });
 				}
 				if (companyId.HasValue)
 				{
@@ -213,9 +197,9 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			{
 				var paramList = new List<FilterParam>();
 				paramList.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
-				if (status != null)
+				if (status != null && status.Any())
 				{
-					paramList.Add(new FilterParam { Key = "status", Value = status.Aggregate(string.Empty, (current, m) => current + (int)m + ", ") });
+					paramList.Add(new FilterParam { Key = "status", Value = Utilities.GetCommaSeperatedList<InvoiceStatus>(status) });
 				}
 				
 				if (startDate.HasValue)

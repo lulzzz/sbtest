@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.2.76.2');
+common.constant('version', '1.0.2.78.2');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -85,6 +85,8 @@ common.constant('EntityTypes', {
 });
 common.constant('ClaimTypes', {
 	ManageConfiguration: 'http://Paxol/ManageConfiguration',
+	DataExtracts : 'http://Paxol/DataExtracts',
+	MiscExtracts : 'http://Paxol/MiscExtracts',
 	ManageHost: 'http://Paxol/Host/Manage',
 	HostContract: 'http://Paxol/Host/Contract',
 	HostPEOFlag: 'http://Paxol/Host/PEOFlag',

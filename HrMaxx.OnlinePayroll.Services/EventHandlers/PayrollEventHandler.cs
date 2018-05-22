@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.DataModel;
@@ -19,7 +20,7 @@ using Notification = HrMaxx.Common.Contracts.Messages.Events.Notification;
 
 namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 {
-	public class PayrollEventHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<InvoiceCreatedEvent>.All, Consumes<InvoiceDepositUpdateEvent>.All, Consumes<CompanySalesRepChangeEvent>.All
+	public class PayrollEventHandler : BaseService, Consumes<PayrollSavedEvent>.All, Consumes<PayCheckVoidedEvent>.All, Consumes<InvoiceCreatedEvent>.All, Consumes<InvoiceDepositUpdateEvent>.All, Consumes<CompanySalesRepChangeEvent>.All, Consumes<InvoiceRecurringChargesHandleEvent>.All
 	{
 		public IBus Bus { get; set; }
 		
@@ -166,16 +167,88 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 
 		public void Consume(CompanySalesRepChangeEvent event1)
 		{
-			var invoices = _readerService.GetPayrollInvoices(companyId: event1.SavedObject.Id);
-			invoices.Where(i=>i.SalesRep==null || i.SalesRep==Guid.Empty).ToList().ForEach(i =>
+			var strLog = new StringBuilder();
+			try
 			{
-				i.UserId = event1.UserId;
-				i.CompanyInvoiceSetup.SalesRep = event1.SavedObject.Contract.InvoiceSetup.SalesRep;
-				i.CalculateCommission();
-				_payrollRepository.SavePayrollInvoice(i);
-				var memento = Memento<PayrollInvoice>.Create(i, EntityTypeEnum.Invoice, event1.UserName, string.Format("Invoice Commission updated through company commission set up change"), i.UserId);
-				_mementoDataService.AddMementoData(memento);
-			});
+				var invoices = _readerService.GetPayrollInvoices(companyId: event1.SavedObject.Id);
+				invoices.Where(i => i.SalesRep == null || i.SalesRep == Guid.Empty).ToList().ForEach(i =>
+				{
+					i.UserId = event1.UserId;
+					i.CompanyInvoiceSetup.SalesRep = event1.SavedObject.Contract.InvoiceSetup.SalesRep;
+					i.CalculateCommission();
+					_payrollRepository.SavePayrollInvoice(i, ref strLog);
+					var memento = Memento<PayrollInvoice>.Create(i, EntityTypeEnum.Invoice, event1.UserName, string.Format("Invoice Commission updated through company commission set up change"), i.UserId);
+					_mementoDataService.AddMementoData(memento);
+				});
+			}
+			catch (Exception e)
+			{
+				Log.Info(strLog);
+				Log.Error("Error in consuming company sales rep change", e);
+			}
+			
+		}
+
+		public void Consume(InvoiceRecurringChargesHandleEvent event1)
+		{
+			try
+			{
+
+				var updatedList = new List<PayrollInvoiceMiscCharges>();
+				if (event1.DbInvoice.MiscCharges.Any(dbmc => dbmc.RecurringChargeId > 0 && (event1.Invoice.MiscCharges.All(mc => mc.RecurringChargeId != dbmc.RecurringChargeId) || event1.Invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId && mc.Amount != dbmc.Amount))))
+				{
+					var deleted =
+						event1.DbInvoice.MiscCharges.Where(
+							dbmc =>
+								dbmc.RecurringChargeId > 0 &&
+								event1.Invoice.MiscCharges.All(mc => mc.RecurringChargeId != dbmc.RecurringChargeId))
+							.ToList();
+					var updated =
+						event1.DbInvoice.MiscCharges.Where(
+							dbmc =>
+								dbmc.RecurringChargeId > 0 &&
+								event1.Invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId && mc.Amount != dbmc.Amount))
+							.ToList();
+					var futureInvoices = _payrollRepository.GetFutureInvoicesMiscCharges(event1.Invoice.CompanyId, invoiceNumber: event1.Invoice.InvoiceNumber);
+					futureInvoices.ForEach(fi =>
+					{
+						var update = false;
+						fi.MiscCharges.ForEach(mc =>
+						{
+							if (mc.RecurringChargeId > 0)
+							{
+								var del = deleted.FirstOrDefault(mc1 => mc1.RecurringChargeId == mc.RecurringChargeId);
+								var upd = updated.FirstOrDefault(mc1 => mc1.RecurringChargeId == mc.RecurringChargeId);
+								if (del != null)
+								{
+									update = true;
+									mc.PreviouslyClaimed -= del.Amount;
+								}
+								else if (upd != null)
+								{
+									update = true;
+									mc.PreviouslyClaimed = mc.PreviouslyClaimed - upd.Amount +
+																				 event1.Invoice.MiscCharges.First(mc2 => mc2.RecurringChargeId == mc.RecurringChargeId).Amount;
+								}
+
+							}
+						});
+						if (update)
+							updatedList.Add(fi);
+					});
+					if (updatedList.Any())
+					{
+						_payrollRepository.UpdateInvoiceRecurringCharges(updatedList);
+						Log.Info(string.Format("Updated Misc Charges for {0} after save of Invoice# {1}", updatedList.Count, event1.Invoice.InvoiceNumber));
+					}
+					
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error(string.Format("Error in Updating Misc Charges for future Invoice for Company: {0} Invoice #:{1}", event1.Invoice.Company.Name, event1.Invoice.InvoiceNumber));
+			}
+			
 		}
 	}
 }

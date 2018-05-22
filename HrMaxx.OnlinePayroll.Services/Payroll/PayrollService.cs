@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Messages.Events;
 using HrMaxx.Common.Contracts.Services;
@@ -75,10 +76,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				payroll.Warnings = string.Empty;
 				//Log.Info("Processing start" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var payTypes = _metaDataRepository.GetAllPayTypes();
-				Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.Company.DescriptiveName);
+				//Log.Info("PayTypes " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.Company.DescriptiveName);
 				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
-				Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.PayChecks.Count(pc => pc.Included));
+				//Log.Info("Employee Accumulations " + DateTime.Now.ToString("hh:mm:ss:fff") + " - " + payroll.PayChecks.Count(pc => pc.Included));
 				if (payroll.Company.IsLocation)
 				{
 					var parentCompany = _readerService.GetCompany(payroll.Company.ParentId.Value);
@@ -1614,25 +1615,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		private PayrollInvoice CreateInvoice(Models.Payroll payroll, PayrollInvoice payrollInvoice, bool fetchCompany)
 		{
+			var invoiceStrLog = new StringBuilder();
 			try
 			{
-				//var // t1 = DateTime.Now;
-				var company = fetchCompany ? _readerService.GetCompany(payroll.Company.Id) : payroll.Company;
-				//Log.Info("company fetched: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-				// t1 = DateTime.Now;
-				var previousInvoices = _readerService.GetCompanyInvoices(companyId:payroll.Company.Id);
-				//Log.Info("previous invoices: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-				// t1 = DateTime.Now;
-				//var voidedPayChecks = _payrollRepository.GetUnclaimedVoidedchecks(payroll.Company.Id);
-				var voidedPayChecks = _readerService.GetCompanyPayChecksForInvoiceCredit(companyId: payroll.Company.Id);
-				//Log.Info("voided checks: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-				// t1 = DateTime.Now;
 				
+				var company = fetchCompany ? _readerService.GetCompany(payroll.Company.Id) : payroll.Company;
+				var previousInvoices = _readerService.GetCompanyInvoices(companyId:payroll.Company.Id);
+				var voidedPayChecks = _readerService.GetCompanyPayChecksForInvoiceCredit(companyId: payroll.Company.Id);
 				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 
-				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice);
-				//Log.Info("initialized and saved: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-				// t1 = DateTime.Now;
+				var savedInvoice = _payrollRepository.SavePayrollInvoice(payrollInvoice,ref invoiceStrLog);
 				if (savedInvoice.Company == null)
 					savedInvoice.Company = company;
 				savedInvoice.PayrollPayDay = payroll.PayDay;
@@ -1652,12 +1644,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					UserId = payrollInvoice.UserId,
 					UserName = savedInvoice.UserName
 				});
-				//Log.Info("finished invoicing: " + (int)(DateTime.Now - t1).TotalMilliseconds);
-				// t1 = DateTime.Now;
+				
 				return savedInvoice;
 			}
 			catch (Exception e)
 			{
+				Log.Info(invoiceStrLog.ToString());
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " create invoice for payroll id=" + payroll.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
@@ -1694,123 +1686,93 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		public PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice)
 		{
+			var strLog = new StringBuilder();
 			try
 			{
+
+				strLog.AppendLine("Starting Invoice Save for Company " + invoice.Company.Name + " No." + invoice.InvoiceNumber +
+				                  " - " + DateTime.Now.ToString("hh:mm:ss:fff"));
 				var dbIncvoice = _readerService.GetCompanyInvoices(invoice.CompanyId, id:invoice.Id).First();
-				var futureInvoices = _readerService.GetPayrollInvoices(Guid.Empty, companyId: invoice.CompanyId, invoiceNumber: invoice.InvoiceNumber);
-				
-				using (var txn = TransactionScopeHelper.Transaction())
+				invoice.InvoicePayments.ForEach(p =>
 				{
-					invoice.InvoicePayments.ForEach(p =>
+					if (p.Status == PaymentStatus.Draft)
 					{
-						if (p.Status == PaymentStatus.Draft)
-						{
-							p.Status = (p.Method == InvoicePaymentMethod.Cash || p.Method == InvoicePaymentMethod.CertFund || p.Method == InvoicePaymentMethod.CorpCheck) ? PaymentStatus.Paid : PaymentStatus.Submitted;
-						}
-
-					});
-					
-					if (dbIncvoice.MiscCharges.Any(dbmc => dbmc.RecurringChargeId>0 && (!invoice.MiscCharges.Any(mc=>mc.RecurringChargeId==dbmc.RecurringChargeId) || invoice.MiscCharges.Any(mc=>mc.RecurringChargeId==dbmc.RecurringChargeId && mc.Amount!=dbmc.Amount))))
-					{
-						var deleted =
-							dbIncvoice.MiscCharges.Where(
-								dbmc =>
-									dbmc.RecurringChargeId > 0 &&
-									!invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId))
-								.ToList();
-						var updated =
-							dbIncvoice.MiscCharges.Where(
-								dbmc =>
-									dbmc.RecurringChargeId > 0 &&
-									invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId &&  mc.Amount!=dbmc.Amount))
-								.ToList();
-						
-						futureInvoices.ForEach(fi=>
-						{
-							var update = false;
-							fi.MiscCharges.ForEach(mc =>
-							{
-								if (mc.RecurringChargeId > 0)
-								{
-									var del = deleted.FirstOrDefault(mc1 => mc1.RecurringChargeId == mc.RecurringChargeId);
-									var upd = updated.FirstOrDefault(mc1 => mc1.RecurringChargeId == mc.RecurringChargeId);
-									if (del != null)
-									{
-										update = true;
-										mc.PreviouslyClaimed -= del.Amount;
-									}
-									else if (upd != null)
-									{
-										update = true;
-										mc.PreviouslyClaimed = mc.PreviouslyClaimed - upd.Amount +
-										                       invoice.MiscCharges.First(mc2 => mc2.RecurringChargeId == mc.RecurringChargeId).Amount;
-									}
-
-								}
-							});
-							if (update)
-								_payrollRepository.SavePayrollInvoice(fi);
-						});
+						p.Status = (p.Method == InvoicePaymentMethod.Cash || p.Method == InvoicePaymentMethod.CertFund || p.Method == InvoicePaymentMethod.CorpCheck) ? PaymentStatus.Paid : PaymentStatus.Submitted;
 					}
-					
-					if (dbIncvoice != null)
-					{
-						invoice.CalculateTotal();
-						if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
-						{
-							invoice.SubmittedOn = DateTime.Now;
-							invoice.InvoiceDate = invoice.SubmittedOn.Value;
-							invoice.SubmittedBy = invoice.UserName;
-						}
-						if (dbIncvoice.Status == InvoiceStatus.Submitted && invoice.Status == InvoiceStatus.Delivered)
-						{
-							invoice.DeliveredOn = DateTime.Now;
-							invoice.DeliveredBy = invoice.UserName;
-						}
 
-						if ((invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.NotDeposited || invoice.Status == InvoiceStatus.ACHPending ))
+				});
+				if (dbIncvoice != null)
+				{
+					invoice.CalculateTotal();
+					if (dbIncvoice.Status == InvoiceStatus.Draft && invoice.Status == InvoiceStatus.Submitted)
+					{
+						invoice.SubmittedOn = DateTime.Now;
+						invoice.InvoiceDate = invoice.SubmittedOn.Value;
+						invoice.SubmittedBy = invoice.UserName;
+					}
+					if (dbIncvoice.Status == InvoiceStatus.Submitted && invoice.Status == InvoiceStatus.Delivered)
+					{
+						invoice.DeliveredOn = DateTime.Now;
+						invoice.DeliveredBy = invoice.UserName;
+					}
+
+					if ((invoice.Status == InvoiceStatus.Delivered || invoice.Status == InvoiceStatus.PartialPayment || invoice.Status == InvoiceStatus.PaymentBounced || invoice.Status == InvoiceStatus.Paid || invoice.Status == InvoiceStatus.Deposited || invoice.Status == InvoiceStatus.NotDeposited || invoice.Status == InvoiceStatus.ACHPending))
+					{
+						if (invoice.Balance <= 0)
+							invoice.Status = InvoiceStatus.Paid;
+						else if (invoice.Balance <= invoice.Total)
 						{
-							if (invoice.Balance <= 0)
-								invoice.Status = InvoiceStatus.Paid;
-							else if (invoice.Balance <= invoice.Total)
+							if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced))
 							{
-								if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced))
-								{
-									invoice.Status = InvoiceStatus.PaymentBounced;
-									_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment{ Content = string.Format("Invoice #{0} - Payment Bounced",invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName});
-								}
-								else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Submitted))
-								{
-									invoice.Status = InvoiceStatus.NotDeposited;
-								}
-								else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Deposited))
-								{
-									invoice.Status = InvoiceStatus.Deposited;
-									
-								}
-								else if (invoice.InvoicePayments.Any(p => p.Method==InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted))
-								{
-									invoice.Status = InvoiceStatus.ACHPending;
-								}
-								else if (invoice.InvoicePayments.Any())
-								{
-									invoice.Status = InvoiceStatus.PartialPayment;
-								}
-								else
-								{
-									invoice.Status = InvoiceStatus.Delivered;
-								}
+								invoice.Status = InvoiceStatus.PaymentBounced;
+								_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment { Content = string.Format("Invoice #{0} - Payment Bounced", invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName });
+							}
+							else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Submitted))
+							{
+								invoice.Status = InvoiceStatus.NotDeposited;
+							}
+							else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Deposited))
+							{
+								invoice.Status = InvoiceStatus.Deposited;
+
+							}
+							else if (invoice.InvoicePayments.Any(p => p.Method == InvoicePaymentMethod.ACH && p.Status == PaymentStatus.Submitted))
+							{
+								invoice.Status = InvoiceStatus.ACHPending;
+							}
+							else if (invoice.InvoicePayments.Any())
+							{
+								invoice.Status = InvoiceStatus.PartialPayment;
+							}
+							else
+							{
+								invoice.Status = InvoiceStatus.Delivered;
 							}
 						}
-
 					}
-					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice);
+
+				}
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					var savedInvoice = _payrollRepository.SavePayrollInvoice(invoice, ref strLog);
 					savedInvoice.Company = invoice.Company;
 					savedInvoice.PayrollPayDay = invoice.PayrollPayDay;
 					savedInvoice.PayrollTaxPayDay = invoice.PayrollTaxPayDay;
-					var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice updated"), invoice.UserId);
-					_mementoDataService.AddMementoData(memento);
 					txn.Complete();
+					strLog.AppendLine("Invoice transaction Committed " + invoice.Company.Name + " No." + invoice.InvoiceNumber  + " - " + DateTime.Now.ToString("hh:mm:ss:fff"));
+					if (dbIncvoice!=null &&
+						dbIncvoice.MiscCharges.Any(
+							dbmc =>
+								dbmc.RecurringChargeId > 0 &&
+								(invoice.MiscCharges.All(mc => mc.RecurringChargeId != dbmc.RecurringChargeId) ||
+								 invoice.MiscCharges.Any(mc => mc.RecurringChargeId == dbmc.RecurringChargeId && mc.Amount != dbmc.Amount))))
+					{
+						Bus.Publish(new InvoiceRecurringChargesHandleEvent
+						{
+							DbInvoice = dbIncvoice,
+							Invoice = invoice
+						});
+					}
 					Bus.Publish(new CreateMementoEvent<PayrollInvoice>
 					{
 						List = new List<PayrollInvoice>{savedInvoice},
@@ -1820,12 +1782,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						UserName = invoice.UserName,
 						LogNotes = string.Format("Mementos (Invoice) for payroll {0} - {1}", savedInvoice.Id, savedInvoice.Company.Name)
 					});
+
 					return savedInvoice;
 				}
 
 			}
 			catch (Exception e)
 			{
+				Log.Info(strLog.ToString());
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Save Invoice for company id=" + invoice.CompanyId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
@@ -2790,14 +2754,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					
 				}
-				Log.Info(string.Format("Finished Modeling {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+				//Log.Info(string.Format("Finished Modeling {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 				var fileName = payChecks.Count == 1
 					? string.Format("Pay Check {0}", payChecks.First().CheckNumber)
 					: string.Format("Payroll_{0}_{1}_{2}", payroll.StartDate.ToString("MMddyyyy"), payroll.EndDate.ToString("MMddyyyy"),
 						payroll.Id);
 				
 				var file = _pdfService.Print(fileName, pdfs);
-				Log.Info(string.Format("File Ready {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+				//Log.Info(string.Format("File Ready {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 				return file;
 			}
 			catch (Exception e)
@@ -3027,15 +2991,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				invoice.TaxesDelayed = true;
 				invoice.LastModified = DateTime.Now;
 				invoice.UserName = fullName;
-				var saved = _payrollRepository.SavePayrollInvoice(invoice);
-				saved.Company = invoice.Company;
-				saved.PayrollPayDay = invoice.PayrollPayDay;
-				saved.PayrollTaxPayDay = invoice.InvoiceDate;
-				_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.CompanyId, new Comment
+				_payrollRepository.DelayPayrollInvoice(invoice.Id, invoice.TaxesDelayed, invoice.LastModified, invoice.UserName);
+				
+				_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment
 				{
-					Content = string.Format("Invoice #{0} has been marked as Taxes Delayed", invoice.InvoiceNumber), LastModified = saved.LastModified, UserName = fullName, TimeStamp = DateTime.Now
+					Content = string.Format("Invoice #{0} has been marked as Taxes Delayed", invoice.InvoiceNumber), LastModified = invoice.LastModified, UserName = fullName, TimeStamp = DateTime.Now
 				});
-				return saved;
+				return invoice;
 			}
 			catch (Exception e)
 			{
@@ -3053,24 +3015,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					invoice.TaxesDelayed = false;
 					invoice.LastModified = DateTime.Now;
-				
-					var saved = _payrollRepository.SavePayrollInvoice(invoice);
-					if (saved.Company == null)
-						saved.Company = invoice.Company;
-					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.CompanyId, new Comment
+
+					_payrollRepository.DelayPayrollInvoice(invoice.Id, invoice.TaxesDelayed, invoice.LastModified, invoice.UserName);
+					
+					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment
 					{
 						Content = string.Format("Invoice #{1} and related Payroll and Paychecks have been re-dated to {0}", invoice.InvoiceDate.ToString("MM/dd/yyyy"), invoice.InvoiceNumber),
-						LastModified = saved.LastModified,
+						LastModified = invoice.LastModified,
 						UserName = invoice.UserName,
 						TimeStamp = DateTime.Now
 					});
 					
 					_payrollRepository.UpdatePayrollPayDay(invoice.PayrollId, invoice.PayChecks, invoice.InvoiceDate);
-					saved.PayrollPayDay = invoice.PayrollPayDay;
-					saved.PayrollTaxPayDay = invoice.InvoiceDate;
+					
 					txn.Complete();
 					
-					return saved;
+					return invoice;
 				}
 				
 			}
@@ -3420,6 +3380,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		public List<Guid> FixInvoiceData()
 		{
+			var strLog = new StringBuilder();
 			try
 			{
 				var payrolls = _readerService.GetPayrolls(null);
@@ -3477,7 +3438,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						//payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
 						//{
 						//	pc.Deductions.ToList().ForEach(d =>
-						//	{
 						//		var d1 = i.Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
 						//		if (d1 != null)
 						//		{
@@ -3491,7 +3451,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						//	});
 						//});
 						
-						_payrollRepository.SavePayrollInvoice(i);
+						_payrollRepository.SavePayrollInvoice(i, ref strLog);
 					});
 					txn.Complete();
 					return invoiceList;
@@ -3499,6 +3459,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
+				Log.Info(strLog.ToString());
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " fix invoice data ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);

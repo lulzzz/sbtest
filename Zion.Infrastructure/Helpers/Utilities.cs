@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 
 namespace HrMaxx.Infrastructure.Helpers
 {
@@ -81,6 +82,12 @@ namespace HrMaxx.Infrastructure.Helpers
 			var str = string.Format("{0}-0000-0000-0000-{1}", type.ToString().PadLeft(8, '0'),
 					id.ToString().PadLeft(12, '0'));
 			return new Guid(str);
+		}
+
+		public static string GetCommaSeperatedList<T>(List<T> list )
+		{
+			var str = list.Aggregate(string.Empty, (current, m) => current + Convert.ToInt16(m) + ",");
+			return str.Substring(0, str.Length - 1);
 		}
 	}
 }
