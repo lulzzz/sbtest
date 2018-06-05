@@ -2280,7 +2280,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).First();
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, report: "CaliforniaDE9C").Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			response.Company = GetCompany(request.CompanyId);
 			response.Host = GetHost(request.HostId);
 			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
