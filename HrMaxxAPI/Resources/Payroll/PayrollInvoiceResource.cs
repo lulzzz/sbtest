@@ -48,6 +48,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<InvoicePaymentResource> InvoicePayments { get; set; }
 		public List<InvoiceLateFeeConfig> TaxPaneltyConfig { get; set; }
 		public string Notes { get; set; }
+		public string SpecialRequest { get; set; }
 		public string ProcessedBy { get; set; }
 		public DateTime ProcessedOn { get; set; }
 		public decimal PaidAmount { get; set; }

@@ -46,6 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Company Company { get; set; }
 		public string Courier { get; set; }
 		public string Notes { get; set; }
+		public string SpecialRequest { get; set; }
 		public string ProcessedBy { get; set; }
 		public DateTime ProcessedOn { get; set; }
 		public List<InvoicePayment> InvoicePayments { get; set; }
@@ -129,6 +130,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				Notes += string.Format("Alert: Previous Invoices still only Delivered #{0}; ", prevInvoices.Where(i => i.Status==InvoiceStatus.Delivered).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
 			}
+			SpecialRequest = company.InvoiceSpecialRequest;
 			CalculateCommission();
 		}
 

@@ -40,6 +40,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string Memo { get; set; }
 		public string DashboardNotes { get; set; }
 		public string Notes { get; set; }
+		public string InvoiceSpecialRequest { get; set; }
 		public string PayrollMessage { get; set; }
 		//Tax Setup
 		[Required]

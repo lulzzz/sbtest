@@ -1,10 +1,18 @@
 ﻿<div class="row">
+	<style type="text/css" media="print">
+		@page {
+			size: landscape;
+		}
+	</style>
+
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
 		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Invoice List for Delivery  
-				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>		
-			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+			<h4 class="panel-title">
+				Invoice List for Delivery
+				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>
+				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
+			</h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
@@ -15,7 +23,7 @@
 				<button class="btn btn-sm btn-info pull-right" ng-click="print()"><i class="fa fa-print">Print</i></button>
 			</div>
 			<div class="row table-responsive text-center" ng-show="list.length>0">
-				<div class=" col-sm-12 m-20 visible-print">
+				<div class=" col-sm-10 m-20 visible-print">
 					<h2 class="text-center">Delivery Log</h2>
 					<br />
 					<h4 class="text-center">{{mainData.myName}} ( {{today | date:'MM/dd/yyyy'}}) </h4>
@@ -38,46 +46,52 @@
 							{{item.total | currency:'$'}}
 						</td>
 
-						<td data-title=" 'Notes' " class="col-sm-6 text-center">
+						<td data-title=" 'Notes' " class="col-sm-3 text-center">
 							{{item.notes}}
+						</td>
+						<td data-title=" 'Special Request' " class="col-sm-3 text-center">
+							{{item.specialRequest}}
 						</td>
 
 
 					</tr>
 
 				</table>
-				<table class="table visible-print table-invoice">
+				<table class="table visible-print table-condensed">
 					<thead>
 						<tr>
-							<th colspan="1" class="text-center">#</th>
-							<th colspan="2" class="text-center">Client</th>
-							<th colspan="1" class="text-center">City</th>
-							<th colspan="1" class="text-center">Total</th>
-							<th colspan="8" class="text-center">Notes</th>
+							<th class="text-center">#</th>
+							<th class="text-center">Client</th>
+							<th class="text-center">City</th>
+							<th class="text-center">Total</th>
+							<th class="text-center">Notes</th>
+							<th class="text-center">Special Request</th>
 						</tr>
 					</thead>
 					<tr ng-repeat="item in tableData | filter:{selected:true} track by $index">
-						<td colspan="1" class="text-center">
+						<td class="col-sm-1 text-center">
 							{{$index + 1}}
 						</td>
 
-						<td colspan="2" class="text-center">
+						<td class="col-sm-2 text-center">
 							{{item.companyName}}
 						</td>
-						<td colspan="1" class="text-center">
+						<td class="col-sm-1 text-center">
 							{{item.city}}
 						</td>
-						<td colspan="1" class="text-center">
+						<td class="col-sm-1 text-center">
 							{{item.total | currency:'$'}}
 						</td>
 
-						<td colspan="8" class="col-sm-8 text-center">
+						<td class="col-sm-2 text-center">
 							{{item.notes}}
 						</td>
-
+						<td class="col-sm-2 text-center">
+							{{item.specialRequest}}
+						</td>
 
 					</tr>
-					
+
 
 				</table>
 
@@ -94,7 +108,7 @@
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpenHistory">
 			<div class="row">
-				
+
 				<div class="col-sm-1 form-group">
 					<label class="control-label">Start Date </label>
 					<date-ctrl name="startdate" model="data.startDate" disabled="false" />
@@ -103,7 +117,7 @@
 					<label class="control-label">End Date </label>
 					<date-ctrl name="enddate" model="data.endDate" disabled="false" />
 				</div>
-				
+
 				<div class="col-sm-1 form-group">
 					<label></label>
 					<button class="btn btn-sm btn-primary form-control" ng-click="getInvoiceDeliveryClaims()">Filter</button>
@@ -147,7 +161,7 @@
 			<div class=" col-sm-12 m-20">
 				<h2 class="text-center">Delivery Log</h2>
 				<br />
-				<h4 class="text-center">{{item.userName}} ( {{item.deliveryClaimedOn | date:'MM/dd/yyyy'}}) <i class="fa fa-plus-circle fa-lg"  ng-click="add()"></i></h4>
+				<h4 class="text-center">{{item.userName}} ( {{item.deliveryClaimedOn | date:'MM/dd/yyyy'}}) <i class="fa fa-plus-circle fa-lg" ng-click="add()"></i></h4>
 			</div>
 			<table class="table table-invoice">
 				<thead>
@@ -157,6 +171,7 @@
 						<th colspan="1" class="text-center">City</th>
 						<th colspan="1" class="text-center">Total</th>
 						<th colspan="7" class="text-center">Notes</th>
+						
 					</tr>
 				</thead>
 				<tr ng-repeat="inv in item.invoiceSummaries track by $index" ng-class="{'warning':!inv.isPayrollDelivery}">
@@ -166,23 +181,22 @@
 
 					<td colspan="2" class="text-center">
 						<span ng-show="!inv.isEditable">{{inv.clientName}}</span>
-						<input type="text" class="form-control" ng-model="inv.clientName" ng-show="inv.isEditable"/>
+						<input type="text" class="form-control" ng-model="inv.clientName" ng-show="inv.isEditable" />
 					</td>
 					<td colspan="1" class="text-center">
 						<span ng-show="!inv.isEditable">{{inv.clientCity}}</span>
 						<input type="text" class="form-control" ng-model="inv.clientCity" ng-show="inv.isEditable" />
-						
+
 					</td>
 					<td colspan="1" class="text-center">
 						{{inv.total | currency:'$'}}
 					</td>
 
-					<td colspan="7" class="col-sm-8 text-center">
+					<td colspan="2" class="col-sm-7 text-center">
 						<span ng-show="!inv.isEditable">{{inv.notes}}</span>
-						<input type="text" class="form-control" ng-model="inv.notes" ng-show="inv.isEditable" />						
+						<input type="text" class="form-control" ng-model="inv.notes" ng-show="inv.isEditable" />
 					</td>
-
-
+					
 				</tr>
 				<tr ng-show="hasChanges()">
 					<td colspan="5">
@@ -193,7 +207,7 @@
 		</div>
 	</script>
 	<script type="text/ng-template" id="custom/nopager">
-		
+
 	</script>
 </div>
 

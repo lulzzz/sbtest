@@ -1935,7 +1935,7 @@
 			<xsl:variable name="lineI" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD)" />
 			<Row>
 				<Cell>
-					<Data ss:Type="Number">
+					<Data ss:Type="String">
 						<xsl:value-of select="$fein1" />
 					</Data>
 				</Cell>

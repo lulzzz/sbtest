@@ -51,6 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int CompanyCheckPrintOrder { get; set; }
 		
 		public string Notes { get; set; }
+		public string InvoiceSpecialRequest { get; set; }
 		public string DashboardNotes { get; set; }
 		public string PayrollMessage { get; set; }
 		public string Contact { get; set; }

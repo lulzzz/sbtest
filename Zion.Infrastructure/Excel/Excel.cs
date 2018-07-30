@@ -105,6 +105,7 @@ namespace HrMaxx.Infrastructure.Excel
 			// and prevent finalization code for this object 
 			// from executing a second time.
 			GC.SuppressFinalize(this);
+			
 		}
 
 		public Cell FindCellWithData(string fromColumn, string toColumn, string data, bool exactMatch = false)

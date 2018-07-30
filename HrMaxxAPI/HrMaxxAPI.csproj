@@ -517,6 +517,10 @@
     <Content Include="templates\GovtForms\941\f941-2018-part1.pdf" />
     <Content Include="templates\GovtForms\941\f941-2018-part2.pdf" />
     <Content Include="templates\GovtForms\941\f941sb-2018.pdf" />
+    <Content Include="templates\GovtForms\1099\f1096-2018.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099div-2018.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099int-2018.pdf" />
+    <Content Include="templates\GovtForms\1099\f1099msc-2018.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

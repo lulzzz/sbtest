@@ -146,6 +146,7 @@
           <Property Name="CompanyCheckPrintOrder" Type="int" Nullable="false" />
           <Property Name="PayrollScheduleDay" Type="int" Nullable="false" />
           <Property Name="DashboardNotes" Type="varchar(max)" />
+          <Property Name="InvoiceSpecialRequest" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -529,6 +530,7 @@
           <Property Name="SalesRep" Type="uniqueidentifier" />
           <Property Name="Commission" Type="decimal" Precision="18" Scale="2" />
           <Property Name="TaxesDelayed" Type="bit" />
+          <Property Name="SpecialRequest" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="PayrollPayCheck">
           <Key>
@@ -1801,6 +1803,7 @@
           <Property Name="PayrollScheduleDay" Type="Int32" Nullable="false" />
           <Property Name="DashboardNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="Company" ToRole="CheckbookJournal" />
+          <Property Name="InvoiceSpecialRequest" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2685,6 +2688,7 @@
           <Property Name="Commission" Type="Decimal" Precision="18" Scale="2" />
           <NavigationProperty Name="CommissionExtracts" Relationship="HrMaxxModel.FK_CommissionExtract_PayrollInvoice" FromRole="PayrollInvoice" ToRole="CommissionExtract" />
           <Property Name="TaxesDelayed" Type="Boolean" />
+          <Property Name="SpecialRequest" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_PayrollInvoice_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3061,6 +3065,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="InvoiceSpecialRequest" ColumnName="InvoiceSpecialRequest" />
                 <ScalarProperty Name="DashboardNotes" ColumnName="DashboardNotes" />
                 <ScalarProperty Name="PayrollScheduleDay" ColumnName="PayrollScheduleDay" />
                 <ScalarProperty Name="CompanyCheckPrintOrder" ColumnName="CompanyCheckPrintOrder" />
@@ -3541,6 +3546,7 @@
           <EntitySetMapping Name="PayrollInvoices">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollInvoice">
               <MappingFragment StoreEntitySet="PayrollInvoice">
+                <ScalarProperty Name="SpecialRequest" ColumnName="SpecialRequest" />
                 <ScalarProperty Name="TaxesDelayed" ColumnName="TaxesDelayed" />
                 <ScalarProperty Name="Commission" ColumnName="Commission" />
                 <ScalarProperty Name="SalesRep" ColumnName="SalesRep" />

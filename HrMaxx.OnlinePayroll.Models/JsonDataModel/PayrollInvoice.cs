@@ -41,6 +41,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Courier { get; set; }
 		public string EmployeeTaxes { get; set; }
 		public string Notes { get; set; }
+		public string SpecialRequest { get; set; }
 		public string ProcessedBy { get; set; }
 		public decimal Balance { get; set; }
 		public DateTime ProcessedOn { get; set; }

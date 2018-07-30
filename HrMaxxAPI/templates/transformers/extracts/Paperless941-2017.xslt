@@ -1380,9 +1380,9 @@
 		
 		
 			<Row>
-				<Cell><Data ss:Type="Number"><xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/></Data></Cell>
+				<Cell><Data ss:Type="String"><xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/></Data></Cell>
 				<Cell><Data ss:Type="String"><xsl:value-of select="$enddate"/></Data></Cell>
-				<Cell><Data ss:Type="Number">
+				<Cell><Data ss:Type="String">
 				<xsl:choose>
 					<xsl:when test="PayCheckAccumulation/PayCheckWages/Twelve3"><xsl:value-of select="PayCheckAccumulation/PayCheckWages/Twelve3"/></xsl:when>
 					<xsl:otherwise>0</xsl:otherwise>
