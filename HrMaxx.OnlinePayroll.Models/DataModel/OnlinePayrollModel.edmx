@@ -146,7 +146,6 @@
           <Property Name="CompanyCheckPrintOrder" Type="int" Nullable="false" />
           <Property Name="PayrollScheduleDay" Type="int" Nullable="false" />
           <Property Name="DashboardNotes" Type="varchar(max)" />
-          <Property Name="InvoiceSpecialRequest" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -482,6 +481,7 @@
           <Property Name="QueuedTime" Type="datetime" />
           <Property Name="ConfirmedTime" Type="datetime" />
           <Property Name="IsConfirmFailed" Type="bit" Nullable="false" />
+          <Property Name="InvoiceSpecialRequest" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="PayrollInvoice">
           <Key>
@@ -1803,7 +1803,6 @@
           <Property Name="PayrollScheduleDay" Type="Int32" Nullable="false" />
           <Property Name="DashboardNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="Company" ToRole="CheckbookJournal" />
-          <Property Name="InvoiceSpecialRequest" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2361,6 +2360,7 @@
           <Property Name="QueuedTime" Type="DateTime" Precision="3" />
           <Property Name="ConfirmedTime" Type="DateTime" Precision="3" />
           <Property Name="IsConfirmFailed" Type="Boolean" Nullable="false" />
+          <Property Name="InvoiceSpecialRequest" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_Employee_CompanyWorkerCompensation">
           <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="0..1" />
@@ -3065,7 +3065,6 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
-                <ScalarProperty Name="InvoiceSpecialRequest" ColumnName="InvoiceSpecialRequest" />
                 <ScalarProperty Name="DashboardNotes" ColumnName="DashboardNotes" />
                 <ScalarProperty Name="PayrollScheduleDay" ColumnName="PayrollScheduleDay" />
                 <ScalarProperty Name="CompanyCheckPrintOrder" ColumnName="CompanyCheckPrintOrder" />
@@ -3364,6 +3363,7 @@
           <EntitySetMapping Name="Payrolls">
             <EntityTypeMapping TypeName="HrMaxxModel.Payroll">
               <MappingFragment StoreEntitySet="Payroll">
+                <ScalarProperty Name="InvoiceSpecialRequest" ColumnName="InvoiceSpecialRequest" />
                 <ScalarProperty Name="IsConfirmFailed" ColumnName="IsConfirmFailed" />
                 <ScalarProperty Name="ConfirmedTime" ColumnName="ConfirmedTime" />
                 <ScalarProperty Name="QueuedTime" ColumnName="QueuedTime" />

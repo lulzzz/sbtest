@@ -25,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayCheck> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
+		public string InvoiceSpecialRequest { get; set; }
 		public PayrollStatus Status { get; set; }
 		//public PayrollInvoice Invoice { get; set; }
 

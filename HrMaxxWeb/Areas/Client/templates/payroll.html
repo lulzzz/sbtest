@@ -39,9 +39,13 @@
 
 			</div>
 		</div>
-		<div class="col-sm-4 form-group">
+		<div class="col-sm-2 form-group">
 			<label class="control-label">Notes</label>
 			<textarea ng-model="item.notes" class="form-control" rows="4"></textarea>
+		</div>
+		<div class="col-sm-2 form-group">
+			<label class="control-label">Invoice Special Request</label>
+			<textarea ng-model="item.invoiceSpecialRequest" class="form-control" rows="4"></textarea>
 		</div>
 	</div>
 	<div ng-show="list.length===0" class="table table-bordered">

@@ -369,22 +369,15 @@
 							
 						</tr>
 						<tr class="hidden-print">
-							<td colspan="4" ng-if="invoice.status<2 || isInvoiceEditable()">
-								<div class="form-group">
-									<label>Special Request</label>
-									<textarea class="form-control" ng-model="invoice.specialRequest" rows="4"></textarea>
-								</div>
-							</td>
-							<td ng-if="!isInvoiceEditable()">
+							<td colspan="4">
 								<em><u>Special Request: </u></em>
-							</td>
-							<td ng-if="!isInvoiceEditable()">
 								<pre>{{invoice.specialRequest}}</pre>
+
 							</td>
 						</tr>
 						<tr class="visible-print" ng-show="invoice.specialRequest">
 							<td colspan="4">
-								<em><u>Notes: </u></em>
+								<em><u>Special Request: </u></em>
 								<pre>{{invoice.specialRequest}}</pre>
 
 							</td>

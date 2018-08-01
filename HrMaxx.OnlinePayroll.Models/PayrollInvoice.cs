@@ -130,7 +130,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				Notes += string.Format("Alert: Previous Invoices still only Delivered #{0}; ", prevInvoices.Where(i => i.Status==InvoiceStatus.Delivered).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
 			}
-			SpecialRequest = company.InvoiceSpecialRequest;
+			SpecialRequest = payroll.InvoiceSpecialRequest;
 			CalculateCommission();
 		}
 

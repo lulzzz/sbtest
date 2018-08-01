@@ -46,6 +46,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.DateTime> QueuedTime { get; set; }
         public Nullable<System.DateTime> ConfirmedTime { get; set; }
         public bool IsConfirmFailed { get; set; }
+        public string InvoiceSpecialRequest { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PayrollInvoice> PayrollInvoices { get; set; }

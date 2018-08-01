@@ -29,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool PEOASOCoCheck { get; set; }
 		public bool IsHistory { get; set; }
 		public string Notes { get; set; }
+		public string InvoiceSpecialRequest { get; set; }
 		//public PayrollInvoiceJson PayrollInvoice { get; set; }
 		public List<PayrollPayCheckJson> PayrollPayChecks { get; set; }
 

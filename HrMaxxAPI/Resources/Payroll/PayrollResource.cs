@@ -27,6 +27,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public List<PayCheckResource> PayChecks { get; set; }
 		public int StartingCheckNumber { get; set; }
 		public string Notes { get; set; }
+		public string InvoiceSpecialRequest { get; set; }
 		public Guid? InvoiceId { get; set; }
 		public Guid? HostCompanyId { get; set; }
 		public decimal Total { get; set; }
