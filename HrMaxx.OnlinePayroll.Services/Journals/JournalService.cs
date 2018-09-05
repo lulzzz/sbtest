@@ -505,7 +505,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							micr.Substring(0,
 								(8 - journal.CheckNumber.ToString().Length) < 0 ? 0 : 8 - journal.CheckNumber.ToString().Length) +
 							journal.CheckNumber.ToString();
-						var micrVal = string.Format("C{0}CA{1}A{2}C", micr, bankcoa.BankAccount.RoutingNumber,
+						var micrVal = string.Format("C{0}C A{1}A {2}C", micr, bankcoa.BankAccount.RoutingNumber,
 							bankcoa.BankAccount.AccountNumber);
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("MICR", micrVal));
 					}

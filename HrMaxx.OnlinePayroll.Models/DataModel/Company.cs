@@ -32,6 +32,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
             this.PayrollInvoices = new HashSet<PayrollInvoice>();
             this.Locations = new HashSet<Company>();
             this.CheckbookJournals = new HashSet<CheckbookJournal>();
+            this.CompanyRecurringCharges = new HashSet<CompanyRecurringCharge>();
         }
     
         public System.Guid Id { get; set; }
@@ -107,5 +108,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual Company Parent { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CheckbookJournal> CheckbookJournals { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CompanyRecurringCharge> CompanyRecurringCharges { get; set; }
     }
 }

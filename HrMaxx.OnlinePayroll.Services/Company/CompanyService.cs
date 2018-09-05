@@ -88,6 +88,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					});
 					var savedcompany = _companyRepository.SaveCompany(company);
 					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, company.Contract);
+
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;

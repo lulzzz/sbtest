@@ -109,6 +109,9 @@
     <Compile Include="DataModel\CompanyPayCode.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\CompanyRecurringCharge.cs">
+      <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\CompanyTaxRate.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -264,6 +267,7 @@
     <Compile Include="JsonDataModel\PayrollInvoice.cs" />
     <Compile Include="JsonDataModel\PayrollInvoiceListItem.cs" />
     <Compile Include="JsonDataModel\PayrollPayCheck.cs" />
+    <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
     <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
@@ -293,6 +297,7 @@
     <Compile Include="USTaxModels\TaxDeductionPrecendence.cs" />
     <Compile Include="USTaxModels\USTaxTables.cs" />
     <Compile Include="VendorCustomer.cs" />
+    <Compile Include="VoidedPayCheckInvoiceCredit.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

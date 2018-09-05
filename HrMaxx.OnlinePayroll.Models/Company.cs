@@ -54,6 +54,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
 
+		public List<CompanyRecurringCharge> RecurringCharges { get; set; } 
 		public List<CompanyTaxState> States { get; set; }
 		public List<AccumulatedPayType> AccumulatedPayTypes { get; set; }
 		public List<CompanyDeduction> Deductions { get; set; }
@@ -242,4 +243,17 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal? AnnualLimit { get; set; }
 		public string Description { get; set; }
 	}
+	public class CompanyRecurringCharge
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public int OldId { get; set; }
+		public int? Year { get; set; }
+		public decimal Amount { get; set; }
+		public decimal? AnnualLimit { get; set; }
+		public string Description { get; set; }
+		public bool IsRemoved { get; set; }
+		public decimal Claimed { get; set; }
+	}
+
 }

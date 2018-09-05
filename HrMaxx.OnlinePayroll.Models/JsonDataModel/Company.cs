@@ -59,6 +59,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 
 		public List<CompanyTaxRate> CompanyTaxRates { get; set; }
 
+		public List<CompanyRecurringCharge> RecurringCharges { get; set; } 
+
 		public List<CompanyTaxState> CompanyTaxStates { get; set; }
 
 		public CompanyContract CompanyContract { get; set; }
@@ -207,4 +209,17 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal HourlyRate { get; set; }
 
 	}
+	public class CompanyRecurringCharge
+	{
+		public int Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public int OldId { get; set; }
+		public int? Year { get; set; }
+		public decimal Amount { get; set; }
+		public decimal? AnnualLimit { get; set; }
+		public string Description { get; set; }
+		public bool IsRemoved { get; set; }
+		public decimal Claimed { get; set; } 
+	}
+
 }
