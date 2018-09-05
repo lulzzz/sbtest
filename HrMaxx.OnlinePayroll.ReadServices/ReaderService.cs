@@ -441,7 +441,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-		public List<VoidedPayCheckInvoiceCredit> GetCompanyPayChecksForInvoiceCredit(Guid companyId)
+		public List<PayCheck> GetCompanyPayChecksForInvoiceCredit(Guid companyId)
 		{
 			try
 			{
@@ -450,8 +450,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				
 					paramList.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
 				
-				var payrolls = GetDataFromStoredProc<List<VoidedPayCheckInvoiceCredit>, List<Models.JsonDataModel.VoidedPayCheckInvoiceCreditJson>>(
-					"GetCompanyPaychecksForInvoiceCredit", paramList, new XmlRootAttribute("VoidedPayCheckInvoiceCreditList"));
+				var payrolls = GetDataFromStoredProc<List<PayCheck>, List<Models.JsonDataModel.PayrollPayCheckJson>>(
+					"GetCompanyPaychecksForInvoiceCredit", paramList, new XmlRootAttribute("PayCheckList"));
 
 				return payrolls;
 			}

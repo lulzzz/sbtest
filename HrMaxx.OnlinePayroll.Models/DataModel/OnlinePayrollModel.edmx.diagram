@@ -92,8 +92,6 @@
         <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_Company" />
         <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_CompanyAccount" />
         <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_EntityType" />
-        <EntityTypeShape EntityType="HrMaxxModel.CompanyRecurringCharge" Width="1.5" PointX="5.25" PointY="24.375" />
-        <AssociationConnector Association="HrMaxxModel.FK_CompanyRecurringCharge_Company" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -17,5 +17,4 @@ namespace HrMaxx.OnlinePayroll.Contracts.Messages.Events
 		public DateTime TimeStamp { get; set; }
 		public NotificationTypeEnum EventType;
 	}
-
 }

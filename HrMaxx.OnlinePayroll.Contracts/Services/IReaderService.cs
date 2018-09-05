@@ -33,7 +33,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		//Paychecks
 		List<PayCheck> GetPayChecks(Guid? companyId = null, Guid? employeeId=null, Guid? payrollId = null, DateTime? startDate = null, DateTime? endDate = null, int status = 0, int? isvoid = null, int? year = null);
-		List<VoidedPayCheckInvoiceCredit> GetCompanyPayChecksForInvoiceCredit(Guid companyId);
+		List<PayCheck> GetCompanyPayChecksForInvoiceCredit(Guid companyId);
 		List<PayCheck> GetEmployeePayChecks(Guid employeeId);
 		PayCheck GetPaycheck(int payCheckId);
 

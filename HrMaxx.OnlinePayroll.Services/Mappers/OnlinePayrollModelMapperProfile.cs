@@ -96,7 +96,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Locations, opt => opt.MapFrom(src => src.Locations))
 				.ForMember(dest => dest.AccumulatedPayTypes, opt => opt.MapFrom(src => src.CompanyAccumlatedPayTypes))
 				.ForMember(dest => dest.Contract, opt => opt.MapFrom(src => src.CompanyContracts.FirstOrDefault()))
-				.ForMember(dest => dest.RecurringCharges, opt => opt.MapFrom(src => src.CompanyRecurringCharges))
 				.ForMember(dest => dest.CompanyTaxRates, opt => opt.MapFrom(src => src.CompanyTaxRates))
 				.ForMember(dest => dest.States, opt => opt.MapFrom(src => src.CompanyTaxStates))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.CompanyDeductions))
@@ -139,7 +138,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName))
-				.ForMember(dest => dest.CompanyRecurringCharges, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyAccumlatedPayTypes, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyDeductions, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyPayCodes, opt => opt.Ignore())
@@ -202,10 +200,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.Parent.Id))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CompanyName))
 				.ForMember(dest => dest.Address, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.CompanyAddress)));
-
-			CreateMap<Models.DataModel.CompanyRecurringCharge, Models.CompanyRecurringCharge>();
-			CreateMap<Models.CompanyRecurringCharge, Models.DataModel.CompanyRecurringCharge>()
-				.ForMember(dest => dest.Company, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.CompanyTaxState, Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))
@@ -634,7 +628,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.AllowEFileFormFiling, opt => opt.MapFrom(src=>src.ManageEFileForms))
 				.ForMember(dest => dest.LastPayrollDate, opt => opt.Ignore())
 				.ForMember(dest => dest.States, opt => opt.Ignore())
-				.ForMember(dest => dest.RecurringCharges, opt => opt.Ignore())
 				.ForMember(dest => dest.AccumulatedPayTypes, opt => opt.Ignore())
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.Ignore())
 				

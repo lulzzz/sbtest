@@ -75,7 +75,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return Math.Round(Total - PaidAmount, 2, MidpointRounding.AwayFromZero); }
 		}
 
-		public void Initialize(Payroll payroll, List<PayrollInvoice> prevInvoices, decimal envFeePerCheck, Company company, List<VoidedPayCheckInvoiceCredit> voidedPayChecks)
+		public void Initialize(Payroll payroll, List<PayrollInvoice> prevInvoices, decimal envFeePerCheck, Company company, List<PayCheck> voidedPayChecks)
 		{
 			WorkerCompensations = new List<InvoiceWorkerCompensation>();
 			EmployerTaxes = new List<PayrollTax>();
@@ -108,8 +108,8 @@ namespace HrMaxx.OnlinePayroll.Models
 
 			CalculateAdminFee(payroll);
 
-			CalculateRecurringCharges(payroll);
-			HandleVoidedChecks(voidedPayChecks);
+			CalculateRecurringCharges(prevInvoices, payroll);
+			HandleVoidedChecks(prevInvoices, company, voidedPayChecks);
 			CalculateCASUTA(company, payroll.PayDay.Year);
 
 			EmployeeContribution = EmployeeTaxes.Sum(pc=>pc.Amount) + Deductions.Sum(d=>d.Amount);
@@ -166,27 +166,29 @@ namespace HrMaxx.OnlinePayroll.Models
 			});
 		}
 
-		private void HandleVoidedChecks(List<VoidedPayCheckInvoiceCredit> voidedPayChecks)
+		private void HandleVoidedChecks(List<PayrollInvoice> prevInvoices, Company company, List<PayCheck> voidedPayChecks)
 		{
 			voidedPayChecks.ForEach(vpc =>
 			{
-				
-					if (vpc.Balance <= 0)
+				if (!prevInvoices.Any(i => i.VoidedCreditedChecks.Any(pivc => pivc == vpc.Id)) && prevInvoices.Any(pi => pi.Id == vpc.InvoiceId))
+				{
+					var prevInv = prevInvoices.First(pi => pi.Id == vpc.InvoiceId);
+					if (prevInv.Balance <= 0)
 					{
 						var pcCredit = new MiscFee
 						{
 							PayCheckId = vpc.Id,
 							RecurringChargeId = -1,
 							Amount = 0,
-							Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber : "EFT", vpc.InvoiceNumber, vpc.VoidedOn.HasValue ? vpc.VoidedOn.Value.ToString("MM/dd/yyyy") : string.Empty),
+							Description = string.Format("Credit for PayCheck #{0} invoiced in #{1} voided on{2}", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", prevInv.InvoiceNumber, vpc.VoidedOn.Value.ToString("MM/dd/yyyy")),
 							isEditable = false
 						};
-						if (vpc.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
+						if (prevInv.CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck)
 						{
 							pcCredit.Amount += Math.Round(vpc.GrossWage, 2, MidpointRounding.AwayFromZero);
 							pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
 						}
-						else if (vpc.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
+						else if (prevInv.CompanyInvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOClientCheck)
 						{
 							pcCredit.Amount += Math.Round(vpc.EmployeeTaxes, 2, MidpointRounding.AwayFromZero);
 							pcCredit.Amount += Math.Round(vpc.EmployerTaxes, 2, MidpointRounding.AwayFromZero);
@@ -198,15 +200,15 @@ namespace HrMaxx.OnlinePayroll.Models
 						MiscCharges.Add(pcCredit);
 						vpc.Deductions.ForEach(vpcd =>
 						{
-							if (vpc.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id * -1))
+							if (prevInv.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id * -1))
 							{
-								var chargedDeduction = vpc.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id * -1);
+								var chargedDeduction = prevInv.MiscCharges.First(c => c.RecurringChargeId == vpcd.Deduction.Id * -1);
 								var dedCredit = new MiscFee
 								{
 									PayCheckId = 0,
 									RecurringChargeId = vpcd.Deduction.Id * -1,
 									Amount = chargedDeduction.Amount * -1,
-									Description = string.Format("Reverse Credit for Deduction:{1} on voided PayCheck #{0} ", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber : "EFT", chargedDeduction.Description),
+									Description = string.Format("Reverse Credit for Deduction:{1} on voided PayCheck #{0} ", vpc.PaymentMethod == EmployeePaymentMethod.Check ? vpc.CheckNumber.Value.ToString() : "EFT", chargedDeduction.Description),
 									isEditable = false
 								};
 
@@ -215,6 +217,9 @@ namespace HrMaxx.OnlinePayroll.Models
 						});
 					}
 					
+
+
+				}
 			});
 		}
 
@@ -332,14 +337,16 @@ namespace HrMaxx.OnlinePayroll.Models
 			InvoiceDate = payroll.PayDay.Date;
 		}
 
-		private void CalculateRecurringCharges(Payroll payroll)
+		private void CalculateRecurringCharges(IEnumerable<PayrollInvoice> prevInvoices, Payroll payroll)
 		{
-			payroll.Company.RecurringCharges.ForEach(rc =>
+			CompanyInvoiceSetup.RecurringCharges.ForEach(rc =>
 			{
 				var calcAmount = rc.Amount;
-				
+				var previouslyClaimed = (decimal)0;
 				if (!rc.Year.HasValue)
 				{
+					previouslyClaimed =
+						prevInvoices.SelectMany(i => i.MiscCharges).Where(mc => mc.RecurringChargeId == rc.Id).Sum(mc => mc.Amount);
 					MiscCharges.Add(new MiscFee
 					{
 						RecurringChargeId = rc.Id,
@@ -347,38 +354,33 @@ namespace HrMaxx.OnlinePayroll.Models
 						Description = rc.Description,
 						PayCheckId = 0,
 						isEditable = true,
-						PreviouslyClaimed = rc.Claimed
+						PreviouslyClaimed = previouslyClaimed
 					});
 				}
 				else
 				{
 					if (rc.Year.Value == payroll.PayDay.Year)
 					{
+						previouslyClaimed =
+							prevInvoices.Where(i => i.PayrollPayDay.Year == payroll.PayDay.Year).SelectMany(i => i.MiscCharges).Where(mc => mc.RecurringChargeId == rc.Id).Sum(mc => mc.Amount);
+
 						if (rc.AnnualLimit.HasValue)
 						{
-							if (rc.Claimed < rc.AnnualLimit)
+							if (previouslyClaimed < rc.AnnualLimit)
 							{
-								calcAmount = (rc.Claimed + rc.Amount) >= rc.AnnualLimit
-									? (rc.AnnualLimit.Value - rc.Claimed)
-									: rc.Amount;
-								
+								calcAmount = (previouslyClaimed + rc.Amount) > rc.AnnualLimit ? (rc.AnnualLimit.Value - previouslyClaimed) : rc.Amount;
 							}
-							else
-							{
-								calcAmount = 0;
-							}
-							
+
 						}
-						if (calcAmount>0)
-							MiscCharges.Add(new MiscFee
-							{
-								RecurringChargeId = rc.Id,
-								Amount = calcAmount,
-								Description = rc.Description,
-								PayCheckId = 0,
-								isEditable = true,
-								PreviouslyClaimed = rc.Claimed
-							});
+						MiscCharges.Add(new MiscFee
+						{
+							RecurringChargeId = rc.Id,
+							Amount = calcAmount,
+							Description = rc.Description,
+							PayCheckId = 0,
+							isEditable = true,
+							PreviouslyClaimed = previouslyClaimed
+						});
 					}
 				}
 				

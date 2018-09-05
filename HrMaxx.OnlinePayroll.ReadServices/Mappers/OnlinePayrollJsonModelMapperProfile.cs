@@ -10,14 +10,7 @@ using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
-using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using Newtonsoft.Json;
-using BankAccount = HrMaxx.OnlinePayroll.Models.BankAccount;
-using CompanyDeduction = HrMaxx.OnlinePayroll.Models.CompanyDeduction;
-using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
-using CompanyWorkerCompensation = HrMaxx.OnlinePayroll.Models.CompanyWorkerCompensation;
-using DeductionType = HrMaxx.OnlinePayroll.Models.DeductionType;
-using PayType = HrMaxx.OnlinePayroll.Models.PayType;
 
 
 namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
@@ -54,9 +47,6 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
 				.ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.CompanyName))
 				.ForMember(dest => dest.Address, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Address>(src.CompanyAddress)));
-
-			CreateMap<Models.JsonDataModel.CompanyRecurringCharge, Models.CompanyRecurringCharge>();
-			CreateMap<Models.CompanyRecurringCharge, Models.JsonDataModel.CompanyRecurringCharge>();
 
 			CreateMap<Models.JsonDataModel.CompanyTaxState, Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))
@@ -129,14 +119,6 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.InvoiceId))
 				.ForMember(dest => dest.Included, opt => opt.MapFrom(src => true))
 				.ForMember(dest => dest.UpdateEmployeeRate, opt => opt.MapFrom(src => false));
-
-			CreateMap<Models.JsonDataModel.VoidedPayCheckInvoiceCreditJson, VoidedPayCheckInvoiceCredit>()
-				.ForMember(dest => dest.Deductions,
-					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<PayrollDeduction>>(src.Deductions)))
-				.ForMember(dest => dest.InvoiceSetup,
-					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<InvoiceSetup>(src.InvoiceSetup)))
-				.ForMember(dest => dest.MiscCharges,
-					opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<MiscFee>>(src.MiscCharges)));
 
 
 			CreateMap<Models.JsonDataModel.PayrollJson, Models.Payroll>()

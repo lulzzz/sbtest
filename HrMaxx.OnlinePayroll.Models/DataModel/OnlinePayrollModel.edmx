@@ -216,20 +216,6 @@
           <Property Name="Description" Type="varchar(max)" Nullable="false" />
           <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
-        <EntityType Name="CompanyRecurringCharge">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="OldId" Type="int" Nullable="false" />
-          <Property Name="Description" Type="varchar(max)" Nullable="false" />
-          <Property Name="Year" Type="int" />
-          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
-          <Property Name="AnnualLimit" Type="decimal" Precision="18" Scale="2" />
-          <Property Name="IsRemoved" Type="bit" Nullable="false" />
-          <Property Name="Claimed" Type="decimal" Precision="18" Scale="0" Nullable="false" />
-        </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
             <PropertyRef Name="Id" />
@@ -930,18 +916,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_CompanyRecurringCharge_Company">
-          <End Role="Company" Type="Self.Company" Multiplicity="1" />
-          <End Role="CompanyRecurringCharge" Type="Self.CompanyRecurringCharge" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Company">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CompanyRecurringCharge">
-              <PropertyRef Name="CompanyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CompanyTax_Company">
           <End Role="Company" Type="Self.Company" Multiplicity="1" />
           <End Role="CompanyTaxRate" Type="Self.CompanyTaxRate" Multiplicity="*" />
@@ -1270,7 +1244,6 @@
           <EntitySet Name="CompanyContract" EntityType="Self.CompanyContract" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyDeduction" EntityType="Self.CompanyDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyPayCode" EntityType="Self.CompanyPayCode" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CompanyRecurringCharge" EntityType="Self.CompanyRecurringCharge" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxRate" EntityType="Self.CompanyTaxRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTaxState" EntityType="Self.CompanyTaxState" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CompanyTSImportMap" EntityType="Self.CompanyTSImportMap" Schema="dbo" store:Type="Tables" />
@@ -1380,10 +1353,6 @@
           <AssociationSet Name="FK_CompanyPayCode_Company" Association="Self.FK_CompanyPayCode_Company">
             <End Role="Company" EntitySet="Company" />
             <End Role="CompanyPayCode" EntitySet="CompanyPayCode" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CompanyRecurringCharge_Company" Association="Self.FK_CompanyRecurringCharge_Company">
-            <End Role="Company" EntitySet="Company" />
-            <End Role="CompanyRecurringCharge" EntitySet="CompanyRecurringCharge" />
           </AssociationSet>
           <AssociationSet Name="FK_CompanyTax_Company" Association="Self.FK_CompanyTax_Company">
             <End Role="Company" EntitySet="Company" />
@@ -1737,11 +1706,6 @@
             <End Role="EntityType" EntitySet="EntityTypes" />
             <End Role="CheckbookJournal" EntitySet="CheckbookJournals" />
           </AssociationSet>
-          <EntitySet Name="CompanyRecurringCharges" EntityType="HrMaxxModel.CompanyRecurringCharge" />
-          <AssociationSet Name="FK_CompanyRecurringCharge_Company" Association="HrMaxxModel.FK_CompanyRecurringCharge_Company">
-            <End Role="Company" EntitySet="Companies" />
-            <End Role="CompanyRecurringCharge" EntitySet="CompanyRecurringCharges" />
-          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
           <Key>
@@ -1839,7 +1803,6 @@
           <Property Name="PayrollScheduleDay" Type="Int32" Nullable="false" />
           <Property Name="DashboardNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="Company" ToRole="CheckbookJournal" />
-          <NavigationProperty Name="CompanyRecurringCharges" Relationship="HrMaxxModel.FK_CompanyRecurringCharge_Company" FromRole="Company" ToRole="CompanyRecurringCharge" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -3064,33 +3027,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="CompanyRecurringCharge">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="CompanyId" Type="Guid" Nullable="false" />
-          <Property Name="OldId" Type="Int32" Nullable="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="Year" Type="Int32" />
-          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
-          <Property Name="AnnualLimit" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="IsRemoved" Type="Boolean" Nullable="false" />
-          <Property Name="Claimed" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
-          <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyRecurringCharge_Company" FromRole="CompanyRecurringCharge" ToRole="Company" />
-        </EntityType>
-        <Association Name="FK_CompanyRecurringCharge_Company">
-          <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
-          <End Type="HrMaxxModel.CompanyRecurringCharge" Role="CompanyRecurringCharge" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Company">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="CompanyRecurringCharge">
-              <PropertyRef Name="CompanyId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3788,21 +3724,6 @@
                 <ScalarProperty Name="CheckNumber" ColumnName="CheckNumber" />
                 <ScalarProperty Name="PaymentMethod" ColumnName="PaymentMethod" />
                 <ScalarProperty Name="TransactionType" ColumnName="TransactionType" />
-                <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CompanyRecurringCharges">
-            <EntityTypeMapping TypeName="HrMaxxModel.CompanyRecurringCharge">
-              <MappingFragment StoreEntitySet="CompanyRecurringCharge">
-                <ScalarProperty Name="Claimed" ColumnName="Claimed" />
-                <ScalarProperty Name="IsRemoved" ColumnName="IsRemoved" />
-                <ScalarProperty Name="AnnualLimit" ColumnName="AnnualLimit" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Year" ColumnName="Year" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="OldId" ColumnName="OldId" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
