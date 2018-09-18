@@ -108,12 +108,58 @@ namespace SiteInspectionStatus_Utility
 				case 19:
 					ChangeEmployeesToFiscalYear(container);
 					break;
+				case 20:
+					SaveRecurringCharges(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+
+		private static void SaveRecurringCharges(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var companyrepository = scope.Resolve<ICompanyRepository>();
+				var payrollrepository = scope.Resolve<IPayrollRepository>();
+				var company = readerservice.GetCompanies().Where(c => c.Contract.InvoiceSetup.RecurringCharges.Any()).ToList();
+				var invoiceUpdateList = new List<PayrollInvoice>();
+				company.ForEach(c=>
+				{
+					var list = new List<HrMaxx.OnlinePayroll.Models.CompanyRecurringCharge>();
+					
+					var invoices = readerservice.GetCompanyInvoices(companyId: c.Id);
+					var miscCharges = invoices.SelectMany(i => i.MiscCharges).ToList();
+					c.Contract.InvoiceSetup.RecurringCharges.ForEach(rc => list.Add(new HrMaxx.OnlinePayroll.Models.CompanyRecurringCharge
+					{
+						Id = 0,
+						CompanyId = c.Id,
+						Year = rc.Year,
+						Amount = rc.Amount,
+						AnnualLimit = rc.AnnualLimit,
+						Description = rc.Description,
+						OldId = rc.Id,
+						IsRemoved = false,
+						Claimed = miscCharges.Where(i => i.RecurringChargeId == rc.Id).Sum(i => i.Amount)
+					}));
+					var rcs = companyrepository.SaveRecurringCharges(c, list);
+					invoices.Where(i=>i.MiscCharges.Any(mc=>rcs.Any(r=>r.OldId==mc.RecurringChargeId))).ToList().ForEach(i =>
+					{
+						i.MiscCharges.Where(mc=>mc.RecurringChargeId>0 && rcs.Any(r=>r.OldId==mc.RecurringChargeId)).ToList().ForEach(mc =>
+						{
+							mc.RecurringChargeId = rcs.First(r => r.OldId == mc.RecurringChargeId).Id;
+						});
+						invoiceUpdateList.Add(i);
+					});
+					
+				});
+				payrollrepository.UpdateInvoiceMiscCharges(invoiceUpdateList);
+			}
+		}
+
 		private static void ChangeEmployeesToFiscalYear(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())

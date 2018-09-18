@@ -153,6 +153,25 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<List<Models.DataModel.CompanyTaxState>, List<CompanyTaxState>>(_dbContext.CompanyTaxStates.Where(c => c.CompanyId == savedcompany.Id).ToList());
 		}
 
+		public List<Models.CompanyRecurringCharge> SaveRecurringCharges(Company savedcompany, List<Models.CompanyRecurringCharge> charges)
+		{
+			var mapped = _mapper.Map<List<Models.CompanyRecurringCharge>, List<Models.DataModel.CompanyRecurringCharge>>(charges);
+			mapped.ForEach(ct => ct.CompanyId = savedcompany.Id);
+			_dbContext.CompanyRecurringCharges.AddRange(mapped.Where(s => s.Id == 0));
+			var dbStates = _dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList();
+			foreach (var existingState in mapped.Where(s => s.Id != 0))
+			{
+				var recurringCharge = dbStates.First(s => s.Id == existingState.Id);
+				recurringCharge.Description = existingState.Description;
+				recurringCharge.Amount = existingState.Amount;
+				recurringCharge.AnnualLimit = existingState.AnnualLimit;
+				recurringCharge.OldId = existingState.OldId;
+				
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<List<Models.DataModel.CompanyRecurringCharge>, List<Models.CompanyRecurringCharge>>(_dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList());
+		}
+
 		public CompanyDeduction SaveDeduction(CompanyDeduction deduction)
 		{
 			

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -117,6 +118,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				"update Payroll set InvoiceId=@Id where Id=@PayrollId;update PayrollPayCheck set InvoiceId=@Id where Id in @PayCheckIds;";
 
 			const string updatecreditcheckssql = "update PayrollPayCheck set CreditInvoiceId=@Id where Id in @CreditChecks;";
+			const string updateRecurringChargeClaimed = "update CompanyRecurringCharge set Claimed=(Claimed+@Claimed) where Id=@Id;";
 
 			var mapped = _mapper.Map<Models.PayrollInvoice, Models.DataModel.PayrollInvoice>(payrollInvoice);
 			using (var conn = GetConnection())
@@ -147,6 +149,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 							});
 						strLog.AppendLine("Updated Credit checks " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					}
+					payrollInvoice.MiscCharges.Where(mc=>mc.RecurringChargeId>0).ToList().ForEach(mc => conn.Execute(updateRecurringChargeClaimed,
+						new {Id = mc.RecurringChargeId, Claimed = mc.Amount}));
 					return payrollInvoice;
 				}
 				else
@@ -192,7 +196,22 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 						p.Id = conn.Query<int>(insertpayment, p).Single();
 					});
 					strLog.AppendLine("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
-						
+					var mc1s = JsonConvert.DeserializeObject<List<MiscFee>>(pi.MiscCharges);
+					payrollInvoice.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
+					{
+						var mc1 = mc1s.FirstOrDefault(m => m.RecurringChargeId == mc.RecurringChargeId);
+						if(mc1==null)
+							conn.Execute(updateRecurringChargeClaimed,
+								new {Id = mc.RecurringChargeId, Claimed = mc.Amount});
+						else if(mc1.Amount!=mc.Amount)
+						{
+							conn.Execute(updateRecurringChargeClaimed,
+								new { Id = mc.RecurringChargeId, Claimed = mc.Amount-mc1.Amount });
+						}
+					});
+					mc1s.Where(m1=>payrollInvoice.MiscCharges.All(mc1 => mc1.RecurringChargeId != m1.RecurringChargeId)).ToList().ForEach(
+						m1 => conn.Execute(updateRecurringChargeClaimed,
+							new { Id = m1.RecurringChargeId, Claimed = -1*m1.Amount  }));
 					
 					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);
 				}
@@ -201,7 +220,18 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 
 
 		}
-		
+
+		public void UpdateInvoiceMiscCharges(List<PayrollInvoice> invoices )
+		{
+			const string sql = "update PayrollInvoice set MiscCharges=@MiscCharges where Id=@Id";
+			var mapped = _mapper.Map<List<PayrollInvoice>, List<Models.DataModel.PayrollInvoice>>(invoices);
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, mapped);
+			}
+		}
+
+
 		public void DeletePayrollInvoice(Guid invoiceId)
 		{
 			const string delete =

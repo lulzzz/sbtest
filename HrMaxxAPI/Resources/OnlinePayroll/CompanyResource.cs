@@ -64,7 +64,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
-		
+
+		public List<CompanyRecurringCharge> RecurringCharges { get; set; } 
 		public List<CompanyTaxStateResource> States { get; set; }
 		public List<CompanyTaxRateResource> CompanyTaxRates { get; set; } 
 		public List<AccumulatedPayTypeResource> AccumulatedPayTypes { get; set; }

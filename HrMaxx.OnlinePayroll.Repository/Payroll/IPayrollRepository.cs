@@ -63,5 +63,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void UpdateInvoiceRecurringCharges(List<Models.PayrollInvoiceMiscCharges> updatedList);
 		List<Models.PayrollInvoiceMiscCharges> GetFutureInvoicesMiscCharges(Guid companyId, int invoiceNumber);
 		void DelayPayrollInvoice(Guid id, bool taxesDelayed, DateTime lastModified, string userName);
+
+		void UpdateInvoiceMiscCharges(List<PayrollInvoice> invoices );
+		
 	}
 }

@@ -17,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		Models.Company SaveCompany(Models.Company company);
 		ContractDetails SaveCompanyContract(Company savedcompany, ContractDetails contract);
 		List<CompanyTaxState> SaveTaxStates(Company savedcompany, List<CompanyTaxState> states);
+		List<Models.CompanyRecurringCharge> SaveRecurringCharges(Company savedcompany, List<Models.CompanyRecurringCharge> states);
 		CompanyDeduction SaveDeduction(CompanyDeduction deduction);
 		CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation);
 		AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedResource);
