@@ -17,6 +17,7 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxx.OnlinePayroll.ReadRepository;
 using Newtonsoft.Json;
+using CompanyRecurringCharge = HrMaxx.OnlinePayroll.Models.CompanyRecurringCharge;
 
 
 namespace HrMaxx.OnlinePayroll.ReadServices
@@ -224,6 +225,24 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+	  public List<InvoiceByStatus> GetCompanyPreviousInvoiceNumbers(Guid companyId)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
+				
+				return GetDataFromStoredProc<List<InvoiceByStatus>, List<Models.InvoiceByStatus>>(
+					"GetCompanyPreviousInvoiceNumbers", paramList, new XmlRootAttribute("InvoiceStatusList"));
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Payroll invoices through JSON");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
 
 	  public PayrollInvoice GetPayrollInvoice(Guid invoiceId)
 	  {
@@ -1123,6 +1142,24 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+	  public List<CompanyRecurringCharge> GetCompanyRecurringCharges(Guid id)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+
+				paramList.Add(new FilterParam { Key = "company", Value = id.ToString() });
+
+				return GetDataFromStoredProc<List<CompanyRecurringCharge>, List<Models.JsonDataModel.CompanyRecurringCharge>>("GetCompanyRecurringCharges", paramList, new XmlRootAttribute("CompanyRecurringChargeList"));
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Company List through XML");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
 
 	  public CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request)
 	  {

@@ -238,6 +238,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class RecurringCharge
 	{
 		public int Id { get; set; }
+		public int TableId { get; set; }
 		public int? Year { get; set; }
 		public decimal Amount { get; set; }
 		public decimal? AnnualLimit { get; set; }
@@ -252,7 +253,6 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Amount { get; set; }
 		public decimal? AnnualLimit { get; set; }
 		public string Description { get; set; }
-		public bool IsRemoved { get; set; }
 		public decimal Claimed { get; set; }
 	}
 

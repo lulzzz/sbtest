@@ -61,6 +61,14 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					$scope.getCompanySickLeaveExport = function(mode) {
 						$scope.$parent.$parent.getCompanySickLeaveExport(mode);
 					}
+					$scope.recalculateEmployeePayTypeAccumulations = function (mode) {
+						payrollRepository.recalculateEmployeePayTypeAccumulations($scope.selected.id).then(function (result) {
+							$scope.$parent.$parent.save(result);
+						}, function (error) {
+							$scope.addAlert('error re-calculating employee accumulations', 'danger');
+						});
+					}
+
 					$scope.cancel = function () {
 						if (!$scope.isPopup)
 							$scope.$parent.$parent.cancel();

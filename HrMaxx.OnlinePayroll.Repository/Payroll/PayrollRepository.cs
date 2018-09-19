@@ -232,13 +232,16 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		}
 
 
-		public void DeletePayrollInvoice(Guid invoiceId)
+		public void DeletePayrollInvoice(Guid invoiceId, List<MiscFee> miscCharges)
 		{
 			const string delete =
 				"update payroll set invoiceid=null where invoiceId=@Id;update payrollpaycheck set creditinvoiceid=null where creditinvoiceid=@Id;update payrollpaycheck set invoiceid=null where invoiceid=@Id;delete from payrollinvoice where Id=@Id; ";
+			const string updateRecurringChargeClaimed = "update CompanyRecurringCharge set Claimed=(Claimed+@Claimed) where Id=@Id;";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(delete, new { Id =invoiceId });
+				miscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc => conn.Execute(updateRecurringChargeClaimed,
+					new { Id = mc.RecurringChargeId, Claimed = -1*mc.Amount }));
 			}
 			
 		}

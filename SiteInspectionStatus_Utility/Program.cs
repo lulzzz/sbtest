@@ -123,6 +123,7 @@ namespace SiteInspectionStatus_Utility
 			using (var scope = container.BeginLifetimeScope())
 			{
 				var readerservice = scope.Resolve<IReaderService>();
+				var companyservice = scope.Resolve<ICompanyService>();
 				var companyrepository = scope.Resolve<ICompanyRepository>();
 				var payrollrepository = scope.Resolve<IPayrollRepository>();
 				var company = readerservice.GetCompanies().Where(c => c.Contract.InvoiceSetup.RecurringCharges.Any()).ToList();
@@ -142,10 +143,15 @@ namespace SiteInspectionStatus_Utility
 						AnnualLimit = rc.AnnualLimit,
 						Description = rc.Description,
 						OldId = rc.Id,
-						IsRemoved = false,
 						Claimed = miscCharges.Where(i => i.RecurringChargeId == rc.Id).Sum(i => i.Amount)
 					}));
 					var rcs = companyrepository.SaveRecurringCharges(c, list);
+					c.Contract.InvoiceSetup.RecurringCharges.ForEach(rc =>
+					{
+						var rc1 = rcs.First(r => r.OldId == rc.Id);
+						rc.TableId = rc1.Id;
+					});
+					companyrepository.SaveCompanyContract(c, c.Contract);
 					invoices.Where(i=>i.MiscCharges.Any(mc=>rcs.Any(r=>r.OldId==mc.RecurringChargeId))).ToList().ForEach(i =>
 					{
 						i.MiscCharges.Where(mc=>mc.RecurringChargeId>0 && rcs.Any(r=>r.OldId==mc.RecurringChargeId)).ToList().ForEach(mc =>

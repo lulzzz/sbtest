@@ -8,6 +8,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
+using CompanyRecurringCharge = HrMaxx.OnlinePayroll.Models.CompanyRecurringCharge;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -24,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, bool includeTaxesDelayed = false);
 		List<PayrollInvoice> GetPayrollInvoices(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate=null, Guid? id=null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null, int? invoiceNumber=null, bool byPayDay=false  );
 		List<PayrollInvoice> GetCompanyInvoices(Guid companyId, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, Guid? id = null);
+		List<InvoiceByStatus> GetCompanyPreviousInvoiceNumbers(Guid companyId);
 		PayrollInvoice GetPayrollInvoice(Guid invoiceId);
 		List<ExtractInvoicePayment> GetInvoicePayments(DateTime? startDate, DateTime? endDate);
 		//Payrolls
@@ -80,6 +82,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null);
 
 
-		
+		List<CompanyRecurringCharge> GetCompanyRecurringCharges(Guid id);
 	}
 }

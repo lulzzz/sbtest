@@ -396,7 +396,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				{
 					Data = Encoding.UTF8.GetBytes(transformed),
 					DocumentExtension = ".xls",
-					Filename = request.Description,
+					Filename = request.Description + ".xls",
 					MimeType = "application/octet-stream"
 				};
 

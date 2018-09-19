@@ -476,6 +476,107 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			return result;
 		}
 
+		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, Accumulation employeeAccumulation, Company company)
+		{
+			var result = new List<PayTypeAccumulation>();
+
+
+
+
+			foreach (var payType in company.AccumulatedPayTypes)
+			{
+				var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, payType);
+				var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
+
+				if (!payType.CompanyManaged)
+				{
+
+					var currentAccumulaiton = employeeAccumulation.Accumulations != null &&
+																		employeeAccumulation.Accumulations.Any(
+																			ac =>
+																				ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
+																				ac.FiscalEnd == fiscalEndDate)
+						? employeeAccumulation.Accumulations.Where(
+							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate && ac.FiscalEnd == fiscalEndDate)
+							.OrderBy(ac => ac.FiscalStart)
+							.Last()
+						: null;
+					///minus this check's accumulation
+					if (paycheck.Accumulations.Any(pt => pt.PayType.Id == payType.Id) && currentAccumulaiton!=null)
+					{
+						currentAccumulaiton.YTDFiscal -= paycheck.Accumulations.First(pt => pt.PayType.Id == payType.Id).AccumulatedValue;
+						currentAccumulaiton.YTDUsed -= paycheck.Accumulations.First(pt => pt.PayType.Id == payType.Id).Used;
+					}
+					var previousAccumulations = employeeAccumulation.Accumulations != null &&
+																		employeeAccumulation.Accumulations.Any(
+																			ac =>
+																				ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate &&
+																				ac.FiscalEnd < fiscalEndDate)
+						? employeeAccumulation.Accumulations.Where(
+							ac => ac.PayTypeId == payType.PayType.Id && ac.FiscalStart < fiscalStartDate && ac.FiscalEnd < fiscalEndDate)
+							.ToList()
+						: null;
+					
+					var carryOver = paycheck.Employee.CarryOver;
+					carryOver += previousAccumulations != null
+						? previousAccumulations.Sum(ac => ac.YTDFiscal - ac.YTDUsed)
+						: 0;
+
+					var ytdAccumulation = (decimal)0;
+					var ytdUsed = (decimal)0;
+
+					if (currentAccumulaiton != null)
+					{
+						ytdAccumulation = currentAccumulaiton.YTDFiscal;
+						ytdUsed = currentAccumulaiton.YTDUsed;
+						//carryOver = accum.CarryOver;
+
+					}
+
+					if (ytdAccumulation > payType.AnnualLimit)
+						ytdAccumulation = payType.AnnualLimit;
+
+					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
+					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
+						? CalculatePayTypeUsage(paycheck.Employee,
+							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
+						: (decimal)0;
+					var accumulationValue = (decimal)0;
+					if ((ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
+						accumulationValue = Math.Max(payType.AnnualLimit - ytdAccumulation, 0);
+					else
+					{
+						accumulationValue = thisCheckValue;
+					}
+
+
+					var acc = new PayTypeAccumulation
+					{
+						PayType = payType,
+						AccumulatedValue = Math.Round(accumulationValue, 2, MidpointRounding.AwayFromZero),
+						YTDFiscal = Math.Round(ytdAccumulation + accumulationValue, 2, MidpointRounding.AwayFromZero),
+						FiscalStart = fiscalStartDate,
+						FiscalEnd = fiscalEndDate,
+						Used = Math.Round(thisCheckUsed, 2, MidpointRounding.AwayFromZero),
+						YTDUsed = Math.Round(ytdUsed + thisCheckUsed, 2, MidpointRounding.AwayFromZero),
+						CarryOver = Math.Round(carryOver, 2, MidpointRounding.AwayFromZero)
+					};
+					
+					result.Add(acc);
+				}
+				else if (paycheck.Accumulations.Any(apt => apt.PayType.Id == payType.Id))
+				{
+					var pt = paycheck.Accumulations.First(apt => apt.PayType.Id == payType.Id);
+					pt.FiscalStart = fiscalStartDate;
+					pt.FiscalEnd = fiscalEndDate;
+					result.Add(pt);
+				}
+
+
+			}
+			return result;
+		}
+
 		private decimal CalculatePayTypeUsage(Employee employee, decimal compnesaitonAmount)
 		{
 			var quotient = employee.Rate;
@@ -1620,7 +1721,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				
 				var company = fetchCompany ? _readerService.GetCompany(payroll.Company.Id) : payroll.Company;
-				var previousInvoices = _readerService.GetCompanyInvoices(companyId:payroll.Company.Id);
+				if (company.RecurringCharges.Any())
+				{
+					company.RecurringCharges = _readerService.GetCompanyRecurringCharges(payroll.Company.Id);
+				}
+				
+				var previousInvoices = _readerService.GetCompanyPreviousInvoiceNumbers(companyId: payroll.Company.Id);
 				var voidedPayChecks = _readerService.GetCompanyPayChecksForInvoiceCredit(companyId: payroll.Company.Id);
 				payrollInvoice.Initialize(payroll, previousInvoices, _taxationService.GetApplicationConfig().EnvironmentalChargeRate, company, voidedPayChecks);
 
@@ -1665,7 +1771,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					
 					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, UserId = userId, LastModified = DateTime.Now, ProcessedBy = payroll.UserName, InvoiceNumber = invoice.InvoiceNumber};
-					_payrollRepository.DeletePayrollInvoice(invoiceId);
+					_payrollRepository.DeletePayrollInvoice(invoiceId, invoice.MiscCharges);
 					var recreated = CreateInvoice(payroll, payrollInvoice, true);
 					var memento = Memento<PayrollInvoice>.Create(recreated, EntityTypeEnum.Invoice, recreated.UserName, string.Format("Invoice Re-Created"), recreated.UserId);
 					_mementoDataService.AddMementoData(memento);
@@ -1801,7 +1907,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				var invoice = _readerService.GetPayrollInvoice(invoiceId);
-				_payrollRepository.DeletePayrollInvoice(invoiceId);
+				_payrollRepository.DeletePayrollInvoice(invoiceId, invoice.MiscCharges);
 				var memento = Memento<PayrollInvoice>.Create(invoice, EntityTypeEnum.Invoice, userName, comment, userId);
 				_mementoDataService.AddMementoData(memento);
 			}
@@ -3258,7 +3364,38 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public Employee RecalculateEmployeePayTypeAccumulation(Guid employeeId, string user, string userId)
+		{
+			try
+			{
+				var employee = _readerService.GetEmployee(employeeId);
+				var company = _readerService.GetCompany(employee.CompanyId);
+				var payChecks = _readerService.GetEmployeePayChecks(employeeId).OrderBy(p=>p.PayDay);
+				
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
 
+					foreach (var payCheck in payChecks)
+					{
+						var employeeAccumulations = _readerService.GetAccumulations(company: company.Id,
+							startdate: new DateTime(payCheck.PayDay.Year, 1, 1), enddate: payCheck.PayDay, ssns: Crypto.Encrypt(payCheck.Employee.SSN));
+						payCheck.Accumulations = ProcessAccumulations(payCheck, employeeAccumulations.First(), company);
+						_payrollRepository.UpdatePayCheckSickLeaveAccumulation(payCheck);
+						var memento = Memento<PayCheck>.Create(payCheck, EntityTypeEnum.PayCheck, user, "Pay Type Accumulation Updated", new Guid(userId));
+						_mementoDataService.AddMementoData(memento);
+						
+					}
+					txn.Complete();
+				}
+				return _readerService.GetEmployees(company:company.Id).First(e=>e.Id==employeeId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " recalculate employee paytype accumulations");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 		public void UpdatePayCheckAccumulation(int payCheckId, PayTypeAccumulation accumulation, string user, string userId)
 		{
 			try
@@ -3926,5 +4063,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		
 	}
 }

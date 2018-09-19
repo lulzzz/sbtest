@@ -21,7 +21,6 @@ CREATE TABLE [dbo].[CompanyRecurringCharge](
 	[Year] [int] NULL,
 	[Amount] [decimal](18, 2) NOT NULL,
 	[AnnualLimit] [decimal](18, 2) NULL,
-	[IsRemoved] bit Not Null Default(0),
 	[Claimed] decimal not null Default(0),
  CONSTRAINT [PK_CompanyRecurringCharge] PRIMARY KEY CLUSTERED 
 (
@@ -130,6 +129,60 @@ BEGIN
 			
 		Order by PayrollPayCheck.Id 
 		for Xml path('VoidedPayCheckInvoiceCreditJson'), root('VoidedPayCheckInvoiceCreditList'), Elements, type
+		
+	
+	
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetCompanyPreviousInvoiceNumbers]    Script Date: 18/09/2018 5:02:34 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyPreviousInvoiceNumbers]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyPreviousInvoiceNumbers]
+GO
+/****** Object:  StoredProcedure [dbo].[GetCompanyPreviousInvoiceNumbers]    Script Date: 18/09/2018 5:02:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyPreviousInvoiceNumbers]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetCompanyPreviousInvoiceNumbers] AS' 
+END
+GO
+ALTER PROCEDURE [dbo].[GetCompanyPreviousInvoiceNumbers]
+	@company uniqueidentifier = null
+AS
+BEGIN
+	
+		select InvoiceNumber , -1 Status
+		from PayrollInvoice pi1 
+		where CompanyId=@company and exists(select 'x' from InvoicePayment where InvoiceId=pi1.Id and status=4) 
+		union
+		select InvoiceNumber , Status
+		from PayrollInvoice pi1 
+		where CompanyId=@company and Status=3
+		for xml path('InvoiceByStatus'), root('InvoiceStatusList'), elements, type
+		
+	
+	
+END
+GO
+/****** Object:  StoredProcedure [dbo].[GetCompanyRecurringCharges]    Script Date: 18/09/2018 5:02:34 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyRecurringCharges]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCompanyRecurringCharges]
+GO
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyRecurringCharges]') AND type in (N'P', N'PC'))
+BEGIN
+EXEC dbo.sp_executesql @statement = N'CREATE PROCEDURE [dbo].[GetCompanyRecurringCharges] AS' 
+END
+GO
+ALTER PROCEDURE [dbo].[GetCompanyRecurringCharges]
+	@company uniqueidentifier = null
+AS
+BEGIN
+	
+		select * from CompanyRecurringCharge Where CompanyId=@company 
+		
+		for xml path('CompanyRecurringCharge'), root('CompanyRecurringChargeList'), elements, type
 		
 	
 	

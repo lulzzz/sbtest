@@ -247,6 +247,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 	public class RecurringChargeResource
 	{
 		public int? Id { get; set; }
+		public int TableId { get; set; }
 		public int? Year { get; set; }
 		[Required]
 		public decimal Amount { get; set; }

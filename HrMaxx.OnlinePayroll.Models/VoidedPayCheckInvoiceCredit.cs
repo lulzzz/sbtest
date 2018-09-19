@@ -25,4 +25,11 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<MiscFee> MiscCharges { get; set; }
 
 	}
+
+	public class InvoiceByStatus
+	{
+		public int InvoiceNumber { get; set; }
+		public int Status { get; set; }
+	}
+
 }

@@ -21,7 +21,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<int> Year { get; set; }
         public decimal Amount { get; set; }
         public Nullable<decimal> AnnualLimit { get; set; }
-        public bool IsRemoved { get; set; }
         public decimal Claimed { get; set; }
     
         public virtual Company Company { get; set; }

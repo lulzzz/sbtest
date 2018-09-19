@@ -207,6 +207,12 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.CompanyRecurringCharge, Models.DataModel.CompanyRecurringCharge>()
 				.ForMember(dest => dest.Company, opt => opt.Ignore());
 
+			CreateMap<Models.RecurringCharge, Models.CompanyRecurringCharge>()
+				.ForMember(dest => dest.OldId, opt => opt.MapFrom(src => src.Id))
+				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
+				.ForMember(dest => dest.Claimed, opt => opt.Ignore())
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TableId));
+
 			CreateMap<Models.DataModel.CompanyTaxState, Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))
 				.ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.EIN)))

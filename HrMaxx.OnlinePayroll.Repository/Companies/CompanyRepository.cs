@@ -108,13 +108,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				contract.BankDetails.LastModifiedBy = savedcompany.UserName;
 				contract.BankDetails = _utilRepository.SaveBankAccount(contract.BankDetails);
 			}
-			if (contract.InvoiceSetup != null && contract.InvoiceSetup.RecurringCharges.Any(rc=>rc.Id==0))
+			if (contract.InvoiceSetup != null && contract.InvoiceSetup.RecurringCharges.Any())
 			{
 				contract.InvoiceSetup.RecurringCharges.Where(rc=>rc.Id==0).ToList().ForEach(rc =>
 				{
 					rc.Id = contract.InvoiceSetup.RecurringCharges.Max(rc1 => rc1.Id) + 1;
 				});
 			}
+			
 			var mapped = _mapper.Map<ContractDetails, CompanyContract>(contract);
 			mapped.CompanyId = savedcompany.Id;
 			
@@ -166,7 +167,10 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				recurringCharge.Amount = existingState.Amount;
 				recurringCharge.AnnualLimit = existingState.AnnualLimit;
 				recurringCharge.OldId = existingState.OldId;
-				
+			}
+			foreach (var rc1 in dbStates.Where(rc=>!mapped.Any(r=>r.Id==rc.Id)))
+			{
+				_dbContext.CompanyRecurringCharges.Remove(rc1);
 			}
 			_dbContext.SaveChanges();
 			return _mapper.Map<List<Models.DataModel.CompanyRecurringCharge>, List<Models.CompanyRecurringCharge>>(_dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList());
@@ -697,5 +701,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 		}
 
+		public void SaveCompanyInvoiceSetup(Guid id, string invoiceSetup)
+		{
+			const string query = "update CompanyContract set InvoiceSetup=@InvoiceSetup where CompanyId=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(query, new {Id = id, InvoiceSetup = invoiceSetup});
+
+			}
+		}
 	}
 }

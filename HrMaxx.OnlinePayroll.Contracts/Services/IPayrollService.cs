@@ -73,5 +73,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void MarkPayrollPrinted(Guid payrollId);
 
 		void UpdateLastPayrollDateAndPayRateEmployee(List<PayCheck> payChecks);
+		Employee RecalculateEmployeePayTypeAccumulation(Guid employeeId, string user, string userId);
 	}
 }

@@ -58,5 +58,6 @@
 		public const string CompanyPayrolls = "Payroll/CompanyPayrolls/{companyId:guid}";
 		public const string CompanyPayrollsForRelocation = "Payroll/CompanyPayrollsForRelocation/{companyId:guid}";
 		public const string FixPayrollYTD = "Payroll/FixPayrollYTD/{payrollId:guid}";
+		public const string RecalculateEmployeePayTypeAccumulations = "Payroll/RecalculateEmployeePayTypeAccumulations/{employeeId:guid}";
 	}
 }

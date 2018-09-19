@@ -759,6 +759,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 
 		[HttpGet]
+		[Route(PayrollRoutes.RecalculateEmployeePayTypeAccumulations)]
+		[DeflateCompression]
+		public EmployeeResource RecalculateEmployeePayTypeAccumulations(Guid employeeId)
+		{
+
+			var emp = MakeServiceCall(() => _payrollService.RecalculateEmployeePayTypeAccumulation(employeeId, CurrentUser.FullName, CurrentUser.UserId), "Recalculate Employee PayType Accumulations for " + employeeId);
+			return Mapper.Map<Employee, EmployeeResource>(emp);
+		}
+
+		[HttpGet]
 		[Route(PayrollRoutes.EmployeeChecks)]
 		[DeflateCompression]
 		public List<PayCheck> GetEmployeeChecks(Guid companyId, Guid employeeId)

@@ -75,7 +75,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return Math.Round(Total - PaidAmount, 2, MidpointRounding.AwayFromZero); }
 		}
 
-		public void Initialize(Payroll payroll, List<PayrollInvoice> prevInvoices, decimal envFeePerCheck, Company company, List<VoidedPayCheckInvoiceCredit> voidedPayChecks)
+		public void Initialize(Payroll payroll, List<InvoiceByStatus> prevInvoices, decimal envFeePerCheck, Company company, List<VoidedPayCheckInvoiceCredit> voidedPayChecks)
 		{
 			WorkerCompensations = new List<InvoiceWorkerCompensation>();
 			EmployerTaxes = new List<PayrollTax>();
@@ -108,7 +108,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 			CalculateAdminFee(payroll);
 
-			CalculateRecurringCharges(payroll);
+			CalculateRecurringCharges(payroll, company);
 			HandleVoidedChecks(voidedPayChecks);
 			CalculateCASUTA(company, payroll.PayDay.Year);
 
@@ -121,14 +121,14 @@ namespace HrMaxx.OnlinePayroll.Models
 			ProcessedOn = DateTime.Now;
 
 			Notes = string.Empty;
-			if (prevInvoices.Any(i => i.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced)))
+			if (prevInvoices.Any(i => i.Status==-1))
 			{
-				Notes = string.Format("Alert: Payment bounced for Invoices #{0}; ", prevInvoices.Where(i => i.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced)).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", "));
+				Notes = string.Format("Alert: Payment bounced for Invoices #{0}; ", prevInvoices.Where(i => i.Status==-1).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", "));
 				Notes += Environment.NewLine;
 			}
-			if (prevInvoices.Any(i => i.Status==InvoiceStatus.Delivered))
+			if (prevInvoices.Any(i => i.Status==3))
 			{
-				Notes += string.Format("Alert: Previous Invoices still only Delivered #{0}; ", prevInvoices.Where(i => i.Status==InvoiceStatus.Delivered).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
+				Notes += string.Format("Alert: Previous Invoices still only Delivered #{0}; ", prevInvoices.Where(i => i.Status==3).Aggregate(string.Empty, (current, m) => current + m.InvoiceNumber + ", ")) + Environment.NewLine;
 			}
 			SpecialRequest = payroll.InvoiceSpecialRequest;
 			CalculateCommission();
@@ -332,9 +332,9 @@ namespace HrMaxx.OnlinePayroll.Models
 			InvoiceDate = payroll.PayDay.Date;
 		}
 
-		private void CalculateRecurringCharges(Payroll payroll)
+		private void CalculateRecurringCharges(Payroll payroll, Company company)
 		{
-			payroll.Company.RecurringCharges.ForEach(rc =>
+			company.RecurringCharges.ForEach(rc =>
 			{
 				var calcAmount = rc.Amount;
 				

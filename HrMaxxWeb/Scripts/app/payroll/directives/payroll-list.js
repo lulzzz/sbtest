@@ -872,6 +872,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.createInvoice = function ($event, payroll) {
 						$event.stopPropagation();
 						var match = $filter('filter')($scope.list, { id: payroll.id })[0];
+						match.invoiceNumber = 0;
 						match.company = $scope.mainData.selectedCompany;
 						payrollRepository.createPayrollInvoice(match, $scope.mainData.selectedCompany).then(function (data) {
 							payroll.invoiceId = data.id;
