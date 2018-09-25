@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.2.81');
+common.constant('version', '1.0.2.82');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -102,6 +102,7 @@ common.constant('ClaimTypes', {
 	EmployeeManageEmployees: 'http://Paxol/Employee/ManageEmployees',
 	EmployeeBulkTerminate: 'http://Paxol/Employee/BulkTerminate',
 	EmployeeSickLeaveExport: 'http://Paxol/Employee/SickLeaveExport',
+	RecalculateSickLeave: 'http://Paxol/Employee/RecalculateSickLeave',
 	EmployeeCopy: 'http://Paxol/Employee/Copy',
 	EmployeeImportExport: 'http://Paxol/Employee/ImportExport',
 	EmployeeVersions: 'http://Paxol/Employee/Versions',
@@ -198,6 +199,7 @@ common.run(function (editableOptions) {
 });
 
 common.config(setConfigPhaseSettings);
+
 
 setConfigPhaseSettings.$inject = ["ngTableFilterConfigProvider"];
 

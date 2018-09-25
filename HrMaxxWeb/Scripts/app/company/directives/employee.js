@@ -43,7 +43,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						editableDeductions: $scope.mainData.hasClaim(ClaimTypes.EmployeeDeductions, 1),
 						editableAccumulations: $scope.mainData.hasClaim(ClaimTypes.EmployeeEditableAccumulatatedPayTypes, 1),
 						showSSN: $scope.mainData.hasClaim(ClaimTypes.EmployeeManageEmployees, 1),
-						showSickLeaveExport: $scope.mainData.hasClaim(ClaimTypes.EmployeeSickLeaveExport,1)
+						showSickLeaveExport: $scope.mainData.hasClaim(ClaimTypes.EmployeeSickLeaveExport, 1),
+						showSickLeaveRecalculate: $scope.mainData.hasClaim(ClaimTypes.RecalculateSickLeave,1)
 				}
 					$scope.showincludeclients = false;
 					$scope.tab = 1;

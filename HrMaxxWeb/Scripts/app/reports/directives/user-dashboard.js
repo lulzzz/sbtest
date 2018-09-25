@@ -1,17 +1,17 @@
 ﻿'use strict';
 
-common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version',
-	function (zionAPI, $timeout, $window, version) {
+common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', '$sce',
+	function (zionAPI, $timeout, $window, version, $sce) {
 		return {
 			restrict: 'E',
 			replace: true,
 			scope: {
 				mainData: "=mainData"
 			},
-			templateUrl: zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version,
+			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version),
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', '$window', 'commonRepository', 'NgTableParams', 'ClaimTypes',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, $window, commonRepository, ngTableParams, ClaimTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', 'commonRepository', 'NgTableParams', 'ClaimTypes',
+				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, commonRepository, ngTableParams, ClaimTypes) {
 					var dataSvc = {
 						isBodyOpen: true,
 						response: null,

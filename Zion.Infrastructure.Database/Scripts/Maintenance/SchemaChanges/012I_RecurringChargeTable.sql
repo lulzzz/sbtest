@@ -188,3 +188,5 @@ BEGIN
 	
 END
 GO
+if not exists(select 'x' from PaxolFeatureClaim where ClaimName='Recalculate Sick Leave')
+insert into PaxolFeatureClaim (FeatureId, ClaimName, ClaimType, AccessLevel) values (4, 'Recalculate Sick Leave', 'http://Paxol/Employee/RecalculateSickLeave', 90);

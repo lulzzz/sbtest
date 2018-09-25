@@ -38,6 +38,7 @@
 		public const string EmployeeManageEmployees = "http://Paxol/Employee/ManageEmployees";
 		public const string EmployeeBulkTerminate = "http://Paxol/Employee/BulkTerminate";
 		public const string EmployeeSickLeaveExport = "http://Paxol/Employee/SickLeaveExport";
+		public const string RecalculateSickLeave = "http://Paxol/Employee/RecalculateSickLeave";
 		public const string EmployeeCopy = "http://Paxol/Employee/Copy";
 		public const string EmployeeImportExport = "http://Paxol/Employee/ImportExport";
 		public const string EmployeeVersions = "http://Paxol/Employee/Versions";
