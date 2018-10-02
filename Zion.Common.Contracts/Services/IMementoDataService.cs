@@ -13,5 +13,6 @@ namespace HrMaxx.Common.Contracts.Services
 		Memento<T> GetMostRecentMementoData<T>(Guid mementoId);
 		List<Memento<T>> GetMementoData<T>();
 		List<object> GetMementos(EntityTypeEnum sourceTypeId, Guid sourceId);
+		
 	}
 }

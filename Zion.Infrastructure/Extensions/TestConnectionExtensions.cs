@@ -30,11 +30,6 @@ namespace HrMaxx.Infrastructure.Extensions
 				{
 					newConnectionString = newConnectionString.Replace("Initial Catalog=Paxol;", "Initial Catalog=PaxolTest;");
 				}
-				else if (newConnectionString.Contains("Initial Catalog=PaxolArchive;"))
-				{
-					newConnectionString = newConnectionString.Replace("Initial Catalog=PaxolArchive;",
-						"Initial Catalog=PaxolTestArchive;");
-				}
 				
 				HrMaxxTrace.TraceInformation("Switching connection:\r\n\t {0}\r\n to integration test connection:\r\n\t{1}\r\n",
 					connectionString, newConnectionString);
@@ -58,11 +53,7 @@ namespace HrMaxx.Infrastructure.Extensions
 				{
 					newConnectionString = newConnectionString.Replace("Initial Catalog=Paxol;", "Initial Catalog=PaxolTest;");
 				}
-				else if (newConnectionString.Contains("Initial Catalog=PaxolArchive;"))
-				{
-					newConnectionString = newConnectionString.Replace("Initial Catalog=PaxolArchive;",
-						"Initial Catalog=PaxolTestArchive;");
-				}
+				
 				HrMaxxTrace.TraceInformation("Switching connection:\r\n\t {0}\r\n to integration test connection:\r\n\t{1}\r\n",
 					connectionStringSettings.ConnectionString, newConnectionString);
 			}

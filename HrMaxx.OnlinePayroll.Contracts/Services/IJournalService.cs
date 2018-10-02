@@ -29,5 +29,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void DeleteExtract(int extractId);
 		
 		void DeleteJournals(List<Journal> toList);
+		void FixMasterExtract<T>(T extract);
 	}
 }

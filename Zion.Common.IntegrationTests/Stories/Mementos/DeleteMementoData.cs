@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Autofac;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Common.Repository.Files;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.TestSupport;
 using NUnit.Framework;
@@ -21,6 +24,7 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 			using (TransactionScopeHelper.Transaction())
 			{
 				var stagingDataSvc = TestLifetimeScope.Resolve<IMementoDataService>();
+				var _fileRepository = TestLifetimeScope.Resolve<IFileRepository>();
 
 				stagingDataSvc.AddMementoData(memento);
 
@@ -28,6 +32,7 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 					stagingDataSvc.GetMostRecentMementoData<SomeTestObjectForSavingValidMemento>(memento.MementoId);
 				Assert.That(savedMemento.Id, Is.EqualTo(testObject.Id));
 				Assert.That(savedMemento.OriginatorTypeName, Is.EqualTo(typeof (SomeTestObjectForSavingValidMemento).FullName));
+				Assert.That(savedMemento.State, Is.EqualTo(memento.State));
 
 				stagingDataSvc.DeleteMementoData<SomeTestObjectForSavingValidMemento>(memento.MementoId);
 
@@ -35,6 +40,9 @@ namespace HrMaxx.Common.IntegrationTests.Stories.Mementos
 					stagingDataSvc.GetMementoData<SomeTestObjectForSavingValidMemento>(memento.MementoId);
 
 				Assert.IsNull(mementoAfterDelete);
+				
+				Assert.Throws<DirectoryNotFoundException>(() => _fileRepository.GetArchiveJson(ArchiveTypes.Mementos.GetDbName(),
+						memento.SourceTypeId.GetDbName() + "\\" + memento.Id.ToString(), savedMemento.Id.ToString()));
 			}
 		}
 

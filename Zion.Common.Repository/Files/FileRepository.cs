@@ -10,13 +10,15 @@ namespace HrMaxx.Common.Repository.Files
 	public class FileRepository : IFileRepository
 	{
 		private readonly string _destinationPath;
+		private readonly string _archivePath;
 		private readonly string _sourcePath;
 		private readonly string _pdfSourcePath;
 		private readonly string _userImagePath;
 
-		public FileRepository(string destinationPath, string sourcePath, string userimagepath)
+		public FileRepository(string destinationPath, string sourcePath, string userimagepath, string archivePath)
 		{
 			_destinationPath = destinationPath;
+			_archivePath = archivePath;
 			_sourcePath = sourcePath;
 			_userImagePath = userimagepath;
 			_pdfSourcePath = _destinationPath + "PDFTemp/";
@@ -73,6 +75,30 @@ namespace HrMaxx.Common.Repository.Files
 		public byte[] GetSourceFileBytesByPath(string documentPath)
 		{
 			return File.ReadAllBytes(_sourcePath + documentPath);
+		}
+
+		public string GetArchiveJson(string rootdirectory, string directory, string fileName)
+		{
+			var filename = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", fileName);
+			return File.ReadAllText(filename);
+		}
+
+		public void SaveArchiveJson(string rootdirectory, string directory, string name, string data)
+		{
+			var invalidChars = Path.GetInvalidFileNameChars();
+
+			name = new string(name
+			.Where(x => !invalidChars.Contains(x))
+			.ToArray());
+			var fileName = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", name);
+			if (File.Exists(fileName))
+			{
+				File.Delete(fileName);
+			}
+			var fileInfo = new FileInfo(fileName);
+			if (fileInfo.Directory != null && !fileInfo.Directory.Exists) 
+				fileInfo.Directory.Create();
+			File.WriteAllText(fileName, data);
 		}
 
 		public string CreateDirectory(string dirName)
@@ -201,6 +227,20 @@ namespace HrMaxx.Common.Repository.Files
 				File.Delete(fileName);
 			}
 			File.WriteAllBytes(fileName, content);
+		}
+
+		public void DeleteArchiveDirectory(string rootDirectory, string directory, string name)
+		{
+			DeleteDirectory(string.Format("{0}{1}\\{2}\\{3}", _archivePath, rootDirectory, directory, name));
+		}
+
+		public void DeleteArchiveFile(string rootDirectory, string directory, string name)
+		{
+			var fileName = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", name);
+			if (File.Exists(fileName))
+			{
+				File.Delete(fileName);
+			}
 		}
 	}
 }

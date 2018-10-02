@@ -17,11 +17,11 @@ namespace HrMaxx.Common.Repository.Mementos
 		{
 		}
 
-		public void SaveMemento(MementoPersistenceDto memento, bool isSubVersion)
+		public MementoPersistenceDto SaveMemento(MementoPersistenceDto memento, bool isSubVersion)
 		{
 			
 				const string sql =
-					@"INSERT INTO Common.Memento(memento, originatortype, version, mementoid, sourcetypeid, createdby, comments, userid) VALUES (@Memento, @OriginatorType, @Version, @MementoId, @SourceTypeId, @CreatedBy, @Comments, @UserId)";
+					@"INSERT INTO Common.Memento( originatortype, version, mementoid, sourcetypeid, createdby, comments, userid) VALUES ( @OriginatorType, @Version, @MementoId, @SourceTypeId, @CreatedBy, @Comments, @UserId); select cast(scope_identity() as int)";
 				const string versionSql =
 					@"SELECT MAX(version) as version FROM Common.Memento WHERE originatortype = @OriginatorType AND mementoid = @MementoId";
 
@@ -51,7 +51,7 @@ namespace HrMaxx.Common.Repository.Mementos
 				}
 
 
-				connection.Execute(sql, new
+				memento.Id = connection.Query<int>(sql, new
 				{
 					memento.Memento,
 					memento.OriginatorType,
@@ -61,24 +61,22 @@ namespace HrMaxx.Common.Repository.Mementos
 					memento.CreatedBy,
 					memento.Comments,
 					memento.UserId
-				});
+				}).Single();
 			}
-				
-				
-			
+			return memento;
+
+
 		}
 
-		public IEnumerable<MementoPersistenceDto> GetMementoData<T>(Guid mementoId)
+		public IEnumerable<MementoPersistenceDto> GetMementoData(Guid mementoId)
 		{
 			
 				const string sql =
-					@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version ASC";
+					@"SELECT Id, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy FROM Common.Memento WHERE MementoId = @MementoId ORDER BY Version ASC";
 			using (var conn = GetConnection())
 			{
-				string originatorType = typeof(T).FullName;
-
 				IEnumerable<MementoPersistenceDto> results = conn.Query<MementoPersistenceDto>(sql,
-					new { OriginatorType = originatorType, MementoId = mementoId });
+					new {  MementoId = mementoId });
 				
 				return results;
 			}
@@ -102,7 +100,7 @@ namespace HrMaxx.Common.Repository.Mementos
 			using (var conn = GetConnection())
 			{
 				const string sql =
-				@"SELECT TOP 1 Id, Memento, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
+				@"SELECT TOP 1 Id, OriginatorType, Version, MementoId, CreatedBy, SourceTypeId, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType AND MementoId = @MementoId ORDER BY Version DESC";
 
 				string originatorType = typeof(T).FullName;
 				
@@ -119,7 +117,7 @@ namespace HrMaxx.Common.Repository.Mementos
 			using (var conn = GetConnection())
 			{
 				const string sql =
-					@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
+					@"SELECT Id, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE OriginatorType = @OriginatorType ORDER BY Version ASC";
 
 				string originatorType = typeof(T).FullName;
 				
@@ -135,10 +133,8 @@ namespace HrMaxx.Common.Repository.Mementos
 			using (var conn = GetConnection())
 			{
 				const string sql =
-									@"SELECT Id, Memento, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
+									@"SELECT Id, OriginatorType, Version, DateCreated, SourceTypeId, CreatedBy, Comments, UserId, MementoId FROM Common.Memento WHERE SourceTypeId = @SourceTypeId and MementoId=@SourceId ORDER BY Version DESC";
 
-				string originatorType = typeof(T).FullName;
-				
 				IEnumerable<MementoPersistenceDto> results = conn.Query<MementoPersistenceDto>(sql,
 					new { SourceTypeId = sourceTypeId, SourceId = sourceId });
 				

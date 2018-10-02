@@ -5,12 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web.UI;
+using System.Xml.Serialization;
 using Autofac;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Common.Repository.Files;
+using HrMaxx.Common.Repository.Mementos;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
@@ -22,6 +25,7 @@ using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
+using HrMaxx.OnlinePayroll.ReadRepository;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Journals;
@@ -111,6 +115,12 @@ namespace SiteInspectionStatus_Utility
 				case 20:
 					SaveRecurringCharges(container);
 					break;
+				case 21:
+					SaveMasterExtractsAsFiles(container);
+					break;
+				case 22:
+					SaveMementosAsFiles(container);
+					break;
 				default:
 					break;
 			}
@@ -118,12 +128,52 @@ namespace SiteInspectionStatus_Utility
 			Console.WriteLine("Utility run finished for ");
 		}
 
+		private static void SaveMasterExtractsAsFiles(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var reader = scope.Resolve<IReadRepository>();
+				var filerepository = scope.Resolve<IFileRepository>();
+				var extracts = readerservice.GetExtracts();
+				extracts.ForEach(e =>
+				{
+					var extract = reader.GetQueryData<List<KeyValueResult>>(string.Format("select MasterExtractId as [Key], Extract as Value from PaxolArchive.dbo.MasterExtract where MasterExtractId={0} for xml path('KeyValueResult'), elements, type, root('KeyValueResultList')", e.Id), new XmlRootAttribute("KeyValueResultList"));
+					filerepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString(), extract.First().Value);
+					
+				});
+			}
+
+		}
+		private static void SaveMementosAsFiles(IContainer container)
+		{
+			Console.WriteLine(DateTime.Now.TimeOfDay);
+			using (var scope = container.BeginLifetimeScope())
+			{
+				
+				var reader = scope.Resolve<IReadRepository>();
+				var filerepository = scope.Resolve<IFileRepository>();
+				var mementos = reader.GetQueryData<List<KeyValueResult>>("select distinct sourceTypeId as [Key], MementoId as Value from PaxolArchive.Common.Memento for xml path('KeyValueResult'), elements, type, root('KeyValueResultList')", new XmlRootAttribute("KeyValueResultList"));
+				var remaining = mementos.Count;
+				Console.WriteLine(remaining);
+				mementos.ForEach(e =>
+				{
+					var queryy = "select * from PaxolArchive.Common.Memento where MementoId='" + e.Value + "';";
+					var mems = reader.GetQueryData<MementoPersistenceDto>(queryy);
+					mems.ForEach(m => filerepository.SaveArchiveJson(ArchiveTypes.Mementos.GetDbName(), ((EntityTypeEnum)e.Key).GetDbName() + "\\" + e.Value, m.Id.ToString(), m.Memento));
+					
+					remaining--;
+				});
+			}
+			Console.WriteLine(DateTime.Now.TimeOfDay);
+
+		}
+
 		private static void SaveRecurringCharges(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
 				var readerservice = scope.Resolve<IReaderService>();
-				var companyservice = scope.Resolve<ICompanyService>();
 				var companyrepository = scope.Resolve<ICompanyRepository>();
 				var payrollrepository = scope.Resolve<IPayrollRepository>();
 				var company = readerservice.GetCompanies().Where(c => c.Contract.InvoiceSetup.RecurringCharges.Any()).ToList();

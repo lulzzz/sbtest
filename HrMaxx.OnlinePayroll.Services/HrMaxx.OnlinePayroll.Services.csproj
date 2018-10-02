@@ -76,7 +76,6 @@
   <ItemGroup>
     <Compile Include="ACH\ACHService.cs" />
     <Compile Include="Company\CompanyService.cs" />
-    <Compile Include="Dashboard\DashboardService.cs" />
     <Compile Include="EventHandlers\ConfirmPayrollEventHandler.cs" />
     <Compile Include="EventHandlers\PayrollEventHandler.cs" />
     <Compile Include="EventHandlers\CompanyEventHandler.cs" />

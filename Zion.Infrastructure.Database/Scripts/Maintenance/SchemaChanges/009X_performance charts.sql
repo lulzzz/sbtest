@@ -123,4 +123,5 @@ BEGIN
 END
 GO
 
-delete from AspNetUsers where id='5a742574-673d-40c5-8e89-6d2023f3bca2';
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[AspNetUsers]') AND type in (N'U'))
+	delete from AspNetUsers where id='5a742574-673d-40c5-8e89-6d2023f3bca2';

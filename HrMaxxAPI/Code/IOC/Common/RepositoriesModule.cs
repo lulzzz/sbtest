@@ -20,8 +20,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 		{
 			string _connectionString =
 				ConfigurationManager.ConnectionStrings["HrMaxx"].ConnectionString.ConvertToTestConnectionStringAsRequired();
-			string _connectionStringArchive =
-				ConfigurationManager.ConnectionStrings["Archive"].ConnectionString.ConvertToTestConnectionStringAsRequired();
+			
 			string _commonConnectionString =
 				ConfigurationManager.ConnectionStrings["CommonEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 			string _userConnectionString =
@@ -29,6 +28,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 			
 
 			string _fileDestinationPath = ConfigurationManager.AppSettings["FilePath"];
+			string _archiveDestinationPath = ConfigurationManager.AppSettings["ArchiveFilePath"];
 			string _fileSourcePath = ConfigurationManager.AppSettings["TmpUploadPath"];
 
 			string _uamUrl = ConfigurationManager.AppSettings["UAMUrl"];
@@ -51,30 +51,24 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.Named<SqlConnection>("readConnection")
 				.InstancePerLifetimeScope();
 
-			builder.Register(cont =>
-			{
-				var archiveConnection = new SqlConnection(_connectionStringArchive);
-				return archiveConnection;
-			})
-				.Named<SqlConnection>("archiveConnection")
-				.InstancePerLifetimeScope();
-
+			
 			builder.RegisterType<StagingDataRepository>()
 				.As<IStagingDataRepository>()
 				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
 			builder.RegisterType<MementoDataRepository>()
 				.As<IMementoDataRepository>()
 				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
 			var namedParameters = new List<NamedParameter>();
 			namedParameters.Add(new NamedParameter("destinationPath", _fileDestinationPath));
+			namedParameters.Add(new NamedParameter("archivePath", _archiveDestinationPath));
 			namedParameters.Add(new NamedParameter("sourcePath", _fileSourcePath));
 			namedParameters.Add(new NamedParameter("userimagepath", string.Empty));
 

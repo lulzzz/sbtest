@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Common.Models.Enum;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
@@ -26,10 +28,12 @@ namespace HrMaxx.OnlinePayroll.ReadServices
   {
 	  private readonly IReadRepository _reader;
 		private readonly IStagingDataService _stagingDataService;
-	  public ReaderService(IReadRepository reader, IStagingDataService stagingDataService)
+	  private readonly IFileRepository _fileRepository;
+	  public ReaderService(IReadRepository reader, IStagingDataService stagingDataService, IFileRepository fileRepository)
 	  {
 		  _reader = reader;
 		  _stagingDataService = stagingDataService;
+		  _fileRepository = fileRepository;
 	  }
 
 	  public T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList)
@@ -727,14 +731,25 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
+	  private T GetObjectFromFile<T>(string rootdirectory, string directory, string name)
+	  {
+		  var data = _fileRepository.GetArchiveJson(rootdirectory, directory,  name);
+		  if (string.IsNullOrWhiteSpace(data))
+			  return default (T);
+		  return JsonConvert.DeserializeObject<T>(data);
+	  }
 	  public MasterExtract GetExtract(int id)
 	  {
 			try
 			{
 				var paramList = new List<FilterParam> { new FilterParam() { Key = "id", Value = id.ToString() } };
 				var result = GetDataFromStoredProc<List<MasterExtract>, List<Models.JsonDataModel.MasterExtractJson>>(
-					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList"));
-				return result.FirstOrDefault();
+					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList")).FirstOrDefault();
+				if (result != null)
+				{
+					result.Extract = GetObjectFromFile<Extract>(ArchiveTypes.Extract.GetDbName(), string.Empty, result.Id.ToString());
+				}
+				return result;
 			}
 			catch (Exception e)
 			{
@@ -982,8 +997,12 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			{
 				var paramList = new List<FilterParam> { new FilterParam() { Key = "id", Value = id.ToString() } };
 				var result = GetDataFromStoredProc<List<ACHMasterExtract>, List<Models.JsonDataModel.MasterExtractJson>>(
-					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList"));
-				return result.FirstOrDefault();
+					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList")).FirstOrDefault();
+				if (result != null)
+				{
+					result.Extract = GetObjectFromFile<ACHExtract>(ArchiveTypes.Extract.GetDbName(), string.Empty, result.Id.ToString());
+				}
+				return result;
 			}
 			catch (Exception e)
 			{
@@ -1002,7 +1021,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 					"GetExtracts", paramList, new XmlRootAttribute("MasterExtractList"));
 				var me = result.FirstOrDefault();
 				if (me != null)
-					return JsonConvert.DeserializeObject<CommissionsExtract>(me.Extract);
+				{
+					return GetObjectFromFile<CommissionsExtract>(ArchiveTypes.Extract.GetDbName(), string.Empty, me.Id.ToString());
+				}
+					//return JsonConvert.DeserializeObject<CommissionsExtract>(me.Extract);
 				return null;
 			}
 			catch (Exception e)

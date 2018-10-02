@@ -634,6 +634,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			try
 			{
 				_journalRepository.DeleteJournals(extractId);
+				_fileRepository.DeleteArchiveFile(ArchiveTypes.Extract.GetDbName(), string.Empty, extractId.ToString());
 			}
 			catch (Exception)
 			{
@@ -772,6 +773,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			}
 		}
 
+		public void FixMasterExtract<T>(T extract)
+		{
+			
+		}
 		public MasterExtract FileTaxes(Extract extract, string fullName)
 		{
 			try
@@ -794,6 +799,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 							extract.Data.Hosts.SelectMany(h => h.PayCheckAccumulation.PayCheckList.Select(pc => pc.Id)).ToList(),
 							extract.Data.Hosts.SelectMany(h => h.PayCheckAccumulation.VoidedPayCheckList.Select(pc => pc.Id)).ToList(),
 							new List<Journal>());
+						
 					}
 					else if (extract.Report.ReportName.Equals("HostWCReport"))
 					{
@@ -801,10 +807,13 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						masterExtract = _journalRepository.SaveMasterExtract(masterExtract,
 							extract.Data.Hosts.SelectMany(h => h.PayChecks.Select(pc => pc.Id)).ToList(),new List<int>(),
 							new List<Journal>());
+						
 					}
 						
 					else 
 						masterExtract = CreateTaxPayments(extract, fullName, masterExtract);
+
+					_fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, masterExtract.Id.ToString(), JsonConvert.SerializeObject(extract));
 					txn.Complete();
 				}
 				return masterExtract;
@@ -847,9 +856,9 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						payCheckIds.AddRange(host.PayCheckAccumulation.PayCheckList.Select(pc=>pc.Id));
 						voidedCheckIds.AddRange(host.PayCheckAccumulation.VoidedPayCheckList.Select(pc=>pc.Id));
 					}
-					
 
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds, journalList);
+					
 					return masterExtract;
 				
 			}
@@ -917,6 +926,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					//masterExtract.Journals = journals;
 					
 					masterExtract = _journalRepository.SaveMasterExtract(masterExtract, payCheckIds, voidedCheckIds, journalList);
+					
 					return masterExtract;
 				
 			}

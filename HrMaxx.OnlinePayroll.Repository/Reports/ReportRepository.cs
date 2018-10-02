@@ -1,71 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml.Serialization;
-using Dapper;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
-using HrMaxx.Infrastructure.Repository;
-using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using Newtonsoft.Json;
-using CompanyPayrollCube = HrMaxx.OnlinePayroll.Models.CompanyPayrollCube;
 using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
 
 namespace HrMaxx.OnlinePayroll.Repository.Reports
 {
-	public class ReportRepository : BaseDapperRepository, IReportRepository
+	public class ReportRepository : IReportRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		private string _sqlCon;
 
-		public ReportRepository(IMapper mapper, OnlinePayrollEntities dbContext, string sqlCon, DbConnection connection):base(connection)
+		public ReportRepository(IMapper mapper, OnlinePayrollEntities dbContext, string sqlCon)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
 			_sqlCon = sqlCon;
 		}
 		
-		public PayrollAccumulation GetCompanyPayrollCube(ReportRequest request)
-		{
-			using (var conn = GetConnection())
-			{
-				const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
-				var dbval = conn.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { request.CompanyId, request.Year }).AsQueryable();
-				if (request.Quarter > 0)
-					dbval = dbval.Where(cpc => cpc.Quarter == request.Quarter);
-				else if (request.Month > 0)
-					dbval = dbval.Where(cpc => cpc.Month == request.Month);
-				var result = dbval.ToList();
-				if (result.Any())
-					return _mapper.Map<Models.JsonDataModel.CompanyPayrollCube, CompanyPayrollCube>(result.First()).Accumulation;
-				return null;
-			}
-			
-		}
-
-		public List<Models.CompanyPayrollCube> GetCompanyCubesForYear(Guid companyId, int year)
-		{
-			using (var conn = GetConnection())
-			{
-				const string sql = "select * from CompanyPayrollCube Where CompanyId=@CompanyId and Year=@Year";
-				var cubes = conn.Query<Models.JsonDataModel.CompanyPayrollCube>(sql, new { companyId, year });
-				return _mapper.Map<List<Models.JsonDataModel.CompanyPayrollCube>, List<Models.CompanyPayrollCube>>(cubes.ToList());
-			}
-			
-		}
-
 		public List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest)
 		{
 			return getDashboardData(dashboardRequest.Report, dashboardRequest.Host, dashboardRequest.Role, dashboardRequest.StartDate, dashboardRequest.EndDate, dashboardRequest.Criteria, dashboardRequest.OnlyActive);
@@ -169,7 +133,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			}
 		}
 
-		public void SaveACHExtract(ACHExtract extract, string fullName)
+		public Models.MasterExtract SaveACHExtract(ACHExtract extract, string fullName)
 		{
 			var transactions = extract.Data.Hosts.SelectMany(h => h.ACHTransactions).ToList();
 			var dbExtract = new Models.DataModel.MasterExtract
@@ -188,7 +152,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			};
 			_dbContext.MasterExtracts.Add(dbExtract);
 			_dbContext.SaveChanges();
-			SaveExtractDetails(dbExtract.Id, JsonConvert.SerializeObject(extract));
+			//SaveExtractDetails(dbExtract.Id, JsonConvert.SerializeObject(extract));
 			transactions.ForEach(t => _dbContext.ACHTransactionExtracts.Add(new ACHTransactionExtract
 			{
 				Id = 0,
@@ -196,35 +160,11 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 				ACHTransactionId = t.Id
 			}));
 			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.MasterExtract, Models.MasterExtract>(dbExtract);
 
 		}
 
-		private void SaveExtractDetails(int extractId, string extract)
-		{
-			using (var conn = GetConnection())
-			{
-				const string selectSql =
-				@"SELECT MasterExtractId FROM MasterExtract WHERE MasterExtractId=@extractId";
-				
-				dynamic exists =
-						conn.Query(selectSql, new { extractId }).FirstOrDefault();
-				if (exists != null)
-				{
-					conn.Execute("delete from MasterExtract where MasterExtractId=@extractId", new { extractId });
-				}
-				const string sql =
-					@"INSERT INTO dbo.MasterExtract(MasterExtractId, Extract) VALUES (@extractId, @extract)";
-				conn.Execute(sql, new
-				{
-					extractId,
-					extract
-				});
-				
-			}
-			
-		}
 		
-
 		public Models.MasterExtract SaveCommissionExtract(CommissionsExtract extract, string fullName)
 		{
 			var invoices = extract.Data.SalesReps.SelectMany(h => h.Commissions).ToList();
@@ -244,7 +184,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Reports
 			};
 			_dbContext.MasterExtracts.Add(dbExtract);
 			_dbContext.SaveChanges();
-			SaveExtractDetails(dbExtract.Id, JsonConvert.SerializeObject(extract));
+			//SaveExtractDetails(dbExtract.Id, JsonConvert.SerializeObject(extract));
 			invoices.ForEach(t => _dbContext.CommissionExtracts.Add(new CommissionExtract
 			{
 				Id = 0,

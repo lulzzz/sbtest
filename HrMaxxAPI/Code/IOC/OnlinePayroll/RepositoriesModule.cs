@@ -7,7 +7,6 @@ using HrMaxx.OnlinePayroll.Models.DataModel;
 using HrMaxx.OnlinePayroll.ReadRepository;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
-using HrMaxx.OnlinePayroll.Repository.Dashboard;
 using HrMaxx.OnlinePayroll.Repository.Host;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
@@ -22,9 +21,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 		{
 			string _connectionString =
 				ConfigurationManager.ConnectionStrings["HrMaxx"].ConnectionString.ConvertToTestConnectionStringAsRequired();
-			string _connectionStringArchive =
-				ConfigurationManager.ConnectionStrings["Archive"].ConnectionString.ConvertToTestConnectionStringAsRequired();
-
+			
 			string _onlinePayrollConnectionString =
 				ConfigurationManager.ConnectionStrings["OnlinePayrollEntities"].ConnectionString.ConvertToTestConnectionStringAsRequired();
 			string _usTaxTablesConnectionString =
@@ -43,13 +40,7 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			var sqlCon = new NamedParameter("sqlCon", _connectionString);
 
-			builder.Register(cont =>
-			{
-				var archiveConnection = new SqlConnection(_connectionStringArchive);
-				return archiveConnection;
-			})
-				.Named<SqlConnection>("archiveConnection")
-				.InstancePerLifetimeScope();
+			
 
 			builder.Register(cont =>
 			{
@@ -107,23 +98,16 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
-			builder.RegisterType<DashboardRepository>()
-				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
-				.As<IDashboardRepository>()
-				.InstancePerLifetimeScope()
-				.PropertiesAutowired();
-
 			builder.RegisterType<ReportRepository>()
 				.WithParameter(sqlCon)
-				.WithParameter((param, cont) => param.Name == "connection",
-					(param, cont) => cont.ResolveNamed<SqlConnection>("archiveConnection"))
 				.As<IReportRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 
 			builder.RegisterType<ReadRepository>()
 				.WithParameter(sqlCon)
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IReadRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

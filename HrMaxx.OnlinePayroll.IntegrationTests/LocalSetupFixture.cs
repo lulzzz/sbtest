@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.IntegrationTests
 			base.CreateDatabase();
 		}
 
-		protected override void ConfigureIOC(ContainerBuilder extBuilder = null)
+		protected override IContainer ConfigureIOC(ContainerBuilder extBuilder = null)
 		{
 			XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.xml"));
 
@@ -39,14 +39,15 @@ namespace HrMaxx.OnlinePayroll.IntegrationTests
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.MappingModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.ServicesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.OnlinePayroll.CommandHandlerModule>();
-			base.ConfigureIOC(builder);
-			
+			var container = base.ConfigureIOC(builder);
+			ProbeServiceBus(container);
+			return container;
 		}
 		private static void ProbeServiceBus(IContainer container)
 		{
 			var bus = container.Resolve<IServiceBus>();
 			bus.Probe();
-			bus.WriteIntrospectionToFile(String.Join(@"\", HttpContext.Current.Server.MapPath(@"~\logs"), "HrMaxx.API.probe"));
+			
 		}
 	}
 }

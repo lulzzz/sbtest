@@ -14,7 +14,7 @@ namespace HrMaxx.Common.IntegrationTests
 		//	base.CreateDatabase();
 		//}
 
-		protected override void ConfigureIOC(ContainerBuilder extBuilder = null)
+		protected override IContainer ConfigureIOC(ContainerBuilder extBuilder = null)
 		{
 			var builder = new ContainerBuilder();
 			builder.RegisterModule<ServicesModule>();
@@ -27,7 +27,7 @@ namespace HrMaxx.Common.IntegrationTests
 
 			builder.RegisterModule<BusModule>();
 
-			base.ConfigureIOC(builder);
+			return base.ConfigureIOC(builder);
 		}
 	}
 }

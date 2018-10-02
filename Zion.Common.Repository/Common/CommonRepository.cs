@@ -218,7 +218,7 @@ namespace HrMaxx.Common.Repository.Common
 		public void UpdateDBStats()
 		{
 			const string sql = "exec sp_updatestats;";
-			const string archivesql = "exec paxolarchive.dbo.sp_updatestats;";
+			
 			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(sql))
@@ -228,9 +228,6 @@ namespace HrMaxx.Common.Repository.Common
 					cmd.Connection = con;
 					con.Open();
 					cmd.ExecuteNonQuery();
-					cmd.CommandText = archivesql;
-					cmd.ExecuteNonQuery();
-					
 					con.Close();
 				}
 			}

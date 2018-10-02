@@ -28,8 +28,7 @@ namespace HrMaxx.OnlinePayroll.IntegrationTests.Stories.ConfirmPayroll
 		[Test]
 		public void SavePhotoCheckList_PhotoCheckListDoesNotExist()
 		{
-			using (TransactionScopeHelper.Transaction())
-			{
+			
 				new Story("Confirm 20 PEO Payrolls")
 					.InOrderTo("Save the Payrolls in a sequence")
 					.AsA("User")
@@ -39,7 +38,7 @@ namespace HrMaxx.OnlinePayroll.IntegrationTests.Stories.ConfirmPayroll
 					.When(PayrollsConfirmed)
 					.Then(PayrollsConfirmedCorrectly)
 					.ExecuteWithReport(MethodBase.GetCurrentMethod());
-			}
+			
 		}
 
 		public void ProcessedPayrolls()
@@ -49,7 +48,7 @@ namespace HrMaxx.OnlinePayroll.IntegrationTests.Stories.ConfirmPayroll
 				var _readerService = scope.Resolve<IReaderService>();
 				var _payrollService = scope.Resolve<IPayrollService>();
 
-				originalPayrolls = _readerService.GetPayrolls(null, startDate: new DateTime(2018,1,1).Date).Where(p=>p.PEOASOCoCheck).OrderByDescending(p => p.PayDay).Take(20).ToList();
+				originalPayrolls = _readerService.GetPayrolls(null, startDate: new DateTime(2018,1,1).Date, endDate: new DateTime(2018,1,10).Date).Where(p=>p.PEOASOCoCheck).OrderByDescending(p => p.PayDay).Take(1).ToList();
 				originalPayrolls.ForEach(p =>
 				{
 					p.Id = CombGuid.Generate();

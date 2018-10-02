@@ -1,4 +1,5 @@
-﻿
+﻿IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[AspNetUsers]') AND type in (N'U'))
+begin
   insert into AspNetRoles values(100, 'SuperUser1');
   insert into AspNetRoles values(90, 'Master1');
   insert into AspNetRoles values(70, 'CorpStaff1');
@@ -25,7 +26,7 @@
   update AspNetRoles set  [Name]='CorpStaff' where Id=70;
   update AspNetRoles set  [Name]='Master' where Id=90;
   update AspNetRoles set  [Name]='SuperUser' where Id=100;
-
+end
   update News set AudienceScope=90 where AudienceScope=1;
 
   IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_PaxolFeatureClaim_PaxolFeature]') AND parent_object_id = OBJECT_ID(N'[dbo].[PaxolFeatureClaim]'))
@@ -156,7 +157,7 @@ insert into PaxolFeatureClaim (FeatureId, ClaimName, ClaimType, AccessLevel) val
 insert into PaxolFeatureClaim (FeatureId, ClaimName, ClaimType, AccessLevel) values (12, 'Account Receivable', 'http://Paxol/Dashboard/AccountReceivable', 70);
 insert into PaxolFeatureClaim (FeatureId, ClaimName, ClaimType, AccessLevel) values (12, 'Performance', 'http://Paxol/Dashboard/Performance', 70);
 
-
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[AspNetUsers]') AND type in (N'U'))
 insert into AspNetUserClaims(userId, ClaimType, ClaimValue)
 select u.Id,  c.claimtype, 1
 from AspNetUsers u, AspNetUserRoles ur, AspNetRoles r, paxolfeatureclaim c

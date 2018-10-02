@@ -1,25 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using Dapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Infrastructure;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using Newtonsoft.Json;
 using XmlSerializer = System.Xml.Serialization.XmlSerializer;
 
 namespace HrMaxx.OnlinePayroll.ReadRepository
 {
-	public class ReadRepository: IReadRepository
+	public class ReadRepository : BaseDapperRepository, IReadRepository
 	{
 		private readonly IMapper _mapper;
 		private string _sqlCon;
 
-		public ReadRepository(IMapper mapper, string sqlCon)
+		public ReadRepository(IMapper mapper, string sqlCon, DbConnection connection)
+			: base(connection)
 		{
 			_mapper = mapper;
 			_sqlCon = sqlCon;
@@ -34,6 +38,34 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 					cmd.CommandType = CommandType.StoredProcedure;
 					paramList.Where(p=>!string.IsNullOrWhiteSpace(p.Key) && !string.IsNullOrWhiteSpace(p.Value)).ToList()
 									.ForEach(p => cmd.Parameters.AddWithValue(string.Format("@{0}", p.Key), p.Value));
+					cmd.Connection = con;
+					cmd.CommandTimeout = 0;
+					con.Open();
+
+					var data = string.Empty;
+					using (var reader = cmd.ExecuteXmlReader())
+					{
+						var sb = new StringBuilder();
+
+						while (reader.Read())
+							sb.AppendLine(reader.ReadOuterXml());
+
+						data = sb.ToString();
+					}
+					con.Close();
+					return data;
+				}
+			}
+		}
+
+		private string GetQueryData(string query)
+		{
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand(query))
+				{
+					cmd.CommandType = CommandType.Text;
+					
 					cmd.Connection = con;
 					cmd.CommandTimeout = 0;
 					con.Open();
@@ -141,6 +173,23 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 			}
 			
 			
+		}
+		public T GetQueryData<T>(string query , XmlRootAttribute rootAttribute)
+		{
+			var data = GetQueryData(query);
+			return Deserialize<T>(data, rootAttribute);
+
+		}
+
+		public List<T> GetQueryData<T>(string query)
+		{
+			using (var conn = GetConnection())
+			{
+				
+				IEnumerable<T> results = conn.Query<T>(query );
+
+				return results.ToList();
+			}
 		}
 	}
 }

@@ -75,7 +75,7 @@ namespace HrMaxx.TestSupport
 			return TestInfrastructure.GetSolutionRoot();
 		}
 
-		protected virtual void ConfigureIOC(ContainerBuilder extBuilder = null)
+		protected virtual IContainer ConfigureIOC(ContainerBuilder extBuilder = null)
 		{
 			ContainerBuilder builder = extBuilder ?? new ContainerBuilder();
 			builder.RegisterModule<MapperModule>();
@@ -83,6 +83,7 @@ namespace HrMaxx.TestSupport
 			IContainer container = builder.Build();
 
 			TestLifetimeScopeProvider.Init(container, null);
+			return container;
 		}
 	}
 }

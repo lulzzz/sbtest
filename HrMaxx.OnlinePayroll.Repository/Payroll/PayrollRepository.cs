@@ -196,22 +196,26 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 						p.Id = conn.Query<int>(insertpayment, p).Single();
 					});
 					strLog.AppendLine("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
-					var mc1s = JsonConvert.DeserializeObject<List<MiscFee>>(pi.MiscCharges);
-					payrollInvoice.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
+					if (!string.IsNullOrWhiteSpace(pi.MiscCharges))
 					{
-						var mc1 = mc1s.FirstOrDefault(m => m.RecurringChargeId == mc.RecurringChargeId);
-						if(mc1==null)
-							conn.Execute(updateRecurringChargeClaimed,
-								new {Id = mc.RecurringChargeId, Claimed = mc.Amount});
-						else if(mc1.Amount!=mc.Amount)
+						var mc1s = JsonConvert.DeserializeObject<List<MiscFee>>(pi.MiscCharges);
+						payrollInvoice.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
 						{
-							conn.Execute(updateRecurringChargeClaimed,
-								new { Id = mc.RecurringChargeId, Claimed = mc.Amount-mc1.Amount });
-						}
-					});
-					mc1s.Where(m1=>payrollInvoice.MiscCharges.All(mc1 => mc1.RecurringChargeId != m1.RecurringChargeId)).ToList().ForEach(
-						m1 => conn.Execute(updateRecurringChargeClaimed,
-							new { Id = m1.RecurringChargeId, Claimed = -1*m1.Amount  }));
+							var mc1 = mc1s.FirstOrDefault(m => m.RecurringChargeId == mc.RecurringChargeId);
+							if (mc1 == null)
+								conn.Execute(updateRecurringChargeClaimed,
+									new { Id = mc.RecurringChargeId, Claimed = mc.Amount });
+							else if (mc1.Amount != mc.Amount)
+							{
+								conn.Execute(updateRecurringChargeClaimed,
+									new { Id = mc.RecurringChargeId, Claimed = mc.Amount - mc1.Amount });
+							}
+						});
+						mc1s.Where(m1 => payrollInvoice.MiscCharges.All(mc1 => mc1.RecurringChargeId != m1.RecurringChargeId)).ToList().ForEach(
+							m1 => conn.Execute(updateRecurringChargeClaimed,
+								new { Id = m1.RecurringChargeId, Claimed = -1 * m1.Amount }));
+					}
+					
 					
 					return _mapper.Map<Models.DataModel.PayrollInvoice, Models.PayrollInvoice>(mapped);
 				}
@@ -627,10 +631,9 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 
 		public void DeletePayroll(Models.Payroll payroll)
 		{
-			//const string delete = @"if dbo.CanDeletePayroll(@PayrollId)=1 begin delete from PaxolArchive.Common.Memento where MementoId in (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(pc.Id, 12), SPACE(1), '0')) as uniqueidentifier) from PayrollPayCheck pc where PayrollId=@PayrollId); delete from journal where PayrollPayCheckId in (select id from PayrollPayCheck where PayrollId=@PayrollId);delete from PayrollPayCheck where PayrollId=@PayrollId; delete from Payroll where Id=@PayrollId;end else raiserror('This Payroll cannot be delete',16,1);";
 			const string checkCanDelete = "select dbo.CanDeletePayroll(@PayrollId) as candelete";
 			const string deletememento =
-				"delete from PaxolArchive.Common.Memento where MementoId = (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(@Id, 12), SPACE(1), '0')) as uniqueidentifier));";
+				"delete from Common.Memento where MementoId = (select cast(('00000007-0000-0000-0000-' + REPLACE(STR(@Id, 12), SPACE(1), '0')) as uniqueidentifier));";
 			const string deletejournals = "delete from journal where PayrollPayCheckId = @Id;";
 			const string deletepaycheckcomps = "delete from PayCheckCompensation where PayCheckId=@Id; ";
 			const string deletepaycheckdeds = "delete from PayCheckDeduction where PayCheckId=@Id; ";

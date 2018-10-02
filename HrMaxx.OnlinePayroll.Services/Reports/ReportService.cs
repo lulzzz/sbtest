@@ -524,7 +524,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					var me = _reportRepository.SaveCommissionExtract(extract, fullName);	
+					var me = _reportRepository.SaveCommissionExtract(extract, fullName);
+					_fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, me.Id.ToString(), JsonConvert.SerializeObject(extract));
 					txn.Complete();
 					return me;
 				}
@@ -1685,8 +1686,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						Filename = string.Format("CBT-ACH-Extract-{0}.txt", DateTime.Now.ToString("MM/dd/yyyy")),
 						MimeType = "application/octet-stream"
 					};
-					_reportRepository.SaveACHExtract(extract, fullName);
-					
+					var me = _reportRepository.SaveACHExtract(extract, fullName);
+					_fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, me.Id.ToString(), JsonConvert.SerializeObject(extract));
 					return extract;
 				
 			}

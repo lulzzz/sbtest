@@ -1721,7 +1721,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				
 				var company = fetchCompany ? _readerService.GetCompany(payroll.Company.Id) : payroll.Company;
-				if (company.RecurringCharges.Any())
+				if (company.RecurringCharges!=null && company.RecurringCharges.Any())
 				{
 					company.RecurringCharges = _readerService.GetCompanyRecurringCharges(payroll.Company.Id);
 				}
@@ -3074,7 +3074,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if (d.AnnualMax.HasValue)
 				{
 					if (ytdVal + d.Amount > d.AnnualMax.Value)
-						d.Amount = Math.Max(0, d.AnnualMax.Value - d.Amount);
+						d.Amount = Math.Max(0, d.AnnualMax.Value - ytdVal);
 				}
 				
 				if (d.Amount < 0)
@@ -3833,6 +3833,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					Log.Info("Delete startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_payrollRepository.DeletePayroll(payroll);
+					payroll.PayChecks.ForEach(pc =>
+					{
+						_fileRepository.DeleteArchiveDirectory(ArchiveTypes.Mementos.GetDbName(), EntityTypeEnum.PayCheck.GetDbName(), string.Format("{0}-0000-0000-0000-{1}", ((int)EntityTypeEnum.PayCheck).ToString().PadLeft(8, '0'),
+					pc.Id.ToString().PadLeft(12, '0')));
+					});
 					Log.Info("delete ended" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_taxationService.RefreshPEOMaxCheckNumber();
 					txn.Complete();

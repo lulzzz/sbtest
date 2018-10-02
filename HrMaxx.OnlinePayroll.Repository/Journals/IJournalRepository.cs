@@ -16,8 +16,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 
 		MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Journal> journalList);
 		
-		MasterExtract FixMasterExtract(MasterExtract masterExtract);
-		
 		List<Journal> GetJournalListForPositivePay(Guid? companyId, DateTime startDate, DateTime endDate);
 		void FixMasterExtractPayCheckMapping(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds);
 		void DeleteJournals(int journals);

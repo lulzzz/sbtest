@@ -6,8 +6,8 @@ namespace HrMaxx.Common.Repository.Mementos
 {
 	public interface IMementoDataRepository
 	{
-		void SaveMemento(MementoPersistenceDto memento, bool isSubVersion);
-		IEnumerable<MementoPersistenceDto> GetMementoData<T>(Guid mementoId);
+		MementoPersistenceDto SaveMemento(MementoPersistenceDto memento, bool isSubVersion);
+		IEnumerable<MementoPersistenceDto> GetMementoData(Guid mementoId);
 		void DeleteMementoData<T>(Guid mementoId);
 		MementoPersistenceDto GetMostRecentMemento<T>(Guid mementoId);
 		IEnumerable<MementoPersistenceDto> GetMementoData<T>();

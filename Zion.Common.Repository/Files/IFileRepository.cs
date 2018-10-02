@@ -9,12 +9,17 @@ namespace HrMaxx.Common.Repository.Files
 		void DeleteDestinationFile(string file);
 		void DeleteFile(string file);
 		void DeleteFiles(List<string> files);
+		void DeleteArchiveFile(string directory, string name, string toString);
+
 		void MoveFile(string source, string destination);
 		void MovePDFFile(string source, string destination);
 		string GetDocumentLocation(string documentName);
 		byte[] GetFile(string documentName);
 		byte[] GetFileBytesByPath(string documentPath);
 		byte[] GetSourceFileBytesByPath(string documentPath);
+
+		string GetArchiveJson(string rootdirectory, string directory, string fileName);
+		void SaveArchiveJson(string rootdirectory, string directory, string fileName, string data);
 
 		string CreateDirectory(string dirName);
 		void DeleteDirectory(string dirName);
@@ -29,5 +34,7 @@ namespace HrMaxx.Common.Repository.Files
 		void SaveFile(Guid id, string documentExtension, byte[] file);
 		void SaveFile(string directory, string name, string extension, string content);
 		void SaveFile(string directory, string name, string extension, byte[] file);
+
+		void DeleteArchiveDirectory(string rootDirectory, string directory, string name);
 	}
 }
