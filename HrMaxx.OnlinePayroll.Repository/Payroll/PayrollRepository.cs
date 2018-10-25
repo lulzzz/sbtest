@@ -235,6 +235,24 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
+		public void SaveInvoiceRecurringCharge(List<InvoiceRecurringCharge> list)
+		{
+			const string sql = "if not exists(select 'x' from invoicerecurringcharge where invoiceid=@InvoiceId and Recurringchargeid=@RecurringChargeId) insert into invoicerecurringcharge(InvoiceId, CompanyId, InvoiceNumber, RecurringChargeId, Description, Amount, Rate, Claimed) values(@InvoiceId, @CompanyId, @InvoiceNumber, @RecurringChargeId, @Description, @Amount, @Rate, @Claimed);";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, list);
+			}
+		}
+
+		public List<InvoiceRecurringCharge> GetRecurringChargeToUpdate()
+		{
+			const string sql = "select * from InvoiceRecurringCharge";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<InvoiceRecurringCharge>(sql).ToList();
+			}
+		}
+
 
 		public void DeletePayrollInvoice(Guid invoiceId, List<MiscFee> miscCharges)
 		{

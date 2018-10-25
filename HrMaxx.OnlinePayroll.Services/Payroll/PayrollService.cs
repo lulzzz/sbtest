@@ -150,11 +150,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								pc1.OvertimeAmount = Math.Round(pc1.OvertimeHours * pc1.PayCode.HourlyRate * overtimequotiant, 2,
 									MidpointRounding.AwayFromZero);
 								pc1.YTD =
-									Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.Amount) + pc1.Amount, 2,
+									Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc1.Amount, 2,
 										MidpointRounding.AwayFromZero);
 								pc1.YTDOvertime =
 									Math.Round(
-										previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.Overtime) + pc1.OvertimeAmount,
+										previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc1.OvertimeAmount,
 										2, MidpointRounding.AwayFromZero);
 
 								regularWage = Math.Round(pc1.Amount + pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);

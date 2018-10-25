@@ -86,19 +86,22 @@ namespace HrMaxx.OnlinePayroll.Services
 						ct.CompanyId = company.Id;
 
 					});
+					
 					var savedcompany = _companyRepository.SaveCompany(company);
 					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, company.Contract);
-					if (savedcontract.InvoiceSetup.RecurringCharges.Any())
-					{
-						var map = Mapper.Map<List<RecurringCharge>, List<Models.CompanyRecurringCharge>>(savedcontract.InvoiceSetup.RecurringCharges);
-						var rcs = _companyRepository.SaveRecurringCharges(savedcompany, map);
-						savedcontract.InvoiceSetup.RecurringCharges.ForEach(rc =>
-						{
-							rc.TableId = rcs.First(r => r.OldId == rc.Id).Id;
-						});
-						_companyRepository.SaveCompanyInvoiceSetup(savedcompany.Id, JsonConvert.SerializeObject(savedcontract.InvoiceSetup));
-						savedcompany.RecurringCharges = rcs;
-					}
+					if(company.RecurringCharges.Any())
+						savedcompany.RecurringCharges = _companyRepository.SaveRecurringCharges(savedcompany, company.RecurringCharges);
+					//if (savedcontract.InvoiceSetup.RecurringCharges.Any())
+					//{
+					//	var map = Mapper.Map<List<RecurringCharge>, List<Models.CompanyRecurringCharge>>(savedcontract.InvoiceSetup.RecurringCharges);
+					//	var rcs = _companyRepository.SaveRecurringCharges(savedcompany, map);
+					//	savedcontract.InvoiceSetup.RecurringCharges.ForEach(rc =>
+					//	{
+					//		rc.TableId = rcs.First(r => r.OldId == rc.Id).Id;
+					//	});
+					//	_companyRepository.SaveCompanyInvoiceSetup(savedcompany.Id, JsonConvert.SerializeObject(savedcontract.InvoiceSetup));
+					//	savedcompany.RecurringCharges = rcs;
+					//}
 
 
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);

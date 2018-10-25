@@ -330,7 +330,7 @@
 								<span ng-show="isInvoiceEditable()" class="visible-print">{{lineitem.description}}</span>
 							</td>
 							<td><span ng-show="lineitem.recurringChargeId>0">{{lineitem.previouslyClaimed | currency:'$'}}</span></td>
-							<td></td>
+							<td><span ng-show="lineitem.recurringChargeId>0">{{lineitem.rate | currency:'$'}}</span></td>
 							<td class="text-left">
 								<input name="lineamount{{$index}}" class="form-control hidden-print" ng-show="isInvoiceEditable() && lineitem.isEditable" style="width:7em;" ng-model="lineitem.amount" required data-parsley-pattern="/^-?[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" data-parsley-type="number" />
 								<span ng-show="(invoice.status>1 && !isInvoiceEditable()) || !lineitem.isEditable" class="hidden-print">{{lineitem.amount | currency:'$'}}</span>

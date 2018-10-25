@@ -280,15 +280,17 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.addRecurringCharge = function () {
 
-						$scope.selectedCompany.contract.invoiceSetup.recurringCharges.push({
+						$scope.selectedCompany.recurringCharges.push({
+							id: 0,
 							year: new Date().getFullYear(),
 							description: '',
 							amount: 0,
-							annualLimit: null
+							annualLimit: null,
+							claimed:0
 						});
 					}
 					$scope.removeRecurringCharge = function (rc, index) {
-						$scope.selectedCompany.contract.invoiceSetup.recurringCharges.splice(index, 1);
+						$scope.selectedCompany.recurringCharges.splice(index, 1);
 					}
 					$scope.getRowClass = function (item) {
 						if ($scope.selectedCompany && $scope.selectedCompany.id === item.id)

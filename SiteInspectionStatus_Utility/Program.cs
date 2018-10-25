@@ -121,6 +121,12 @@ namespace SiteInspectionStatus_Utility
 				case 22:
 					SaveMementosAsFiles(container);
 					break;
+				case 23:
+					SaveRecurringChargeClaimed(container);
+					break;
+				case 24:
+					FixRecurringCharges(container);
+					break;
 				default:
 					break;
 			}
@@ -166,6 +172,70 @@ namespace SiteInspectionStatus_Utility
 				});
 			}
 			Console.WriteLine(DateTime.Now.TimeOfDay);
+
+		}
+		private static void FixRecurringCharges(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var repository = scope.Resolve<IPayrollRepository>();
+
+
+				var list = repository.GetRecurringChargeToUpdate();
+				var list2 = new List<PayrollInvoice>();
+				list.Select(l=>l.InvoiceId).Distinct().ToList().ForEach(l =>
+				{
+					var i = readerservice.GetPayrollInvoice(l);
+					var l1 = list.Where(l2 => l2.InvoiceId == l).ToList();
+					l1.ForEach(l2 =>
+					{
+						if (i.MiscCharges.Any(i1 => i1.RecurringChargeId == l2.RecurringChargeId))
+						{
+							var mc = i.MiscCharges.First(mc1 => mc1.RecurringChargeId == l2.RecurringChargeId);
+							if(l2.NewRecurringChargeId>0)
+								mc.RecurringChargeId = l2.NewRecurringChargeId;
+							mc.PreviouslyClaimed = l2.Claimed;
+							mc.Rate = l2.Rate;
+						}
+					});
+					list2.Add(i);
+				});
+				//list.ForEach(l =>
+				//{
+				//	var i = readerservice.GetPayrollInvoice(l.InvoiceId);
+					
+				//	i.MiscCharges.First(mc => mc.RecurringChargeId == l.RecurringChargeId).RecurringChargeId = l.NewRecurringChargeId;
+				//	list2.Add(i);
+				//});
+				repository.UpdateInvoiceMiscCharges(list2);
+			}
+			
+		}
+		private static void SaveRecurringChargeClaimed(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var repository = scope.Resolve<IPayrollRepository>();
+				
+				var company = readerservice.GetCompanies().Where(c => c.Contract.InvoiceSetup.RecurringCharges.Any()).ToList();
+				var list = new List<HrMaxx.OnlinePayroll.Models.InvoiceRecurringCharge>();
+				company.ForEach(c =>
+				{
+					
+
+					var invoices = readerservice.GetCompanyInvoices(companyId: c.Id).Where(i=>i.MiscCharges.Any(mc=>mc.RecurringChargeId>0)).ToList();
+					invoices.ForEach(i => i.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
+						list.Add(new InvoiceRecurringCharge
+						{
+							InvoiceId = i.Id, CompanyId=i.CompanyId, InvoiceNumber = i.InvoiceNumber, RecurringChargeId = mc.RecurringChargeId, Description = mc.Description, Rate = mc.Rate, Amount = mc.Amount, Claimed = mc.PreviouslyClaimed
+						})));
+					
+					
+				});
+				repository.SaveInvoiceRecurringCharge(list);
+			}
 
 		}
 

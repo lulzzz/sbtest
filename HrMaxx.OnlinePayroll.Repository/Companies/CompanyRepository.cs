@@ -108,13 +108,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				contract.BankDetails.LastModifiedBy = savedcompany.UserName;
 				contract.BankDetails = _utilRepository.SaveBankAccount(contract.BankDetails);
 			}
-			if (contract.InvoiceSetup != null && contract.InvoiceSetup.RecurringCharges.Any())
-			{
-				contract.InvoiceSetup.RecurringCharges.Where(rc=>rc.Id==0).ToList().ForEach(rc =>
-				{
-					rc.Id = contract.InvoiceSetup.RecurringCharges.Max(rc1 => rc1.Id) + 1;
-				});
-			}
+			//if (contract.InvoiceSetup != null && contract.InvoiceSetup.RecurringCharges.Any())
+			//{
+			//	contract.InvoiceSetup.RecurringCharges.Where(rc=>rc.Id==0).ToList().ForEach(rc =>
+			//	{
+			//		rc.Id = contract.InvoiceSetup.RecurringCharges.Max(rc1 => rc1.Id) + 1;
+			//	});
+			//}
 			
 			var mapped = _mapper.Map<ContractDetails, CompanyContract>(contract);
 			mapped.CompanyId = savedcompany.Id;
@@ -150,6 +150,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbState.EIN = existingState.EIN;
 				dbState.Pin = existingState.Pin;
 			}
+
 			_dbContext.SaveChanges();
 			return _mapper.Map<List<Models.DataModel.CompanyTaxState>, List<CompanyTaxState>>(_dbContext.CompanyTaxStates.Where(c => c.CompanyId == savedcompany.Id).ToList());
 		}
@@ -159,19 +160,33 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var mapped = _mapper.Map<List<Models.CompanyRecurringCharge>, List<Models.DataModel.CompanyRecurringCharge>>(charges);
 			mapped.ForEach(ct => ct.CompanyId = savedcompany.Id);
 			_dbContext.CompanyRecurringCharges.AddRange(mapped.Where(s => s.Id == 0));
-			var dbStates = _dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList();
-			foreach (var existingState in mapped.Where(s => s.Id != 0))
+			var dbrc = _dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList();
+			foreach (var rc in mapped.Where(s => s.Id != 0))
 			{
-				var recurringCharge = dbStates.First(s => s.Id == existingState.Id);
-				recurringCharge.Description = existingState.Description;
-				recurringCharge.Amount = existingState.Amount;
-				recurringCharge.AnnualLimit = existingState.AnnualLimit;
-				recurringCharge.OldId = existingState.OldId;
+				var recurringCharge = dbrc.First(s => s.Id == rc.Id);
+				recurringCharge.Description = rc.Description;
+				recurringCharge.Amount = rc.Amount;
+				recurringCharge.AnnualLimit = rc.AnnualLimit;
+				recurringCharge.OldId = rc.OldId;
 			}
-			foreach (var rc1 in dbStates.Where(rc=>!mapped.Any(r=>r.Id==rc.Id)))
+			foreach (var rc1 in dbrc.Where(rc=>!mapped.Any(r=>r.Id==rc.Id)))
 			{
 				_dbContext.CompanyRecurringCharges.Remove(rc1);
 			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<List<Models.DataModel.CompanyRecurringCharge>, List<Models.CompanyRecurringCharge>>(_dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList());
+		}
+		public List<Models.CompanyRecurringCharge> SaveRecurringChargesTemp(Company savedcompany, List<Models.CompanyRecurringCharge> charges)
+		{
+			var mapped = _mapper.Map<List<Models.CompanyRecurringCharge>, List<Models.DataModel.CompanyRecurringCharge>>(charges);
+			
+			var dbrc = _dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList();
+			foreach (var rc in mapped.Where(s => s.Id != 0))
+			{
+				var recurringCharge = dbrc.First(s => s.Id == rc.Id);
+				recurringCharge.Claimed = rc.Claimed;
+			}
+			
 			_dbContext.SaveChanges();
 			return _mapper.Map<List<Models.DataModel.CompanyRecurringCharge>, List<Models.CompanyRecurringCharge>>(_dbContext.CompanyRecurringCharges.Where(c => c.CompanyId == savedcompany.Id).ToList());
 		}

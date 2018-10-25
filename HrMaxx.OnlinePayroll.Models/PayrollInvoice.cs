@@ -195,7 +195,8 @@ namespace HrMaxx.OnlinePayroll.Models
 						}
 						pcCredit.Amount *= -1;
 						VoidedCreditedChecks.Add(vpc.Id);
-						MiscCharges.Add(pcCredit);
+						if(pcCredit.Amount>0)
+							MiscCharges.Add(pcCredit);
 						vpc.Deductions.ForEach(vpcd =>
 						{
 							if (vpc.MiscCharges.Any(c => c.RecurringChargeId == vpcd.Deduction.Id * -1))
@@ -347,7 +348,8 @@ namespace HrMaxx.OnlinePayroll.Models
 						Description = rc.Description,
 						PayCheckId = 0,
 						isEditable = true,
-						PreviouslyClaimed = rc.Claimed
+						PreviouslyClaimed = rc.Claimed,
+						Rate = rc.Amount
 					});
 				}
 				else
@@ -363,21 +365,26 @@ namespace HrMaxx.OnlinePayroll.Models
 									: rc.Amount;
 								
 							}
+							else if (rc.Claimed > rc.AnnualLimit)
+							{
+								calcAmount = rc.AnnualLimit.Value - rc.Claimed;
+							}
 							else
 							{
 								calcAmount = 0;
 							}
 							
 						}
-						if (calcAmount>0)
+						if (calcAmount!=0)
 							MiscCharges.Add(new MiscFee
 							{
 								RecurringChargeId = rc.Id,
 								Amount = calcAmount,
-								Description = rc.Description,
+								Description = (calcAmount <0 ? "Over charged credit: " : string.Empty) + rc.Description,
 								PayCheckId = 0,
 								isEditable = true,
-								PreviouslyClaimed = rc.Claimed
+								PreviouslyClaimed = rc.Claimed,
+								Rate = rc.Amount
 							});
 					}
 				}

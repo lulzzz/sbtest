@@ -254,6 +254,7 @@
       <DependentUpon>OnlinePayrollModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="HostHomePageDocument.cs" />
+    <Compile Include="InvoiceRecurringCharge.cs" />
     <Compile Include="JournalPayee.cs" />
     <Compile Include="JsonDataModel\Company.cs" />
     <Compile Include="JsonDataModel\CompanyPayrollCube.cs" />
