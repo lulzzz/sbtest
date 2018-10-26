@@ -484,6 +484,16 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							return true;
 					}
 					//Bank Account Handling
+
+					$scope.fixEmployeeYTD = function () {
+						payrollRepository.fixEmployeeYTD($scope.selected.id).then(function (data) {
+							
+							$scope.addAlert('successfully updated YTDs', 'success');
+						}, function (error) {
+							
+							$scope.addAlert('error getting report payroll summary report ' + error.statusText, 'danger');
+						});
+					}
 					$scope.getReportW2Employee = function () {
 						getReport('W2Employee', 'Federal W2 (Employee version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory);
 					}

@@ -423,6 +423,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			fixEmployeeYTD: function (employeeId) {
+				var deferred = $q.defer();
+				payrollServer.one('FixEmployeeYTD/' + employeeId).get().then(function () {
+					deferred.resolve();
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			recalculateEmployeePayTypeAccumulations: function (employeeId) {
 				var deferred = $q.defer();
 				payrollServer.one('RecalculateEmployeePayTypeAccumulations/' + employeeId).get().then(function (data) {

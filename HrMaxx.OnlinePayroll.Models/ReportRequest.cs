@@ -30,6 +30,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IncludeHistory { get; set; }
 		public bool IncludeClients { get; set; }
 		public bool IncludeTaxDelayed { get; set; }
+		public bool CheckEFileFormsFlag { get; set; }
+		public bool CheckTaxPaymentFlag { get; set; }
 
 		public ExtractType ExtractType
 		{

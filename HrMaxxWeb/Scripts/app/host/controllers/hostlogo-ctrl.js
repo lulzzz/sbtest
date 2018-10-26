@@ -3,12 +3,15 @@
 	function ($scope, localStorageService, zionAPI, hostRepository) {
 		$scope.zionAPI = zionAPI;
 		$scope.logo = null;
+		$scope.getPaxolLogo = function() {
+			return zionAPI.Web + "/Content/images/logo.png";
+		}
 		$scope.getDocumentUrl = function (photo) {
 			if (photo) {
 				if (photo.id)
 					return zionAPI.URL + 'DocumentById/' + photo.id + '/' + photo.documentExtension + '/' + photo.documentName;
 			}
-			return zionAPI.Web + "/Content/images/logo.png";
+			return '';
 
 		};
 		$scope.$on('hostChanged', function(event, args) {

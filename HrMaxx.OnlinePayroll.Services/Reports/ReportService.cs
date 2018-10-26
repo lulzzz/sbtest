@@ -210,6 +210,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			try
 			{
+				request.CheckEFileFormsFlag = true;
+				request.CheckTaxPaymentFlag = true;
 				CalculateDates(ref request);
 				if (request.ReportName.Equals("Paperless941"))
 					return GetPaperless941(request);
@@ -912,7 +914,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 		
 			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
-				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory);
+				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory
+				, checkEFileFormsFlag: request.CheckEFileFormsFlag, checkTaxPaymentFlag: request.CheckTaxPaymentFlag);
 			
 			if (request.ReportName.Contains("1099"))
 			{
@@ -1012,7 +1015,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				? config.C1095Limits.First(c => c.Key == request.StartDate.Year).Value
 				: (decimal)9.65;
 			
-			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate, includeVoids: false, includeHistory: request.IncludeHistory, includeC1095: true);
+			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate, includeVoids: false, includeHistory: request.IncludeHistory, includeC1095: true
+				, checkEFileFormsFlag: request.CheckEFileFormsFlag, checkTaxPaymentFlag: request.CheckTaxPaymentFlag);
 			
 			
 			
@@ -1275,6 +1279,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Paperless 940 for {0}", request.Year);
 			request.AllowFiling = false;
+			request.CheckEFileFormsFlag = true;
+			request.CheckTaxPaymentFlag = false;
 			var data = GetExtractResponse(request, includeTaxes:true, includeDeductions:true);
 			
 			var argList = new List<KeyValuePair<string, string>>();
@@ -1292,6 +1298,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("Paperless 941 for {0} (Quarter={1})", request.Year, request.Quarter);
 			request.AllowFiling = false;
+			request.CheckEFileFormsFlag = true;
+			request.CheckTaxPaymentFlag = false;
 			var data = GetExtractResponse(request, buildDaily: true, includeCompensaitons: true, includeTaxes: true);
 			
 			var argList = new List<KeyValuePair<string, string>>();
@@ -1310,6 +1318,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = string.Format("SSA W2 Megnatic for {0} ", request.Year);
 			request.AllowFiling = false;
+			request.CheckEFileFormsFlag = true;
+			request.CheckTaxPaymentFlag = false;
 			var data = GetExtractResponse(request, includeTaxes:true, buildEmployeeAccumulations:true, includeCompensaitons:true, includeDeductions:true);
 			
 			var config = _taxationService.GetApplicationConfig();

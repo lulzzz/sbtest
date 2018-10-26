@@ -3396,6 +3396,81 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void FixEmployeeYTD(Guid employeeId)
+		{
+			try
+			{
+				var updateList = new List<PayCheck>();
+				var originalList = new List<PayCheck>();
+				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					var employee = _readerService.GetEmployee(employeeId);
+					var paychecks = _readerService.GetEmployeePayChecks(employeeId);
+					
+					paychecks.OrderBy(pc=>pc.PayDay).ToList().ForEach(pc => {
+						var employeeAccumulation = _readerService.GetAccumulations(company: employee.CompanyId,
+						startdate: new DateTime(pc.PayDay.Year, 1, 1), enddate: pc.PayDay, ssns:Crypto.Encrypt(employee.SSN));
+						var ea = employeeAccumulation.First(e => e.EmployeeId.Value == pc.Employee.Id);
+						pc.PayCodes.ForEach(p =>
+							{
+								var p2 = ea.PayCodes.First(p3 => p3.PayCodeId == p.PayCode.Id);
+								p.YTD = p2.YTDAmount;
+								p.YTDOvertime = p2.YTDOvertime;
+							});
+						pc.Taxes.ForEach(t =>
+						{
+							var t2 = ea.Taxes.First(t3 => t3.Tax.Code.Equals(t.Tax.Code));
+							t.YTDTax = t2.YTD;
+							t.YTDWage = t2.YTDWage;
+						});
+						pc.Deductions.ForEach(d =>
+						{
+							var d2 = ea.Deductions.First(d3 => d3.CompanyDeductionId == d.Deduction.Id);
+							d.YTD = d2.YTD;
+							d.YTDWage = d2.YTDWage;
+						});
+						pc.Compensations.ForEach(c =>
+						{
+							var c2 = ea.Compensations.First(c3 => c3.PayTypeId == c.PayType.Id);
+							c.YTD = c2.YTD;
+						});
+						
+						if (pc.WorkerCompensation != null)
+							pc.WorkerCompensation.YTD =
+								ea.WorkerCompensations.Where(w2 => w2.WorkerCompensationId == pc.WorkerCompensation.WorkerCompensation.Id)
+									.Sum(w2 => w2.YTD);
+
+						pc.YTDGrossWage = ea.PayCheckWages.GrossWage;
+						pc.YTDNetWage = ea.PayCheckWages.NetWage;
+						pc.YTDSalary = ea.PayCheckWages.Salary;
+						updateList.Add(pc);
+					});
+						
+
+					
+					if (updateList.Any())
+					{
+						updateList.ForEach(pc => _payrollRepository.UpdatePayCheckYTD(pc));
+						
+						txn.Complete();
+						
+					}
+
+
+
+
+				}
+			}
+			catch (Exception e)
+			{
+				var message = string.Format("Error in fixing YTD for Payroll {0}.", employeeId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		
+		}
+
 		public void UpdatePayCheckAccumulation(int payCheckId, PayTypeAccumulation accumulation, string user, string userId)
 		{
 			try
@@ -3553,40 +3628,6 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							});
 
 						}
-						//var prevInvoices =
-						//	invoices.Where(i1 => i1.CompanyId == i.CompanyId && i1.InvoiceNumber < i.InvoiceNumber).ToList();
-						//var pcs = paychecks.Where(pc => i.PayChecks.Contains(pc.Id)).ToList();
-						//i.NetPay = pcs.Sum(p => p.NetWage);
-						//i.CheckPay = pcs.Sum(p => p.CheckPay);
-						//i.DDPay = pcs.Sum(p => p.DDPay);
-						//i.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
-						//{
-						//	var rc = i.CompanyInvoiceSetup.RecurringCharges.First(r => r.Id == mc.RecurringChargeId);
-						//	if (!rc.Year.HasValue)
-						//	{
-						//		mc.PreviouslyClaimed = prevInvoices.SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc.Amount);
-						//	}
-						//	else
-						//	{
-						//		mc.PreviouslyClaimed = prevInvoices.Where(i2 => i2.PayrollPayDay.Year == i.PayrollPayDay.Year).SelectMany(i2 => i2.MiscCharges).Where(mc1 => mc1.RecurringChargeId == rc.Id).Sum(mc1 => mc1.Amount);
-						//	}
-						//});
-						//i.Deductions = new List<PayrollDeduction>();
-						//payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
-						//{
-						//	pc.Deductions.ToList().ForEach(d =>
-						//		var d1 = i.Deductions.FirstOrDefault(ded => ded.Deduction.Id == d.Deduction.Id);
-						//		if (d1 != null)
-						//		{
-						//			d1.Amount += Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
-						//		}
-						//		else
-						//		{
-						//			var temp = JsonConvert.SerializeObject(d);
-						//			i.Deductions.Add(JsonConvert.DeserializeObject<PayrollDeduction>(temp));
-						//		}
-						//	});
-						//});
 						
 						_payrollRepository.SavePayrollInvoice(i, ref strLog);
 					});

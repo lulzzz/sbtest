@@ -660,6 +660,7 @@
 
 							<div class="col-sm-2">
 								<button class="btn btn-sm btn-primary" ng-click="getReportPayrollSummary()" ng-disabled="!data.payrollSummary.year">Show</button>
+								<button class="btn btn-sm btn-primary" ng-click="fixEmployeeYTD()" ng-show="selected.id && mainData.userRole==='SuperUser'">Fix Employee YTD</button>
 							</div>
 
 						</div>
