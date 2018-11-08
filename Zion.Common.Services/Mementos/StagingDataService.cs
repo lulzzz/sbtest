@@ -32,8 +32,8 @@ namespace HrMaxx.Common.Services.Mementos
 
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.WriteRepositoryCall, GetType(), "{0} ({1})",
-					"AddStagingData", dto.OriginatorType);
+				//Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.WriteRepositoryCall, GetType(), "{0} ({1})",
+				//	"AddStagingData", dto.OriginatorType);
 
 				using (TransactionScope txn = TransactionScopeHelper.Transaction())
 				{
@@ -42,7 +42,7 @@ namespace HrMaxx.Common.Services.Mementos
 					txn.Complete();
 				}
 
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				//HrMaxxTrace.EndPerfTrace(messageCorrelationId);
 			}
 			catch (Exception e)
 			{
@@ -56,10 +56,10 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>({2})",
-					"GetMostRecentStagingData", typeof (T).FullName, "GetMostRecentStagingData", mementoId.ToString());
+				//Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>({2})",
+				//	"GetMostRecentStagingData", typeof (T).FullName, "GetMostRecentStagingData", mementoId.ToString());
 				StagingDataDto memento = _repository.GetMostRecentMemento<T>(mementoId);
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				//HrMaxxTrace.EndPerfTrace(messageCorrelationId);
 				if (memento == null)
 					return null;
 				return Memento<T>.Create(mementoId, memento.Memento);
@@ -75,10 +75,10 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>({2})",
-					"GetStagingData", typeof (T).FullName, "GetStagingData", mementoId.ToString());
+				//Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0}<{1}>({2})",
+				//	"GetStagingData", typeof (T).FullName, "GetStagingData", mementoId.ToString());
 				List<StagingDataDto> memento = _repository.GetStagingData<T>(mementoId);
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				//HrMaxxTrace.EndPerfTrace(messageCorrelationId);
 
 				if ((memento == null) || memento.Count == 0)
 					return null;
@@ -98,8 +98,8 @@ namespace HrMaxx.Common.Services.Mementos
 		{
 			try
 			{
-				Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0} ({1})",
-					"Delete Mementos", mementoId.ToString());
+				//Guid messageCorrelationId = HrMaxxTrace.StartPerfTrace(PerfTraceType.ReadRepositoryCall, GetType(), "{0} ({1})",
+				//	"Delete Mementos", mementoId.ToString());
 
 				using (TransactionScope txn = TransactionScopeHelper.Transaction())
 				{
@@ -108,7 +108,7 @@ namespace HrMaxx.Common.Services.Mementos
 					txn.Complete();
 				}
 
-				HrMaxxTrace.EndPerfTrace(messageCorrelationId);
+				//HrMaxxTrace.EndPerfTrace(messageCorrelationId);
 			}
 			catch (Exception e)
 			{

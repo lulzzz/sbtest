@@ -407,8 +407,8 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	
 });
 common.controller('companyCtrl', function ($scope, $uibModalInstance, $filter, invoice, mainData) {
-	$scope.original = invoice.company;
-	$scope.company = angular.copy(invoice.company);
+	$scope.original = mainData.selectedCompany;
+	$scope.company = angular.copy(mainData.selectedCompany);
 	$scope.mainData = mainData;
 	$scope.cancel = function () {
 		$uibModalInstance.close($scope.company);

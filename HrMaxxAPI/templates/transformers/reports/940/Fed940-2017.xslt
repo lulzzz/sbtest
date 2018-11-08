@@ -27,7 +27,7 @@
 	<xsl:variable name="line8" select="format-number($line7*0.006,'######.00')"/>
 	<xsl:variable name="line11" select="format-number($line7*0.021,'######.00')"/>
 	<xsl:variable name="line12" select="$line8 + $line11"/>
-	<xsl:variable name="line13" select="ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD"/>
+	<xsl:variable name="line13" select="format-number(ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'######.00')"/>
 <xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">
 	<ReportTransformed>

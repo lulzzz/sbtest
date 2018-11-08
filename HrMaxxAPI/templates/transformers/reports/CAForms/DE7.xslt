@@ -49,7 +49,8 @@
 	<xsl:variable name="ETTTax" select="format-number(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='ETT']/YTD,'###0.00')"/>
 	<xsl:variable name="box18" select="format-number($UIContribution + $ETTContribution + $SDIContribution + $SITTax,'###0.00')"/>
 	<xsl:variable name="TotalStateTax" select="format-number($SITTax + $SUITax + $SDITax + $ETTTax,'###0.00')"/>
-	<xsl:variable name="Total" select="format-number($box18 - $TotalStateTax,'###0.00')"/>
+	<xsl:variable name="DepositAmount" select="format-number(/ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'###0.00')"/>
+	<xsl:variable name="Total" select="format-number($box18 - $DepositAmount,'###0.00')"/>
 	<xsl:variable name="sein" select="concat(substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
 
 	<xsl:output method="xml" indent="yes"/>
@@ -143,7 +144,7 @@
 				</xsl:call-template>
 				<xsl:call-template name="FieldTemplate">
 					<xsl:with-param name="name1" select="'19'"/>
-					<xsl:with-param name="val1" select="format-number($TotalStateTax,'###0.00')"/>
+					<xsl:with-param name="val1" select="format-number($DepositAmount,'###0.00')"/>
 				</xsl:call-template>
 				<xsl:call-template name="FieldTemplate">
 					<xsl:with-param name="name1" select="'20'"/>

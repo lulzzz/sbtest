@@ -525,6 +525,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		CAPITSDI=3,
 		CAETTUI=4,
 		Garnishment=5,
+		CADE9=6,
 		NA=0
 	}
 

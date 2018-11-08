@@ -37,17 +37,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			{
 				if (mapped.Id == 0)
 				{
-					if (mapped.CheckNumber > 0)
-					{
-						const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll); if @NewCheckNumber<>@CheckNumber begin update PayrollPayCheck set CheckNumber=@NewCheckNumber where Id=@PayrollPayCheckId; if @PEOASOCoCheck=1 begin update Journal set CheckNumber=@NewCheckNumber where PayrollPaycheckId=@PayrollPayCheckId; end end select @NewCheckNumber as checknumber";
-						//const string sql = "select dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll) as checknumber";
-						dynamic result =
-							conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType=(int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck, IsPEOPayroll = peoPayroll }).FirstOrDefault();
-						if (result.checknumber != null)
-						{
-							mapped.CheckNumber = result.checknumber;
-						}
-					}
+					//if (mapped.CheckNumber > 0)
+					//{
+					//	const string sql = "select @NewCheckNumber = dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll); if @NewCheckNumber<>@CheckNumber begin update PayrollPayCheck set CheckNumber=@NewCheckNumber where Id=@PayrollPayCheckId; end select @NewCheckNumber as checknumber";
+					//	//const string sql = "select dbo.GetCheckNumber(@CompanyIntId, @PayrollPayCheckId, @PEOASOCoCheck, @TransactionType, @CheckNumber, @IsPEOPayroll) as checknumber";
+					//	dynamic result =
+					//		conn.Query(sql, new { CheckNumber = mapped.CheckNumber, NewCheckNumber = mapped.CheckNumber, CompanyIntId = mapped.CompanyIntId, TransactionType=(int)mapped.TransactionType, CompanyId = mapped.CompanyId, PayrollPayCheckId = mapped.PayrollPayCheckId, PEOASOCoCheck = mapped.PEOASOCoCheck, IsPEOPayroll = peoPayroll }).FirstOrDefault();
+					//	if (result.checknumber != null)
+					//	{
+					//		mapped.CheckNumber = result.checknumber;
+					//	}
+					//}
 
 					mapped.Id = conn.Query<int>(insertjournal, mapped).Single();
 
@@ -204,7 +204,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			var me1 = _dbContext.MasterExtracts.First(m => m.Id == extractId);
 			var journals = JsonConvert.DeserializeObject<List<int>>(me1.Journals);
 			const string deletejournals =
-				@"delete from CheckbookJournal where Id=@Id";
+				@"delete from MasterExtractJournal where JournalId=@Id ;delete from CheckbookJournal where Id=@Id";
 			const string deleteextract = @"delete from PayCheckExtract where MasterExtractId=@MasterExtractId;delete from CommissionExtract where MasterExtractId=@MasterExtractId;delete from MasterExtracts where Id=@MasterExtractId;";
 			
 			using (var conn = GetConnection())
@@ -243,6 +243,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			}
 		}
 
+		public void NormalizeExtractJournal(MasterExtract masterExtract)
+		{
+			const string insertExtractJournal = @"insert into MasterExtractJournal(MasterExtractId, JournalId) values(@MasterExtractId, @JournalId);";
+			using (var conn = GetConnection())
+			{
+				masterExtract.Journals.ForEach(j => conn.Execute(insertExtractJournal, new { MasterExtractId = masterExtract.Id, JournalId = j }));
+			}
+		}
+
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)
 		{
@@ -250,6 +259,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			var mappedJournals = _mapper.Map<List<Models.Journal>, List<Journal>>(journalList);
 			
 			const string insertExtract = @"insert into MasterExtracts(StartDate, EndDate, ExtractName, IsFederal, DepositDate, Journals, LastModified, LastModifiedBy) values(@StartDate, @EndDate, @ExtractName, @IsFederal, @DepositDate, @Journals, @LastModified, @LastModifiedBy); select cast(scope_identity() as int)";
+			const string insertExtractJournal = @"insert into MasterExtractJournal(MasterExtractId, JournalId) values(@MasterExtractId, @JournalId);";
 			const string insertPayCheckExtract =
 				"insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type) values(@PayrollPayCheckId, @MasterExtractId, @Extract, @Type);";
 			const string insertJournals = "insert into CheckbookJournal( CompanyId, TransactionType, PaymentMethod, CheckNumber, PayrollPayCheckId, EntityType, PayeeId, PayeeName, Amount, Memo, IsDebit, IsVoid, MainAccountId, TransactionDate, LastModified, LastModifiedBy, JournalDetails, DocumentId, PEOASOCoCheck, OriginalDate, CompanyIntId) " +
@@ -267,6 +277,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 				var mapped = _mapper.Map<Models.MasterExtract, Models.DataModel.MasterExtract>(masterExtract);
 
 				mapped.Id = conn.Query<int>(insertExtract, mapped).Single();
+				masterExtract.Journals.ForEach(j => conn.Execute(insertExtractJournal, new {MasterExtractId = mapped.Id, JournalId = j}));
+				
 				var pces = new List<PayCheckExtract>();
 				var vces = new List<PayCheckExtract>();
 				payCheckIds.Distinct().ToList().ForEach(pc => pces.Add(new PayCheckExtract

@@ -1487,7 +1487,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					if (payroll.InvoiceId.HasValue && invoice != null && (forceDelete || invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
 						DeletePayrollInvoice(payroll.InvoiceId.Value, new Guid(userId), userName, string.Format("Invoice Deleted for Void Payroll {0}", forceDelete ? " - Move Payroll" : string.Empty));
 
-					_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
+					//_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
 					payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(paycheck =>
 					{
 						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id!=paycheck.Id).ToList();
@@ -1499,9 +1499,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						}
 					});
 					Log.Info("Checks Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
-					
-					
-					_payrollRepository.VoidPayroll(payroll.Id);
+
+
+					_payrollRepository.VoidPayroll(payroll.Id, userName);
 					txn.Complete();
 					
 				}
@@ -3142,7 +3142,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Delay Taxes on invoice id=" + invoice.Id);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Redate invoice id=" + invoice.Id);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

@@ -119,7 +119,8 @@ namespace HrMaxx.OnlinePayroll.Models
 					return Taxes.Where(t => t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI")).ToList();
 				if (ExtractType == ExtractType.CAETTUI)
 					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI")).ToList();
-
+				if (ExtractType == ExtractType.CADE9)
+					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI") || t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI")).ToList();
 				return Taxes;
 
 			}
@@ -152,7 +153,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			PayCheckWages.Twelve2 += acc.PayCheckWages.Twelve2;
 			PayCheckWages.Twelve3 += acc.PayCheckWages.Twelve3;
 			PayCheckWages.Immigrants += acc.PayCheckWages.Immigrants;
-
+			PayCheckWages.DepositAmount += acc.PayCheckWages.DepositAmount;
 			PayCheckList.AddRange(acc.PayCheckList);
 			acc.Taxes.ForEach(t1 =>
 			{
@@ -242,7 +243,7 @@ namespace HrMaxx.OnlinePayroll.Models
 			PayCheckWages.Quarter4FUTAWage -= acc.PayCheckWages.Quarter4FUTAWage;
 			
 			PayCheckWages.Immigrants -= acc.PayCheckWages.Immigrants;
-
+			PayCheckWages.DepositAmount -= acc.PayCheckWages.DepositAmount;
 			VoidedPayCheckList.AddRange(acc.VoidedPayCheckList);
 			acc.Taxes.ForEach(t1 =>
 			{

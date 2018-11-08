@@ -22,5 +22,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 		
 		decimal GetJournalBalance(int accountId);
 		void DeletePayrollJournals(List<Journal> toList);
+		void NormalizeExtractJournal(MasterExtract masterExtract);
 	}
 }

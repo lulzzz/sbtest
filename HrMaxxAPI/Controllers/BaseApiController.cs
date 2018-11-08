@@ -101,7 +101,7 @@ namespace HrMaxxAPI.Controllers
 			{
 				
 				if (!traceMessage.Equals(string.Empty))
-					HrMaxxTrace.PerfTrace(() => result = callToMake(), PerfTraceType.BusinessLayerCall, GetType(), traceMessage);
+					HrMaxxTrace.PerfTrace(() => result = callToMake(), PerfTraceType.BusinessLayerCall, GetType(), string.Format("{0} | {1}", traceMessage, (CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName));
 
 				else
 					result = callToMake();
@@ -171,7 +171,8 @@ namespace HrMaxxAPI.Controllers
 			{
 				
 				if (!traceMessage.Equals(string.Empty))
-					HrMaxxTrace.PerfTrace(callToMake, PerfTraceType.BusinessLayerCall, GetType(), traceMessage);
+					HrMaxxTrace.PerfTrace(callToMake, PerfTraceType.BusinessLayerCall, GetType(), string.Format("{0} | {1}", traceMessage, (CurrentUser == null || !CurrentUser.Claims.Any()) ? string.Empty : CurrentUser.FullName));
+					
 				else
 					callToMake();
 

@@ -1931,7 +1931,7 @@
 			<xsl:variable name="line11" select="format-number($line7*0.003,'######.00')" />
 			<xsl:variable name="line12" select="$line8 + $line11" />
 			<xsl:variable name="line12a" select="format-number($line7*0.008,'####.00')" />
-			<xsl:variable name="line13" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD,'####.00')" />
+			<xsl:variable name="line13" select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount,'####.00')" />
 			<xsl:variable name="lineI" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD)" />
 			<Row>
 				<Cell>

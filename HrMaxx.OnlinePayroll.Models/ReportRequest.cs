@@ -33,6 +33,23 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool CheckEFileFormsFlag { get; set; }
 		public bool CheckTaxPaymentFlag { get; set; }
 
+		public string ExtractDepositName
+		{
+			get
+			{
+				if (ReportName.Equals("Federal940") || ReportName.Equals("Paperless940") || ReportName.Equals("Federal940Excel"))
+					return "Federal940";
+				else if (ReportName.Equals("Federal941") || ReportName.Equals("Paperless941") || ReportName.Equals("Federal941Excel"))
+					return "Federal941";
+				else if (ReportName.Equals("StateCADE9") || ReportName.Equals("CaliforniaDE9") || ReportName.Equals("StateCADE6") || ReportName.Equals("CaliforniaDE7"))
+					return "StateCADE9";
+				else
+				{
+					return string.Empty;
+				}
+			}
+		}
+
 		public ExtractType ExtractType
 		{
 			get
@@ -45,6 +62,8 @@ namespace HrMaxx.OnlinePayroll.Models
 					return ExtractType.CAPITSDI;
 				if (ReportName.Equals("StateCAUI"))
 					return ExtractType.CAETTUI;
+				if (ReportName.Equals("StateCADE9") || ReportName.Equals("StateCADE6"))
+					return ExtractType.CADE9;
 
 				return ExtractType.NA;
 			}

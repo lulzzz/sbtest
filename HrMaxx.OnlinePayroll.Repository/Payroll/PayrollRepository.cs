@@ -253,6 +253,17 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
+		public void FixInvoiceVoidedCredit(PayrollInvoice payrollInvoice)
+		{
+			const string update1 = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id; update PayrollInvoice set VoidedCreditChecks='' where Id=@Id";
+			
+			using (var conn = GetConnection())
+			{
+				conn.Execute(update1, payrollInvoice);
+				
+			}
+		}
+
 
 		public void DeletePayrollInvoice(Guid invoiceId, List<MiscFee> miscCharges)
 		{
@@ -295,8 +306,8 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		{
 			using (var conn = GetConnection())
 			{
-				const string updatesql = @"Update PayrollPayCheck set TaxPayDay=@TaxPayDay Where Id in @PayCheckIds; Update Payroll set TaxPayDay=@TaxPayDay where Id=@PayrollId";
-				conn.Execute(updatesql, new { TaxPayDay = date.Date, PayrollId=payrollId, PayCheckIds=payChecks });
+				const string updatesql = @"Update PayrollPayCheck set TaxPayDay=@TaxPayDay Where PayrollId=@PayrollId; Update Payroll set TaxPayDay=@TaxPayDay where Id=@PayrollId";
+				conn.Execute(updatesql, new { TaxPayDay = date.Date, PayrollId=payrollId });
 				
 			}
 			
@@ -713,12 +724,12 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
-		public void VoidPayroll(Guid id)
+		public void VoidPayroll(Guid id, string userName)
 		{
-			const string query = @"update Payroll set IsVoid=1 where Id=@Id;";
+			const string query = @"update Journal set IsVoid=1, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=1, Status=7, VoidedOn=getdate(), LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update Payroll set IsVoid=1 where Id=@Id;";
 			using (var conn = GetConnection())
 			{
-				conn.Execute(query, new {Id = id});
+				conn.Execute(query, new {Id = id, User = userName});
 			}
 		}
 

@@ -180,7 +180,7 @@
 				$scope.getCompanies(null);
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
 				if (dataSvc.selectedCompany1) {
-					$scope.companySelected(url);
+					$scope.companySelected(url, true);
 					
 				}
 				
@@ -190,7 +190,7 @@
 				dataSvc.selectedCompany1 = null;
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
 				if (dataSvc.selectedCompany1) {
-					$scope.companySelected(url);
+					$scope.companySelected(url, true);
 					
 				}
 			} else {
@@ -199,14 +199,14 @@
 			}
 			
 		}
-		$scope.setHostandCompanyFromInvoice = function(hostId, company){
+		$scope.setHostandCompanyFromInvoice = function(hostId, companyId){
 			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
 				$scope.hostSelected();
 			}
-			if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== company.id)) {
-				dataSvc.selectedCompany1 = company;
-				dataSvc.selectedCompany = angular.copy(company);
+			if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
+				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];;
+				$scope.companySelected(null, false);
 			}
 			
 		}
@@ -253,11 +253,14 @@
 				addAlert('error getting host details', 'danger');
 			});
 		}
-		$scope.companySelected = function (url) {
-			if (!url){
-				url = $window.location.href;
+		$scope.companySelected = function (url, useUrl) {
+			if (useUrl) {
+				if (!url) {
+					url = $window.location.href;
+				}
+				$window.location.href = "#!/temp";
 			}
-			$window.location.href = "#!/temp";
+			
 			if (dataSvc.selectedCompany1 && dataSvc.selectedCompany1.id) {
 				dataSvc.selectedCompany = angular.copy(dataSvc.selectedCompany1);
 				companyRepository.getCompany(dataSvc.selectedCompany.id).then(function (comp) {

@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void DeletePayroll(Models.Payroll id);
 		bool CanUpdateCheckNumbers(Guid id, int startingCheckNumber, int count);
 		void UpdatePayrollCheckNumbers(Models.Payroll payroll);
-		void VoidPayroll(Guid id);
+		void VoidPayroll(Guid id, string userName);
 		//PayChecks
 		void SavePayCheck(PayCheck pc);
 		void UpdatePayCheckYTD(PayCheck employeeFutureCheck);
@@ -68,5 +68,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 
 		void SaveInvoiceRecurringCharge(List<InvoiceRecurringCharge> list);
 		List<InvoiceRecurringCharge> GetRecurringChargeToUpdate();
+		void FixInvoiceVoidedCredit(PayrollInvoice payrollInvoice);
 	}
 }

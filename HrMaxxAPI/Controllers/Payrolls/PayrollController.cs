@@ -239,7 +239,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public HttpResponseMessage GetDocument(PayrollPrintRequest request)
 		{
-			var printedCheck = MakeServiceCall(() => _payrollService.PrintPayCheck(request.PayCheckId), "print check by payroll id and check id", true);
+			var printedCheck = MakeServiceCall(() => _payrollService.PrintPayCheck(request.PayCheckId), "print check by payroll id and check id" + request.DocumentId + " - " + request.PayCheckId, true);
 			return Printed(printedCheck);	
 			
 			
@@ -251,7 +251,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public HttpResponseMessage PrintPayrollReport(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
-			var printed = MakeServiceCall(() => _payrollService.PrintPayrollReport(mapped), "print all check for payroll with id " + mapped.Id, true);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollReport(mapped), string.Format("print payroll report {0} - {1}", mapped.Id, mapped.Company.Name), true);
 			return Printed(printed);
 		}
 		[HttpPost]
@@ -260,7 +260,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public HttpResponseMessage PrintPayrollTimesheet(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
-			var printed = MakeServiceCall(() => _payrollService.PrintPayrollTimesheet(mapped), "print payroll timesheet", true);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollTimesheet(mapped), string.Format("print payroll timesheet {0} - {1}", mapped.Id, mapped.Company.Name), true);
 			return Printed(printed);
 		}
 
@@ -290,7 +290,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					});
 				
 			}
-			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId, companyCheckPrintOrder), "print all check for payroll with id " + payrollId, true);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId, companyCheckPrintOrder), string.Format("print all check for payroll with id {0}" , payrollId), true);
 			return Printed(printed);
 		}
 
@@ -323,7 +323,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[Route(PayrollRoutes.ReIssuePayCheck)]
 		public void ReIssuePayCheck(int payCheckId)
 		{
-			MakeServiceCall(() => _payrollService.ReIssuePayCheck(payCheckId), "re issue Check");
+			MakeServiceCall(() => _payrollService.ReIssuePayCheck(payCheckId), string.Format("re issue Check {0}", payCheckId));
 			
 		}
 
@@ -368,7 +368,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				return payroll;
 			}
 				
-			var payrolls = MakeServiceCall(() => _readerService.GetPayroll(payroll.Id.Value), string.Format("get payroll with id={0}", payroll.Id));
+			var payrolls = MakeServiceCall(() => _readerService.GetPayroll(payroll.Id.Value), string.Format("is confirmed payroll with id={0}-{1}", payroll.Id, payroll.Company.Name));
 			if (payrolls.IsQueued)
 			{
 				payrolls.QueuePosition = _taxationService.GetConfirmPayrollQueueItemIndex(payrolls.Id);
@@ -381,7 +381,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public List<PayrollMinifiedResource> CompanyPayrolls(Guid companyId)
 		{
-			var payrolls = MakeServiceCall(() => _readerService.GetMinifiedPayrolls(companyId: companyId));
+			var payrolls = MakeServiceCall(() => _readerService.GetMinifiedPayrolls(companyId: companyId), string.Format("get minified payroll for company id={0}", companyId));
 			return Mapper.Map<List<PayrollMinified>, List<PayrollMinifiedResource>>(payrolls);
 		}
 
@@ -418,7 +418,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			});
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 
-			MakeServiceCall(() => _payrollService.UpdatePayrollDates(mappedResource), string.Format("update payroll dates for id={0}", resource.Id));
+			MakeServiceCall(() => _payrollService.UpdatePayrollDates(mappedResource), string.Format("update payroll dates for id={0} - {1}", resource.Id, mappedResource.Company.Name));
 			return HttpStatusCode.OK;
 		}
 		[HttpPost]
@@ -456,7 +456,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			});
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			
-			var processed = MakeServiceCall(() => _payrollService.ProcessPayroll(mappedResource), string.Format("process payrolls for company={0}", resource.Company.Id));
+			var processed = MakeServiceCall(() => _payrollService.ProcessPayroll(mappedResource), string.Format("process payrolls for company={0}", resource.Company.Name));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 
@@ -472,7 +472,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				p.LastModified = DateTime.Now;
 				p.LastModifiedBy = CurrentUser.FullName;
 			});
-			var processed = MakeServiceCall(() => _payrollService.ConfirmPayroll(mappedResource), string.Format("commit payrolls for company={0}", resource.Company.Id));
+			var processed = MakeServiceCall(() => _payrollService.ConfirmPayroll(mappedResource), string.Format("commit payrolls for company={0}", resource.Company.Name));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 		[HttpPost]
@@ -482,7 +482,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			
-			var requeued = MakeServiceCall(() => _payrollService.ReQueuePayroll(mappedResource), string.Format("requeue payrolls for id={0}", resource.Id));
+			var requeued = MakeServiceCall(() => _payrollService.ReQueuePayroll(mappedResource), string.Format("requeue payrolls for id={0} - {1}", resource.Id, mappedResource.Company.Name));
 			return Mapper.Map<Payroll, PayrollResource>(requeued);
 
 		}
@@ -515,7 +515,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				p.LastModified = DateTime.Now;
 				p.LastModifiedBy = CurrentUser.FullName;
 			});
-			var processed = MakeServiceCall(() => _payrollService.SaveProcessedPayroll(mappedResource), string.Format("save payroll to staging for company={0}", resource.Company.Id));
+			var processed = MakeServiceCall(() => _payrollService.SaveProcessedPayroll(mappedResource), string.Format("save payroll to staging for company={0}", resource.Company.Name));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 
@@ -526,7 +526,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			if(mappedResource.Status!=PayrollStatus.Draft)
 				throw new Exception("Only draft payrolls can be deleted from the system");
-			var processed = MakeServiceCall(() => _payrollService.DeleteDraftPayroll(mappedResource), string.Format("delete draft payroll from staging for company={0}", resource.Company.Id));
+			var processed = MakeServiceCall(() => _payrollService.DeleteDraftPayroll(mappedResource), string.Format("delete draft payroll from staging for company={0}", resource.Company.Name));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 		[HttpPost]
@@ -535,7 +535,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
 			
-			var processed = MakeServiceCall(() => _payrollService.DeletePayroll(mappedResource), string.Format("delete payroll for company={0} with Id={1}", resource.Company.Id, resource.Id));
+			var processed = MakeServiceCall(() => _payrollService.DeletePayroll(mappedResource), string.Format("delete payroll for company={0} with Id={1}", resource.Company.Name, resource.Id));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 
@@ -546,14 +546,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public PayrollResource VoidPayroll(PayrollResource resource)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(resource);
-			var processed = MakeServiceCall(() => _payrollService.VoidPayroll(mappedResource, CurrentUser.FullName, CurrentUser.UserId), string.Format("Void all pay checks and invocie for Payroll={0}", resource.Id));
+			var processed = MakeServiceCall(() => _payrollService.VoidPayroll(mappedResource, CurrentUser.FullName, CurrentUser.UserId), string.Format("Void all pay checks and invocie for Payroll={0} - {1}", resource.Id, mappedResource.Company.Name));
 			return Mapper.Map<Payroll, PayrollResource>(processed);
 		}
 
 		[HttpGet]
 		[Route(PayrollRoutes.VoidPayCheck)]
 		[DeflateCompression]
-		public PayrollResource CommitPayroll(Guid payrollId, int payCheckId)
+		public PayrollResource VoidPayCheck(Guid payrollId, int payCheckId)
 		{
 			var voided = MakeServiceCall(() => _payrollService.VoidPayCheck(payrollId, payCheckId, CurrentUser.FullName, CurrentUser.UserId), string.Format("void paycheck in payroll={0} with id={1}",payrollId, payCheckId));
 			return Mapper.Map<Payroll, PayrollResource>(voided);
@@ -564,7 +564,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public PayrollResource UnVoidPayCheck(Guid payrollId, int payCheckId)
 		{
-			var voided = MakeServiceCall(() => _payrollService.UnVoidPayCheck(payrollId, payCheckId, CurrentUser.FullName, CurrentUser.UserId), string.Format("void paycheck in payroll={0} with id={1}", payrollId, payCheckId));
+			var voided = MakeServiceCall(() => _payrollService.UnVoidPayCheck(payrollId, payCheckId, CurrentUser.FullName, CurrentUser.UserId), string.Format("un-void paycheck in payroll={0} with id={1}", payrollId, payCheckId));
 			return Mapper.Map<Payroll, PayrollResource>(voided);
 		}
 
@@ -611,7 +611,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public PayrollInvoiceResource CreatePayrollInvoice(PayrollResource payroll)
 		{
 			var mappedResource = Mapper.Map<PayrollResource, Payroll>(payroll);
-			var processed = MakeServiceCall(() => _payrollService.CreatePayrollInvoice(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId), true), string.Format("create payroll invoice for payroll={0}", payroll.Id));
+			var processed = MakeServiceCall(() => _payrollService.CreatePayrollInvoice(mappedResource, CurrentUser.FullName, new Guid(CurrentUser.UserId), true), string.Format("create payroll invoice for payroll={0} - {1}", payroll.Id, payroll.Company.Name));
 			var returnInvocie = Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
 			returnInvocie.TaxPaneltyConfig = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			return returnInvocie;
@@ -632,7 +632,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 			});
 
-			var processed = MakeServiceCall(() => _payrollService.SavePayrollInvoice(mappedResource), string.Format("save payroll invoice for invoice={0}", invoice.Id));
+			var processed = MakeServiceCall(() => _payrollService.SavePayrollInvoice(mappedResource), string.Format("save payroll invoice for invoice={0} - {1}", invoice.InvoiceNumber, invoice.Company.Name	));
 			var returnInvocie = Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(processed);
 			returnInvocie.TaxPaneltyConfig = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			return returnInvocie;
@@ -710,7 +710,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		{
 			var mapped = Mapper.Map<PayrollInvoiceResource, PayrollInvoice>(resource);
 			mapped.UserName = CurrentUser.FullName;
-			var invoice = MakeServiceCall(() => _payrollService.RedateInvoice(mapped), string.Format("redate invoice with id={0}", mapped.Id));
+			var invoice = MakeServiceCall(() => _payrollService.RedateInvoice(mapped), string.Format("redate invoice with id={0} - {1}", mapped.Id, mapped.Company.Name));
 			return Mapper.Map<PayrollInvoice, PayrollInvoiceResource>(invoice);
 		}
 

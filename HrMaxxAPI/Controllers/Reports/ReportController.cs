@@ -45,7 +45,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public ReportResponseResource GetReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetReport(request), string.Format("getting Report for request for company={0}", request.CompanyId));
+			var response = MakeServiceCall(() => _reportService.GetReport(request), string.Format("getting Report for request for company={0} - {1}", request.CompanyId, request.ReportName));
 			return Mapper.Map<ReportResponse, ReportResponseResource>(response);
 
 		}
@@ -66,7 +66,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public HttpResponseMessage GetReportDocment(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetReportDocument(request), string.Format("getting Report for request for company={0}", request.CompanyId));
+			var response = MakeServiceCall(() => _reportService.GetReportDocument(request), string.Format("getting Report document for request for company={0} - {1}", request.CompanyId, request.ReportName));
 			return Printed(response);
 
 		}
@@ -76,7 +76,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		public HttpResponseMessage GetExtractDocmentReport(ReportRequestResource resource)
 		{
 			var request = Mapper.Map<ReportRequestResource, ReportRequest>(resource);
-			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting Report for request for company={0}", request.CompanyId));
+			var response = MakeServiceCall(() => _reportService.GetExtractDocument(request), string.Format("getting extract document for request for company={0} - {1}", request.CompanyId, request.ReportName));
 			return Printed(response.File);
 
 		}
@@ -139,7 +139,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		[DeflateCompression]
 		public HttpResponseMessage DownloadExtract(Extract extract)
 		{
-			var result = MakeServiceCall(() => _reportService.GetExtractTransformedWithFile(extract), string.Format("getting extract file"));
+			var result = MakeServiceCall(() => _reportService.GetExtractTransformedWithFile(extract), string.Format("getting extract file for {0}", extract.Report.ReportName));
 			return Printed(result.File);
 		}
 
@@ -157,7 +157,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		[DeflateCompression]
 		public HttpResponseMessage PrintExtractBatchAll(Extract extract)
 		{
-			var file = MakeServiceCall(() => _reportService.GetExtractTransformedAndPrintedZip(extract), string.Format("getting extract transformed and printed"));
+			var file = MakeServiceCall(() => _reportService.GetExtractTransformedAndPrintedZip(extract), string.Format("getting extract all transformed and printed"));
 			return Printed(file);
 		}
 
@@ -170,7 +170,7 @@ namespace HrMaxxAPI.Controllers.Reports
 			if(CurrentUser.Host!=Guid.Empty)
 				dashboardRequest.Host = CurrentUser.Host;
 			dashboardRequest.Role = CurrentUser.Role;
-			return MakeServiceCall(() => _reportService.GetDashboardData(dashboardRequest), "Get Dashboard Data for a Request", true);
+			return MakeServiceCall(() => _reportService.GetDashboardData(dashboardRequest), "Get Dashboard Data for a Request " + request.ReportName, true);
 
 		}
 

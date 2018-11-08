@@ -1377,7 +1377,7 @@
 			<xsl:variable name="line7" select="$totalSSTax + $totalMDTax - $line5d"/>	
 			<xsl:variable name="line8" select="($line6 + $line7)"/>
 			<xsl:variable name="line11" select="($totalFITTax + $totalSSTax + $totalMDTax)"/>
-		
+		<xsl:variable name="deposit" select="PayCheckAccumulation/PayCheckWages/DepositAmount"/>
 		
 			<Row>
 				<Cell><Data ss:Type="String"><xsl:value-of select="translate(HostCompany/FederalEIN,'-','')"/></Data></Cell>
@@ -1406,7 +1406,7 @@
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
-				<Cell><Data ss:Type="Number"><xsl:value-of select="format-number($line11,'#,###,##0.00')"/></Data></Cell>
+				<Cell><Data ss:Type="Number"><xsl:value-of select="format-number($deposit,'#,###,##0.00')"/></Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>
 				<Cell><Data ss:Type="Number">0</Data></Cell>
 				<Cell><Data ss:Type="String"></Data></Cell>

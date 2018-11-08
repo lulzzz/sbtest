@@ -195,7 +195,7 @@ namespace HrMaxx.OnlinePayroll.Models
 						}
 						pcCredit.Amount *= -1;
 						VoidedCreditedChecks.Add(vpc.Id);
-						if(pcCredit.Amount>0)
+						if(pcCredit.Amount<0)
 							MiscCharges.Add(pcCredit);
 						vpc.Deductions.ForEach(vpcd =>
 						{

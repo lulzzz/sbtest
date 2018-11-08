@@ -15,6 +15,7 @@ using HrMaxx.OnlinePayroll.Contracts.Messages.Events;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
 using Magnum;
@@ -31,8 +32,9 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		public readonly IMementoDataService _mementoDataService;
 		public readonly IPayrollRepository _payrollRepository;
 		public readonly ITaxationService _taxationService;
+		public readonly IMetaDataRepository _metaDataRepository ;
 
-		public ConfirmPayrollEventHandler(IReaderService readerService, IPayrollService payrollService, IJournalService journalService, IMementoDataService mementoDataService, IPayrollRepository payrollRepository, ITaxationService taxationService)
+		public ConfirmPayrollEventHandler(IReaderService readerService, IPayrollService payrollService, IJournalService journalService, IMementoDataService mementoDataService, IPayrollRepository payrollRepository, ITaxationService taxationService, IMetaDataRepository metaDataRepository)
 		{
 			_readerService = readerService;
 			_payrollService = payrollService;
@@ -40,6 +42,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			_mementoDataService = mementoDataService;
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
+			_metaDataRepository = metaDataRepository;
 		}
 
 		public void Consume(ConfirmPayrollEvent event1)
@@ -70,20 +73,30 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 				var companyPayChecks = _readerService.GetPayChecks(companyId: event1.Payroll.Company.Id, startDate: event1.Payroll.PayDay, year: event1.Payroll.PayDay.Year, isvoid: 0);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
+					event1 = ValidateCheckNumbers(event1);
 					foreach (var journal in event1.Journals)
 					{
 						var j = _journalService.SaveJournalForPayroll(journal, event1.Payroll.Company);
 						journal.Id = j.Id;
-						journal.CheckNumber = j.CheckNumber;
-						event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
+						//if (journal.CheckNumber != j.CheckNumber)
+						//{
+						//	journal.CheckNumber = j.CheckNumber;
+						//	event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
+						//	if (event1.Payroll.PEOASOCoCheck)
+						//	{
+						//		event1.PeoJournals.First(pc => pc.PayrollPayCheckId == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
+						//	}
+						//}
 					}
 					foreach (var journal in event1.PeoJournals)
 					{
 						var j = _journalService.SaveJournalForPayroll(journal, event1.Payroll.Company);
 						journal.Id = j.Id;
-						journal.CheckNumber = j.CheckNumber;
-						event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
-
+						//if (journal.CheckNumber != j.CheckNumber)
+						//{
+						//	journal.CheckNumber = j.CheckNumber;
+						//	event1.Payroll.PayChecks.First(pc => pc.Id == journal.PayrollPayCheckId).CheckNumber = journal.CheckNumber;
+						//}
 					}
 					log.AppendLine(string.Format("saved journals for Payroll {0} - {1} - {2} ", event1.Payroll.Id, event1.Payroll.Company.Name, DateTime.Now.ToString("hh:mm:ss:fff")));
 					var payCheckJournals = _payrollRepository.EnsureCheckNumberIntegrity(event1.Payroll.Id, event1.Payroll.PEOASOCoCheck);
@@ -171,6 +184,27 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 
 		}
 
-		
+		private ConfirmPayrollEvent ValidateCheckNumbers(ConfirmPayrollEvent event1)
+		{
+			var startingCheckNumber = event1.Payroll.PEOASOCoCheck
+				? _taxationService.GetPEOMaxCheckNumber() + 1
+				: _metaDataRepository.GetMaxCheckNumber(event1.Payroll.CompanyIntId, false);
+			if (startingCheckNumber != event1.Payroll.StartingCheckNumber)
+			{
+				var payCheckCount = 0;
+				if (event1.Payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)
+					event1.Payroll.PayChecks = event1.Payroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList();
+				else
+					event1.Payroll.PayChecks = event1.Payroll.PayChecks.OrderBy(pc => pc.Employee.LastName).ToList();
+				event1.Payroll.PayChecks.ForEach(paycheck =>
+				{
+					paycheck.CheckNumber = paycheck.PaymentMethod == EmployeePaymentMethod.Check ? startingCheckNumber + payCheckCount++ : -1;
+					event1.Journals.First(j => j.PayrollPayCheckId == paycheck.Id).CheckNumber = paycheck.CheckNumber.Value;
+					if(event1.Payroll.PEOASOCoCheck)
+						event1.PeoJournals.First(j => j.PayrollPayCheckId == paycheck.Id).CheckNumber = paycheck.CheckNumber.Value;
+				});
+			}
+			return event1;
+		}
 	}
 }

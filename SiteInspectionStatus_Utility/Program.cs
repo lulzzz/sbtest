@@ -33,6 +33,7 @@ using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxxAPI.Code.IOC;
 using LinqToExcel;
 using Magnum;
+using Magnum.PerformanceCounters;
 using Newtonsoft.Json;
 using BankAccount = HrMaxx.OnlinePayroll.Models.BankAccount;
 using CompanyPayCode = HrMaxx.OnlinePayroll.Models.CompanyPayCode;
@@ -127,6 +128,12 @@ namespace SiteInspectionStatus_Utility
 				case 24:
 					FixRecurringCharges(container);
 					break;
+				case 25:
+					NormalizeMasterExtractJournals(container);
+					break;
+				case 26:
+					FixInvoicesWithVoidCredits(container);
+					break;
 				default:
 					break;
 			}
@@ -134,6 +141,60 @@ namespace SiteInspectionStatus_Utility
 			Console.WriteLine("Utility run finished for ");
 		}
 
+		private static void FixInvoicesWithVoidCredits(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+
+				var payrollrepository = scope.Resolve<IPayrollRepository>();
+				var invoices = readerservice.GetPayrollInvoices(invoiceNumber: 52210);
+				var nocredits = new List<PayrollInvoice>();
+				var yescredits = new List<PayrollInvoice>();
+				var partialcredits = new List<PayrollInvoice>();
+				invoices = invoices.Where(i => i.VoidedCreditedChecks.Any() && i.ProcessedOn > new DateTime(2018, 9, 1)).ToList();
+				invoices.ForEach(i =>
+				{
+					int counter = 0;
+					i.VoidedCreditedChecks.ForEach(vc =>
+					{
+						if (i.MiscCharges.Any(mc => mc.RecurringChargeId == -1 && mc.PayCheckId == vc))
+							counter++;
+					});
+					if(counter==i.VoidedCreditedChecks.Count)
+						yescredits.Add(i);
+					else if (counter == 0 && (int)i.CompanyInvoiceSetup.InvoiceType<=2)
+					{
+						nocredits.Add(i);
+						payrollrepository.FixInvoiceVoidedCredit(i);
+						Console.WriteLine(i.InvoiceNumber);
+					}
+						
+					else
+					{
+						partialcredits.Add(i);
+					}
+
+					
+				});
+				
+				Console.WriteLine(string.Format("Total {0} No Credits {1} Yes Credits {2} Partial {3}  Min {4} {5} {6}", invoices.Count, nocredits.Count, yescredits.Count, partialcredits.Count, nocredits.Min(i=>i.ProcessedOn), yescredits.Min(i=>i.ProcessedOn), nocredits.Max(i=>i.ProcessedOn)));
+
+			}
+
+		}
+		private static void NormalizeMasterExtractJournals(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				
+				var journalrepository = scope.Resolve<IJournalRepository>();
+				var extracts = readerservice.GetExtracts();
+				extracts.ForEach(journalrepository.NormalizeExtractJournal);
+			}
+			
+		}
 		private static void SaveMasterExtractsAsFiles(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())

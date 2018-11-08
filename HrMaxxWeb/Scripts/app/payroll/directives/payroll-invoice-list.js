@@ -186,7 +186,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						if (item && item.id) {
 							payrollRepository.getInvoiceById(item.id).then(function (invoice) {
 								$scope.selectedInvoice = invoice;
-								$scope.$parent.$parent.setHostandCompanyFromInvoice(invoice.company.hostId, invoice.company);
+								$scope.$parent.$parent.setHostandCompanyFromInvoice(invoice.company.hostId, invoice.company.id);
 								$location.hash("invoice");
 								anchorSmoothScroll.scrollTo('invoice');
 							}, function (error) {

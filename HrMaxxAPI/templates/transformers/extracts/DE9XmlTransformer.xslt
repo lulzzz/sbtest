@@ -42,6 +42,7 @@
 		<xsl:variable name="ETTTax" select="format-number(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTD,'###0.00')"/>
 		<xsl:variable name="box18" select="format-number($UIContribution + $ETTContribution + $SDIContribution + $SITTax,'###0.00')"/>
 		<xsl:variable name="TotalStateTax" select="format-number($SITTax + $SUITax + $SDITax + $ETTTax,'###0.00')"/>
+		<xsl:variable name="DepositAmount" select="format-number(PayCheckAccumulations/PayCheckWages/DepositAmount,'###0.00')"/>
 		<xsl:variable name="Total" select="format-number($box18 - $TotalStateTax,'###0.00')"/>
 		<ReturnDataState xsi:schemaLocation="http://www.irs.gov/efile/ReturnDataState.xsd" xmlns="http://www.irs.gov/efile" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 			<ContentLocation>
@@ -122,7 +123,7 @@
 						<xsl:value-of select="$box18"/>
 					</TotalContributionsYear>
 				<TotalCreditsYear>
-					<xsl:value-of select="$TotalStateTax"/>
+					<xsl:value-of select="$DepositAmount"/>
 				</TotalCreditsYear>
 				
 			</StateAnnual>
