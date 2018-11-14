@@ -155,7 +155,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 				}
 				else
 				{
-					pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
+					
 					const string updatepisql =
 						@"update PayrollInvoice set MiscCharges=@MiscCharges, Total=@Total, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, Status=@Status, 
 																		SubmittedBy=@SubmittedBy, SubmittedOn	=@SubmittedOn, DeliveredBy=@DeliveredBy, DeliveredOn=@DeliveredOn, InvoiceDate=@InvoiceDate, Deductions=@Deductions, Courier=@Courier,
@@ -167,37 +167,51 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 					strLog.AppendLine("Updated Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
-						const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
-						conn.Execute(removecreditchecks, mapped);
+						strLog.AppendLine("Voided Credits " + pi.VoidedCreditChecks + "---" + mapped.VoidedCreditChecks);
+						if (!string.IsNullOrWhiteSpace(pi.VoidedCreditChecks))
+						{
+							const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
+							conn.Execute(removecreditchecks, mapped);
+							strLog.AppendLine("Removed current Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
+						}
+						
 						if (payrollInvoice.VoidedCreditedChecks.Any())
 						{
 							conn.Execute(updatecreditcheckssql,new { Id = mapped.Id, CreditChecks = payrollInvoice.VoidedCreditedChecks });
+							strLog.AppendLine("added new Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
 						}
 						
 					}
-					
-					const string removepayment = "delete from InvoicePayment where Id=@Id;";
-					const string updatepayment =
-						@"update InvoicePayment set Amount=@Amount, CheckNumber=@CheckNumber, Method=@Method, Notes=@Notes, PaymentDate=@PaymentDate, Status=@Status, 
+					strLog.AppendLine("Updated Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
+					if (pi.Status > 3)
+					{
+						strLog.AppendLine("Updating Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
+						pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
+						const string removepayment = "delete from InvoicePayment where Id=@Id;";
+						const string updatepayment =
+							@"update InvoicePayment set Amount=@Amount, CheckNumber=@CheckNumber, Method=@Method, Notes=@Notes, PaymentDate=@PaymentDate, Status=@Status, 
 LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
-					const string insertpayment = "insert into InvoicePayment(InvoiceId,PaymentDate,Method,Status,CheckNumber,Amount,Notes,LastModified,LastModifiedBy) values(@InvoiceId,@PaymentDate,@Method,@Status,@CheckNumber,@Amount,@Notes,@LastModified,@LastModifiedBy);select cast(scope_identity() as int)";
+						const string insertpayment = "insert into InvoicePayment(InvoiceId,PaymentDate,Method,Status,CheckNumber,Amount,Notes,LastModified,LastModifiedBy) values(@InvoiceId,@PaymentDate,@Method,@Status,@CheckNumber,@Amount,@Notes,@LastModified,@LastModifiedBy);select cast(scope_identity() as int)";
 
-					
-					if(pi.InvoicePayments.Any(ip=>mapped.InvoicePayments.All(mp => mp.Id != ip.Id)))
-						conn.Execute(removepayment, pi.InvoicePayments.Where(ip => mapped.InvoicePayments.All(mp => mp.Id != ip.Id)));
-					foreach (var p in pi.InvoicePayments.Where(dip => mapped.InvoicePayments.Any(mip => dip.Id == mip.Id) && payrollInvoice.InvoicePayments.Any(pip => pip.Id == dip.Id && pip.HasChanged)))
-					{
-						var matching = mapped.InvoicePayments.First(mip => mip.Id == p.Id);
-						conn.Execute(updatepayment, matching);
 
+						if (pi.InvoicePayments.Any(ip => mapped.InvoicePayments.All(mp => mp.Id != ip.Id)))
+							conn.Execute(removepayment, pi.InvoicePayments.Where(ip => mapped.InvoicePayments.All(mp => mp.Id != ip.Id)));
+						foreach (var p in pi.InvoicePayments.Where(dip => mapped.InvoicePayments.Any(mip => dip.Id == mip.Id) && payrollInvoice.InvoicePayments.Any(pip => pip.Id == dip.Id && pip.HasChanged)))
+						{
+							var matching = mapped.InvoicePayments.First(mip => mip.Id == p.Id);
+							conn.Execute(updatepayment, matching);
+
+						}
+						mapped.InvoicePayments.Where(ip => ip.Id == 0).ToList().ForEach(p =>
+						{
+							p.Id = conn.Query<int>(insertpayment, p).Single();
+						});
+						strLog.AppendLine("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					}
-					mapped.InvoicePayments.Where(ip => ip.Id == 0).ToList().ForEach(p =>
-					{
-						p.Id = conn.Query<int>(insertpayment, p).Single();
-					});
-					strLog.AppendLine("Updated Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
+					
 					if (!string.IsNullOrWhiteSpace(pi.MiscCharges))
 					{
+						strLog.AppendLine("Updating Misc charges " + DateTime.Now.ToString("hh:mm:ss:fff"));
 						var mc1s = JsonConvert.DeserializeObject<List<MiscFee>>(pi.MiscCharges);
 						payrollInvoice.MiscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc =>
 						{
@@ -214,6 +228,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 						mc1s.Where(m1 => payrollInvoice.MiscCharges.All(mc1 => mc1.RecurringChargeId != m1.RecurringChargeId)).ToList().ForEach(
 							m1 => conn.Execute(updateRecurringChargeClaimed,
 								new { Id = m1.RecurringChargeId, Claimed = -1 * m1.Amount }));
+						strLog.AppendLine("Updated Misc charges " + DateTime.Now.ToString("hh:mm:ss:fff"));
 					}
 					
 					

@@ -40,6 +40,9 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<System.DateTime> ReIssuedDate { get; set; }
         public Nullable<System.Guid> PayrollId { get; set; }
         public Nullable<int> CompanyIntId { get; set; }
+        public bool IsCleared { get; set; }
+        public string ClearedBy { get; set; }
+        public Nullable<System.DateTime> ClearedOn { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual CompanyAccount CompanyAccount { get; set; }

@@ -43,6 +43,16 @@ common.factory('journalRepository', [
 
 				return deferred.promise;
 			},
+			markJournalCleared: function (journal) {
+				var deferred = $q.defer();
+				journalServer.all('MarkJournalCleared').post(journal).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveCheck: function (check) {
 				var deferred = $q.defer();
 				journalServer.all('Journal').post(check).then(function (data) {

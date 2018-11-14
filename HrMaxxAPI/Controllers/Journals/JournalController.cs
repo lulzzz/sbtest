@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http;
@@ -11,6 +12,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxxAPI.Resources;
 using HrMaxxAPI.Resources.Journals;
 
@@ -110,6 +112,15 @@ namespace HrMaxxAPI.Controllers.Journals
 			});
 			var journal = MakeServiceCall(() => _journalService.VoidCheckbookEntry(mapped, new Guid(CurrentUser.UserId)), string.Format("void journal entry for company={0}", mapped.CompanyId));
 			return Mapper.Map<Journal, JournalResource>(journal);
+		}
+
+		[HttpPost]
+		[Route(JournalRoutes.MarkJournalCleared)]
+		public JournalResource MarkJournalCleared(JournalResource resource)
+		{
+			var journal = Mapper.Map<JournalResource, Journal>(resource);
+			var saved =  MakeServiceCall(() => _journalService.ClearJournal(journal, new Guid(CurrentUser.UserId), CurrentUser.FullName), string.Format("clear journal entry for company={0} - {1}",journal.Id, resource.TransactionTypeText));
+			return Mapper.Map<Journal, JournalResource>(saved);
 		}
 	}
 }

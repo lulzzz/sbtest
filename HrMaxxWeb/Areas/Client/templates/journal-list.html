@@ -91,6 +91,14 @@
 								<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
 									<span class="label label-warning" ng-show="item.isVoid">{{item.statusText}}</span>
 								</td>
+								<td data-title=" 'Cleared' " sortable=" 'isCleared' " class="col-sm-1 text-center" ng-click="markJournalCleared(item, $event)" ng-disabled="item.isCleared">
+									<label></label>
+									<div>
+										<label for="journal" class="switch">
+											<input id="journal" type="checkbox" ng-model="item.isCleared" ng-click="markJournalCleared(item, $event)" ng-disabled="item.isCleared" /><i></i>
+										</label>
+									</div>
+								</td>
 							</tr>
 
 						</table>

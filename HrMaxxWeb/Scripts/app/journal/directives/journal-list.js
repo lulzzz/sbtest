@@ -120,6 +120,20 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						
 
 					}
+					$scope.markJournalCleared = function (listitem, $event) {
+						if (!listitem.isCleared) {
+							$event.stopPropagation();
+							journalRepository.markJournalCleared(listitem).then(function (data) {
+								listitem.isCleared = data.isCleared;
+								listitem.clearedBy = data.clearedBy;
+								listitem.clearedOn = data.clearedOn;
+
+							}, function (error) {
+								addAlert('error marking check cleared', 'danger');
+							});
+						}
+						
+					}
 					$scope.markPrinted = function (listitem) {
 						payrollRepository.printPayCheck(listitem.documentId, listitem.payrollPayCheckId).then(function (data) {
 							var a = document.createElement('a');
@@ -128,19 +142,20 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							a.download = data.name;
 							document.body.appendChild(a);
 							a.click();
-							
+
 							payrollRepository.markPayCheckPrinted(listitem.payrollPayCheckId).then(function () {
-									
-								}, function (error) {
-									addAlert('error marking pay check as printed', 'danger');
-								});
-							
+
+							}, function (error) {
+								addAlert('error marking pay check as printed', 'danger');
+							});
+
 
 
 						}, function (error) {
 							addAlert('error printing pay check', 'danger');
 						});
 					}
+
 					$scope.printJournal = function (journal) {
 						journalRepository.printCheck(journal).then(function (data) {
 							var a = document.createElement('a');
@@ -328,7 +343,8 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							companyId: $scope.mainData.selectedCompany.id,
 							companyIntId: $scope.mainData.selectedCompany.companyIntId,
 							transactionType: transactionType,
-							paymentMethod : paymentMethod ? 2 : 1,
+							paymentMethod: paymentMethod ? 2 : 1,
+							isCleared: paymentMethod ? true : false,
 							checkNumber : paymentMethod? -1 :dataSvc.startingCheckNumber,
 							payrollPayCheckId : null,
 							entityType : null,

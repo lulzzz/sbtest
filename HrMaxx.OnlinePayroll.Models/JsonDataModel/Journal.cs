@@ -37,5 +37,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool IsReIssued { get; set; }
 		public int? OriginalCheckNumber { get; set; }
 		public DateTime? ReIssuedDate { get; set; }
+		public bool IsCleared { get; set; }
+		public string ClearedBy { get; set; }
+		public DateTime? ClearedOn { get; set; }
 	}
 }

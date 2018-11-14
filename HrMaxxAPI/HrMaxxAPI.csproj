@@ -402,9 +402,11 @@
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-2018.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-2017.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-2015.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-Employer-2018.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2017.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2015.xslt" />
@@ -521,6 +523,8 @@
     <Content Include="templates\GovtForms\1099\f1099div-2018.pdf" />
     <Content Include="templates\GovtForms\1099\f1099int-2018.pdf" />
     <Content Include="templates\GovtForms\1099\f1099msc-2018.pdf" />
+    <Content Include="templates\GovtForms\W2\W2-2018-Employer.pdf" />
+    <Content Include="templates\GovtForms\W2\W2-2018.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

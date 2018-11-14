@@ -1,4 +1,4 @@
-﻿<div class="row">
+﻿<div class="row table-responsive">
 	<div class="col-sm-12 alert alert-{{alert.type}}" ng-show="alert">
 		{{alert.message}}
 	</div>
@@ -493,7 +493,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
 			<div class="panel-heading">
 				<h3 class="panel-title">
@@ -576,7 +576,7 @@
 									<option value=""> select year</option>
 								</select>
 							</div>
-							<div class="col-sm-3"></div>
+
 							<div class="col-sm-2 form-group">
 
 								<label for="w2history" class="switch">
@@ -591,6 +591,11 @@
 									Include Clients/locations?
 									<input id="fw2clients" type="checkbox" ng-model="data.filterW2.includeClients" /><i></i>
 								</label>
+
+							</div>
+							<div class="col-sm-2 form-group">
+
+
 
 							</div>
 							<div class="col-sm-2">
@@ -613,7 +618,7 @@
 									<option value=""> select year</option>
 								</select>
 							</div>
-							<div class="col-sm-3"></div>
+
 							<div class="col-sm-2 form-group">
 
 								<label for="c1095history" class="switch">
@@ -628,6 +633,11 @@
 									Include Clients/locations?
 									<input id="fc1095clients" type="checkbox" ng-model="data.filterC1095.includeClients" /><i></i>
 								</label>
+
+							</div>
+							<div class="col-sm-2 form-group">
+
+
 
 							</div>
 							<div class="col-sm-2">
@@ -648,12 +658,20 @@
 									<option value=""> select year</option>
 								</select>
 							</div>
-							<div class="col-sm-3"></div>
+
 							<div class="col-sm-2 form-group">
 
 								<label for="payrollsummaryhistory" class="switch">
 									Include History?
 									<input id="payrollsummaryhistory" type="checkbox" ng-model="data.payrollSummary.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-2 form-group">
+
+								<label for="payrollsummarytaxdelayed" class="switch" ng-show="mainData.userRole==='SuperUser' || mainData.userRole==='Master'">
+									Include Tax Delayed?
+									<input id="payrollsummarytaxdelayed" type="checkbox" ng-model="data.payrollSummary.includeTaxDelayed" /><i></i>
 								</label>
 
 							</div>
@@ -665,7 +683,7 @@
 
 						</div>
 						<div class="col-sm-12" ng-if="data.payrollSummaryReport">
-							<table class="table table-condensed table-bordered">
+							<table class="table table-condensed table-bordered col-sm-12">
 								<thead>
 									<tr>
 										<th class="col-sm-2 text-center">Employee</th>
@@ -730,7 +748,7 @@
 							<th>Host</th>
 							<th>Company</th>
 							<th>Name</th>
-							
+
 						</tr>
 					</thead>
 					<tbody>
@@ -744,18 +762,18 @@
 							<td>
 								{{ctx.name}}
 							</td>
-							
+
 						</tr>
 					</tbody>
 				</table>
 				<span ng-show="list.length===0">No results found</span>
 			</div>
-			
+
 		</div>
 		<div class="modal-footer">
 			<button class="btn btn-xs btn-default" ng-click="cancel()">close</button>
 		</div>
-		
+
 	</script>
-	
+
 </div>

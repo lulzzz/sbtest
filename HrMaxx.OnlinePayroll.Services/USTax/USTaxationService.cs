@@ -211,7 +211,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 		public void SetPEOMaxCheckNumber(int n)
 		{
-			PEOMaxCheckNumber = n;
+			if(n>PEOMaxCheckNumber)
+				PEOMaxCheckNumber = n;
 		}
 
 		public int AddToConfirmPayrollQueue(ConfirmPayrollLogItem item)

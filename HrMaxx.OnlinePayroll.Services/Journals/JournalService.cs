@@ -21,6 +21,7 @@ using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using Magnum;
 using Magnum.FileSystem;
@@ -37,10 +38,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		private readonly ICommonService _commonService;
 		private readonly IFileRepository _fileRepository;
 		private readonly IReaderService _readerService;
-		private readonly IDocumentService _documentService;
+		private readonly IMetaDataRepository _metaDataRepository;
 		public IBus Bus { get; set; }
 
-		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository, IReaderService readerService, IDocumentService documentService)
+		public JournalService(IJournalRepository journalRepository, ICompanyService companyService, IPDFService pdfService, IMementoDataService mementoDataService, ICommonService commonService, IFileRepository fileRepository, IReaderService readerService, IMetaDataRepository metaDataRepository)
 		{
 			_journalRepository = journalRepository;
 			_companyService = companyService;
@@ -49,7 +50,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			_fileRepository = fileRepository;
 			_commonService = commonService;
 			_readerService = readerService;
-			_documentService = documentService;
+			_metaDataRepository = metaDataRepository;
 		}
 
 		public Journal SaveJournalForPayroll(Journal journal, Company company)
@@ -687,7 +688,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 					MainAccountId = bankCOA.Id,
 					JournalDetails = new List<JournalDetail>(),
 					DocumentId = Guid.Empty,
-					PEOASOCoCheck = false
+					PEOASOCoCheck = false,
+					IsCleared = false
 				};
 				//bank account debit
 
@@ -777,6 +779,29 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			
 		}
+
+		public Journal ClearJournal(Journal journal, Guid userId, string fullName)
+		{
+			try
+			{
+				journal.IsCleared = true;
+				journal.ClearedBy = fullName;
+				journal.ClearedOn = DateTime.Now;
+				_journalRepository.ClearJournal(journal);
+				var memento = Memento<Journal>.Create(journal, (EntityTypeEnum)journal.EntityType1, journal.ClearedBy, string.Format("Check Cleared {0}", journal.CheckNumber), userId);
+				_mementoDataService.AddMementoData(memento);
+					
+				return journal;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Clear Journal " + journal.Id + " " + journal.TransactionType);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			
+		}
+
 		public MasterExtract FileTaxes(Extract extract, string fullName)
 		{
 			try
@@ -964,7 +989,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				JournalDetails = new List<JournalDetail>(),
 				DocumentId = Guid.Empty,
 				PEOASOCoCheck = false,
-				CompanyIntId = companyIntId
+				CompanyIntId = companyIntId,
+				IsCleared = true,
+				ClearedBy = "System",
+				ClearedOn = DateTime.Now
 			};
 			//bank account debit
 
@@ -999,7 +1027,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				JournalDetails = new List<JournalDetail>(),
 				DocumentId = Guid.Empty,
 				PEOASOCoCheck = false,
-				CompanyIntId = companyIntId
+				CompanyIntId = companyIntId,
+				IsCleared = false
 			};
 			//bank account debit
 

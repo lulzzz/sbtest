@@ -28,15 +28,16 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						},
 						filterW2: {
 							year: 0,
-							includeHistory: true
+							includeHistory: true,
+							includeTaxDelayed: false
 						},
 						filterC1095: {
 							year: 0,
-							includeHistory: true
+							includeHistory: true, includeTaxDelayed: false
 						},
 						payrollSummary: {
 							year: 0,
-							includeHistory: true
+							includeHistory: true, includeTaxDelayed: true
 						},
 						viewVersions: $scope.mainData.hasClaim(ClaimTypes.EmployeeVersions, 1),
 						viewReports: $scope.mainData.hasClaim(ClaimTypes.EmployeeReports, 1),
@@ -495,13 +496,13 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						});
 					}
 					$scope.getReportW2Employee = function () {
-						getReport('W2Employee', 'Federal W2 (Employee version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory);
+						getReport('W2Employee', 'Federal W2 (Employee version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory, dataSvc.filterW2.includeTaxDelayed);
 					}
 					$scope.getReportW2Employer = function () {
-						getReport('W2Employer', 'Federal W2 (Employer version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory);
+						getReport('W2Employer', 'Federal W2 (Employer version)', dataSvc.filterW2.year, null, dataSvc.filterW2.includeHistory, dataSvc.filterW2.includeTaxDelayed);
 					}
 					$scope.getReportC1095 = function () {
-						getReport('C1095', 'Federal 1095-C', dataSvc.filterC1095.year, null, dataSvc.filterC1095.includeHistory);
+						getReport('C1095', 'Federal 1095-C', dataSvc.filterC1095.year, null, dataSvc.filterC1095.includeHistory, dataSvc.filterC1095.includeTaxDelayed);
 					}
 					$scope.getReportPayrollSummary = function () {
 						//getReport('PayrollSummary', 'Payroll Summary', dataSvc.payrollSummary.year, null, dataSvc.payrollSummary.includeHistory);
@@ -517,7 +518,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							startDate: moment('01/01/' + dataSvc.payrollSummary.year).format('MM/DD/YYYY'),
 							endDate: moment('12/31/' + dataSvc.payrollSummary.year).format('MM/DD/YYYY'),
 							includeHistory: dataSvc.payrollSummary.includeHistory,
-							includeClients: true
+							includeClients: true,
+							includeTaxDelayed: dataSvc.payrollSummary.includeTaxDelayed
 						}
 						reportRepository.getReport(request).then(function (data) {
 							dataSvc.payrollSummaryReport = data;
@@ -527,7 +529,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							$scope.addAlert('error getting report payroll summary report ' + error.statusText, 'danger');
 						});
 					}
-					var getReport = function (reportName, desc, year, quarter, includeHistory) {
+					var getReport = function (reportName, desc, year, quarter, includeHistory, includeTaxDelayed) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
@@ -540,7 +542,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							startDate: null,
 							endDate: null,
 							includeHistory: includeHistory,
-							includeClients: true
+							includeClients: true,
+							includeTaxDelayed: includeTaxDelayed
 						}
 						reportRepository.getReportDocument(request).then(function (data) {
 							var a = document.createElement('a');

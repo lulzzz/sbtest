@@ -29,6 +29,7 @@ using Magnum;
 using Magnum.Extensions;
 using Newtonsoft.Json;
 using CompanyTaxRate = HrMaxx.OnlinePayroll.Models.CompanyTaxRate;
+using PayType = HrMaxx.OnlinePayroll.Models.PayType;
 
 namespace HrMaxx.OnlinePayroll.Services.Payroll
 {
@@ -305,7 +306,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						paycheck.YTDSalary = Math.Round(employeeAccumulation.PayCheckWages.Salary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 						
 						var grossWage = GetGrossWage(paycheck);
-						paycheck.Compensations = ProcessCompensations(paycheck.Compensations, employeeAccumulation);
+						paycheck.Compensations = ProcessCompensations(paycheck.Compensations, employeeAccumulation, payTypes);
 						paycheck.Accumulations = ProcessAccumulations(paycheck, payroll, employeeAccumulation);
 						grossWage = Math.Round(grossWage + paycheck.CompensationTaxableAmount, 2, MidpointRounding.AwayFromZero);
 
@@ -754,7 +755,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							};
 							pttaxes.Add(pt);
 						});
-						pc.Compensations.ForEach(t =>
+						pc.Compensations.Where(pcc=>pcc.Amount>0).ToList().ForEach(t =>
 						{
 							var pt = new PayCheckCompensation()
 							{
@@ -780,7 +781,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							};
 							ptdeds.Add(pt);
 						});
-						pc.PayCodes.ForEach(t =>
+						pc.PayCodes.Where(pcc=>pcc.Amount>0 || pcc.OvertimeAmount>0).ToList().ForEach(t =>
 						{
 							var pt = new PayCheckPayCode()
 							{
@@ -1412,7 +1413,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Confirm Payroll");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Pay check " + payCheckId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1485,7 +1486,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					if (payroll.InvoiceId.HasValue && invoice != null && (forceDelete || invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
-						DeletePayrollInvoice(payroll.InvoiceId.Value, new Guid(userId), userName, string.Format("Invoice Deleted for Void Payroll {0}", forceDelete ? " - Move Payroll" : string.Empty));
+						DeletePayrollInvoice(payroll.InvoiceId.Value, new Guid(userId), userName, comment: string.Format("Invoice Deleted for Void Payroll {0}", forceDelete ? " - Move Payroll" : string.Empty), invoice: invoice);
 
 					//_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
 					payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(paycheck =>
@@ -1902,14 +1903,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 		}
 
-		public void DeletePayrollInvoice(Guid invoiceId, Guid userId, string userName, string comment = "Invoice Deleted")
+		public void DeletePayrollInvoice(Guid invoiceId, Guid userId, string userName, string comment = "Invoice Deleted", PayrollInvoice invoice = null)
 		{
 			try
 			{
-				var invoice = _readerService.GetPayrollInvoice(invoiceId);
-				_payrollRepository.DeletePayrollInvoice(invoiceId, invoice.MiscCharges);
-				var memento = Memento<PayrollInvoice>.Create(invoice, EntityTypeEnum.Invoice, userName, comment, userId);
-				_mementoDataService.AddMementoData(memento);
+				if(invoice==null)
+					invoice = _readerService.GetPayrollInvoice(invoiceId);
+				_payrollRepository.DeletePayrollInvoice(invoice.Id, invoice.MiscCharges);
+				Bus.Publish(new CreateMementoEvent<PayrollInvoice>
+				{
+					List = new List<PayrollInvoice> { invoice },
+					EntityType = EntityTypeEnum.Invoice,
+					Notes = comment,
+					UserId = userId,
+					UserName = invoice.UserName,
+					LogNotes = string.Format("Mementos (Invoice) deleted {0} - {1}", invoice.Id, invoice.Company.Name)
+				});
+				
 			}
 			catch (Exception e)
 			{
@@ -2928,7 +2938,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				JournalDetails = new List<JournalDetail>(),
 				DocumentId =  Guid.Empty,
 				PEOASOCoCheck = PEOASOCoCheck,
-				PayrollId = payroll.Id
+				PayrollId = payroll.Id,
+				IsCleared = pc.PaymentMethod == EmployeePaymentMethod.DirectDebit,
+				ClearedBy = pc.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "System" : string.Empty,
+				ClearedOn = pc.PaymentMethod == EmployeePaymentMethod.DirectDebit ? DateTime.Now : default(DateTime?),
 			};
 			//bank account debit
 			
@@ -2948,7 +2961,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 		
-		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, Accumulation employeeAccumulation)
+		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, Accumulation employeeAccumulation, IList<PayType> payTypes)
 		{
 			var previousComps = employeeAccumulation.Compensations ?? new List<PayCheckCompensation>();
 			compensations.ForEach(c =>
@@ -2956,6 +2969,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				c.Amount = Math.Round(c.Amount, 2, MidpointRounding.AwayFromZero);
 				c.YTD = Math.Round(previousComps.Where(ppc => c.PayType.Id == ppc.PayTypeId).Sum(ppc => ppc.YTD) + c.Amount, 2, MidpointRounding.AwayFromZero);
 			});
+			previousComps.Where(pc=>compensations.All(c => c.PayType.Id != pc.PayTypeId) && pc.YTD>0).ToList().ForEach(pc => compensations.Add(new PayrollPayType
+			{
+				Amount=0, Rate = 0, YTD = pc.YTD, Hours = 0, PayType = payTypes.First(t=>t.Id==pc.PayTypeId)
+			}));
 			return compensations;
 		} 
 		private List<PayrollPayCode> ProcessPayCodes(List<PayrollPayCode> payCodes, PayCheck paycheck, Accumulation employeeAccumulation)
@@ -3086,6 +3103,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				localGrossWage -= d.Amount;
 			});
+			
 			return payCheck.Deductions;
 		}
 		

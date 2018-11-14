@@ -8,5 +8,6 @@
 		public const string AccountWithJournalList = "Journal/Accounts";
 		public const string VoidJournal = "Journal/Void";
 		public const string Print = "Journal/Print";
+		public const string MarkJournalCleared = "Journal/MarkJournalCleared";
 	}
 }

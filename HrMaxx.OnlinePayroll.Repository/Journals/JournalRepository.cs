@@ -252,6 +252,18 @@ namespace HrMaxx.OnlinePayroll.Repository.Journals
 			}
 		}
 
+		public void ClearJournal(Models.Journal journal)
+		{
+			const string sqlpayroll =
+				"update Journal set IsCleared=@IsCleared, ClearedBy=@ClearedBy, ClearedOn=getdate() where PayrollPayCheckId=@PayrollPayCheckId;";
+			const string sqlcheckbook =
+				"update CheckbookJournal set IsCleared=@IsCleared, ClearedBy=@ClearedBy, ClearedOn=getdate() where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(journal.TransactionType==TransactionType.PayCheck ? sqlpayroll : sqlcheckbook, new { Id=journal.Id, PayrollPayCheckId = journal.PayrollPayCheckId, IsCleared = journal.IsCleared, ClearedBy = journal.ClearedBy});
+			}
+		}
+
 
 		public MasterExtract SaveMasterExtract(MasterExtract masterExtract, List<int> payCheckIds, List<int> voidedCheckIds, List<Models.Journal> journalList)
 		{

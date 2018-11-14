@@ -43,7 +43,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		//Invoice
 		PayrollInvoice CreatePayrollInvoice(Payroll payroll, string fullName, Guid userId, bool fetchCompany);
 		PayrollInvoice SavePayrollInvoice(PayrollInvoice invoice);
-		void DeletePayrollInvoice(Guid invoiceId, Guid userId, string userName, string comment = "Invoice Deleted");
+		void DeletePayrollInvoice(Guid invoiceId, Guid userId, string userName, string comment = "Invoice Deleted", PayrollInvoice invoice = null);
 		PayrollInvoice RecreateInvoice(Guid invoiceId, string fullName, Guid guid);
 		PayrollInvoice DelayTaxes(Guid invoiceId, string fullName);
 		PayrollInvoice RedateInvoice(PayrollInvoice invoice);
