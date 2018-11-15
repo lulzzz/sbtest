@@ -165,21 +165,25 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 					
 					conn.Execute(updatepisql, mapped);
 					strLog.AppendLine("Updated Invoice " + DateTime.Now.ToString("hh:mm:ss:fff"));
-					if (pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
+					if (!string.IsNullOrWhiteSpace(pi.VoidedCreditChecks) && pi.VoidedCreditChecks!=mapped.VoidedCreditChecks)
 					{
+						var dbInvoiceVoidedCredits = JsonConvert.DeserializeObject<List<int>>(pi.VoidedCreditChecks);
 						strLog.AppendLine("Voided Credits " + pi.VoidedCreditChecks + "---" + mapped.VoidedCreditChecks);
-						if (!string.IsNullOrWhiteSpace(pi.VoidedCreditChecks))
-						{
-							const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id";
-							conn.Execute(removecreditchecks, mapped);
-							strLog.AppendLine("Removed current Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
-						}
 						
-						if (payrollInvoice.VoidedCreditedChecks.Any())
+						if (dbInvoiceVoidedCredits.Any(ip => payrollInvoice.VoidedCreditedChecks.All(mp => mp != ip)))
 						{
-							conn.Execute(updatecreditcheckssql,new { Id = mapped.Id, CreditChecks = payrollInvoice.VoidedCreditedChecks });
-							strLog.AppendLine("added new Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
+							var removeVoidedCredits =
+								dbInvoiceVoidedCredits.Where(ip => payrollInvoice.VoidedCreditedChecks.All(mp => mp != ip)).ToList();
+							const string removecreditchecks = "update PayrollPayCheck set CreditInvoiceId=null where Id in @CreditChecks";
+							conn.Execute(removecreditchecks, new { CreditChecks = removeVoidedCredits });
+							strLog.AppendLine("Removed Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
 						}
+
+						//if (payrollInvoice.VoidedCreditedChecks.Any(ip => dbInvoiceVoidedCredits.All(mp => mp != ip)))
+						//{
+						//	conn.Execute(updatecreditcheckssql, new { Id = mapped.Id, CreditChecks = payrollInvoice.VoidedCreditedChecks.Where(ip => dbInvoiceVoidedCredits.All(mp => mp != ip)).ToList() });
+						//	strLog.AppendLine("added new Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
+						//}
 						
 					}
 					strLog.AppendLine("Updated Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
