@@ -183,7 +183,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 						
 					}
 					strLog.AppendLine("Updated Voided Credits " + DateTime.Now.ToString("hh:mm:ss:fff"));
-					if (pi.Status > 3)
+					if (pi.Status > 2)
 					{
 						strLog.AppendLine("Updating Payments " + DateTime.Now.ToString("hh:mm:ss:fff"));
 						pi.InvoicePayments = conn.Query<Models.DataModel.InvoicePayment>(pipaysql, new { Id = pi.Id }).ToList();
