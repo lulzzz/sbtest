@@ -30,5 +30,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		ImportMap GetCompanyTsImportMap(Guid companyId);
 		List<VendorCustomer> GetGarnishmentAgencies();
 		int GetMaxRegularCheckNumber(int companyId);
+		int GetMaxCheckNumberWithoutPayroll(int companyIntId, Guid id);
 	}
 }

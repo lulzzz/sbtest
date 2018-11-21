@@ -218,7 +218,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Amount { get; set; }
 		public decimal? AnnualLimit { get; set; }
 		public string Description { get; set; }
-		public decimal Claimed { get; set; } 
+		public decimal Claimed { get; set; }
+		public bool IsPaidInFull { get; set; }
+		public string Comments { get; set; }
 	}
 
 }

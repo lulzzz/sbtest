@@ -168,6 +168,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				recurringCharge.Amount = rc.Amount;
 				recurringCharge.AnnualLimit = rc.AnnualLimit;
 				recurringCharge.OldId = rc.OldId;
+				recurringCharge.IsPaidInFull = rc.IsPaidInFull;
+				recurringCharge.Comments = rc.Comments;
 			}
 			foreach (var rc1 in dbrc.Where(rc=>!mapped.Any(r=>r.Id==rc.Id)))
 			{

@@ -335,7 +335,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		private void CalculateRecurringCharges(Payroll payroll, Company company)
 		{
-			company.RecurringCharges.ForEach(rc =>
+			company.RecurringCharges.Where(r=>!r.IsPaidInFull).ToList().ForEach(rc =>
 			{
 				var calcAmount = rc.Amount;
 				

@@ -147,64 +147,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 					
 				}
 			}
-			//using (var conn = GetConnection())
-			//{
-			//	dynamic result =
-			//		conn.Query(sql, new { CompanyId = companyId, TransactionType=(int)TransactionType.PayCheck, IsPEO = isPeo }).FirstOrDefault();
-
-			//	if (result!=null && result.maxnumber != null)
-			//	{
-
-			//		var max = result.maxnumber + 1;
-			//		if (isPeo && max < 100001)
-			//		{
-			//			max = 100001 + max;
-			//		}
-			//		else
-			//		{
-			//			if (max < 1001)
-			//				max = 1001;
-			//		}
-
-			//		return max;
-			//	}
-			//	else
-			//	{
-			//		if (isPeo)
-			//		{
-			//			return 100001;
-			//		}
-			//		else
-			//			return 1001;
-			//	}
-			//}
 			
-			//var journals = _dbContext.Journals.Where(p => p.CompanyId == companyId && !p.IsVoid && p.TransactionType==(int)TransactionType.PayCheck).Select(j=>j.CheckNumber).ToList();
-			//if (journals.Any())
-			//{
-			//	var max = journals.Max(p => p) + 1;
-
-			//	if ((companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73")) && max < 100001)
-			//	{
-			//		max = 100001 + max;
-			//	}
-			//	else
-			//	{
-			//		if (max < 1001)
-			//			max = 1001;
-			//	}
-
-			//	return max;
-			//}
-			//else
-			//{
-			//	if (companyId == new Guid("DB5D88AE-0DF5-4561-A543-A6E200DC8092") || companyId == new Guid("50423097-59B6-425B-9964-A6E200DCAAAC") || companyId == new Guid("C0548C98-E69A-4D47-9302-A6E200DDBA73"))
-			//	{
-			//		return 100001;
-			//	}
-			//	else
-			//		return 1001;
-			//}
 			
 		}
 
@@ -399,6 +342,29 @@ namespace HrMaxx.OnlinePayroll.Repository
 				else
 				{
 					return 101;
+				}
+			}
+		}
+
+		public int GetMaxCheckNumberWithoutPayroll(int companyIntId, Guid payrollId)
+		{
+
+			string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" + companyIntId + " and PayrollId<>'" + payrollId + "';";
+
+
+			using (var con = new SqlConnection(_sqlCon))
+			{
+				using (var cmd = new SqlCommand(nonpeosql))
+				{
+					cmd.Connection = con;
+					con.Open();
+					var result = (int)cmd.ExecuteScalar();
+
+					var max = result + 1;
+					if (max < 1001)
+							max = 1001;
+					return max;
+
 				}
 			}
 		}

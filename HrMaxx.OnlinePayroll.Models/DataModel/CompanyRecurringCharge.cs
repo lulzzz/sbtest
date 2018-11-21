@@ -22,6 +22,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public decimal Amount { get; set; }
         public Nullable<decimal> AnnualLimit { get; set; }
         public decimal Claimed { get; set; }
+        public bool IsPaidInFull { get; set; }
+        public string Comments { get; set; }
     
         public virtual Company Company { get; set; }
     }

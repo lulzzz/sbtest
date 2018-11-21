@@ -231,6 +231,8 @@
           <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="AnnualLimit" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Claimed" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="IsPaidInFull" Type="bit" Nullable="false" />
+          <Property Name="Comments" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -3088,6 +3090,8 @@
           <Property Name="AnnualLimit" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Claimed" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyRecurringCharge_Company" FromRole="CompanyRecurringCharge" ToRole="Company" />
+          <Property Name="IsPaidInFull" Type="Boolean" Nullable="false" />
+          <Property Name="Comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_CompanyRecurringCharge_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3812,6 +3816,8 @@
           <EntitySetMapping Name="CompanyRecurringCharges">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyRecurringCharge">
               <MappingFragment StoreEntitySet="CompanyRecurringCharge">
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="IsPaidInFull" ColumnName="IsPaidInFull" />
                 <ScalarProperty Name="Claimed" ColumnName="Claimed" />
                 <ScalarProperty Name="AnnualLimit" ColumnName="AnnualLimit" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />

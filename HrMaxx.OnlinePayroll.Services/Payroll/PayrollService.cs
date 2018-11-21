@@ -1772,7 +1772,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					
 					var payrollInvoice = new PayrollInvoice { Id = invoice.Id, UserName = fullName, UserId = userId, LastModified = DateTime.Now, ProcessedBy = payroll.UserName, InvoiceNumber = invoice.InvoiceNumber};
-					_payrollRepository.DeletePayrollInvoice(invoiceId, invoice.MiscCharges);
+					_payrollRepository.DeletePayrollInvoice(invoiceId, invoice.MiscCharges, invoice);
 					var recreated = CreateInvoice(payroll, payrollInvoice, true);
 					var memento = Memento<PayrollInvoice>.Create(recreated, EntityTypeEnum.Invoice, recreated.UserName, string.Format("Invoice Re-Created"), recreated.UserId);
 					_mementoDataService.AddMementoData(memento);
@@ -1909,7 +1909,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				if(invoice==null)
 					invoice = _readerService.GetPayrollInvoice(invoiceId);
-				_payrollRepository.DeletePayrollInvoice(invoice.Id, invoice.MiscCharges);
+				_payrollRepository.DeletePayrollInvoice(invoice.Id, invoice.MiscCharges, invoice);
 				Bus.Publish(new CreateMementoEvent<PayrollInvoice>
 				{
 					List = new List<PayrollInvoice> { invoice },

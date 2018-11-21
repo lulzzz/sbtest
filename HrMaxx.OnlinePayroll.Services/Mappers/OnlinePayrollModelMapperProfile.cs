@@ -211,6 +211,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.OldId, opt => opt.MapFrom(src => src.Id))
 				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
 				.ForMember(dest => dest.Claimed, opt => opt.Ignore())
+				.ForMember(dest => dest.IsPaidInFull, opt => opt.Ignore())
+				.ForMember(dest => dest.Comments, opt => opt.Ignore())
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TableId));
 
 			CreateMap<Models.DataModel.CompanyTaxState, Models.CompanyTaxState>()

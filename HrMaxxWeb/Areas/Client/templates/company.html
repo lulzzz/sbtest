@@ -614,19 +614,20 @@
 												</div>
 											</div>
 											<div class="row" ng-if="selectedCompany.contract.billingOption===3">
-												<div class="col-sm-4"></div>
-												<div class="col-sm-8">
+												<div class="col-sm-12">
 													<div class="row"><h5>Recurring Charges <i class="fa fa-lg fa-plus-circle" ng-click="addRecurringCharge()"></i></h5></div>
 													<div class="row" ng-show="selectedCompany.recurringCharges.length===0">No recurring charges have been setup</div>
 													<div class="row" ng-show="selectedCompany.recurringCharges.length>0">
 														<table class="table table-bordered table-condensed">
 															<thead>
 																<tr>
-																	<th class="col-sm-5">Description</th>
-																	<th class="col-sm-2">Year</th>
-																	<th class="col-sm-2">Amount</th>
-																	<th class="col-sm-2">Annual Limit</th>
-																	<th>Claimed</th>
+																	<th class="col-sm-4">Description</th>
+																	<th class="col-sm-1">Year</th>
+																	<th class="col-sm-1">Amount</th>
+																	<th class="col-sm-1">Annual Limit</th>
+																	<th class="col-sm-1">Claimed</th>
+																	<th class="col-sm-1">Paid In Full?</th>
+																	<th class="col-sm-2">Comments</th>
 																	<th></th>
 																</tr>
 																<tr ng-repeat="rc in selectedCompany.recurringCharges track by $index">
@@ -635,6 +636,15 @@
 																	<td><input data-parsely-type="number" ng-model="rc.amount" class="form-control" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-disabled="rc.id>0  || rc.claimed>0"></td>
 																	<td><input data-parsely-type="number" ng-model="rc.annualLimit" class="form-control" data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" ng-disabled="rc.id>0 || rc.claimed>0" /></td>
 																	<td>{{rc.claimed | currency:'$'}}</td>
+																	<td><div>
+																				<label></label>
+																				<div>
+																					<label for="rcPaidInFull{{$index}}" class="switch">
+																						<input id="rcPaidInFull{{$index}}" type="checkbox" ng-model="rc.isPaidInFull" ng-disabled="!rc.hasChanged && rc.isPaidInFull" ng-change="rc.hasChanged=true" /><i></i>
+																					</label>
+																				</div>
+																	    </div></td>
+																	<td><input type="text" ng-model="rc.comments" class="form-control" data-parsley-group="wizard-step-4" /></td>
 																	<td><i class="fa fa-remove" ng-click="removeRecurringCharge(rc, $index)" ng-show="!rc.id || rc.claimed===0"></i></td>
 																</tr>
 															</thead>
@@ -644,8 +654,8 @@
 											</div>
 											
 											<div class="row" ng-if="selectedCompany.contract.billingOption===3">
-												<div class="col-sm-4"></div>
-												<div class="col-sm-8">
+												
+												<div class="col-sm-12">
 													<div class="row"><h5>Sales Representative(s) <i class="fa fa-lg fa-plus-circle" ng-show="!selectedCompany.contract.invoiceSetup.salesRep" ng-click="addSalesRep()"></i></h5></div>
 													<div class="row" ng-show="!selectedCompany.contract.invoiceSetup.salesRep">No sales rep have been setup</div>
 													<div class="row" ng-if="selectedCompany.contract.invoiceSetup.salesRep">

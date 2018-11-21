@@ -11,8 +11,8 @@ Alter table CheckbookJournal Add IsCleared bit not null Default(0), ClearedBy va
 
 Go
 
-Update Journal set IsCleared=1, ClearedBy='System', ClearedOn=getdate();
-Update CheckbookJournal set IsCleared=1, ClearedBy='System', ClearedOn=getdate();
+--Update Journal set IsCleared=1, ClearedBy='System', ClearedOn=getdate();
+--Update CheckbookJournal set IsCleared=1, ClearedBy='System', ClearedOn=getdate();
 Go
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[Journal]') AND name = N'IX_JournalIsCleared')
 CREATE NONCLUSTERED INDEX [IX_JournalIsCleared] ON [dbo].[Journal]
@@ -98,13 +98,7 @@ BEGIN
       ,[MainAccountId]
       ,[TransactionDate]
       ,[LastModified]
-      ,[LastModifiedBy],'
-	  if @includeDetails=1 
-		set @query = @query + '[JournalDetails] as JournalDetails, '
-		else 
-		set @query = @query + ''''' as JournalDetails, '
-      --,case when @includeDetails=1 then [JournalDetails] else '' end as JournalDetails
-      set @query = @query + '[DocumentId]
+      ,[LastModifiedBy],[JournalDetails] as JournalDetails, [DocumentId]
       ,[PEOASOCoCheck]
       ,[OriginalDate]
       ,[IsReIssued]

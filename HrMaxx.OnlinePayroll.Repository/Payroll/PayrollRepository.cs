@@ -274,7 +274,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 
 		public void FixInvoiceVoidedCredit(PayrollInvoice payrollInvoice)
 		{
-			const string update1 = "update PayrollPayCheck set CreditInvoiceId=null where CreditInvoiceId=@Id; update PayrollInvoice set VoidedCreditChecks='' where Id=@Id";
+			const string update1 = "update PayrollPayCheck set CreditInvoiceId=null where Id in =@VoidedCreditedChecks; update PayrollInvoice set VoidedCreditChecks='' where Id=@Id";
 			
 			using (var conn = GetConnection())
 			{
@@ -284,14 +284,14 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		}
 
 
-		public void DeletePayrollInvoice(Guid invoiceId, List<MiscFee> miscCharges)
+		public void DeletePayrollInvoice(Guid invoiceId, List<MiscFee> miscCharges, PayrollInvoice invoice)
 		{
 			const string delete =
-				"update payroll set invoiceid=null where invoiceId=@Id;update payrollpaycheck set creditinvoiceid=null where creditinvoiceid=@Id;update payrollpaycheck set invoiceid=null where invoiceid=@Id;delete from payrollinvoice where Id=@Id; ";
+				"update payroll set invoiceid=null where invoiceId=@Id;update PayrollPayCheck set CreditInvoiceId=null where Id in @CreditChecks;update payrollpaycheck set invoiceid=null where payrollid=@PayrollId;delete from payrollinvoice where Id=@Id; ";
 			const string updateRecurringChargeClaimed = "update CompanyRecurringCharge set Claimed=(Claimed+@Claimed) where Id=@Id;";
 			using (var conn = GetConnection())
 			{
-				conn.Execute(delete, new { Id =invoiceId });
+				conn.Execute(delete, new { Id =invoiceId, CreditChecks=invoice.VoidedCreditedChecks, PayrollId = invoice.PayrollId });
 				miscCharges.Where(mc => mc.RecurringChargeId > 0).ToList().ForEach(mc => conn.Execute(updateRecurringChargeClaimed,
 					new { Id = mc.RecurringChargeId, Claimed = -1*mc.Amount }));
 			}
