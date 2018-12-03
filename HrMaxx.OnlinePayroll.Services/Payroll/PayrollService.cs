@@ -435,7 +435,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
-						? CalculatePayTypeUsage(paycheck.Employee,
+						? CalculatePayTypeUsage(paycheck,
 							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
 						: (decimal) 0;
 					var accumulationValue = (decimal) 0;
@@ -539,7 +539,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
-						? CalculatePayTypeUsage(paycheck.Employee,
+						? CalculatePayTypeUsage(paycheck,
 							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
 						: (decimal)0;
 					var accumulationValue = (decimal)0;
@@ -578,8 +578,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			return result;
 		}
 
-		private decimal CalculatePayTypeUsage(Employee employee, decimal compnesaitonAmount)
+		private decimal CalculatePayTypeUsage(PayCheck payCheck, decimal compnesaitonAmount)
 		{
+			var employee = payCheck.Employee;
 			var quotient = employee.Rate;
 			if (employee.PayType == EmployeeType.Salary)
 			{
@@ -594,7 +595,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			else if (employee.PayType == EmployeeType.PieceWork || employee.PayType == EmployeeType.JobCost)
 			{
-				quotient = employee.Rate;
+				if (employee.PayrollSchedule == PayrollSchedule.Weekly)
+					quotient = payCheck.Salary / (40);
+				else if (employee.PayrollSchedule == PayrollSchedule.BiWeekly)
+					quotient = (payCheck.Salary * 26) / (40 * 52);
+				else if (employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
+					quotient = (payCheck.Salary * 24) / (40 * 52);
+				else if (employee.PayrollSchedule == PayrollSchedule.Monthly)
+					quotient = (payCheck.Salary * 12) / (40 * 52);
 			}
 			else
 			{
@@ -610,6 +618,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 		private decimal CalculatePayTypeAccumulation(PayCheck paycheck, AccumulatedPayType payType, decimal ytd)
 		{
+			const decimal perDayQuotient = (decimal)5.70;
 			if (payType.IsLumpSum)
 			{
 				return payType.AnnualLimit - ytd;
@@ -619,11 +628,27 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours)*payType.RatePerHour;
 			}
+			else if (paycheck.Employee.PayType == EmployeeType.JobCost)
+			{
+				var val = perDayQuotient * payType.RatePerHour;
+				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
+					return 7 * val;
+				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
+					return 14 * val;
+				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
+					return 15 * val;
+				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Monthly)
+					return DateTime.DaysInMonth(paycheck.PayDay.Year, paycheck.PayDay.Month) * val;
+				else
+				{
+					return 0;
+				}
+			}
 			else
 			{
 				if (paycheck.Employee.Rate <= 0)
 					return 0;
-				const decimal perDayQuotient = (decimal)5.70;
+				
 				var val = (paycheck.Salary/paycheck.Employee.Rate)*perDayQuotient*payType.RatePerHour;
 				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
 					return 7*val;

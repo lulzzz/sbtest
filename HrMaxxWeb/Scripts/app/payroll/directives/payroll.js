@@ -565,8 +565,11 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 			if (accPayType.length === 0) {
 				if (paytype.id === 6 && $scope.original.employee.carryOver>0) {
 					var hrs = $scope.original.employee.carryOver;
-					if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3 || $scope.original.employee.payType === 4) {
+					if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3) {
 						accumulated = hrs * $scope.original.employee.rate;
+					}
+					if ($scope.original.employee.payType === 4) {
+						accumulated = hrs * $scope.original.salary;
 					}
 					else if ($scope.original.employee.payType === 2) {
 						var rate = $scope.original.employee.rate;
@@ -584,10 +587,16 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 				var accumulated = 0;
 				var sorted = $filter('orderBy')(accPayType, 'fiscalEnd', true);
 				var hrs = sorted[0].available;
-				if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3 || $scope.original.employee.payType === 4) {
+				if ($scope.original.employee.payType === 1 || $scope.original.employee.payType === 3) {
 					accumulated = hrs * $scope.original.employee.rate;
 				}
-				else if ($scope.original.employee.payType === 2) {
+				else if ($scope.original.employee.payType === 4) {
+					var rate = $scope.original.salary;
+					var schedule = $scope.original.employee.payrollSchedule;
+					var quotient = schedule === 1 ? 52 : schedule === 2 ? 26 : schedule === 3 ? 24 : 12;
+					accumulated = hrs * rate * (quotient / (40 * 52));
+					
+				} else if ($scope.original.employee.payType === 2) {
 					var rate = $scope.original.employee.rate;
 					var schedule = $scope.original.employee.payrollSchedule;
 					var quotient = schedule === 1 ? 52 : schedule === 2 ? 26 : schedule === 3 ? 24 : 12;

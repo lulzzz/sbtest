@@ -185,10 +185,9 @@ namespace HrMaxxAPI.Controllers.User
 						userExists.PhoneNumber = model.Phone;
 						userExists.LastModified = DateTime.Now;
 						userExists.LastModifiedBy = model.UserName;
-
+						userExists.Active = model.Active;
 						if (userExists.Email != model.Email)
 						{
-							userExists.Active = false;
 							userExists.EmailConfirmed = false;
 						}
 						userExists.Email = model.Email;
@@ -200,7 +199,7 @@ namespace HrMaxxAPI.Controllers.User
 							model.Claims.Where(c => userExists.Claims.All(mc => mc.ClaimType != c.ClaimType))
 								.Select(c => new Claim(c.ClaimType, c.ClaimValue))
 								.ToList();
-						if (removeClaims.Any() || addclaims.Any())
+						if (removeClaims.Any() || addclaims.Any() || !userExists.EmailConfirmed)
 						{
 							_userService.UpdateClaims(userExists.Id,
 							addclaims,
@@ -216,12 +215,15 @@ namespace HrMaxxAPI.Controllers.User
 							await UserManager.AddToRoleAsync(userExists.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
 						}
 
-						
-						
-						
-						
+
+
+
+
 						if (!userExists.EmailConfirmed)
+						{
 							await SendEmailConfirmationTokenAsync(userExists.Id, "Confirm your account");
+						}
+							
 
 						var memento = Memento<ApplicationUser>.Create(userExists, EntityTypeEnum.Company, CurrentUser.FullName, "User Updated", new Guid(CurrentUser.UserId));
 						_mementoDataService.AddMementoData(memento);

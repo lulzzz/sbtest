@@ -382,6 +382,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\reports\1099\F1099.xslt" />
+    <Content Include="templates\transformers\reports\940\Fed940-2018.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\940\Fed940-2017.xslt">
       <SubType>Designer</SubType>
     </Content>
@@ -410,6 +413,7 @@
     <Content Include="templates\transformers\reports\W2\W2-Employer-2017.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2016.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer-2015.xslt" />
+    <Content Include="templates\transformers\reports\W3\W3-2018.xslt" />
     <Content Include="templates\transformers\reports\W3\W3-2017.xslt" />
     <Content Include="templates\transformers\reports\W3\W3-2016.xslt" />
     <Content Include="templates\transformers\reports\W3\W3-2015.xslt" />
@@ -525,6 +529,9 @@
     <Content Include="templates\GovtForms\1099\f1099msc-2018.pdf" />
     <Content Include="templates\GovtForms\W2\W2-2018-Employer.pdf" />
     <Content Include="templates\GovtForms\W2\W2-2018.pdf" />
+    <Content Include="templates\GovtForms\940\f940-2018.pdf" />
+    <Content Include="templates\GovtForms\940\f940sa-2018.pdf" />
+    <Content Include="templates\GovtForms\W3\W3-2018.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">
