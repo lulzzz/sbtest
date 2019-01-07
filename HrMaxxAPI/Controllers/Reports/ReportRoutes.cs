@@ -29,5 +29,6 @@
 		public const string CreateDepositTickets = "Reports/CreateDepositTickets";
 		public const string CommissionsReport = "Reports/CommissionsReport";
 		public const string PayCommissions = "Reports/PayCommissions";
+		public const string MinWageEligibilityReport = "Reports/MinWageEligibilityReport";
 	}
 }

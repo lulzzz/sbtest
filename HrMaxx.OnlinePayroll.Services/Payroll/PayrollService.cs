@@ -97,6 +97,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						payroll.PayChecks = payroll.PayChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo).ToList();
 					else
 						payroll.PayChecks = payroll.PayChecks.OrderBy(pc => pc.Employee.LastName).ToList();
+
+					_taxationService.EnsureTaxTablesForPayDay(payroll.PayDay.Year);
 					foreach (var paycheck in payroll.PayChecks.Where(pc=>pc.Included))
 					{
 						paycheck.CompanyIntId = payroll.Company.CompanyIntId;

@@ -18,6 +18,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						$scope.$parent.$parent.addAlert(error, type);
 					};
 					var dataSvc = {
+						taxTableYears: [],
 						currentYear: new Date().getFullYear(),
 						taxTables: null,
 						originalTaxTables: null,
@@ -50,14 +51,24 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						
 					}
 					
-					var getTaxTables = function() {
-						commonRepository.getTaxTables().then(function (data) {
+					$scope.getTaxTables = function() {
+						commonRepository.getTaxTables(dataSvc.selectedYear).then(function (data) {
 							dataSvc.originalTaxTables = data;
 							dataSvc.taxTables = angular.copy(data);
 							
 						}, function (error) {
 							$scope.list = [];
 							addAlert('error in getting tax rates ', 'danger');
+						});
+					}
+					var getTaxTableYears = function () {
+						commonRepository.getTaxTableYears().then(function (data) {
+							dataSvc.taxTableYears = data;
+							//dataSvc.taxTables = angular.copy(data);
+
+						}, function (error) {
+							$scope.list = [];
+							addAlert('error in getting tax table years ', 'danger');
 						});
 					}
 					$scope.cancel = function () {
@@ -285,7 +296,8 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 					}
 					var _init = function () {
 						$scope.mainData.showFilterPanel = false;
-						getTaxTables();
+						//getTaxTables();
+						getTaxTableYears();
 
 					}
 					_init();

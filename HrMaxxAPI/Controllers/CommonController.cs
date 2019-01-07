@@ -174,10 +174,17 @@ namespace HrMaxxAPI.Controllers
 		}
 
 		[HttpGet]
-		[Route(HrMaxxRoutes.GetTaxes)]
-		public USTaxTables GetTaxes()
+		[Route(HrMaxxRoutes.GetTaxTableYear)]
+		public List<int> GetTaxTableYear()
 		{
-			return MakeServiceCall(() => _taxationService.GetTaxTables(), "Tax Tables", true);
+			return MakeServiceCall(() => _taxationService.GetTaxTableYears(), "Tax Tables Years", true);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.GetTaxes)]
+		public USTaxTables GetTaxes(int year)
+		{
+			return MakeServiceCall(() => _taxationService.GetTaxTables(year), "Tax Tables", true);
 		}
 
 		[HttpPost]

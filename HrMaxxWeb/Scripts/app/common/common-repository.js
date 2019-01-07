@@ -327,9 +327,19 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
-			getTaxTables: function () {
+			getTaxTables: function (year) {
 				var deferred = $q.defer();
-				commonServer.one('GetTaxes').get().then(function (data) {
+				commonServer.one('GetTaxes/' + year).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getTaxTableYears: function () {
+				var deferred = $q.defer();
+				commonServer.one('GetTaxTableYears').get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

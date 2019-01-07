@@ -39,11 +39,12 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		
 		void SaveTSImportMap(Guid id, ImportMap importMap);
 		Company SaveLocation(CompanyLocation mappedResource, string fullName, Guid guid);
-		void RaiseMinWage(decimal minWage);
+		void RaiseMinWage(MinWageEligibilityCriteria minWage, string user, Guid userId);
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
 		void UpdateWCRates(List<CompanyWorkerCompensation> rates, string fullName, Guid guid);
 		List<EmployeeSSNCheck> CheckSSN(string ssn);
 		void BulkTerminateEmployees(Guid companyId, List<Guid> employees, string userId, string name);
-		
+
+		Account GetComanyAccountById(Guid companyId, int accountId);
 	}
 }

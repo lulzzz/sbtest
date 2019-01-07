@@ -1200,6 +1200,29 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
+	  public List<MinWageEligibileCompany> GetMinWageEligibilityReport(MinWageEligibilityCriteria criteria)
+	  {
+		  try
+		  {
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "contractType", Value = criteria.ContractType.ToString() });
+				if(criteria.MinWage.HasValue)
+					paramList.Add(new FilterParam { Key = "minWage", Value = criteria.MinWage.Value.ToString() });
+				paramList.Add(new FilterParam { Key = "statusId", Value = criteria.StatusId.ToString() });
+				paramList.Add(new FilterParam { Key = "payrollYear", Value = criteria.PayrollYear.ToString() });
+				if (!string.IsNullOrWhiteSpace(criteria.City))
+					paramList.Add(new FilterParam { Key = "city", Value = criteria.City.Trim().ToLower() });
+
+				return GetDataFromStoredProc<List<MinWageEligibileCompany>, List<MinWageEligibileCompany>>("GetMinWageEligibleCompanies", paramList, new XmlRootAttribute("MinWageEligibleCompanyList"));
+		  }
+		  catch (Exception e)
+		  {
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " min Wage eligible comanies");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+		  }
+	  }
+
 	  public CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request)
 	  {
 			try

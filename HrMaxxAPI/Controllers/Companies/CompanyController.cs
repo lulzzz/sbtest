@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Mvc;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Files;
@@ -19,6 +20,7 @@ using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.Common;
 using HrMaxxAPI.Resources.OnlinePayroll;
 using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 
 namespace HrMaxxAPI.Controllers.Companies
 {
@@ -41,8 +43,8 @@ namespace HrMaxxAPI.Controllers.Companies
 		  _readerService = readerService;
 	  }
 
-	  [HttpGet]
-	  [Route(CompanyRoutes.FixEmployeePayCodes)]
+	  [System.Web.Http.HttpGet]
+	  [System.Web.Http.Route(CompanyRoutes.FixEmployeePayCodes)]
 	  public HttpStatusCode FixEmployeePayCodes(Guid companyId)
 	  {
 			var employees = _readerService.GetEmployees(company: companyId);
@@ -60,40 +62,40 @@ namespace HrMaxxAPI.Controllers.Companies
 		  return HttpStatusCode.OK;
 	  }
 
-		[HttpPost]
-		[Route(CompanyRoutes.CopyEmployees)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.CopyEmployees)]
 		public HttpStatusCode CopyEmployees(CopyEmployeeResource resource)
 		{
 			MakeServiceCall(() => _companyService.CopyEmployees(resource.SourceCompanyId, resource.TargetCompanyId, resource.EmployeeIds, CurrentUser.FullName, resource.KeepEmployeeNumbers), "Copy employees from one company to another");
 			return HttpStatusCode.OK;
 		}
 
-	  [HttpGet]
-	  [Route(CompanyRoutes.MetaData)]
+	  [System.Web.Http.HttpGet]
+	  [System.Web.Http.Route(CompanyRoutes.MetaData)]
 		[DeflateCompression]
 	  public object GetMetaData()
 	  {
 			return MakeServiceCall(() => _metaDataService.GetCompanyMetaData(), "Get company meta data", true);
 	  }
 
-		[HttpGet]
-		[Route(CompanyRoutes.PEOCompanies)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.PEOCompanies)]
 		[DeflateCompression]
 		public List<CompanySUIRate> PEOCompanies()
 		{
 			return MakeServiceCall(() => _metaDataService.GetPEOCompanies(), "Get PEO Companies", true);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.EmployeeMetaData)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.EmployeeMetaData)]
 		[DeflateCompression]
 		public object GetEmployeeMetaData()
 		{
 			return MakeServiceCall(() => _metaDataService.GetEmployeeMetaData(), "Get employee meta data", true);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.PayrollMetaData)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.PayrollMetaData)]
 		[DeflateCompression]
 		public object GetPayrollMetaData(CheckBookMetaDataRequestResource request)
 		{
@@ -101,16 +103,16 @@ namespace HrMaxxAPI.Controllers.Companies
 			return MakeServiceCall(() => _metaDataService.GetPayrollMetaData(r), "Get payroll meta data", true);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.InvoiceMetaData)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.InvoiceMetaData)]
 		[DeflateCompression]
 		public object GetInvoiceMetaData(Guid companyId)
 		{
 			return MakeServiceCall(() => _metaDataService.GetInvoiceMetaData(companyId), "Get invoice meta data", true);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.CompanyList)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.CompanyList)]
 		[DeflateCompression]
 		public IList<CompanyResource> GetAllCompanies()
 		{
@@ -119,8 +121,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			
 			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c => c.CompanyIntId).ToList());
 		}
-		[HttpGet]
-		[Route(CompanyRoutes.MinifiedCompanyList)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.MinifiedCompanyList)]
 		[DeflateCompression]
 		public HttpResponseMessage GetAllCompaniesMinified()
 		{
@@ -143,8 +145,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return result;
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.MinifiedEmployeeList)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.MinifiedEmployeeList)]
 		[DeflateCompression]
 		public HttpResponseMessage GetAllCompaniesAndEmployeesMinified()
 		{
@@ -172,8 +174,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return result;
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.Companies)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.Companies)]
 		[DeflateCompression]
 		public IList<CompanyResource> GetCompanies(Guid hostId)
 		{
@@ -190,8 +192,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			}
 			return Mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<CompanyResource>>(companies.OrderBy(c=>c.CompanyIntId).ToList());
 		}
-		[HttpGet]
-		[Route(CompanyRoutes.Company)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.Company)]
 		[DeflateCompression]
 		public CompanyResource GetCompany(Guid id)
 		{
@@ -200,16 +202,16 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<HrMaxx.OnlinePayroll.Models.Company, CompanyResource>(companies);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.Save)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.Save)]
 		public CompanyResource Save(CompanyResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyResource, Company>(resource);
 			var savedCompany = MakeServiceCall(() => _companyService.Save(mappedResource), "save company details", true);
 			return Mapper.Map<Company, CompanyResource>(savedCompany);
 		}
-		[HttpPost]
-		[Route(CompanyRoutes.SaveDeduction)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveDeduction)]
 		public CompanyDeductionResource SaveDeduction(CompanyDeductionResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyDeductionResource, CompanyDeduction>(resource);
@@ -217,8 +219,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<CompanyDeduction, CompanyDeductionResource>(ded);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SaveCompanyTaxYearRate)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveCompanyTaxYearRate)]
 		public CompanyTaxRateResource SaveCompanyTaxYearRate(CompanyTaxRateResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyTaxRateResource, CompanyTaxRate>(resource);
@@ -226,8 +228,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<CompanyTaxRate, CompanyTaxRateResource>(taxrate);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SaveWorkerCompensation)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveWorkerCompensation)]
 		public CompanyWorkerCompensationResource SaveWorkerCompensation(CompanyWorkerCompensationResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyWorkerCompensationResource, CompanyWorkerCompensation>(resource);
@@ -235,8 +237,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<CompanyWorkerCompensation, CompanyWorkerCompensationResource>(wc);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SaveAccumulatedPayType)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveAccumulatedPayType)]
 		public AccumulatedPayTypeResource SaveAccumulatedPayType(AccumulatedPayTypeResource resource)
 		{
 			var mappedResource = Mapper.Map<AccumulatedPayTypeResource, AccumulatedPayType>(resource);
@@ -244,8 +246,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<AccumulatedPayType, AccumulatedPayTypeResource>(wc);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SavePayCode)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SavePayCode)]
 		public CompanyPayCodeResource SavePayCode(CompanyPayCodeResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyPayCodeResource, CompanyPayCode>(resource);
@@ -253,8 +255,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<CompanyPayCode, CompanyPayCodeResource>(wc);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SaveLocation)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveLocation)]
 		[DeflateCompression]
 		public CompanyResource SaveLocation(CompanyLocationResource resource)
 		{
@@ -263,16 +265,16 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<Company, CompanyResource>(child);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.VendorCustomerList)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.VendorCustomerList)]
 		[DeflateCompression]
 		public List<VendorCustomerResource> SavePayCode(Guid? companyId, bool isVendor)
 		{
 			var vendors = MakeServiceCall(() => _companyService.GetVendorCustomers(companyId, isVendor), string.Format("getting list of vendor or customer for {0}, {1}", companyId, isVendor), true);
 			return Mapper.Map<List<VendorCustomer>, List<VendorCustomerResource>>(vendors);
 		}
-		[HttpGet]
-		[Route(CompanyRoutes.GlobalVendors)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.GlobalVendors)]
 		[DeflateCompression]
 		public List<VendorCustomerResource> GlobalVendors()
 		{
@@ -280,8 +282,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<List<VendorCustomer>, List<VendorCustomerResource>>(vendors);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.VendorCustomer)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.VendorCustomer)]
 		public VendorCustomerResource SaveVendorCustomer(VendorCustomerResource resource)
 		{
 			var mappedResource = Mapper.Map<VendorCustomerResource, VendorCustomer>(resource);
@@ -289,8 +291,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<VendorCustomer, VendorCustomerResource>(vendor);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.Accounts)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.Accounts)]
 		[DeflateCompression]
 		public List<AccountResource> GetCompanyAccounts(Guid companyId)
 		{
@@ -298,8 +300,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<List<Account>, List<AccountResource>>(accounts);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SaveAccount)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveAccount)]
 		public AccountResource SaveAccount(AccountResource resource)
 		{
 			var mappedResource = Mapper.Map<AccountResource, Account>(resource);
@@ -309,8 +311,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<Account, AccountResource>(account);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.EmployeeList)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.EmployeeList)]
 		[DeflateCompression]
 		public List<EmployeeResource> EmployeeList(Guid companyId)
 		{
@@ -323,8 +325,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<List<Employee>, List<EmployeeResource>>(employees);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.Employee)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.Employee)]
 		public EmployeeResource SaveEmployee(EmployeeResource resource)
 		{
 			var mappedResource = Mapper.Map<EmployeeResource, Employee>(resource);
@@ -336,8 +338,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<Employee, EmployeeResource>(vendor);
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.EmployeeDeduction)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.EmployeeDeduction)]
 		public EmployeeDeductionResource SaveEmployee(EmployeeDeductionResource resource)
 		{
 			var mappedResource = Mapper.Map<EmployeeDeductionResource, EmployeeDeduction>(resource);
@@ -345,22 +347,22 @@ namespace HrMaxxAPI.Controllers.Companies
 			return Mapper.Map<EmployeeDeduction, EmployeeDeductionResource>(deductions);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.DeleteEmployeeDeduction)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.DeleteEmployeeDeduction)]
 		public void DeleteEmployeeDeduction(int deductionId)
 		{
 			MakeServiceCall(() => _companyService.DeleteEmployeeDeduction(deductionId), string.Format("deleting deduction id {0}", deductionId));
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.BulkTerminateEmployees)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.BulkTerminateEmployees)]
 		public void BulkTerminateEmployees(BulkTerminateEmployeesResource resource)
 		{
 			MakeServiceCall(() => _companyService.BulkTerminateEmployees(resource.CompanyId, resource.EmployeeList, CurrentUser.UserId, CurrentUser.FullName), string.Format("bulk terminate employees {0}", resource.EmployeeList.Aggregate(string.Empty, (current, m) => current + m + ", ")));
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.GetEmployeeImportTemplate)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.GetEmployeeImportTemplate)]
 		[DeflateCompression]
 		public HttpResponseMessage GetEmployeeImportTemplate(Guid companyId)
 		{
@@ -622,8 +624,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			return fileUploadObj;
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.SaveTaxRates)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.SaveTaxRates)]
 		public List<CaliforniaCompanyTax> SaveTaxRates(List<CaliforniaCompanyTaxResource> resource)
 		{
 			var rates = Mapper.Map<List<CaliforniaCompanyTaxResource>, List<CaliforniaCompanyTax>>(resource);
@@ -631,8 +633,8 @@ namespace HrMaxxAPI.Controllers.Companies
 			
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.UpdateWCRates)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.UpdateWCRates)]
 		public HttpStatusCode CopyCompany(UpdateWCRatesResource resource)
 		{
 			var rates = Mapper.Map<List<CompanyWorkerCompensationRatesResource>, List<CompanyWorkerCompensation >> (resource.Rates);
@@ -641,24 +643,24 @@ namespace HrMaxxAPI.Controllers.Companies
 			return HttpStatusCode.OK;
 		}
 
-		[HttpPost]
-		[Route(CompanyRoutes.CopyCompany)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.CopyCompany)]
 		public CompanyResource CopyCompany(CopyCompanyResource resource)
 		{
 			var newcompany = MakeServiceCall(() => _payrollService.Copy(resource.CompanyId, resource.HostId, resource.CopyEmployees, resource.CopyPayrolls, resource.StartDate, resource.EndDate, CurrentUser.FullName, new Guid(CurrentUser.UserId), resource.KeepEmployeeNumbers), "copy company", true);
 			return Mapper.Map<Company, CompanyResource>(newcompany);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.AllCompanies)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.AllCompanies)]
 		[DeflateCompression]
 		public List<CaliforniaCompanyTax> AllCompanies(int year)
 		{
 			return MakeServiceCall(() => _companyService.GetCaliforniaCompanyTaxes(year), "Get all companies for tax rates", true);
 		}
 
-		[HttpGet]
-		[Route(CompanyRoutes.GetCaliforniaEDDExport)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(CompanyRoutes.GetCaliforniaEDDExport)]
 		[DeflateCompression]
 		public HttpResponseMessage GetCaliforniaEDDExport()
 		{
@@ -673,15 +675,15 @@ namespace HrMaxxAPI.Controllers.Companies
 			};
 			return response;
 		}
-		[HttpGet]
-		[Route(CompanyRoutes.RaiseMinWage)]
-		public void RaiseMinWage(decimal minWage)
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.RaiseMinWage)]
+		public void RaiseMinWage(MinWageEligibilityCriteria request)
 		{
-			MakeServiceCall(() => _companyService.RaiseMinWage(minWage), "Raise Min Wage "+ minWage);
+			MakeServiceCall(() => _companyService.RaiseMinWage(request, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "Raise Min Wage ");
 		}
 
-	  [HttpGet]
-	  [Route(CompanyRoutes.SSNCheck)]
+	  [System.Web.Http.HttpGet]
+	  [System.Web.Http.Route(CompanyRoutes.SSNCheck)]
 	  public List<EmployeeSSNCheck> SsnCheck(string ssn)
 	  {
 			return MakeServiceCall(() => _companyService.CheckSSN(ssn), "check ssn ", true);

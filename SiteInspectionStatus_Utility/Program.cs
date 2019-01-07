@@ -134,6 +134,9 @@ namespace SiteInspectionStatus_Utility
 				case 26:
 					FixInvoicesWithVoidCredits(container);
 					break;
+				case 27:
+					FillCompanyCity(container);
+					break;
 				default:
 					break;
 			}
@@ -141,7 +144,19 @@ namespace SiteInspectionStatus_Utility
 			Console.WriteLine("Utility run finished for ");
 		}
 
-		private static void FixInvoicesWithVoidCredits(IContainer container)
+		private static void FillCompanyCity(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var companyrepository = scope.Resolve<ICompanyRepository>();
+				var companies = readerservice.GetCompanies();
+				companies.ForEach(c=>companyrepository.SaveCompany(c));
+			}
+		}
+
+		private static
+			void FixInvoicesWithVoidCredits(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
@@ -1294,7 +1309,7 @@ namespace SiteInspectionStatus_Utility
 			using (var scope = container.BeginLifetimeScope())
 			{
 				var _taxationService = scope.Resolve<ITaxationService>();
-				var taxTables = _taxationService.GetTaxTables();
+				var taxTables = _taxationService.GetTaxTables(2019);
 				var taxTablesContext = _taxationService.GetTaxTablesByContext();
 				var differentTaxYearRates = taxTables.Taxes.Where(t => taxTablesContext.Taxes.All(t1 => !t.Equals(t1))).ToList();
 				var differentFIT = taxTables.FITTaxTable.Where(t => taxTablesContext.FITTaxTable.All(t1 => !t.Equals(t1))).ToList();

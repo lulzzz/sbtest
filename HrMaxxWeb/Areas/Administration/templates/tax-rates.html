@@ -6,13 +6,13 @@
 				Manage Tax Rates</h4>
 
 		</div>
-		<div class="panel-body" ng-show="data.taxTables">
+		<div class="panel-body" ng-show="data.taxTableYears">
 			<div class="row m-5">
 				<div class="col-sm-1">
 					<label>Taxes by Year</label>
 				</div>
 				<div class="col-sm-3">
-					<select ng-model="data.selectedYear" class="form-control" ng-click="data.selectedTab=0" convert-to-number ng-options="year for year in data.taxTables.years track by year">
+					<select ng-model="data.selectedYear" class="form-control" ng-click="data.selectedTab=0" ng-change="getTaxTables()" convert-to-number ng-options="year for year in data.taxTableYears track by year">
 						<option value=""> select year</option>
 					</select>
 				</div>

@@ -285,7 +285,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Role, opt => opt.Ignore());
 
 			CreateMap<CaliforniaCompanyTaxResource, CaliforniaCompanyTax>()
-				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId.Value));
+				.ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId.Value))
+				.ForMember(dest => dest.SUIManagementRate, opt => opt.Ignore());
 
 			CreateMap<HrMaxx.OnlinePayroll.Models.JsonDataModel.CompanyTaxState, HrMaxx.OnlinePayroll.Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))

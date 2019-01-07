@@ -144,7 +144,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
-				var coa = _companyService.GetComanyAccounts(companyId).First(c=>c.Id==accountId);
+				var coa = _companyService.GetComanyAccountById(companyId, accountId);
 				
 				var journals = _readerService.GetJournals(companyId: companyId, accountId: accountId, startDate: startDate,
 					endDate: endDate, includePayrolls:includePayrolls, includeDetails:false);

@@ -36,7 +36,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string ImportWCRates = "Company/ImportWCRates";
 		public const string SaveTaxRates = "Company/SaveTaxRates";
 		public const string GetCaliforniaEDDExport = "Company/CaliforniaEDD";
-		public const string RaiseMinWage = "Company/RaiseMinWage/{minWage:decimal}";
+		public const string RaiseMinWage = "Company/RaiseMinWage";
 
 		public const string PEOCompanies = "Company/AllPEOCompanies";
 		public const string AllEmployees = "Company/EmployeeList";

@@ -270,6 +270,8 @@
     <Compile Include="JsonDataModel\PayrollInvoiceListItem.cs" />
     <Compile Include="JsonDataModel\PayrollPayCheck.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
+    <Compile Include="MinWageEligibileCompany.cs" />
+    <Compile Include="MinWageEligibilityCriteria.cs" />
     <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />

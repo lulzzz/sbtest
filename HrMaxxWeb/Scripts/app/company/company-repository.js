@@ -43,6 +43,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			raiseMinWage: function (request) {
+				var deferred = $q.defer();
+				companyServer.all('RaiseMinWage').post(request).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getInvoiceMetaData: function (companyId) {
 				var deferred = $q.defer();
 				companyServer.one('InvoiceMetaData').one(companyId).get().then(function (data) {

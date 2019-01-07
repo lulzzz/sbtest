@@ -23,34 +23,34 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			_mapper = mapper;
 		}
 
-		public USTaxTables FillTaxTables()
+		public USTaxTables FillTaxTables(int year)
 		{
-			const string selectTaxYearRates = @"select * from TaxYearRate";
+			const string selectTaxYearRates = @"select * from TaxYearRate where TaxYear=@Year;";
 			const string selectTaxes = @"select * from Tax";
-			const string selectFIT = @"select * from FITTaxTable order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
-			const string selectFITWithholding = @"select * from FITWithholdingAllowanceTable;";
-			const string selectSIT = @"select * from SITTaxTable order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
-			const string selectSITLowIncome = @"select * from SITLowIncomeTaxTable;";
-			const string selectStdDed = @"select * from StandardDeductionTable;";
-			const string selectEstDed = @"select * from EstimatedDeductionsTable;";
-			const string selectExmpAllow = @"select * from ExemptionAllowanceTable;";
+			const string selectFIT = @"select * from FITTaxTable  where Year=@Year order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
+			const string selectFITWithholding = @"select * from FITWithholdingAllowanceTable  where Year=@Year ;";
+			const string selectSIT = @"select * from SITTaxTable  where Year=@Year  order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
+			const string selectSITLowIncome = @"select * from SITLowIncomeTaxTable  where Year=@Year ;";
+			const string selectStdDed = @"select * from StandardDeductionTable  where Year=@Year ;";
+			const string selectEstDed = @"select * from EstimatedDeductionsTable  where Year=@Year ;";
+			const string selectExmpAllow = @"select * from ExemptionAllowanceTable  where Year=@Year ;";
 			const string selectDeductionPrecedence = @"select * from TaxDeductionPrecedence;";
 
 			using (var conn = GetConnection())
 			{
-				var taxyearrates = conn.Query<TaxYearRate>(selectTaxYearRates).ToList();
+				var taxyearrates = conn.Query<TaxYearRate>(selectTaxYearRates, new {Year = year}).ToList();
 				var taxes = conn.Query<Models.DataModel.Tax>(selectTaxes).ToList();
 				taxyearrates.ForEach(t =>
 				{
 					t.Tax = taxes.First(t1 => t1.Id == t.TaxId);
 				});
-				var fit = conn.Query<Models.DataModel.FITTaxTable>(selectFIT).ToList();
-				var fitwithholding = conn.Query<Models.DataModel.FITWithholdingAllowanceTable>(selectFITWithholding).ToList();
-				var sit = conn.Query<Models.DataModel.SITTaxTable>(selectSIT).ToList();
-				var sitlow = conn.Query<Models.DataModel.SITLowIncomeTaxTable>(selectSITLowIncome).ToList();
-				var stddeds = conn.Query<Models.DataModel.StandardDeductionTable>(selectStdDed).ToList();
-				var estded = conn.Query<Models.DataModel.EstimatedDeductionsTable>(selectEstDed).ToList();
-				var exempallow = conn.Query<Models.DataModel.ExemptionAllowanceTable>(selectExmpAllow).ToList();
+				var fit = conn.Query<Models.DataModel.FITTaxTable>(selectFIT, new { Year = year }).ToList();
+				var fitwithholding = conn.Query<Models.DataModel.FITWithholdingAllowanceTable>(selectFITWithholding, new { Year = year }).ToList();
+				var sit = conn.Query<Models.DataModel.SITTaxTable>(selectSIT, new { Year = year }).ToList();
+				var sitlow = conn.Query<Models.DataModel.SITLowIncomeTaxTable>(selectSITLowIncome, new { Year = year }).ToList();
+				var stddeds = conn.Query<Models.DataModel.StandardDeductionTable>(selectStdDed, new { Year = year }).ToList();
+				var estded = conn.Query<Models.DataModel.EstimatedDeductionsTable>(selectEstDed, new { Year = year }).ToList();
+				var exempallow = conn.Query<Models.DataModel.ExemptionAllowanceTable>(selectExmpAllow, new { Year = year }).ToList();
 				var dedpre = conn.Query<Models.DataModel.TaxDeductionPrecedence>(selectDeductionPrecedence).ToList();
 				return new USTaxTables
 				{
@@ -66,15 +66,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 				};
 
 			}
-			//var fit = _dbContext.FITTaxTables;
-			//var fitwithholding = _dbContext.FITWithholdingAllowanceTables;
-			//var stddeds = _dbContext.StandardDeductionTables;
-			//var sit = _dbContext.SITTaxTables;
-			//var sitlow = _dbContext.SITLowIncomeTaxTables;
-			//var estded = _dbContext.EstimatedDeductionsTables;
-			//var exempallow = _dbContext.ExemptionAllowanceTables;
-			//var dedpre = _dbContext.TaxDeductionPrecedences;
-
+			
 
 			
 		}
@@ -176,6 +168,16 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			{
 
 				conn.Execute(createTaxes, new {Year=year, PYear=(year-1)});
+			}
+		}
+
+		public List<int> GetTaxTableYears()
+		{
+			const string selectTaxYearRates = @"select distinct TaxYear from TaxYearRate;";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<int>
+				(selectTaxYearRates).ToList();
 			}
 		}
 	}

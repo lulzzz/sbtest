@@ -21,6 +21,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						payrollsWithDraftInvoice: [],
 						companiesWithoutPayroll: [],
 						filterApproachingPayroll: '',
+						clearanceData: [],
+						filteredClearanceData: [],
 						sortApproachingPayrolls: 1,
 						viewingChart: 0,
 						myNews: [],
@@ -29,7 +31,8 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						printOption: 0,
 						viewCompanyList: $scope.mainData.hasClaim(ClaimTypes.DashboardCompanyLists, 1),
 						viewAccountReceivables: $scope.mainData.hasClaim(ClaimTypes.DashboardAccountReceivable,1),
-						viewPerformance: $scope.mainData.hasClaim(ClaimTypes.DashboardPerformance,1)
+						viewPerformance: $scope.mainData.hasClaim(ClaimTypes.DashboardPerformance, 1),
+						viewClearance: $scope.mainData.hasClaim(ClaimTypes.DashboardAccountReceivable,1),
 					}
 					$scope.print = function(option) {
 						dataSvc.printOption = option;
@@ -58,22 +61,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						$scope.selectedChart = null;
 						var element = angular.element(document.querySelector('#ncDetailedCriteriaForProject'));
 						element.html('');
-						//$scope.drawPayrollWithoutInvoiceChart();
-						//$scope.drawPayrollWithDraftInvoiceChart();
-						//$scope.drawCompaniesWithApproachingPayrolls();
-						//$scope.drawCompaniesWithoutPayrollChart();
-						//reportRepository.getDashboardData('GetUserDashboard', $scope.data.startDate, $scope.data.endDate, '').then(function (data) {
-						//	dataSvc.reportData = data;
-						//	$scope.chartData = [];
-
-						//	$scope.drawCompaniesWithApproachingPayrolls();
-						//	$scope.drawCompaniesWithoutPayrollChart();
-
-
-						//}, function (error) {
-						//	console.log(error);
-						//});
-
+						
 
 					};
 					var drawARCharts = function (startdate, enddate, onlyActive) {
@@ -102,6 +90,9 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						}
 						else if (tab === 3) {
 							drawPerformanceCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
+						}
+						else if (tab === 5) {
+							$scope.drawClearanceChart();
 						}
 						
 					}
@@ -136,6 +127,60 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 							element.html("<b>" + options.title + "</b><br/>No Data");
 						}
 					}
+
+					$scope.drawClearanceChart = function () {
+						var m = $scope.mainData;
+						reportRepository.getDashboardData('GetCheckbookClearanceChartData', m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, null, m.reportFilter.filter.onlyActive).then(function (data1) {
+							dataSvc.clearanceData = data1[0];
+							dataSvc.filteredClearanceData = [];
+							dataSvc.filteredClearanceData.data = [];
+							dataSvc.filteredClearanceData.result = dataSvc.clearanceData.result;
+							$.each(dataSvc.clearanceData.data, function (ind, cd) {
+								var item = [];
+								item.push(cd[0]);
+								item.push(cd[1]);
+								dataSvc.filteredClearanceData.data.push(item);
+							});
+							if (dataSvc.filteredClearanceData.data.length > 0) {
+								var ws_data = null;
+								ws_data = mapListToDataTable(dataSvc.filteredClearanceData);
+								clearIfExists('CheckbookClearanceChartData', dataSvc.filteredClearanceData.data, 'UnCleared Check counts by Company');
+
+								var options = {
+									title: 'UnCleared Checks by Company',
+									vAxis: {
+										title: "Company"
+									},
+									hAxis: {
+										title: "Checks"
+									},
+									legend: { position: 'none' },
+									
+									'width': '100%',
+									'height': 600,
+									'chartKey': 'CheckbookClearanceChartData'
+								};
+
+								var chart = new google.visualization.ColumnChart($element.find('#clearanceChart')[0]);
+								var element = angular.element(document.querySelector('#clearanceChart'));
+								chart.draw(ws_data, options);
+								google.visualization.events.addListener(chart, 'select', function () {
+									var selection = chart.getSelection();
+									var col = selection[0].column;
+									var row = selection[0].row;
+									var key = options.chartKey;
+									var ctx = $filter('filter')($scope.chartData, { chartName: key }, true);
+									var criteriatmp = dataSvc.filteredClearanceData.data[row + 1];
+									var match = dataSvc.clearanceData.data[row + 1];
+
+								});
+							}
+
+						}, function (error) {
+							console.log(error);
+						});
+
+					};
 
 					$scope.drawCommissionPerformanceChart = function (startdate, enddate, onlyActive) {
 						reportRepository.getDashboardData('GetCommissionPerformanceChart', startdate, enddate, null, onlyActive).then(function (data1) {

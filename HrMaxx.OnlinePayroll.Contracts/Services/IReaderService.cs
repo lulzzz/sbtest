@@ -85,5 +85,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 
 		List<CompanyRecurringCharge> GetCompanyRecurringCharges(Guid id);
+		List<MinWageEligibileCompany> GetMinWageEligibilityReport(MinWageEligibilityCriteria criteria);
 	}
 }

@@ -20,6 +20,10 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 
 					$scope.loadedSemiWeeklyEligibility = false;
 					$scope.semiWeeklyEligibilityReport = null;
+
+					$scope.loadedMinWageEligibility = false;
+					$scope.minWageEligibilityReport = null;
+
 					$scope.depositSchedule = 2;
 					$scope.yearlyLimit = 50000;
 					$scope.quarterlyLimit = 12500;
@@ -37,7 +41,10 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						companyMetaData: null,
 						importInProcess: false,
 						importInProcessWC: false,
-						currentYear: new Date().getFullYear()
+						currentYear: new Date().getFullYear(),
+						minWageCriteria: {
+							contractType: 2, minEmployeeCount:null, maxEmployeeCount: null, minWage:null, statusId:0, city:'', payrollYear: (new Date().getFullYear() - 1)
+						}
 					}
 					$scope.data = dataSvc;
 					$scope.importMap = {
@@ -360,6 +367,34 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						}, function (error) {
 							addAlert('error in getting semi weekly eligibility list', 'danger');
 						});
+					}
+					$scope.loadMinWageEligibilityReport = function () {
+						reportRepository.getMinWageEligibilityReport(dataSvc.minWageCriteria).then(function (result) {
+							$scope.minWageEligibilityReport = result;
+							
+						}, function (error) {
+							addAlert('error in getting min Wage eligibility list', 'danger');
+						});
+					}
+					$scope.raiseMinWage = function () {
+						var message = 'Min Wage to ' + dataSvc.minWageCriteria.minWage + " for all";
+						message += (dataSvc.minWageCriteria.statusId === 1 ? " Active" : dataSvc.minWageCriteria.statusId === 2 ? " In Active" : dataSvc.minWageCriteria.statusId === 3 ? " Terminated" : "");
+						message += (dataSvc.minWageCriteria.contractType === 0 ? " ASO" : dataSvc.minWageCriteria.contractType === 1 ? " PEO" : "") + " companies";
+						if (dataSvc.minWageCriteria.city)
+							message += " in the city of " + dataSvc.minWageCriteria.city;
+
+						$scope.$parent.$parent.confirmDialog('This action will RAISE ' + message + '. Are you sure you want to continue?', 'info', function () {
+							companyRepository.raiseMinWage(dataSvc.minWageCriteria).then(function () {
+
+								addAlert('Successfully raised ' + message, 'success');
+								$scope.loadMinWageEligibilityReport();
+
+							}, function (error) {
+								addAlert('error in raising min Wage. ' + error.statusText , 'danger');
+							});
+						});
+
+						
 					}
 					_init();
 

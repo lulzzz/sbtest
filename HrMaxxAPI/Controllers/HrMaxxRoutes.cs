@@ -48,9 +48,10 @@
 		public const string FillSearchTable = "FillSearchTable";
 		public const string GetHostsAndCompanies = "HostsAndCompanies";
 
-		public const string GetTaxes = "GetTaxes";
+		public const string GetTaxes = "GetTaxes/{year:int}";
 		public const string SaveTaxes = "SaveTaxes";
 		public const string CreateTaxes = "CreateTaxes/{year:int}";
 		public const string AccessMetaData = "AccessMetaData";
+		public const string GetTaxTableYear = "GetTaxTableYears";
 	}
 }

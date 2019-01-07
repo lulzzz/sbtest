@@ -36,5 +36,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		CPAReport GetCPAReport(ReportRequest request);
 		FileDto GetExtractTransformedAndPrinted(Extract extract);
 		FileDto GetExtractTransformedAndPrintedZip(Extract extract);
+		List<MinWageEligibileCompany> GetMinWageEligibilityReport(MinWageEligibilityCriteria criteria);
 	}
 }

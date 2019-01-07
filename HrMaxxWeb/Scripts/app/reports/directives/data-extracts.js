@@ -748,6 +748,11 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					var _init = function () {
 						$scope.minDepositDate = moment().startOf('day').toDate();
 						var currentYear = new Date().getFullYear();
+						var currentMonth = new Date().getMonth();
+						var currentDay = new Date().getDate();
+						if (currentMonth === 11 && currentDay>20) {
+							currentYear += 1;
+						}
 						for (var i = currentYear - 4; i <= currentYear; i++) {
 							if (i >= dataSvc.minYear)
 								dataSvc.filter.years.push(i);

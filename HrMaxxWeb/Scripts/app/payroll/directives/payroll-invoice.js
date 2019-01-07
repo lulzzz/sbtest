@@ -232,9 +232,10 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 									} else {
 										p.hasChanged = true;
 									}
+									
+									var nextDay = moment().add(1, 'days').startOf('day').toDate();
 
-
-									if (p.hasChanged && p.method === 5 && moment(p.paymentDate).format("MM/DD/YYYY") < moment().add(1, 'days').format("MM/DD/YYYY")) {
+									if (p.hasChanged && p.method === 5 && !moment(p.paymentDate).isAfter(nextDay)) {
 										returnVal1 = false;
 										return false;
 									}

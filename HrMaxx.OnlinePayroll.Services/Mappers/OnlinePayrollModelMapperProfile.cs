@@ -157,6 +157,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src=>string.IsNullOrWhiteSpace(src.Memo) ? string.Empty: src.Memo))
 				.ForMember(dest => dest.PayrollInvoices, opt => opt.Ignore())
 				.ForMember(dest => dest.ClientNo, opt => opt.MapFrom(src => src.InsuranceClientNo))
+				.ForMember(dest => dest.City, opt => opt.MapFrom(src => src.BusinessAddress.City))
 				.ForMember(dest => dest.InsuranceGroup, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.InsuranceGroup, Common.Models.InsuranceGroupDto>();

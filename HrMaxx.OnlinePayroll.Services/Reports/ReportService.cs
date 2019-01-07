@@ -671,6 +671,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}; ;
 		}
 
+		public List<MinWageEligibileCompany> GetMinWageEligibilityReport(MinWageEligibilityCriteria criteria)
+		{
+			var data =  _readerService.GetMinWageEligibilityReport(criteria);
+			if(criteria.FilterHourlyEmployeeCompanies)
+				data = data.Where(c => c.Employees.Any()).ToList();
+			if(criteria.MinEmployeeCount.HasValue)
+				data = data.Where(c => c.PaidEmployeeCount >= criteria.MinEmployeeCount.Value).ToList();
+			if(criteria.MaxEmployeeCount.HasValue)
+				data = data.Where(c => c.PaidEmployeeCount <= criteria.MaxEmployeeCount.Value).ToList();
+			return data;
+		}
+
 		private void GetExractTransformedAndSaved(Extract extract, ExtractCompany company, string dir)
 		{
 			extract.Data.Companies = new List<ExtractCompany>() { company };

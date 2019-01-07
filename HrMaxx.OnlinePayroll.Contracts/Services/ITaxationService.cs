@@ -16,7 +16,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ApplicationConfig GetApplicationConfig();
 		ApplicationConfig SaveApplicationConfiguration(ApplicationConfig configs);
 		int PullReportConstant(string form940, int quarterly);
-		USTaxTables GetTaxTables();
+		USTaxTables GetTaxTables(int year);
+		List<int> GetTaxTableYears();
 		USTaxTables GetTaxTablesByContext();
 		USTaxTables SaveTaxTables(int year, USTaxTables taxTables);
 		USTaxTables CreateTaxes(int year);
@@ -32,5 +33,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		string GetUserRoleVersion(string userId);
 		void UpdateUserRoleVersion(string id, int roleVersion);
 		void RefreshPEOMaxCheckNumber();
+		void EnsureTaxTablesForPayDay(int year);
 	}
 }

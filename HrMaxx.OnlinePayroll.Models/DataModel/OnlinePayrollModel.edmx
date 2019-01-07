@@ -149,6 +149,7 @@
           <Property Name="CompanyCheckPrintOrder" Type="int" Nullable="false" />
           <Property Name="PayrollScheduleDay" Type="int" Nullable="false" />
           <Property Name="DashboardNotes" Type="varchar(max)" />
+          <Property Name="City" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -1847,6 +1848,7 @@
           <Property Name="DashboardNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="Company" ToRole="CheckbookJournal" />
           <NavigationProperty Name="CompanyRecurringCharges" Relationship="HrMaxxModel.FK_CompanyRecurringCharge_Company" FromRole="Company" ToRole="CompanyRecurringCharge" />
+          <Property Name="City" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -3143,6 +3145,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="DashboardNotes" ColumnName="DashboardNotes" />
                 <ScalarProperty Name="PayrollScheduleDay" ColumnName="PayrollScheduleDay" />
                 <ScalarProperty Name="CompanyCheckPrintOrder" ColumnName="CompanyCheckPrintOrder" />

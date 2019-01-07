@@ -57,7 +57,8 @@ namespace HrMaxx.OnlinePayroll.Services
 							ETTTaxId = 9,
 							UiRate = c.CompanyTaxRates.First(ct => ct.TaxYear == year && ct.TaxId == 10).Rate, 
 							StateEin = c.States.First(s=>s.CountryId==1 && s.State.StateId==1).StateEIN, 
-							TaxYear=year, UITaxId = 10
+							TaxYear=year, UITaxId = 10,
+							SUIManagementRate = c.Contract.ContractOption == ContractOption.PostPaid ? c.Contract.InvoiceSetup.SUIManagement.ToString() : "NA"
 						}
 					).ToList();
 
@@ -644,64 +645,46 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public void RaiseMinWage(decimal minWage)
+		public void RaiseMinWage(MinWageEligibilityCriteria criteria, string user, Guid userId)
 		{
 			try
 			{
-				var companies = _readerService.GetCompanies().Where(c => c.HostId == new Guid("75A78BE4-7226-466B-86BA-A6E200DCAAAC") || c.HostId == new Guid("9AF2FC03-5D35-4A82-9E17-A6E200DDBA73")).ToList();
-				var employees = _readerService.GetEmployees().Where(e => e.PayType == EmployeeType.Hourly).ToList();
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
-					
-					var selectEmployees = new List<Employee>();
-					var selectedCompanies = new List<Company>();
+				if(!criteria.MinWage.HasValue)
+					throw new Exception("Please provide minimum wage!");
+				var companies = _readerService.GetMinWageEligibilityReport(criteria);
+				var allcompanies = _readerService.GetCompanies();
+				
 					companies.ForEach(c =>
 					{
-						var emps = employees.Where(e => e.CompanyId == c.Id).ToList();
-						if (emps.Count() <= 25)
+						var comp = allcompanies.First(c1 => c1.Id == c.CompanyId);
+						if (comp != null)
 						{
-							selectedCompanies.Add(c);
-							emps.ForEach(e =>
+							if (criteria.MinWage > comp.MinWage)
 							{
-								var resave = false;
-								
-								if (e.Rate ==(decimal)10.5)
-								{
-									e.Rate = 10;
-									resave = true;
-								}
-
-								if (e.PayCodes != null && e.PayCodes.Any())
-								{
-									e.PayCodes.Where(pc => pc.Id == 0).ToList().ForEach(pc =>
-									{
-										if (pc.HourlyRate ==(decimal)10.5)
-										{
-											pc.HourlyRate = 10;
-											resave = true;
-										}
-
-									});
-								}
-								if (resave)
-									selectEmployees.Add(e);
-							});
-						}
+								comp.MinWage = criteria.MinWage.Value;
+								_companyRepository.SaveCompany(comp);
+							}
 							
-
-
+							var employees = _readerService.GetEmployees(company: comp.Id);
+							employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < comp.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage)))
+								.ToList()
+								.ForEach(e =>
+								{
+									e.Rate = e.Rate < comp.MinWage ? comp.MinWage : e.Rate;
+									e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage).ToList().ForEach(pc => pc.HourlyRate = comp.MinWage);
+									SaveEmployee(e, false);
+								});
+							var memento = Memento<Company>.Create(comp, EntityTypeEnum.Company, user, "Min Wage Raised", userId);
+							_mementoDataService.AddMementoData(memento);
+						}
 					});
 					
-					
-					_companyRepository.UpdateMinWage(minWage, selectEmployees, selectedCompanies);
-					txn.Complete();
-				}
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "raise min wage");
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "raise min wage for " + JsonConvert.SerializeObject(criteria));
 				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
+				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
 			}
 		}
 
@@ -792,6 +775,20 @@ namespace HrMaxx.OnlinePayroll.Services
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " bulk terminate employees" + e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(e.Message.Replace(Environment.NewLine, string.Empty), e);
+			}
+		}
+
+		public Account GetComanyAccountById(Guid companyId, int accountId)
+		{
+			try
+			{
+				return _companyRepository.GetCompanyAccountById(companyId, accountId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "account for company by id " + accountId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
 			}
 		}
 	}

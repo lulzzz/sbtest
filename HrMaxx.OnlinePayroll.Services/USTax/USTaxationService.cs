@@ -39,16 +39,17 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			_metaDataRepository = metaDataRepository;
 			_userRepository = userRepository;
 			UserRoleVersions = new List<UserRoleVersion>();
-			FillTaxTables();
+
+			FillTaxTables(DateTime.Now.Year);
 			ConfirmPayrollQueue = new List<ConfirmPayrollLogItem>();
 			
 		}
 
-		private void FillTaxTables()
+		private void FillTaxTables(int year)
 		{
 			try
 			{
-				TaxTables = _taxationRepository.FillTaxTables();
+				TaxTables = _taxationRepository.FillTaxTables(year);
 				//TaxTables.Taxes = _metaDataRepository.GetAllTaxes().ToList();
 				TaxTables.Years = TaxTables.Taxes.Select(t => t.TaxYear).Distinct().ToList();
 
@@ -142,11 +143,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 		}
 
-		public USTaxTables GetTaxTables()
+		public USTaxTables GetTaxTables(int year)
 		{
 			try
 			{
-				return TaxTables;
+				return _taxationRepository.FillTaxTables(year);
 			}
 			catch (Exception e)
 			{
@@ -154,6 +155,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+
+		public List<int> GetTaxTableYears()
+		{
+			return _taxationRepository.GetTaxTableYears();
 		}
 
 		public USTaxTables GetTaxTablesByContext()
@@ -173,7 +179,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					_taxationRepository.SaveTaxTables(year, taxTables, TaxTables);
 					txn.Complete();
 				}
-				FillTaxTables();
+				FillTaxTables(DateTime.Now.Year);
 				return TaxTables;
 			}
 			catch (Exception e)
@@ -193,7 +199,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					_taxationRepository.CreateTaxes(year);
 					txn.Complete();
 				}
-				FillTaxTables();
+				FillTaxTables(DateTime.Now.Year);
 				return TaxTables;
 			}
 			catch (Exception e)
@@ -277,6 +283,23 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		public void RefreshPEOMaxCheckNumber()
 		{
 			PEOMaxCheckNumber = _metaDataRepository.GetMaxCheckNumber(0, true);
+		}
+
+		public void EnsureTaxTablesForPayDay(int year)
+		{
+			if (!TaxTables.Years.Any(y => y == year))
+			{
+				var yearTaxTables = _taxationRepository.FillTaxTables(year);
+				TaxTables.CASITLowIncomeTaxTable.AddRange(yearTaxTables.CASITLowIncomeTaxTable);
+				TaxTables.CASITTaxTable.AddRange(yearTaxTables.CASITTaxTable);
+				TaxTables.CAStandardDeductionTable.AddRange(yearTaxTables.CAStandardDeductionTable);
+				TaxTables.EstimatedDeductionTable.AddRange(yearTaxTables.EstimatedDeductionTable);
+				TaxTables.ExemptionAllowanceTable.AddRange(yearTaxTables.ExemptionAllowanceTable);
+				TaxTables.FITTaxTable.AddRange(yearTaxTables.FITTaxTable);
+				TaxTables.FitWithholdingAllowanceTable.AddRange(yearTaxTables.FitWithholdingAllowanceTable);
+				TaxTables.Taxes.AddRange(yearTaxTables.Taxes);
+				TaxTables.Years.Add(year);
+			}
 		}
 
 		public void RemoveFromConfirmPayrollQueueItem(Guid payrollId)

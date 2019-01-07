@@ -288,5 +288,15 @@ namespace HrMaxxAPI.Controllers.Reports
 			return MakeServiceCall(() => _reportService.GetCommissionsReport(request), string.Format("getting commissions report for request"));
 
 		}
+
+		[HttpPost]
+		[Route(ReportRoutes.MinWageEligibilityReport)]
+		[DeflateCompression]
+		public List<MinWageEligibileCompany> GetCommissionsReport(MinWageEligibilityCriteria criteria)
+		{
+			
+			return MakeServiceCall(() => _reportService.GetMinWageEligibilityReport(criteria), string.Format("getting min wage eligibility report for request"));
+
+		}
 	}
 }

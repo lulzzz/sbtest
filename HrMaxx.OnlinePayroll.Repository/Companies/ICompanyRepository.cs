@@ -49,5 +49,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		List<EmployeeSSNCheck> CheckSSN(string ssn);
 
 		void SaveCompanyInvoiceSetup(Guid id, string invoiceSetup);
+		Account GetCompanyAccountById(Guid companyId, int accountId);
 	}
 }

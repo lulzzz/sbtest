@@ -46,6 +46,7 @@
 							<th>Company</th>
 							<th>UI%</th>
 							<th>ETT%</th>
+							<th>SUI Management Rate</th>
 							<th>Year</th>
 						</tr>
 					</thead>
@@ -56,6 +57,7 @@
 							<td>{{company.companyName}}</td>
 							<td>{{company.uiRate}}</td>
 							<td>{{company.ettRate}}</td>
+							<td>{{company.suiManagementRate}}</td>
 							<td>{{company.taxYear}}</td>
 						</tr>
 					</tbody>
@@ -318,6 +320,138 @@
 
 				</table>
 				
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-inverse">
+
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===5?0:5)">
+			<h4 class=" panel-title">
+				Company Listings<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===5, 'glyphicon-chevron-right': data.openedRack!==5}"></i>
+			</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.openedRack===5">
+
+			<div class="row">
+				<div class="col-sm-1">
+					<div class="form-group">
+						<label>Contract</label>
+						<select ng-model="data.minWageCriteria.contractType" name="contract" class="form-control" convert-to-number>
+							<option value="2">All</option>
+							<option value="0">ASO</option>
+							<option value="1">PEO</option>
+
+						</select>
+					</div>
+				</div>
+				<div class="col-sm-1">
+					<div class="form-group">
+						<label>Min # of Employees</label>
+						<div>
+							<input type="number" ng-model="data.minWageCriteria.minEmployeeCount" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-1">
+					<div class="form-group">
+						<label>Max # of Employees</label>
+						<div>
+							<input type="number" ng-model="data.minWageCriteria.maxEmployeeCount" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-1">
+					<div class="form-group">
+						<label>Payroll Year</label>
+						<div>
+							<input type="number" ng-model="data.minWageCriteria.payrollYear" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-1">
+					<div class="form-group">
+						<label>Min Wage Criteria</label>
+						<div>
+							<input type="number" ng-model="data.minWageCriteria.minWage" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-2">
+					<div class="form-group">
+						<label>City</label>
+						<div>
+							<input type="text" name="city" ng-model="data.minWageCriteria.city" class="form-control" />
+						</div>
+					</div>
+
+				</div>
+				<div class="col-sm-1">
+					<div class="form-group">
+						<label>Status</label>
+						<select ng-model="data.minWageCriteria.statusId" name="statusId" class="form-control" convert-to-number>
+							<option value="0">All</option>
+							<option value="1">Active</option>
+							<option value="2">InActive</option>
+							<option value="3">Terminated</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						<label></label>
+						<div>
+							<label for="showcompanies" class="switch">
+								Show only hourly employee companies?
+								<input id="showcompanies" type="checkbox" ng-model="data.minWageCriteria.filterHourlyEmployeeCompanies" /><i></i>
+							</label>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="row">
+				<div class="form-group">
+					<button class="btn btn-sm btn-primary" ng-disabled="!data.minWageCriteria.payrollYear" ng-click="loadMinWageEligibilityReport()"><i class="fa fa-search"></i></button>
+					<button class="btn btn-sm btn-warning pull-right" ng-show="false && minWageEligibilityReport.length>0 && data.minWageCriteria.contractType!==2 && data.minWageCriteria.minWage>10" ng-click="raiseMinWage()"><i class="fa fa-arrow-up"></i>Raise Min Wage</button>
+				</div>
+			</div>
+			<div class="row" ng-show="minWageEligibilityReport.length>0">
+				<table class="table table-bordered, table-condensed col-sm-12">
+					<tr>
+						<th class="col-sm-1">#</th>
+						<th class="col-sm-2">Host</th>
+						<th class="col-sm-2">Company</th>
+						<th class="col-sm-1">City</th>
+						<th class="col-sm-1">Contract</th>
+						<th class="col-sm-1">Min-Wage</th>
+						<th class="col-sm-1">Active Employees</th>
+						<th class="col-sm-1">Paid Employees</th>
+						<th class="col-sm-2">Hourly Employees</th>
+					</tr>
+					<tr ng-repeat="item in minWageEligibilityReport track by $index" ng-class="{'warning':item.employees.length===0}">
+						<td>{{$index+1}}</td>
+						<td>{{item.host}}</td>
+						<td>{{item.company}}</td>
+						<td>{{item.city}}</td>
+						<td>{{item.contractType}}</td>
+						<td>{{item.minWage | currency:'$'}}</td>
+						<td>{{item.activeEmployeeCount}}</td>
+						<td>{{item.paidEmployeeCount}}</td>
+						<td>
+							<i ng-show="item.employees.length>0" class="fa" ng-class="{'fa-minus-square':item.expanded, 'fa-plus-square': !item.expanded}" ng-click="item.expanded=!item.expanded">{{item.employees.lenght}}</i>
+							<ol ng-show="item.expanded">
+								<li ng-repeat="e in item.employees">{{e.fullName}} @ {{e.rate | currency:'$'}}</li>
+							</ol>
+						</td>
+					</tr>
+				</table>
+				
+
 			</div>
 		</div>
 	</div>

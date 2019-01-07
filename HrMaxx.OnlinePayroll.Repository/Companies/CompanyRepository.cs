@@ -92,6 +92,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.IsFiler944 = dbMappedCompany.IsFiler944;
 				dbCompany.IsFiler1095 = dbMappedCompany.IsFiler1095;
 				dbCompany.CompanyCheckPrintOrder = dbMappedCompany.CompanyCheckPrintOrder;
+				dbCompany.City = dbMappedCompany.City;
 			}
 			_dbContext.SaveChanges();
 			_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName);
@@ -725,6 +726,19 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			{
 				conn.Execute(query, new {Id = id, InvoiceSetup = invoiceSetup});
 
+			}
+		}
+
+		public Account GetCompanyAccountById(Guid companyId, int accountId)
+		{
+			const string sql = "select * from CompanyAccount where CompanyId=@CompanyId and Id=@AccountId";
+			const string sql2 = "select * from BankAccount where Id=@Id";
+			using (var conn = GetConnection())
+			{
+				var account = conn.Query<CompanyAccount>(sql, new { CompanyId = companyId, AccountId=accountId }).Single();
+				account.BankAccount = conn.Query<Models.DataModel.BankAccount>(sql2, new { Id = account.BankAccountId }).FirstOrDefault();
+				
+				return _mapper.Map<CompanyAccount, Account>(account);
 			}
 		}
 	}

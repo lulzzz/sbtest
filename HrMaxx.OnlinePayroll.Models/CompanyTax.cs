@@ -13,7 +13,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int TaxYear { get; set; }
 		public Decimal UiRate { get; set; }
 		public Decimal EttRate { get; set; }
-
+		public string SUIManagementRate { get; set; }
 		
 	}
 }

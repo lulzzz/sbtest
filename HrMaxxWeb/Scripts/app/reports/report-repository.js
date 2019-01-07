@@ -206,6 +206,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getMinWageEligibilityReport: function (request) {
+				var deferred = $q.defer();
+				reportServer.all('MinWageEligibilityReport').post(request).then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getCommissionsReport: function (request) {
 				var deferred = $q.defer();
 				reportServer.all('CommissionsReport').post(request).then(function (response) {
