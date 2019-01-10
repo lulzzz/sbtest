@@ -17,6 +17,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
+					
 					var dataSvc = {
 						taxTableYears: [],
 						currentYear: new Date().getFullYear(),
@@ -28,6 +29,10 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						federalFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'HeadofHousehold' }],
 						californiaFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'Headofhousehold' }],
 						californiaLowIncomeFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'DualIncomeMarried' }, { key: 3, value: 'MarriedWithMultipleEmployers' }, { key: 4, value: 'Married' }, { key: 5, value: 'Headofhousehold' }]
+					}
+					$scope.showEdit = function () {
+						return dataSvc.selectedYear >= dataSvc.currentYear;
+
 					}
 					$scope.data = dataSvc;
 					$scope.selectedTR = null;

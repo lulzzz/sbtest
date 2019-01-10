@@ -36,5 +36,6 @@ namespace HrMaxx.Common.Repository.Files
 		void SaveFile(string directory, string name, string extension, byte[] file);
 
 		void DeleteArchiveDirectory(string rootDirectory, string directory, string name);
+		bool FileExists(string dir, string name, string ext);
 	}
 }

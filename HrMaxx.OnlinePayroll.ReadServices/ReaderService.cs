@@ -1223,6 +1223,98 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  }
 	  }
 
+	  public List<Accumulation> GetTaxAccumulationsBulk(string company, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
+			bool includeVoids = false, bool includeTaxes = false,
+			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null)
+	  {
+			try
+			{
+				var proc = "GetEmployeesAccumulationBulk";
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "company", Value = company.ToString() });
+
+				if (startdate.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "startdate", Value = startdate.Value.ToString("MM/dd/yyyy")});
+				}
+				if (enddate.HasValue)
+				{
+					paramList.Add(new FilterParam {Key = "enddate", Value = enddate.Value.ToString("MM/dd/yyyy")});
+				}
+				if (includeVoids)
+				{
+					paramList.Add(new FilterParam { Key = "includeVoids", Value = includeVoids.ToString() });
+				}
+				if (includeTaxes)
+				{
+					paramList.Add(new FilterParam { Key = "includeTaxes", Value = includeTaxes.ToString() });
+				}
+				if (includedDeductions)
+				{
+					paramList.Add(new FilterParam { Key = "includeDeductions", Value = includedDeductions.ToString() });
+				}
+				if (includedCompensations)
+				{
+					paramList.Add(new FilterParam { Key = "includeCompensations", Value = includedCompensations.ToString() });
+				}
+				if (includeWorkerCompensations)
+				{
+					paramList.Add(new FilterParam { Key = "includeWorkerCompensations", Value = includeWorkerCompensations.ToString() });
+				}
+				if (includePayCodes)
+				{
+					paramList.Add(new FilterParam { Key = "includePayCodes", Value = includePayCodes.ToString() });
+				}
+				if (includeDailyAccumulation)
+				{
+					paramList.Add(new FilterParam { Key = "includeDailyAccumulation", Value = includeDailyAccumulation.ToString() });
+				}
+				if (includeMonthlyAccumulation)
+				{
+					paramList.Add(new FilterParam { Key = "includeMonthlyAccumulation", Value = includeMonthlyAccumulation.ToString() });
+				}
+				if (includePayTypeAccumulation)
+				{
+					paramList.Add(new FilterParam { Key = "includeAccumulation", Value = includePayTypeAccumulation.ToString() });
+				}
+				if (!string.IsNullOrWhiteSpace(report))
+				{
+					paramList.Add(new FilterParam { Key = "report", Value = report });
+				}
+				if (includeHistory)
+				{
+					paramList.Add(new FilterParam { Key = "includeHistory", Value = includeHistory.ToString() });
+				}
+				if (includeC1095)
+				{
+					paramList.Add(new FilterParam { Key = "includeC1095", Value = includeC1095.ToString() });
+				}
+				if (includeClients)
+				{
+					paramList.Add(new FilterParam { Key = "includeClients", Value = includeClients.ToString() });
+				}
+				if (includeTaxDelayed)
+				{
+					paramList.Add(new FilterParam { Key = "includeTaxDelayed", Value = includeTaxDelayed.ToString() });
+				}
+				if (!string.IsNullOrWhiteSpace(extractDepositName))
+				{
+					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
+				}
+				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
+					proc, paramList, new XmlRootAttribute("AccumulationList"));
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " EMployee accumulation bulk");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
 	  public CommissionsResponse GetCommissionsExtractResponse(CommissionsReportRequest request)
 	  {
 			try

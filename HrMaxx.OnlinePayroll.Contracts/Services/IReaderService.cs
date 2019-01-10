@@ -86,5 +86,10 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		List<CompanyRecurringCharge> GetCompanyRecurringCharges(Guid id);
 		List<MinWageEligibileCompany> GetMinWageEligibilityReport(MinWageEligibilityCriteria criteria);
+		List<Accumulation> GetTaxAccumulationsBulk(string company, DateTime? startdate = null, DateTime? enddate = null, AccumulationType type = AccumulationType.Employee,
+			bool includeVoids = false, bool includeTaxes = false,
+			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null);
 	}
 }

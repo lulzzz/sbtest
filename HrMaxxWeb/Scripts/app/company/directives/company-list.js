@@ -34,6 +34,9 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						{ field: "salesRep", title: "Sales Rep", show: true, sortable: "salesRep", filter: { salesRep: "text" } },
 						{ field: "commission", title: "Commission", show: true, sortable: "commission" },
 						{ field: "contactName", title: "Contact", show: true, sortable: "contactName", filter: { contactName: "text" } },
+						{ field: "uiRate", title: "UI Rate", show: false, sortable: "uiRate" },
+						{ field: "ettRate", title: "ETT Rate", show: false, sortable: "ettRate" },
+						{ field: "suiManagementRate", title: "SUI Management Rate", show: false, sortable: "suiManagementRate" },
 						{ field: "phone", title: "Phone", show: true, sortable: "phone" },
 						{ field: "controls", title: "", show: true }
 

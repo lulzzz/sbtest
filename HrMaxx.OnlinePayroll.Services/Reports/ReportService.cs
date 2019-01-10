@@ -31,6 +31,7 @@ using HrMaxx.OnlinePayroll.Repository.Payroll;
 using HrMaxx.OnlinePayroll.Repository.Reports;
 using Magnum.Collections;
 using Magnum.Serialization;
+using MassTransit.Logging;
 using MassTransit.NewIdProviders;
 using Newtonsoft.Json;
 
@@ -685,6 +686,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private void GetExractTransformedAndSaved(Extract extract, ExtractCompany company, string dir)
 		{
+			if (_fileRepository.FileExists(dir, company.Company.Name, ".pdf"))
+			{
+				Log.Info("Finished Company " + company.Company.Name);
+				return;
+			}
 			extract.Data.Companies = new List<ExtractCompany>() { company };
 			if (extract.Report.ReportName.StartsWith("SSAW2"))
 			{
@@ -925,6 +931,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private ExtractResponse GetExtractResponse(ReportRequest request, bool buildEmployeeAccumulations = false, bool buildDaily  =false, bool buildCompanyEmployeeAccumulation = false, bool includeTaxes = false, bool includeCompensaitons = false, bool includeDeductions=false, bool includeWorkerCompensations = false, bool includePayCodes= false)
 		{
 		
+			//if(request.ReportName.StartsWith("SSA"))
+			//	Log.Info(string.Format("Starting Report {0} - {1}", request.ReportName, DateTime.Now.ToString("hh:mm:ss:fff")));
 			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
 				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory
 				, checkEFileFormsFlag: request.CheckEFileFormsFlag, checkTaxPaymentFlag: request.CheckTaxPaymentFlag, extractDepositName: request.ExtractDepositName);
@@ -952,11 +960,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					data.Hosts = data.Hosts.Where(h => h.Companies.Any(c => c.PayCheckAccumulation!=null && c.PayCheckAccumulation.PayCheckWages!=null && c.PayCheckAccumulation.PayCheckWages.GrossWage>0)).ToList();
 				}
 			}
+			var counter = (int) 0;
 			
 			data.Hosts.ForEach(h =>
 			{
 				if (!request.ReportName.Contains("1099"))
 				{
+					counter++;
+					//if (request.ReportName.StartsWith("SSA"))
+					//	Log.Info(string.Format("Report {0} - {1} - {2} - {3}", request.ReportName, counter, DateTime.Now.ToString("hh:mm:ss:fff"), data.Hosts.Count));
 					h.Companies = h.Companies.Where(c => c.PayCheckAccumulation != null && c.PayCheckAccumulation.PayCheckWages != null && c.PayCheckAccumulation.PayCheckWages.GrossWage > 0).ToList();
 					h.PayCheckAccumulation = new Accumulation(){ExtractType = request.ExtractType, Year=request.Year, Quarter=request.Quarter,PayCheckWages=new PayCheckWages(), PayCheckList=new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes=new List<PayCheckTax>(), Deductions=new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(),WorkerCompensations=new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>()};
 					h.EmployeeAccumulationList = new List<Accumulation>();
@@ -966,10 +978,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						var ea = _readerService.GetTaxAccumulations(company: h.HostCompany.Id, startdate: request.StartDate,
 							enddate: request.EndDate, type: AccumulationType.Employee, includeWorkerCompensations: includeWorkerCompensations, includeTaxes: includeTaxes, includedCompensations: includeCompensaitons, includedDeductions: includeDeductions, report: request.ReportName, includeHistory: request.IncludeHistory, includeClients: true);
 
-						h.EmployeeAccumulationList =
-							ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
-
-
+						h.EmployeeAccumulationList = ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
 					}
 					if (buildCompanyEmployeeAccumulation)
 					{
@@ -977,7 +986,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						{
 							var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: request.StartDate,
 							enddate: request.EndDate, type: AccumulationType.Employee, includeWorkerCompensations: includeWorkerCompensations, includeTaxes: includeTaxes, includedCompensations: includeCompensaitons, includedDeductions: includeDeductions, report: request.ReportName, includeHistory: request.IncludeHistory);
-
+							
 							c.EmployeeAccumulationList =
 								ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
 						});
@@ -1016,7 +1025,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}	
 			
 			});
-			
+			//if (request.ReportName.StartsWith("SSA"))
+			//	Log.Info(string.Format("Finished Report {0} - {1}", request.ReportName, DateTime.Now.ToString("hh:mm:ss:fff")));
 			return data;
 		}
 		private ExtractResponse GetExtractResponseC1095(ReportRequest request)
@@ -1343,7 +1353,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.SsaBsoW2MagneticFileId));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2-" + request.Year + ".xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2.xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
 			
 		}
 		private Extract GetSSAMagneticReport(ReportRequest request)
@@ -1363,7 +1373,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				Report = request,
 				Data = data,
-				Template = "transformers/extracts/SSAW2PDF-" + request.Year + ".xslt",
+				Template = "transformers/extracts/SSAW2PDF.xslt",
 				ArgumentList = JsonConvert.SerializeObject(argList),
 				FileName = request.Description,
 				Extension = ".pdf"
@@ -1388,7 +1398,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				Report = request,
 				Data = data,
-				Template = "transformers/extracts/SSAW2PDF-Employer-" + request.Year + ".xslt",
+				Template = "transformers/extracts/SSAW2PDF-Employer.xslt",
 				ArgumentList = JsonConvert.SerializeObject(argList),
 				FileName = request.Description,
 				Extension = ".pdf"

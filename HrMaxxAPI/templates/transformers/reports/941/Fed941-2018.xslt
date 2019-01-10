@@ -28,7 +28,8 @@
 	<xsl:variable name="line6" select="format-number($totalFITTax + $line5d,'######0.00')"/>
 	<xsl:variable name="line7" select="format-number($totalSSTax + $totalMDTax - $line5d,'######0.00')"/>
 	<xsl:variable name="line10" select="format-number(($line6 + $line7),'######0.00')"/>
-	<xsl:variable name="line11" select="format-number(($totalFITTax + $totalSSTax + $totalMDTax),'######0.00')"/>
+	<xsl:variable name="line11" select="0.00"/>
+	<xsl:variable name="line12" select="format-number(($line10 - $line11),'######0.00')"/>
 	<xsl:variable name="line13" select="format-number(/ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'######0.00')"/>
 
 	<xsl:variable name="month1" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 2)]/IRS941"/>
@@ -180,6 +181,16 @@
 		<xsl:with-param name="field1" select="'f1-53'"/>
 		<xsl:with-param name="field2" select="'f1-54'"/>
 		<xsl:with-param name="val" select="$line10"/>
+	</xsl:call-template>
+	<xsl:call-template name="DecimalFieldTemplate">
+		<xsl:with-param name="field1" select="'f1-55'"/>
+		<xsl:with-param name="field2" select="'f1-56'"/>
+		<xsl:with-param name="val" select="$line11"/>
+	</xsl:call-template>
+	<xsl:call-template name="DecimalFieldTemplate">
+		<xsl:with-param name="field1" select="'f1-57'"/>
+		<xsl:with-param name="field2" select="'f1-58'"/>
+		<xsl:with-param name="val" select="$line12"/>
 	</xsl:call-template>
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1-59'"/>

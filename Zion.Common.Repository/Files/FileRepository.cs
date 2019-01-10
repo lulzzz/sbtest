@@ -234,6 +234,18 @@ namespace HrMaxx.Common.Repository.Files
 			DeleteDirectory(string.Format("{0}{1}\\{2}\\{3}", _archivePath, rootDirectory, directory, name));
 		}
 
+		public bool FileExists(string dir, string name, string ext)
+		{
+			var invalidChars = Path.GetInvalidFileNameChars();
+
+			name = new string(name
+			.Where(x => !invalidChars.Contains(x))
+			.ToArray());
+			var fileName = string.Format("{0}\\{1}.{2}", dir, name, ext);
+			return File.Exists(fileName);
+
+		}
+
 		public void DeleteArchiveFile(string rootDirectory, string directory, string name)
 		{
 			var fileName = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", name);

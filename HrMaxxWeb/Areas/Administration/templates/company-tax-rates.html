@@ -1,9 +1,10 @@
 ﻿<div class="col-sm-12">
-	<div class="panel panel-inverse">
+	<div class="panel panel-inverse  hidden-print">
 
 		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===1?0:1)">
 			<h4 class=" panel-title">
-				Comapny Tax Rates - California by year<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===1, 'glyphicon-chevron-right': data.openedRack!==1}"></i></h4>
+				Comapny Tax Rates - California by year<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===1, 'glyphicon-chevron-right': data.openedRack!==1}"></i>
+			</h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.openedRack===1">
@@ -14,7 +15,7 @@
 					</select>
 				</div>
 			</div>
-			<div class="row m-5" >
+			<div class="row m-5">
 				<span ng-show="list.length===0 && data.selectedYear">No Records found <br /></span>
 				<button ng-show="data.selectedYear && data.selectedYear>data.currentYear && !data.importInProcess" class="btn btn-sm btn-success attach-button pull-left" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 					<i class="fa fa-upload"></i>Import Tax Rates
@@ -37,7 +38,7 @@
 						<button class="btn btn-sm btn-primary pull-right" ng-show="companyMisMatch()===0" ng-click="save()">Confirm & Save</button>
 					</div>
 				</div>
-				
+
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -64,10 +65,10 @@
 
 				</table>
 			</div>
-			
+
 		</div>
 	</div>
-	<div class="panel panel-inverse">
+	<div class="panel panel-inverse  hidden-print">
 
 		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===2?0:2)">
 			<h4 class=" panel-title">
@@ -81,8 +82,8 @@
 					<div class="form-group">
 						<label>First Row</label>
 						<input class="form-control"
-						       type="number"
-						       ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+									 type="number"
+									 ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
 					</div>
 					<div class="form-group">
 						<table class="table table-header table-bordered table-condensed form-controls input-sm">
@@ -141,7 +142,7 @@
 							<i class="fa fa-upload"></i>Import WC Rates
 						</button>
 					</div>
-						
+
 				</div>
 				<div class="col-sm-8">
 					<button class="btn btn-sm btn-primary" ng-click="uploadWCRates()" ng-show="data.importInProcessWC"><i class="fa fa-save"> update</i></button>
@@ -169,14 +170,14 @@
 					</table>
 
 				</div>
-				
+
 
 
 			</div>
 
 		</div>
 	</div>
-	<div class="panel panel-inverse">
+	<div class="panel panel-inverse  hidden-print">
 
 		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===3?0:3)">
 			<h4 class=" panel-title">
@@ -186,13 +187,13 @@
 		</div>
 		<div class="panel-body" ng-show="data.openedRack===3">
 
-			<div >
-				<span ng-if="companyScheduleList.length===0">{{ loadedScheudleList ? 'No companies found' : 'list not loaded yet'}}</span> <button class="btn btn-sm btn-primary" ng-click="loadCompaniesForSchedules()" ><i class="fa fa-refresh"></i></button>
+			<div>
+				<span ng-if="companyScheduleList.length===0">{{ loadedScheudleList ? 'No companies found' : 'list not loaded yet'}}</span> <button class="btn btn-sm btn-primary" ng-click="loadCompaniesForSchedules()"><i class="fa fa-refresh"></i></button>
 			</div>
 			<div class="row" ng-show="companyScheduleList.length>0">
 				<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':selectedCompany.id===item.id}">
-						<td data-title="' #'"  class="col-sm-1">
+						<td data-title="' #'" class="col-sm-1">
 							{{$index + 1}}
 						</td>
 						<td data-title="' No'" filter="{ 'companyIntId': 'text' }" sortable=" 'companyIntId' " class="col-sm-1">
@@ -201,7 +202,7 @@
 						<td data-title=" 'Name' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-3">
 							{{item.name}}
 						</td>
-						
+
 						<td data-title=" 'Last Payroll' " sortable=" 'lastPayrollDate' " class="col-sm-1">
 							{{item.lastPayrollDate | date:'MM/dd/yyyy'}}
 						</td>
@@ -241,7 +242,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="panel panel-inverse">
+	<div class="panel panel-inverse  hidden-print">
 
 		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===4?0:4)">
 			<h4 class=" panel-title">
@@ -314,12 +315,12 @@
 						<td data-title=" 'Total' " class="text-center col-sm-1" ng-class="{'danger' : (item.payCheckAccumulation.payCheckWages.quarter1FUTA + item.payCheckAccumulation.payCheckWages.quarter2FUTA + item.payCheckAccumulation.payCheckWages.quarter3FUTA +item.payCheckAccumulation.payCheckWages.quarter4FUTA ) >= yearlyLimit}">
 							{{ (item.payCheckAccumulation.payCheckWages.quarter1FUTA + item.payCheckAccumulation.payCheckWages.quarter2FUTA + item.payCheckAccumulation.payCheckWages.quarter3FUTA +item.payCheckAccumulation.payCheckWages.quarter4FUTA ) | currency:'$'}}
 						</td>
-						
+
 
 					</tr>
 
 				</table>
-				
+
 			</div>
 		</div>
 	</div>
@@ -333,7 +334,7 @@
 		</div>
 		<div class="panel-body" ng-show="data.openedRack===5">
 
-			<div class="row">
+			<div class="row  hidden-print">
 				<div class="col-sm-1">
 					<div class="form-group">
 						<label>Contract</label>
@@ -414,13 +415,17 @@
 
 				</div>
 			</div>
-			<div class="row">
+			<div class="row  hidden-print">
 				<div class="form-group">
 					<button class="btn btn-sm btn-primary" ng-disabled="!data.minWageCriteria.payrollYear" ng-click="loadMinWageEligibilityReport()"><i class="fa fa-search"></i></button>
-					<button class="btn btn-sm btn-warning pull-right" ng-show="false && minWageEligibilityReport.length>0 && data.minWageCriteria.contractType!==2 && data.minWageCriteria.minWage>10" ng-click="raiseMinWage()"><i class="fa fa-arrow-up"></i>Raise Min Wage</button>
+					<button class="btn btn-sm btn-warning pull-right" ng-show="showRaiseMinWage() && minWageEligibilityReport.length>0 && data.minWageCriteria.contractType!==2 && data.minWageCriteria.minWage>10" ng-click="raiseMinWage()"><i class="fa fa-arrow-up"></i>Raise Min Wage</button>
+					<button class="btn btn-sm btn-primary" ng-show="showRaiseMinWage() && minWageEligibilityReport.length>0" ng-click="print()"><i class="fa fa-print"></i>Print</button>
 				</div>
 			</div>
-			<div class="row" ng-show="minWageEligibilityReport.length>0">
+			<div class="row  hidden-print" ng-show="showRaiseMinWage() && minWageEligibilityReport.length===0">
+				No Results Found.
+			</div>
+			<div class="row" ng-show="showRaiseMinWage() && minWageEligibilityReport.length>0">
 				<table class="table table-bordered, table-condensed col-sm-12">
 					<tr>
 						<th class="col-sm-1">#</th>
@@ -431,7 +436,7 @@
 						<th class="col-sm-1">Min-Wage</th>
 						<th class="col-sm-1">Active Employees</th>
 						<th class="col-sm-1">Paid Employees</th>
-						<th class="col-sm-2">Hourly Employees</th>
+						<th class="col-sm-2 hidden-print">Hourly Employees</th>
 					</tr>
 					<tr ng-repeat="item in minWageEligibilityReport track by $index" ng-class="{'warning':item.employees.length===0}">
 						<td>{{$index+1}}</td>
@@ -442,7 +447,7 @@
 						<td>{{item.minWage | currency:'$'}}</td>
 						<td>{{item.activeEmployeeCount}}</td>
 						<td>{{item.paidEmployeeCount}}</td>
-						<td>
+						<td class="hidden-print">
 							<i ng-show="item.employees.length>0" class="fa" ng-class="{'fa-minus-square':item.expanded, 'fa-plus-square': !item.expanded}" ng-click="item.expanded=!item.expanded">{{item.employees.lenght}}</i>
 							<ol ng-show="item.expanded">
 								<li ng-repeat="e in item.employees">{{e.fullName}} @ {{e.rate | currency:'$'}}</li>
@@ -450,7 +455,7 @@
 						</td>
 					</tr>
 				</table>
-				
+
 
 			</div>
 		</div>

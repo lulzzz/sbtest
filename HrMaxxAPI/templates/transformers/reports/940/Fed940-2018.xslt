@@ -25,7 +25,7 @@
 	<xsl:variable name="line6" select="$line4 + $line5"/>
 	<xsl:variable name="line7" select="$line3 - $line6"/>
 	<xsl:variable name="line8" select="format-number($line7*0.006,'######.00')"/>
-	<xsl:variable name="line11" select="format-number($line7*0.021,'######.00')"/>
+	<xsl:variable name="line11" select="format-number($line7*0.00,'######.00')"/>
 	<xsl:variable name="line12" select="$line8 + $line11"/>
 	<xsl:variable name="line13" select="format-number(ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'######.00')"/>
 <xsl:output method="xml" indent="no"/>
@@ -43,7 +43,7 @@
 				</Fields>
 			
 			</Report>
-			<xsl:call-template name="ScheduleA"/>
+			<!--<xsl:call-template name="ScheduleA"/>-->
 		</Reports>
 	</ReportTransformed>	
 </xsl:template>

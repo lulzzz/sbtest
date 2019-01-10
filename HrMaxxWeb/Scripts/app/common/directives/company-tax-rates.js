@@ -10,8 +10,8 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/company-tax-rates.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$filter', 'companyRepository', 'reportRepository', 'NgTableParams',
-				function ($scope, $rootScope, $filter, companyRepository, reportRepository, ngTableParams) {
+			controller: ['$scope', '$rootScope', '$filter', 'companyRepository', 'reportRepository', 'NgTableParams', '$window',
+				function ($scope, $rootScope, $filter, companyRepository, reportRepository, ngTableParams, $window) {
 					$scope.fullList = [];
 					$scope.list = [];
 					$scope.listWCRates = [];
@@ -21,7 +21,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 					$scope.loadedSemiWeeklyEligibility = false;
 					$scope.semiWeeklyEligibilityReport = null;
 
-					$scope.loadedMinWageEligibility = false;
+					$scope.loadedMinWageEligibilityCriteria = null;
 					$scope.minWageEligibilityReport = null;
 
 					$scope.depositSchedule = 2;
@@ -371,10 +371,17 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 					$scope.loadMinWageEligibilityReport = function () {
 						reportRepository.getMinWageEligibilityReport(dataSvc.minWageCriteria).then(function (result) {
 							$scope.minWageEligibilityReport = result;
-							
+							dataSvc.loadedMinWageEligibilityCriteria = angular.copy(dataSvc.minWageCriteria);
+
 						}, function (error) {
 							addAlert('error in getting min Wage eligibility list', 'danger');
 						});
+					}
+					$scope.showRaiseMinWage = function() {
+						return angular.equals(dataSvc.minWageCriteria, dataSvc.loadedMinWageEligibilityCriteria);
+					}
+					$scope.print = function () {
+						$window.print();
 					}
 					$scope.raiseMinWage = function () {
 						var message = 'Min Wage to ' + dataSvc.minWageCriteria.minWage + " for all";

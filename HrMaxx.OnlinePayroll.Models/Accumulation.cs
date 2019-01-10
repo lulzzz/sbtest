@@ -27,6 +27,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string FederalEIN { get { return Crypto.Decrypt(FEIN); } }
 		public string FederalPIN { get { return Crypto.Decrypt(FPIN); } }
 
+		
 		public Guid? EmployeeId { get; set; }
 		public Guid? LastCheckCompany { get; set; }
 		public string FirstName { get; set; }

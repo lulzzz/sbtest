@@ -104,6 +104,13 @@ namespace HrMaxxAPI.Resources.Common
 		{
 			get { return Contact != null ? !string.IsNullOrWhiteSpace(Contact.Phone) ? string.Format("({0}) {1}-{2}", Contact.Phone.Substring(0, 3), Contact.Phone.Substring(3, 3), Contact.Phone.Substring(6, 4)) : !string.IsNullOrWhiteSpace(Contact.Mobile) ? string.Format("({0}) {1}-{2}", Contact.Mobile.Substring(0, 3), Contact.Mobile.Substring(3, 3), Contact.Mobile.Substring(6, 4)) : string.Empty : string.Empty; }
 		}
+		public decimal UIRate { get; set; }
+		public decimal ETTRate { get; set; }
+
+		public decimal SUIManagementRate
+		{
+			get { return InvoiceSetup.SUIManagement; }
+		}
 	}
 	
 
