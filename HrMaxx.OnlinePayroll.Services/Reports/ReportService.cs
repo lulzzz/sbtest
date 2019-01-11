@@ -968,7 +968,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				{
 					counter++;
 					//if (request.ReportName.StartsWith("SSA"))
-					//	Log.Info(string.Format("Report {0} - {1} - {2} - {3}", request.ReportName, counter, DateTime.Now.ToString("hh:mm:ss:fff"), data.Hosts.Count));
+					//	Log.Info(string.Format("Report {0} - {1} - {2} - {3}", h.HostCompany.Name, counter, DateTime.Now.ToString("hh:mm:ss:fff"), data.Hosts.Count));
 					h.Companies = h.Companies.Where(c => c.PayCheckAccumulation != null && c.PayCheckAccumulation.PayCheckWages != null && c.PayCheckAccumulation.PayCheckWages.GrossWage > 0).ToList();
 					h.PayCheckAccumulation = new Accumulation(){ExtractType = request.ExtractType, Year=request.Year, Quarter=request.Quarter,PayCheckWages=new PayCheckWages(), PayCheckList=new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes=new List<PayCheckTax>(), Deductions=new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(),WorkerCompensations=new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>()};
 					h.EmployeeAccumulationList = new List<Accumulation>();
@@ -2008,10 +2008,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("firstQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter1FUTA);
-			argList.AddParam("secondQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter2FUTA);
-			argList.AddParam("thirdQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter3FUTA);
-			argList.AddParam("fourthQuarter", "", response.CompanyAccumulations.PayCheckWages.Quarter4FUTA);
+			argList.AddParam("firstQuarter", "", (response.CompanyAccumulations.PayCheckWages.Quarter1FUTAWage * response.CompanyAccumulations.PayCheckWages.FUTARate/100).ToString());
+			argList.AddParam("secondQuarter", "", (response.CompanyAccumulations.PayCheckWages.Quarter2FUTAWage * response.CompanyAccumulations.PayCheckWages.FUTARate/100).ToString());
+			argList.AddParam("thirdQuarter", "", (response.CompanyAccumulations.PayCheckWages.Quarter3FUTAWage * response.CompanyAccumulations.PayCheckWages.FUTARate/100).ToString());
+			argList.AddParam("fourthQuarter", "", (response.CompanyAccumulations.PayCheckWages.Quarter4FUTAWage * response.CompanyAccumulations.PayCheckWages.FUTARate/100).ToString());
 			argList.AddParam("immigrantsIncluded", "", response.CompanyAccumulations.PayCheckWages.Immigrants>0);
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/940/Fed940-" + request.Year + ".xslt");
 			

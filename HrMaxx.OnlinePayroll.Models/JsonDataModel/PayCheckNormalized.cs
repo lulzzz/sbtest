@@ -114,7 +114,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Quarter2FUTAWage { get; set; }
 		public decimal Quarter3FUTAWage { get; set; }
 		public decimal Quarter4FUTAWage { get; set; }
-		
+		public decimal FUTARate { get; set; }
 		public int Immigrants { get; set; }
 
 		public int Twelve1 { get; set; }

@@ -43,7 +43,7 @@
 				</Fields>
 			
 			</Report>
-			<!--<xsl:call-template name="ScheduleA"/>-->
+			<xsl:call-template name="ScheduleA"/>
 		</Reports>
 	</ReportTransformed>	
 </xsl:template>

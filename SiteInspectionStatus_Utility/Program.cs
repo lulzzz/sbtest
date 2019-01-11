@@ -137,11 +137,32 @@ namespace SiteInspectionStatus_Utility
 				case 27:
 					FillCompanyCity(container);
 					break;
+				case 28:
+					UpdateCBCSUIManagementRate(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+
+		private static void UpdateCBCSUIManagementRate(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var companyservice = scope.Resolve<ICompanyService>();
+				var companies = readerservice.GetCompanies(host: new Guid("ECE56649-623B-447B-A02B-A6E200DC8092")).Where(c=>c.Contract.InvoiceSetup.SUIManagement!=(decimal)2.1).ToList();
+				companies.ForEach(c =>
+				{
+					c.Contract.InvoiceSetup.SUIManagement = (decimal) 2.1;
+					c.UserId = Guid.Empty;
+					c.UserName = "System";
+					companyservice.Save(c);
+				});
+				Console.WriteLine("companies updated " + companies.Count);
+			}
 		}
 
 		private static void FillCompanyCity(IContainer container)

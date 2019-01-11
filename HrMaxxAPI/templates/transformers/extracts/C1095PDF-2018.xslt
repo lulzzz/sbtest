@@ -91,7 +91,9 @@
 		</xsl:variable>
 		
 		<xsl:variable name="ssn" select="concat(substring(SSNVal,1,3),'-',substring(SSNVal,4,2),'-',substring(SSNVal,6,4))"/>
-		<xsl:variable name="empname" select="translate(concat(FirstName, ' ', LastName),$smallcase,$uppercase)"/>
+		<xsl:variable name="empfirstname" select="translate(FirstName,$smallcase,$uppercase)"/>
+		<xsl:variable name="empmiddlename" select="translate(MiddleInitial,$smallcase,$uppercase)"/>
+		<xsl:variable name="emplastname" select="translate(LastName,$smallcase,$uppercase)"/>
 		<xsl:variable name="address" select="translate(Contact/Address/AddressLine1,$smallcase,$uppercase)"/>
 		<xsl:variable name="city" select="translate(Contact/Address/City,$smallcase,$uppercase)"/>
 		<xsl:variable name="state" select="translate('CA',$smallcase,$uppercase)"/>
@@ -104,8 +106,16 @@
 			<Fields>
 
 				<xsl:call-template name="FieldTemplate">
-					<xsl:with-param name="name1" select="'empname'"/>
-					<xsl:with-param name="val1" select="$empname"/>
+					<xsl:with-param name="name1" select="'empfirstname'"/>
+					<xsl:with-param name="val1" select="$empfirstname"/>
+				</xsl:call-template>
+				<xsl:call-template name="FieldTemplate">
+					<xsl:with-param name="name1" select="'empmiddlename'"/>
+					<xsl:with-param name="val1" select="$empmiddlename"/>
+				</xsl:call-template>
+				<xsl:call-template name="FieldTemplate">
+					<xsl:with-param name="name1" select="'emplastname'"/>
+					<xsl:with-param name="val1" select="$emplastname"/>
 				</xsl:call-template>
 				<xsl:call-template name="FieldTemplate">
 					<xsl:with-param name="name1" select="'ssn'"/>

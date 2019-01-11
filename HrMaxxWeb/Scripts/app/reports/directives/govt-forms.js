@@ -74,7 +74,7 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 							includeClients: false
 						}
 					}
-					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedHost.isPeoHost) ? true : false;
+					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && ($scope.mainData.selectedCompany.hasLocations || $scope.mainData.selectedCompany.isLocation)) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedHost.isPeoHost) ? true : false;
 					var currentYear = new Date().getFullYear();
 					for (var i = currentYear - 4; i <= currentYear; i++) {
 						if(i>=2017)
