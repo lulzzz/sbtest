@@ -520,7 +520,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				var returnCompany = _readerService.GetCompany(tr.CompanyId);
 				var memento = Memento<Company>.Create(returnCompany, EntityTypeEnum.Company, user, string.Format("Tax rate updated {0}", mappedResource.TaxCode), userId);
 				_mementoDataService.AddMementoData(memento, true);
-
+				tr.TaxCode = mappedResource.TaxCode;
 				return tr;
 			}
 			catch (Exception e)
@@ -651,33 +651,31 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				if(!criteria.MinWage.HasValue)
 					throw new Exception("Please provide minimum wage!");
-				var companies = _readerService.GetMinWageEligibilityReport(criteria);
-				var allcompanies = _readerService.GetCompanies();
-				
-					companies.ForEach(c =>
+				criteria.Companies.ForEach(c =>
+				{
+					var comp = _readerService.GetCompany(c.CompanyId);
+					if (comp != null)
 					{
-						var comp = allcompanies.First(c1 => c1.Id == c.CompanyId);
-						if (comp != null)
+						if (criteria.MinWage > comp.MinWage)
 						{
-							if (criteria.MinWage > comp.MinWage)
-							{
-								comp.MinWage = criteria.MinWage.Value;
-								_companyRepository.SaveCompany(comp);
-							}
-							
-							var employees = _readerService.GetEmployees(company: comp.Id);
-							employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < comp.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage)))
-								.ToList()
-								.ForEach(e =>
-								{
-									e.Rate = e.Rate < comp.MinWage ? comp.MinWage : e.Rate;
-									e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage).ToList().ForEach(pc => pc.HourlyRate = comp.MinWage);
-									SaveEmployee(e, false);
-								});
-							var memento = Memento<Company>.Create(comp, EntityTypeEnum.Company, user, "Min Wage Raised", userId);
-							_mementoDataService.AddMementoData(memento);
+							comp.MinWage = criteria.MinWage.Value;
+							_companyRepository.SaveCompany(comp);
 						}
-					});
+
+						var employees = _readerService.GetEmployees(company: comp.Id);
+						employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < comp.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage)))
+							.ToList()
+							.ForEach(e =>
+							{
+								e.Rate = e.Rate < comp.MinWage ? comp.MinWage : e.Rate;
+								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage).ToList().ForEach(pc => pc.HourlyRate = comp.MinWage);
+								SaveEmployee(e, false);
+							});
+						var memento = Memento<Company>.Create(comp, EntityTypeEnum.Company, user, "Min Wage Raised", userId);
+						_mementoDataService.AddMementoData(memento);
+					}
+				});
+				
 					
 			}
 			catch (Exception e)

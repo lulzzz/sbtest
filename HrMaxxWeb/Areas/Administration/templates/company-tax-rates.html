@@ -425,7 +425,7 @@
 			<div class="row  hidden-print" ng-show="showRaiseMinWage() && minWageEligibilityReport.length===0">
 				No Results Found.
 			</div>
-			<div class="row" ng-show="showRaiseMinWage() && minWageEligibilityReport.length>0">
+			<div class="row" ng-show="minWageEligibilityReport.length>0">
 				<table class="table table-bordered, table-condensed col-sm-12">
 					<tr>
 						<th class="col-sm-1">#</th>
@@ -438,7 +438,7 @@
 						<th class="col-sm-1">Paid Employees</th>
 						<th class="col-sm-2 hidden-print">Hourly Employees</th>
 					</tr>
-					<tr ng-repeat="item in minWageEligibilityReport track by $index" ng-class="{'warning':item.employees.length===0}">
+					<tr ng-repeat="item in minWageEligibilityReport track by $index" ng-class="{'success':item.selected}" ng-click="item.selected=!item.selected">
 						<td>{{$index+1}}</td>
 						<td>{{item.host}}</td>
 						<td>{{item.company}}</td>

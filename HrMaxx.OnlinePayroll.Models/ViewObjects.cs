@@ -40,8 +40,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<JsonDataModel.CompanyTaxState> CompanyTaxStates { get; set; }
 		public InsuranceGroup InsuranceGroup { get; set; }
 		public string Contact { get; set; }
-		public decimal UIRate { get; set; }
-		public decimal ETTRate { get; set; }
+		public decimal? UIRate { get; set; }
+		public decimal? ETTRate { get; set; }
 	}
 
 	public class HostAndCompanies

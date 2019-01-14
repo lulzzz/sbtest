@@ -48,6 +48,7 @@
 			<tr ng-show="!selected">
 				<td colspan="4">
 					<span ng-show="list.length===0">No items found</span>
+					<button class="btn btn-primary btn-sm" ng-show="showAdd()" ng-click="add()">Add</button>
 				</td>
 
 			</tr>

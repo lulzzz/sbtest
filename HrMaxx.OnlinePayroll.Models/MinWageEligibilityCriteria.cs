@@ -17,5 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string City { get; set; }
 		public int PayrollYear { get; set; }
 		public bool FilterHourlyEmployeeCompanies { get; set; }
+
+		public List<MinWageEligibileCompany> Companies { get; set; } 
 	}
 }

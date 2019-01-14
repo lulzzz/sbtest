@@ -377,8 +377,10 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							addAlert('error in getting min Wage eligibility list', 'danger');
 						});
 					}
-					$scope.showRaiseMinWage = function() {
-						return angular.equals(dataSvc.minWageCriteria, dataSvc.loadedMinWageEligibilityCriteria);
+					$scope.showRaiseMinWage = function () {
+						var selected = $filter('filter')($scope.minWageEligibilityReport, { selected: true });
+
+						return angular.equals(dataSvc.minWageCriteria, dataSvc.loadedMinWageEligibilityCriteria) && selected.length>0;
 					}
 					$scope.print = function () {
 						$window.print();
@@ -389,6 +391,8 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						message += (dataSvc.minWageCriteria.contractType === 0 ? " ASO" : dataSvc.minWageCriteria.contractType === 1 ? " PEO" : "") + " companies";
 						if (dataSvc.minWageCriteria.city)
 							message += " in the city of " + dataSvc.minWageCriteria.city;
+
+						dataSvc.minWageCriteria.companies = angular.copy($filter('filter')($scope.minWageEligibilityReport, {selected: true}));
 
 						$scope.$parent.$parent.confirmDialog('This action will RAISE ' + message + '. Are you sure you want to continue?', 'info', function () {
 							companyRepository.raiseMinWage(dataSvc.minWageCriteria).then(function () {

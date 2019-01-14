@@ -25,6 +25,7 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 				$scope.save = function(item) {
 					companyRepository.saveTaxYearRate(item).then(function(data) {
 						item.id = data.id;
+						item.taxCode = data.taxCode;
 						$scope.selected = null;
 						$rootScope.$broadcast('companyTaxUpdated', { tax: data });
 						addAlert('successfully saved tax rate', 'success');
@@ -44,13 +45,35 @@ common.directive('taxYearRateList', ['zionAPI', 'version',
 
 				$scope.isItemValid = function (item) {
 					var matching = $filter('filter')($scope.metaData? $scope.metaData : [], { tax:{id:item.taxId}, taxYear: item.taxYear })[0];
-					if (!item.id || item.rate===null || item.rate===undefined || !matching || (matching.taxRateLimit && item.rate>matching.taxRateLimit))
+					if (item.rate===null || item.rate===undefined || !matching || (matching.taxRateLimit && item.rate>matching.taxRateLimit))
 						return false;
 					else
 						return true;
 				}
 				
-				
+				$scope.showAdd = function() {
+					var currentYear = new Date().getFullYear();
+					var currentYearTaxes = $filter('filter')($scope.list, { taxYear: currentYear });
+					return currentYearTaxes.length === 0;
+				}
+				$scope.add = function () {
+					var currentYear = new Date().getFullYear() - 1;
+					var currentYearTaxes = $filter('filter')($scope.list, { taxYear: currentYear });
+					$.each(currentYearTaxes, function(i, t) {
+						var t1 = angular.copy(t);
+						t1.id = 0;
+						t1.taxYear = currentYear + 1;
+						companyRepository.saveTaxYearRate(t1).then(function (data) {
+							t1.id = data.id;
+							t1.taxCode = data.taxCode;
+							$scope.list.push(t1);
+							$rootScope.$broadcast('companyTaxUpdated', { tax: data });
+							
+						}, function (error) {
+							addAlert('erorr adding tax rate for year ' + (currentYear + 1), 'danger');
+						});
+					});
+				}
 				
 
 			}]
