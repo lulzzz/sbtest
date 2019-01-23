@@ -13,6 +13,7 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 				defaultsProvided: "=?defaultsProvided",
 				showHistory: "=?showHistory",
 				showIncludeClients: "=?showIncludeClients",
+				showIncludeClientEmployees: "=?showIncludeClientEmployees",
 				showIncludeTaxDelayed: "=?showIncludeTaxDelayed",
 				showActive: "=?showActive"
 			},
@@ -103,6 +104,7 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					dataSvc.filter.includeHistory = false;
 					dataSvc.filter.includeClients = false;
+					dataSvc.filter.includeClientEmployees = false;
 					dataSvc.filter.includeTaxDelayed = false;
 					_init();
 				}]

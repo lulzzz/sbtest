@@ -1088,7 +1088,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true,
-			string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null)
+			string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, 
+			string extractDepositName = null, bool includeClientEmployees = false, bool includeMedicareExtraWages = false)
 		{
 			try
 			{
@@ -1169,6 +1170,14 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (!string.IsNullOrWhiteSpace(extractDepositName))
 				{
 					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
+				}
+				if (includeClientEmployees)
+				{
+					paramList.Add(new FilterParam { Key = "includeClientEmployees", Value = includeClientEmployees.ToString() });
+				}
+				if (includeMedicareExtraWages)
+				{
+					paramList.Add(new FilterParam { Key = "includeMedicareExtraWage", Value = includeMedicareExtraWages.ToString() });
 				}
 				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
 					proc, paramList, new XmlRootAttribute("AccumulationList"));

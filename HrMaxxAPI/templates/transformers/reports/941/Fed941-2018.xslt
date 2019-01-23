@@ -24,9 +24,11 @@
 	<xsl:variable name="totalSSTax" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTD + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTD)"/>
 	<xsl:variable name="totalMDTax" select="(/ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTD + /ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTD)"/>
 
-	<xsl:variable name="line5d" select="format-number($totalSSWages*$ssConst,'######0.00') + format-number($totalTips*$ssConst,'######0.00') + format-number($totalMDWages*$mdConst,'######0.00')"/>
-	<xsl:variable name="line6" select="format-number($totalFITTax + $line5d,'######0.00')"/>
-	<xsl:variable name="line7" select="format-number($totalSSTax + $totalMDTax - $line5d,'######0.00')"/>
+	<xsl:variable name="medicareExtraRate" select="0.009"/>
+	<xsl:variable name="line5d" select="format-number(/ReportResponse/CompanyAccumulations/PayCheckWages/MedicareExtraWages * $medicareExtraRate, '######0.00')"/>
+	<xsl:variable name="line5e" select="format-number($totalSSWages*$ssConst,'######0.00') + format-number($totalTips*$ssConst,'######0.00') + format-number($totalMDWages*$mdConst,'######0.00') + $line5d"/>
+	<xsl:variable name="line6" select="format-number($totalFITTax + $line5e,'######0.00')"/>
+	<xsl:variable name="line7" select="format-number($totalSSTax + $totalMDTax - $line5e,'######0.00')"/>
 	<xsl:variable name="line10" select="format-number(($line6 + $line7),'######0.00')"/>
 	<xsl:variable name="line11" select="0.00"/>
 	<xsl:variable name="line12" select="format-number(($line10 - $line11),'######0.00')"/>
@@ -163,9 +165,19 @@
 		<xsl:with-param name="val" select="$totalMDWages * $mdConst"/>
 	</xsl:call-template>
 	<xsl:call-template name="DecimalFieldTemplate">
+		<xsl:with-param name="field1" select="'f1-290'"/>
+		<xsl:with-param name="field2" select="'f1-300'"/>
+		<xsl:with-param name="val" select="format-number(PayCheckWages/MedicareExtraWages, '######0.00')"/>
+	</xsl:call-template>
+	<xsl:call-template name="DecimalFieldTemplate">
+		<xsl:with-param name="field1" select="'f1-310'"/>
+		<xsl:with-param name="field2" select="'f1-320'"/>
+		<xsl:with-param name="val" select="$line5d"/>
+	</xsl:call-template>
+	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1-33'"/>
 		<xsl:with-param name="field2" select="'f1-34'"/>
-		<xsl:with-param name="val" select="$line5d"/>
+		<xsl:with-param name="val" select="$line5e"/>
 	</xsl:call-template>
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1-35'"/>

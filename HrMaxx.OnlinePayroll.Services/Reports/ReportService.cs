@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Cache;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -1505,7 +1506,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 				extract.File = new FileDto
 				{
-					Data = Encoding.UTF8.GetBytes(transformed),
+					Data = Encoding.Default.GetBytes(transformed),
 					DocumentExtension = extract.Extension,
 					Filename = extract.FileName,
 					MimeType = "application/octet-stream"
@@ -1649,11 +1650,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 							}
 							if (t.EmployeeBankAccounts != null && t.EmployeeBankAccounts.Any())
 							{
+								t.Name = Regex.Replace(t.Name, @"[^0-9a-zA-Z\s]+", string.Empty);
 								t.EmployeeBankAccounts.ForEach(eb =>
 								{
 									eb.BankAccount.AccountNumber = Crypto.Decrypt(eb.BankAccount.AccountNumber);
 									eb.BankAccount.RoutingNumber = Crypto.Decrypt(eb.BankAccount.RoutingNumber);
 									eb.BankAccount.RoutingNumber1 = Convert.ToInt32(eb.BankAccount.RoutingNumber.Substring(0, 8));
+									
 								});
 							}
 						});
@@ -1928,7 +1931,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId,
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includePayCodes: true, includeTaxes: true, includePayTypeAccumulation: false, 
 				includedDeductions: true, includedCompensations: true, includeWorkerCompensations: true, includeHistory: request.IncludeHistory, 
-				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, employee: request.EmployeeId).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, employee: request.EmployeeId, includeClientEmployees: request.IncludeClientEmployees)
+				.Where(e => e.PayCheckWages.GrossWage > 0).ToList();
 			if (request.EmployeeId == Guid.Empty)
 			{
 				response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
@@ -2020,7 +2024,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeDailyAccumulation: true, includeMonthlyAccumulation: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, extractDepositName: request.ExtractDepositName).First();
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeDailyAccumulation: true, includeMonthlyAccumulation: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, extractDepositName: request.ExtractDepositName, includeMedicareExtraWages: true).First();
 			
 			response.Host = GetHost(request.HostId);
 			response.Company = GetCompany(request.CompanyId);

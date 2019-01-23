@@ -81,7 +81,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
-			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null);
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null, bool includeClientEmployees = false, bool includeMedicareExtraWages = false);
 
 
 		List<CompanyRecurringCharge> GetCompanyRecurringCharges(Guid id);

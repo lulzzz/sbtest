@@ -354,7 +354,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				}
 				else
 				{
-					if (rc.Year.Value == payroll.PayDay.Year)
+					if (rc.Year.Value <= payroll.PayDay.Year)
 					{
 						if (rc.AnnualLimit.HasValue)
 						{

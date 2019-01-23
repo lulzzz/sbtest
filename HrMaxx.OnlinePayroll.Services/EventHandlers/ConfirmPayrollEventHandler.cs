@@ -189,7 +189,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 			var startingCheckNumber = event1.Payroll.PEOASOCoCheck
 				? _taxationService.GetPEOMaxCheckNumber() + 1
 				: _metaDataRepository.GetMaxCheckNumberWithoutPayroll(event1.Payroll.CompanyIntId, event1.Payroll.Id);
-			if (startingCheckNumber != event1.Payroll.StartingCheckNumber)
+			if (startingCheckNumber > event1.Payroll.StartingCheckNumber)
 			{
 				var payCheckCount = 0;
 				if (event1.Payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)

@@ -63,6 +63,17 @@ namespace HrMaxxAPI.Resources.Payroll
 		public bool IsConfirmFailed { get; set; }
 		public int QueuePosition { get; set; }
 
+		public int MinCheckNumber
+		{
+			get
+			{
+				var min = PayChecks.Min(pc => pc.CheckNumber);
+				if (min != null && min > -1)
+					return min.Value;
+				return 0;
+			}
+		}
+
 		public bool CanDelete
 		{
 			get { return IsVoid && !HasExtracts && !HasACH && !InvoiceId.HasValue; }

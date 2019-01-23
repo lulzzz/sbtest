@@ -48,7 +48,10 @@
 									Include Clients/locations?
 									<input id="bydateclients" type="checkbox" ng-model="data.filter.includeClients" /><i></i>
 								</label>
-
+								<label for="bydateclientemployees" class="switch" ng-if="showIncludeClientEmployees" ng-show="data.filter.includeClients">
+									Include Clients/locations Employees?
+									<input id="bydateclientemployees" type="checkbox" ng-model="data.filter.includeClientEmployees" /><i></i>
+								</label>
 							</div>
 							<div class="col-sm-3 form-group" ng-show="showActive">
 
@@ -125,7 +128,10 @@
 								Include Clients/locations?
 								<input id="byqmclients" type="checkbox" ng-model="data.filter.includeClients" /><i></i>
 							</label>
-
+							<label for="byqmclientemployees" class="switch" ng-if="showIncludeClientEmployees" ng-show="data.filter.includeClients">
+								Include Clients/locations Employees?
+								<input id="byqmclientemployees" type="checkbox" ng-model="data.filter.includeClientEmployees" /><i></i>
+							</label>
 						</div>
 						<div class="col-sm-3 form-group" ng-show="showActive">
 

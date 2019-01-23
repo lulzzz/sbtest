@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl"
-    xmlns:foo="http://whatever"
->
-  <xsl:param name="MagFileUserId"/>
-  <xsl:param name="selectedYear"/>
-  <xsl:output method="text" indent="no"/>
-  <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
-  <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-  
-  
-  <xsl:template match="/">
-RA462262313<xsl:value-of select="$MagFileUserId"/>$$spaces5$$$$spaces2$$$$spaces2$$0$$spaces5$$$$spaces1$$98
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt" exclude-result-prefixes="msxsl" xmlns:foo="http://whatever">
+<xsl:param name="MagFileUserId"/>
+<xsl:param name="selectedYear"/>
+<xsl:output method="text" indent="no"/>
+<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
+<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+<xsl:variable name="apos">'</xsl:variable>
+<xsl:variable name="special" select="concat('/.,_-?;:~\', $apos)"/>
+<xsl:template match="/">RA462262313<xsl:value-of select="$MagFileUserId"/>$$spaces5$$$$spaces2$$$$spaces2$$0$$spaces5$$$$spaces1$$98
 CORPORATE BENEFITS CORP$$spaces20$$$$spaces10$$$$spaces2$$$$spaces2$$
-2750 N BELLFLOWER BLVDLONG BEACH #200$$spaces10$$$$spaces10$$$$spaces5$$$$spaces2$$$$spaces2$$CA90815$$spaces5$$$$spaces2$$$$spaces2$$
+2750 N BELLFLOWER BLVD2750 N BELLFLOWER BLVDLONG BEACH #200$$spaces5$$$$spaces2$$CA90815$$spaces5$$$$spaces2$$$$spaces2$$
 $$spaces20$$$$spaces20$$
 CORPORATE BENEFITS CORP$$spaces20$$$$spaces10$$$$spaces2$$$$spaces2$$
 2750 N BELLFLOWER BLVD #200$$spaces10$$$$spaces2$$$$spaces5$$LONG BEACH$$spaces10$$$$spaces2$$CA90815
@@ -27,7 +22,7 @@ $$spaces2$$$$spaces1$$5624252008$$spaces1$$S$$spaces10$$$$spaces2$$
 <xsl:apply-templates select="ExtractResponse/Hosts/ExtractHost">
 <xsl:sort select="HostCompany/TaxFilingName"/>
 </xsl:apply-templates>
-RF$$spaces5$$<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/PayCheckAccumulation/PayCheckList/PayCheckSummary[GrossWage>0])"/><xsl:with-param name="count" select="9"/></xsl:call-template>
+RF$$spaces5$$<xsl:call-template name="padLeft"><xsl:with-param name="data" select="count(ExtractResponse/Hosts/ExtractHost/EmployeeAccumulationList/Accumulation[PayCheckWages/GrossWage>0])"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="496"/></xsl:call-template>
 <xsl:text>$$n</xsl:text>
 
@@ -52,7 +47,7 @@ RE<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:value-of select="transla
 <xsl:value-of select="States/CompanyTaxState[position()=1]/State/Abbreviation"/><xsl:value-of select="HostCompany/BusinessAddress/Zip"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="HostCompany/BusinessAddress/ZipExtension"/><xsl:with-param name="count" select="4"/></xsl:call-template>
 N<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="19"/></xsl:call-template>$$spaces20$$$$spaces5$$
 <xsl:choose><xsl:when test="HostCompany/IsFiler944">F</xsl:when><xsl:otherwise>R</xsl:otherwise></xsl:choose>$$spaces1$$0
-<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(concat(Contact/FirstName,' ',Contact/MiddleInitial,' ',Contact/LastName),$smallcase,$uppercase)"/><xsl:with-param name="count" select="27"/></xsl:call-template>
+<xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(translate(concat(Contact/FirstName,' ',Contact/MiddleInitial,' ',Contact/LastName),$smallcase,$uppercase),$special,'')"/><xsl:with-param name="count" select="27"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Contact/Phone,'-','')"/><xsl:with-param name="count" select="20"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Contact/Fax,'-','')"/><xsl:with-param name="count" select="10"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="Contact/Email"/><xsl:with-param name="count" select="40"/></xsl:call-template>
@@ -98,7 +93,7 @@ $$spaces20$$$$spaces20$$$$spaces20$$$$spaces20$$$$spaces10$$$$spaces5$$$$spaces2
 
 
 <xsl:template match="Accumulation">
-RW<xsl:value-of select="translate(SSNVal,'-','')"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(FirstName,$smallcase,$uppercase)"/><xsl:with-param name="count" select="15"/></xsl:call-template><xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(MiddleInitial,$smallcase,$uppercase)"/><xsl:with-param name="count" select="15"/></xsl:call-template><xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(LastName,$smallcase,$uppercase)"/><xsl:with-param name="count" select="20"/></xsl:call-template>$$spaces2$$$$spaces2$$$$spaces20$$$$spaces2$$
+RW<xsl:value-of select="translate(SSNVal,'-','')"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(translate(FirstName,$smallcase,$uppercase),$special,'')"/><xsl:with-param name="count" select="15"/></xsl:call-template><xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(translate(MiddleInitial,$smallcase,$uppercase),$special,'')"/><xsl:with-param name="count" select="15"/></xsl:call-template><xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(translate(LastName,$smallcase,$uppercase),$special,'')"/><xsl:with-param name="count" select="20"/></xsl:call-template>$$spaces2$$$$spaces2$$$$spaces20$$$$spaces2$$
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Contact/Address/AddressLine1,$smallcase,$uppercase)"/><xsl:with-param name="count" select="22"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Contact/Address/City,$smallcase,$uppercase)"/><xsl:with-param name="count" select="22"/></xsl:call-template><xsl:value-of select="'CA'"/><xsl:call-template name="padRight"><xsl:with-param name="data" select="Contact/Address/Zip"/><xsl:with-param name="count" select="5"/></xsl:call-template><xsl:call-template name="padRight"><xsl:with-param name="data" select="Contact/Address/ZipExtension"/><xsl:with-param name="count" select="4"/></xsl:call-template>
 $$spaces20$$$$spaces20$$$$spaces5$$
