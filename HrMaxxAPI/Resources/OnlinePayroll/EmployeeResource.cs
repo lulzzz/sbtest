@@ -22,6 +22,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class EmployeeResource : BaseRestResource
 	{
+		public int EmployeeIntId { get; set; }
 		public Guid HostId { get; set; }
 		[Required]
 		public Guid CompanyId { get; set; }
@@ -270,7 +271,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 				}
 			}
 
-			PaymentMethod = er.Value("Payment Method").Equals("Check") ? EmployeePaymentMethod.Check : EmployeePaymentMethod.DirectDebit;
+			PaymentMethod = er.Value("Payment Method").Equals("Check") ? EmployeePaymentMethod.Check : er.Value("Payment Method").Equals("EFT") ? EmployeePaymentMethod.DirectDebit : EmployeePaymentMethod.ProfitStars;
 			StatusId =  er.Value("Employment Status").Equals("Terminated") ? StatusOption.Terminated : StatusOption.Active;
 
 			if (!string.IsNullOrWhiteSpace(error))

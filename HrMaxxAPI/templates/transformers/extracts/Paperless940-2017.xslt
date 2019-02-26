@@ -1922,17 +1922,16 @@
 			<xsl:variable name="line4" select="$totalGrossWages - $totalMDWages" />
 			<xsl:variable name="line5" select="$totalGrossWages - $line4 - $totalFUTAWages" />
 			<xsl:variable name="line6" select="$line4 + $line5" />
-			<xsl:variable name="line7b" select="sum(PayCheckAccumulation/PayCheckWages/Quarter1FUTAWage) + sum(PayCheckAccumulation/PayCheckWages/Quarter2FUTAWage)" />
-			<xsl:variable name="line7c" select="$line7b*0.008" />
-			<xsl:variable name="line7d" select="sum(PayCheckAccumulation/PayCheckWages/Quarter3FUTAWage) + sum(PayCheckAccumulation/PayCheckWages/Quarter4FUTAWage)" />
-			<xsl:variable name="line7e" select="$line7d*0.006" />
+			
 			<xsl:variable name="line7" select="$totalGrossWages - $line6" />
-			<xsl:variable name="line8" select="format-number($line7c+$line7e,'######.00')" />
-			<xsl:variable name="line11" select="format-number($line7*0.003,'######.00')" />
-			<xsl:variable name="line12" select="$line8 + $line11" />
+		
 			<xsl:variable name="line12a" select="format-number($line7*0.008,'####.00')" />
 			<xsl:variable name="line13" select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount,'####.00')" />
 			<xsl:variable name="lineI" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD)" />
+		<xsl:variable name="firstQuarter" select="format-number(PayCheckAccumulation/PayCheckWages/Quarter1FUTAWage * PayCheckAccumulation/PayCheckWages/FUTARate div 100 , '######.00')"/>
+		<xsl:variable name="secondQuarter" select="format-number(PayCheckAccumulation/PayCheckWages/Quarter2FUTAWage * PayCheckAccumulation/PayCheckWages/FUTARate div 100 , '######.00')"/>
+		<xsl:variable name="thirdQuarter" select="format-number(PayCheckAccumulation/PayCheckWages/Quarter3FUTAWage * PayCheckAccumulation/PayCheckWages/FUTARate div 100 , '######.00')"/>
+		<xsl:variable name="fourthQuarter" select="format-number(PayCheckAccumulation/PayCheckWages/Quarter4FUTAWage * PayCheckAccumulation/PayCheckWages/FUTARate div 100 , '######.00')"/>
 			<Row>
 				<Cell>
 					<Data ss:Type="String">
@@ -2020,8 +2019,8 @@
 				<Cell>
 					<Data ss:Type="String">
 						<xsl:choose>
-							<xsl:when test="$line13>$line12a">A</xsl:when>
-							<xsl:when test="$line12a>$line13">R</xsl:when>
+							<xsl:when test="$line13>$line12a">R</xsl:when>
+							<xsl:when test="$line12a>$line13">A</xsl:when>
 						</xsl:choose>
 					</Data>
 				</Cell>
@@ -2043,22 +2042,22 @@
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter1FUTA)" />
+						<xsl:value-of select="$firstQuarter" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter2FUTA)" />
+						<xsl:value-of select="$secondQuarter" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter3FUTA)" />
+						<xsl:value-of select="$thirdQuarter" />
 					</Data>
 				</Cell>
 				<Cell>
 					<Data ss:Type="Number">
-						<xsl:value-of select="sum(PayCheckAccumulation/PayCheckWages/Quarter4FUTA)" />
+						<xsl:value-of select="$fourthQuarter" />
 					</Data>
 				</Cell>
 				<Cell>

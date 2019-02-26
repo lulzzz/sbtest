@@ -150,6 +150,7 @@
           <Property Name="PayrollScheduleDay" Type="int" Nullable="false" />
           <Property Name="DashboardNotes" Type="varchar(max)" />
           <Property Name="City" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="ProfitStarsPayer" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -325,6 +326,7 @@
           <Property Name="Notes" Type="varchar(max)" />
           <Property Name="SickLeaveHireDate" Type="datetime" />
           <Property Name="CarryOver" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EmployeeIntId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -378,6 +380,7 @@
           <Property Name="PIN940941" Type="varchar(max)" />
           <Property Name="IsPeoHost" Type="bit" Nullable="false" />
           <Property Name="BankCustomerId" Type="varchar(max)" />
+          <Property Name="HostIntId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="InsuranceGroup">
           <Key>
@@ -504,6 +507,8 @@
           <Property Name="ConfirmedTime" Type="datetime" />
           <Property Name="IsConfirmFailed" Type="bit" Nullable="false" />
           <Property Name="InvoiceSpecialRequest" Type="varchar(max)" />
+          <Property Name="VoidedBy" Type="varchar(max)" />
+          <Property Name="VoidedOn" Type="datetime" />
         </EntityType>
         <EntityType Name="PayrollInvoice">
           <Key>
@@ -601,6 +606,7 @@
           <Property Name="OriginalCheckNumber" Type="int" />
           <Property Name="ReIssuedDate" Type="datetime" />
           <Property Name="CompanyIntId" Type="int" />
+          <Property Name="VoidedBy" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="PayType">
           <Key>
@@ -685,6 +691,7 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="IsAgency" Type="bit" Nullable="false" />
           <Property Name="IsTaxDepartment" Type="bit" Nullable="false" />
+          <Property Name="VendorCustomerIntId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <Association Name="FK_ACHTransactionExtract_ACHTransaction">
           <End Role="ACHTransaction" Type="Self.ACHTransaction" Multiplicity="1" />
@@ -1773,6 +1780,7 @@
           <Property Name="PIN940941" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="IsPeoHost" Type="Boolean" Nullable="false" />
           <Property Name="BankCustomerId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="HostIntId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <Association Name="FK_CPA_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -1849,6 +1857,7 @@
           <NavigationProperty Name="CheckbookJournals" Relationship="HrMaxxModel.FK_CheckbookJournal_Company" FromRole="Company" ToRole="CheckbookJournal" />
           <NavigationProperty Name="CompanyRecurringCharges" Relationship="HrMaxxModel.FK_CompanyRecurringCharge_Company" FromRole="Company" ToRole="CompanyRecurringCharge" />
           <Property Name="City" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ProfitStarsPayer" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2307,6 +2316,7 @@
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="SickLeaveHireDate" Type="DateTime" Precision="3" />
           <Property Name="CarryOver" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EmployeeIntId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -2407,6 +2417,8 @@
           <Property Name="ConfirmedTime" Type="DateTime" Precision="3" />
           <Property Name="IsConfirmFailed" Type="Boolean" Nullable="false" />
           <Property Name="InvoiceSpecialRequest" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="VoidedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="VoidedOn" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Employee_CompanyWorkerCompensation">
           <End Type="HrMaxxModel.CompanyWorkerCompensation" Role="CompanyWorkerCompensation" Multiplicity="0..1" />
@@ -2547,6 +2559,7 @@
           <NavigationProperty Name="Status" Relationship="HrMaxxModel.FK_VendorCustomer_Status" FromRole="VendorCustomer" ToRole="Status" />
           <Property Name="IsAgency" Type="Boolean" Nullable="false" />
           <Property Name="IsTaxDepartment" Type="Boolean" Nullable="false" />
+          <Property Name="VendorCustomerIntId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
         </EntityType>
         <Association Name="FK_VendorCustomer_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="0..1" />
@@ -2826,6 +2839,7 @@
           <Property Name="OriginalCheckNumber" Type="Int32" />
           <Property Name="ReIssuedDate" Type="DateTime" Precision="3" />
           <Property Name="CompanyIntId" Type="Int32" />
+          <Property Name="VoidedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_Journal_PayrollPayCheck">
           <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="0..1" />
@@ -3124,6 +3138,7 @@
           <EntitySetMapping Name="Hosts">
             <EntityTypeMapping TypeName="HrMaxxModel.Host">
               <MappingFragment StoreEntitySet="Host">
+                <ScalarProperty Name="HostIntId" ColumnName="HostIntId" />
                 <ScalarProperty Name="BankCustomerId" ColumnName="BankCustomerId" />
                 <ScalarProperty Name="IsPeoHost" ColumnName="IsPeoHost" />
                 <ScalarProperty Name="PIN940941" ColumnName="PIN940941" />
@@ -3145,6 +3160,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="ProfitStarsPayer" ColumnName="ProfitStarsPayer" />
                 <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="DashboardNotes" ColumnName="DashboardNotes" />
                 <ScalarProperty Name="PayrollScheduleDay" ColumnName="PayrollScheduleDay" />
@@ -3386,6 +3402,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="EmployeeIntId" ColumnName="EmployeeIntId" />
                 <ScalarProperty Name="CarryOver" ColumnName="CarryOver" />
                 <ScalarProperty Name="SickLeaveHireDate" ColumnName="SickLeaveHireDate" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
@@ -3444,6 +3461,8 @@
           <EntitySetMapping Name="Payrolls">
             <EntityTypeMapping TypeName="HrMaxxModel.Payroll">
               <MappingFragment StoreEntitySet="Payroll">
+                <ScalarProperty Name="VoidedOn" ColumnName="VoidedOn" />
+                <ScalarProperty Name="VoidedBy" ColumnName="VoidedBy" />
                 <ScalarProperty Name="InvoiceSpecialRequest" ColumnName="InvoiceSpecialRequest" />
                 <ScalarProperty Name="IsConfirmFailed" ColumnName="IsConfirmFailed" />
                 <ScalarProperty Name="ConfirmedTime" ColumnName="ConfirmedTime" />
@@ -3530,6 +3549,7 @@
           <EntitySetMapping Name="VendorCustomers">
             <EntityTypeMapping TypeName="HrMaxxModel.VendorCustomer">
               <MappingFragment StoreEntitySet="VendorCustomer">
+                <ScalarProperty Name="VendorCustomerIntId" ColumnName="VendorCustomerIntId" />
                 <ScalarProperty Name="IsTaxDepartment" ColumnName="IsTaxDepartment" />
                 <ScalarProperty Name="IsAgency" ColumnName="IsAgency" />
                 <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
@@ -3680,6 +3700,7 @@
           <EntitySetMapping Name="PayrollPayChecks">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
               <MappingFragment StoreEntitySet="PayrollPayCheck">
+                <ScalarProperty Name="VoidedBy" ColumnName="VoidedBy" />
                 <ScalarProperty Name="CompanyIntId" ColumnName="CompanyIntId" />
                 <ScalarProperty Name="ReIssuedDate" ColumnName="ReIssuedDate" />
                 <ScalarProperty Name="OriginalCheckNumber" ColumnName="OriginalCheckNumber" />

@@ -11,6 +11,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	public class HostListItem
 	{
 		public Guid Id { get; set; }
+		public int HostIntId { get; set; }
 		public string FirmName { get; set; }
 		public string Url { get; set; }
 		public DateTime EffectiveDate { get; set; }

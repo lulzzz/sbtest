@@ -67,6 +67,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.CompanyNo = dbMappedCompany.CompanyNo;
 				dbCompany.DepositSchedule941 = dbMappedCompany.DepositSchedule941;
 				dbCompany.DirectDebitPayer = dbMappedCompany.DirectDebitPayer;
+				dbCompany.ProfitStarsPayer = dbMappedCompany.ProfitStarsPayer;
 				dbCompany.FederalEIN = dbMappedCompany.FederalEIN;
 				dbCompany.FederalPin = dbMappedCompany.FederalPin;
 				dbCompany.FileUnderHost = dbMappedCompany.FileUnderHost;

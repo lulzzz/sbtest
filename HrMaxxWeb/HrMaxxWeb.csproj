@@ -284,6 +284,8 @@
     <Content Include="Areas\Reports\templates\extract-view.html" />
     <Content Include="Areas\Reports\templates\Extracts.html" />
     <Content Include="Areas\Reports\templates\cpa-report.html" />
+    <Content Include="Areas\Reports\templates\profit-stars-report.html" />
+    <Content Include="Areas\Reports\templates\ProfitStars.html" />
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
     <Content Include="Content\images\blank.png" />
@@ -1357,6 +1359,7 @@
     <Content Include="Scripts\app\payroll\directives\payroll-list.js" />
     <Content Include="Scripts\app\payroll\payroll-app.js" />
     <Content Include="Scripts\app\payroll\payroll-repository.js" />
+    <Content Include="Scripts\app\reports\directives\profit-stars-report.js" />
     <Content Include="Scripts\app\reports\directives\ach-report.js" />
     <Content Include="Scripts\app\reports\directives\balance-sheet.js" />
     <Content Include="Scripts\app\reports\directives\commissions-view.js" />

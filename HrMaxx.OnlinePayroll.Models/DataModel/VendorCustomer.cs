@@ -32,6 +32,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string LastModifiedBy { get; set; }
         public bool IsAgency { get; set; }
         public bool IsTaxDepartment { get; set; }
+        public int VendorCustomerIntId { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual Status Status { get; set; }

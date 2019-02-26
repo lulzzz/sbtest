@@ -219,10 +219,10 @@
 												<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number data-parsley-type="number">
 													<option value="1">Check</option>
 													<option value="2" ng-show="mainData.selectedCompany.directDebitPayer">Direct Deposit</option>
-
+													<option value="3" ng-show="mainData.selectedCompany.profitStarsPayer">Direct Deposit - ProfitStars</option>
 												</select>
 											</div>
-											<div class="row" ng-if="selected.paymentMethod===2">
+											<div class="row" ng-if="selected.paymentMethod>1">
 												<div class="form-group">
 													<label></label>
 													<div>

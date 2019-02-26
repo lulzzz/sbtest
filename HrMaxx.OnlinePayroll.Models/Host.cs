@@ -10,6 +10,7 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class Host : BaseEntityDto, IOriginator<Host>
 	{
+		public int HostIntId { get; set; }
 		public string FirmName { get; set; }
 		public string Url { get; set; }
 		public DateTime EffectiveDate { get; set; }

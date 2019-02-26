@@ -1459,6 +1459,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					paycheck.IsVoid = false;
 					paycheck.Status = PaycheckStatus.Saved;
 					paycheck.VoidedOn = null;
+					paycheck.VoidedBy = null;
 					paycheck.LastModified = DateTime.Now;
 					paycheck.LastModifiedBy = name;
 					var savedPaycheck = _payrollRepository.UnVoidPayCheck(paycheck, name);
@@ -1556,6 +1557,64 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Void Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public Models.Payroll UnVoidPayroll(Models.Payroll payroll, string userName, string userId)
+		{
+			try
+			{
+				Log.Info("Un Void payroll startded" + DateTime.Now.ToString("hh:mm:ss:fff"));
+				var affectedChecks = new List<PayCheck>();
+				//var payroll = _readerService.GetPayroll(payroll1.Id);
+				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
+				
+				Log.Info("read finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					//_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
+					payroll.PayChecks.Where(pc => pc.IsVoid).ToList().ForEach(paycheck =>
+					{
+						var employeeFutureChecks = companyPayChecks.Where(p => p.Employee.Id == paycheck.Employee.Id && p.Id != paycheck.Id).ToList();
+						foreach (var employeeFutureCheck in employeeFutureChecks)
+						{
+							employeeFutureCheck.AddToYTD(paycheck);
+							_payrollRepository.UpdatePayCheckYTD(employeeFutureCheck);
+							affectedChecks.Add(employeeFutureCheck);
+						}
+					});
+					Log.Info("Checks Un Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
+
+
+					_payrollRepository.UnVoidPayroll(payroll.Id, userName);
+					txn.Complete();
+
+				}
+				payroll = _readerService.GetPayroll(payroll.Id);
+				foreach (var payCheck in payroll.PayChecks)
+				{
+					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
+					{
+						SavedObject = payCheck,
+						HostId = payroll.Company.HostId,
+						UserId = new Guid(userId),
+						TimeStamp = DateTime.Now,
+						EventType = NotificationTypeEnum.Updated,
+						AffectedChecks = affectedChecks.Where(pc => pc.Employee.Id == payCheck.Employee.Id).ToList(),
+						UserName = userName,
+						IsUnVoid=true
+					});
+				}
+				Log.Info("Void Payroll Finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
+				_fileRepository.DeleteDestinationFile(payroll.Id + ".pdf");
+				return payroll;
+
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Un - Void Payroll");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -2101,7 +2160,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", company.Name));
 
 			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2",
-					payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+					payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", company.CompanyAddress.AddressLine1));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", company.CompanyAddress.AddressLine2));
 
@@ -2331,11 +2390,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			if (payroll.Company.PayCheckStock == PayCheckStock.LaserMiddle)
 			{
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("Name-2", nameCompany.Name));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date-3", payCheck.PayDay.ToString("MM/dd/yyyy")));
 			}
-			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
-			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
+			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", nameCompany.CompanyAddress.AddressLine1));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo ? payCheck.Employee.FullName : payCheck.Employee.FullNameSpecial));
@@ -2386,7 +2445,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			if (payroll.Company.PayCheckStock != PayCheckStock.MICRQb)
 			{
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2",
-					payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+					payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", nameCompany.CompanyAddress.AddressLine1));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", nameCompany.CompanyAddress.AddressLine2));
 
@@ -2699,7 +2758,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("comp", nameCompany.Name + Environment.NewLine + nameCompany.CompanyAddress.AddressLine1 + Environment.NewLine + nameCompany.CompanyAddress.AddressLine2));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("ee", "Emp No" + Environment.NewLine + (payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty)));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("pp", "Period Begin                   Period End" + Environment.NewLine + payCheck.StartDate.ToString("MM/dd/yyyy") + "                     " + payCheck.EndDate.ToString("MM/dd/yyyy")));
-				if (payCheck.Employee.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+				if (payCheck.Employee.PaymentMethod != EmployeePaymentMethod.Check)
 					pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
 				else
 				{
@@ -2710,7 +2769,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				
 				
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo1-1", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo1-1", payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Address", nameCompany.CompanyAddress.AddressLine1));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("City", nameCompany.CompanyAddress.AddressLine2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName", payCheck.Employee.FullName));
@@ -2754,7 +2813,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
 
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", nameCompany.Name));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : payCheck.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("EmpNo", payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString():string.Empty));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2", payCheck.Employee.FullName));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("gross", payCheck.GrossWage.ToString("c")));

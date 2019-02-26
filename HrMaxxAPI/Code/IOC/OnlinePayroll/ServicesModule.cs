@@ -20,7 +20,10 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 		protected override void Load(ContainerBuilder builder)
 		{
 			string _pdfPath = ConfigurationManager.AppSettings["FilePath"] + "PDFTemp/";
+			string _psemailto = ConfigurationManager.AppSettings["psemailto"];
+			string _psemailcc = ConfigurationManager.AppSettings["psemailcc"];
 			string _templatePath = HttpContext.Current !=null ? HttpContext.Current.Server.MapPath("~/Templates/") : string.Empty;
+			string _filePath = ConfigurationManager.AppSettings["FilePath"] + "ProfitStars/";
 			
 			builder.RegisterType<HostService>()
 				.As<IHostService>()
@@ -60,6 +63,10 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.PropertiesAutowired();
 
 			builder.RegisterType<ACHService>()
+				.WithParameter(new NamedParameter("filePath", _filePath))
+				.WithParameter(new NamedParameter("psemailto", _psemailto))
+				.WithParameter(new NamedParameter("psemailcc", _psemailcc))
+				.WithParameter(new NamedParameter("templatePath", _templatePath))
 				.As<IACHService>()
 				.SingleInstance()
 				.PropertiesAutowired();

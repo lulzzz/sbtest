@@ -27,6 +27,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		//Payroll fields
 		public int PayrollDaysInPast { get; set; }
 		public bool DirectDebitPayer { get; set; }
+		public bool ProfitStarsPayer { get; set; }
 		public PayCheckStock PayCheckStock { get; set; }
 		public int InsuranceGroupNo { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }

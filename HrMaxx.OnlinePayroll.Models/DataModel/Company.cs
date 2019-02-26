@@ -74,6 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int PayrollScheduleDay { get; set; }
         public string DashboardNotes { get; set; }
         public string City { get; set; }
+        public bool ProfitStarsPayer { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }

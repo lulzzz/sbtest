@@ -77,6 +77,7 @@
 				<Column ss:Width="306.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="104.25"/>
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93.75"/>
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="69.75"/>
@@ -95,6 +96,9 @@
 					</Cell>
 					<Cell ss:StyleID="s68">
 						<Data ss:Type="String">EIN</Data>
+					</Cell>
+					<Cell ss:StyleID="s69">
+						<Data ss:Type="String">Type</Data>
 					</Cell>
 					<Cell ss:StyleID="s69">
 						<Data ss:Type="String">Total Gross</Data>
@@ -263,6 +267,11 @@
 			<Cell>
 				<Data ss:Type="String">
 					<xsl:value-of select="concat(substring($comp/FederalEIN,1,2),'-',substring($comp/FederalEIN,3,7))"/>
+				</Data>
+			</Cell>
+			<Cell ss:StyleID="s74">
+				<Data ss:Type="String">
+					<xsl:choose><xsl:when test="$comp/FileUnderHost='true'">PEO</xsl:when><xsl:otherwise>ASO</xsl:otherwise></xsl:choose>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">

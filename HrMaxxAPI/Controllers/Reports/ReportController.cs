@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Autofac.Features.Metadata;
 using HrMaxx.Common.Contracts.Services;
@@ -298,5 +299,28 @@ namespace HrMaxxAPI.Controllers.Reports
 			return MakeServiceCall(() => _reportService.GetMinWageEligibilityReport(criteria), string.Format("getting min wage eligibility report for request"));
 
 		}
+
+		[HttpGet]
+		[Route(ReportRoutes.ProfitStarsPayrollList)]
+		public List<ProfitStarsPayroll> ProfitStarsPayrollList()
+		{
+			var data = MakeServiceCall(() => _achService.GetProfitStarsPayrollList(), "Profit Stars Payroll List ", true);
+			return data;
+
+		}
+		[HttpGet]
+		[Route(ReportRoutes.ProfitStars1pm)]
+		public List<ProfitStarsPayment> ProfitStars1pm()
+		{
+			return MakeServiceCall(() => _achService.ProfitStarsPayments(), "Profit Stars 1pm  ", true);
+		}
+
+		[HttpGet]
+		[Route(ReportRoutes.ProfitStars9am)]
+		public ProfitStarsReportResponse ProfitStars9am()
+		{
+			return MakeServiceCall(() => _achService.ProfitStarsStatusUpdate(), "Profit Stars 1pm  ", true);
+		}
+
 	}
 }

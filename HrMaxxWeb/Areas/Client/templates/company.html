@@ -216,6 +216,15 @@
 															</label>
 														</div>
 													</div>
+													<div class="form-group" ng-show="false">
+														<label></label>
+														<div>
+															<label for="profitstarspayer" class="switch">
+																Pay by ProfitStars
+																<input id="profitstarspayer" type="checkbox" ng-model="selectedCompany.profitStarsPayer" ng-disabled="!mainData.selectedHost.isHostAllowsDirectDebit" /><i></i>
+															</label>
+														</div>
+													</div>
 													<div class="form-group">
 														<label>Invoice Note</label>
 														<input type="text" name="notes" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.notes" />
@@ -308,7 +317,7 @@
 													<div class="form-group">
 														<label>Federal Tax PIN</label>
 														<div>
-															<input type="text" ng-model="selectedCompany.federalPin" class="form-control" required data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+															<input type="text" ng-model="selectedCompany.federalPin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
 														</div>
 													</div>
 
@@ -378,7 +387,7 @@
 													<div class="form-group">
 														<label>State Tax PIN</label>
 														<div>
-															<input type="text" ng-model="state.statePin" class="form-control" required data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+															<input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
 
 														</div>
 													</div>
@@ -409,7 +418,7 @@
 														<label>Type</label>
 														<select ng-model="selectedCompany.contract.contractOption" ng-change="selectedCompany.contract.contractOption===1?selectedCompany.contract.prePaidSubscriptionOption=1:selectedCompany.contract.prePaidSubscriptionOption=null" name="contracttype" class="form-control" convert-to-number>
 															<option value="2">PostPaid</option>
-															<option value="1" ng-hide="true">PrePaid</option>
+															<option value="1">PrePaid</option>
 														</select>
 													</div>
 													<div class="form-group" ng-if="selectedCompany.contract.contractOption===1">
@@ -424,9 +433,9 @@
 													<div class="form-group">
 														<label>Billing Type</label>
 														<select ng-model="selectedCompany.contract.billingOption" ng-change="billingOptionChanged()" name="billingoption" class="form-control" convert-to-number ng-disabled="selectedCompany.contract.prePaidSubscriptionOption===1">
-															<option value="0" ng-hide="true">NA</option>
-															<option value="1" ng-hide="true">Credit Card</option>
-															<option value="2" ng-hide="true">Direct Debit</option>
+															<option value="0" ng-hide="selectedCompany.contract.contractOption===2">NA</option>
+															<option value="1" ng-hide="selectedCompany.contract.contractOption===2">Credit Card</option>
+															<option value="2" ng-hide="selectedCompany.contract.contractOption===2">Direct Debit</option>
 															<option value="3" ng-show="selectedCompany.contract.contractOption===2">Invoice</option>
 														</select>
 													</div>

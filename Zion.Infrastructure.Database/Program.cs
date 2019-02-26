@@ -60,9 +60,9 @@ namespace HrMaxx.Infrastructure.Database
 						break;
 
 					case "PROD":
-						//commandFile = scriptPath + @"\Commands\Prod.cmd";
-						//if (!RunCommands(connectionString, commandFile, scriptPath))
-						//	throw new Exception("Failed to run Command. ");
+						commandFile = scriptPath + @"\Commands\IntegrationTest.cmd";
+						if (!RunCommands(connectionString, commandFile, scriptPath))
+							throw new Exception("Failed to run Command. ");
 						break;
 					case "UAT":
 						//commandFile = scriptPath + @"\Commands\UAT.cmd";

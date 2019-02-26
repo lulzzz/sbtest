@@ -349,9 +349,11 @@
     <Content Include="templates\transformers\extracts\Federal940EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />
+    <Content Include="templates\transformers\extracts\TaxReport.xslt" />
     <Content Include="templates\transformers\extracts\HostClientSummary.xslt" />
     <Content Include="templates\transformers\extracts\InternalPositivePayReport.xslt" />
     <Content Include="templates\transformers\extracts\CompanySickLeave.xslt" />
+    <Content Include="templates\transformers\extracts\Paperless940-2019.xslt" />
     <Content Include="templates\transformers\extracts\Paperless940-2018.xslt" />
     <Content Include="templates\transformers\extracts\Paperless940-2017.xslt" />
     <Content Include="templates\transformers\extracts\Paperless941-2018.xslt" />
@@ -384,6 +386,10 @@
     <Content Include="templates\transformers\payroll\payrollsummary.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\ProfitStars\PaymentRequest.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="templates\transformers\ProfitStars\ReportRequest.xslt" />
     <Content Include="templates\transformers\reports\1099\F1099.xslt" />
     <Content Include="templates\transformers\reports\940\Fed940-2018.xslt">
       <SubType>Designer</SubType>

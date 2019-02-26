@@ -145,7 +145,7 @@ GO
 
 declare @dbname  as varchar(max);
 select @dbname = db_name();
-if @dbname<>'PaxolTest'
+if @dbname<>'PaxolTest' and @dbname<>'PaxolOP'
 begin
 print 'inserting archive data'
 SET IDENTITY_INSERT [Common].[Memento] ON ;

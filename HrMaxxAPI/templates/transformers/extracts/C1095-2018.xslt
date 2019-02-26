@@ -1391,7 +1391,7 @@
 				</Data>
 			</Cell>
 			<xsl:apply-templates select="C1095Months/C1095Month">
-				<xsl:sort select="Month"/>
+				<xsl:sort select="Month" data-type="number"/>
 			</xsl:apply-templates>
 			
 		</Row>

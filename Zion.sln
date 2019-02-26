@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrMaxx.OnlinePayroll.ReadRe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HrMaxx.OnlinePayroll.IntegrationTests", "HrMaxx.OnlinePayroll.IntegrationTests\HrMaxx.OnlinePayroll.IntegrationTests.csproj", "{B264D7C7-CA68-41FC-A16B-B90A56DE6794}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OPImportUtility", "OPImportUtility\OPImportUtility.csproj", "{ACE111A2-3502-4AFE-80BA-CADC4249D12B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -358,6 +360,18 @@ Global
 		{B264D7C7-CA68-41FC-A16B-B90A56DE6794}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B264D7C7-CA68-41FC-A16B-B90A56DE6794}.Release|x64.ActiveCfg = Release|Any CPU
 		{B264D7C7-CA68-41FC-A16B-B90A56DE6794}.Release|x86.ActiveCfg = Release|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Release|x64.ActiveCfg = Release|Any CPU
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -388,5 +402,6 @@ Global
 		{6B85B4D8-7767-42D9-9F64-9E4CD0B2225E} = {9464E643-893E-4882-ADC2-D72A4C04775D}
 		{A2EA6FCA-A8B2-445F-B8B8-4FF4D60034D3} = {9464E643-893E-4882-ADC2-D72A4C04775D}
 		{B264D7C7-CA68-41FC-A16B-B90A56DE6794} = {4C335120-3047-4B73-9B91-FA76CF8FF8AC}
+		{ACE111A2-3502-4AFE-80BA-CADC4249D12B} = {DE52562D-9DF6-44ED-B142-34CF2A8FEDF6}
 	EndGlobalSection
 EndGlobal

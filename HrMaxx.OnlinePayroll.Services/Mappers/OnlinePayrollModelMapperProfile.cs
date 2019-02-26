@@ -605,6 +605,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Decrypt(src.IndividualSSN) : src.IndividualSSN))
 				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN) : src.BusinessFIN))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.VendorCustomerIntId, opt => opt.Ignore())
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore());
 
@@ -628,6 +629,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.StatusId, opt => opt.Ignore())
 				.ForMember(dest => dest.IsPeoHost, opt => opt.Ignore())
+				.ForMember(dest => dest.HostIntId, opt => opt.Ignore())
 				.ForMember(dest => dest.EffectiveDate, opt => opt.Ignore());
 
 			CreateMap<Models.ExtractDBCompany, Models.Company>()
@@ -646,7 +648,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.RecurringCharges, opt => opt.Ignore())
 				.ForMember(dest => dest.AccumulatedPayTypes, opt => opt.Ignore())
 				.ForMember(dest => dest.WorkerCompensations, opt => opt.Ignore())
-				
+				.ForMember(dest => dest.ProfitStarsPayer, opt => opt.Ignore())
 				.ForMember(dest => dest.Contract, opt => opt.Ignore())
 				.ForMember(dest => dest.PayCodes, opt => opt.Ignore())
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())

@@ -40,6 +40,7 @@
 		public const string DeleteDraftPayroll = "Payroll/DeleteDraftPayroll";
 		public const string DeletePayroll = "Payroll/DeletePayroll";
 		public const string VoidPayroll = "Payroll/VoidPayroll";
+		public const string UnVoidPayroll = "Payroll/UnVoidPayroll";
 		public const string InvoiceDeliveryClaims = "Payroll/InvoiceDeliveryClaims";
 		public const string EmployeeChecks = "Payroll/EmployeeChecks/{companyId:guid}/{employeeId:guid}";
 		public const string FixInvoices = "Payroll/FixInvoices";

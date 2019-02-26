@@ -459,7 +459,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			var words = Utilities.NumberToWords(Math.Floor(journal.Amount));
 			var decPlaces = (int)(((decimal)journal.Amount % 1) * 100);
 
-			if (journal.PaymentMethod == EmployeePaymentMethod.DirectDebit)
+			if (journal.PaymentMethod != EmployeePaymentMethod.Check)
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("dd-spec", "NON-NEGOTIABLE     DIRECT DEPOSIT"));
 
 			if (company.PayCheckStock != PayCheckStock.MICRQb)
@@ -494,8 +494,8 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 			if (company.PayCheckStock != PayCheckStock.MICREncodedTop)
 			{
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", journal.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : journal.CheckNumber.ToString()));
-				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", journal.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : journal.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo", journal.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : journal.CheckNumber.ToString()));
+				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo2", journal.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : journal.CheckNumber.ToString()));
 				if (company.PayCheckStock != PayCheckStock.MICRQb)
 				{
 					//pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Bank", bankcoa.BankAccount.BankName));
@@ -530,7 +530,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 			if (company.PayCheckStock == PayCheckStock.LaserMiddle && counter > 5)
 			{
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compName-3", company.Name));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CheckNo2-3", journal.PaymentMethod == EmployeePaymentMethod.DirectDebit ? "EFT" : journal.CheckNumber.ToString()));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CheckNo2-3", journal.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : journal.CheckNumber.ToString()));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-3", "Check Date: " + journal.TransactionDate.ToString("MM/dd/yyyy")));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption9-3", "Account"));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2-3", "Memo on Check:    " + journal.Memo));

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Xml.Xsl;
 using Newtonsoft.Json;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 
@@ -88,6 +92,71 @@ namespace HrMaxx.Infrastructure.Helpers
 		{
 			var str = list.Aggregate(string.Empty, (current, m) => current + Convert.ToInt16(m) + ",");
 			return str.Substring(0, str.Length - 1);
+		}
+
+		public static T Deserialize<T>(string xmlStream, XmlRootAttribute rootAttribute)
+		{
+
+			if (string.IsNullOrWhiteSpace(xmlStream))
+				return default(T);
+			using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(xmlStream)))
+			{
+				//var serializer = new XmlSerializer(typeof(T), rootAttribute);
+				var serializer = XmlSerializerCache.Create(typeof(T), rootAttribute);
+				return (T)serializer.Deserialize(reader);
+			}
+		}
+		public static T Deserialize<T>(string xmlStream)
+		{
+
+			if (string.IsNullOrWhiteSpace(xmlStream))
+				return default(T);
+			using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(xmlStream)))
+			{
+				var serializer = new XmlSerializer(typeof(T));
+				return (T)serializer.Deserialize(reader);
+			}
+		}
+		public static XmlDocument GetXml<T>(T data)
+		{
+
+			XmlDocument xd = null;
+
+			using (var memStm = new MemoryStream())
+			{
+				var ser = new XmlSerializer(typeof(T));
+				ser.Serialize(memStm, data);
+
+				memStm.Position = 0;
+
+				var settings = new XmlReaderSettings();
+				settings.IgnoreWhitespace = true;
+
+				using (var xtr = XmlReader.Create(memStm, settings))
+				{
+					xd = new XmlDocument();
+					xd.Load(xtr);
+				}
+			}
+
+			return xd;
+		}
+
+		public static string XmlTransform(XmlDocument source, string transformer, XsltArgumentList args)
+		{
+			string strOutput = null;
+			var sb = new System.Text.StringBuilder();
+
+			using (TextWriter xtw = new StringWriter(sb))
+			{
+				var xslt = new XslCompiledTransform();// Mvp.Xml.Exslt.ExsltTransform();
+
+				xslt.Load(transformer);
+				xslt.Transform(source, args, xtw);
+				xtw.Flush();
+			}
+			strOutput = sb.ToString();
+			return strOutput;
 		}
 	}
 }

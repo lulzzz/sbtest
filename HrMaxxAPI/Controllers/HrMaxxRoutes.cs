@@ -53,5 +53,7 @@
 		public const string CreateTaxes = "CreateTaxes/{year:int}";
 		public const string AccessMetaData = "AccessMetaData";
 		public const string GetTaxTableYear = "GetTaxTableYears";
+		public const string Encrypt = "Encrypt/{data}";
+		public const string Decrypt = "Decrypt/{data}";
 	}
 }

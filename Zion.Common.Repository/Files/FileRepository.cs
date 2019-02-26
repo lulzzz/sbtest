@@ -198,7 +198,7 @@ namespace HrMaxx.Common.Repository.Files
 			File.WriteAllBytes(filePath, file);
 		}
 
-		public void SaveFile(string directory, string name, string extension, string content)
+		public string SaveFile(string directory, string name, string extension, string content)
 		{
 
 			var invalidChars = Path.GetInvalidFileNameChars();
@@ -212,6 +212,7 @@ namespace HrMaxx.Common.Repository.Files
 				File.Delete(fileName);
 			}
 			File.WriteAllText(fileName, content);
+			return fileName;
 		}
 		public void SaveFile(string directory, string name, string extension, byte[] content)
 		{
@@ -244,6 +245,11 @@ namespace HrMaxx.Common.Repository.Files
 			var fileName = string.Format("{0}\\{1}.{2}", dir, name, ext);
 			return File.Exists(fileName);
 
+		}
+
+		public string GetFileText(string file)
+		{
+			return File.ReadAllText(file);
 		}
 
 		public void DeleteArchiveFile(string rootDirectory, string directory, string name)

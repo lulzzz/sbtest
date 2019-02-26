@@ -116,6 +116,12 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: 0,
 							includeHistory: true
 						},
+						taxreport: {
+							year: 0,
+							month: null,
+							quarter: null,
+							includeHistory: true
+						},
 						filterCommissions: {
 							startDate: null,
 							endDate: null,
@@ -439,6 +445,10 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						else {
 							getReport('Federal941', 'Federal 941 EFTPS File', dataSvc.filter941.year, dataSvc.filter941.quarter, 3, dataSvc.filter941.depositDate, null, null, null, true, dataSvc.filter941.includeHistory);
 						}
+					}
+					$scope.getTaxReport = function () {
+						getReport('TaxReport', 'Tax Report File', dataSvc.taxreport.year, dataSvc.taxreport.quarter, null, null, dataSvc.taxreport.month, null, null, false, dataSvc.taxreport.includeHistory);
+						
 					}
 					$scope.getReportFederal941Excel = function () {
 						if (dataSvc.filter941.depositSchedule === 1)

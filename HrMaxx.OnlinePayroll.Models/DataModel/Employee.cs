@@ -55,6 +55,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string Notes { get; set; }
         public Nullable<System.DateTime> SickLeaveHireDate { get; set; }
         public Nullable<decimal> CarryOver { get; set; }
+        public int EmployeeIntId { get; set; }
     
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }

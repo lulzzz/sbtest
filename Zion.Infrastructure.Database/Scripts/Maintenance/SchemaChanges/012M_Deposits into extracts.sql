@@ -1,6 +1,4 @@
-﻿USE [PAXOL]
-GO
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MasterExtractJournal_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[MasterExtractJournal]'))
+﻿IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MasterExtractJournal_MasterExtracts]') AND parent_object_id = OBJECT_ID(N'[dbo].[MasterExtractJournal]'))
 ALTER TABLE [dbo].[MasterExtractJournal] DROP CONSTRAINT [FK_MasterExtractJournal_MasterExtracts]
 GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_MasterExtractJournal_CheckbookJournal]') AND parent_object_id = OBJECT_ID(N'[dbo].[MasterExtractJournal]'))

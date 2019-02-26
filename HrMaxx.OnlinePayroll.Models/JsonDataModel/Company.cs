@@ -23,6 +23,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool IsVisibleToHost { get; set; }
 		public bool FileUnderHost { get; set; }
 		public bool DirectDebitPayer { get; set; }
+		public bool ProfitStarsPayer { get; set; }
 		public int PayrollDaysInPast { get; set; }
 		public int InsuranceGroupNo { get; set; }
 		public string TaxFilingName { get; set; }

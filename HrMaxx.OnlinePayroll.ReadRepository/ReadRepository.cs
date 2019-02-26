@@ -129,6 +129,10 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 		public T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList)
 		{
 			var data = GetData(proc, paramList);
+			if (string.IsNullOrWhiteSpace(data))
+			{
+				return default(T);
+			}
 			//var serializer = new XmlSerializer(typeof(T));
 			using (var memStream = new MemoryStream(Encoding.UTF8.GetBytes(data)))
 			{

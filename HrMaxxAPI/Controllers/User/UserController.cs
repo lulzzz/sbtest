@@ -280,6 +280,50 @@ namespace HrMaxxAPI.Controllers.User
 
 
 		}
+
+		[HttpPost]
+		[Route(UserRoutes.MigrateUsers)]
+		public async Task<UserResource> MigrateUser(UserResource model)
+		{
+			try
+			{
+
+				var user = new ApplicationUser { UserName = model.SubjectUserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Host = model.Host, Company = model.Company, Employee = model.Employee, Active = model.Active, PhoneNumber = model.Phone, LastModified = DateTime.Now, LastModifiedBy = model.UserName };
+					var result = await UserManager.CreateAsync(user, model.Password);
+					if (result.Succeeded)
+					{
+						await UserManager.AddToRoleAsync(user.Id, HrMaaxxSecurity.GetEnumFromDbId<RoleTypeEnum>(model.Role.RoleId).Value.GetDbName());
+						
+						model.UserId = new Guid(user.Id);
+						model.SubjectUserName = user.UserName;
+						model.SubjectUserId = model.UserId;
+					
+					}
+					else
+					{
+						throw new HttpResponseException(new HttpResponseMessage
+						{
+							StatusCode = HttpStatusCode.Conflict,
+							ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Save User"
+						});
+					}
+				
+				return model;
+
+			}
+			catch (Exception e)
+			{
+				Logger.Error("Error creating user", e);
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = "Failed to complete user creation"
+				});
+			}
+
+
+		}
+
 		private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
 		{
 			string code = GetCode(userID, true);//await UserManager.GenerateEmailConfirmationTokenAsync(userID));

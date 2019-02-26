@@ -22,6 +22,36 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getProfitStarsPayroll: function () {
+				var deferred = $q.defer();
+				reportServer.one('ProfitStarsPayrollList').getList().then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			run1pm: function () {
+				var deferred = $q.defer();
+				reportServer.one('ProfitStars1pm').get().then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			run9am: function () {
+				var deferred = $q.defer();
+				reportServer.one('ProfitStars9am').get().then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getACHReport: function (request) {
 				var deferred = $q.defer();
 				reportServer.all('ACHReport').post(request).then(function (response) {

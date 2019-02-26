@@ -62,6 +62,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime? ConfirmedTime { get; set; }
 		public bool IsConfirmFailed { get; set; }
 		public int QueuePosition { get; set; }
+		public DateTime? VoidedOn { get; set; }
+		public string VoidedBy { get; set; }
 
 		public int MinCheckNumber
 		{
@@ -197,7 +199,7 @@ namespace HrMaxxAPI.Resources.Payroll
 
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
-		
+		public string VoidedBy { get; set; }
 		public Guid? CreditInvoiceId { get; set; }
 		
 		public bool Included { get; set; }

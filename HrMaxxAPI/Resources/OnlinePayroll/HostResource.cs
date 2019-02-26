@@ -6,6 +6,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class HostResource : BaseRestResource
 	{
+		public int HostIntId { get; set; }
 		[Required]
 		public string FirmName { get; set; }
 		[Required]

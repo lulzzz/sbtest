@@ -16,6 +16,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	{
 		public Guid HostId { get; set; }
 		public Guid CompanyId { get; set; }
+		public int EmployeeIntId { get; set; }
 		public string FirstName { get; set; }
 		public string MiddleInitial { get; set; }
 		public string LastName { get; set; }

@@ -12,6 +12,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 {
 	public class VendorCustomerResource : BaseRestResource
 	{
+		public int VendorCustomerIntId { get; set; }
 		public Guid? CompanyId { get; set; }
 		[Required]
 		public string Name { get; set; }

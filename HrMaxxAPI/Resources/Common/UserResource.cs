@@ -32,7 +32,7 @@ namespace HrMaxxAPI.Resources.Common
 		public int Version { get; set; }
 		public DateTime? LastModified { get; set; }
 		public string LastModifiedBy { get; set; }
-		
+		public string Password { get; set; }
 		
 	}
 }

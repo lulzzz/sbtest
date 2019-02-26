@@ -51,6 +51,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? QueuedTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }
 		public bool IsConfirmFailed { get; set; }
+		public DateTime? VoidedOn { get; set; }
+		public string VoidedBy { get; set; }
 	}
 	[Serializable]
 	[XmlRoot("PayrollMinifiedList")]

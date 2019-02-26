@@ -74,6 +74,8 @@
     <Compile Include="IMetaDataRepository.cs" />
     <Compile Include="Payroll\IPayrollRepository.cs" />
     <Compile Include="Payroll\PayrollRepository.cs" />
+    <Compile Include="ProfitStars\IProfitStarsRepository.cs" />
+    <Compile Include="ProfitStars\ProfitStarsRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reports\ReportRepository.cs" />
     <Compile Include="Reports\IReportRepository.cs" />
@@ -89,6 +91,10 @@
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Models\HrMaxx.OnlinePayroll.Models.csproj">
       <Project>{47df73ff-0053-4e97-9477-06ce38ad3020}</Project>
       <Name>HrMaxx.OnlinePayroll.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HrMaxx.OnlinePayroll.ReadRepository\HrMaxx.OnlinePayroll.ReadRepository.csproj">
+      <Project>{A2EA6FCA-A8B2-445F-B8B8-4FF4D60034D3}</Project>
+      <Name>HrMaxx.OnlinePayroll.ReadRepository</Name>
     </ProjectReference>
     <ProjectReference Include="..\Zion.Common.Models\HrMaxx.Common.Models.csproj">
       <Project>{6B33E83D-006B-45AE-8657-9676568EC734}</Project>

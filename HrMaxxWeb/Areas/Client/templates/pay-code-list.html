@@ -26,7 +26,7 @@
 				<td>
 					<!-- editable comment (text with validation) -->
 					<span editable-number="item.hourlyRate" e-name="hourlyRate" e-form="rowform" e-ng-change="item.hourlyRate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.hourlyRate }}
+						{{ item.hourlyRate | currency:'$'}}/hr
 					</span>
 				</td>
 				<td style="white-space: nowrap" ng-show="showControls">

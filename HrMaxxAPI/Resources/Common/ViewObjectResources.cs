@@ -79,7 +79,7 @@ namespace HrMaxxAPI.Resources.Common
 		{
 			get
 			{
-				return InvoiceSetup.SalesRep != null
+				return InvoiceSetup!=null && InvoiceSetup.SalesRep != null
 					? string.Format("{0} {1}", InvoiceSetup.SalesRep.User.FirstName,
 						InvoiceSetup.SalesRep.User.LastName)
 					: string.Empty;
@@ -90,7 +90,7 @@ namespace HrMaxxAPI.Resources.Common
 		{
 			get
 			{
-				return InvoiceSetup.SalesRep != null ?
+				return InvoiceSetup!=null && InvoiceSetup.SalesRep != null ?
 					string.Format("{0}{1}{2}", InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "$" : "", InvoiceSetup.SalesRep.Rate, InvoiceSetup.SalesRep.Method == DeductionMethod.Amount ? "" : "%") :
 					string.Empty;
 			}
@@ -102,7 +102,7 @@ namespace HrMaxxAPI.Resources.Common
 		}
 		public string Phone
 		{
-			get { return Contact != null ? !string.IsNullOrWhiteSpace(Contact.Phone) ? string.Format("({0}) {1}-{2}", Contact.Phone.Substring(0, 3), Contact.Phone.Substring(3, 3), Contact.Phone.Substring(6, 4)) : !string.IsNullOrWhiteSpace(Contact.Mobile) ? string.Format("({0}) {1}-{2}", Contact.Mobile.Substring(0, 3), Contact.Mobile.Substring(3, 3), Contact.Mobile.Substring(6, 4)) : string.Empty : string.Empty; }
+			get { return Contact != null ? !string.IsNullOrWhiteSpace(Contact.Phone) && Contact.Phone.Length > 9 ? string.Format("({0}) {1}-{2}", Contact.Phone.Substring(0, 3), Contact.Phone.Substring(3, 3), Contact.Phone.Substring(6, 4)) : !string.IsNullOrWhiteSpace(Contact.Mobile) && Contact.Mobile.Length > 9 ? string.Format("({0}) {1}-{2}", Contact.Mobile.Substring(0, 3), Contact.Mobile.Substring(3, 3), Contact.Mobile.Substring(6, 4)) : string.Empty : string.Empty; }
 		}
 		
 		public decimal? UIRate { get; set; }

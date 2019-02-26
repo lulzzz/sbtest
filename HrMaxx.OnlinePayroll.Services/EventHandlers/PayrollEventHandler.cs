@@ -84,7 +84,8 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		{
 			try
 			{
-				var memento = Memento<PayCheck>.Create(event1.SavedObject, EntityTypeEnum.PayCheck, event1.UserName, "PayCheck voided",event1.UserId);
+				var str = event1.IsUnVoid ? "Payroll Unvoided" : "PayCheck voided";
+				var memento = Memento<PayCheck>.Create(event1.SavedObject, EntityTypeEnum.PayCheck, event1.UserName, str,event1.UserId);
 				_mementoDataService.AddMementoData(memento);
 				if (!event1.SavedObject.Employee.LastPayrollDate.HasValue || event1.SavedObject.Employee.LastPayrollDate == event1.SavedObject.PayDay)
 					_payrollRepository.UpdateLastPayrollDateAndPayRateEmployee(event1.SavedObject.Employee.Id, event1.SavedObject.Employee.Rate);

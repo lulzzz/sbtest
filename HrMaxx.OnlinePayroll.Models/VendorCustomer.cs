@@ -13,6 +13,7 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class VendorCustomer : BaseEntityDto, IOriginator<VendorCustomer>
 	{
+		public int VendorCustomerIntId { get; set; }
 		public Guid? CompanyId { get; set; }
 		public string Name { get; set; }
 		public StatusOption StatusId { get; set; }

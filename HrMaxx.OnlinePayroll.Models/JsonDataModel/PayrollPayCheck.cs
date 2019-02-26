@@ -51,6 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool IsHistory { get; set; }
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
+		public string VoidedBy { get; set; }
 		public Guid? CreditInvoiceId { get; set; }
 		
 		public bool IsReIssued { get; set; }

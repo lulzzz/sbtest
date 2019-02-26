@@ -1,6 +1,4 @@
-﻿USE [PAXOL]
-GO
-/****** Object:  Table [dbo].[InvoiceRecurringCharge]    Script Date: 23/10/2018 9:14:02 AM ******/
+﻿/****** Object:  Table [dbo].[InvoiceRecurringCharge]    Script Date: 23/10/2018 9:14:02 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

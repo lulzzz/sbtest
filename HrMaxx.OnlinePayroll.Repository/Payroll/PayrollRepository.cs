@@ -745,10 +745,18 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 
 		public void VoidPayroll(Guid id, string userName)
 		{
-			const string query = @"update Journal set IsVoid=1, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=1, Status=7, VoidedOn=getdate(), LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update Payroll set IsVoid=1 where Id=@Id;";
+			const string query = @"update Journal set IsVoid=1, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=1, Status=7, VoidedOn=getdate(), LastModifiedBy=@User, LastModified=getdate(), VoidedBy=@User Where PayrollId=@Id;update Payroll set IsVoid=1, VoidedOn=getDate(), VoidedBy=@User, LastModified=getdate() where Id=@Id;";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(query, new {Id = id, User = userName});
+			}
+		}
+		public void UnVoidPayroll(Guid id, string userName)
+		{
+			const string query = @"update Journal set IsVoid=0, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=0, Status=3, VoidedOn=null, LastModifiedBy=@User, LastModified=getdate(), VoidedBy=null Where PayrollId=@Id;update Payroll set IsVoid=0, VoidedOn=null, VoidedBy=null, LastModified=getdate() where Id=@Id;";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(query, new { Id = id, User = userName });
 			}
 		}
 
@@ -761,7 +769,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			});
 			using (var conn = GetConnection())
 			{
-				const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				const string updatepayroll = @"update PayrollPayCheck set IsVoid=1, Status=@Status, VoidedOn=getdate(), LastModifiedBy=@LastModifiedBy, LastModified=getdate(), VoidedBy=@LastModifiedBy Where Id=@Id";
 				const string updatejournal = @"update Journal set IsVoid=1, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
 				conn.Execute(updatejournal, payChecks);
 				conn.Execute(updatepayroll, payChecks);
@@ -771,7 +779,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 		{
 			using (var conn = GetConnection())
 			{
-				const string updatepayroll = @"update PayrollPayCheck set IsVoid=@IsVoid, Status=@Status, VoidedOn=@VoidedOn, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
+				const string updatepayroll = @"update PayrollPayCheck set IsVoid=@IsVoid, Status=@Status, VoidedOn=@VoidedOn, VoidedBy=@VoidedBy, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where Id=@Id";
 				const string updatejournal = @"update Journal set IsVoid=0, LastModifiedBy=@LastModifiedBy, LastModified=getdate() Where PayrollPayCheckId=@Id";
 				conn.Execute(updatejournal, payCheck);
 				conn.Execute(updatepayroll, payCheck);

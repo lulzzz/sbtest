@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Web.Http;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
+using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxxAPI.Resources;
@@ -65,6 +66,19 @@ namespace HrMaxxAPI.Controllers
 		public ApplicationConfig SaveConfigs(ApplicationConfig configs)
 		{
 			return MakeServiceCall(() => _taxationService.SaveApplicationConfiguration(configs), "Save Application config", true);
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.Encrypt)]
+		public string Encrypt(string data)
+		{
+			return Crypto.Encrypt(data);
+		}
+		[HttpGet]
+		[Route(HrMaxxRoutes.Decrypt)]
+		public string Decrypt(string data)
+		{
+			return Crypto.Decrypt(data);
 		}
 	}
 }

@@ -20,6 +20,7 @@
 		public const string Employee = "http://HrMaxx/Employee";
 
 		public const string ManageConfiguration = "http://Paxol/ManageConfiguration";
+		public const string ManageProfitStars = "http://Paxol/ProfitStars";
 		public const string DataExtracts = "http://Paxol/DataExtracts";
 		public const string MiscExtracts = "http://Paxol/MiscExtracts";
 		public const string ACH = "http://Paxol/ACH";

@@ -69,5 +69,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SaveInvoiceRecurringCharge(List<InvoiceRecurringCharge> list);
 		List<InvoiceRecurringCharge> GetRecurringChargeToUpdate();
 		void FixInvoiceVoidedCredit(PayrollInvoice payrollInvoice);
+		void UnVoidPayroll(Guid id, string userName);
 	}
 }

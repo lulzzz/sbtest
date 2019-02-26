@@ -131,3 +131,8 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_CPA_Status]') AND parent_object_id = OBJECT_ID(N'[dbo].[Host]'))
 ALTER TABLE [dbo].[Host] CHECK CONSTRAINT [FK_CPA_Status]
 GO
+set identity_insert dbo.Status on
+insert into Status(statusId, statusname) values(1,'Active');
+insert into Status(statusId, statusname) values(2,'InActive');
+insert into Status(statusId, statusname) values(3,'Terminated');
+set identity_insert dbo.Status off

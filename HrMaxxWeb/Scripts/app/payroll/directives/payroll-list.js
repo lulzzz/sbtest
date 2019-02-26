@@ -773,6 +773,25 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						);
 
 					}
+					$scope.unVoidPayroll = function (event, payroll) {
+						event.stopPropagation();
+						$scope.cancel();
+						$scope.$parent.$parent.confirmDialog('Are you sure you want to Un Void all checks in this Payroll?', 'danger', function () {
+							payrollRepository.UnVoidPayroll(payroll).then(function (data) {
+								if (data) {
+									$scope.list.splice($scope.list.indexOf(payroll), 1);
+									$scope.list.push(data);
+									$scope.tableParams.reload();
+									$scope.fillTableData($scope.tableParams);
+									$scope.processed = null;
+								}
+							}, function (erorr) {
+								$scope.addAlert('error: ' + erorr.statusText, 'danger');
+							});
+						}
+						);
+
+					}
 					$scope.reProcessReConfirmPayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();

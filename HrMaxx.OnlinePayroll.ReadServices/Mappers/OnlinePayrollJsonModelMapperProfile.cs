@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
@@ -245,6 +246,14 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.MiscCharges, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<Models.MiscFee>>(src.MiscCharges)));
 			CreateMap<Models.PayrollInvoiceMiscCharges, Models.JsonDataModel.PayrollInvoiceMiscCharges>()
 				.ForMember(dest => dest.MiscCharges, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.MiscCharges)));
+
+			CreateMap<Models.JsonDataModel.ProfitStarsPaymentJson, Models.ProfitStarsPayment>()
+				.ForMember(dest => dest.AccountType, opt => opt.MapFrom(src => src.AccType))
+				.ForMember(dest => dest.requestID, opt => opt.MapFrom(src => string.Format("{0}{1}", ((ProfitStarsPaymentType)src.Type).GetHrMaxxName(), src.Id)))
+				.ForMember(dest => dest.transactionID, opt => opt.MapFrom(src => string.Format("{0}{1}", ((ProfitStarsPaymentType)src.Type).GetHrMaxxName(), src.Id)))
+				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccNum)))
+				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNum)));
+			
 		}
 	}
 }

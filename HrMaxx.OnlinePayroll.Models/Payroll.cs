@@ -45,6 +45,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsPrinted { get; set; }
 		public bool IsVoid { get; set; }
 		public string Warnings { get; set; }
+		public DateTime? VoidedOn { get; set; }
+		public string VoidedBy { get; set; }
 
 		public bool IsQueued { get; set; }
 		public DateTime? QueuedTime { get; set; }
@@ -131,6 +133,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public Guid? InvoiceId { get; set; }
 		public DateTime? VoidedOn { get; set; }
+		public string VoidedBy { get; set; }
 		
 		public Guid? CreditInvoiceId { get; set; }
 		

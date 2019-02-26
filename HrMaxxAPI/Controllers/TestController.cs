@@ -39,6 +39,28 @@ namespace HrMaxxAPI.Controllers
 			}
 
 		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route("Scheduled/ProfitStarsNineAM")]
+		public void ProfitStarsNine()
+		{
+			//if (DateTime.Now.ToString("tt") == "AM")
+			{
+				MakeServiceCall(() => _scheduledJobService.ProfitStarsNineAM(), "Update DB Stats");
+			}
+
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route("Scheduled/ProfitStarsOnePM")]
+		public void ProfitStarsOne()
+		{
+			//if (DateTime.Now.ToString("tt") == "AM")
+			{
+				MakeServiceCall(() => _scheduledJobService.ProfitStarsOnePM(), "Update DB Stats");
+			}
+
+		}
 
 		[HttpPost]
 		[AllowAnonymous]

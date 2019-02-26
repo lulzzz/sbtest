@@ -1,0 +1,122 @@
+﻿<div class="row">
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading">
+			<h4 class="panel-title">Profit Stars Controls</h4>
+		</div>
+		<div class="panel-body">
+			<div class="col-sm-12 text-center">
+				<button class="btn btn-sm btn-success" ng-click="run1pm()"><i class="fa fa-clock-o"></i> 1 PM</button>
+				<button class="btn btn-sm btn-success" ng-click="run9am()"><i class="fa fa-clock-o"></i> 9 AM</button>
+
+			</div>
+			<div class="col-sm-6" ng-show="data.show1pm">
+				<table class="table table condensed">
+					<tr><th colspan="4">1 pm request response</th></tr>
+					<tr>
+						<th>Type</th>
+						<th>Request Id</th>
+						<th>RefNum</th>
+						<th>Result</th>
+					</tr>
+					<tr ng-repeat="item in data.onePmResult">
+						<td>{{item.typeName}}</td>
+						<td>{{item.id}}</td>
+						<td>{{item.payResponse.refNum}}</td>
+						<td>{{item.payResponse.resultCode}}</td>
+					</tr>
+				</table>
+			</div>
+			<div class="col-sm-6" ng-show="data.show9am">
+				<table class="table table condensed">
+					<tr><th colspan="5">9 am request response</th></tr>
+					<tr>
+						<th>Type</th>
+						<th>Request Id</th>
+						<th>RefNum</th>
+						<th>Transaction Status</th>
+						<th>Settlement Status</th>
+					</tr>
+					<tr ng-repeat="item in data.nineAmResult.events">
+						<td>{{item.transaction.typeName}}</td>
+						<td>{{item.transaction.id}}</td>
+						<td>{{item.transaction.refNum}}</td>
+						<td>{{item.transaction.transactionStatus}}</td>
+						<td>{{item.transaction.settlementStatus}}</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-click="data.showPayrolls = !data.showPayrolls">
+		<div class="panel-heading">
+			<h4 class="panel-title">Profit Stars Payrolls <button class="btn btn-sm btn-primary" ng-click="getReport($event)"><i class="fa fa-refresh"></i></button>
+				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.showPayrolls, 'glyphicon-chevron-right': !data.showPayrolls}"></i></h4>
+		</div>
+		<div class="panel-body" ng-show="data.showPayrolls">
+			
+			<div class="col-sm-12">
+
+				<div ng-show="list.length===0" class="row table table-bordered">
+					No pay checks found
+				</div>
+				<div class="row" ng-show="list.length>0">
+					<i class="fa fa-check" style="color:green">  actual</i>
+					<i class="fa fa-film" style="color:orange">  forecast</i>
+				</div>
+				<div class="row" ng-show="list.length>0">
+					<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/pager">
+						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer">
+							<td data-title="'Company'" class="col-sm-2">
+								{{item.companyName}}
+							</td>
+							<td data-title="'Paying Company'" filter="{'payingCompanyName':'text'}" class="col-sm-2">
+								{{item.payingCompanyName}}
+							</td>
+							<td data-title="'Employee'" class="col-sm-2" filter="{'employeeName':'text'}">
+								{{item.employeeName}}
+							</td>
+							<td data-title=" 'Pay Day' " sortable=" 'payDate' " class="col-sm-1">
+								{{item.payDate | date:'MM/dd/yyyy'}}
+							</td>
+							<td data-title=" 'Fund Req Date' " sortable=" 'projectedFundingDate' " class="col-sm-1">
+								{{item.projectedFundingDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':item.fundRequestId, 'fa-film':!item.fundRequestId}" ng-style="(item.fundRequestId && {'color':'green'}) || (!item.fundRequestId && {'color':'orange'})"></i>
+							</td>
+							<td data-title=" 'Pay Req Date' " sortable=" 'projectedPayDate' " class="col-sm-1">
+								{{item.projectedPayDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':item.payRequestId, 'fa-film':!item.payRequestId}" ng-style="(item.payRequestId && {'color':'green'}) || (!item.payRequestId && {'color':'orange'})"></i>
+							</td>
+							<td data-title=" 'Status' " class="col-sm-1">
+								{{item.status}}
+							</td>
+
+						</tr>
+
+					</table>
+					<script type="text/ng-template" id="custom/pager">
+								<ul class="pager ng-cloak">
+									<li ng-repeat="page in pages"
+											ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+											ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+										<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+										<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+									</li>
+									<li>
+										<div class="btn-group">
+											<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+											<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+											<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+											<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+										</div>
+									</li>
+								</ul>
+							</script>
+				</div>
+
+			</div>
+
+
+
+
+		</div>
+	</div>
+
+</div>

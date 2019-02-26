@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using HrMaxx.Common.Contracts.Resources;
@@ -31,12 +32,14 @@ namespace HrMaxx.Common.Services.Email
 			try
 			{
 				var mail = new MailMessage(MessageFrom, MessageTo);
+				mail.IsBodyHtml = true;
 				var client = new SmtpClient
 				{
 					Port = 25,
 					DeliveryMethod = SmtpDeliveryMethod.Network,
 					UseDefaultCredentials = false,
-					Host = _smptServer
+					Host = _smptServer,
+					Credentials = new NetworkCredential("payrollApp@hrmaxx.com", "hrMaxx123")
 				};
 				mail.Subject = MessageSubject;
 				mail.Body = MessageBody;

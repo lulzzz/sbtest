@@ -100,6 +100,37 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			}
 		}
 
+		public void ProfitStarsNineAM()
+		{
+			try
+			{
+				Log.Info("Profit Stars 9 AM service initiated " + DateTime.Now);
+				_achService.ProfitStarsStatusUpdate();
+				Log.Info("Profit Stars 9 AM service completed " + DateTime.Now);
+			}
+			catch (Exception e)
+			{
+				var message = "Failed to run Profit stars 9AM";
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public void ProfitStarsOnePM()
+		{
+			try
+			{
+				Log.Info("Profit Stars 1 PM service initiated " + DateTime.Now);
+				_achService.ProfitStarsPayments();
+				Log.Info("Profit Stars 1 PM service completed " + DateTime.Now);
+			}
+			catch (Exception e)
+			{
+				var message = "Failed to run Profit stars 1 PM";
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public void UpdateDBStats()
 		{
 			try

@@ -10,6 +10,7 @@ using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Repository.Host;
 using HrMaxx.OnlinePayroll.Repository.Journals;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
+using HrMaxx.OnlinePayroll.Repository.ProfitStars;
 using HrMaxx.OnlinePayroll.Repository.Reports;
 using HrMaxx.OnlinePayroll.Repository.Taxation;
 
@@ -109,6 +110,14 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 				.WithParameter((param, cont) => param.Name == "connection",
 					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IReadRepository>()
+				.InstancePerLifetimeScope()
+				.PropertiesAutowired();
+
+			builder.RegisterType<ProfitStarsRepository>()
+				.WithParameter(sqlCon)
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
+				.As<IProfitStarsRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
 		}

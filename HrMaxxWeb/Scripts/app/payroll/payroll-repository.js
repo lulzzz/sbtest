@@ -143,6 +143,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			UnVoidPayroll: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('UnVoidPayroll').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			voidPayCheck: function (payrollId, payCheckId) {
 				var deferred = $q.defer();
 				payrollServer.one('VoidPayCheck').one(payrollId, payCheckId).get().then(function (data) {
