@@ -52,102 +52,14 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		[HttpGet]
 		[Route(PayrollRoutes.FillPayCheckNormalized)]
-		public HttpStatusCode FillPayCheckNormalized()
+		public HttpStatusCode FillPayCheckNormalized(Guid? companyId, Guid? payrollId)
 		{
-			try
-			{
-				var payChecks = _readerService.GetPayChecks();
-				var ptaccums = new List<PayCheckPayTypeAccumulation>();
-				var pttaxes = new List<PayCheckTax>();
-				var ptcomps = new List<PayCheckCompensation>();
-				var ptdeds = new List<PayCheckDeduction>();
-				var ptcodes = new List<PayCheckPayCode>();
-				var ptwcs = new List<PayCheckWorkerCompensation>();
-				payChecks.ForEach(pc => pc.Accumulations.ForEach(a =>
-				{
-					var ptaccum = new PayCheckPayTypeAccumulation
-					{
-						PayCheckId = pc.Id,
-						PayTypeId = a.PayType.PayType.Id,
-						FiscalEnd = a.FiscalEnd,
-						FiscalStart = a.FiscalStart,
-						AccumulatedValue = a.AccumulatedValue,
-						Used = a.Used,
-						CarryOver = a.CarryOver
-					};
-					ptaccums.Add(ptaccum);
-				}));
-				payChecks.ForEach(pc => pc.Taxes.ForEach(t =>
-				{
-					var pt = new PayCheckTax()
-					{
-						PayCheckId = pc.Id,
-						TaxId = t.Tax.Id,
-						TaxableWage = t.TaxableWage,
-						Amount = t.Amount
-					};
-					pttaxes.Add(pt);
-				}));
-				payChecks.ForEach(pc => pc.Compensations.ForEach(t =>
-				{
-					var pt = new PayCheckCompensation()
-					{
-						PayCheckId = pc.Id,
-						PayTypeId = t.PayType.Id,
-						Amount = t.Amount
-					};
-					ptcomps.Add(pt);
-				}));
-				payChecks.ForEach(pc => pc.Deductions.ForEach(t =>
-				{
-					var pt = new PayCheckDeduction()
-					{
-						PayCheckId = pc.Id,
-						EmployeeDeductionId = t.EmployeeDeduction.Id,
-						CompanyDeductionId=t.Deduction.Id,
-						EmployeeDeductionFlat = JsonConvert.SerializeObject(t.EmployeeDeduction),
-						Method = t.Method, Rate = t.Rate, AnnualMax = t.AnnualMax,
-						Amount = t.Amount, Wage = t.Wage
-					};
-					ptdeds.Add(pt);
-				}));
-				payChecks.ForEach(pc => pc.PayCodes.ForEach(t =>
-				{
-					var pt = new PayCheckPayCode()
-					{
-						PayCheckId = pc.Id,
-						PayCodeId = t.PayCode.Id,
-						PayCodeFlat = JsonConvert.SerializeObject(t.PayCode),
-						Amount = t.Amount,
-						Overtime = t.OvertimeAmount
-					};
-					ptcodes.Add(pt);
-				}));
-				payChecks.Where(pc=>pc.WorkerCompensation!=null).ToList().ForEach(pc =>
-				
-				{
-					var pt = new PayCheckWorkerCompensation()
-					{
-						PayCheckId = pc.Id,
-						WorkerCompensationId = pc.WorkerCompensation.WorkerCompensation.Id,
-						WorkerCompensationFlat = JsonConvert.SerializeObject(pc.WorkerCompensation.WorkerCompensation),
-						Amount = pc.WorkerCompensation.Amount,
-						Wage = pc.WorkerCompensation.Wage
-					};
-					ptwcs.Add(pt);
-				});
-				_payrollService.SavePayCheckWorkerCompensation(ptwcs);
-				_payrollService.SavePayCheckPayCodes(ptcodes);
-				_payrollService.SavePayCheckDeductions(ptdeds);
-				_payrollService.SavePayCheckCompensations(ptcomps);
-				_payrollService.SavePayCheckTaxes(pttaxes);
-				_payrollService.SavePayCheckPayTypeAccumulations(ptaccums);
+			var result = _payrollService.FillPayCheckNormalized(companyId, payrollId);
+			if (result > 0)
 				return HttpStatusCode.OK;
-			}
-			catch (Exception)
+			else
 			{
-
-				return HttpStatusCode.ExpectationFailed;
+				return HttpStatusCode.NoContent;
 			}
 		}
 

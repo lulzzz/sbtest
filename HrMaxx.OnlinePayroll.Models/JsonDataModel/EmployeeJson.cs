@@ -35,6 +35,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Rate { get; set; }
 		public string PayCodes { get; set; }
 		public string Compensations { get; set; }
+		public string PayTypeAccruals { get; set; }
 		public int PaymentMethod { get; set; }
 		public bool DirectDebitAuthorized { get; set; }
 		public int TaxCategory { get; set; }

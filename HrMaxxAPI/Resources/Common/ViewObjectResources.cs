@@ -115,7 +115,7 @@ namespace HrMaxxAPI.Resources.Common
 
 		public string SUIManagementRate
 		{
-			get { return InvoiceSetup.SUIManagement.ToString(); }
+			get { return InvoiceSetup!=null ? InvoiceSetup.SUIManagement.ToString() : "0"; }
 		}
 	}
 	

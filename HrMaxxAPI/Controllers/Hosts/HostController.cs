@@ -23,10 +23,12 @@ namespace HrMaxxAPI.Controllers.Hosts
 	public class HostController : BaseApiController
 	{
 		private readonly IHostService _hostService;
+		private readonly ITaxationService _config;
 		
-		public HostController(IHostService hostService)
+		public HostController(IHostService hostService, ITaxationService config)
 		{
 			_hostService = hostService;
+			_config = config;
 		}
 
 		[HttpGet]
@@ -55,17 +57,21 @@ namespace HrMaxxAPI.Controllers.Hosts
 		[Route(HostRoutes.HostWelcome)]
 		public object GetHostWelcome(string url)
 		{
-			return MakeServiceCall(() => _hostService.GetHostHomePageByUrl(url, CurrentUser.Host), "Get home page for the host", true);
-			
+			var rootHostId = _config.GetApplicationConfig().RootHostId;
+			var hostwelcome =  MakeServiceCall(() => _hostService.GetHostHomePageByUrl(url, CurrentUser.Host, rootHostId), "Get home page for the host", true);
+			return hostwelcome;
+
 		}
 
 		[HttpGet]
+		[AllowAnonymous]
 		[Route(HostRoutes.HostHomePage)]
 		public HostHomePage GetHostHomePage(Guid cpaId)
 		{
 			return MakeServiceCall(() => _hostService.GetHostHomePage(cpaId), "Get home page for the host", true);
 		}
 		[HttpGet]
+		[AllowAnonymous]
 		[Route(HostRoutes.HostWelcomeByFirmName)]
 		public object GetHostWelcomeByFirmName(string firmName)
 		{

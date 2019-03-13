@@ -21,6 +21,7 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 					$scope.enableIsCompanyManaged = $scope.mainData.hasClaim(ClaimTypes.CompanyAcumulatedPaytypesCompanyManaged, 1);
 					$scope.enableIsLumpSum = $scope.mainData.hasClaim(ClaimTypes.CompanyAccumulatedPayTypesLumpSum, 1);
 					
+					
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};
@@ -34,7 +35,8 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 						annualLimit: 0,
 						isNew: true,
 						companyManaged: false,
-						isLumpSum: false
+						isLumpSum: false,
+						isEmployeeSpecific: false
 					};
 					$scope.list.push($scope.selected);
 				},
@@ -72,16 +74,25 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 				}
 
 				$scope.isItemValid = function(item) {
-					if (!item.payType || !item.ratePerHour || !item.annualLimit)
+					if (!item.payType || !item.ratePerHour)
 						return false;
 					else
 						return true;
 				}
 				
 				
-				
+				var init = function() {
+					if ($scope.metaData) {
+						$.each($scope.metaData, function (index, type) {
+							var exists = $filter('filter')($scope.list, { payType: { id: type.id } })[0];
+							if (!exists)
+								type.available = true;
+						});
+					}
+				}
+					init();
 
-			}]
+				}]
 		}
 	}
 ]);

@@ -8,22 +8,38 @@ namespace OPImportUtility
 {
 	public static class Queries
 	{
-		public const string pxcompanies = "select * from paxolop.dbo.Company;";
+		public const string pxcompanies = "select * from paxolop.dbo.Company where companyintid={0};";
 		public const string pxhosts = "select * from paxolop.dbo.host;";
 
-		public const string company = "select * from company;";
+		public const string company = "select * from company where companyId={0};";
 		public const string users = "select * from UserAccount";
 		public const string contacts = "select * from Contact";
 		public const string cpa = "select * from cpa";
-		public const string subsscription = "select * from subscriptions";
+		public const string subsscription = "select * from subscriptions where CompanyId={0}";
 		public const string billing = "select * from billingdetails";
 		public const string banks = "select * from bankaccount where bankname<>''";
-		public const string vendors = "select * from vendor_customer where vendorcustomername not in ('IRS', 'CA EDD')";
-		public const string employees = "select * from employee";
+		public const string vendors = "select * from vendor_customer where vendorcustomername not in ('CA - EDD','CA EDD','EDD','EDD - manual','EDD EFT','IRS','IRS - EFT','IRS - manual','IRS EFTPS') and CompanyId={0}";
+		public const string employees = "select * from employee where CompanyId={0}";
 		public const string employeedeductions = "select * from employee_deduction";
 		public const string employeepaytypes = "select * from employeepaytypes";
 		public const string employeepayrates = "select * from employeepayrates";
+
+		public const string payrolls =
+			"select ps.CompanyId, ps.PayStartDate, ps.PayEndDate, ps.PayDay as SchedulePayDay, ps.ScheduleType, p.* from Payroll p, PayrollSchedule ps where p.PayrollScheduleID=ps.PayrollScheduleId and year(p.PayDay)>2006 and p.PayrollId not in (select Id from PaxolOp.dbo.PayrollPayCheck) and ps.CompanyId={0}";
+
+		public const string payrolltax = "select PayrollId, FederalCode as TaxId, Amount, TaxableWage from FederalTax where PayrollId in ({0}) union select PayrollId, (StateCode+6) as TaxId, Amount, TaxableWage from StateTax  where PayrollId in ({0})";
+		public const string payrollcompensation = "select PayrollId, CompensationTypeId, Amount from payrollcompensations where PayrollId in ({0})";
+		public const string payrolldeduction = "select * from deduction_payroll where PayrollId in ({0})";
+		public const string payrollaccumulation = "select * from payrollleaveaccumulation where PayrollId in ({0})";
+		public const string journal = "select j.*, cc.CompanyId from Journal j, COA_Company cc where j.MainCOAID=cc.COAID and j.TransactionType in (1,2,3,4,5,8) and year(j.TransactionDate)>2006 and JournalId not in (select Id from paxolop.dbo.Journal union select Id from Paxolop.dbo.CheckbookJournal) and cc.CompanyId={0}";
+
+		public const string payrollJournals =
+			"select *, (select CompanyId from COA_Company where COAID=MainCoaid) CompanyId from Journal where TransactionType=4 and PayrollId in ({0})";
+	
+		public const string journaldetail = "select * from Journal_Detail where journalid in (select id from journal where TransactionType in (1,2,3,4,5,8)";
+		public const string payrollpayrates = "select ppr.*, e.CompanyID from PayrollPayRates ppr, payroll p, employee e where ppr.PayrollId=p.PayrollID and p.EmployeeID=e.EmployeeID and p.PayrollId in ({0})";
 	}
+
 	public class CPA
 	{
 		public int CPAID { get; set; }
@@ -263,5 +279,153 @@ namespace OPImportUtility
 		public int DeductionCategoryID { get; set; }
 		public string DeductionType { get; set; }
 
+	}
+
+	public class Payroll
+	{
+		public int PayrollID { get; set; }
+		public int EmployeeID { get; set; }
+		public int PayrollScheduleID { get; set; }
+		public int CompanyID { get; set; }
+		public DateTime? PayStartDate { get; set; }
+		public DateTime? PayEndDate { get; set; }
+		public DateTime SchedulePayDay { get; set; }
+		public string ScheduleType { get; set; }
+		public string PayrollStatus { get; set; }
+		public decimal HoursWorked { get; set; }
+		public decimal OTWorked { get; set; }
+		public decimal DeductionAmount { get; set; }
+		public string PaymentMethod { get; set; }
+		public decimal GrossPay { get; set; }
+		public decimal NetPay { get; set; }
+		public string PayrollNotes { get; set; }
+		public DateTime EnteredDate { get; set; }
+		public int EnteredBy { get; set; }
+		public DateTime LastUpdateDate { get; set; }
+		public int LastUpdateBy { get; set; }
+		public decimal BaseSalaryRate { get; set; }
+		public decimal OTRate { get; set; }
+		public decimal OTAmount { get; set; }
+		public decimal OtherCompensation { get; set; }
+		public int PayrollPeriodID { get; set; }
+		public string PayType { get; set; }
+		public decimal TaxesER { get; set; }
+		public decimal TaxesEE { get; set; }
+		public decimal Salary { get; set; }
+		public decimal WCAmount { get; set; }
+		public DateTime PayDay { get; set; }
+		public int ACH_Payroll { get; set; }
+		public int Flag { get; set; }
+		public string OtherCompType { get; set; }
+		public decimal? NonTaxable { get; set; }
+		public bool? MultiplePayRates { get; set; }
+	}
+
+	public class PayrollTax
+	{
+		public int PayrollId { get; set; }
+		public int TaxId { get; set; }
+		public decimal Amount { get; set; }
+		public decimal TaxableWage { get; set; }
+	}
+
+	public class PayrollCompensation
+	{
+		public int PayrollId { get; set; }
+		public int CompensationTypeId { get; set; }
+		public decimal Amount { get; set; }
+	}
+
+	public class PayrollDeduction
+	{
+		public int DeductionID { get; set; }
+		public int PayrollID { get; set; }
+		public decimal Amount { get; set; }
+	}
+
+	public class PayrollLeaveAccumulation
+	{
+		public int PayrollId { get; set; }
+		public int PayTypeId { get; set; }
+		public decimal Accumulation { get; set; }
+		public decimal HoursUsed { get; set; }
+	}
+
+	public class Journal
+	{
+		public int JournalID { get; set; }
+		public string TransactionNumber { get; set; }
+		public int TransactionType { get; set; }
+		public DateTime TransactionDate { get; set; }
+		public string Memo { get; set; }
+		public DateTime EnteredDate { get; set; }
+		public int EnteredBy { get; set; }
+		public DateTime LastUpdateDate { get; set; }
+		public int LastUpdateBy { get; set; }
+		public int EntityID { get; set; }
+		public int EntityTypeID { get; set; }
+		public string Status { get; set; }
+		public string FromCOA { get; set; }
+		public string ToCOA { get; set; }
+		public decimal Amt { get; set; }
+		public bool IsDecrease { get; set; }
+		public int MainCOAID { get; set; }
+		public int? PayrollID { get; set; }
+		public int tmpTransactionNumber { get; set; }
+		public string dispTransactionNumber { get; set; }
+		public int CompanyId { get; set; }
+	}
+
+	public class JournalDetail
+	{
+		public decimal Increase { get; set; }
+		public decimal Decrease { get; set; }
+		public string Memo { get; set; }
+		public DateTime EnteredDate { get; set; }
+		public int EnteredBy { get; set; }
+		public DateTime LastUpdateDate { get; set; }
+		public int LastUpdateBy { get; set; }
+		public int COAID { get; set; }
+		public bool IsFrom { get; set; }
+		public bool IsCash { get; set; }
+		public int VendorCustomerID { get; set; }
+		public int JournalID { get; set; }
+		public int Journal_DetailID { get; set; }
+		public int Parent_COAID { get; set; }
+		public string Number { get; set; }
+	}
+
+	public class PayrollPayRate
+	{
+		public int PayrollPayRateId { get; set; }
+		public int PayrollId { get; set; }
+		public int PayRateOrder { get; set; }
+		public string PayRateDescription { get; set; }
+		public decimal PayRate { get; set; }
+		public decimal HoursWorked { get; set; }
+		public decimal OTWorked { get; set; }
+		public decimal Salary { get; set; }
+		public decimal OTAmount { get; set; }
+		public int CompanyID { get; set; }
+	}
+
+	public class EmployeeMin
+	{
+		public Guid Id { get; set; }
+		public int EmployeeIntId { get; set; }
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+		public string MiddleInitial { get; set; }
+		public string FullName
+		{
+			get { return string.Format("{0}{2}{1}", FirstName, LastName, string.Format(" {0}", !string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty)); }
+		}
+	}
+
+	public class PayCheckMin
+	{
+		public int Id { get; set; }
+		public Guid PayrollId { get; set; }
+		public Guid EmployeeId { get; set; }
 	}
 }

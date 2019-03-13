@@ -107,6 +107,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string DesigneeName940941 { get; set; }
 		public string PIN940941 { get; set; }
 		public string BankCustomerId { get; set; }
+		public bool IsPeoHost { get; set; }
 
 		public BankAccount HostBank { get; set; }
 		public ExtractDBCompany HostCompany { get; set; }
@@ -120,6 +121,10 @@ namespace HrMaxx.OnlinePayroll.Models
 	
 	public class ExtractContact
 	{
+		public int SourceEntityTypeId { get; set; }
+		public int TargetEntityTypeId { get; set; }
+		public Guid SourceEntityId { get; set; }
+		public Guid TargetEntityId { get; set; }
 		public string ContactObject { get; set; }
 	}
 	public class ExtractTaxState

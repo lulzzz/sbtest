@@ -40,6 +40,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal Rate { get; set; }
 		public List<CompanyPayCode> PayCodes { get; set; }
 		public List<EmployeePayType> Compensations { get; set; }
+		public List<int> PayTypeAccruals { get; set; } 
 		public EmployeePaymentMethod PaymentMethod { get; set; }
 		
 		public List<EmployeeBankAccount> BankAccounts { get; set; }

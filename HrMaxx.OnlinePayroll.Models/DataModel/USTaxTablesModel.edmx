@@ -66,11 +66,11 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayrollPeriodID" Type="int" />
           <Property Name="FilingStatus" Type="varchar" MaxLength="50" />
-          <Property Name="StartRange" Type="float" />
-          <Property Name="EndRange" Type="float" />
-          <Property Name="FlatRate" Type="money" />
-          <Property Name="AdditionalPercentage" Type="float" />
-          <Property Name="ExcessOvrAmt" Type="money" />
+          <Property Name="StartRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
         <EntityType Name="StandardDeductionTable">
@@ -192,11 +192,11 @@ warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a 
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
           <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="StartRange" Type="Double" />
-          <Property Name="EndRange" Type="Double" />
-          <Property Name="FlatRate" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="AdditionalPercentage" Type="Double" />
-          <Property Name="ExcessOvrAmt" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="StartRange" Type="Decimal" />
+          <Property Name="EndRange" Type="Decimal" />
+          <Property Name="FlatRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="Decimal" />
+          <Property Name="ExcessOvrAmt" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
         <EntityType Name="StandardDeductionTable">

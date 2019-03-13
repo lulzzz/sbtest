@@ -4,6 +4,7 @@ using System.Linq;
 using AutoMapper;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
@@ -349,6 +350,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<CompanyPayCode>>(src.PayCodes)))
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<EmployeePayType>>(src.Compensations)))
+				.ForMember(dest => dest.PayTypeAccruals, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.PayTypeAccruals) ? new List<int>() : JsonConvert.DeserializeObject<List<int>>(src.PayTypeAccruals)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulations, opt => opt.Ignore())
@@ -366,6 +368,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Contact)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.PayCodes)))
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Compensations)))
+				.ForMember(dest => dest.PayTypeAccruals, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.PayTypeAccruals)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.State)))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
 				.ForMember(dest => dest.EmployeeDeductions, opt => opt.Ignore())
@@ -628,7 +631,6 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.StatusId, opt => opt.Ignore())
-				.ForMember(dest => dest.IsPeoHost, opt => opt.Ignore())
 				.ForMember(dest => dest.HostIntId, opt => opt.Ignore())
 				.ForMember(dest => dest.EffectiveDate, opt => opt.Ignore());
 
@@ -695,6 +697,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.MapFrom(src=>src.PEOASOCoCheck))
 				.ForMember(dest => dest.InvoiceId, opt => opt.Ignore())
 				.ForMember(dest => dest.VoidedOn, opt => opt.Ignore())
+				.ForMember(dest => dest.VoidedBy, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyIntId, opt => opt.Ignore())
 				.ForMember(dest => dest.UpdateEmployeeRate, opt => opt.MapFrom(src => false))
 				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())

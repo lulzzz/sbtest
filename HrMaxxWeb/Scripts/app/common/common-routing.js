@@ -40,7 +40,7 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$httpProvider.interceptors.push('myHttpInterceptor');
 	
 	$routeProvider.when('/', {
-		templateUrl: zionAPI.Web + 'Areas/Reports/templates/Dashboard.html'
+		templateUrl: zionAPI.Web + 'Areas/Administration/templates/welcome.html'
 	});
 	$routeProvider.when('/welcome', {
 		templateUrl: zionAPI.Web + 'Areas/Administration/templates/welcome.html'

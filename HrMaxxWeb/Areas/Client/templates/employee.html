@@ -168,6 +168,7 @@
 
 												</select>
 											</div>
+
 											<div class="form-group">
 												<label for="comps">Recurring Compensation(s)</label><i class="fa fa-plus-circle fa-lg" ng-show="availablePayTypes().length>0" ng-click="addPayType()"></i>
 												<div class="col-sm-12" ng-show="selected.compensations.length>0" ng-if="selected.compensations">
@@ -203,7 +204,13 @@
 												</div>
 
 											</div>
+											<div class="form-group" ng-if="showAccruals()">
+												<label for="payTypeAccruals">Accrual(s)</label>
+												<div name="payTypeAccruals" ng-dropdown-multiselect="" options="data.accrualPayTypes" extra-settings="{displayProp: 'name', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedAccruals" events="accrualEvents" required data-parsley-group="wizard-step-2"></div>
+
+											</div>
 										</div>
+
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label>Pay Type</label>
@@ -466,8 +473,8 @@
 
 						</div>
 						<div class="col-sm-4 col-sm-offset-4" ng-show="showControls">
-							<button class="btn btn-primary" ng-click="save()" ng-disabled="!validate()"><i class="fa fa-save m-r-5"></i> Save</button>
-							<button class="btn btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+							<button class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="!validate()"><i class="fa fa-save m-r-5"></i> Save</button>
+							<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
 						</div>
 					</form>
 				</div>
@@ -506,8 +513,8 @@
 			<div id="collapseThree" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="row">
-						<button class="btn btn-sm btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport">Sick Leave Export</button>
-						<button class="btn btn-sm btn-success" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate">Re-Calculate Accumulations</button>
+						<button class="btn btn-xs btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport">Sick Leave Export</button>
+						<button class="btn btn-xs btn-success" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate">Re-Calculate Accumulations</button>
 					</div>
 					<div class="row" ng-if="selected.accumulations.length===0">
 						no records found
@@ -544,9 +551,9 @@
 							<td class="text-right">{{pt.available}}</td>
 							<td class="text-right">{{calculateAvailableWage(pt) | currency:'$'}}</td>
 							<td ng-show="data.editableAccumulations">
-								<button class="btn btn-sm btn-primary" ng-show="!selectedAccumulation" ng-click="setSelectedAccumulation(pt, $index)"><i class="fa fa-pencil"></i></button>
-								<button class="btn btn-sm btn-success" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="saveEmployeeAccumulation(pt)"><i class="fa fa-save"></i></button>
-								<button class="btn btn-sm btn-default" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="cancelAccumulation(pt)"><i class="fa fa-remove"></i></button>
+								<button class="btn btn-xs btn-info" ng-show="!selectedAccumulation" ng-click="setSelectedAccumulation(pt, $index)"><i class="fa fa-pencil"></i></button>
+								<button class="btn btn-xs btn-success" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="saveEmployeeAccumulation(pt)"><i class="fa fa-save"></i></button>
+								<button class="btn btn-xs btn-default" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="cancelAccumulation(pt)"><i class="fa fa-remove"></i></button>
 							</td>
 						</tr>
 
@@ -599,8 +606,8 @@
 
 							</div>
 							<div class="col-sm-2">
-								<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
-								<button class="btn btn-sm btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">W2 - Employer</button>
+								<button class="btn btn-xs btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
+								<button class="btn btn-xs btn-primary" ng-click="getReportW2Employer()" ng-disabled="!data.filterW2.year">W2 - Employer</button>
 							</div>
 
 						</div>
@@ -641,7 +648,7 @@
 
 							</div>
 							<div class="col-sm-2">
-								<button class="btn btn-sm btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
+								<button class="btn btn-xs btn-primary" ng-click="getReportC1095()" ng-disabled="!data.filterC1095.year">Display 1095-C</button>
 							</div>
 
 						</div>
@@ -677,8 +684,8 @@
 							</div>
 
 							<div class="col-sm-2">
-								<button class="btn btn-sm btn-primary" ng-click="getReportPayrollSummary()" ng-disabled="!data.payrollSummary.year">Show</button>
-								<button class="btn btn-sm btn-primary" ng-click="fixEmployeeYTD()" ng-show="selected.id && mainData.userRole==='SuperUser'">Fix Employee YTD</button>
+								<button class="btn btn-xs btn-primary" ng-click="getReportPayrollSummary()" ng-disabled="!data.payrollSummary.year">Show</button>
+								<button class="btn btn-xs btn-primary" ng-click="fixEmployeeYTD()" ng-show="selected.id && mainData.userRole==='SuperUser'">Fix Employee YTD</button>
 							</div>
 
 						</div>

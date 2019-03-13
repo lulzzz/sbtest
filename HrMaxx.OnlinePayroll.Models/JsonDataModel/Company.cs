@@ -176,7 +176,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal AnnualLimit { get; set; }
 		public bool CompanyManaged { get; set; }
 		public bool IsLumpSum { get; set; }
-		
+		public bool IsEmployeeSpecific { get; set; }
 		public PayType PayType { get; set; }
 	}
 	

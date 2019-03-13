@@ -158,11 +158,25 @@
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93.75"/>
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93.75"/>
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
-				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
-				<Column ss:AutoFitWidth="0" ss:Width="69.75"/>
-				<Column ss:AutoFitWidth="0" ss:Width="68.25"/>
-				<Column ss:AutoFitWidth="0" ss:Width="70.5"/>
-				<Column ss:AutoFitWidth="0" ss:Width="75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
 				<Row ss:AutoFitHeight="0" ss:StyleID="s70">
 					<Cell ss:StyleID="s68">
 						<Data ss:Type="String">Host</Data>
@@ -287,7 +301,7 @@
 				</Data>
 			</Cell>
 			<Cell>
-				<Data ss:Type="Number">
+				<Data ss:Type="String">
 					<xsl:value-of select="$comp/CompanyNo" />
 				</Data>
 			</Cell>
@@ -308,37 +322,37 @@
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$totalGross"/>
+					<xsl:value-of select="format-number($totalGross,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$total941"/>
+					<xsl:value-of select="format-number($total941,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$total940"/>
+					<xsl:value-of select="format-number($total940,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$totalUi"/>
+					<xsl:value-of select="format-number($totalUi,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$totalEtt"/>
+					<xsl:value-of select="format-number($totalEtt,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$totalFederal"/>
+					<xsl:value-of select="format-number($totalFederal,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$totalState"/>
+					<xsl:value-of select="format-number($totalState,'####.##')"/>
 				</Data>
 			</Cell>
 			
@@ -362,7 +376,7 @@
 				</Data>
 			</Cell>
 			<Cell>
-				<Data ss:Type="Number">
+				<Data ss:Type="String">
 					<xsl:value-of select="$comp/CompanyNo" />
 				</Data>
 			</Cell>
@@ -383,107 +397,107 @@
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="$totalGross"/>
+					<xsl:value-of select="format-number($totalGross,'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employer']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employer']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SDI']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTDWage)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTDWage),'####.##')"/>
 				</Data>
 			</Cell>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTD)"/>
+					<xsl:value-of select="format-number(sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTD),'####.##')"/>
 				</Data>
 			</Cell>
 			

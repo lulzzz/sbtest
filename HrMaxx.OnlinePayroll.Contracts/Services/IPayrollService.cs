@@ -76,5 +76,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void UpdateLastPayrollDateAndPayRateEmployee(List<PayCheck> payChecks);
 		Employee RecalculateEmployeePayTypeAccumulation(Guid employeeId, string user, string userId);
 		void FixEmployeeYTD(Guid employeeId);
+		int FillPayCheckNormalized(Guid? companyId, Guid? payrollId);
 	}
 }

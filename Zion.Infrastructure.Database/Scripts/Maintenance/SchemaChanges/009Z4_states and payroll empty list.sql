@@ -149,7 +149,7 @@
 		"abbreviation" : "NE",
 		"taxesEnabled": false
 	}
-	,{mar
+	,{
 		"stateId" : 27,
 		"stateName" : "Nevada",
 		"abbreviation" : "NV",
@@ -286,7 +286,8 @@
 		"stateName" : "Wyoming",
 		"abbreviation" : "WY",
 		"taxesEnabled": false
-	},{
+	}
+	,{
 		"stateId" : 51,
 		"stateName" : "Alabama",
 		"abbreviation" : "AL",

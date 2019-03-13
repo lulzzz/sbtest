@@ -90,7 +90,7 @@ namespace HrMaxx.Infrastructure.Helpers
 
 		public static string GetCommaSeperatedList<T>(List<T> list )
 		{
-			var str = list.Aggregate(string.Empty, (current, m) => current + Convert.ToInt16(m) + ",");
+			var str = list.Aggregate(string.Empty, (current, m) => current + Convert.ToInt32(m) + ",");
 			return str.Substring(0, str.Length - 1);
 		}
 

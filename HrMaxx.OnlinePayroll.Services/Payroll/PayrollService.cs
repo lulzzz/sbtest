@@ -376,11 +376,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, Models.Payroll payroll, Accumulation employeeAccumulation)
 		{
 			var result = new List<PayTypeAccumulation>();
-			
 
-			
-			
-			foreach (var payType in payroll.Company.AccumulatedPayTypes)	
+			foreach (var payType in payroll.Company.AccumulatedPayTypes.Where(at => !at.IsEmployeeSpecific || (paycheck.Employee.PayTypeAccruals != null && paycheck.Employee.PayTypeAccruals.Any(epta=>epta==at.PayType.Id))))	
 			{
 				var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, payType);
 				var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);
@@ -441,7 +438,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
 						: (decimal) 0;
 					var accumulationValue = (decimal) 0;
-					if ((ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
+					if (payType.AnnualLimit > 0 && (ytdAccumulation + thisCheckValue) >= payType.AnnualLimit)
 						accumulationValue = Math.Max(payType.AnnualLimit - ytdAccumulation,0);
 					else
 					{
@@ -2716,18 +2713,24 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("prwytd-1", prwytd.ToString("C")));
 			}
-
 			if (payCheck.Accumulations.Any())
 			{
-				var scl = payCheck.Accumulations.First();
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype", string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.Used.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-1", scl.AccumulatedValue.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-1", scl.YTDUsed.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-1", scl.CarryOver.ToString()));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-1", scl.Available.ToString()));
+				var accumulationCounter = 1;
+				payCheck.Accumulations.ForEach(scl =>
+				{
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype-" + accumulationCounter, string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-" + accumulationCounter, scl.Used.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-" + accumulationCounter, scl.AccumulatedValue.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-" + accumulationCounter, scl.YTDFiscal.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclused-" + accumulationCounter, scl.YTDUsed.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclco-" + accumulationCounter, scl.CarryOver.ToString()));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclnet-" + accumulationCounter, scl.Available.ToString()));
+					accumulationCounter++;
+				});
+
+
 			}
+			
 			return pdf;
 		}
 
@@ -3573,6 +3576,108 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		
+		}
+
+		public int FillPayCheckNormalized(Guid? companyId, Guid? payrollId)
+		{
+			try
+			{
+				var payChecks = _readerService.GetPayChecks(companyId:companyId, payrollId: payrollId);
+				var ptaccums = new List<PayCheckPayTypeAccumulation>();
+				var pttaxes = new List<PayCheckTax>();
+				var ptcomps = new List<PayCheckCompensation>();
+				var ptdeds = new List<PayCheckDeduction>();
+				var ptcodes = new List<PayCheckPayCode>();
+				var ptwcs = new List<PayCheckWorkerCompensation>();
+				payChecks.ForEach(pc => pc.Accumulations.ForEach(a =>
+				{
+					var ptaccum = new PayCheckPayTypeAccumulation
+					{
+						PayCheckId = pc.Id,
+						PayTypeId = a.PayType.PayType.Id,
+						FiscalEnd = a.FiscalEnd,
+						FiscalStart = a.FiscalStart,
+						AccumulatedValue = a.AccumulatedValue,
+						Used = a.Used,
+						CarryOver = a.CarryOver
+					};
+					ptaccums.Add(ptaccum);
+				}));
+				payChecks.ForEach(pc => pc.Taxes.ForEach(t =>
+				{
+					var pt = new PayCheckTax()
+					{
+						PayCheckId = pc.Id,
+						TaxId = t.Tax.Id,
+						TaxableWage = t.TaxableWage,
+						Amount = t.Amount
+					};
+					pttaxes.Add(pt);
+				}));
+				payChecks.ForEach(pc => pc.Compensations.ForEach(t =>
+				{
+					var pt = new PayCheckCompensation()
+					{
+						PayCheckId = pc.Id,
+						PayTypeId = t.PayType.Id,
+						Amount = t.Amount
+					};
+					ptcomps.Add(pt);
+				}));
+				payChecks.ForEach(pc => pc.Deductions.ForEach(t =>
+				{
+					var pt = new PayCheckDeduction()
+					{
+						PayCheckId = pc.Id,
+						EmployeeDeductionId = t.EmployeeDeduction.Id,
+						CompanyDeductionId = t.Deduction.Id,
+						EmployeeDeductionFlat = JsonConvert.SerializeObject(t.EmployeeDeduction),
+						Method = t.Method,
+						Rate = t.Rate,
+						AnnualMax = t.AnnualMax,
+						Amount = t.Amount,
+						Wage = t.Wage
+					};
+					ptdeds.Add(pt);
+				}));
+				payChecks.ForEach(pc => pc.PayCodes.ForEach(t =>
+				{
+					var pt = new PayCheckPayCode()
+					{
+						PayCheckId = pc.Id,
+						PayCodeId = t.PayCode.Id,
+						PayCodeFlat = JsonConvert.SerializeObject(t.PayCode),
+						Amount = t.Amount,
+						Overtime = t.OvertimeAmount
+					};
+					ptcodes.Add(pt);
+				}));
+				payChecks.Where(pc => pc.WorkerCompensation != null && pc.WorkerCompensation.WorkerCompensation != null).ToList().ForEach(pc =>
+				{
+					var pt = new PayCheckWorkerCompensation()
+					{
+						PayCheckId = pc.Id,
+						WorkerCompensationId = pc.WorkerCompensation.WorkerCompensation.Id,
+						WorkerCompensationFlat = JsonConvert.SerializeObject(pc.WorkerCompensation.WorkerCompensation),
+						Amount = pc.WorkerCompensation.Amount,
+						Wage = pc.WorkerCompensation.Wage
+					};
+					ptwcs.Add(pt);
+				});
+				SavePayCheckWorkerCompensation(ptwcs);
+				SavePayCheckPayCodes(ptcodes);
+				SavePayCheckDeductions(ptdeds);
+				SavePayCheckCompensations(ptcomps);
+				SavePayCheckTaxes(pttaxes);
+				SavePayCheckPayTypeAccumulations(ptaccums);
+				return payChecks.Count;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Normalize PayChecks for " + companyId + " payrollId " + payrollId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 		}
 
 		public void UpdatePayCheckAccumulation(int payCheckId, PayTypeAccumulation accumulation, string user, string userId)

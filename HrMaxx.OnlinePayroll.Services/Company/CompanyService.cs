@@ -157,7 +157,8 @@ namespace HrMaxx.OnlinePayroll.Services
 					
 					txn.Complete();
 
-					if (comp != null && savedcompany.Contract.InvoiceSetup.SalesRep != null)
+					if (comp != null && savedcompany.Contract.ContractOption==ContractOption.PostPaid && savedcompany.Contract.BillingOption==BillingOptions.Invoice 
+						&& savedcompany.Contract.InvoiceSetup.SalesRep != null)
 					{
 						Bus.Publish<CompanySalesRepChangeEvent>(new CompanySalesRepChangeEvent
 						{

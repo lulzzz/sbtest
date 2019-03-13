@@ -9,7 +9,7 @@
 		</div>
 		<div class="panel-body">
 			<div class="row">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="true" />
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
 			</div>
 			<div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.workerCompensations.length===0" class="table table-bordered">
 				No worker compensations found

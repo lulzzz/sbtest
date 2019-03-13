@@ -133,6 +133,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string SecurityCode { get; set; }
 		[Required]
 		public AddressResource BillingAddress { get; set; }
+
+		public int CardTypeInt { get { return string.IsNullOrWhiteSpace(CardType) ? 0 : Convert.ToInt32(CardType); } }
 	}
 
 	public class CompanyWorkerCompensationResource 
@@ -178,6 +180,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal AnnualLimit { get; set; }
 		public bool CompanyManaged { get; set; }
 		public bool IsLumpSum { get; set; }
+		public bool IsEmployeeSpecific { get; set; }
 	}
 
 	public class CompanyTaxStateResource

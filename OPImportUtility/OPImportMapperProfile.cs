@@ -12,6 +12,7 @@ using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using Magnum;
+using Magnum.Extensions;
 
 namespace OPImportUtility
 {
@@ -134,8 +135,8 @@ namespace OPImportUtility
 				.ForMember(dest => dest.IsAgency, opt => opt.MapFrom(src => false))
 				.ForMember(dest => dest.Type1099, opt => opt.MapFrom(src=>string.IsNullOrWhiteSpace(src.Type1099) ? F1099Type.NA : (F1099Type)HrMaaxxSecurity.GetEnumFromDbName<F1099Type>(src.Type1099.Replace("-", " "))))
 				.ForMember(dest => dest.SubType1099, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.SubType1099) ? F1099SubType.NA : (F1099SubType)HrMaaxxSecurity.GetEnumFromDbName<F1099SubType>(src.SubType1099.Replace("-", " "))))
-				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Decrypt(src.IndividualSSN) : string.Empty))
-				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN) : string.Empty))
+				.ForMember(dest => dest.IndividualSSN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.IndividualSSN) ? Crypto.Decrypt(src.IndividualSSN).Replace("-",string.Empty) : string.Empty))
+				.ForMember(dest => dest.BusinessFIN, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.BusinessFIN) ? Crypto.Decrypt(src.BusinessFIN).Replace("-", string.Empty) : string.Empty))
 				.ForMember(dest => dest.IsTaxDepartment, opt => opt.MapFrom(src => false))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => !src.LastUpdateDate.HasValue ? DateTime.Now : src.LastUpdateDate))
 				.ForMember(dest => dest.UserName, opt => opt.Ignore())
@@ -190,7 +191,40 @@ namespace OPImportUtility
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => new List<CompanyPayCode>()))
 				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src => src.W2Memo))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastUpdateDate));
+
+			CreateMap<Journal, HrMaxx.OnlinePayroll.Models.Journal>()
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src=>src.JournalID))
+				.ForMember(dest => dest.CompanyId, opt => opt.Ignore())
+				.ForMember(dest => dest.CompanyIntId, opt => opt.MapFrom(src=>src.CompanyId))
+				.ForMember(dest => dest.TransactionType, opt => opt.MapFrom(src=>src.TransactionType==1 ? TransactionType.Adjustment : src.TransactionType==2 ? TransactionType.Deposit : src.TransactionType==3 || src.TransactionType==5 ? TransactionType.RegularCheck : TransactionType.PayCheck ))
+				.ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src=>src.tmpTransactionNumber<1 ? EmployeePaymentMethod.DirectDebit : EmployeePaymentMethod.Check))
+				.ForMember(dest => dest.CheckNumber, opt => opt.MapFrom(src=>src.tmpTransactionNumber<1 ? -1 : src.tmpTransactionNumber))
+				.ForMember(dest => dest.PayrollPayCheckId, opt => opt.MapFrom(src=>src.PayrollID.HasValue? src.PayrollID : default(int?)))
+				.ForMember(dest => dest.EntityType, opt => opt.Ignore())
+				.ForMember(dest => dest.PayeeId, opt => opt.Ignore())
+				.ForMember(dest => dest.PayeeName, opt => opt.Ignore())
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src=>src.Amt))
+				.ForMember(dest => dest.Memo, opt => opt.MapFrom(src=>src.Memo))
+				.ForMember(dest => dest.IsDebit, opt => opt.MapFrom(src=>src.IsDecrease))
+				.ForMember(dest => dest.IsVoid, opt => opt.MapFrom(src=>src.Status.Equals("Void")))
+				.ForMember(dest => dest.MainAccountId, opt => opt.MapFrom(src=>src.MainCOAID))
+				.ForMember(dest => dest.TransactionDate, opt => opt.MapFrom(src=>src.TransactionDate))
+				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src=>src.LastUpdateDate))
+				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src=>src.LastUpdateBy))
+				.ForMember(dest => dest.JournalDetails, opt => opt.MapFrom(src=>new List<HrMaxx.OnlinePayroll.Models.JournalDetail>()))
+				.ForMember(dest => dest.DocumentId, opt => opt.Ignore())
+				.ForMember(dest => dest.PEOASOCoCheck, opt => opt.MapFrom(src=>false))
+				.ForMember(dest => dest.OriginalCheckNumber, opt => opt.Ignore())
+				.ForMember(dest => dest.OriginalDate, opt => opt.MapFrom(src=>src.TransactionDate))
+				.ForMember(dest => dest.IsReIssued, opt => opt.MapFrom(src=>false))
+				.ForMember(dest => dest.ReIssuedDate, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollId, opt => opt.Ignore())
+				.ForMember(dest => dest.IsCleared, opt => opt.Ignore())
+				.ForMember(dest => dest.ClearedBy, opt => opt.Ignore())
+				.ForMember(dest => dest.ClearedOn, opt => opt.Ignore());
+
 				
+
 
 
 

@@ -5,10 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
+using Newtonsoft.Json;
 using Host = HrMaxx.OnlinePayroll.Models.DataModel.Host;
+using MasterExtract = HrMaxx.OnlinePayroll.Models.MasterExtract;
 using VendorCustomer = HrMaxx.OnlinePayroll.Models.DataModel.VendorCustomer;
 
 namespace OPImportUtility
@@ -48,10 +51,22 @@ namespace OPImportUtility
 			                         "insert into EstimatedDeductionsTable(PayrollPeriodId, NoOfAllowances, Amount, year)" +
 			                         "select PayrollPeriodId, NoOfAllowances, Amount, year(startdate) year from OnlinePayroll.dbo.ExemptionAllowanceTable order by year, payrollperiodid, noofallowances, amount;";
 
+			const string agencies = "set identity_insert VendorCustomer On;" +
+															"insert into VendorCustomer(Id, CompanyId, Name, StatusId, AccountNo, IsVendor, IsVendor1099, Contact, Note, Type1099, SubType1099, IdentifierType, IndividualSSN, BusinessFIN, LastModified, LastModifiedBy, IsAgency, IsTaxDepartment, VendorCustomerIntId) " +
+															"select Id, CompanyId, Name, StatusId, AccountNo, IsVendor, IsVendor1099, Contact, Note, Type1099, SubType1099, IdentifierType, IndividualSSN, BusinessFIN, LastModified, LastModifiedBy, IsAgency, IsTaxDepartment, VendorCustomerIntId from Paxol.dbo.VendorCustomer where vendorcustomerintid<3;" +
+															"set identity_insert VendorCustomer On;";
+
+			
+
 			const string userstuff =
 				"insert into aspnetroles select * from paxol.dbo.AspNetRoles;insert into aspnetusers select * from Paxol.dbo.AspNetUsers where username='sherjeel';insert into AspNetUserRoles select * from Paxol.dbo.AspNetUserRoles where USERID=(select Id from Paxol.dbo.AspNetUsers where username='sherjeel');insert into AspNetUserClaims(userid, claimtype, claimvalue) select userid, claimtype, claimvalue from paxol.dbo.AspNetUserClaims where userid=(select Id from paxol.dbo.AspNetUsers where username='sherjeel')";
+
+			const string config = "delete from ApplicationConfiguration;set identity_insert ApplicationConfiguration On;insert into ApplicationConfiguration (Id, config, RootHostId) select * from paxol.dbo.ApplicationConfiguration; set identity_insert ApplicationConfiguration Off;";
 			using (var con = GetConnection())
 			{
+				con.Execute(userstuff);
+				con.Execute(agencies);
+				con.Execute(config);
 				con.Execute(taxyearrate);
 				con.Execute(fit);
 				con.Execute(fitwith);
@@ -60,7 +75,7 @@ namespace OPImportUtility
 				con.Execute(stdded);
 				con.Execute(estded);
 				con.Execute(exmpallow);
-				con.Execute(userstuff);
+			
 			}
 		}
 
@@ -115,51 +130,54 @@ namespace OPImportUtility
 			}
 		}
 
-		public void SaveCompanyAssociatedData()
+		public void SaveCompanyAssociatedData(int companyId)
 		{
 			const string taxrates =
-				"delete from CompanyTaxRate; insert into CompanyTaxRate(CompanyId, TaxId, TaxYear, Rate) select (select Id from company where companyintid=CompanyId), (select Id from Tax where Code=Taxcode collate Latin1_General_CI_AI), year(startdate), taxrate from OnlinePayroll.dbo.CompanyTaxRates;";
+				"delete from CompanyTaxRate where CompanyId=(select Id from company where companyintid=@CompanyId); " +
+				"insert into CompanyTaxRate(CompanyId, TaxId, TaxYear, Rate) select (select Id from company where companyintid=@CompanyId), (select Id from Tax where Code=Taxcode collate Latin1_General_CI_AI), year(startdate), taxrate from OnlinePayroll.dbo.CompanyTaxRates where CompanyId=@CompanyId;";
 			const string paytypes =
-				"delete from CompanyAccumlatedPayType; set identity_insert CompanyAccumlatedPayType On;insert into CompanyAccumlatedPayType(Id, PayTypeId, CompanyId, RatePerHour, AnnualLimit, CompanyManaged, IsLumpSum) select PayTypeID, 6, (select Id from company where companyintid=CompanyId), PayTypeRate, PayTypeLimit, 0, 0 from OnlinePayroll.dbo.CompanyPayType;set identity_insert CompanyAccumlatedPayType Off;";
+				"delete from CompanyAccumlatedPayType where CompanyId=(select Id from company where companyintid=@CompanyId); set identity_insert CompanyAccumlatedPayType On;insert into CompanyAccumlatedPayType(Id, PayTypeId, CompanyId, RatePerHour, AnnualLimit, CompanyManaged, IsLumpSum, IsEmployeeSpecific) select PayTypeID, 6, (select Id from company where companyintid=@CompanyId), PayTypeRate, PayTypeLimit, 0, 0, 0 from OnlinePayroll.dbo.CompanyPayType where CompanyId=@CompanyId;set identity_insert CompanyAccumlatedPayType Off;";
 			const string deductions =
-				"delete from CompanyDeduction;" +
+				"delete from CompanyDeduction where CompanyId=(select Id from company where companyintid=@CompanyId);" +
 				"set identity_insert CompanyDeduction On;" +
 				"insert into CompanyDeduction (Id, CompanyId, TypeId, Name, Description, AnnualMax, FloorPerCheck, ApplyInvoiceCredit) " +
-				"select DeductionId, (select Id from company where companyintid=CompanyId), " +
-				"(select Id from DeductionType where Name=(select replace(DeductionType, 'Wage Advanced Repay','Wage Advance Repay') from OnlinePayroll.dbo.Deduction_Type where Id=DeductionTypeID) collate Latin1_General_CI_AI), " +
+				"select DeductionId, (select Id from company where companyintid=@CompanyId), " +
+				"(select Id from DeductionType where Name=(select replace(DeductionType, 'Wage Advanced Repay','Wage Advance Repay') " +
+				"from OnlinePayroll.dbo.Deduction_Type where Id=DeductionTypeID) collate Latin1_General_CI_AI), " +
 				"DeductionName, DeductionDescription, AnnualMaxAmt, null, 0 " +
-				"from OnlinePayroll.dbo.Deduction_Company;" +
+				"from OnlinePayroll.dbo.Deduction_Company where CompanyID=@CompanyId;" +
 				"set identity_insert CompanyDeduction Off;";
-			const string wcs = "delete from CompanyWorkerCompensation;" +
+			const string wcs = "delete from CompanyWorkerCompensation where CompanyId=(select Id from company where companyintid=@CompanyId);" +
 			                   "insert into CompanyWorkerCompensation(CompanyId, Code, Description, Rate, MinGrossWage) " +
-			                   "select (select Id from company where companyintid=CompanyId), " +
+			                   "select (select Id from company where companyintid=@CompanyId), " +
 			                   "case when WCCode<2 then 1 else WCCode end, WCDescription, WCRate, null " +
-			                   "from OnlinePayroll.dbo.WorkersComp_Company";
-			const string pcs = "delete from CompanyPayCode;" +
+			                   "from OnlinePayroll.dbo.WorkersComp_Company " +
+			                   "where CompanyID=@CompanyId";
+			const string pcs = "delete from CompanyPayCode where CompanyId=(select Id from company where companyintid=@CompanyId);" +
 			                   "insert into CompanyPayCode(CompanyId, Code, Description, HourlyRate) " +
-												 "select (select Id from company where companyintid=c.CompanyId), format(ROW_NUMBER() OVER(Partition by c.CompanyId ORDER BY ep.PayRateDescription),'00##') AS Code, ep.PayRateDescription, ep.PayRateAmount " +
+												 "select (select Id from company where companyintid=@CompanyId), format(ROW_NUMBER() OVER(Partition by c.CompanyId ORDER BY ep.PayRateDescription),'00##') AS Code, ep.PayRateDescription, ep.PayRateAmount " +
 												 "from OnlinePayroll.dbo.Company c, " +
 												 "(select distinct e.CompanyID,epr.PayRateDescription, epr.PayRateAmount from OnlinePayroll.dbo.employee e, OnlinePayroll.dbo.EmployeePayRates epr " +
 			                   "where e.EmployeeID=epr.EmployeeId) ep " +
-			                   "where c.Companyid=ep.CompanyID";
+			                   "where c.Companyid=ep.CompanyID and c.CompanyId=@CompanyId";
 			using (var con = GetConnection())
 			{
 
-				con.Execute(taxrates);
-				con.Execute(paytypes);
-				con.Execute(deductions);
-				con.Execute(wcs);
-				con.Execute(pcs);
+				con.Execute(taxrates, new {CompanyId=companyId});
+				con.Execute(paytypes, new { CompanyId = companyId });
+				con.Execute(deductions, new { CompanyId = companyId });
+				con.Execute(wcs, new { CompanyId = companyId });
+				con.Execute(pcs, new { CompanyId = companyId });
 
 			}
 		}
 
-		public void ExecuteQuery(string sql)
+		public void ExecuteQuery(string sql, object unknown)
 		{
 			using (var con = GetConnection())
 			{
 
-				con.Execute(sql);
+				con.Execute(sql, unknown);
 				
 			}
 		}
@@ -193,30 +211,95 @@ namespace OPImportUtility
 			}
 		}
 
-		public void SaveEmployees(List<HrMaxx.OnlinePayroll.Models.DataModel.Employee> emplList)
+		public void SaveEmployees(List<HrMaxx.OnlinePayroll.Models.DataModel.Employee> emplList, int companyId)
 		{
 			const string sql = "set identity_insert Employee On; " +
 												 "insert into Employee(Id, CompanyId, StatusId, FirstName, LastName, MiddleInitial, Contact, Gender, SSN, BirthDate, HireDate, Department, EmployeeNo, Memo, PayrollSchedule, PayType, Rate, PayCodes, Compensations, PaymentMethod, DirectDebitAuthorized, TaxCategory, FederalStatus, FederalExemptions, FederalAdditionalAmount, State, LastModified, LastModifiedBy, LastPayrollDate, WorkerCompensationId, CompanyEmployeeNo, Notes, SickLeaveHireDate, CarryOver, EmployeeIntId)" +
 												 "values(@Id, @CompanyId, @StatusId, @FirstName, @LastName, @MiddleInitial, @Contact, @Gender, @SSN, @BirthDate, @HireDate, @Department, @EmployeeNo, @Memo, @PayrollSchedule, @PayType, @Rate, @PayCodes, @Compensations, @PaymentMethod, @DirectDebitAuthorized, @TaxCategory, @FederalStatus, @FederalExemptions, @FederalAdditionalAmount, @State, @LastModified, @LastModifiedBy, @LastPayrollDate, @WorkerCompensationId, @CompanyEmployeeNo, @Notes, @SickLeaveHireDate, @CarryOver, @EmployeeIntId);" +
 			                   "set identity_insert Employee Off; ";
 			const string dedsql = "insert into EmployeeDeduction(EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId) " +
-			                      "select (select Id from Employee where EmployeeIntId=EmployeeId), DedutionMethod,DeductionAmount,AnnualMaxAmt, " +
-			                      "DeductionID from OnlinePayroll.dbo.Employee_Deduction where DeductionID>0;";
+			                      "select (select Id from Employee where EmployeeIntId=ed.EmployeeId), ed.DedutionMethod,ed.DeductionAmount,ed.AnnualMaxAmt, " +
+														"DeductionID from OnlinePayroll.dbo.Employee_Deduction ed, " +
+			                      "OnlinePayroll.dbo.Employee e where ed.EmployeeId=e.EmployeeId and ed.DeductionID>0 and " +
+			                      "e.CompanyId=@CompanyId;";
 
 			const string banksql = "set identity_insert BankAccount On; " +
 															 "insert into BankAccount(Id, EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId) " +
 															 "select AccountId, 3, (select Id from Employee where EmployeeIntId=EntityID), " +
 															 "case when AccountType='Checking' then 1 else 2 end, isnull(BankName,''), isnull(BankName,''), AccountNumber, RoutingNumber, ba.LastUpdateDate, ba.LastUpdateBy,null " +
-															 "from OnlinePayroll.dbo.BankAccount ba " +
-															 "where EntityTypeID=3;" +
+															 "from OnlinePayroll.dbo.BankAccount ba, OnlinePayroll.dbo.employee e " +
+															 "where EntityTypeID=3 and ba.EntityId=e.EmployeeId and e.CompanyId=@CompanyId and ba.BankName<>'';" +
 															 "set identity_insert BankAccount Off;" +
-															 "insert into EmployeeBankAccount(EmployeeId, BankAccountId, Percentage) select EntityId, Id, 100.00 from BankAccount where EntityTypeId=3;";
+															 "insert into EmployeeBankAccount(EmployeeId, BankAccountId, Percentage) " +
+			                       "select EntityId, Id, 100.00 from BankAccount where EntityTypeId=3 and EntityId in (select e.Id from Employee e, Company c where e.CompanyId=c.Id and c.CompanyIntId=@CompanyId);";
 			using (var con = GetConnection())
 			{
 				con.Execute(sql, emplList);
-				con.Execute(dedsql);
-				con.Execute(banksql);
+				con.Execute(dedsql, new { CompanyId=companyId});
+				con.Execute(banksql, new { CompanyId = companyId });
 			}
+		}
+
+		public void SavePayrolls(List<HrMaxx.OnlinePayroll.Models.DataModel.Payroll> payrolls)
+		{
+			const string payrollsql = "insert into Payroll( Id ,CompanyId,StartDate,EndDate,PayDay,StartingCheckNumber,Status,Company,LastModified,LastModifiedBy,InvoiceId,PEOASOCoCheck,Notes,TaxPayDay,IsHistory,CopiedFrom,MovedFrom,IsPrinted,IsVoid,HostCompanyId,CompanyIntId,IsQueued,QueuedTime,ConfirmedTime,IsConfirmFailed,InvoiceSpecialRequest)" +
+																"values( @Id, @CompanyId, @StartDate, @EndDate, @PayDay, @StartingCheckNumber, @Status, @Company, @LastModified, @LastModifiedBy, @InvoiceId, @PEOASOCoCheck, @Notes, @TaxPayDay, @IsHistory, @CopiedFrom, @MovedFrom, @IsPrinted, @IsVoid, @HostCompanyId, @CompanyIntId, @IsQueued, @QueuedTime, @ConfirmedTime, @IsConfirmFailed, @InvoiceSpecialRequest);";
+			const string paychecksql = "set identity_insert dbo.PayrollPayCheck On;" +
+																 "insert into PayrollPayCheck (Id, PayrollId, CompanyId, EmployeeId, Employee, GrossWage, NetWage, WCAmount, Compensations, Deductions, Taxes, Accumulations, Salary, YTDSalary, PayCodes, DeductionAmount, EmployeeTaxes, EmployerTaxes, Status, IsVoid, PayrmentMethod, PrintStatus, StartDate, EndDate, PayDay, CheckNumber, PaymentMethod, Notes, YTDGrossWage, YTDNetWage, LastModified, LastModifiedBy, WorkerCompensation, PEOASOCoCheck, InvoiceId, VoidedOn, CreditInvoiceId, TaxPayDay, IsHistory, IsReIssued, OriginalCheckNumber, ReIssuedDate, CompanyIntId)" +
+																 "values(@Id, @PayrollId, @CompanyId, @EmployeeId, @Employee, @GrossWage, @NetWage, @WCAmount, @Compensations, @Deductions, @Taxes, @Accumulations, @Salary, @YTDSalary, @PayCodes, @DeductionAmount, @EmployeeTaxes, @EmployerTaxes, @Status, @IsVoid, @PayrmentMethod, @PrintStatus, @StartDate, @EndDate, @PayDay, @CheckNumber, @PaymentMethod, @Notes, @YTDGrossWage, @YTDNetWage, @LastModified, @LastModifiedBy, @WorkerCompensation, @PEOASOCoCheck, @InvoiceId, @VoidedOn, @CreditInvoiceId, @TaxPayDay, @IsHistory, @IsReIssued, @OriginalCheckNumber, @ReIssuedDate, @CompanyIntId);" +
+			                           "set identity_insert dbo.PayrollPayCheck Off;";
+			payrolls.ForEach(p=>p.PayrollPayChecks.ToList().ForEach(pc =>
+			{
+				pc.PayrollId = p.Id;
+				pc.CompanyId = p.CompanyId;
+			}));
+			using (var conn = GetConnection())
+			{
+				conn.Execute(payrollsql, payrolls);
+				conn.Execute(paychecksql, payrolls.SelectMany(p => p.PayrollPayChecks).ToList());
+			}
+
+		}
+
+		public void SaveJournals(List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals)
+		{
+			const string payrolljournal = "set identity_insert Journal On;" +
+																		"insert into Journal (Id, CompanyId, TransactionType, PaymentMethod, CheckNumber, PayrollPayCheckId, EntityType, PayeeId, PayeeName, Amount, Memo, IsDebit, IsVoid, MainAccountId, TransactionDate, LastModified, LastModifiedBy, JournalDetails, DocumentId, PEOASOCoCheck, OriginalDate, IsReIssued, OriginalCheckNumber, ReIssuedDate, PayrollId, CompanyIntId, IsCleared, ClearedBy, ClearedOn)" +
+																		"values(@Id, @CompanyId, @TransactionType, @PaymentMethod, @CheckNumber, @PayrollPayCheckId, @EntityType, @PayeeId, @PayeeName, @Amount, @Memo, @IsDebit, @IsVoid, @MainAccountId, @TransactionDate, @LastModified, @LastModifiedBy, @JournalDetails, @DocumentId, @PEOASOCoCheck, @OriginalDate, @IsReIssued, @OriginalCheckNumber, @ReIssuedDate, @PayrollId, @CompanyIntId, @IsCleared, @ClearedBy, @ClearedOn)" +
+			                              "set identity_insert Journal Off;";
+			const string checkbookjournal = "set identity_insert CheckbookJournal On;" +
+																		"insert into CheckbookJournal (Id, CompanyId, TransactionType, PaymentMethod, CheckNumber, PayrollPayCheckId, EntityType, PayeeId, PayeeName, Amount, Memo, IsDebit, IsVoid, MainAccountId, TransactionDate, LastModified, LastModifiedBy, JournalDetails, DocumentId, PEOASOCoCheck, OriginalDate, IsReIssued, OriginalCheckNumber, ReIssuedDate, PayrollId, CompanyIntId, IsCleared, ClearedBy, ClearedOn)" +
+																		"values(@Id, @CompanyId, @TransactionType, @PaymentMethod, @CheckNumber, @PayrollPayCheckId, @EntityType, @PayeeId, @PayeeName, @Amount, @Memo, @IsDebit, @IsVoid, @MainAccountId, @TransactionDate, @LastModified, @LastModifiedBy, @JournalDetails, @DocumentId, @PEOASOCoCheck, @OriginalDate, @IsReIssued, @OriginalCheckNumber, @ReIssuedDate, @PayrollId, @CompanyIntId, @IsCleared, @ClearedBy, @ClearedOn)" +
+																		"set identity_insert CheckbookJournal Off;";
+			using (var con = GetConnection())
+			{
+				con.Execute(payrolljournal, journals.Where(j => j.TransactionType == 1 && j.PayrollId.HasValue));
+				con.Execute(checkbookjournal, journals.Where(j => j.TransactionType == 2 && j.PayeeId!=Guid.Empty ));
+				con.Execute(checkbookjournal, journals.Where(j => j.TransactionType >2));
+			}
+		}
+
+		public void AddExtract(MasterExtract extract, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals )
+		{
+			ExecuteQuery("set identity_insert MasterExtracts On;insert into MasterExtracts(Id, Extract, Startdate, Enddate, ExtractName, Isfederal, depositdate, Journals, lastmodified, lastmodifiedby) values(@Id,'', @StartDate, @EndDate, @ExtractName, @IsFederal, @DepositDate, @Journals, @LastModified, @LastModifiedBy);set identity_insert MasterExtracts Off;", new { Id = extract.Id, StartDate = extract.StartDate, EndDate = extract.EndDate, DepositDate = extract.DepositDate, ExtractName = extract.ExtractName, LastModified = extract.LastModified, LastModifiedBy = extract.LastModifiedBy, IsFederal = extract.IsFederal, Journals = JsonConvert.SerializeObject(extract.Journals) });
+			extract.Journals.ForEach(j => ExecuteQuery("insert into MasterExtractJournal(MasterExtractId, JournalId) values(@Id, @JournalId)", new { Id = extract.Id, JournalId = j }));
+			//payCheckList.ForEach(p => ExecuteQuery("insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type) values(@Id, @MId, @ExtractName, 1)", new { Id = p, MId = extract.Id, ExtractName = extract.ExtractName }));
+			extract.Journals.ForEach(j =>
+			{
+				var j1 = journals.First(j2 => j2.Id == j);
+				var query =
+					string.Format(
+						"insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type)" +
+						"select pc.Id, {4}, '{5}', 1 from Payroll p, PayrollPayCheck pc " +
+						"where pc.payrollid=p.id " +
+						"and (pc.IsVoid=0 or (pc.isvoid=1 and pc.VoidedOn > '{0}')) " +
+						"and p.LastModified<'{0}' and pc.PayDay between '{1}' and '{2}' and pc.CompanyIntId={3}" +
+						"and not exists (select 'x' from PayCheckExtract where PayrollPayCheckId=pc.Id and Extract='{5}' and Type=1)",
+						j1.LastModified.ToString("MM/dd/yyyy"), extract.StartDate.ToString("MM/dd/yyyy"), extract.EndDate.ToString("MM/dd/yyyy"),
+						j1.CompanyIntId, extract.Id, extract.ExtractName);
+				ExecuteQuery(query, new {});
+			});
+
 		}
 	}
 }

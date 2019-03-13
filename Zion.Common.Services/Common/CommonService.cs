@@ -172,8 +172,7 @@ namespace HrMaxx.Common.Services.Common
 				var entity = GetRelatedEntities<T>(sourceTypeId, targetTypeId, sourceId).FirstOrDefault();
 				if (entity == null)
 				{
-					var temp = System.Activator.CreateInstance<T>();
-					return temp;
+					return default(T);
 				}
 				return entity;
 

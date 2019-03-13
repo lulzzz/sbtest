@@ -232,7 +232,10 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 
 						return false;
 					}
-					
+					$scope.showAccruals = function() {
+						var exists = $filter('filter')($scope.mainData.selectedCompany.accumulatedPayTypes, { isEmployeeSpecific: true });
+						return exists.length > 0;
+					}
 					$scope.payCodeEvents = {
 						onItemSelect: function (item) {
 							$scope.selected.payCodes.push($filter('filter')($scope.mainData.selectedCompany.payCodes, { id: item.id })[0]);
@@ -242,6 +245,17 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						},
 						onDeselectAll: function () {
 							$scope.selected.payCodes = [];
+						}
+					};
+					$scope.accrualEvents = {
+						onItemSelect: function (item) {
+							$scope.selected.payTypeAccruals.push(item.id);
+						},
+						onItemDeselect: function (item) {
+							$scope.selected.payTypeAccruals.splice($scope.selected.payTypeAccruals.indexOf(item.id), 1);
+						},
+						onDeselectAll: function () {
+							$scope.selected.payTypeAccruals = [];
 						}
 					};
 					$scope.updateDeductionList = function(list) {
@@ -291,6 +305,9 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 									hourlyRate: $scope.selected.rate
 								});
 							}
+						}
+						if ($scope.selected.paymentMethod === 1) {
+							$scope.selected.bankAccounts = [];
 						}
 						if ($scope.selected.sickLeaveHireDate !== $scope.original.sickLeaveHireDate) {
 							$scope.$parent.$parent.$parent.$parent.confirmDialog('Changing sick leave hire date would require you to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
@@ -374,10 +391,16 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						if ($scope.mainData.selectedCompany) {
 							dataSvc.payCodes = $scope.mainData.selectedCompany.payCodes;
 							$scope.selectedPayCodes = [];
+							$scope.selectedAccruals = [];
 							$scope.selectedPayTypes = [];
 							dataSvc.companyStates = [];
+							dataSvc.accrualPayTypes = [];
 							$.each($scope.mainData.selectedCompany.states, function (index, st) {
 								dataSvc.companyStates.push(st.state);
+							});
+							$.each($scope.mainData.selectedCompany.accumulatedPayTypes, function (index, at) {
+								if (at.isEmployeeSpecific)
+									dataSvc.accrualPayTypes.push(at.payType);
 							});
 						}
 						
@@ -391,6 +414,10 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							$.each($scope.selected.payCodes, function (index, pc) {
 								if (pc.id > 0)
 									$scope.selectedPayCodes.push({ id: pc.id });
+							});
+							$.each($scope.selected.payTypeAccruals, function (index, ac) {
+								if (ac > 0)
+									$scope.selectedAccruals.push({ id: ac });
 							});
 							if ($scope.showControls) {
 								$timeout(function() {

@@ -175,6 +175,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal AnnualLimit { get; set; }
 		public bool CompanyManaged { get; set; }
 		public bool IsLumpSum { get; set; }
+		public bool IsEmployeeSpecific { get; set; }
 	}
 
 	public class CompanyTaxState

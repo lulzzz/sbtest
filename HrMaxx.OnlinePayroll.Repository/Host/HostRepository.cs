@@ -79,7 +79,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			}
 		}
 
-		public Models.Host GetHostByUrl(string url, Guid hostId)
+		public Models.Host GetHostByUrl(string url, Guid hostId, Guid? rootHostId)
 		{
 			var hosts = _dbContext.Hosts.ToList();
 			if (!hosts.Any())
@@ -94,7 +94,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 			{
 				var host = hosts.FirstOrDefault(h => h.Url.ToLower().Equals(url.ToLower()));
 				if (host == null)
-					host = hosts.First();
+					host = hosts.First(h=>h.Id==rootHostId);
 				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
 			}
 		}

@@ -786,11 +786,25 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				dbReport.Hosts.ForEach(c =>
 					{
 						var contact = new List<Contact>();
-						c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+						//c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+						var returnHost = returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id);
+						if (returnHost.Host.IsPeoHost && returnHost.HostCompany.FileUnderHost)
+						{
+							c.Contacts.Where(ct => ct.SourceEntityId == returnHost.Host.Id)
+								.ToList()
+								.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+						}
+						else
+						{
+							c.Contacts.Where(ct => ct.SourceEntityId == returnHost.HostCompany.Id)
+								.ToList()
+								.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+						}
+
 						var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
 						if (selcontact != null)
 						{
-							returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id).Contact = selcontact;
+							returnHost.Contact = selcontact;
 						}
 					});
 				return returnVal;
@@ -829,11 +843,25 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				dbReport.Hosts.ForEach(c =>
 				{
 					var contact = new List<Contact>();
-					c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					//c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					var returnHost = returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id);
+					if (returnHost.Host.IsPeoHost && returnHost.HostCompany.FileUnderHost)
+					{
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.Host.Id)
+							.ToList()
+							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					}
+					else
+					{
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.HostCompany.Id)
+							.ToList()
+							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					}
+
 					var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
 					if (selcontact != null)
 					{
-						returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id).Contact = selcontact;
+						returnHost.Contact = selcontact;
 					}
 				});
 				return returnVal;
@@ -924,14 +952,28 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractAccumulation", paramList);
 				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
-				dbReport.Hosts.OrderBy(h=>h.HostCompany.CompanyName).ToList().ForEach(c =>
+				dbReport.Hosts.ForEach(c =>
 				{
 					var contact = new List<Contact>();
-					c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					//c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					var returnHost = returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id);
+					if (returnHost.Host.IsPeoHost && returnHost.HostCompany.FileUnderHost)
+					{
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.Host.Id)
+							.ToList()
+							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					}
+					else
+					{
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.HostCompany.Id)
+							.ToList()
+							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					}
+
 					var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
 					if (selcontact != null)
 					{
-						returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id==c.HostCompany.Id).Contact = selcontact;
+						returnHost.Contact = selcontact;
 					}
 				});
 				return returnVal;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 
 namespace HrMaxx.Common.Models.Dtos
 {
@@ -17,6 +18,11 @@ namespace HrMaxx.Common.Models.Dtos
 		public string ZipExtension { get; set; }
 		public AddressType Type { get; set; }
 
+		public string StateCode
+		{
+			get { return ((States) StateId).GetHrMaxxName(); }
+			set { }
+		}
 		public string AddressLine2
 		{
 			get

@@ -270,6 +270,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.AnnualLimit = mappedwc.AnnualLimit;
 					wc.CompanyManaged = mappedwc.CompanyManaged;
 					wc.IsLumpSum = mappedwc.IsLumpSum;
+					wc.IsEmployeeSpecific = mappedwc.IsEmployeeSpecific;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -471,6 +472,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.CompanyEmployeeNo = me.CompanyEmployeeNo;
 				dbEmployee.Notes = me.Notes;
 				dbEmployee.StatusId = me.StatusId;
+				dbEmployee.PayTypeAccruals = me.PayTypeAccruals;
 
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)

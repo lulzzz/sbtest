@@ -1633,6 +1633,7 @@
     <Content Include="Views\Manage\News.cshtml" />
     <Content Include="HrMaxxWeb.nuspec" />
     <Content Include="Scripts\ng-table.min.js.map" />
+    <Content Include="Views\Shared\Welcome.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

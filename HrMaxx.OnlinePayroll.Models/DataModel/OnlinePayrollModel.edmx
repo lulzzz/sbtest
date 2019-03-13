@@ -182,6 +182,7 @@
           <Property Name="AnnualLimit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="CompanyManaged" Type="bit" Nullable="false" />
           <Property Name="IsLumpSum" Type="bit" Nullable="false" />
+          <Property Name="IsEmployeeSpecific" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyContract">
           <Key>
@@ -327,6 +328,7 @@
           <Property Name="SickLeaveHireDate" Type="datetime" />
           <Property Name="CarryOver" Type="decimal" Precision="18" Scale="2" />
           <Property Name="EmployeeIntId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayTypeAccruals" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -2102,6 +2104,7 @@
           <NavigationProperty Name="PayType" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_PayType" FromRole="CompanyAccumlatedPayType" ToRole="PayType" />
           <Property Name="CompanyManaged" Type="Boolean" Nullable="false" />
           <Property Name="IsLumpSum" Type="Boolean" Nullable="false" />
+          <Property Name="IsEmployeeSpecific" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyAccumlatedPayType_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2317,6 +2320,7 @@
           <Property Name="SickLeaveHireDate" Type="DateTime" Precision="3" />
           <Property Name="CarryOver" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="EmployeeIntId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayTypeAccruals" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -3311,6 +3315,7 @@
           <EntitySetMapping Name="CompanyAccumlatedPayTypes">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyAccumlatedPayType">
               <MappingFragment StoreEntitySet="CompanyAccumlatedPayType">
+                <ScalarProperty Name="IsEmployeeSpecific" ColumnName="IsEmployeeSpecific" />
                 <ScalarProperty Name="IsLumpSum" ColumnName="IsLumpSum" />
                 <ScalarProperty Name="CompanyManaged" ColumnName="CompanyManaged" />
                 <ScalarProperty Name="AnnualLimit" ColumnName="AnnualLimit" />
@@ -3402,6 +3407,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="PayTypeAccruals" ColumnName="PayTypeAccruals" />
                 <ScalarProperty Name="EmployeeIntId" ColumnName="EmployeeIntId" />
                 <ScalarProperty Name="CarryOver" ColumnName="CarryOver" />
                 <ScalarProperty Name="SickLeaveHireDate" ColumnName="SickLeaveHireDate" />

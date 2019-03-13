@@ -20,7 +20,7 @@
 		</div>
 		<div class="panel-body text">
 			<div class="row hidden-print">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="true" show-include-clients="showincludeclients" show-include-client-employees="showincludeclients" show-include-tax-delayed="true" />
+				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="true" show-include-clients="showincludeclients" show-include-client-employees="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
 			</div>
 			<div ng-show="data.response.employeeAccumulationList.length===0" class="table table-bordered">
 				No results found
@@ -180,7 +180,8 @@
 						<tr ng-repeat="pc in data.response.employeeAccumulationList">
 							<td>
 								<div id="pc.id" ng-model="pc" ng-include="'employee.html'" class="row"></div>
-								<!--<div class="row" ng-include="'paytype.html'" ng-repeat="pt in pc" id="pt.id"></div>-->
+								<br/>
+								<div class="row" ng-include="'paytype.html'" ng-repeat="pt in pc.accumulations" id="pt.id"></div>
 							</td>
 							<td colspan="2">
 								<div ng-model="pc" ng-include="'wages.html'" class="row"></div>

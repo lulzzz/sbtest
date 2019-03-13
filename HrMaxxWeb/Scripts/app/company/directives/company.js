@@ -112,6 +112,16 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						});
 						return stateAvailable;
 					}
+					$scope.isStateTaxAvailable = function (st) {
+						if (dataSvc.companyMetaData) {
+							var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
+							return cst.taxesEnabled;
+						} else {
+							return false;
+						}
+						
+
+					}
 					$scope.validateRoutingNumber = function (rtn) {
 						if (!rtn) {
 							return true;
@@ -306,22 +316,25 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							return false;
 						}
 							
-						if ($scope.selectedCompany.contract.billingOption !== 3)
-							$scope.selectedCompany.contract.invoiceSetup = null;
-						if ($scope.selectedCompany.contract.billingOption === 0 || $scope.selectedCompany.contract.billingOption === 3) {
-							$scope.selectedCompany.contract.creditCardDetails = null;
-							$scope.selectedCompany.contract.bankDetails = null;
+						//if ($scope.selectedCompany.contract.billingOption !== 3)
+						//	$scope.selectedCompany.contract.invoiceSetup = null;
+						//if ($scope.selectedCompany.contract.billingOption === 0 || $scope.selectedCompany.contract.billingOption === 3) {
+						//	$scope.selectedCompany.contract.creditCardDetails = null;
+						//	$scope.selectedCompany.contract.bankDetails = null;
+						//}
+						//else if ($scope.selectedCompany.contract.billingOption === 1) {
+						//	$scope.selectedCompany.contract.bankDetails = null;
+						//} else {
+						//	$scope.selectedCompany.contract.creditCardDetails = null;
+						//	if ($scope.selectedCompany.contract.bankDetails) {
+						//		$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
+						//		$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
+						//	}
+						//}
+						if ($scope.selectedCompany.contract.bankDetails) {
+							$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
+							$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
 						}
-						else if ($scope.selectedCompany.contract.billingOption === 1) {
-							$scope.selectedCompany.contract.bankDetails = null;
-						} else {
-							$scope.selectedCompany.contract.creditCardDetails = null;
-							if ($scope.selectedCompany.contract.bankDetails) {
-								$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
-								$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
-							}
-						}
-
 						var confirmMessage = "";
 						if ($scope.mainData.selectedHost.isPeoHost && ($scope.original.contract.invoiceSetup && !angular.equals($scope.original.contract.invoiceSetup, $scope.selectedCompany.contract.invoiceSetup))) {
 							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";
@@ -430,7 +443,8 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					
 					var init = function () {
-						$scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold = $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold ? $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold : 35;
+						if ($scope.selectedCompany.contract.contractOption === 2 && $scope.selectedCompany.contract.billingOption===3)
+							$scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold = $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold ? $scope.selectedCompany.contract.invoiceSetup.adminFeeThreshold : 35;
 						$scope.original = angular.copy($scope.selectedCompany);
 						companyRepository.getCompanyMetaData().then(function (data) {
 							dataSvc.companyMetaData = data;

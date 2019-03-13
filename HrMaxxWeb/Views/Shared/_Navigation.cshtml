@@ -83,7 +83,7 @@
 			}
 			@if (!CurrentUser.IsInRole(RoleTypeEnum.Company.GetDbName()) && !CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))
 			{
-				<li><a href="#!/" data-toggle="tooltip" data-placement="right" title="Dashboard"><i class="fa fa-bar-chart"></i><span>Dashboard</span></a></li>
+				<li><a href="#!/Admin/Dashboard" data-toggle="tooltip" data-placement="right" title="Dashboard"><i class="fa fa-bar-chart"></i><span>Dashboard</span></a></li>
 
 			}
 			@if (!CurrentUser.IsInRole(RoleTypeEnum.Employee.GetDbName()))

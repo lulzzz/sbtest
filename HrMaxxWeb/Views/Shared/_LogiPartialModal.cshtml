@@ -3,23 +3,15 @@
 @{
 	ViewBag.Title = "Log in";
 }
+
 <div class="login-cover">
 	<div class="login-cover-image"><img src="~/Content/images/bg-8.jpg" data-id="login-cover-image" alt="" /></div>
 	<div class="login-cover-bg"></div>
 </div>
+
 <div class="login login-v2" data-pageload-addclass="animated fadeIn" id="loginpartialmodal" ng-controller="loginCtrl">
 	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-	<!-- begin brand -->
-	<div class="login-header">
-		<div class="brand">
-			<span class="logo"></span> PAXOL
-			<small>Payroll made easier</small>
-		</div>
-		<div class="icon">
-			<i class="fa fa-sign-in"></i>
-		</div>
-	</div>
-	<!-- end brand -->
+	
 	<div class="login-content">
 		@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "loginFormSubmit", name = "loginFormSubmit" }))
 		{
@@ -57,3 +49,4 @@
 
 	</div>
 </div>
+

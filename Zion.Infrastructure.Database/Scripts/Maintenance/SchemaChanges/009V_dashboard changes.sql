@@ -578,3 +578,7 @@ GO
 
 Update EntityType set EntityTypeName='HostHomePage' where EntityTypeId=17;
 Update EntityType set EntityTypeName='Adjustment' where EntityTypeId=18;
+insert into paxolop.dbo.EntityType values ('Tax Payment');
+insert into paxolop.dbo.EntityType values('Payroll');
+insert into paxolop.dbo.EntityType values('Extract');
+insert into paxolop.dbo.EntityType values('Invoice Deposits');

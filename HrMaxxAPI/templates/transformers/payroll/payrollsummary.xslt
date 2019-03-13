@@ -285,41 +285,57 @@
 							
 							
 					</tr>
-					<xsl:if test="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6 and PayType/CompanyManaged='false']">
+					<xsl:if test="Accumulations/PayTypeAccumulation[PayType/CompanyManaged='false']">
 						<tr>
-							<td style="width:40%; text-align:left;">
-								<strong>SL:</strong>
-							</td>
-							<td style="width:60%; text-align:right;">
-								<xsl:value-of select="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/AccumulatedValue"/> (YTD: <xsl:value-of select="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDFiscal"/>)
+							<td>
+								<strong>Accruals:</strong>	
 							</td>
 						</tr>
-						<tr>
-							<td style="width:40%; text-align:left;">
-								<strong>SL Used:</strong>
-							</td>
-							<td style="width:60%; text-align:right;">
-								<xsl:value-of select="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/Used"/> (YTD: <xsl:value-of select="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDUsed"/>)
-							</td>
-						</tr>
-						<tr>
-							<td style="width:50%; text-align:left;">
-								<strong>SLL C/O</strong>
-							</td>
-							<td style="width:50%; text-align:right;">
-								<xsl:value-of select="Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/CarryOver"/>
-							</td>
-						</tr>
-						<tr>
-							<td style="width:50%; text-align:left;">
-								<strong>SL Avail</strong>
-							</td>
-							<td style="width:50%; text-align:right;">
-								<xsl:value-of select="format-number(Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDFiscal + Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/CarryOver - Accumulations/PayTypeAccumulation[PayType/PayType/Id=6]/YTDUsed, '###.00')"/>
-							</td>
-						</tr>
-
-					</xsl:if>
+						<xsl:for-each select="Accumulations/PayTypeAccumulation[PayType/CompanyManaged='false']">
+								<tr>
+										<td style="width:40%; text-align:left;">
+											<pre><u>
+												- <xsl:value-of select="PayType/PayType/Name"/>:
+											</u>
+											</pre>
+										</td>
+										<td style="width:0%; text-align:right;">
+											<xsl:value-of select="AccumulatedValue"/> (YTD: <xsl:value-of select="YTDFiscal"/>)
+										</td>
+									</tr>
+									<tr>
+										<td style="width:40%; text-align:left;">
+											<pre>
+												<pre>
+													<i>--Used:</i>
+												</pre>
+											</pre>
+											
+										</td>
+										<td style="width:60%; text-align:right;">
+											<xsl:value-of select="Used"/> (YTD: <xsl:value-of select="YTDUsed"/>)
+										</td>
+									</tr>
+									<tr>
+										<td style="width:50%; text-align:left;">
+											<i>--C/O</i>
+										</td>
+										<td style="width:50%; text-align:right;">
+											<xsl:value-of select="CarryOver"/>
+										</td>
+									</tr>
+									<tr>
+										<td style="width:50%; text-align:left;">
+											<i>--Avail</i>
+										</td>
+										<td style="width:50%; text-align:right;">
+											<xsl:value-of select="format-number(YTDFiscal + CarryOver - YTDUsed, '###.00')"/>
+										</td>
+									</tr>
+								
+						</xsl:for-each>
+					</xsl:if>	
+					
 				</table>
 			</td>
 			<td colspan="3" valign="top">

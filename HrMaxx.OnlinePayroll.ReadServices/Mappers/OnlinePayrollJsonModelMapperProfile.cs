@@ -198,6 +198,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)))
 				.ForMember(dest => dest.PayCodes, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<CompanyPayCode>>(src.PayCodes)))
 				.ForMember(dest => dest.Compensations, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<List<EmployeePayType>>(src.Compensations)))
+				.ForMember(dest => dest.PayTypeAccruals, opt => opt.MapFrom(src =>string.IsNullOrWhiteSpace(src.PayTypeAccruals) ? new List<int>() : JsonConvert.DeserializeObject<List<int>>(src.PayTypeAccruals)))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<EmployeeState>(src.State)))
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
 				.ForMember(dest => dest.SickLeaveHireDate, opt => opt.MapFrom(src=> src.SickLeaveHireDate.HasValue? src.SickLeaveHireDate.Value : src.HireDate))

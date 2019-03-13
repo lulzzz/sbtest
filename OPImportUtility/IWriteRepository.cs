@@ -15,11 +15,14 @@ namespace OPImportUtility
 		void SaveHosts(List<Host> dbhosts);
 		void SaveCompanies(List<HrMaxx.OnlinePayroll.Models.DataModel.Company> dbcompanies);
 		void SaveCompanyContract(Guid companyIntId, ContractDetails contract);
-		void SaveCompanyAssociatedData();
+		void SaveCompanyAssociatedData(int companyId);
 
-		void ExecuteQuery(string sql);
+		void ExecuteQuery(string sql, object unknown);
 		void SaveBanks(List<HrMaxx.OnlinePayroll.Models.DataModel.BankAccount> mbanks);
 		void SaveVendors(List<VendorCustomer> dbvendors);
-		void SaveEmployees(List<HrMaxx.OnlinePayroll.Models.DataModel.Employee> emplList);
+		void SaveEmployees(List<HrMaxx.OnlinePayroll.Models.DataModel.Employee> emplList, int companyId);
+		void SavePayrolls(List<HrMaxx.OnlinePayroll.Models.DataModel.Payroll> payrolls);
+		void SaveJournals(List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals);
+		void AddExtract(MasterExtract extract, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals );
 	}
 }

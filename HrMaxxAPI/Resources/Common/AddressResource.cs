@@ -27,5 +27,6 @@ namespace HrMaxxAPI.Resources.Common
 		[Required]
 		public Guid SourceId { get; set; }
 		public string AddressLine2 { get; set; }
+		
 	}
 }

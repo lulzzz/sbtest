@@ -66,6 +66,7 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<AddressResource, Address>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
+				.ForMember(dest => dest.StateCode, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
 
 			CreateMap<Address, AddressResource>()

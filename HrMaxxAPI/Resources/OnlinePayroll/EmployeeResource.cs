@@ -55,6 +55,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal Rate { get; set; }
 		public List<CompanyPayCodeResource> PayCodes { get; set; }
 		public List<EmployeePayTypeResource> Compensations { get; set; }
+		public List<int> PayTypeAccruals { get; set; } 
 		[Required]
 		public EmployeePaymentMethod PaymentMethod { get; set; }
 		
