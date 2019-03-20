@@ -10,7 +10,7 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/hostwelcome.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'commonRepository', '$q', 'EntityTypes', function ($scope, $element, $location, $filter, hostRepository, commonRepository, $q, EntityTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'commonRepository', '$q', 'EntityTypes', 'authService', function ($scope, $element, $location, $filter, hostRepository, commonRepository, $q, EntityTypes, authService) {
 				$scope.mainData.showFilterPanel = false;
 				$scope.hostId = null;
 				$scope.data = null;
@@ -35,6 +35,9 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 
 
 				};
+				$scope.getContentImage = function(path) {
+					return zionAPI.Web + path;
+				}
 				$scope.getStateCode = function() {
 					var countries = localStorageService.get('countries');
 					var country = $filter('filter')(countries, { countryId: $scope.hostaddress.countryId })[0];
@@ -53,7 +56,8 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 							$scope.data = angular.copy(data.homePage);
 							$scope.hostaddress = data.address;
 							$scope.hostId = data.hostId;
-							$scope.newsfeed = data.newsfeed;
+							if (!authService.isLoggedIn())
+								$scope.newsfeed = data.newsfeed;
 							localStorageService.set('hostId', $scope.hostId);
 							if ($scope.data) {
 								localStorageService.set('hostlogo', $scope.data.logo);
@@ -67,7 +71,8 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 							$scope.data = angular.copy(data.homePage);
 							$scope.hostaddress = data.address;
 							$scope.hostId = data.hostId;
-							$scope.newsfeed = data.newsfeed;
+							if (!authService.isLoggedIn())
+								$scope.newsfeed = data.newsfeed;
 							localStorageService.set('hostId', $scope.hostId);
 							if ($scope.data) {
 								localStorageService.set('hostlogo', $scope.data.logo);
@@ -76,7 +81,14 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 							addAlert('error getting host home page details', 'danger');
 						});
 					}
-					
+					if (authService.isLoggedIn()) {
+						commonRepository.getUserNews().then(function(data) {
+							$scope.newsfeed = data;
+
+						}, function(erorr) {
+
+						});
+					} 
 					
 				}
 				init();

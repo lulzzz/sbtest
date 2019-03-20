@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics.Eventing;
 using System.Globalization;
@@ -10,6 +11,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
@@ -128,7 +130,20 @@ namespace OPImportUtility
 					break;
 				case 11:
 					Console.WriteLine("Fill Extracts");
+					//PayrollStatusesAndExtracts(container);
 					RunExtracts(container);
+					break;
+				case 12:
+					Console.WriteLine("semi weekly dates");
+					GetSemiWeeklyDates(2019);
+					break;
+				case 13:
+					Console.WriteLine("semi weekly 941, enter year: ");
+					var year = Console.ReadLine();
+					SemiWeeklyExtract(container, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly,
+						new List<int> {1, 2, 3, 4, 5}, "Federal941", 1, true, year);
+					SemiWeeklyExtract(container, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly,
+						new List<int> { 7, 8 }, "StateCAPIT", 1, true, year);
 					break;
 				
 				default:
@@ -150,7 +165,10 @@ namespace OPImportUtility
 			companies.ForEach(c =>
 			{
 				Console.WriteLine("Starting company {0}", c);
-				ImportCompanies(scope, c);
+				
+					ImportCompanies(scope, c);	
+				
+				
 				Console.WriteLine("{1} -- Finished company {0}", c, counter++);
 			});
 		}
@@ -411,7 +429,10 @@ namespace OPImportUtility
 			var write = scope.Resolve<IWriteRepository>();
 			var journalquery =
 				string.Format(
-					"select j.* from paxolop.dbo.CheckbookJournal j, paxolop.dbo.Company c where j.CompanyIntId=c.CompanyIntId and j.TransactionType=5 and j.Memo='{0}' and j.IsVoid=0 and year(j.TransactionDate)>2011",
+					"select j.* from paxolop.dbo.CheckbookJournal j, paxolop.dbo.Company c " +
+					"where j.CompanyIntId=c.CompanyIntId and j.TransactionType=5 and j.Memo='{0}' and j.IsVoid=0 " +
+					"and year(j.TransactionDate)>2015 " +
+					"and not exists(select 'x' from paxolop.dbo.MasterExtractJournal where JournalId=j.Id)",
 					memo);
 			if (matchschedule)
 			{
@@ -440,22 +461,391 @@ namespace OPImportUtility
 					Journals = e.ToList().Select(j=>j.Id).ToList()
 				};
 				
-				write.AddExtract(extract, e.ToList());
+				counter = write.AddExtract(extract, e.ToList());
 			});
 			return counter;
+		}
+
+		private static int SemiWeeklyExtract(IContainer scope, string memo, DepositSchedule941 schedule, List<int> taxes, string extractName, int counter, bool matchschedule, string year)
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var write = scope.Resolve<IWriteRepository>();
+			var journalquery =
+				string.Format(
+					"select j.* from paxolop.dbo.CheckbookJournal j, paxolop.dbo.Company c where j.CompanyIntId=c.CompanyIntId and j.TransactionType=5 " +
+					"and j.Memo='{0}' and j.IsVoid=0 and year(j.TransactionDate)>{1} " +
+					"and not exists(select 'x' from paxolop.dbo.MasterExtractJournal where JournalId=j.Id)",
+					memo, year);
+			if (matchschedule)
+			{
+				journalquery += " and c.DepositSchedule941=" + ((int)schedule).ToString();
+			}
+			var extracts =
+				read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Journal>(journalquery);
+			var yeargroups = extracts.GroupBy(j => new {j.TransactionDate.Year}).OrderByDescending(g => g.Key.Year).ToList();
+			yeargroups.ForEach(yg =>
+			{
+				var dates = GetSemiWeeklyDates(yg.Key.Year);
+				var groups =
+				yg.ToList().GroupBy(j => new { j.TransactionDate, j.LastModified }).OrderBy(j => j.Key.TransactionDate).ToList();
+				var matchedgroups = groups.Where(j => dates.Any(swd => swd.DepositDate.Date == j.Key.TransactionDate.Date)).ToList();
+				var notmatchedgroups = groups.Where(j => dates.All(swd => swd.DepositDate.Date != j.Key.TransactionDate.Date)).ToList();
+
+				matchedgroups.ForEach(e =>
+				{
+					var swds = dates.Where(sd => sd.DepositDate.Date == e.Key.TransactionDate.Date).ToList();
+					var swd = swds.First(sd => sd.DepositDate.Date == e.Key.TransactionDate.Date);
+					var startdate = swd.StartDate;
+					var enddate = swd.EndDate;
+					var journals = e.ToList();
+
+
+					var extract = new MasterExtract()
+					{
+						DepositDate = e.Key.TransactionDate,
+						IsFederal = true,
+						StartDate = startdate,
+						EndDate = enddate,
+						LastModified = e.Key.LastModified,
+						LastModifiedBy = "Master",
+						ExtractName = extractName,
+						Id = counter++,
+						Journals = new List<int>()
+					};
+					var taxquery =
+						string.Format(
+							"select pc.companyintid [Key], sum(pct.Amount) [Value] from paxolop.dbo.payrollpaycheck pc, paxolop.dbo.paychecktax pct, paxolop.dbo.taxyearrate tyr " +
+							"where pc.Id=pct.PayCheckId and pct.TaxId=tyr.Id and tyr.TaxId in ({0}) " +
+							"and pc.PayDay between '{1}' and '{2}' " +
+							"and (pc.IsVoid=0 or (pc.IsVoid=1 and pc.VoidedOn>=cast('{4}' as date))) " +
+							"and pc.CompanyIntId in ({3}) " +
+							"and pc.LastModified<'{4}' " +
+							"group by pc.CompanyIntId", Utilities.GetCommaSeperatedList(taxes), startdate.ToString("MM/dd/yyyy"),
+							enddate.ToString("MM/dd/yyyy"),
+							Utilities.GetCommaSeperatedList(journals.Select(j => j.CompanyIntId).ToList()),
+							e.Key.LastModified.ToString("MM/dd/yyyy hh:mm:ss tt"));
+					var taxamounts =
+							read.GetQueryData<KeyValuePair<int, decimal>>(taxquery);
+					journals.ForEach(j =>
+					{
+						var tax = taxamounts.FirstOrDefault(t => t.Key == j.CompanyIntId);
+						var matchfound = false;
+						if (tax.Value != j.Amount && tax.Value>0)
+						{
+							Console.WriteLine("Deposit Date:{0}, LastModified:{6},  Startdate:{4}, EndDate:{5}, Company:{1}, Amount:{2}, TaxAmount:{3}", swd.DepositDate.ToString(), j.CompanyIntId, j.Amount, tax.Value, swd.StartDate.ToString(), swd.EndDate.ToString(), e.Key.LastModified.ToString());
+							if (swds.Count > 1)
+							{
+								swds.Where(sd=>sd.DateStr!=swd.DateStr).ToList().ForEach(sd =>
+								{
+									if (!matchfound)
+									{
+										var sdval = CheckForSemiMonthlyTax(scope, taxes, sd, j, e.Key.LastModified, extractName, ref counter);
+										if (sdval == j.Amount)
+										{
+											Console.WriteLine("Found in other quarter {0} - {1} - {2} - {3} - {4} - {5}", j.CompanyIntId, sd.DepositDate, sd.StartDate, sd.EndDate, j.Amount, sdval);
+											matchfound = true;
+										}
+									}
+									
+								});
+							}
+							if (!matchfound)
+							{
+								var thismonth = CheckForMonthlyTax(scope, taxes, new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month, 1),
+								new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month,
+									DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)),
+								j, e.Key.LastModified, extractName, ref counter);
+
+								if (thismonth != j.Amount)
+								{
+									var pmd = e.Key.LastModified.AddMonths(-1);
+									var previousmonth = CheckForMonthlyTax(scope, taxes, new DateTime(pmd.Year, pmd.Month, 1),
+										new DateTime(pmd.Year, pmd.Month,
+											DateTime.DaysInMonth(pmd.Year, pmd.Month)),
+										j, e.Key.LastModified, extractName, ref counter);
+									if (previousmonth != j.Amount)
+										Console.WriteLine("No Match found for SemiWeekly or Monthly {0} - {1} - {2} - {3} - {6} - {4} - {5}", extractName,
+										e.Key.TransactionDate, j.CompanyIntId, j.Amount, thismonth, previousmonth, tax.Value);
+									else
+									{
+										Console.WriteLine("---Previous---Yes!!! {0}-{1}--{2}",
+											new DateTime(pmd.Year, pmd.Month, 1).ToString("MM/dd/yyyy"),
+											new DateTime(pmd.Year, pmd.Month,
+												DateTime.DaysInMonth(pmd.Year, pmd.Month)).ToString("MM/dd/yyyy"), j.Id);
+									}
+								}
+								else
+								{
+									Console.WriteLine("---Yes!!! {0}-{1}--{2}",
+										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month, 1).ToString("MM/dd/yyyy"),
+										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month,
+											DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)).ToString("MM/dd/yyyy"), j.Id);
+								}
+							}
+							
+						}
+						else
+						{
+							extract.Journals.Add(j.Id);
+						}
+					});
+					if (extract.Journals.Any())
+						write.AddExtract(extract, e.ToList());
+				});
+				Console.WriteLine("Finished Matched...Starting UnMatched for - " + year);
+				notmatchedgroups.ForEach(e =>
+				{
+					var lastdepositdate = dates.Where(d => d.DepositDate > e.Key.TransactionDate).OrderBy(d => d.DepositDate).First();
+					var journals = e.ToList();
+					journals.ForEach(j =>
+					{
+						var prevswd = CheckForSemiMonthlyTax(scope, taxes, lastdepositdate, j, e.Key.LastModified, extractName, ref counter);
+						if (prevswd == j.Amount)
+						{
+							Console.WriteLine("Found in Previous {0} - {1} - {2} - {3} - {4} - {5}",j.CompanyIntId, lastdepositdate.DepositDate, lastdepositdate.StartDate, lastdepositdate.EndDate, j.Amount, prevswd);
+						}
+						else
+						{
+							var thismonth = CheckForMonthlyTax(scope, taxes, new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month, 1),
+								new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month,
+									DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)),
+								j, e.Key.LastModified, extractName, ref counter);
+
+							if (thismonth != j.Amount)
+							{
+								var pmd = e.Key.LastModified.AddMonths(-1);
+								var previousmonth = CheckForMonthlyTax(scope, taxes, new DateTime(pmd.Year, pmd.Month, 1),
+									new DateTime(pmd.Year, pmd.Month,
+										DateTime.DaysInMonth(pmd.Year, pmd.Month)),
+									j, e.Key.LastModified, extractName, ref counter);
+								if (previousmonth != j.Amount)
+									Console.WriteLine("UnMatched - No Match found for SemiWeekly or Monthly {0} - {1} - {2} - {3} - {4} - {5}", extractName,
+										e.Key.TransactionDate, j.CompanyIntId, j.Amount, thismonth, previousmonth);
+								else
+								{
+									Console.WriteLine("Unmatched---Previous---Yes!!! {0}-{1}--{2}",
+										new DateTime(pmd.Year, pmd.Month, 1).ToString("MM/dd/yyyy"),
+										new DateTime(pmd.Year, pmd.Month,
+											DateTime.DaysInMonth(pmd.Year, pmd.Month)).ToString("MM/dd/yyyy"), j.Id);
+								}
+							}
+							else
+							{
+								Console.WriteLine("---Yes!!! {0}-{1}--{2}",
+										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month, 1).ToString("MM/dd/yyyy"),
+										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month,
+											DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)).ToString("MM/dd/yyyy"), j.Id);
+							}
+						}
+						
+					});
+				});
+				Console.WriteLine("Finished Year " + yg.Key );
+			});
+			
+			return counter;
+		}
+		private static decimal CheckForSemiMonthlyTax(IContainer scope, List<int> taxes, SemiWeeklyDate swd, HrMaxx.OnlinePayroll.Models.DataModel.Journal j,
+			DateTime lastmodified, string extractName,ref int counter)
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var write = scope.Resolve<IWriteRepository>();
+
+			var taxquery = string.Format(
+							"select pc.companyintid [Key], sum(pct.Amount) [Value] from paxolop.dbo.payrollpaycheck pc, paxolop.dbo.paychecktax pct, paxolop.dbo.taxyearrate tyr " +
+							"where pc.Id=pct.PayCheckId and pct.TaxId=tyr.Id and tyr.TaxId in ({0}) " +
+							"and pc.PayDay between '{1}' and '{2}' " +
+							"and (pc.IsVoid=0 or (pc.IsVoid=1 and pc.VoidedOn>=cast('{4}' as date))) " +
+							"and pc.CompanyIntId ={3} " +
+							"and pc.LastModified<'{4}' " +
+							"group by pc.CompanyIntId", Utilities.GetCommaSeperatedList(taxes), swd.StartDate.ToString("MM/dd/yyyy"),
+							swd.EndDate.ToString("MM/dd/yyyy"),
+							j.CompanyIntId,
+							lastmodified.ToString("MM/dd/yyyy hh:mm:ss tt"));
+			var taxamounts = read.GetQueryData<KeyValuePair<int, decimal>>(taxquery);
+			var monthlytax = taxamounts.FirstOrDefault();
+			if (monthlytax.Value == j.Amount)
+			{
+				var extract = new MasterExtract()
+				{
+					DepositDate = j.TransactionDate,
+					IsFederal = true,
+					StartDate = swd.StartDate,
+					EndDate = swd.EndDate,
+					LastModified = lastmodified,
+					LastModifiedBy = "Master",
+					ExtractName = extractName,
+					Id = counter++,
+					Journals = new List<int>()
+				};
+				write.AddToExtract(swd.StartDate,
+					swd.EndDate, j, extractName, extract);
+
+			}
+			return monthlytax.Value;
+		}
+		private static decimal CheckForMonthlyTax(IContainer scope, List<int> taxes, DateTime startdate, DateTime enddate, HrMaxx.OnlinePayroll.Models.DataModel.Journal j,
+			DateTime lastmodified, string extractName, ref int counter )
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var write = scope.Resolve<IWriteRepository>();
+			
+			var monthlyquery = string.Format(
+							"select pc.companyintid [Key], sum(pct.Amount) [Value] from paxolop.dbo.payrollpaycheck pc, paxolop.dbo.paychecktax pct, paxolop.dbo.taxyearrate tyr " +
+							"where pc.Id=pct.PayCheckId and pct.TaxId=tyr.Id and tyr.TaxId in ({0}) " +
+							"and pc.PayDay between '{1}' and '{2}' " +
+							"and (pc.IsVoid=0 or (pc.IsVoid=1 and pc.VoidedOn>='{5}')) " +
+							"and pc.CompanyIntId in ({3}) " +
+							"and pc.LastModified<'{4}' " +
+							"group by pc.CompanyIntId", Utilities.GetCommaSeperatedList(taxes), startdate.ToString("MM/dd/yyyy"),
+							enddate.ToString("MM/dd/yyyy"),
+							j.CompanyIntId,
+							lastmodified.ToString("MM/dd/yyyy hh:mm:ss tt"), lastmodified.ToString("MM/dd/yyyy"));
+			var taxamounts = read.GetQueryData<KeyValuePair<int, decimal>>(monthlyquery);
+			var monthlytax = taxamounts.FirstOrDefault();
+			if (monthlytax.Value == j.Amount)
+			{
+				var extract = new MasterExtract()
+				{
+					DepositDate = j.TransactionDate,
+					IsFederal = true,
+					StartDate = startdate,
+					EndDate = enddate,
+					LastModified = lastmodified,
+					LastModifiedBy = "Master",
+					ExtractName = extractName,
+					Id = counter++,
+					Journals = new List<int>()
+				};
+				write.AddToExtract(startdate,
+					enddate, j, extractName, extract);
+				
+			}
+			return monthlytax.Value;
+		}
+		private static List<SemiWeeklyDate> GetSemiWeeklyDates(int year)
+		{
+			var res = new List<SemiWeeklyDate>();
+			var stdate = new DateTime(year, 1, 1);
+			var quarter1 = false;
+			var quarter2 = false;
+			var quarter3 = false;
+			var quarter4 = false;
+			while (stdate.Year == year)
+			{
+				var swd = new SemiWeeklyDate();
+				var swd2 = new SemiWeeklyDate();
+				if (stdate.DayOfWeek == DayOfWeek.Wednesday || stdate.DayOfWeek == DayOfWeek.Friday)
+				{
+					swd.DepositDate = stdate;
+					swd2.DepositDate = stdate;
+					if (stdate.DayOfWeek == DayOfWeek.Wednesday)
+					{
+						swd.DateStr = string.Format("Wed, {0} {1}", stdate.ToString("MMMM"), stdate.Day);
+						swd.StartDate = stdate.AddDays(-7);
+						swd.EndDate = stdate.AddDays(-5);
+					}
+					else if (stdate.DayOfWeek == DayOfWeek.Friday)
+					{
+						swd.StartDate = stdate.AddDays(-6);
+						swd.EndDate = stdate.AddDays(-3);
+						if (stdate.Month == 1 && !quarter1)
+						{
+							swd.DateStr = string.Format("Fri, {0} {1}-{2}- 4th Q", stdate.ToString("MMMM"), stdate.Day, stdate.Year - 1);
+							swd2.DateStr = string.Format("Fri, {0} {1} 1st Q", stdate.ToString("MMMM"), stdate.Day);
+							quarter1 = true;
+						}
+						else if (stdate.Month == 4 && !quarter2)
+						{
+							swd.DateStr = string.Format("Fri, {0} {1} 1st Q", stdate.ToString("MMMM"), stdate.Day);
+							swd2.DateStr = string.Format("Fri, {0} {1} 2nd Q", stdate.ToString("MMMM"), stdate.Day);
+							quarter2 = true;
+						}
+						else if (stdate.Month == 7 && !quarter3)
+						{
+							swd.DateStr = string.Format("Fri, {0} {1} 2nd Q", stdate.ToString("MMMM"), stdate.Day);
+							swd2.DateStr = string.Format("Fri, {0} {1} 3rd Q", stdate.ToString("MMMM"), stdate.Day);
+							quarter3 = true;
+						}
+						else if (stdate.Month == 10 && !quarter4)
+						{
+							swd.DateStr = string.Format("Fri, {0} {1} 3rd Q", stdate.ToString("MMMM"), stdate.Day);
+							swd2.DateStr = string.Format("Fri, {0} {1} 4th Q", stdate.ToString("MMMM"), stdate.Day);
+							quarter4 = true;
+						}
+						else
+						{
+							swd.DateStr = string.Format("Fri, {0} {1}", stdate.ToString("MMMM"), stdate.Day);
+							swd2.DateStr = string.Empty;
+						}
+
+					}
+					if (IsQuarterDifferent(swd.StartDate, swd.EndDate))
+					{
+						swd2.StartDate=new DateTime(swd.EndDate.Year, swd.EndDate.Month, 1);
+						swd2.EndDate = swd.EndDate;
+						swd.EndDate = new DateTime(swd.StartDate.Year, swd.StartDate.Month, DateTime.DaysInMonth(swd.StartDate.Year, swd.StartDate.Month));
+						//Console.WriteLine(string.Format("{0}-{1}-{2}-{3}", swd.DateStr, swd.DepositDate.ToString("MM/dd/yyyy"), swd.StartDate.ToString("MM/dd/yyyy"), swd.EndDate.ToString("MM/dd/yyyy")));
+						res.Add(swd);
+						//Console.WriteLine(string.Format("{0}-{1}-{2}-{3}", swd2.DateStr, swd2.DepositDate.ToString("MM/dd/yyyy"), swd2.StartDate.ToString("MM/dd/yyyy"), swd2.EndDate.ToString("MM/dd/yyyy")));
+						res.Add(swd2);
+					}
+					else
+					{
+						//Console.WriteLine(string.Format("{0}-{1}-{2}-{3}", swd.DateStr, swd.DepositDate.ToString("MM/dd/yyyy"), swd.StartDate.ToString("MM/dd/yyyy"), swd.EndDate.ToString("MM/dd/yyyy")));
+						res.Add(swd);	
+					}
+					
+					
+				}
+				
+				stdate = stdate.AddDays(1);
+			}
+			return res;
+
+		}
+
+		private static int GetQuarter(DateTime date)
+		{
+			if (date.Month < 4)
+				return 1;
+			else if (date.Month < 7)
+				return 2;
+			else if (date.Month < 10)
+				return 3;
+			else
+			{
+
+				return 4;
+			}
+		}
+		private static bool IsQuarterDifferent(DateTime startdate, DateTime enddate)
+		{
+			return GetQuarter(startdate) != GetQuarter(enddate);
 		}
 
 		private static void RunExtracts(IContainer scope)
 		{
 			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, new List<int> { 6 }, "Federal940", 1, false);
+			Console.WriteLine("FUTA finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false);
+			Console.WriteLine("UI ETT finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
+			Console.WriteLine("PIT quarterly finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Monthly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
+			Console.WriteLine("PIT Monthly finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
+			Console.WriteLine("941 quarterly finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Monthly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
-
-			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
-			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
+			Console.WriteLine("941 monthly finished {0} ", counter);
+			counter = SemiWeeklyExtract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly,
+						new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, "2015");
+			Console.WriteLine("941 semi weekly finished {0} ", counter);
+			counter = SemiWeeklyExtract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly,
+				new List<int> { 7, 8 }, "StateCAPIT", counter, true, "2015");
+			Console.WriteLine("Extracts finished {0} ", counter);
+			//counter = SemiWeeklyExtract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
+			//counter = SemiWeeklyExtract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
 		}
 		
 
@@ -1096,13 +1486,14 @@ namespace OPImportUtility
 				data.ForEach(c =>
 				{
 					var host = hosts.First(h => h.HostIntId == c.CPAID);
-					var contact = contacts.First(co => co.EntityTypeID == 1 && co.EntityID == host.HostIntId);
+					var contact = contacts.FirstOrDefault(co => co.EntityTypeID == 1 && co.EntityID == host.HostIntId);
+					
 					host.UserName = users.First(u => u.UserID.ToString() == host.UserName).UserFullName;
 					host.HomePage = new HostHomePage
 					{
 						Profile = c.WebOverview,
 						Services = string.Concat(c.OurService, c.WebNews),
-						Telephone = contact.Phone1, Fax = contact.Fax, Email = contact.Email1
+						Telephone = contact!=null ? contact.Phone1 : string.Empty, Fax = contact!=null ? contact.Fax : string.Empty, Email = contact!=null ? contact.Email1 : string.Empty
 					};
 					host.HomePage.InitializeContactHours();
 					if (string.IsNullOrWhiteSpace(c.OfficeHours1From))
@@ -1372,11 +1763,11 @@ namespace OPImportUtility
 							contract.CreditCardDetails.BillingAddress.AddressLine1 = string.IsNullOrWhiteSpace(contract.CreditCardDetails.BillingAddress.AddressLine1)
 								? "NA"
 								: contract.CreditCardDetails.BillingAddress.AddressLine1;
-							if (Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length!=16)
+							if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length!=16)
 							{
 								contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
 							}
-							if (Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
+							if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
 							{
 								contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
 							}

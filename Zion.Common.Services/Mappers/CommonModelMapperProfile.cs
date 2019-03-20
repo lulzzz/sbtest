@@ -72,6 +72,7 @@ namespace HrMaxx.Common.Services.Mappers
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
 			CreateMap<Models.DataModel.News, News>()
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
+				.ForMember(dest => dest.TimeStamp, opt => opt.MapFrom(src=>src.LastModified))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy));
 
 			CreateMap<User, UserModel>()

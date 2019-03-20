@@ -1069,3 +1069,5 @@ if not exists(select 'x' from PayType where Name='Union Benefit')
 insert into PayType values('Union Benefit', 'Union Benefit',1,1);
 
 alter table CompanyAccumlatedPayType add IsEmployeeSpecific bit not null Default(0);
+
+alter table Employee add PayTypeAccruals varchar(max) null;

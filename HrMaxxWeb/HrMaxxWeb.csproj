@@ -290,6 +290,7 @@
     <Content Include="Areas\Client\templates\test-invoice.html" />
     <Content Include="Content\images\blank.png" />
     <Content Include="Content\images\icon.png" />
+    <Content Include="Content\images\logo.png" />
     <Content Include="Content\ng-table.css" />
     <Content Include="Content\ng-table.min.css" />
     <Content Include="Content\ng-tags-input.bootstrap.css" />
@@ -438,7 +439,6 @@
     <Content Include="Content\images\bg-7.jpg" />
     <Content Include="Content\images\bg-8.jpg" />
     <Content Include="Content\images\BlankUser.jpg" />
-    <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\news.gif" />
     <Content Include="Content\images\services.gif" />
     <Content Include="Content\ng-table\ng-table.css" />

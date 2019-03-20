@@ -269,7 +269,7 @@
 
 							<div class="col-sm-2 form-group">
 								<label>{{data.filter941.depositSchedule===1 ? 'Deposit Date' : data.filter941.depositSchedule===2 ? 'Month' : data.filter941.depositSchedule===3 ?'Quarter' : ''}}</label>
-								<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.val">
+								<select name="quarter941" ng-if="data.filter941.depositSchedule===1" ng-model="data.filter941.payPeriod" ng-disabled="!data.filter941.year" class="form-control" ng-options="payperiod.val for payperiod in data.filter941.payPeriods track by payperiod.val" ng-change="showpayperiod()">
 									<option value=""> Please select</option>
 
 								</select>

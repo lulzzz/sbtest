@@ -18,7 +18,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						isBodyOpenPP: false,
 						openedRack:0,
 						response: null,
-						minYear: 2017,
+						minYear: 2015,
 						hosts: [],
 						selectedHost: null,
 						selectedSalesRep: null,
@@ -280,6 +280,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						var stqtr = Math.floor((start.month() + 3) / 3);
 						var endqytr = Math.floor((end.month() + 3) / 3);
 						return stqtr !== endqytr;
+					}
+					$scope.showpayperiod = function() {
+						alert(dataSvc.filter941.payPeriod.key + '   ' + dataSvc.filter941.payPeriod.startDate + '   ' + dataSvc.filter941.payPeriod.endDate);
 					}
 					var fillPayPeriods = function (year) {
 						var payPeriods = [];

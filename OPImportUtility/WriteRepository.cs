@@ -56,6 +56,14 @@ namespace OPImportUtility
 															"select Id, CompanyId, Name, StatusId, AccountNo, IsVendor, IsVendor1099, Contact, Note, Type1099, SubType1099, IdentifierType, IndividualSSN, BusinessFIN, LastModified, LastModifiedBy, IsAgency, IsTaxDepartment, VendorCustomerIntId from Paxol.dbo.VendorCustomer where vendorcustomerintid<3;" +
 															"set identity_insert VendorCustomer On;";
 
+
+			const string fixdata = "delete from onlinepayroll.dbo.deduction_payroll where deductionid=0; " +
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 209750 and 209753;" +
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 202859 and 202860;" +
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 197429 and 197435;" +
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 176912 and 176915;" +
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 165227 and 165276;" +
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 165127 and 165176;";
 			
 
 			const string userstuff =
@@ -75,7 +83,7 @@ namespace OPImportUtility
 				con.Execute(stdded);
 				con.Execute(estded);
 				con.Execute(exmpallow);
-			
+				con.Execute(fixdata);
 			}
 		}
 
@@ -279,8 +287,15 @@ namespace OPImportUtility
 			}
 		}
 
-		public void AddExtract(MasterExtract extract, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals )
+		public int AddExtract(MasterExtract extract, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals )
 		{
+			const string maxIdSql = "select isnull(max(Id),0)+1 from MasterExtracts";
+			using (var conn = GetConnection())
+			{
+				var maxId = conn.ExecuteScalar<int>(maxIdSql);
+				if (extract.Id != maxId)
+					extract.Id = maxId;
+			}
 			ExecuteQuery("set identity_insert MasterExtracts On;insert into MasterExtracts(Id, Extract, Startdate, Enddate, ExtractName, Isfederal, depositdate, Journals, lastmodified, lastmodifiedby) values(@Id,'', @StartDate, @EndDate, @ExtractName, @IsFederal, @DepositDate, @Journals, @LastModified, @LastModifiedBy);set identity_insert MasterExtracts Off;", new { Id = extract.Id, StartDate = extract.StartDate, EndDate = extract.EndDate, DepositDate = extract.DepositDate, ExtractName = extract.ExtractName, LastModified = extract.LastModified, LastModifiedBy = extract.LastModifiedBy, IsFederal = extract.IsFederal, Journals = JsonConvert.SerializeObject(extract.Journals) });
 			extract.Journals.ForEach(j => ExecuteQuery("insert into MasterExtractJournal(MasterExtractId, JournalId) values(@Id, @JournalId)", new { Id = extract.Id, JournalId = j }));
 			//payCheckList.ForEach(p => ExecuteQuery("insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type) values(@Id, @MId, @ExtractName, 1)", new { Id = p, MId = extract.Id, ExtractName = extract.ExtractName }));
@@ -292,14 +307,60 @@ namespace OPImportUtility
 						"insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type)" +
 						"select pc.Id, {4}, '{5}', 1 from Payroll p, PayrollPayCheck pc " +
 						"where pc.payrollid=p.id " +
-						"and (pc.IsVoid=0 or (pc.isvoid=1 and pc.VoidedOn > '{0}')) " +
+						"and (pc.IsVoid=0 or (pc.isvoid=1 and pc.VoidedOn >= cast('{0}' as date))) " +
 						"and p.LastModified<'{0}' and pc.PayDay between '{1}' and '{2}' and pc.CompanyIntId={3}" +
 						"and not exists (select 'x' from PayCheckExtract where PayrollPayCheckId=pc.Id and Extract='{5}' and Type=1)",
-						j1.LastModified.ToString("MM/dd/yyyy"), extract.StartDate.ToString("MM/dd/yyyy"), extract.EndDate.ToString("MM/dd/yyyy"),
+						j1.LastModified.ToString("MM/dd/yyyy hh:mm:ss tt"), extract.StartDate.ToString("MM/dd/yyyy"), extract.EndDate.ToString("MM/dd/yyyy"),
 						j1.CompanyIntId, extract.Id, extract.ExtractName);
 				ExecuteQuery(query, new {});
 			});
+			return extract.Id++;
+		}
 
+		public void AddToExtract(DateTime startdate, DateTime enddate, HrMaxx.OnlinePayroll.Models.DataModel.Journal journal, string extractName, MasterExtract extract)
+		{
+			const string getextract =
+				"select * from MasterExtracts where Startdate=@StartDate and EndDate=@EndDate and Extractname=@ExtractName";
+			const string updateextract = "update MasterExtracts set Journals=@Journals where Id=@Id";
+			const string insertJournal = "if not exists( select 'x' from MasterExtractJournal where MasterExtractId=@Id and JournalId=@JournalId)" +
+			                             "insert into MasterExtractJournal(MasterExtractId, JournalId) values(@Id, @JournalId)";
+			const string insertpaychecks = "insert into PayCheckExtract(PayrollPayCheckId, MasterExtractId, Extract, Type) " +
+						"select pc.Id, @ExtractId, @ExtractName, 1 from Payroll p, PayrollPayCheck pc " +
+						"where pc.payrollid=p.id " +
+						"and (pc.IsVoid=0 or (pc.isvoid=1 and pc.VoidedOn >= cast(@LastModified as date))) " +
+						"and p.LastModified<@LastModified and pc.PayDay between @StartDate and @EndDate and pc.CompanyIntId=@CompanyIntId " +
+						"and not exists (select 'x' from PayCheckExtract where PayrollPayCheckId=pc.Id and Extract=@ExtractName and Type=1)";
+			using (var conn = GetConnection())
+			{
+				var extracts =
+					conn.Query<HrMaxx.OnlinePayroll.Models.DataModel.MasterExtract>(getextract,
+						new {StartDate = startdate, EndDate = enddate, ExtractName = extractName}).ToList();
+				if (extracts.Any())
+				{
+					var e = extracts.First();
+					var jList = JsonConvert.DeserializeObject<List<int>>(e.Journals);
+					jList.Add(journal.Id);
+					conn.Execute(updateextract, new {Journals = JsonConvert.SerializeObject(jList), Id = e.Id});
+					conn.Execute(insertJournal, new {Id = e.Id, JournalId = journal.Id});
+					conn.Execute(insertpaychecks,
+						new
+						{
+							ExtractId = e.Id,
+							ExtractName = extractName,
+							LastModified = journal.LastModified,
+							StartDate = startdate,
+							EndDate = enddate,
+							CompanyIntId = journal.CompanyIntId
+						});
+
+				}
+				else
+				{
+					extract.Journals.Add(journal.Id);
+					AddExtract(extract, new List<HrMaxx.OnlinePayroll.Models.DataModel.Journal>() {journal});
+				}
+				
+			}
 		}
 	}
 }

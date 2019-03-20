@@ -14,7 +14,7 @@
 					<ul ng-show="newsfeed.length>0">
 						<li ng-repeat="news in newsfeed | orderBy:'lastModified':true">
 							<div class="commentText">
-								<p class="">{{news.newsContent}}</p> <span class="date sub-text">on {{news.lastModified | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
+								<p class="">{{news.newsContent}}</p> <span class="date sub-text">on {{news.timeStamp | date:'MM/dd/yyyy HH:mm:ssa'}}</span>
 							</div>
 						</li>
 					</ul>
@@ -23,7 +23,7 @@
 					</div>
 				</div>
 				<div class="col-sm-4">
-					<img ng-src="{{zionAPI.Web + 'Content/images/news.gif'}}" class=" pull-right" />
+					<img ng-src="{{getContentImage('Content/images/news.gif')}}" class=" pull-right" />
 				</div>
 			</div>
 		</div>
@@ -39,7 +39,7 @@
 
 				</div>
 				<div class="col-sm-4">
-					<img ng-src="{{zionAPI.Web + 'Content/images/services.gif'}}" class=" pull-right" />
+					<img ng-src="{{getContentImage('Content/images/services.gif')}}" class=" pull-right" />
 				</div>
 			</div>
 		</div>
@@ -57,7 +57,7 @@
 							<tbody>
 								<tr>
 									<td class="field col-sm-3">
-										<img ng-src="{{getDocumentUrl(data.contact)}}" class=" pull-right" /></td>
+										<img ng-src="{{getDocumentUrl(data.contact)}}" class=" pull-right" style="width:95px;height:72px"/></td>
 									<td class="col-sm-9">
 										<div ng-repeat="contacthour in data.contactHours">
 											<pre>{{contacthour.description}}: <span ng-show="contacthour.isClosed">Closed</span><span ng-show="!contacthour.isClosed">{{contacthour.from | date:'shortTime'}} - {{contacthour.to | date:'shortTime'}}</span></pre>

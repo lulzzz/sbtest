@@ -13,5 +13,6 @@ namespace HrMaxx.Common.Models.Dtos
 		public int? AudienceScope { get; set; }
 		public string Audience { get; set; }
 		public bool IsActive { get; set; }
+		public DateTime TimeStamp { get; set; }
 	}
 }

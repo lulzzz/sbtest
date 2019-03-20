@@ -83,6 +83,7 @@ namespace HrMaxxAPI.Controllers.Hosts
 		public HomePageResource GetHostHomePageForEdit(Guid cpaId)
 		{
 			var homepage = MakeServiceCall(() => _hostService.GetHostHomePage(cpaId), "Get home page for the host", true);
+			homepage.Id = cpaId;
 			return Mapper.Map<HostHomePage, HomePageResource>(homepage);
 		}
 

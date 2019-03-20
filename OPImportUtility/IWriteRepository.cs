@@ -23,6 +23,7 @@ namespace OPImportUtility
 		void SaveEmployees(List<HrMaxx.OnlinePayroll.Models.DataModel.Employee> emplList, int companyId);
 		void SavePayrolls(List<HrMaxx.OnlinePayroll.Models.DataModel.Payroll> payrolls);
 		void SaveJournals(List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals);
-		void AddExtract(MasterExtract extract, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals );
+		int AddExtract(MasterExtract extract, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal> journals );
+		void AddToExtract(DateTime startdate, DateTime enddate, HrMaxx.OnlinePayroll.Models.DataModel.Journal journalId, string extractName, MasterExtract extract);
 	}
 }

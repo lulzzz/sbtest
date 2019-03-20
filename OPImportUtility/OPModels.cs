@@ -428,4 +428,12 @@ namespace OPImportUtility
 		public Guid PayrollId { get; set; }
 		public Guid EmployeeId { get; set; }
 	}
+
+	public class SemiWeeklyDate
+	{
+		public string DateStr { get; set; }
+		public DateTime DepositDate { get; set; }
+		public DateTime StartDate { get; set; }
+		public DateTime EndDate { get; set; }
+	}
 }

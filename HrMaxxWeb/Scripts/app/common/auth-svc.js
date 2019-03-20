@@ -52,11 +52,15 @@ common.factory('authService', [
 			}
 
 		};
+		var _isLoggedIn = function() {
+			return _authentication.isAuth;
+		};
 		authServiceFactory.login = _login;
 		authServiceFactory.logOut = _logOut;
 		authServiceFactory.fillAuthData = _fillAuthData;
 		authServiceFactory.authentication = _authentication;
 		authServiceFactory.clearToken = _clearToken;
+		authServiceFactory.isLoggedIn = _isLoggedIn;
 
 		return authServiceFactory;
 	}
