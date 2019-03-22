@@ -445,7 +445,11 @@ select * into #tmpComp
 					sum(Quarter1FUTA) Quarter1FUTA, sum(Quarter2FUTA) Quarter2FUTA, sum(Quarter3FUTA) Quarter3FUTA, sum(Quarter4FUTA) Quarter4FUTA,
 					sum(Quarter1FUTAWage) Quarter1FUTAWage, sum(Quarter2FUTAWage) Quarter2FUTAWage, sum(Quarter3FUTAWage) Quarter3FUTAWage, sum(Quarter4FUTAWage) Quarter4FUTAWage,
 					sum(Immigrants) as Immigrants, sum(Twelve1) Twelve1, sum(Twelve2) Twelve2, sum(Twelve3) Twelve3,
-					case when @extractDepositNameL='' then 0 else dbo.GetExtractDepositAmount(@extractDepositNameL, ExtractCompany.Id, @startdateL, @enddateL) end DepositAmount
+					case when @extractDepositNameL='' then 0 else dbo.GetExtractDepositAmount(@extractDepositNameL, ExtractCompany.Id, @startdateL, @enddateL) end DepositAmount,
+					case when @extractDepositNameL='' and @report='TaxReport' then dbo.GetExtractDepositAmount('Federal940', ExtractCompany.Id, @startdateL, @enddateL) else 0 end DepositAmount940,
+					case when @extractDepositNameL='' and @report='TaxReport' then dbo.GetExtractDepositAmount('Federal941', ExtractCompany.Id, @startdateL, @enddateL) else 0 end DepositAmount941,
+					case when @extractDepositNameL='' and @report='TaxReport' then dbo.GetExtractDepositAmount('StateCAPIT', ExtractCompany.Id, @startdateL, @enddateL) else 0 end DepositAmountCAPIT,
+					case when @extractDepositNameL='' and @report='TaxReport' then dbo.GetExtractDepositAmount('StateCAUI', ExtractCompany.Id, @startdateL, @enddateL) else 0 end DepositAmountCAUI
 				from (
 						select 
 						pc.id, pc.GrossWage, pc.NetWage, pc.Salary,pc.PaymentMethod,

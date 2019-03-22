@@ -64,6 +64,9 @@
 				<Style ss:ID="s75">
 					<NumberFormat ss:Format="m/d/yyyy;@"/>
 				</Style>
+			 <Style ss:ID="s76">
+				 <Interior ss:Color="#a94442" ss:Pattern="Solid"/>
+				</Style>
 			</Styles>
 			<xsl:apply-templates />
 		</Workbook>
@@ -78,10 +81,14 @@
 				<Column ss:AutoFitWidth="0" ss:Width="104.25"/>
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93.75"/>
 				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="93.75"/>
-				<Column ss:StyleID="s62" ss:AutoFitWidth="0" ss:Width="90.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="69.75"/>
+				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="68.25"/>
+				<Column ss:AutoFitWidth="0" ss:Width="72.75"/>
 				<Column ss:AutoFitWidth="0" ss:Width="70.5"/>
 				<Column ss:AutoFitWidth="0" ss:Width="75"/>
 				<Row ss:AutoFitHeight="0" ss:StyleID="s70">
@@ -107,13 +114,25 @@
 						<Data ss:Type="String">Total 941</Data>
 					</Cell>
 					<Cell ss:StyleID="s69">
+						<Data ss:Type="String">Deposit 941</Data>
+					</Cell>
+					<Cell ss:StyleID="s69">
 						<Data ss:Type="String">Total 940</Data>
 					</Cell>
 					<Cell ss:StyleID="s69">
-						<Data ss:Type="String">Total UI</Data>
+						<Data ss:Type="String">Deposit 940</Data>
 					</Cell>
 					<Cell ss:StyleID="s69">
-						<Data ss:Type="String">Total ETT</Data>
+						<Data ss:Type="String">Total PIT+SDI</Data>
+					</Cell>
+					<Cell ss:StyleID="s69">
+						<Data ss:Type="String">Deposit PIT+SDI</Data>
+					</Cell>
+					<Cell ss:StyleID="s69">
+						<Data ss:Type="String">Total UI+ETT</Data>
+					</Cell>
+					<Cell ss:StyleID="s69">
+						<Data ss:Type="String">Deposit UI+ETT</Data>
 					</Cell>
 					<Cell ss:StyleID="s69">
 						<Data ss:Type="String">Total Federal</Data>
@@ -290,8 +309,8 @@
 		<xsl:variable name ="totalGross" select="sum(PayCheckAccumulation/PayCheckWages/GrossWage)"/>
 		<xsl:variable name ="total941" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT' or Tax/Code='MD_Employee' or Tax/Code='MD_Employer' or Tax/Code='SS_Employee' or Tax/Code='SS_Employer']/YTD)"/>
 		<xsl:variable name ="total940" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FUTA']/YTD)"/>
-		<xsl:variable name ="totalUi" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SUI']/YTD)"/>
-		<xsl:variable name ="totalEtt" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT']/YTD)"/>
+		<xsl:variable name ="totalPit" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SIT' or Tax/Code='SDI']/YTD)"/>
+		<xsl:variable name ="totalEtt" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='ETT' or Tax/Code='SUI']/YTD)"/>
 		<xsl:variable name ="totalFederal" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT' or Tax/Code='MD_Employee' or Tax/Code='MD_Employer' or Tax/Code='SS_Employee' or Tax/Code='SS_Employer' or Tax/Code='FUTA']/YTD)"/>
 		<xsl:variable name ="totalState" select="sum(PayCheckAccumulation/Taxes/PayCheckTax[Tax/StateId=1]/YTD)"/>
 		<Row>
@@ -330,21 +349,86 @@
 					<xsl:value-of select="format-number($total941,'####.##')"/>
 				</Data>
 			</Cell>
+			<xsl:choose>
+				<xsl:when test="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount941,'####.##')=format-number($total941,'####.##')">
+					<Cell ss:StyleID="s74">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount941,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:when>
+				<xsl:otherwise>
+					<Cell ss:StyleID="s76">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount941,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:otherwise>
+			</xsl:choose>
+			
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
 					<xsl:value-of select="format-number($total940,'####.##')"/>
 				</Data>
 			</Cell>
+				<xsl:choose>
+				<xsl:when test="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount940,'####.##')=format-number($total940,'####.##')">
+					<Cell ss:StyleID="s74">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount940,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:when>
+				<xsl:otherwise>
+					<Cell ss:StyleID="s76">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmount940,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:otherwise>
+			</xsl:choose>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
-					<xsl:value-of select="format-number($totalUi,'####.##')"/>
+					<xsl:value-of select="format-number($totalPit,'####.##')"/>
 				</Data>
 			</Cell>
+				<xsl:choose>
+				<xsl:when test="format-number(PayCheckAccumulation/PayCheckWages/DepositAmountCAPIT,'####.##')=format-number($totalPit,'####.##')">
+					<Cell ss:StyleID="s74">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmountCAPIT,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:when>
+				<xsl:otherwise>
+					<Cell ss:StyleID="s76">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmountCAPIT,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:otherwise>
+			</xsl:choose>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
 					<xsl:value-of select="format-number($totalEtt,'####.##')"/>
 				</Data>
 			</Cell>
+				<xsl:choose>
+				<xsl:when test="format-number(PayCheckAccumulation/PayCheckWages/DepositAmountCAUI,'####.##')=format-number($totalEtt,'####.##')">
+					<Cell ss:StyleID="s74">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmountCAUI,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:when>
+				<xsl:otherwise>
+					<Cell ss:StyleID="s76">
+						<Data ss:Type="Number">
+							<xsl:value-of select="format-number(PayCheckAccumulation/PayCheckWages/DepositAmountCAUI,'####.##')"/>
+						</Data>
+					</Cell>
+				</xsl:otherwise>
+			</xsl:choose>
 			<Cell ss:StyleID="s74">
 				<Data ss:Type="Number">
 					<xsl:value-of select="format-number($totalFederal,'####.##')"/>

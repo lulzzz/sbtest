@@ -125,6 +125,10 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int EmployeeCount { get; set; }
 
 		public decimal DepositAmount { get; set; }
+		public decimal DepositAmount940 { get; set; }
+		public decimal DepositAmount941 { get; set; }
+		public decimal DepositAmountCAPIT { get; set; }
+		public decimal DepositAmountCAUI { get; set; }
 	}
 
 	public class PayCheckSummary

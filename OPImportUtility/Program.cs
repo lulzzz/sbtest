@@ -530,7 +530,11 @@ namespace OPImportUtility
 					{
 						var tax = taxamounts.FirstOrDefault(t => t.Key == j.CompanyIntId);
 						var matchfound = false;
-						if (tax.Value != j.Amount && tax.Value>0)
+						if (j.Id == 206052)
+						{
+							var test = string.Empty;
+						}
+						if (tax.Value != j.Amount)
 						{
 							Console.WriteLine("Deposit Date:{0}, LastModified:{6},  Startdate:{4}, EndDate:{5}, Company:{1}, Amount:{2}, TaxAmount:{3}", swd.DepositDate.ToString(), j.CompanyIntId, j.Amount, tax.Value, swd.StartDate.ToString(), swd.EndDate.ToString(), e.Key.LastModified.ToString());
 							if (swds.Count > 1)
@@ -826,6 +830,11 @@ namespace OPImportUtility
 
 		private static void RunExtracts(IContainer scope)
 		{
+			var write = scope.Resolve<IWriteRepository>();
+			write.ExecuteQuery("update paxolop.dbo.CheckbookJournal set TransactionDate='2/15/2017', memo='Taxes Payable--SS, MD and FED Tax Amounts' where Id=190934;" +
+			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='3/15/2017', memo='Taxes Payable--SS, MD and FED Tax Amounts' where Id=190938;" +
+			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='3/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190939;" +
+			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='2/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190937;", new {});
 			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, new List<int> { 6 }, "Federal940", 1, false);
 			Console.WriteLine("FUTA finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false);
@@ -844,8 +853,10 @@ namespace OPImportUtility
 			counter = SemiWeeklyExtract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly,
 				new List<int> { 7, 8 }, "StateCAPIT", counter, true, "2015");
 			Console.WriteLine("Extracts finished {0} ", counter);
-			//counter = SemiWeeklyExtract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
-			//counter = SemiWeeklyExtract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
+			write.ExecuteQuery("update paxolop.dbo.CheckbookJournal set TransactionDate='7/25/2017', memo='Taxes Payable-SS, MD and FED Tax Amounts-January' where Id=190934;" +
+			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='7/25/2017', memo='Taxes Payable-SS, MD and FED Tax Amounts-February' where Id=190938;" +
+			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='7/21/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts-Febru' where Id=190939;" +
+			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='7/25/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts-Janua' where Id=190937;", new{});
 		}
 		
 
