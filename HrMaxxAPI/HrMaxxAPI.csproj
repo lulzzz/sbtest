@@ -351,6 +351,7 @@
     <Content Include="templates\transformers\extracts\Federal940EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />
+    <Content Include="templates\transformers\extracts\Paperless941-2019.xslt" />
     <Content Include="templates\transformers\extracts\TaxReport.xslt" />
     <Content Include="templates\transformers\extracts\HostClientSummary.xslt" />
     <Content Include="templates\transformers\extracts\InternalPositivePayReport.xslt" />
@@ -405,9 +406,12 @@
     <Content Include="templates\transformers\reports\940\Fed940-2015.xslt">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="templates\transformers\reports\941\Fed941-2015.xslt" />
+    <Content Include="templates\transformers\reports\941\Fed941-2016.xslt" />
+    <Content Include="templates\transformers\reports\941\Fed941-2019.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2018.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2017.xslt" />
-    <Content Include="templates\transformers\reports\944\Fed944-2017.xslt" />
+    <Content Include="templates\transformers\reports\944\Fed944.xslt" />
     <Content Include="templates\transformers\reports\C1095\C1095-2018.xslt">
       <SubType>Designer</SubType>
     </Content>
@@ -419,18 +423,9 @@
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-2018.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-2017.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-2016.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-2015.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-Employer-2018.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-Employer-2017.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-Employer-2016.xslt" />
-    <Content Include="templates\transformers\reports\W2\W2-Employer-2015.xslt" />
-    <Content Include="templates\transformers\reports\W3\W3-2018.xslt" />
-    <Content Include="templates\transformers\reports\W3\W3-2017.xslt" />
-    <Content Include="templates\transformers\reports\W3\W3-2016.xslt" />
-    <Content Include="templates\transformers\reports\W3\W3-2015.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2.xslt" />
+    <Content Include="templates\transformers\reports\W2\W2-Employer.xslt" />
+    <Content Include="templates\transformers\reports\W3\W3.xslt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -547,6 +542,12 @@
     <Content Include="templates\GovtForms\940\f940sa-2018.pdf" />
     <Content Include="templates\GovtForms\W3\W3-2018.pdf" />
     <Content Include="templates\GovtForms\C1095\C1095-2018.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2015-part1.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2015-part2.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2019-part1.pdf" />
+    <Content Include="templates\GovtForms\941\f941-2019-part2.pdf" />
+    <Content Include="templates\GovtForms\941\f941sb-2015.pdf" />
+    <Content Include="templates\GovtForms\941\f941sb-2019.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

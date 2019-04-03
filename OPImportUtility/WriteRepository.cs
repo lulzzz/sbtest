@@ -28,7 +28,8 @@ namespace OPImportUtility
 			const string taxyearrate = "delete from TaxYearRate;" +
 			                           "insert into TaxYearRate(taxid, TaxYear, Rate, AnnualMaxPerEmployee, TaxRateLimit) " +
 			                           "select (select Id from paxoltest.dbo.tax where code=taxcode collate Latin1_General_CI_AI) taxid, year(startdate) taxyear, TaxRatePercentage, AnnualMaxPerEmployee, TaxRateLimit from OnlinePayroll.dbo.TaxRuleTable " +
-			                           "order by taxyear, taxid;";
+			                           "order by taxyear, taxid;" +
+			                           "update tyr set Rate=t.DefaultRate from TaxYearRate tyr, Tax t where tyr.TaxId=t.Id and t.IsCompanySpecific=1 and tyr.Rate is null;";
 			const string fit = "truncate table FITTaxTable;" +
 			                   "insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year)" +
 			                   "select PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, year(startdate) from OnlinePayroll.dbo.FITTaxTable order by year(startdate), payrollperiodid, filingstatus, startrange;";
@@ -48,7 +49,7 @@ namespace OPImportUtility
 			                      "insert into EstimatedDeductionsTable(PayrollPeriodId, NoOfAllowances, Amount, year)" +
 			                      "select PayrollPeriodId, NoOfAllowances, Amount, year(startdate) year from OnlinePayroll.dbo.EstimatedDeductionsTable order by year, payrollperiodid, noofallowances, amount;";
 			const string exmpallow = "truncate table ExemptionAllowanceTable;" +
-			                         "insert into EstimatedDeductionsTable(PayrollPeriodId, NoOfAllowances, Amount, year)" +
+															 "insert into ExemptionAllowanceTable(PayrollPeriodId, NoOfAllowances, Amount, year)" +
 			                         "select PayrollPeriodId, NoOfAllowances, Amount, year(startdate) year from OnlinePayroll.dbo.ExemptionAllowanceTable order by year, payrollperiodid, noofallowances, amount;";
 
 			const string agencies = "set identity_insert VendorCustomer On;" +
@@ -84,6 +85,7 @@ namespace OPImportUtility
 				con.Execute(estded);
 				con.Execute(exmpallow);
 				con.Execute(fixdata);
+				con.Execute("insert into Holidays(YearNo, Holiday) select * from OnlinePayroll.dbo.Holidays");
 			}
 		}
 

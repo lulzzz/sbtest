@@ -1075,3 +1075,12 @@ insert into PayType values('Union Benefit', 'Union Benefit',1,1);
 alter table CompanyAccumlatedPayType add IsEmployeeSpecific bit not null Default(0);
 
 alter table Employee add PayTypeAccruals varchar(max) null;
+
+CREATE TABLE [dbo].[Holidays](
+	[YearNo] [smallint] NULL,
+	[Holiday] [smalldatetime] NULL
+) ON [PRIMARY]
+
+GO
+
+

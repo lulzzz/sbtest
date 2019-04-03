@@ -376,7 +376,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
 				Tax = Mapper.Map<TaxByYear, Tax>(tax),
 				YTDTax = Math.Round(employeeAccumulation.Taxes.Where(t=>t.Tax.Code==tax.Tax.Code).Sum(t=>t.YTD) + taxAmount, 2, MidpointRounding.AwayFromZero),
-				YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.TaxableWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
+				YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
 		private PayrollTax GetMDEE(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)

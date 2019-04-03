@@ -216,6 +216,10 @@
 				<xsl:with-param name="field2" select="'f1-62'"/>
 				<xsl:with-param name="val" select="$line10 - $line13"/>
 			</xsl:call-template>
+			<xsl:call-template name="CheckTemplate">
+				<xsl:with-param name="name1" select="'c1-6'"/>
+				<xsl:with-param name="val1" select="'On'"/>
+			</xsl:call-template>
 		</xsl:when>
 		<xsl:when test="$line13>$line10">
 			<xsl:call-template name="DecimalFieldTemplate">

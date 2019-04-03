@@ -1372,18 +1372,45 @@ namespace SiteInspectionStatus_Utility
 			{
 				var _readerService = scope.Resolve<IReaderService>();
 				var _payrollRepository = scope.Resolve<IPayrollRepository>();
-				var mementoService = scope.Resolve<IMementoDataService>();
-				var original = _readerService.GetPaycheck(35693);
-				var newone = _readerService.GetPaycheck(37041);
-				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
+				var counter = (int) 0;
+				var eacounter = (int) 0;
+				var taxcounter = (int) 0;
+				var year = Convert.ToInt32(Console.ReadLine());
+				var payrolls = _readerService.GetPayrolls(null, excludeVoids:1, startDate: new DateTime(year,1,1), endDate:new DateTime(year, 12,31));
+				payrolls.OrderBy(p=>p.PayDay).ToList().ForEach(payroll =>
 				{
-					original.SubtractFromYTD(newone);
-					original.Compensations.Remove(original.Compensations.First(c => c.PayType.Id == 4));
-					_payrollRepository.SavePayCheck(original);
-					var memento = Memento<PayCheck>.Create(original, EntityTypeEnum.PayCheck, "System", "YTD fixed", Guid.Empty);
-					mementoService.AddMementoData(memento);
-					txn.Complete();
-				}
+					var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
+						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, 
+						ssns: payroll.PayChecks.Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
+					payroll.PayChecks.ForEach(pc =>
+					{
+						var fit = pc.Taxes.First(t => t.Tax.Code == "FIT");
+						var ea = employeeAccumulations.FirstOrDefault(e => e.EmployeeId.Value == pc.Employee.Id || e.SSNVal==pc.Employee.SSN);
+						if (ea != null)
+						{
+							var eafit = ea.Taxes.FirstOrDefault(t => t.Tax.Code == "FIT");
+							if (eafit != null)
+							{
+								if (fit.YTDWage != (eafit.YTDWage))
+								{
+									Console.WriteLine("{0} -- {1}", pc.Id, ++counter);
+									fit.YTDWage = eafit.YTDWage;
+								}
+							}
+							else
+							{
+								Console.WriteLine("Tax Missing {0}--{1}", pc.Id, ++taxcounter);
+							}
+						}
+						else
+						{
+							Console.WriteLine("EA Missing {0}--{1}", pc.Id, ++eacounter);
+						}
+						
+					});
+				});
+
+				
 			}
 		}
 

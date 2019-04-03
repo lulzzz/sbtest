@@ -13,9 +13,9 @@
 	<xsl:param name="immigrantsIncluded"/>
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-	<xsl:variable name="totalGrossWages" select="ReportResponse/CompanyAccumulation/GrossWage"/>
-	<xsl:variable name="totalMDWages" select="ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='MD_Employee']/TaxableWage"/>
-	<xsl:variable name="totalFUTAWages" select="ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FUTA']/TaxableWage"/>
+	<xsl:variable name="totalGrossWages" select="ReportResponse/CompanyAccumulations/PayCheckWages/GrossWage"/>
+	<xsl:variable name="totalMDWages" select="ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage"/>
+	<xsl:variable name="totalFUTAWages" select="ReportResponse/CompanyAccumulations/Taxes/PayCheckTax[Tax/Code='FUTA']/YTDWage"/>
 	
 	<xsl:variable name="quarterSum" select="$firstQuarter + $secondQuarter + $thirdQuarter + $fourthQuarter"/>
 
@@ -27,7 +27,7 @@
 	<xsl:variable name="line8" select="format-number($line7*0.006,'######.00')"/>
 	<xsl:variable name="line11" select="format-number($line7*0.015,'######.00')"/>
 	<xsl:variable name="line12" select="$line8 + $line11"/>
-	<xsl:variable name="line13" select="ReportResponse/CompanyAccumulation/Taxes/PayrollTax[Tax/Code='FUTA']/Amount"/>
+	<xsl:variable name="line13" select="format-number(ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'######.00')"/>
 <xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">
 	<ReportTransformed>
@@ -38,7 +38,7 @@
 				<Template>f940-<xsl:value-of select="$selectedYear"/>.pdf</Template>
 				<Fields>
 					<xsl:apply-templates select="Company"/>
-					<xsl:apply-templates select="CompanyAccumulation"/>
+					<xsl:apply-templates select="CompanyAccumulations"/>
 					<xsl:apply-templates select="Company/BusinessAddress"/>				
 				</Fields>
 			
@@ -47,7 +47,7 @@
 		</Reports>
 	</ReportTransformed>	
 </xsl:template>
-<xsl:template match="CompanyAccumulation">
+<xsl:template match="CompanyAccumulations">
 	<xsl:call-template name="DecimalFieldTemplate">
 		<xsl:with-param name="field1" select="'f1_018(0)'"/>
 		<xsl:with-param name="field2" select="'f1_019(0)'"/>
@@ -58,25 +58,25 @@
 		<xsl:with-param name="field2" select="'f1_021(0)'"/>
 		<xsl:with-param name="val" select="$line4"/>
 	</xsl:call-template>
-	<xsl:if test="Deductions/PayrollDeduction[Deduction/Type/R940_R='4a']">
+	<xsl:if test="Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/R940_R='4a']">
 		<xsl:call-template name="CheckTemplate">
 			<xsl:with-param name="name1" select="'c1_07(0)'"/>
 			<xsl:with-param name="val1" select="'On'"/>
 		</xsl:call-template>
 	</xsl:if>
-	<xsl:if test="Deductions/PayrollDeduction[Deduction/Type/R940_R='4b']">
+	<xsl:if test="Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/R940_R='4b']">
 		<xsl:call-template name="CheckTemplate">
 			<xsl:with-param name="name1" select="'c1_08(0)'"/>
 			<xsl:with-param name="val1" select="'On'"/>
 		</xsl:call-template>
 	</xsl:if>
-	<xsl:if test="Deductions/PayrollDeduction[Deduction/Type/R940_R='4c']">
+	<xsl:if test="Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/R940_R='4c']">
 		<xsl:call-template name="CheckTemplate">
 			<xsl:with-param name="name1" select="'c1_09(0)'"/>
 			<xsl:with-param name="val1" select="'On'"/>
 		</xsl:call-template>
 	</xsl:if>
-	<xsl:if test="Deductions/PayrollDeduction[Deduction/Type/R940_R='4d']">
+	<xsl:if test="Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/R940_R='4d']">
 		<xsl:call-template name="CheckTemplate">
 			<xsl:with-param name="name1" select="'c1_10(0)'"/>
 			<xsl:with-param name="val1" select="'On'"/>
@@ -132,7 +132,7 @@
 				<xsl:with-param name="val" select="$line12 - $line13"/>
 			</xsl:call-template>
 			<xsl:call-template name="CheckTemplate">
-				<xsl:with-param name="name1" select="'c1_012(0)'"/>
+				<xsl:with-param name="name1" select="'c1_12(0)'"/>
 				<xsl:with-param name="val1" select="'Yes'"/>
 			</xsl:call-template>
 		</xsl:when>
@@ -143,7 +143,7 @@
 				<xsl:with-param name="val" select="$line13 - $line12"/>
 			</xsl:call-template>
 			<xsl:call-template name="CheckTemplate">
-				<xsl:with-param name="name1" select="'c1_12(0)'"/>
+				<xsl:with-param name="name1" select="'c1_012(0)'"/>
 				<xsl:with-param name="val1" select="'Yes'"/>
 			</xsl:call-template>
 		</xsl:when>

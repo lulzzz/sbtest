@@ -2131,7 +2131,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
 			
-			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/944/Fed944-" + request.Year + ".xslt");
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/944/Fed944.xslt");
 
 		}
 
@@ -2149,6 +2149,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					e => e.PayCheckWages.GrossWage > 0 && e.LastCheckCompany.HasValue && e.LastCheckCompany.Value == request.CompanyId)
 					.OrderBy(e => e.FullName)
 					.ToList();
+			if (!response.EmployeeAccumulationList.Any())
+				throw new Exception(NoPayrollData);
 			response.Company = GetCompany(request.CompanyId);
 			if (response.Company.FileUnderHost)
 			{
@@ -2161,7 +2163,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new XsltArgumentList();
 			argList.AddParam("selectedYear", "", request.Year);
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W2/W2-" + (isEmployee? string.Empty : "Employer-") + request.Year + ".xslt");
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W2/W2" + (isEmployee? string.Empty : "-Employer") + ".xslt");
 
 		}
 		private FileDto GetC1095Report(ReportRequest request)
@@ -2207,7 +2209,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var response = new ReportResponse();
 
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).First();
-			
+			if(response.CompanyAccumulations.PayCheckWages.EmployeeCount<=0)
+				throw new Exception(NoPayrollData);
 			response.Company = GetCompany(request.CompanyId);
 			if (response.Company.FileUnderHost)
 			{
@@ -2220,7 +2223,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
 			
 			
-			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W3/W3-" + request.Year + ".xslt");
+			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W3/W3.xslt");
 
 		}
 

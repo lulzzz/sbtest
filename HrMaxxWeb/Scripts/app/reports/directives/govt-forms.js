@@ -76,8 +76,8 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && ($scope.mainData.selectedCompany.hasLocations || $scope.mainData.selectedCompany.isLocation)) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedHost.isPeoHost) ? true : false;
 					var currentYear = new Date().getFullYear();
-					for (var i = currentYear - 4; i <= currentYear; i++) {
-						if(i>=2017)
+					for (var i = currentYear; i >= currentYear-4; i--) {
+						if(i>=2015)
 							dataSvc.filter.years.push(i);
 					}
 					

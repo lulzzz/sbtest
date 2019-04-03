@@ -98,7 +98,9 @@ common.directive('host', ['zionAPI','localStorageService','version',
 					var c = $scope.selectedCompany.contract;
 					if (!c)
 						return false;
-					if (c.contractOption === 1 && (c.billingOption || !c.prePaidSubscriptionOption || (c.prePaidSubscriptionOption > 1 && !c.billingOption)))
+					if (c.contractOption === 1 && !c.prePaidSubscriptionOption)// || (c.prePaidSubscriptionOption > 1 && !c.billingOption)))
+						return false;
+					if (c.contractOption === 2 && !c.billingOption)
 						return false;
 					if (c.billingOption === 1) {
 						var cc = c.creditCardDetails;
@@ -112,13 +114,26 @@ common.directive('host', ['zionAPI','localStorageService','version',
 						if (!b || !b.bankName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
 							return false;
 					}
-					if (c.billingOption === 3 && (!c.invoiceCharge || !c.method))
-						return false;
-
+					if (c.contractOption === 2 && c.billingOption === 3) {
+						var i = c.invoiceSetup;
+						if (!i)
+							return false;
+						if (i.recurringCharges.length > 0) {
+							var invalidrc = false;
+							$.each(i.recurringCharges, function (index, rc) {
+								if (!rc.description || !rc.amount) {
+									invalidrc = true;
+									return false;
+								}
+							});
+							if (invalidrc)
+								return false;
+						}
+					}
 					return true;
 
 				}
-
+				
 				$scope.LinkCompanyAndBusinessAddress = function () {
 					if ($scope.selectedCompany.isAddressSame) {
 						$scope.selectedCompany.taxFilingName = $scope.selectedCompany.name;
@@ -173,6 +188,16 @@ common.directive('host', ['zionAPI','localStorageService','version',
 						}
 					});
 					return stateAvailable;
+				}
+				$scope.isStateTaxAvailable = function (st) {
+					if (dataSvc.companyMetaData) {
+						var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
+						return cst.taxesEnabled;
+					} else {
+						return false;
+					}
+
+
 				}
 				$scope.validateRoutingNumber = function (rtn) {
 					if (!rtn) {

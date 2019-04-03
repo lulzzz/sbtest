@@ -213,7 +213,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						var c = $scope.selectedCompany.contract;
 						if (!c)
 							return false;
-						if (c.contractOption === 1 && (!c.prePaidSubscriptionOption || (c.prePaidSubscriptionOption > 1 && !c.billingOption)))
+						if (c.contractOption === 1 && !c.prePaidSubscriptionOption)// || (c.prePaidSubscriptionOption > 1 && !c.billingOption)))
 							return false;
 						if (c.contractOption === 2 && !c.billingOption)
 							return false;

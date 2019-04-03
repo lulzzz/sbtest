@@ -159,6 +159,14 @@
 							<label>Minimum Wage</label>
 							<input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-3" data-parsley-type="number" ng-model="selectedCompany.minWage" />
 						</div>
+						<div class="form-group">
+							<label>Check Print Order</label>
+							<select ng-model="selectedCompany.companyCheckPrintOrder" name="printorder" class="form-control" data-parsley-group="wizard-step-3" required="" convert-to-number>
+								<option value="1">Company Employee No</option>
+								<option value="2">Employee Last Name</option>
+
+							</select>
+						</div>
 					</div>
 					<div class="col-sm-4">
 						<div class="form-group">
@@ -169,6 +177,35 @@
 
 						</div>
 						<div class="form-group">
+							<label>Payroll Schedule Day</label>
+							<select ng-model="selectedCompany.payrollScheduleDay" name="psday" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number min="1" max="23">
+								<option value="0">Select</option>
+								<option value="1" ng-show="selectedCompany.payrollSchedule===1">Weekly-Monday</option>
+								<option value="2" ng-show="selectedCompany.payrollSchedule===1">Weekly-Tuesday</option>
+								<option value="3" ng-show="selectedCompany.payrollSchedule===1">Weekly-Wednesday</option>
+								<option value="4" ng-show="selectedCompany.payrollSchedule===1">Weekly-Thursday</option>
+								<option value="5" ng-show="selectedCompany.payrollSchedule===1">Weekly-Friday</option>
+								<option value="6" ng-show="selectedCompany.payrollSchedule===1">Weekly-Saturday</option>
+								<option value="7" ng-show="selectedCompany.payrollSchedule===1">Weekly-Sunday</option>
+								<option value="8" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Monday</option>
+								<option value="9" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Tuesday</option>
+								<option value="10" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Wednesday</option>
+								<option value="11" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Thursday</option>
+								<option value="12" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Friday</option>
+								<option value="13" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Saturday</option>
+								<option value="14" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (1)-Sunday</option>
+								<option value="15" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Monday</option>
+								<option value="16" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Tuesday</option>
+								<option value="17" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Wednesday</option>
+								<option value="18" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Thursday</option>
+								<option value="19" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Friday</option>
+								<option value="20" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Saturday</option>
+								<option value="21" ng-show="selectedCompany.payrollSchedule===2">Bi-Weekly (2)-Sunday</option>
+								<option value="22" ng-show="selectedCompany.payrollSchedule===3">Semi-Monthly</option>
+								<option value="23" ng-show="selectedCompany.payrollSchedule===4">Monthly</option>
+							</select>
+						</div>
+						<div class="form-group">
 							<label>PayCheck Stock</label>
 							<select ng-model="selectedCompany.payCheckStock" name="stock" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number>
 								<option value="1">MICR Encoded Top</option>
@@ -177,6 +214,10 @@
 								<option value="4">MICR QB</option>
 								<option value="5">Job Cost</option>
 							</select>
+						</div>
+						<div class="form-group">
+							<label>Check Stub Memo</label>
+							<input type="text" name="memo" class="form-control" data-parsley-group="wizard-step-3" ng-model="selectedCompany.memo" />
 						</div>
 					</div>
 					<div class="col-sm-4">
@@ -192,6 +233,14 @@
 									<input id="directdebitpayer" type="checkbox" ng-model="selectedCompany.directDebitPayer" /><i></i>
 								</label>
 							</div>
+						</div>
+						<div class="form-group">
+							<label>Invoice Note</label>
+							<input type="text" name="notes" class="form-control" data-parsley-group="wizard-step-3" ng-model="selectedCompany.notes" />
+						</div>
+						<div class="form-group">
+							<label>Additional Notes ( Step 1 )</label>
+							<textarea ng-model="selectedCompany.payrollMessage" class="form-control" rows="4" data-parsley-group="wizard-step-3"></textarea>
 						</div>
 					</div>
 
@@ -291,8 +340,11 @@
 						<div class="form-group">
 							<label>State</label>
 							<div>
-								<select id="state" class="form-control" ng-model="state.state" ng-disabled="!state.isNew" ng-options="st.stateName for st in data2.companyMetaData.countries[0].states track by st.stateId" required data-parsley-group="wizard-step-4" ng-class="{'parsley-error': !state.state.stateId}"></select>
+								<select id="state" class="form-control" ng-model="state.state" ng-options="st.stateName for st in data2.companyMetaData.countries[0].states track by st.stateId" required data-parsley-group="wizard-step-4" ng-class="{'parsley-error': !state.state.stateId}"></select>
 							</div>
+						</div>
+						<div class="form-group alert alert-danger" ng-show="!isStateTaxAvailable(state)">
+							<i>only Federal Taxes will be available</i>
 						</div>
 					</div>
 					<div class="col-sm-2">
@@ -394,16 +446,16 @@
 						<div class="form-group col-sm-4">
 							<label>Expiry Month</label>
 							<div>
-								<select ng-model="selectedCompany.contract.creditCardDetails.expiryMonth" name="expirymonth" class="form-control">
-									<option value="01">January</option>
-									<option value="02">February</option>
-									<option value="03">March</option>
-									<option value="04">April</option>
-									<option value="05">May</option>
-									<option value="06">June</option>
-									<option value="07">July</option>
-									<option value="08">August</option>
-									<option value="09">September</option>
+								<select ng-model="selectedCompany.contract.creditCardDetails.expiryMonth" name="expirymonth" class="form-control" convert-to-number>
+									<option value="1">January</option>
+									<option value="2">February</option>
+									<option value="3">March</option>
+									<option value="4">April</option>
+									<option value="5">May</option>
+									<option value="6">June</option>
+									<option value="7">July</option>
+									<option value="8">August</option>
+									<option value="9">September</option>
 									<option value="10">October</option>
 									<option value="11">November</option>
 									<option value="12">December</option>

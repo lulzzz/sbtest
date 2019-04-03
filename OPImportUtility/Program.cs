@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Diagnostics.Eventing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -37,6 +38,8 @@ using HrMaxx.OnlinePayroll.Repository.Companies;
 using HrMaxx.OnlinePayroll.Services.Mappers;
 using HrMaxxAPI.Code.IOC;
 using HrMaxxAPI.Resources.Common;
+using log4net;
+using log4net.Config;
 using Magnum;
 using Magnum.Reflection;
 using Microsoft.AspNet.Identity;
@@ -50,9 +53,11 @@ namespace OPImportUtility
 		public static List<UserAccount> users = new List<UserAccount>();
 		public static List<Contact> contacts = new List<Contact>();
 		public static List<HrMaxx.OnlinePayroll.Models.DataModel.Host> hostList = new List<HrMaxx.OnlinePayroll.Models.DataModel.Host>();
-		public static List<HrMaxx.OnlinePayroll.Models.DataModel.Company> CompanyList = new List<HrMaxx.OnlinePayroll.Models.DataModel.Company>(); 
+		public static List<HrMaxx.OnlinePayroll.Models.DataModel.Company> CompanyList = new List<HrMaxx.OnlinePayroll.Models.DataModel.Company>();
+		public static ILog Logger;
 		static void Main(string[] args)
 		{
+			XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.xml"));
 			var builder = new ContainerBuilder();
 			builder.RegisterModule<LoggingModule>();
 			builder.RegisterModule<MapperModule>();
@@ -75,7 +80,10 @@ namespace OPImportUtility
 
 
 			var container = builder.Build();
+			log4net.Config.BasicConfigurator.Configure();
+			Logger = log4net.LogManager.GetLogger(typeof(Program));  
 			var companyId = (int) 0;
+			Logger.Info("starting :)");
 			Console.WriteLine("Staring Migration " + DateTime.Now.ToShortTimeString());
 			Console.WriteLine("Enter 1 for Base Data, 2 for Hosts 3 for Company ");
 			var command = Convert.ToInt32(Console.ReadLine());
@@ -130,12 +138,12 @@ namespace OPImportUtility
 					break;
 				case 11:
 					Console.WriteLine("Fill Extracts");
-					//PayrollStatusesAndExtracts(container);
+					PayrollStatusesAndExtracts(container);
 					RunExtracts(container);
 					break;
 				case 12:
-					Console.WriteLine("semi weekly dates");
-					GetSemiWeeklyDates(2019);
+					Console.WriteLine("Profit Stars");
+					ImportProfitStarsData(container);
 					break;
 				case 13:
 					Console.WriteLine("semi weekly 941, enter year: ");
@@ -160,7 +168,7 @@ namespace OPImportUtility
 			var companies =
 				read.GetQueryData<int>(
 					string.Format("select CompanyId from Company where Status='{0}' and CompanyId not in (select CompanyIntId from paxolop.dbo.Company);", status));
-			Console.WriteLine("Companies matching status {0} : {1}", status, companies.Count);
+			Logger.Info(string.Format("Companies matching status {0} : {1}", status, companies.Count));
 			var counter = (int) 0;
 			companies.ForEach(c =>
 			{
@@ -232,7 +240,7 @@ namespace OPImportUtility
 			var payrolls =
 					read.GetQueryData<PayCheckMin>("select Id, PayrollId, EmployeeId from paxolop.dbo.PayrollPayCheck where CompanyId='" + companies.First().Value + "'");
 			var opjournaldetails = read.GetQueryData<JournalDetail>(string.Format("select * from Journal_Detail where journalid in ({0})", Utilities.GetCommaSeperatedList(opjournals.Select(oj=>oj.JournalID).ToList())) );
-			Console.WriteLine(string.Format("Groups: {0} Journals:{1}", groups.Count, opjournals.Count));
+			Logger.Info(string.Format("Groups: {0} Journals:{1}", groups.Count, opjournals.Count));
 			groups.ForEach(cid =>
 			{
 				var list = new List<HrMaxx.OnlinePayroll.Models.Journal>();
@@ -370,7 +378,7 @@ namespace OPImportUtility
 					var mapped1 = mapper.Map<List<HrMaxx.OnlinePayroll.Models.Journal>, List<HrMaxx.OnlinePayroll.Models.DataModel.Journal>>(list);
 					write.SaveJournals(mapped1);
 					
-					Console.WriteLine(string.Format("Counter: CompanyIntId:{0} Total:{1}", cid.Key, list.Count));
+					Logger.Info(string.Format("Counter: CompanyIntId:{0} Total:{1}", cid.Key, list.Count));
 				}
 				catch (Exception e)
 				{
@@ -423,7 +431,7 @@ namespace OPImportUtility
 		}
 
 		private static int Extract(IContainer scope, string memo, DepositSchedule941 schedule, List<int> taxes,
-			string extractName, int counter, bool matchschedule)
+			string extractName, int counter, bool matchschedule, int year)
 		{
 			var read = scope.Resolve<IOPReadRepository>();
 			var write = scope.Resolve<IWriteRepository>();
@@ -431,9 +439,9 @@ namespace OPImportUtility
 				string.Format(
 					"select j.* from paxolop.dbo.CheckbookJournal j, paxolop.dbo.Company c " +
 					"where j.CompanyIntId=c.CompanyIntId and j.TransactionType=5 and j.Memo='{0}' and j.IsVoid=0 " +
-					"and year(j.TransactionDate)>2015 " +
+					"and year(j.TransactionDate)>{1} " +
 					"and not exists(select 'x' from paxolop.dbo.MasterExtractJournal where JournalId=j.Id)",
-					memo);
+					memo, year);
 			if (matchschedule)
 			{
 				journalquery += " and c.DepositSchedule941=" + ((int) schedule).ToString();
@@ -473,7 +481,7 @@ namespace OPImportUtility
 			var journalquery =
 				string.Format(
 					"select j.* from paxolop.dbo.CheckbookJournal j, paxolop.dbo.Company c where j.CompanyIntId=c.CompanyIntId and j.TransactionType=5 " +
-					"and j.Memo='{0}' and j.IsVoid=0 and year(j.TransactionDate)>{1} " +
+					"and j.Memo='{0}' and j.IsVoid=0 and year(j.TransactionDate)>={1} " +
 					"and not exists(select 'x' from paxolop.dbo.MasterExtractJournal where JournalId=j.Id)",
 					memo, year);
 			if (matchschedule)
@@ -536,7 +544,7 @@ namespace OPImportUtility
 						}
 						if (tax.Value != j.Amount)
 						{
-							Console.WriteLine("Deposit Date:{0}, LastModified:{6},  Startdate:{4}, EndDate:{5}, Company:{1}, Amount:{2}, TaxAmount:{3}", swd.DepositDate.ToString(), j.CompanyIntId, j.Amount, tax.Value, swd.StartDate.ToString(), swd.EndDate.ToString(), e.Key.LastModified.ToString());
+							Logger.Info(string.Format("Deposit Date:{0}, LastModified:{6},  Startdate:{4}, EndDate:{5}, Company:{1}, Amount:{2}, TaxAmount:{3}", swd.DepositDate.ToString(), j.CompanyIntId, j.Amount, tax.Value, swd.StartDate.ToString(), swd.EndDate.ToString(), e.Key.LastModified.ToString()));
 							if (swds.Count > 1)
 							{
 								swds.Where(sd=>sd.DateStr!=swd.DateStr).ToList().ForEach(sd =>
@@ -546,7 +554,7 @@ namespace OPImportUtility
 										var sdval = CheckForSemiMonthlyTax(scope, taxes, sd, j, e.Key.LastModified, extractName, ref counter);
 										if (sdval == j.Amount)
 										{
-											Console.WriteLine("Found in other quarter {0} - {1} - {2} - {3} - {4} - {5}", j.CompanyIntId, sd.DepositDate, sd.StartDate, sd.EndDate, j.Amount, sdval);
+											Logger.Info(string.Format("Found in other quarter {0} - {1} - {2} - {3} - {4} - {5}", j.CompanyIntId, sd.DepositDate, sd.StartDate, sd.EndDate, j.Amount, sdval));
 											matchfound = true;
 										}
 									}
@@ -568,22 +576,22 @@ namespace OPImportUtility
 											DateTime.DaysInMonth(pmd.Year, pmd.Month)),
 										j, e.Key.LastModified, extractName, ref counter);
 									if (previousmonth != j.Amount)
-										Console.WriteLine("No Match found for SemiWeekly or Monthly {0} - {1} - {2} - {3} - {6} - {4} - {5}", extractName,
-										e.Key.TransactionDate, j.CompanyIntId, j.Amount, thismonth, previousmonth, tax.Value);
+										Logger.Info(string.Format("No Match found for SemiWeekly or Monthly {0} - {1} - {2} - {3} - {6} - {4} - {5}", extractName,
+										e.Key.TransactionDate, j.CompanyIntId, j.Amount, thismonth, previousmonth, tax.Value));
 									else
 									{
-										Console.WriteLine("---Previous---Yes!!! {0}-{1}--{2}",
+										Logger.Info(string.Format("---Previous---Yes!!! {0}-{1}--{2}",
 											new DateTime(pmd.Year, pmd.Month, 1).ToString("MM/dd/yyyy"),
 											new DateTime(pmd.Year, pmd.Month,
-												DateTime.DaysInMonth(pmd.Year, pmd.Month)).ToString("MM/dd/yyyy"), j.Id);
+												DateTime.DaysInMonth(pmd.Year, pmd.Month)).ToString("MM/dd/yyyy"), j.Id));
 									}
 								}
 								else
 								{
-									Console.WriteLine("---Yes!!! {0}-{1}--{2}",
+									Logger.Info(string.Format("---Yes!!! {0}-{1}--{2}",
 										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month, 1).ToString("MM/dd/yyyy"),
 										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month,
-											DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)).ToString("MM/dd/yyyy"), j.Id);
+											DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)).ToString("MM/dd/yyyy"), j.Id));
 								}
 							}
 							
@@ -596,7 +604,7 @@ namespace OPImportUtility
 					if (extract.Journals.Any())
 						write.AddExtract(extract, e.ToList());
 				});
-				Console.WriteLine("Finished Matched...Starting UnMatched for - " + year);
+				Logger.Info("Finished Matched...Starting UnMatched for - " + year);
 				notmatchedgroups.ForEach(e =>
 				{
 					var lastdepositdate = dates.Where(d => d.DepositDate > e.Key.TransactionDate).OrderBy(d => d.DepositDate).First();
@@ -606,7 +614,7 @@ namespace OPImportUtility
 						var prevswd = CheckForSemiMonthlyTax(scope, taxes, lastdepositdate, j, e.Key.LastModified, extractName, ref counter);
 						if (prevswd == j.Amount)
 						{
-							Console.WriteLine("Found in Previous {0} - {1} - {2} - {3} - {4} - {5}",j.CompanyIntId, lastdepositdate.DepositDate, lastdepositdate.StartDate, lastdepositdate.EndDate, j.Amount, prevswd);
+							Logger.Info(string.Format("Found in Previous {0} - {1} - {2} - {3} - {4} - {5}",j.CompanyIntId, lastdepositdate.DepositDate, lastdepositdate.StartDate, lastdepositdate.EndDate, j.Amount, prevswd));
 						}
 						else
 						{
@@ -623,28 +631,28 @@ namespace OPImportUtility
 										DateTime.DaysInMonth(pmd.Year, pmd.Month)),
 									j, e.Key.LastModified, extractName, ref counter);
 								if (previousmonth != j.Amount)
-									Console.WriteLine("UnMatched - No Match found for SemiWeekly or Monthly {0} - {1} - {2} - {3} - {4} - {5}", extractName,
-										e.Key.TransactionDate, j.CompanyIntId, j.Amount, thismonth, previousmonth);
+									Logger.Info(string.Format("UnMatched - No Match found for SemiWeekly or Monthly {0} - {1} - {2} - {3} - {4} - {5}", extractName,
+										e.Key.TransactionDate, j.CompanyIntId, j.Amount, thismonth, previousmonth));
 								else
 								{
-									Console.WriteLine("Unmatched---Previous---Yes!!! {0}-{1}--{2}",
+									Logger.Info(string.Format("Unmatched---Previous---Yes!!! {0}-{1}--{2}",
 										new DateTime(pmd.Year, pmd.Month, 1).ToString("MM/dd/yyyy"),
 										new DateTime(pmd.Year, pmd.Month,
-											DateTime.DaysInMonth(pmd.Year, pmd.Month)).ToString("MM/dd/yyyy"), j.Id);
+											DateTime.DaysInMonth(pmd.Year, pmd.Month)).ToString("MM/dd/yyyy"), j.Id));
 								}
 							}
 							else
 							{
-								Console.WriteLine("---Yes!!! {0}-{1}--{2}",
+								Logger.Info(string.Format("---Yes!!! {0}-{1}--{2}",
 										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month, 1).ToString("MM/dd/yyyy"),
 										new DateTime(e.Key.LastModified.Year, e.Key.LastModified.Month,
-											DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)).ToString("MM/dd/yyyy"), j.Id);
+											DateTime.DaysInMonth(e.Key.LastModified.Year, e.Key.LastModified.Month)).ToString("MM/dd/yyyy"), j.Id));
 							}
 						}
 						
 					});
 				});
-				Console.WriteLine("Finished Year " + yg.Key );
+				Logger.Info("Finished Year " + yg.Key );
 			});
 			
 			return counter;
@@ -835,17 +843,17 @@ namespace OPImportUtility
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='3/15/2017', memo='Taxes Payable--SS, MD and FED Tax Amounts' where Id=190938;" +
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='3/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190939;" +
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='2/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190937;", new {});
-			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, new List<int> { 6 }, "Federal940", 1, false);
+			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, new List<int> { 6 }, "Federal940", 1, false, 2014);
 			Console.WriteLine("FUTA finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false);
+			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false, 2104);
 			Console.WriteLine("UI ETT finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
+			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 6, 7 }, "StateCAPIT", counter, true, 2014);
 			Console.WriteLine("PIT quarterly finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Monthly, new List<int> { 6, 7 }, "StateCAPIT", counter, true);
+			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Monthly, new List<int> { 6, 7 }, "StateCAPIT", counter, true, 2014);
 			Console.WriteLine("PIT Monthly finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
+			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, 2014);
 			Console.WriteLine("941 quarterly finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Monthly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true);
+			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Monthly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, 2014);
 			Console.WriteLine("941 monthly finished {0} ", counter);
 			counter = SemiWeeklyExtract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly,
 						new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, "2015");
@@ -872,7 +880,75 @@ namespace OPImportUtility
 			write.ExecuteQuery("update Employee set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where EmployeeId=Employee.Id and isvoid=0)", new {  });
 			write.ExecuteQuery("update Company set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where CompanyId=Company.Id and isvoid=0)", new { });
 			write.ExecuteQuery("update pc set VoidedOn=j.EnteredDate, VoidedBy=j.EnteredBy from PayrollPayCheck pc, OnlinePayroll.dbo.Journal j, OnlinePayroll.dbo.COA_Company cc where pc.id=j.PayrollID and pc.IsVoid=1 and j.TransactionType=6 and j.MainCOAID=cc.COAID and cc.CompanyID=pc.CompanyIntId", new {});
+			write.ExecuteQuery("update company set IsHostCompany=1 where CompanyIntId in (111, 94, 44, 190, 80, 30, 141, 35, 87, 395, 119, 42, 450, 62, 114);", new { });
+			write.ExecuteQuery("update h set CompanyId=c.Id from host h, company c  where h.id=c.HostId and c.IsHostCompany=1 and h.CompanyId is null;", new { });
+			
+		}
 
+		private static void ImportProfitStarsData(IContainer scope)
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var write = scope.Resolve<IWriteRepository>();
+
+			write.ExecuteQuery("truncate table DDPayroll;set identity_insert DDPayroll On; insert into DDPayroll(DDPayrollId, payrollId, payrollFundId, employeeId, companyId, netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, HostCheck, PayingCompanyId) " +
+			                   "select DDPayrollId, payrollId, payrollFundId, " +
+			                   "(select Id from Employee where EmployeeIntId=employeeId), " +
+			                   "(select Id from Company where CompanyIntId=companyId), " +
+												 "netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, 0, (select Id from Company where CompanyIntId=companyId)" +
+			                   " from OnlinePayroll.dbo.DDPayroll;set identity_insert DDPayroll Off; ", new { });
+			write.ExecuteQuery("truncate table DDPayrollFund;set identity_insert DDPayrollFund On; " +
+												 "insert into DDPayrollFund(DDPayrollFundId, companyId, netsum, entereddate) " +
+												 "select DDPayrollFundId," +
+												 "(select Id from Company where CompanyIntId=companyId), " +
+												 "netSum, entereddate" +
+												 " from OnlinePayroll.dbo.DDPayrollFund;" +
+			                   "set identity_insert DDPayrollFund Off; ", new { });
+			write.ExecuteQuery("truncate table DDPayrollFundRequest;set identity_insert DDPayrollFundRequest On; " +
+												 "insert into DDPayrollFundRequest(DDPayrollFundRequestId, DDPayrollFundId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, ResultCode, requestDocumentId, refNum) " +
+												 "select DDPayrollFundRequestId, DDPayrollFundId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, ResultCode, requestDocumentId, refNum" +
+												 " from OnlinePayroll.dbo.DDPayrollFundRequest;" +
+												 "set identity_insert DDPayrollFundRequest Off; ", new { });
+			write.ExecuteQuery("truncate table DDPayrollFundReport;set identity_insert DDPayrollFundReport On; " +
+												 "insert into DDPayrollFundReport(DDPayrollFundReportId, DDPayrollFundRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId, manualUpdate) " +
+												 "select DDPayrollFundReportId, DDPayrollFundRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId, manualUpdate" +
+												 " from OnlinePayroll.dbo.DDPayrollFundReport;" +
+												 "set identity_insert DDPayrollFundReport Off; ", new { });
+
+			write.ExecuteQuery("truncate table DDPayrollPay;set identity_insert DDPayrollPay On; " +
+												 "insert into DDPayrollPay(DDPayrollPayId, DDPayrollId, enteredDate, payStatus) " +
+												 "select DDPayrollPayId, DDPayrollId, enteredDate, payStatus" +
+												 " from OnlinePayroll.dbo.DDPayrollPay;" +
+												 "set identity_insert DDPayrollPay Off; ", new { });
+			write.ExecuteQuery("truncate table DDPayrollPayRequest;set identity_insert DDPayrollPayRequest On; " +
+												 "insert into DDPayrollPayRequest(DDPayrollPayRequestId, DDPayrollPayId, netPay, AccountType, AccountNumber, RoutingNumber, payDate, enteredDate, ResultCode, requestDocumentId, refNum) " +
+												 "select DDPayrollPayRequestId, DDPayrollPayId, netPay, AccountType, AccountNumber, RoutingNumber, payDate, enteredDate, ResultCode, requestDocumentId, refNum" +
+												 " from OnlinePayroll.dbo.DDPayrollPayRequest;" +
+												 "set identity_insert DDPayrollPayRequest Off; ", new { });
+			write.ExecuteQuery("truncate table DDPayrollPayReport;set identity_insert DDPayrollPayReport On; " +
+												 "insert into DDPayrollPayReport(DDPayrollPayReportId, DDPayrollPayRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId) " +
+												 "select DDPayrollPayReportId, DDPayrollPayRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId" +
+												 " from OnlinePayroll.dbo.DDPayrollPayReport;" +
+												 "set identity_insert DDPayrollPayReport Off; ", new { });
+
+			write.ExecuteQuery("truncate table DDPayrollRefundRequest;set identity_insert DDPayrollRefundRequest On; " +
+												 "insert into DDPayrollRefundRequest(ddPayrollRefundId, ddPayrollPayId, companyId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, resultCode, refNum, requestDoc) " +
+												 "select ddPayrollRefundId, ddPayrollPayId, " +
+			                   "(select Id from Company where CompanyIntId=companyId), " +
+			                   "netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, resultCode, refNum, requestDoc" +
+												 " from OnlinePayroll.dbo.DDPayrollRefundRequest;" +
+												 "set identity_insert DDPayrollRefundRequest Off; ", new { });
+
+			write.ExecuteQuery("truncate table DDPayrollRefundReport;set identity_insert DDPayrollRefundReport On; " +
+												 "insert into DDPayrollRefundReport(DDPayrollRefundReportId, DDPayrollRefundRequestId, ActionFlag, enteredDate, transactionStatus, settlementStatus, reportDocumentId) " +
+												 "select DDPayrollRefundReportId, DDPayrollRefundRequestId, ActionFlag, enteredDate, transactionStatus, settlementStatus, reportDocumentId" +
+												 " from OnlinePayroll.dbo.DDPayrollRefundReport;" +
+												 "set identity_insert DDPayrollRefundReport Off; ", new { });
+
+			write.ExecuteQuery("truncate table ProfitStarsReportLog;set identity_insert ProfitStarsReportLog On; " +
+												 "insert into ProfitStarsReportLog(reportItemId, eventItemId, operationType, eventType, eventDateTime, transactionDateTime, enteredDate, transactionStatus, SettlementStatus, sequenceNumber, transactionSequenceNumber, document) " +
+												 "select reportItemId, eventItemId, operationType, eventType, eventDateTime, transactionDateTime, enteredDate, transactionStatus, SettlementStatus, sequenceNumber, transactionSequenceNumber, document" +
+												 " from OnlinePayroll.dbo.RTGReportLog;" +
+												 "set identity_insert ProfitStarsReportLog Off; ", new { });
 			
 		}
 		
@@ -1152,7 +1228,7 @@ namespace OPImportUtility
 				txn.Complete();
 			}
 			payrollService.FillPayCheckNormalized(compList.First().Value, null);
-			Console.WriteLine("Finished importing payrolls for Company:{0}, Payrolls:{1}", companyId, payrolls.Count);
+			Logger.Info(string.Format("Finished importing payrolls for Company:{0}, Payrolls:{1}", companyId, payrolls.Count));
 			
 		}
 
@@ -1171,14 +1247,23 @@ namespace OPImportUtility
 			var companies = readservice.GetCompanies(null, null, null);
 			var hosts = hostservice.GetHostList(Guid.Empty);
 			var appUsers = new List<UserResource>();
-			users = users.Where(u => u.LevelID == level).ToList();
+			if (level == 0)
+			{
+
+			}
+			else
+			{
+				users = users.Where(u => u.LevelID == level).ToList();	
+			}
+			users = users.Where(u => string.IsNullOrWhiteSpace(u.Status) || u.Status.Equals("A")).ToList();
 			if (companyId > 0)
 				users = users.Where(u => u.CompanyID == companyId).ToList();
 			else
 			{
-				users = users.Where(u => u.LevelID == 3 && companies.Any(c => c.CompanyIntId == u.CompanyID)).ToList();
+				users = users.Where(u => (u.LevelID == 3 && companies.Any(c => c.CompanyIntId == u.CompanyID)) || u.LevelID>4).ToList();
 			}
-			users.Where(u =>!string.IsNullOrWhiteSpace(u.UserName) && !string.IsNullOrWhiteSpace(u.UserFirstName) && !string.IsNullOrWhiteSpace(u.UserLastName)).ToList().ForEach(u =>
+
+			users.Where(u =>!string.IsNullOrWhiteSpace(u.UserName)).OrderByDescending(u=>u.LevelID).ToList().ForEach(u =>
 			{
 				var appUser = new UserResource()
 				{
@@ -1189,6 +1274,8 @@ namespace OPImportUtility
 				Password = Crypto.Decrypt(u.Password),
 				SubjectUserName = Crypto.Decrypt(u.UserName).Split('@')[0]
 				};
+				appUser.FirstName = string.IsNullOrWhiteSpace(appUser.FirstName) ? appUser.SubjectUserName : appUser.FirstName;
+				appUser.LastName = string.IsNullOrWhiteSpace(appUser.LastName) ? appUser.SubjectUserName : appUser.LastName;
 				if(u.LevelID==5)
 					appUser.Role = new UserRole(){ RoleId = (int)RoleTypeEnum.Master, RoleName = RoleTypeEnum.Master.GetDbName()};
 				else if (u.LevelID == 6)
@@ -1201,7 +1288,7 @@ namespace OPImportUtility
 					appUser.Role = new UserRole() { RoleId = (int)RoleTypeEnum.Host, RoleName = RoleTypeEnum.Host.GetDbName() };
 				appUsers.Add(appUser);
 			});
-			Console.WriteLine("Starting import of users " + appUsers.Count);
+			Logger.Info(string.Format("Starting import of users " + appUsers.Count));
 			var success = new List<UserResource>();
 			var failed = new List<UserResource>();
 			try
@@ -1212,7 +1299,7 @@ namespace OPImportUtility
 					try
 					{
 						var request = new RestRequest(Method.POST);
-						request.AddHeader("Authorization", "bearer iAWXH5_uozJZjC7aMjMDXQMhiPw0yDOn859zEMWyweT3yqA_kdTSl90PjmVmuI9u2ccOe8HxKn95KmGIVqFETWPpW8t0SXZ6jHgC6DJXZSHlG5Ql7WSZDjC4gLeArbrErfRVrQdX5EE7_1LgVt_h0jbGTL29RXtM82kPHIxHDviplwT5gSWd-DIOlaIq1F2lOMOW5qFgXOaxfigAho794U744vHY_zsE3MgmtilZMbCZ-EtbERC54Z_sRkGabahcI57jW3pnF4aJv6LPVSeZ2Pj_2NjxnPTgcfHw21Z1LZ54HucjK_sw6YlUA6xCFmvwfuXUm7k86pkUx73f7CZexJ8DuB8uv031cWdY1mDYy1HxoXirnweQRW5C3B2xB12-vcxsP3TzZOufU-a2IeSfn0ROpwK9nk2v5Ekqc_U2fABpJIuNpqZiq83Rg5EZt1mleYNFS9XqPQN9yqxzjS31t8EETxJMpTH6h4NI4Ux49KWSVBmWCsXu4emIMZv633TSVenPV-Q8Fj5pJm-tda_HSyelWmd1NbztsmFimvaTb1h6sW43aky3wPSMI8Iec9AUX47BxZ4nDa345iCpNYE6J0I-uz0PMtEdEG7DNYw-de9c8-rr2ZKlr2I51WYSyErvJoP_sWUbyJ0QU3tj1cz_fiB6ZR62lGo9F95jU_oEfnR4snpkW3cVynkJd8bDmIambsEm28FQP-a5LoTk-VGu2GfJw-771sWKC8WsJKmw4AlGh_voSCAxSRLcb1-j7-jfKTpuJsHbHdUek3bXnUEjy0Sdm9nzfuTGzpFgGfqmPci9B7DNoAxBQpzATVAqLh00WG96NC5aXYJfUzGwUWMyquNZulRtMPymPMyhvqFDtA7QSo_8lGTJ53i5cg3-qvNdRngNZ-ZfADESZdlL8s5yhZTbCxDfh_tTN0e9rcZl_nH5AZ8ymmQLWEWjDRHAtv736btKqD7PR95p5sOmXSKZzx9xb5kue6Gs9ci237wG5_EgNgASOx5UDLKUo1UZP-yvwPLMzxjk2A0tp38O8I9AkqsZOKcpiPv1St2lV5P95_TuBK1FUrzYzq7CIJjStHjdyKRC0L-UoaetJzjhrk6Y0fKGAXLFV3ShoyC1d2LK7FRQKQQIkOMEGknBD-FMSHWS_smjXyL4geJQvWIaNQ4saKkAwnaCTED5ipWHM1G9M7CrnUpK4BaK2wIFlG_k-sI1MGvwgM1Uxq0cdP9u5uf3hfNlyfC1hG33SKE5gfvb0OHHhY47E6MUFSJ29-znkf_NrndbaFOELBEuV5i6fJfJG9TwFkPIkNiyqTx6_ai7ZgSmtbEDhQu17YywCtspaP4l4myc3a1beGKj-cKm9QO_Roay27C9a5QclXSonrONVOrN7DhgG_V0SL2dyOIQo-OsMWOGYoCPlA1AGM54C3PaYo_EmeIx-LoPenah5JD4Qi0");
+						request.AddHeader("Authorization", "bearer 8zteRYefeERDP7eFirJlpsKQER7AXo3XFUW3LriVqpffigmTXfRQxOVeNpyAz_wHK5gxs5_qEvofHim67UgH5AMQ4KiL-Z_9-HoweHtZPoPFgfVjWQ6tNMXT5I2NQSUv506QYM7kiOoC6Wl2nmjsZwtDyXXSjkRQryMh1sU6P9zgGMvdox-TbNK1NWVkEfOpUb9oH4ivn6jan0Gf63adimf40hX8p6NccRylQSLuX3dIMswX8oboRzIwrf8p9fWsEgR6G4gelR03hKIZK8TzuwR3Mc5wYaK5gQ9sfLsQPywkbyvq7F463-qSWZKoX4rDRBixua522uoOUrF_fe_hu7jR2n5kryVasESfaShLSRL4u5eAAt3plSaebX0CreCtiE-m-JIJQRyesPqNwzhKciM8SzRjnO8JXLk7wWyZhGq3jZDQfWEUxNbYjl11hiKAQgFGGukT5WvQk3d3CkyjG-BT0Qgp4zgm9krqXaInZ7hpel9WVk_EShaqHWOO8XtCNlLtZWGpeffm6ocdsYMTMunO8I3k_0SHEPyXF4Kij8_bwQgIm33tbcHEHOswfpF5ycnZeq846mCWtu4VegL4P_BRlgsYMXZC5Nqj2ZYAngTgqWm96c-t_KIzZZBKvFiwpYtB603SGLHQh9X1xbxkAQ_UX78moKE8sxYMqxVqlRN88_6GW-xtt5MAhJBNmLQznCScAY6bO6E9O4KXUjozGFDe52nkhrx4QoX23ExRMl3TOErqcQh_4J-VBEsZzdBKSn-TaaLn8Eetxo5g2nWhh5j1j5185v100tmpYtEMYXNBaxikyBueeZiydS-sHZNvfj2Ao08tjuO3lBJ3zV1w7MId3FrMzmE0l4Mcyos2iHWebBV_BXgYIzPH29m8Qt6PrURUqZGw9bnEyd4aSzjATaK6jfg-F2RXC75pkhtlnNxp53jQT6OIpTAVjjNI8JTxBeIdmnAhYEd-k8aBsR4HlgDsaAP_zBUCSy-AHAqMnFNmYbO_T_CBXl-WpyRwTnqe3nhXr2LNXwbd8pMNj8JTAl06o-sKhFI5IhpBqqrFJAu6Xf88Z7HNKMWKrZI33hJi_fvTAF1mrDRAs8kdPRLpky3KsSOBVRH7TmYJddzWcs4xPI-nKgQKtz7gAJncbO5UFEEQa92vdfjcsr4cJL1BoNCLh4qz374YpXRfTZIRXH_HCFR0njRFDME1xZKeoGKbk5SVdZSFlqv426SpcEjfcKKiAUNU9wAjIEReS1KKcv7GEvNcdoyFwrCKq2Ufwdky8ZzkR97vDjMqKrMsJZh3vuCK6_RFIHx-pgSqUC9EC8cbY9yYgtkZhZOEUAOSwbiGHOQBZEXJBpdvyFQf6YmUlXSje-VxD8-NrfG-OSsGvTbogAcnK6QIkJjt-rf7n77GOWj5kwqvq_FrF6uryosZSA");
 						request.AddHeader("Content-Type", "application/json");
 						request.AddParameter("application/json; charset=utf-8", JsonConvert.SerializeObject(appUser), ParameterType.RequestBody);
 						request.RequestFormat = DataFormat.Json;
@@ -1223,14 +1310,14 @@ namespace OPImportUtility
 						}
 						else
 						{
-							Console.WriteLine(string.Format("User: {0}, Message: {1}", appUser.UserName, response1.ToString()));
+							Logger.Info(string.Format("User: {0}, Message: {1} {2}", appUser.UserName, response1.StatusCode, response1.StatusDescription));
 							failed.Add(appUser);
 						}
 					}
 					catch (Exception e1)
 					{
 						failed.Add(appUser);
-						Console.WriteLine(string.Format("User: {0}, Message: {1}", appUser.UserName, e1.Message));
+						Logger.Info(string.Format("User: {0}, Message: {1}", appUser.UserName, e1.Message));
 					}
 					
 				});
@@ -1242,12 +1329,12 @@ namespace OPImportUtility
 			{
 				
 			}
-			Console.WriteLine(string.Format("Successful {0}, Failed {1} ",success.Count, failed.Count));
+			Logger.Info(string.Format("Successful {0}, Failed {1} ",success.Count, failed.Count));
 			write.ExecuteQuery("Update aspnetusers set emailconfirmed=1;insert into AspNetUserClaims(UserId, ClaimType, ClaimValue)  " +
 			                   "select u.Id, cl.ClaimType, 1 from AspNetUsers u, AspNetUserRoles ur, AspNetRoles r, PaxolFeatureClaim cl " +
 			                   "where u.Id=ur.UserId and ur.RoleId=r.Id and cl.AccessLevel<=r.Id " +
 			                   "and not exists(select 'x' from AspNetUserClaims where UserId=u.Id and ClaimType=cl.ClaimType)", new {});
-			Console.WriteLine("Finsihed importing users");
+			Logger.Info("Finsihed importing users");
 				
 		}
 
@@ -1500,6 +1587,10 @@ namespace OPImportUtility
 					var contact = contacts.FirstOrDefault(co => co.EntityTypeID == 1 && co.EntityID == host.HostIntId);
 					
 					host.UserName = users.First(u => u.UserID.ToString() == host.UserName).UserFullName;
+					host.PTIN = "P00774607";
+					host.DesigneeName940941 = "Jay Shen or Elizabeth Cortez";
+					host.PIN940941 = "45678";
+					host.BankCustomerId = "999999999";
 					host.HomePage = new HostHomePage
 					{
 						Profile = c.WebOverview,
@@ -1705,7 +1796,7 @@ namespace OPImportUtility
 			//ImportUsers(container, level:3, companyId: companyId);
 			ImportPayrolls(container, companyId);
 			ImportJournals(container, companyId);
-			Console.WriteLine("Finsihed copying journals");
+			Logger.Info("Finsihed copying journals");
 
 		}
 
