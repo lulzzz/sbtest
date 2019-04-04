@@ -17,12 +17,11 @@
 		$scope.$on('hostChanged', function(event, args) {
 			var host = args.host;
 			$scope.logo = host.homePage.logo;
-			//hostRepository.getHomePage(host.id).then(function(homepage) {
-			//		$scope.logo = homepage.logo;
-			//	},
-			//	function(error) {
+			
+		});
+		$scope.$on('welcomeChanged', function (event, args) {
+			$scope.logo = args.logo;
 
-			//	});
 		});
 		function _init() {
 			var homepage = localStorageService.get('hostlogo');

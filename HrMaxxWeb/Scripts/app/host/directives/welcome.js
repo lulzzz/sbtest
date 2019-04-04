@@ -10,7 +10,8 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/hostwelcome.html?v=' + version,
 
-			controller: ['$scope', '$element', '$location', '$filter', 'hostRepository', 'commonRepository', '$q', 'EntityTypes', 'authService', function ($scope, $element, $location, $filter, hostRepository, commonRepository, $q, EntityTypes, authService) {
+			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'hostRepository', 'commonRepository', '$q', 'EntityTypes', 'authService',
+				function ($scope, $rootScope, $element, $location, $filter, hostRepository, commonRepository, $q, EntityTypes, authService) {
 				$scope.mainData.showFilterPanel = false;
 				$scope.hostId = null;
 				$scope.data = null;
@@ -61,6 +62,7 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 							localStorageService.set('hostId', $scope.hostId);
 							if ($scope.data) {
 								localStorageService.set('hostlogo', $scope.data.logo);
+								$rootScope.$broadcast('welcomeChanged', { logo: $scope.data.logo });
 							}
 						}, function (erorr) {
 							addAlert('error getting host home page details', 'danger');
@@ -77,6 +79,7 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 							localStorageService.set('hostId', $scope.hostId);
 							if ($scope.data) {
 								localStorageService.set('hostlogo', $scope.data.logo);
+								$rootScope.$broadcast('welcomeChanged', { logo: $scope.data.logo });
 							}
 						}, function (erorr) {
 							addAlert('error getting host home page details', 'danger');
@@ -92,6 +95,7 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 							localStorageService.set('hostId', $scope.hostId);
 							if ($scope.data) {
 								localStorageService.set('hostlogo', $scope.data.logo);
+								$rootScope.$broadcast('welcomeChanged', { logo: $scope.data.logo });
 							}
 						}, function (erorr) {
 							addAlert('error getting host home page details', 'danger');
