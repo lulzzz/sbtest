@@ -52,6 +52,16 @@ common.factory('hostRepository', [
 
 				return deferred.promise;
 			},
+			getHostWelcomePageByFirmId: function (hostId) {
+				var deferred = $q.defer();
+				hostServer.one('HostWelcomeByIntId/'+ hostId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			
 			getHomePage: function (hostId) {
 				var deferred = $q.defer();

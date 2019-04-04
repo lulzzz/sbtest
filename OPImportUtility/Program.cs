@@ -1260,7 +1260,7 @@ namespace OPImportUtility
 				users = users.Where(u => u.CompanyID == companyId).ToList();
 			else
 			{
-				users = users.Where(u => (u.LevelID == 3 && companies.Any(c => c.CompanyIntId == u.CompanyID)) || u.LevelID>4).ToList();
+				users = users.Where(u => (u.LevelID == 3 && companies.Any(c => c.CompanyIntId == u.CompanyID)) || u.LevelID == 1 || u.LevelID == 2 || u.LevelID == 5 || u.LevelID == 6).ToList();
 			}
 
 			users.Where(u =>!string.IsNullOrWhiteSpace(u.UserName)).OrderByDescending(u=>u.LevelID).ToList().ForEach(u =>
@@ -1299,7 +1299,7 @@ namespace OPImportUtility
 					try
 					{
 						var request = new RestRequest(Method.POST);
-						request.AddHeader("Authorization", "bearer 8zteRYefeERDP7eFirJlpsKQER7AXo3XFUW3LriVqpffigmTXfRQxOVeNpyAz_wHK5gxs5_qEvofHim67UgH5AMQ4KiL-Z_9-HoweHtZPoPFgfVjWQ6tNMXT5I2NQSUv506QYM7kiOoC6Wl2nmjsZwtDyXXSjkRQryMh1sU6P9zgGMvdox-TbNK1NWVkEfOpUb9oH4ivn6jan0Gf63adimf40hX8p6NccRylQSLuX3dIMswX8oboRzIwrf8p9fWsEgR6G4gelR03hKIZK8TzuwR3Mc5wYaK5gQ9sfLsQPywkbyvq7F463-qSWZKoX4rDRBixua522uoOUrF_fe_hu7jR2n5kryVasESfaShLSRL4u5eAAt3plSaebX0CreCtiE-m-JIJQRyesPqNwzhKciM8SzRjnO8JXLk7wWyZhGq3jZDQfWEUxNbYjl11hiKAQgFGGukT5WvQk3d3CkyjG-BT0Qgp4zgm9krqXaInZ7hpel9WVk_EShaqHWOO8XtCNlLtZWGpeffm6ocdsYMTMunO8I3k_0SHEPyXF4Kij8_bwQgIm33tbcHEHOswfpF5ycnZeq846mCWtu4VegL4P_BRlgsYMXZC5Nqj2ZYAngTgqWm96c-t_KIzZZBKvFiwpYtB603SGLHQh9X1xbxkAQ_UX78moKE8sxYMqxVqlRN88_6GW-xtt5MAhJBNmLQznCScAY6bO6E9O4KXUjozGFDe52nkhrx4QoX23ExRMl3TOErqcQh_4J-VBEsZzdBKSn-TaaLn8Eetxo5g2nWhh5j1j5185v100tmpYtEMYXNBaxikyBueeZiydS-sHZNvfj2Ao08tjuO3lBJ3zV1w7MId3FrMzmE0l4Mcyos2iHWebBV_BXgYIzPH29m8Qt6PrURUqZGw9bnEyd4aSzjATaK6jfg-F2RXC75pkhtlnNxp53jQT6OIpTAVjjNI8JTxBeIdmnAhYEd-k8aBsR4HlgDsaAP_zBUCSy-AHAqMnFNmYbO_T_CBXl-WpyRwTnqe3nhXr2LNXwbd8pMNj8JTAl06o-sKhFI5IhpBqqrFJAu6Xf88Z7HNKMWKrZI33hJi_fvTAF1mrDRAs8kdPRLpky3KsSOBVRH7TmYJddzWcs4xPI-nKgQKtz7gAJncbO5UFEEQa92vdfjcsr4cJL1BoNCLh4qz374YpXRfTZIRXH_HCFR0njRFDME1xZKeoGKbk5SVdZSFlqv426SpcEjfcKKiAUNU9wAjIEReS1KKcv7GEvNcdoyFwrCKq2Ufwdky8ZzkR97vDjMqKrMsJZh3vuCK6_RFIHx-pgSqUC9EC8cbY9yYgtkZhZOEUAOSwbiGHOQBZEXJBpdvyFQf6YmUlXSje-VxD8-NrfG-OSsGvTbogAcnK6QIkJjt-rf7n77GOWj5kwqvq_FrF6uryosZSA");
+						request.AddHeader("Authorization", string.Format("bearer {0}", ConfigurationManager.AppSettings["APIToken"]));
 						request.AddHeader("Content-Type", "application/json");
 						request.AddParameter("application/json; charset=utf-8", JsonConvert.SerializeObject(appUser), ParameterType.RequestBody);
 						request.RequestFormat = DataFormat.Json;
@@ -1334,6 +1334,10 @@ namespace OPImportUtility
 			                   "select u.Id, cl.ClaimType, 1 from AspNetUsers u, AspNetUserRoles ur, AspNetRoles r, PaxolFeatureClaim cl " +
 			                   "where u.Id=ur.UserId and ur.RoleId=r.Id and cl.AccessLevel<=r.Id " +
 			                   "and not exists(select 'x' from AspNetUserClaims where UserId=u.Id and ClaimType=cl.ClaimType)", new {});
+
+			write.ExecuteQuery("update u set active=0 from AspNetUsers u, AspNetUserRoles ur, Company c " +
+												 "where u.Id=ur.UserId and ur.RoleId in (10, 30) and u.Company=c.Id and u.Active=1 and c.StatusId>1;", new { });
+
 			Logger.Info("Finsihed importing users");
 				
 		}

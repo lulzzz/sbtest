@@ -23,5 +23,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object GetHostHomePageByFirmName(string firmName, Guid host);
 
 		HostAndCompanies GetHostAndCompanies(Guid host, Guid company, string role);
+		object GetHostHomePageById(int hostId, Guid user);
 	}
 }

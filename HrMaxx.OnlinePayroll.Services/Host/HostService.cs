@@ -267,5 +267,27 @@ namespace HrMaxx.OnlinePayroll.Services.Host
 		{
 			throw new NotImplementedException();
 		}
+
+		public object GetHostHomePageById(int hostId, Guid user)
+		{
+			try
+			{
+				var host = _hostRepository.GetHostById(hostId);
+				var homepage = GetHostHomePage(host.Id);
+				var address = _commonService.FirstRelatedEntity<Address>(EntityTypeEnum.Host, EntityTypeEnum.Address, host.Id);
+				if (address.CountryId == 0)
+				{
+					address = host.Company.BusinessAddress;
+				}
+				var newsfeed = _commonService.GetNewsforUser((int)RoleTypeEnum.Host, host.Id);
+				return new { HostId = host.Id, HomePage = homepage, Address = address, Newsfeed = newsfeed };
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Host home page for firm Id {0}", hostId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

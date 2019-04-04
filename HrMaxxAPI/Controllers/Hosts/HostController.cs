@@ -77,6 +77,13 @@ namespace HrMaxxAPI.Controllers.Hosts
 		{
 			return MakeServiceCall(() => _hostService.GetHostHomePageByFirmName(firmName, CurrentUser.Host), "Get home page for the host", true);
 		}
+		[HttpGet]
+		[AllowAnonymous]
+		[Route(HostRoutes.HostWelcomeById)]
+		public object GetHostWelcomeById(int hostId)
+		{
+			return MakeServiceCall(() => _hostService.GetHostHomePageById(hostId, CurrentUser.Host), "Get home page for the host", true);
+		}
 
 		[HttpGet]
 		[Route(HostRoutes.HostHomePageForEdit)]

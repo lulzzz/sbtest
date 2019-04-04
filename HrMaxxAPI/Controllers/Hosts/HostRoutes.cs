@@ -11,6 +11,7 @@
 		public const string HostLogoUpload = "Document/HomePageImage";
 		public const string HostWelcome = "Host/HostWelcome/{url}";
 		public const string HostWelcomeByFirmName = "Host/HostWelcomeByFirmName/{firmName}";
+		public const string HostWelcomeById = "Host/HostWelcomeByIntId/{hostId}";
 
 		public const string NewsMetaData = "Host/NewsMetaData";
 		public const string MyHost = "Host/MyHost";

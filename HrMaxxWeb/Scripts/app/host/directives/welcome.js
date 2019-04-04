@@ -50,7 +50,23 @@ common.directive('welcome', ['zionAPI', '$location','localStorageService','versi
 				}
 				var init = function () {
 					var querystring = $location.search();
-					if (querystring.host) {
+					if (querystring.hostid) {
+						var hostId = querystring.hostid;
+						hostRepository.getHostWelcomePageByFirmId(hostId).then(function (data) {
+							$scope.data = angular.copy(data.homePage);
+							$scope.hostaddress = data.address;
+							$scope.hostId = data.hostId;
+							if (!authService.isLoggedIn())
+								$scope.newsfeed = data.newsfeed;
+							localStorageService.set('hostId', $scope.hostId);
+							if ($scope.data) {
+								localStorageService.set('hostlogo', $scope.data.logo);
+							}
+						}, function (erorr) {
+							addAlert('error getting host home page details', 'danger');
+						});
+
+					} else if (querystring.host) {
 						var hostname = querystring.host.split(".")[0];
 						hostRepository.getHostWelcomePageByFirmName(hostname).then(function (data) {
 							$scope.data = angular.copy(data.homePage);

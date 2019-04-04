@@ -117,5 +117,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 				return _mapper.Map<Models.DataModel.Host, Models.Host>(host);
 			}
 		}
+
+		public Models.Host GetHostById(int hostId)
+		{
+			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.HostIntId.Equals(hostId));
+			if (cpa == null)
+				return new Models.Host();
+			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);
+		}
 	}
 }
