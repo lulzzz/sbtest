@@ -425,11 +425,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					{
 						ytdAccumulation = currentAccumulaiton.YTDFiscal;
 						ytdUsed = currentAccumulaiton.YTDUsed;
-						//carryOver = accum.CarryOver;
+						if(payType.PayType.Id!=6)
+							carryOver = currentAccumulaiton.CarryOver;
 
 					}
 
-					if (ytdAccumulation > payType.AnnualLimit)
+					if (payType.AnnualLimit>0 && ytdAccumulation > payType.AnnualLimit)
 						ytdAccumulation = payType.AnnualLimit;
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
@@ -622,46 +623,54 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				return payType.AnnualLimit - ytd;
 			}
-
-			if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWork)
+			else if (payType.Option == AccumulatedPayTypeOption.ByPayPeriodPerDay)
 			{
-				return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours)*payType.RatePerHour;
-			}
-			else if (paycheck.Employee.PayType == EmployeeType.JobCost)
-			{
-				var val = perDayQuotient * payType.RatePerHour;
-				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
-					return 7 * val;
-				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
-					return 14 * val;
-				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
-					return 15 * val;
-				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Monthly)
-					return DateTime.DaysInMonth(paycheck.PayDay.Year, paycheck.PayDay.Month) * val;
-				else
-				{
-					return 0;
-				}
+				var days = Convert.ToDecimal((paycheck.EndDate - paycheck.StartDate).TotalDays + 1 );
+				return Math.Round(payType.RatePerHour*days, 2);
 			}
 			else
 			{
-				if (paycheck.Employee.Rate <= 0)
-					return 0;
-				
-				var val = (paycheck.Salary/paycheck.Employee.Rate)*perDayQuotient*payType.RatePerHour;
-				if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
-					return 7*val;
-				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
-					return 14*val;
-				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
-					return 15*val;
-				else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Monthly)
-					return DateTime.DaysInMonth(paycheck.PayDay.Year, paycheck.PayDay.Month) * val;
+				if (paycheck.Employee.PayType == EmployeeType.Hourly || paycheck.Employee.PayType == EmployeeType.PieceWork)
+				{
+					return paycheck.PayCodes.Sum(pc => pc.Hours + pc.OvertimeHours) * payType.RatePerHour;
+				}
+				else if (paycheck.Employee.PayType == EmployeeType.JobCost)
+				{
+					var val = perDayQuotient * payType.RatePerHour;
+					if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
+						return 7 * val;
+					else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
+						return 14 * val;
+					else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
+						return 15 * val;
+					else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Monthly)
+						return DateTime.DaysInMonth(paycheck.PayDay.Year, paycheck.PayDay.Month) * val;
+					else
+					{
+						return 0;
+					}
+				}
 				else
 				{
-					return 0;
+					if (paycheck.Employee.Rate <= 0)
+						return 0;
+
+					var val = (paycheck.Salary / paycheck.Employee.Rate) * perDayQuotient * payType.RatePerHour;
+					if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Weekly)
+						return 7 * val;
+					else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly)
+						return 14 * val;
+					else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.SemiMonthly)
+						return 15 * val;
+					else if (paycheck.Employee.PayrollSchedule == PayrollSchedule.Monthly)
+						return DateTime.DaysInMonth(paycheck.PayDay.Year, paycheck.PayDay.Month) * val;
+					else
+					{
+						return 0;
+					}
 				}
 			}
+			
 		}
 
 		private DateTime CalculateFiscalStartDate(DateTime hireDate, DateTime payDay, AccumulatedPayType payType)
@@ -4047,10 +4056,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var payChecks = _readerService.GetPayChecks(employeeId: employeeId);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					payChecks.Where(pc => pc.Accumulations != null && pc.Accumulations.Any(ac => ac.FiscalStart.Date == mapped.FiscalStart.Date && ac.FiscalEnd.Date == mapped.FiscalEnd.Date)).ToList().ForEach(
+					payChecks.Where(pc => pc.Accumulations != null && pc.Accumulations.Any(ac => ac.PayType.PayType.Id==mapped.PayTypeId && ac.FiscalStart.Date == mapped.FiscalStart.Date && ac.FiscalEnd.Date == mapped.FiscalEnd.Date)).ToList().ForEach(
 						pc =>
 						{
-							pc.Accumulations.Where(ac => ac.FiscalStart.Date == mapped.FiscalStart.Date && ac.FiscalEnd.Date == mapped.FiscalEnd.Date).ToList().ForEach(
+							pc.Accumulations.Where(ac => ac.PayType.PayType.Id == mapped.PayTypeId && ac.FiscalStart.Date == mapped.FiscalStart.Date && ac.FiscalEnd.Date == mapped.FiscalEnd.Date).ToList().ForEach(
 								ac =>
 								{
 									ac.FiscalStart = newFiscalStart;

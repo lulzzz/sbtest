@@ -986,6 +986,118 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
+	  public ExtractResponse GetExtractAccumulationReverse(string report, int masterExtractId, Guid? hostId = null,
+		  DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,
+		  bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
+		  bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false,
+		  bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true,
+		  bool checkTaxPaymentFlag = true, string extractDepositName = null)
+	  {
+			try
+			{
+				var paramList = new List<FilterParam>();
+				paramList.Add(new FilterParam { Key = "report", Value = report });
+				paramList.Add(new FilterParam { Key = "masterExtractId", Value = masterExtractId.ToString() });
+				
+				if (depositSchedule941 != null)
+				{
+					paramList.Add(new FilterParam { Key = "depositSchedule", Value = ((int)depositSchedule941).ToString() });
+				}
+				if (hostId != Guid.Empty)
+				{
+					paramList.Add(new FilterParam { Key = "host", Value = hostId.ToString() });
+
+				}
+				if (includeVoids)
+				{
+					paramList.Add(new FilterParam { Key = "includeVoids", Value = includeVoids.ToString() });
+				}
+				if (includeTaxes)
+				{
+					paramList.Add(new FilterParam { Key = "includeTaxes", Value = includeTaxes.ToString() });
+				}
+				if (includedDeductions)
+				{
+					paramList.Add(new FilterParam { Key = "includeDeductions", Value = includedDeductions.ToString() });
+				}
+				if (includedCompensations)
+				{
+					paramList.Add(new FilterParam { Key = "includeCompensations", Value = includedCompensations.ToString() });
+				}
+				if (includeWorkerCompensations)
+				{
+					paramList.Add(new FilterParam { Key = "includeWorkerCompensations", Value = includeWorkerCompensations.ToString() });
+				}
+				if (includePayCodes)
+				{
+					paramList.Add(new FilterParam { Key = "includePayCodes", Value = includePayCodes.ToString() });
+				}
+				if (includeDailyAccumulation)
+				{
+					paramList.Add(new FilterParam { Key = "includeDailyAccumulation", Value = includeDailyAccumulation.ToString() });
+				}
+				if (includeMonthlyAccumulation)
+				{
+					paramList.Add(new FilterParam { Key = "includeMonthlyAccumulation", Value = includeMonthlyAccumulation.ToString() });
+				}
+				if (includeHistory)
+				{
+					paramList.Add(new FilterParam { Key = "includeHistory", Value = includeHistory.ToString() });
+				}
+				if (includeC1095)
+				{
+					paramList.Add(new FilterParam { Key = "includeC1095", Value = includeC1095.ToString() });
+				}
+				if (!checkEFileFormsFlag)
+				{
+					paramList.Add(new FilterParam { Key = "CheckEFileFormsFlag", Value = checkEFileFormsFlag.ToString() });
+				}
+				if (!checkTaxPaymentFlag)
+				{
+					paramList.Add(new FilterParam { Key = "CheckTaxPaymentFlag", Value = checkTaxPaymentFlag.ToString() });
+				}
+				if (!string.IsNullOrWhiteSpace(extractDepositName))
+				{
+					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
+				}
+
+				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
+					"GetExtractAccumulationReverse", paramList);
+				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
+				dbReport.Hosts.ForEach(c =>
+				{
+					var contact = new List<Contact>();
+					//c.Contacts.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					var returnHost = returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id);
+					if (returnHost.Host.IsPeoHost && returnHost.HostCompany.FileUnderHost)
+					{
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.Host.Id)
+							.ToList()
+							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					}
+					else
+					{
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.HostCompany.Id)
+							.ToList()
+							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
+					}
+
+					var selcontact = contact.Any(c2 => c2.IsPrimary) ? contact.First(c1 => c1.IsPrimary) : contact.FirstOrDefault();
+					if (selcontact != null)
+					{
+						returnHost.Contact = selcontact;
+					}
+				});
+				return returnVal;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data Reverse {0}-{1}-{2}", report, masterExtractId, depositSchedule941));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+	  }
+
 	  public ExtractResponse GetTaxEligibilityAccumulation(DepositSchedule941? depositSchedule)
 	  {
 			try

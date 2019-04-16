@@ -18,6 +18,7 @@ namespace HrMaxx.Common.Repository.Files
 		byte[] GetFileBytesByPath(string documentPath);
 		byte[] GetSourceFileBytesByPath(string documentPath);
 
+		bool ArchiveFileExists(string rootdirectory, string directory, string fileName);
 		string GetArchiveJson(string rootdirectory, string directory, string fileName);
 		void SaveArchiveJson(string rootdirectory, string directory, string fileName, string data);
 

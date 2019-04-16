@@ -183,6 +183,7 @@
           <Property Name="CompanyManaged" Type="bit" Nullable="false" />
           <Property Name="IsLumpSum" Type="bit" Nullable="false" />
           <Property Name="IsEmployeeSpecific" Type="bit" Nullable="false" />
+          <Property Name="Option" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyContract">
           <Key>
@@ -2105,6 +2106,7 @@
           <Property Name="CompanyManaged" Type="Boolean" Nullable="false" />
           <Property Name="IsLumpSum" Type="Boolean" Nullable="false" />
           <Property Name="IsEmployeeSpecific" Type="Boolean" Nullable="false" />
+          <Property Name="Option" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyAccumlatedPayType_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3315,6 +3317,7 @@
           <EntitySetMapping Name="CompanyAccumlatedPayTypes">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyAccumlatedPayType">
               <MappingFragment StoreEntitySet="CompanyAccumlatedPayType">
+                <ScalarProperty Name="Option" ColumnName="Option" />
                 <ScalarProperty Name="IsEmployeeSpecific" ColumnName="IsEmployeeSpecific" />
                 <ScalarProperty Name="IsLumpSum" ColumnName="IsLumpSum" />
                 <ScalarProperty Name="CompanyManaged" ColumnName="CompanyManaged" />

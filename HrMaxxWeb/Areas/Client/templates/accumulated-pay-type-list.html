@@ -6,8 +6,9 @@
 		<thead>
 			<tr>
 				<td class="col-sm-2">Pay Type</td>
-				<td class="col-sm-2">Rate Per Hour (upto 4 decimal)</td>
-				<td class="col-sm-2">Annual Limit (Hrs per Employee)</td>
+				<td class="col-sm-1">Option</td>
+				<td class="col-sm-1">Rate (upto 4 decimal)</td>
+				<td class="col-sm-1">Annual Limit</td>
 				<td class="col-sm-1">Is Company Managed?</td>
 				<td class="col-sm-1">Is LumpSum?</td>
 				<td class="col-sm-1">Is Employee Specific?</td>
@@ -22,8 +23,13 @@
 					</span>
 				</td>
 				<td>
+					<span e-ng-change="item.option = $data.id;" editable-select="item.option" e-name="opt" e-form="rowform" e-ng-options="option.id as option.text for option in leaveOptions track by option.id">
+						{{ item.option? leaveOptions[1].text : leaveOptions[0].text }}
+					</span>
+				</td>
+				<td>
 					<span e-ng-change="item.ratePerHour = $data" editable-number="item.ratePerHour" e-name="rate" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,4})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.ratePerHour }}
+						{{ item.ratePerHour }} 
 					</span>
 				</td>
 				<td>

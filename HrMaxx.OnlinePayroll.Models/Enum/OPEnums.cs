@@ -554,6 +554,11 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		EmployeeLastName=2
 	}
 
+	public enum AccumulatedPayTypeOption
+	{
+		Default=0,
+		ByPayPeriodPerDay=1
+	}
 	public enum USStates
 	{
 		[HrMaxxSecurity(DbId = 1, DbName = "California", HrMaxxName = "CA")]

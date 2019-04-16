@@ -33,6 +33,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IncludeTaxDelayed { get; set; }
 		public bool CheckEFileFormsFlag { get; set; }
 		public bool CheckTaxPaymentFlag { get; set; }
+		public int MasterExtractId { get; set; }
+		public bool IsReverse { get; set; }
 
 		public string ExtractDepositName
 		{

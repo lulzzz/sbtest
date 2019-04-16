@@ -23,6 +23,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Common.Repository.Files;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Infrastructure.Attributes;
 using HrMaxx.Infrastructure.Helpers;
@@ -153,7 +154,10 @@ namespace OPImportUtility
 					SemiWeeklyExtract(container, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly,
 						new List<int> { 7, 8 }, "StateCAPIT", 1, true, year);
 					break;
-				
+				case 14:
+					Console.WriteLine("Fill Extracts files");
+					FillExtracts(container);
+					break;
 				default:
 					break;
 			}
@@ -472,6 +476,53 @@ namespace OPImportUtility
 				counter = write.AddExtract(extract, e.ToList());
 			});
 			return counter;
+		}
+		private static void FillExtract(IContainer scope, string extractName)
+		{
+			var reader = scope.Resolve<IReaderService>();
+			var reportservice = scope.Resolve<IReportService>();
+			var _fileRepository = scope.Resolve<IFileRepository>();
+			var extracts = reader.GetExtracts(extractName);
+			extracts =
+				extracts.Where(
+					e => !_fileRepository.ArchiveFileExists(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString())).ToList();
+			extracts.ForEach(e =>
+			{
+				
+				var extract = new Extract();
+				var reportrequest = new ReportRequest()
+				{
+					MasterExtractId = e.Id,
+					DepositDate = e.DepositDate,
+					StartDate = e.StartDate,
+					EndDate = e.EndDate,
+					IncludeHistory = true,
+					ReportName = extractName,
+					IsReverse = true
+				};
+				if(e.StartDate.Day==1 && e.StartDate.Month==e.EndDate.Month && e.EndDate.Day==DateTime.DaysInMonth(e.EndDate.Year, e.EndDate.Month))
+					reportrequest.DepositSchedule=DepositSchedule941.Monthly;
+				else if (e.StartDate.Day == 1 && e.StartDate.Month != e.EndDate.Month && e.EndDate.Day == DateTime.DaysInMonth(e.EndDate.Year, e.EndDate.Month))
+					reportrequest.DepositSchedule = DepositSchedule941.Quarterly;
+				else
+				{
+					reportrequest.DepositSchedule = DepositSchedule941.SemiWeekly;
+				}
+
+				try
+				{
+					extract = reportservice.GetExtractDocument(reportrequest);
+					_fileRepository.SaveArchiveJson(ArchiveTypes.Extract.GetDbName(), string.Empty, e.Id.ToString(), JsonConvert.SerializeObject(extract));
+				}
+				catch (Exception)
+				{
+					
+				}
+				
+				
+			});
+
+			Logger.Info(string.Format("Extract Files Saved {0} - {1}", extractName, extracts.Count));
 		}
 
 		private static int SemiWeeklyExtract(IContainer scope, string memo, DepositSchedule941 schedule, List<int> taxes, string extractName, int counter, bool matchschedule, string year)
@@ -845,7 +896,7 @@ namespace OPImportUtility
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='2/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190937;", new {});
 			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, new List<int> { 6 }, "Federal940", 1, false, 2014);
 			Console.WriteLine("FUTA finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false, 2104);
+			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false, 2014);
 			Console.WriteLine("UI ETT finished {0} ", counter);
 			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 6, 7 }, "StateCAPIT", counter, true, 2014);
 			Console.WriteLine("PIT quarterly finished {0} ", counter);
@@ -865,6 +916,17 @@ namespace OPImportUtility
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='7/25/2017', memo='Taxes Payable-SS, MD and FED Tax Amounts-February' where Id=190938;" +
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='7/21/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts-Febru' where Id=190939;" +
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='7/25/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts-Janua' where Id=190937;", new{});
+		}
+		private static void FillExtracts(IContainer scope)
+		{
+			
+			FillExtract(scope, "Federal940");
+			FillExtract(scope, "StateCAUI");
+			FillExtract(scope, "StateCAPIT");
+			FillExtract(scope, "Federal941");
+			
+			Console.WriteLine("Extracts Filled and Saved");
+			
 		}
 		
 

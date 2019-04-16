@@ -178,6 +178,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool IsLumpSum { get; set; }
 		public bool IsEmployeeSpecific { get; set; }
 		public PayType PayType { get; set; }
+		public int Option { get; set; }
 	}
 	
 	public class PayType

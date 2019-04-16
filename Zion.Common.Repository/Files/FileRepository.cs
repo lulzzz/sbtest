@@ -82,6 +82,11 @@ namespace HrMaxx.Common.Repository.Files
 			var filename = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", fileName);
 			return File.ReadAllText(filename);
 		}
+		public bool ArchiveFileExists(string rootdirectory, string directory, string fileName)
+		{
+			var filename = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", fileName);
+			return File.Exists(filename);
+		}
 
 		public void SaveArchiveJson(string rootdirectory, string directory, string name, string data)
 		{

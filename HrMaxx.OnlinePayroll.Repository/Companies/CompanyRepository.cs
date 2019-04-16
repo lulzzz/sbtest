@@ -271,6 +271,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.CompanyManaged = mappedwc.CompanyManaged;
 					wc.IsLumpSum = mappedwc.IsLumpSum;
 					wc.IsEmployeeSpecific = mappedwc.IsEmployeeSpecific;
+					wc.Option = mappedwc.Option;
 				}
 			}
 			_dbContext.SaveChanges();

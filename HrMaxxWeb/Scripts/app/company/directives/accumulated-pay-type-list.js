@@ -20,8 +20,17 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 					$scope.mainData = $scope.$parent.$parent.mainData;
 					$scope.enableIsCompanyManaged = $scope.mainData.hasClaim(ClaimTypes.CompanyAcumulatedPaytypesCompanyManaged, 1);
 					$scope.enableIsLumpSum = $scope.mainData.hasClaim(ClaimTypes.CompanyAccumulatedPayTypesLumpSum, 1);
-					
-					
+
+					$scope.leaveOptions = [
+						{
+							id: 0,
+							text: 'Default (per hour worked)'
+						},
+						{
+							id: 1,
+							text: 'Per Day By Pay Period'
+						}
+					];
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};

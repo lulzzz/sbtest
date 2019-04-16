@@ -66,6 +66,13 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag=true,
 			string extractDepositName=null);
 
+		ExtractResponse GetExtractAccumulationReverse(string report, int masterExtractId, Guid? host = null,
+			DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,
+			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
+			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false,
+			bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag = true,
+			string extractDepositName = null);
+
 		ExtractResponse GetTaxEligibilityAccumulation(DepositSchedule941? depositSchedule);
 
 		//Companies

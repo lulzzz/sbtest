@@ -22,6 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public bool CompanyManaged { get; set; }
         public bool IsLumpSum { get; set; }
         public bool IsEmployeeSpecific { get; set; }
+        public int Option { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual PayType PayType { get; set; }

@@ -44,11 +44,11 @@
 								<label>Ceiling Per Check</label>	
 							</div>
 							<div class="col-sm-6">
-								<span editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+								<span editable-number="item.ceilingPerCheck" e-name="ceilingoercheck" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
 									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? (item.ceilingPerCheck | currency:'$') : 'no deduction' ): 'none'  }}</span>
 									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? ((item.ceilingPerCheck | currency:'') + '%') : 'no deduction'): 'none'  }}</span>
 								</span>
-								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="type" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
+								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="ceilingtype" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
 									
 								</span>
 							</div>

@@ -177,9 +177,11 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<EmployeeDeductionResource, EmployeeDeduction>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method.Key))
 				.ForMember(dest => dest.CeilingMethod, opt => opt.MapFrom(src => src.CeilingMethod.HasValue ? src.CeilingMethod.Value : 1))
-				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue? src.Id : 0));
+				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue? src.Id : 0))
+				.ForMember(dest => dest.CeilingPerCheck, opt => opt.MapFrom(src => src.CeilingPerCheck1));
 			CreateMap<EmployeeDeduction, EmployeeDeductionResource>()
-				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount")));
+				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount")))
+				.ForMember(dest => dest.CeilingPerCheck1, opt => opt.MapFrom(src => src.CeilingPerCheck));
 
 			CreateMap<PayCheckPayTypeAccumulation, PayCheckPayTypeAccumulationResource>()
 				.ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
@@ -269,6 +271,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.IncludeVoids, opt => opt.Ignore())
 				.ForMember(dest => dest.CheckTaxPaymentFlag, opt => opt.Ignore())
 				.ForMember(dest => dest.CheckEFileFormsFlag, opt => opt.Ignore())
+				.ForMember(dest => dest.MasterExtractId, opt => opt.Ignore())
+				.ForMember(dest => dest.IsReverse, opt => opt.MapFrom(src=>false))
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.HasValue ? src.StartDate.Value : DateTime.MinValue))
 				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.HasValue ? src.EndDate.Value : DateTime.MinValue));
 

@@ -282,7 +282,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						return stqtr !== endqytr;
 					}
 					$scope.showpayperiod = function() {
-						alert(dataSvc.filter941.payPeriod.key + '   ' + dataSvc.filter941.payPeriod.startDate + '   ' + dataSvc.filter941.payPeriod.endDate);
+						$scope.$parent.$parent.addAlert('Start Date: ' + dataSvc.filter941.payPeriod.startDate + ' , End Date: ' + dataSvc.filter941.payPeriod.endDate, 'info'); 
 					}
 					var fillPayPeriods = function (year) {
 						var payPeriods = [];

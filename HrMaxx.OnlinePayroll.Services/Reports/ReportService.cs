@@ -951,7 +951,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		
 			//if(request.ReportName.StartsWith("SSA"))
 			//	Log.Info(string.Format("Starting Report {0} - {1}", request.ReportName, DateTime.Now.ToString("hh:mm:ss:fff")));
-			var data = _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
+			var data = request.IsReverse && request.MasterExtractId>0 ?_readerService.GetExtractAccumulationReverse(request.ReportName, request.MasterExtractId,
+				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory
+				, checkEFileFormsFlag: request.CheckEFileFormsFlag, checkTaxPaymentFlag: request.CheckTaxPaymentFlag, extractDepositName: request.ExtractDepositName) : _readerService.GetExtractAccumulation(request.ReportName, request.StartDate, request.EndDate,
 				depositSchedule941: request.DepositSchedule, includeVoids: request.IncludeVoids, includeTaxes: includeTaxes, includedCompensations:includeCompensaitons, includedDeductions:includeDeductions, includeDailyAccumulation:buildDaily, includeMonthlyAccumulation:buildDaily, includeWorkerCompensations: includeWorkerCompensations, includePayCodes: includePayCodes, includeHistory: request.IncludeHistory
 				, checkEFileFormsFlag: request.CheckEFileFormsFlag, checkTaxPaymentFlag: request.CheckTaxPaymentFlag, extractDepositName: request.ExtractDepositName);
 			
@@ -1528,7 +1530,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				Extension = extension
 			};
 			
-			if (!request.AllowExclude)
+			if (!request.AllowExclude || request.IsReverse)
 			{
 				return GetExtractTransformedWithFile(extract);
 			}
