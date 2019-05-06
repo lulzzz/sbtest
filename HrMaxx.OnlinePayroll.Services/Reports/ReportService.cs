@@ -140,10 +140,6 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetW3Report(request);
 				else if (request.ReportName.Equals("Report1099"))
 					return Get1099Report(request);
-				else if (request.ReportName.Equals("CaliforniaDE7"))
-					return GetCaliforniaDE7(request);
-				else if (request.ReportName.Equals("CaliforniaDE6"))
-					return GetCaliforniaDE6(request);
 				else if (request.ReportName.Equals("CaliforniaDE9"))
 					return GetCaliforniaDE9(request);
 				else if (request.ReportName.Equals("CaliforniaDE9C"))
@@ -2316,53 +2312,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/1099/F1099.xslt");
 
 		}
-		private FileDto GetCaliforniaDE7(ReportRequest request)
-		{
-			var response = new ReportResponse();
-
-			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includePayTypeAccumulation: false, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, extractDepositName: request.ExtractDepositName).First();
-			response.Company = GetCompany(request.CompanyId);
-			response.Host = GetHost(request.HostId);
-			if (response.Company.FileUnderHost)
-			{
-				response.Company = response.Host.Company;
-			}
-			var argList = new XsltArgumentList();
-			
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			
-			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE7.xslt");
-
-		}
-		private FileDto GetCaliforniaDE6(ReportRequest request)
-		{
-			var response = new ReportResponse();
-
-			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includedDeductions: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).First();
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
-			response.Company = GetCompany(request.CompanyId); 
-			response.Host = GetHost(request.HostId);
-			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
-
-			var quarterEndDate = new DateTime(request.Year, request.Quarter*3,
-				DateTime.DaysInMonth(request.Year, request.Quarter*3));
-			var dueDate = quarterEndDate.AddDays(1);
-			if (response.Company.FileUnderHost)
-			{
-				response.Company = response.Host.Company;
-			}
-			var argList = new XsltArgumentList();
-
-			argList.AddParam("selectedYear", "", request.Year);
-			argList.AddParam("todaydate", "", DateTime.Today.ToString("MM/dd/yyyy"));
-			argList.AddParam("quarter", "", request.Quarter);
-			argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
-			argList.AddParam("dueDate", "", dueDate.ToString("MM/dd/yyyy"));
-			
-			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/CAForms/DE6.xslt");
-
-		}
+		
 		private FileDto GetCaliforniaDE9(ReportRequest request)
 		{
 			var response = new ReportResponse();

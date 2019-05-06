@@ -413,7 +413,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						payroll.Warnings += string.Format("Employee #{0}, {1} has multiple leave cycles for this Pay Day<br/>", paycheck.Employee.CompanyEmployeeNo, paycheck.Employee.FullName);
 					}
 
-					var carryOver = paycheck.Employee.CarryOver;
+					var carryOver = payType.PayType.Id==6 ? paycheck.Employee.CarryOver : 0;
 					carryOver += previousAccumulations!=null
 						? previousAccumulations.Sum(ac=>ac.YTDFiscal - ac.YTDUsed)
 						: 0;
@@ -421,13 +421,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					var ytdAccumulation = (decimal)0;
 					var ytdUsed = (decimal)0;
 
-					if (currentAccumulaiton!=null)
+					if (currentAccumulaiton != null)
 					{
 						ytdAccumulation = currentAccumulaiton.YTDFiscal;
 						ytdUsed = currentAccumulaiton.YTDUsed;
-						if(payType.PayType.Id!=6)
+						if (payType.PayType.Id != 6)
 							carryOver = currentAccumulaiton.CarryOver;
 
+					}
+					else
+					{
+						if (payType.PayType.Id != 6)
+						{
+							carryOver += previousAccumulations != null
+						? previousAccumulations.Sum(ac => ac.CarryOver)
+						: 0;
+						}
 					}
 
 					if (payType.AnnualLimit>0 && ytdAccumulation > payType.AnnualLimit)

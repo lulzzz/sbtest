@@ -34,9 +34,9 @@
 	<xsl:variable name="line12" select="format-number(($line10 - $line11),'######0.00')"/>
 	<xsl:variable name="line13" select="format-number(/ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'######0.00')"/>
 
-	<xsl:variable name="month1" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 2)]/IRS941"/>
-	<xsl:variable name="month2" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 1)]/IRS941"/>
-	<xsl:variable name="month3" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth)]/IRS941"/>
+	<xsl:variable name="month1" select="sum(/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 2)]/IRS941)"/>
+	<xsl:variable name="month2" select="sum(/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 1)]/IRS941)"/>
+	<xsl:variable name="month3" select="sum(/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth)]/IRS941)"/>
 
 	<xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">
@@ -107,7 +107,7 @@
 				<xsl:call-template name="DecimalFieldTemplate"><xsl:with-param name="field1" select="'f2-5'"/><xsl:with-param name="field2" select="'f2-6'"/><xsl:with-param name="val" select="$month1"/></xsl:call-template>				
 				<xsl:call-template name="DecimalFieldTemplate"><xsl:with-param name="field1" select="'f2-7'"/><xsl:with-param name="field2" select="'f2-8'"/><xsl:with-param name="val" select="$month2"/></xsl:call-template>				
 				<xsl:call-template name="DecimalFieldTemplate"><xsl:with-param name="field1" select="'f2-9'"/><xsl:with-param name="field2" select="'f2-10'"/><xsl:with-param name="val" select="$month3"/></xsl:call-template>				
-				<xsl:call-template name="DecimalFieldTemplate"><xsl:with-param name="field1" select="'f2-11'"/><xsl:with-param name="field2" select="'f2-12'"/><xsl:with-param name="val" select="($month1 + $month2 + $month3)"/></xsl:call-template>				
+				<xsl:call-template name="DecimalFieldTemplate"><xsl:with-param name="field1" select="'f2-11'"/><xsl:with-param name="field2" select="'f2-12'"/><xsl:with-param name="val" select="format-number($month1 + $month2 + $month3, '######0.00')"/></xsl:call-template>				
 			</xsl:when>
 			<xsl:when test="DepositSchedule='SemiWeekly'">
 				<xsl:call-template name="CheckTemplate"><xsl:with-param name="name1" select="'c2-3'"/><xsl:with-param name="val1" select="'On'"/></xsl:call-template>

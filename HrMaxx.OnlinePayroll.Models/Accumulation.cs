@@ -32,6 +32,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? LastCheckCompany { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
+		public decimal Rate { get; set; }
 		public string MiddleInitial { get; set; }
 		public string Department { get; set; }
 		public DateTime HireDate { get; set; }

@@ -409,7 +409,9 @@
     <Content Include="templates\transformers\reports\941\Fed941-2015.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2016.xslt" />
     <Content Include="templates\transformers\reports\941\Fed941-2019.xslt" />
-    <Content Include="templates\transformers\reports\941\Fed941-2018.xslt" />
+    <Content Include="templates\transformers\reports\941\Fed941-2018.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\941\Fed941-2017.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944.xslt" />
     <Content Include="templates\transformers\reports\C1095\C1095-2018.xslt">
@@ -418,8 +420,6 @@
     <Content Include="templates\transformers\reports\C1095\C1095-2017.xslt">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="templates\transformers\reports\CAForms\DE6.xslt" />
-    <Content Include="templates\transformers\reports\CAForms\DE7.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />

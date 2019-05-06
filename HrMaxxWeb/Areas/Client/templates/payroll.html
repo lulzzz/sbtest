@@ -57,7 +57,7 @@
 	<pre class="col-sm-12 alert alert-info text-center" ng-if="showList() && company.contract.invoiceSetup.invoiceType===1">
 		<b>These checks will be issued under and paid from {{host.firmName}}'s bank account!</b>
 	</pre>
-	<div class="col-sm-12" ng-if="showList()">
+	<div class="col-sm-12 dt-buttons button-group" ng-if="showList()">
 		<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-play-circle-o m-r-5"></i>process <span class="badge">{{correctChecks()}}</span><span></span></button>
 		<button class="btn btn-sm pull-right" ng-class="{'btn-danger':!data.showingErrors, 'btn-success':data.showingErrors}" ng-click="showErrors()" ng-if="showList()" ng-show="erroneousChecks()>0 || data.showingErrors"><i class="fa fa-thumbs-o-up m-r-5" ng-class="{'fa-thumbs-o-down':!data.showingErrors, 'fa-thumbs-o-up':data.showingErrors}"></i>{{data.showingErrors?'show all' : 'show erorrs (' + erroneousChecks() + ')'}}</button>
 		<button class="btn btn-sm pull-right btn-warning"  ng-click="showWarnings()" ng-if="showList()" ng-show="warningChecks()>0 || data.showingWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWarnings, 'fa-check':data.showingWarnings}"></i>{{data.showingWarnings?'show all' : 'min wage! (' + warningChecks() + ')'}}</button>

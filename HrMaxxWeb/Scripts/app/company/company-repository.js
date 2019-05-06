@@ -381,9 +381,9 @@ common.factory('companyRepository', [
 				});
 				return deferred.promise;
 			},
-			uploadWCRates: function(list) {
+			uploadWCRates: function(list, option) {
 				var deferred = $q.defer();
-				companyServer.all('UpdateWCRates').post({ rates: list }).then(function () {
+				companyServer.all('UpdateWCRates').post({ rates: list , wcImportOption: option}).then(function () {
 					deferred.resolve();
 				}, function (error) {
 					deferred.reject(error);

@@ -11,7 +11,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 	{
 		public Guid CompanyId { get; set; }
 		public string CompanyName { get; set; }
-		public int ClientNo { get; set; }
+		public string ClientNo { get; set; }
 		public int Code { get; set; }
 		public decimal? CurrentRate { get; set; }
 		public decimal ProposedRate { get; set; }
@@ -19,11 +19,11 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public static List<CompanyWorkerCompensationRatesResource> FillFromImport(ExcelRead er, List<Company> companies, ImportMap importMap)
 		{
 			var returnList = new List<CompanyWorkerCompensationRatesResource>();
-			var clientNo = Convert.ToInt32(er.ValueFromContains("ClientNo"));
+			var clientNo = er.ValueFromContains("ClientNo");
 			var proposedRate = Convert.ToDecimal(er.ValueFromContains("Rate"));
 			var code = Convert.ToInt32(er.ValueFromContains("Code"));
 
-			companies.Where(c=>Convert.ToInt32(c.InsuranceClientNo)==clientNo).ToList().ForEach(c =>
+			companies.Where(c=>!string.IsNullOrWhiteSpace(c.InsuranceClientNo) && c.InsuranceClientNo==clientNo).ToList().ForEach(c =>
 			{
 				var wcr = new CompanyWorkerCompensationRatesResource()
 				{
@@ -38,6 +38,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 	public class UpdateWCRatesResource
 	{
+		public int WCImportOption { get; set; }
 		public List<CompanyWorkerCompensationRatesResource> Rates { get; set; } 
 	}
 }

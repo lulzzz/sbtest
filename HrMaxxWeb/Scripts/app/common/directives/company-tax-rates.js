@@ -44,12 +44,13 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						currentYear: new Date().getFullYear(),
 						minWageCriteria: {
 							contractType: 2, minEmployeeCount:null, maxEmployeeCount: null, minWage:null, statusId:0, city:'', payrollYear: (new Date().getFullYear() - 1)
-						}
+						},
+						wcImportOption: 1
 					}
 					$scope.data = dataSvc;
 					$scope.importMap = {
 						startingRow: 2,
-						columnCount: 5,
+						columnCount: 10,
 						lastRow: null,
 						columnMap: [
 						{
@@ -251,7 +252,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 					}
 					$scope.uploadWCRates = function() {
 						$scope.$parent.$parent.confirmDialog('this will update all matching valid WC rates, do you wish to continue?', 'danger', function () {
-							companyRepository.uploadWCRates($scope.listWCRates).then(function (timesheets) {
+							companyRepository.uploadWCRates($scope.listWCRates, dataSvc.wcImportOption).then(function (timesheets) {
 
 								addAlert('successfully updated WC Rates in the system', 'success');
 

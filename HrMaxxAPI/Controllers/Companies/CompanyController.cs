@@ -569,7 +569,7 @@ namespace HrMaxxAPI.Controllers.Companies
 
 				throw new HttpResponseException(new HttpResponseMessage
 				{
-					StatusCode = HttpStatusCode.InternalServerError,
+					StatusCode = HttpStatusCode.InternalServerError, 
 					ReasonPhrase = e.Message
 				});
 			}
@@ -635,11 +635,11 @@ namespace HrMaxxAPI.Controllers.Companies
 
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(CompanyRoutes.UpdateWCRates)]
-		public HttpStatusCode CopyCompany(UpdateWCRatesResource resource)
+		public HttpStatusCode UpdateWCRates(UpdateWCRatesResource resource)
 		{
 			var rates = Mapper.Map<List<CompanyWorkerCompensationRatesResource>, List<CompanyWorkerCompensation >> (resource.Rates);
 			
-			MakeServiceCall(() => _companyService.UpdateWCRates(rates, CurrentUser.FullName, new Guid(CurrentUser.UserId)), "update WC Rates");
+			MakeServiceCall(() => _companyService.UpdateWCRates(rates, CurrentUser.FullName, new Guid(CurrentUser.UserId), resource.WCImportOption), "update WC Rates");
 			return HttpStatusCode.OK;
 		}
 

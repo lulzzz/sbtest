@@ -55,18 +55,7 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 							includeHistory: true,
 							includeClients: false
 						},
-						filterde7: {
-							year: 0,
-							quarter: 0,
-							includeHistory: true,
-							includeClients: false
-						},
-						filterde6: {
-							year: 0,
-							quarter: 0,
-							includeHistory: true,
-							includeClients: false
-						},
+						
 						filterde9: {
 							year: 0,
 							quarter: 0,
@@ -112,12 +101,7 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.getReport1099 = function () {
 						getReport('Report1099', '1099', dataSvc.filter1099.year, null, dataSvc.filter1099.includeHistory);
 					}
-					$scope.getReportDE6 = function () {
-						getReport('CaliforniaDE6', 'California DE 6', dataSvc.filterde6.year, dataSvc.filterde6.quarter, dataSvc.filterde6.includeHistory, dataSvc.filterde6.includeClients);
-					}
-					$scope.getReportDE7 = function () {
-						getReport('CaliforniaDE7', 'California DE 7', dataSvc.filterde7.year, null, dataSvc.filterde7.includeHistory, dataSvc.filterde7.includeClients);
-					}
+					
 					$scope.getReportDE9 = function () {
 						getReport('CaliforniaDE9', 'California DE 9', dataSvc.filterde9.year, dataSvc.filterde9.quarter, dataSvc.filterde9.includeHistory, dataSvc.filterde9.includeClients);
 						getReport('CaliforniaDE9C', 'California DE 9C', dataSvc.filterde9.year, dataSvc.filterde9.quarter, dataSvc.filterde9.includeHistory, dataSvc.filterde9.includeClients);

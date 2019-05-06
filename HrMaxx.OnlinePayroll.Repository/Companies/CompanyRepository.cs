@@ -686,12 +686,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 		}
 
-		public void SaveWorkerCompensations(List<CompanyWorkerCompensation> rates)
+		public void SaveWorkerCompensations(List<CompanyWorkerCompensation> rates, int wcImportOption)
 		{
-			const string update = @"update CompanyWorkerCompensation set Rate=@Rate where CompanyId=@CompanyId and Code=@Code;";
+			string update = @"update CompanyWorkerCompensation set Rate=@Rate where CompanyId=@CompanyId and Code=@Code {0}";
+			var query = string.Format(update, wcImportOption == 2 ? " and Rate<@Rate;" : ";");
 			using (var conn = GetConnection())
 			{
-				conn.Execute(update, rates);
+				conn.Execute(query, rates);
 			}
 		}
 

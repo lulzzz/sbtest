@@ -12,7 +12,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="item in list track by $index">
+			<tr ng-repeat="item in list | orderBy:'taxYear' track by $index">
 				<td>
 					<span>
 						{{ item.taxYear }}

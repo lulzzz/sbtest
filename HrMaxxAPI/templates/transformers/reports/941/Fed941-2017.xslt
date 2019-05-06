@@ -34,9 +34,9 @@
 	<xsl:variable name="line12" select="format-number(($line10 - $line11),'######0.00')"/>
 	<xsl:variable name="line13" select="format-number(/ReportResponse/CompanyAccumulations/PayCheckWages/DepositAmount,'######0.00')"/>
 
-	<xsl:variable name="month1" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 2)]/IRS941"/>
-	<xsl:variable name="month2" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 1)]/IRS941"/>
-	<xsl:variable name="month3" select="/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth)]/IRS941"/>
+	<xsl:variable name="month1" select="sum(/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 2)]/IRS941)"/>
+	<xsl:variable name="month2" select="sum(/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth - 1)]/IRS941)"/>
+	<xsl:variable name="month3" select="sum(/ReportResponse/CompanyAccumulations/MonthlyAccumulations/MonthlyAccumulation[Month=($endQuarterMonth)]/IRS941)"/>
 
 	<xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">

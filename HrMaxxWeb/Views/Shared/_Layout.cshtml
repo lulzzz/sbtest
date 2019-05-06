@@ -85,6 +85,10 @@
 					<div class="col-sm-6 text-left"><strong>Pay Type:</strong></div>
 					<div class="col-sm-6 text-right">{{pc.payType===1? 'Hourly' : pc.payType===2? 'Salary' : 'Piece-wise'}}</div>
 				</div>
+				<div class="col-sm-12">
+					<div class="col-sm-6 text-left"><strong>Rate:</strong></div>
+					<div class="col-sm-6 text-right">{{pc.rate | currency:'$'}}</div>
+				</div>
 
 			</script>
 			<script type="text/ng-template" id="paytype.html">

@@ -22,14 +22,14 @@
 			<div class="row hidden-print">
 				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="true" show-include-clients="showincludeclients" show-include-client-employees="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
 			</div>
-			<div ng-show="data.response.employeeAccumulationList.length===0" class="table table-bordered">
+			<div ng-show="data.response.employeeAccumulationList.length===0" class="table">
 				No results found
 			</div>
 			<div ng-show="data.response.employeeAccumulationList.length>0" class="row text-center p-5">
 				<strong><em>Payroll Summary <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
 			</div>
 			<div class="col-sm-12 table-responsive" ng-show="data.response.employeeAccumulationList.length>0">
-				<table class="table table-condensed table-bordered">
+				<table class="table table-striped">
 					<thead>
 						<tr>
 							<th class="col-sm-1 text-center">Total Cash Requirement</th>
@@ -99,7 +99,7 @@
 						</tr>
 					</tbody>
 				</table>
-				<table class="table table-condensed table-bordered">
+				<table class="table table-striped">
 					<thead>
 						<tr>
 							<th class="col-sm-1 text-center">Wage Type</th>
@@ -163,7 +163,7 @@
 						</tr>
 					</tbody>
 				</table>
-				<table class="table table-condensed table-bordered">
+				<table class="table table-striped">
 					<thead>
 						<tr>
 							<th class="col-sm-2 text-center">Employee</th>
@@ -180,7 +180,7 @@
 						<tr ng-repeat="pc in data.response.employeeAccumulationList">
 							<td>
 								<div id="pc.id" ng-model="pc" ng-include="'employee.html'" class="row"></div>
-								<br/>
+								<br />
 								<div class="row" ng-include="'paytype.html'" ng-repeat="pt in pc.accumulations" id="pt.id"></div>
 							</td>
 							<td colspan="2">

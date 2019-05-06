@@ -82,8 +82,15 @@
 					<div class="form-group">
 						<label>First Row</label>
 						<input class="form-control"
-									 type="number"
-									 ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+						       type="number"
+						       ng-model="importMap.startingRow" required data-parsley-pattern="/^[0-9]{1,5}?$/" data-parsley-min="1" />
+					</div>
+					<div class="form-group">
+						<label>Option</label>
+						<select ng-model="data.wcImportOption" name="status" class="form-control" convert-to-number>
+							<option value="1">Import File As Is</option>
+							<option value="2">Import increased rates - Only</option>
+						</select>
 					</div>
 					<div class="form-group">
 						<table class="table table-header table-bordered table-condensed form-controls input-sm">
@@ -98,10 +105,7 @@
 								<tr ng-repeat="f in importMap.columnMap track by $index">
 
 									<td>
-										<!-- editable tesltra worktype (select-local) -->
-										<span e-ng-change="f.key = $data;" editable-select="f.key" e-name="key" e-form="rowform" e-ng-options="field for field in availableColumns($index)">
-											{{ f.key }}
-										</span>
+										{{f.key}}
 									</td>
 									<td>
 										<span editable-number="f.value" e-name="fvalue" e-form="rowform" e-ng-change="f.value = $data" e-ng-pattern="/^[0-9]+?$/" e-step="1" e-style="width:10em;" e-ng-min="1" e-ng-max="importMap.columnCount">

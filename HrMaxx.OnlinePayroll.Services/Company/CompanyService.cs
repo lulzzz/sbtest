@@ -720,13 +720,13 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public void UpdateWCRates(List<CompanyWorkerCompensation> rates, string fullName, Guid guid)
+		public void UpdateWCRates(List<CompanyWorkerCompensation> rates, string fullName, Guid guid, int wcImportOption)
 		{
 			try
 			{
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					_companyRepository.SaveWorkerCompensations(rates);	
+					_companyRepository.SaveWorkerCompensations(rates, wcImportOption);	
 					txn.Complete();
 				}
 			}

@@ -400,10 +400,10 @@ select * into #tmpComp
 	(
 		select HostCompany.*,
 		(
-			select ctr.Id, ctr.CompanyId, ctr.TaxId, t.Code as TaxCode, ctr.TaxYear, ctr.Rate
-			from CompanyTaxRate ctr, Tax t
-			where ctr.TaxId=t.Id and ctr.TaxYear=year(@startdateL)
-			and ctr.CompanyId=Company.Id
+			select 
+			isnull(ctr.Id,0) Id, Company.Id CompanyId, t.Id TaxId, t.Code as TaxCode, year(@startdateL) TaxYear, isnull(ctr.Rate, t.defaultrate) Rate
+			from Tax t left outer join CompanyTaxRate ctr on t.Id=ctr.TaxId and ctr.TaxYear=year(@startdateL) and CompanyId=Company.Id
+			where t.IsCompanySpecific=1
 			for xml path('CompanyTaxRate'), Elements, type
 		) CompanyTaxRates,
 		case when @includeC1095L=1 then

@@ -184,8 +184,8 @@ a.thumbnail.active {
 	color: red;
 }
 .table th {
-            background-color: #1ab394!important;
-            color: #ffffff!important;
+            background-color: #c1ccd1!important;
+            color: #333!important;
         }
 .table-invoice th {
             background-color: transparent!important;
