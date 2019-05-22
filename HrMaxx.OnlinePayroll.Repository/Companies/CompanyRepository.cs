@@ -746,5 +746,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				return _mapper.Map<CompanyAccount, Account>(account);
 			}
 		}
+
+		public void UpdateEmployeePayrollSchedules(Guid id, PayrollSchedule payrollSchedule)
+		{
+			const string sql = "update Employee set PayrollSchedule=@PayrollSchedule where CompanyId=@CompanyId";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new {CompanyId = id, PayrollSchedule = (int) payrollSchedule});
+			}
+		}
 	}
 }

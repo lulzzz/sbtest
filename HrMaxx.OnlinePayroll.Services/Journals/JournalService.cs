@@ -281,33 +281,43 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 		{
 			try
 			{
+				var vendors = _companyService.GetVendorCustomers(journal.CompanyId, true);
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					journal.PayrollPayCheckId = null;
 
 					if (journal.TransactionType == TransactionType.RegularCheck  && journal.PayeeId == Guid.Empty)
 					{
-						if (journal.EntityType == EntityTypeEnum.Vendor)
-						{
-							var vc = new VendorCustomer();
-							vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, journal.PayeeName,
-								journal.EntityType == EntityTypeEnum.Vendor, journal.LastModifiedBy);
-							var savedVC = _companyService.SaveVendorCustomers(vc);
-							journal.PayeeId = savedVC.Id;
-							journal.PayeeName = savedVC.Name;
+						if (journal.EntityType == EntityTypeEnum.Vendor){
+							
+							if (vendors.Any(v => v.Name.ToLower() == journal.PayeeName.ToLower()))
+							{
+								journal.PayeeId = vendors.First(v => v.Name.ToLower() == journal.PayeeName.ToLower()).Id;
+							}
+							else
+							{
+								var vc = new VendorCustomer();
+								vc.SetVendorCustomer(CombGuid.Generate(), journal.CompanyId, journal.PayeeName,
+									journal.EntityType == EntityTypeEnum.Vendor, journal.LastModifiedBy);
+								var savedVC = _companyService.SaveVendorCustomers(vc);
+								journal.PayeeId = savedVC.Id;
+								journal.PayeeName = savedVC.Name;
+							}
 						}
 					}
 					else if (journal.TransactionType == TransactionType.Deposit || journal.TransactionType == TransactionType.InvoiceDeposit)
 					{
 						if (journal.JournalDetails.Any(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty))
 						{
-							var newVendors = new List<JournalPayee>();
 							var jds = journal.JournalDetails.Where(jd => jd.Payee != null && jd.Payee.Id == Guid.Empty).ToList();
 							jds.ForEach(p =>
 							{
-								if (newVendors.Any(v => v.PayeeName.Equals(p.Payee.PayeeName)))
+								if (vendors.Any(v => v.Name.ToLower().Equals(p.Payee.PayeeName.ToLower())))
 								{
-									p.Payee = newVendors.First(v => v.PayeeName.Equals(p.Payee.PayeeName));
+									var vendor = vendors.First(v => v.Name.ToLower() == p.Payee.PayeeName.ToLower());
+									//p.Payee = newVendors.First(v => v.PayeeName.Equals(p.Payee.PayeeName));
+									p.Payee.PayeeType = EntityTypeEnum.Vendor;
+									p.Payee.Id = vendor.Id;
 								}
 								else
 								{
@@ -317,7 +327,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 									var savedVC = _companyService.SaveVendorCustomers(vc);
 									p.Payee.Id = savedVC.Id;
 									p.Payee.PayeeType = EntityTypeEnum.Vendor;
-									newVendors.Add(p.Payee);
+									vendors.Add(savedVC);
 								}
 
 

@@ -207,7 +207,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public CompanyResource Save(CompanyResource resource)
 		{
 			var mappedResource = Mapper.Map<CompanyResource, Company>(resource);
-			var savedCompany = MakeServiceCall(() => _companyService.Save(mappedResource), "save company details", true);
+			var savedCompany = MakeServiceCall(() => _companyService.Save(mappedResource, updateEmployeeSchedules: resource.UpdateEmployeeSchedules), "save company details", true);
 			return Mapper.Map<Company, CompanyResource>(savedCompany);
 		}
 		[System.Web.Http.HttpPost]

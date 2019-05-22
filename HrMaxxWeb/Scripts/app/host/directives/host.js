@@ -114,22 +114,22 @@ common.directive('host', ['zionAPI','localStorageService','version',
 						if (!b || !b.bankName || !b.accountType || !b.validateRoutingNumber() || !b.routingNumber || !b.accountNumber)
 							return false;
 					}
-					if (c.contractOption === 2 && c.billingOption === 3) {
-						var i = c.invoiceSetup;
-						if (!i)
-							return false;
-						if (i.recurringCharges.length > 0) {
-							var invalidrc = false;
-							$.each(i.recurringCharges, function (index, rc) {
-								if (!rc.description || !rc.amount) {
-									invalidrc = true;
-									return false;
-								}
-							});
-							if (invalidrc)
-								return false;
-						}
-					}
+					//if (c.contractOption === 2 && c.billingOption === 3) {
+					//	var i = c.invoiceSetup;
+					//	if (!i)
+					//		return false;
+					//	if (i.recurringCharges.length > 0) {
+					//		var invalidrc = false;
+					//		$.each(i.recurringCharges, function (index, rc) {
+					//			if (!rc.description || !rc.amount) {
+					//				invalidrc = true;
+					//				return false;
+					//			}
+					//		});
+					//		if (invalidrc)
+					//			return false;
+					//	}
+					//}
 					return true;
 
 				}

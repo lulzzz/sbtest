@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Mementos;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.Enum;
 
 namespace HrMaxx.OnlinePayroll.Repository.Companies
 {
@@ -50,5 +51,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 
 		void SaveCompanyInvoiceSetup(Guid id, string invoiceSetup);
 		Account GetCompanyAccountById(Guid companyId, int accountId);
+		void UpdateEmployeePayrollSchedules(Guid id, PayrollSchedule payrollSchedule);
 	}
 }

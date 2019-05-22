@@ -351,6 +351,7 @@
     <Content Include="Areas\Reports\templates\report-filter.html" />
     <Content Include="Areas\Reports\templates\payroll-register.html" />
     <Content Include="Areas\Reports\templates\reports.html" />
+    <Content Include="Content\switcher.css" />
     <Content Include="Content\templates\datectrl.html" />
     <Content Include="Content\templates\memento-list.html" />
     <Content Include="Content\templates\myprofile.html" />

@@ -128,15 +128,26 @@
 														<label>Payroll Days in Past</label>
 														<input type="text" name="payrolldaysinpast" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" ng-model="selectedCompany.payrollDaysInPast" ng-disabled="!data.enablePayrollDaysInPast" />
 													</div>
-													<div class="form-group">
-														<label>Payroll Schedule</label>
-														<select ng-model="selectedCompany.payrollSchedule" ng-change="selectedCompany.payrollScheduleDay=0" name="scheuled" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number>
-															<option value="1">Weekly</option>
-															<option value="2">Bi-Weekly</option>
-															<option value="3">Semi-Monthly</option>
-															<option value="4">Monthly</option>
+													<div class="form-group col-sm-12">
+														<div class="col-sm-8">
+															<label>Payroll Schedule</label>
+															<select ng-model="selectedCompany.payrollSchedule" ng-change="selectedCompany.payrollScheduleDay=0" name="scheuled" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number>
+																<option value="1">Weekly</option>
+																<option value="2">Bi-Weekly</option>
+																<option value="3">Semi-Monthly</option>
+																<option value="4">Monthly</option>
 
-														</select>
+															</select>
+														</div>
+														<div class="col-sm-4" ng-show="selectedCompany.payrollSchedule!==original.payrollSchedule">
+															<label></label>
+															<div>
+																<label for="updateemployees" class="switch">
+																	Update Employees?
+																	<input id="updateemployees" type="checkbox" ng-model="selectedCompany.updateEmployeeSchedules" /><i></i>
+																</label>
+															</div>
+														</div>
 													</div>
 													<div class="form-group">
 														<label>Minimum Wage</label>
@@ -710,7 +721,7 @@
 							</form>
 						</div>
 						<div class="tab-pane fade in" id="user" ng-if="selectedCompany.id && tab===3" ng-class="{'active':tab===3}">
-							<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="data" />
+							<user-list host-id="selectedCompany.hostId" company-id="selectedCompany.id" employee-id="null" heading="'Company Users'" show-reset-password="true" parent-type-id="data.sourceTypeId" main-data="mainData" />
 						</div>
 						<div class="tab-pane fade in" id="news" ng-if="selectedCompany.id && tab===4" ng-class="{'active':tab===4}">
 							<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data" />

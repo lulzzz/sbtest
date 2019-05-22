@@ -72,7 +72,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public Company Save(Company company)
+		public Company Save(Company company, bool updateEmployeeSchedules = false)
 		{
 			try
 			{
@@ -144,6 +144,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					if (comp != null && savedcompany.MinWage > comp.MinWage)
 					{
 						var employees = _readerService.GetEmployees(company: savedcompany.Id);
+
 						employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < savedcompany.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < savedcompany.MinWage)))
 							.ToList()
 							.ForEach(e =>
@@ -152,8 +153,12 @@ namespace HrMaxx.OnlinePayroll.Services
 								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < savedcompany.MinWage).ToList().ForEach(pc => pc.HourlyRate = savedcompany.MinWage);
 								SaveEmployee(e);
 							});
+						
 					}
-					
+					if (updateEmployeeSchedules && comp.PayrollSchedule != savedcompany.PayrollSchedule)
+					{
+						_companyRepository.UpdateEmployeePayrollSchedules(savedcompany.Id, savedcompany.PayrollSchedule);
+					}
 					
 					txn.Complete();
 

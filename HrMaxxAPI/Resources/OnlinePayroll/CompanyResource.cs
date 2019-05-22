@@ -100,7 +100,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		{
 			get { return DepositSchedule.GetDbName(); }
 		}
-
+		public bool UpdateEmployeeSchedules { get; set; }
 		
 	}
 	public class ContractDetailsResource

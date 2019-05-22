@@ -228,7 +228,7 @@ namespace OPImportUtility
 												 "values(@Id, @CompanyId, @StatusId, @FirstName, @LastName, @MiddleInitial, @Contact, @Gender, @SSN, @BirthDate, @HireDate, @Department, @EmployeeNo, @Memo, @PayrollSchedule, @PayType, @Rate, @PayCodes, @Compensations, @PaymentMethod, @DirectDebitAuthorized, @TaxCategory, @FederalStatus, @FederalExemptions, @FederalAdditionalAmount, @State, @LastModified, @LastModifiedBy, @LastPayrollDate, @WorkerCompensationId, @CompanyEmployeeNo, @Notes, @SickLeaveHireDate, @CarryOver, @EmployeeIntId);" +
 			                   "set identity_insert Employee Off; ";
 			const string dedsql = "insert into EmployeeDeduction(EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId) " +
-			                      "select (select Id from Employee where EmployeeIntId=ed.EmployeeId), ed.DedutionMethod,ed.DeductionAmount,ed.AnnualMaxAmt, " +
+			                      "select (select Id from Employee where EmployeeIntId=ed.EmployeeId), case ed.DedutionMethod when 2 then 1 when 1 then 2 else 0 end,ed.DeductionAmount,ed.AnnualMaxAmt, " +
 														"DeductionID from OnlinePayroll.dbo.Employee_Deduction ed, " +
 			                      "OnlinePayroll.dbo.Employee e where ed.EmployeeId=e.EmployeeId and ed.DeductionID>0 and " +
 			                      "e.CompanyId=@CompanyId;";

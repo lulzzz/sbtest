@@ -66,23 +66,34 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 				
 
 				var setRoleList = function () {
-					if ($scope.mainData.userRole === 'Master') {
+					var currentUserAccessLevel = 100;
+					var contextLevel = 100;
+					if ($scope.employeeId)
+						contextLevel = 0;
+					else if ($scope.companyId)
+						contextLevel = 30;
+					else if ($scope.hostId)
+						contextLevel = 50;
+
+					if ($scope.mainData.userRole === 'SuperUser') {
+						currentUserAccessLevel = 100;
+					} else if ($scope.mainData.userRole === 'Master') {
+						currentUserAccessLevel = 90;
 					} else if ($scope.mainData.userRole === 'CorpStaff') {
-						$.each(dataSvc.roles, function(index, role) {
-							if (role.roleId >70)
-								role.show = false;
-						});
+						currentUserAccessLevel = 70;
+
 					} else if ($scope.mainData.userRole === 'Host' || $scope.mainData.userRole === 'HostStaff') {
-						$.each(dataSvc.roles, function (index, role) {
-							if (role.roleId > 50)
-								role.show = false;
-						});
+						currentUserAccessLevel = 50;
+
 					} else if ($scope.mainData.userRole === 'Company') {
-						$.each(dataSvc.roles, function (index, role) {
-							if (role.roleId > 30)
-								role.show = false;
-						});
-					} 
+						currentUserAccessLevel = 30;
+					} else {
+						currentUserAccessLevel = 0;
+					}
+					$.each(dataSvc.roles, function (index, role) {
+						if (role.roleId > currentUserAccessLevel || role.roleId > contextLevel)
+							role.show = false;
+					});
 				}
 				$scope.data = dataSvc;
 				var addAlert = function (error, type) {
@@ -93,6 +104,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 				$scope.selectedUser = null;
 
 				$scope.addNewUser = function () {
+					
 					$scope.selectedUser = {
 						firstName: '',
 						lastName: '',
@@ -107,6 +119,17 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 						claims:[]
 						
 					};
+					if ($scope.employeeId) {
+						$scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 0 })[0];
+					}
+					else if ($scope.companyId) {
+						$scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 30 })[0];
+					}
+					else if ($scope.hostId) {
+						$scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 50 })[0];
+					}
+					if ($scope.selectedUser.role)
+						$scope.roleChanged();
 				}
 
 				$scope.tableData = [];
@@ -150,16 +173,19 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					dataSvc.viewAccess = false;
 				}
 				$scope.setSelectedUser = function(item) {
-					$scope.originalUser = item;
-					$scope.selectedUser = angular.copy(item);
-					dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
-					if (dataSvc.selectedHost)
-						$scope.hostSelected();
-					dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
-					if (dataSvc.selectedCompany)
-						$scope.companySelected();
-					dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
-					$scope.buildAccesses();
+					$scope.selectedUser = null;
+					$timeout(function() {
+						$scope.originalUser = item;
+						$scope.selectedUser = angular.copy(item);
+						dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
+						if (dataSvc.selectedHost)
+							$scope.hostSelected();
+						dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+						if (dataSvc.selectedCompany)
+							$scope.companySelected();
+						dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
+						$scope.buildAccesses();
+					});
 				}
 				$scope.roleChanged = function () {
 					var item = $scope.selectedUser;
@@ -198,16 +224,27 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					$scope.buildAccesses();
 				}
 				
-				$scope.hostSelected = function() {
-					$scope.selectedUser.host = dataSvc.selectedHost.id;
+				$scope.hostSelected = function () {
+					if($scope.selectedUser)
+						$scope.selectedUser.host = dataSvc.selectedHost.id;
 					dataSvc.filteredCompanies = angular.copy($filter('filter')(dataSvc.companies, { host: dataSvc.selectedHost.id }));
+					if ($scope.companyId) {
+						dataSvc.selectedCompany = $filter('filter')(dataSvc.filteredCompanies, { id: $scope.companyId })[0];
+						$scope.companySelected();
+					}
 				}
 				$scope.companySelected = function () {
-					$scope.selectedUser.company = dataSvc.selectedCompany.id;
+					if ($scope.selectedUser)
+						$scope.selectedUser.companyId = dataSvc.selectedCompany.id;
 					dataSvc.filteredEmployees = angular.copy($filter('filter')(dataSvc.employees, { company: dataSvc.selectedCompany.id }));
+					if ($scope.employeeId) {
+						dataSvc.selectedEmployee = $filter('filter')(dataSvc.filteredEmployees, { id: $scope.employeeId })[0];
+						$scope.employeeSelected();
+					}
 				}
 				$scope.employeeSelected = function () {
-					$scope.selectedUser.employee = dataSvc.selectedEmployee.id;
+					if ($scope.selectedUser)
+						$scope.selectedUser.employee = dataSvc.selectedEmployee.id;
 					
 				}
 				$scope.validateUser = function() {
@@ -245,6 +282,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 						}
 					});
 				}
+				
 				$scope.save = function () {
 					$.each(dataSvc.userAccessList, function (index, i) {
 						var match = $filter('filter')($scope.selectedUser.claims, { claimType: i.claimType });
@@ -295,6 +333,10 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 						dataSvc.hosts = angular.copy(result.hosts);
 						dataSvc.companies = angular.copy(result.companies);
 						dataSvc.employees = angular.copy(result.employees);
+						if ($scope.hostId) {
+							dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: $scope.hostId })[0];
+							$scope.hostSelected();
+						}
 						
 					}, function (erorr) {
 

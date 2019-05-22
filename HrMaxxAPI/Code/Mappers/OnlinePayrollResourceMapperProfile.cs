@@ -75,7 +75,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.TargetTypeId, opt => opt.Ignore());
 
 			CreateMap<Company, CompanyResource>()
-				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => src.CompanyAddress));
+				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => src.CompanyAddress))
+				.ForMember(dest => dest.UpdateEmployeeSchedules, opt => opt.Ignore()); ;
 				
 			CreateMap<CompanyResource, Company>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))

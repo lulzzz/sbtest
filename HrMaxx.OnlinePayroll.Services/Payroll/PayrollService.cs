@@ -3190,9 +3190,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							
 					}
 				}
-
-
-
+				
 				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
 				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
 				if (d.AnnualMax.HasValue)

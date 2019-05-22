@@ -8,17 +8,17 @@
 				<div ng-show="list.length===0 && !selectedContact">
 					No Users found
 				</div>
-				<div class="col-sm-8" >
+				<div class="col-sm-6" >
 					<div class="row" ng-show="list.length>0">
 						<table ng-table="tableParams" id="grdContacts" class="table" show-filter="true" template-pagination="custom/pager">
 							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="setSelectedUser(item)" ng-class="{'success':selectedUser===item}">
-								<td data-title=" 'UserName' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-1">
+								<td data-title=" 'UserName' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-2">
 									{{item.userName}}
 								</td>
-								<td data-title=" 'Email' " filter="{ 'email': 'text' }" sortable=" 'email' " class="col-sm-1">
+								<td data-title=" 'Email' " filter="{ 'email': 'text' }" sortable=" 'email' " class="col-sm-2">
 									{{item.email}}
 								</td>
-								<td data-title=" 'First Name' " filter="{ 'firstName': 'text' }" sortable=" 'firstName' " class="col-sm-1">
+								<td data-title=" 'First Name' " filter="{ 'firstName': 'text' }" sortable=" 'firstName' " class="col-sm-2">
 									{{item.firstName}}
 								</td>
 								<td data-title=" 'Last Name' " filter="{ 'lastName': 'text' }" sortable=" 'lastName' " class="col-sm-2">
@@ -34,7 +34,7 @@
 									{{item.role.roleName}}
 								</td>
 								<td>
-									<button type="button" class="btn btn-sm btn-primary" ng-click="setSelectedUser(item)">View</button>
+									<button type="button" class="btn btn-xs btn-default" ng-click="setSelectedUser(item)"><i class="fa fa-eye"></i></button>
 
 								</td>
 							</tr>
@@ -65,80 +65,79 @@
 					</div>
 				</div>
 				
-				<div class="col-sm-4" ng-if="selectedUser">
+				<div class="col-sm-6" data-sortable-id="form-slider-switcher-2" ng-if="selectedUser">
 					<pre ng-show="!selectedUser.userId">New User</pre>
-					<table class="table table-profile">
-						<tbody>
-							<tr>
-								<td class="field">User Name</td>
-								<td>
-									<a href="#" editable-text="selectedUser.subjectUserName" e-ng-maxlength="20" e-required e-ng-pattern="/^[a-zA-Z0-9]*$/">{{ selectedUser.subjectUserName || 'not set' }}</a>
-								</td>
-							</tr>
-							<tr>
-								<td class="field">First Name</td>
-								<td>
-									<a href="#" editable-text="selectedUser.firstName">{{ selectedUser.firstName || 'not set' }}</a>
-								</td>
-							</tr>
-							<tr>
-								<td class="field">Last Name</td>
-								<td>
-									<a href="#" editable-text="selectedUser.lastName">{{ selectedUser.lastName || 'not set' }}</a>
-								</td>
-							</tr>
-							<tr>
-								<td class="field">Email <i class="fa fa-envelope"></i></td>
-								<td>
-									<a href="#" editable-email="selectedUser.email">{{ selectedUser.email || 'not set' }}</a>
-								</td>
-							</tr>
-							<tr>
-								<td class="field">Phone <i class="fa fa-mobile"></i></td>
-								<td> <a href="#" editable-text="selectedUser.phone" e-ui-mask="(999) 999-9999">{{ selectedUser.phone || 'empty' }}</a></td>
-							</tr>
-							<tr>
-								<td class="field">Access Level <i class="fa fa-users"></i></td>
-								<td>
-									<select id="roles" class="form-control" ng-change="roleChanged()" ng-model="selectedUser.role" ng-options="m.roleName for m in data.roles | filter:{show:true} track by m.roleId">
-										
-									</select>
-								</td>
-							</tr>
-							<tr ng-if="selectedUser.host || selectedUser.role.roleId<51">
-								<td class="field">Host</td>
-								<td>
-									<select id="host" class="form-control" ng-change="hostSelected()" ng-model="data.selectedHost" ng-options="host1.name for host1 in data.hosts track by host1.id"></select>
-								</td>
-							</tr>
-							<tr ng-if="selectedUser.company || selectedUser.role.roleId<30">
-								<td class="field">Company</td>
-								<td><select id="company" class="form-control" ng-disabled="!data.selectedHost" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.filteredCompanies track by c.id"></select></td>
-							</tr>
-							<tr ng-if="selectedUser.company && selectedUser.role.roleId===0">
-								<td class="field">Employee</td>
-								<td><select id="employee" class="form-control" ng-disabled="!data.selectedCompany" ng-change="employeeSelected()" ng-model="data.selectedEmployee" ng-options="c.name for c in data.filteredEmployees track by c.id"></select></td>
-							</tr>
-							<tr>
-								<td class="field">Active</td>
-								<td>
-									<div class="form-group">
-										<label for="isActive" class="switch">
-											<input id="isActive" type="checkbox" ng-model="selectedUser.active" /><i></i>
-										</label>
-									</div>
+					<form name="userform" class="form-horizontal" novalidate>
+						<fieldset>
+							<div class="form-group">
+								<label class="col-md-4 control-label">User Name</label>
+								<div class="col-md-8">
+									<input type="text" name="username" placeholder="User Name" class="form-control" ng-model="selectedUser.subjectUserName" ng-maxlength="20" ng-required ng-pattern="/^[a-zA-Z0-9]*$/" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">First Name</label>
+								<div class="col-md-8">
+									<input type="text" name="firstname" placeholder="First Name" class="form-control" ng-model="selectedUser.firstName" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Last Name</label>
+								<div class="col-md-8">
+									<input type="text" name="lastname" placeholder="Last Name" class="form-control" ng-model="selectedUser.lastName" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Email <i class="fa fa-envelope"></i></label>
+								<div class="col-md-8">
+									<input type="text" name="email" placeholder="Email" class="form-control" ng-model="selectedUser.email" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Phone <i class="fa fa-mobile"></i></label>
+								<div class="col-md-8">
+									<input type="text" name="phone" placeholder="Email" class="form-control" ng-model="selectedUser.phone" ui-mask="(999) 999-9999" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Access Level <i class="fa fa-users"></i></label>
+								<div class="col-md-8">
+									<select id="roles" class="form-control" ng-change="roleChanged()" ng-model="selectedUser.role" ng-options="m.roleName for m in data.roles | filter:{show:true} track by m.roleId"></select>
+								</div>
+							</div>
+							<div class="form-group" ng-if="selectedUser.host || selectedUser.role.roleId<51">
+								<label class="col-md-4 control-label">Host</label>
+								<div class="col-md-8">
+									<select id="host" class="form-control" ng-change="hostSelected()" ng-model="data.selectedHost" ng-options="host1.name for host1 in data.hosts track by host1.id" ng-disabled="hostId"></select>
+								</div>
+							</div>
+							<div class="form-group" ng-if="selectedUser.company || selectedUser.role.roleId<31">
+								<label class="col-md-4 control-label">Company</label>
+								<div class="col-md-8">
+									<select id="company" class="form-control" ng-disabled="!data.selectedHost || companyId" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.filteredCompanies track by c.id"></select>
+								</div>
+							</div>
+							<div class="form-group" ng-if="selectedUser.companyId && selectedUser.role.roleId<1">
+								<label class="col-md-4 control-label">Employee</label>
+								<div class="col-md-8">
+									<select id="employee" class="form-control" ng-disabled="!data.selectedCompany || employeeId" ng-change="employeeSelected()" ng-model="data.selectedEmployee" ng-options="c.name for c in data.filteredEmployees track by c.id"></select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label">Active <i class="fa fa-question-circle"></i></label>
+								<div class="col-sm-8">
+									<label for="active" class="switch">
+										<input id="active" type="checkbox" ng-model="selectedUser.active"/><i></i>
+									</label>
+								</div>
+							</div>
+						</fieldset>
 
-								</td>
-							</tr>
-								
-						</tbody>
-					</table>
-					<form name="userform" novalidate>
 						<div class="row pull-right">
 							<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="!validateUser()">Save</button>
 							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
 							<button type="button" class="btn btn-sm btn-danger" ng-click="resetPassword()" ng-show="showResetPassword && selectedUser.userId">Reset Password</button>
-							
+
 						</div>
 					</form>
 					<table class="table table-bordered table-condensed" ng-show="selectedUser.role">
@@ -149,7 +148,7 @@
 							<tr>
 								<th>Feature</th>
 								<th>Access</th>
-								<th><button class="btn btn-sm btn-primary" ng-click="includeAll()">include all</button></th>
+								<th><button class="btn btn-xs btn-primary" ng-click="includeAll()">include all</button></th>
 							</tr>
 						</thead>
 						<tr ng-repeat="access in data.userAccessList">

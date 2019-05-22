@@ -21,7 +21,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						viewVersions: $scope.mainData.hasClaim(ClaimTypes.CompanyVersions, 1),
 						viewContract: $scope.mainData.hasClaim(ClaimTypes.CompanyContract, 1),
 						enablePayrollDaysInPast: $scope.mainData.hasClaim(ClaimTypes.CompanyPayrollDaysinPast, 1),
-
+						updateEmployeeSchedules: false
 					}
 
 					$scope.data = dataSvc;

@@ -26,7 +26,9 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 				$scope.addHost = function () {
 					var newhost = {
 						statusId: 1,
-						isPeoHost: true
+						isPeoHost: false,
+						hostIntId: 0,
+						firmName: ''
 					};
 					$scope.setSelectedHost(newhost);
 				}
@@ -81,20 +83,29 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					$scope.$parent.$parent.refreshHostAndCompanies();
 				}
 				$scope.setSelectedHost = function (item) {
-					if (!$scope.selectedHost || $scope.selectedHost.id !== item.id) {
-						$scope.selectedHost = null;
-						hostRepository.getHost(item.id).then(function (data) {
-							$scope.selectedHost = angular.copy(data);
-							$scope.mainData.selectedHost = data;
-							$scope.$parent.$parent.hostSelected();
-							$scope.isBodyOpen = false;
-							
-							$scope.tab = 1;
-							$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
-						}, function (erorr) {
-							addAlert('error getting host details', 'danger');
-						});
+					if (!item.hostIntId && !item.firmName) {
+						$scope.selectedHost = item;
+						$scope.isBodyOpen = false;
+
+						$scope.tab = 1;
+						//$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
+					} else {
+						if (!$scope.selectedHost || $scope.selectedHost.id !== item.id) {
+							$scope.selectedHost = null;
+							hostRepository.getHost(item.id).then(function (data) {
+								$scope.selectedHost = angular.copy(data);
+								$scope.mainData.selectedHost = data;
+								$scope.$parent.$parent.hostSelected();
+								$scope.isBodyOpen = false;
+
+								$scope.tab = 1;
+								$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
+							}, function (erorr) {
+								addAlert('error getting host details', 'danger');
+							});
+						}
 					}
+					
 				}
 
 				$scope.getRowClass = function(item) {

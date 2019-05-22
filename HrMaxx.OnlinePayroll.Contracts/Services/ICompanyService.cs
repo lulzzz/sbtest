@@ -15,9 +15,9 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<Account> GetCompanyPayrollAccounts(Guid id);
 		VendorCustomer GetVendorCustomersById(Guid vcId);
 		List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year);
-		
 
-		Company Save(Company mappedResource);
+
+		Company Save(Company mappedResource, bool updateEmployeeSchedules = false);
 		Company SaveHostCompany(Company company, Host savedHost);
 		CompanyDeduction SaveDeduction(CompanyDeduction deduction, string fullName, Guid userId);
 		CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation, string fullName, Guid guid);
