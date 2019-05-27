@@ -20,14 +20,14 @@ ALTER PROCEDURE [dbo].[GetEmployees]
 	@host uniqueidentifier = null,
 	@company uniqueidentifier = null,
 	@role varchar(max) = null,
-	@status varchar(max) = null,
+	@status int = 1,
 	@id uniqueidentifier=null
 AS
 BEGIN
 declare @host1 uniqueidentifier = @host,
 	@company1 uniqueidentifier = @company,
 	@role1 varchar(max) = @role,
-	@status1 varchar(max) = @status,
+	@status1 int = @status,
 	@id1 uniqueidentifier=@id
 
 declare @ispeo as bit
@@ -45,7 +45,7 @@ or
 	declare @where nvarchar(max) = 'EmployeeJson.CompanyId = Company.Id'
 	if @id1 is not null
 		set @where = @where + case when @where ='' then '' else ' and ' end  + 'EmployeeJson.Id=''' + cast(@Id1 as varchar(max))+''''
-	if @status1 is not null and cast(@status1 as int)>0
+	if @status1 >0
 		set @where = @where + case when @where ='' then '' else ' and ' end  + 'EmployeeJson.statusId=' + cast(@status1 as varchar(max))
 	if @host1 is not null 
 		set @where = @where +case when @where ='' then '' else ' and ' end  + + 'Company.HostId=''' + cast(@host1 as varchar(max)) + ''''
