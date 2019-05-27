@@ -21,7 +21,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		public const string VendorCustomer = "Company/VendorCustomer";
 		public const string Accounts = "Company/Accounts/{companyId:guid}";
 		public const string SaveAccount = "Company/Accounts";
-		public const string EmployeeList = "Company/Employees/{companyId:guid}";
+		public const string EmployeeList = "Company/Employees/{companyId:guid}/{status:int?}";
 		public const string Employee = "Company/Employee";
 		public const string EmployeeMetaData = "Company/EmployeeMetaData";
 		public const string EmployeeDeduction = "Company/EmployeeDeduction";

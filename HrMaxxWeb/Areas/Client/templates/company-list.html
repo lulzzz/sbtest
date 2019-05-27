@@ -10,11 +10,27 @@
 		<div class="panel-body" ng-show="data.isBodyOpen">
 			<div class="col-sm-12 visible-print"><h6><u>Company List</u></h6></div>
 			<div class="row hidden-print">
-				<div class="col-sm-4" ng-dropdown-multiselect="" options="cols" extra-settings="{displayProp: 'title', idProp: 'field', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedHeaders">
+				<div class="col-sm-1" ng-dropdown-multiselect="" options="cols" extra-settings="{displayProp: 'title', idProp: 'field', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedHeaders">
 
 				</div>
-				<button class="btn btn-success btn-sm" ng-click="refreshTable()" ng-disabled="selectedHeaders.length===0">update view</button>
-				<button class="btn btn-success btn-sm" ng-click="print()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-print"></i>print</button>
+				<div class="col-sm-1">
+					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="refreshTable()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-refresh"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="print()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-print"></i></a>
+				</div>
+				<div class="col-sm-1 pull-right">
+					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="mainData.selectedHost && !selectedCompany" ng-click="addCompany()"><i class="fa fa-plus"></i></a>
+				</div>
+				<div class="col-sm-2 form-group pull-right">
+					
+					<label></label>
+					<div>
+						<label for="includeall" class="switch">
+							include InActive/Terminated?
+							<input id="includeall" type="checkbox" ng-model="mainData.includeAllCompanies" ng-change="refreshData()" /><i></i>
+						</label>
+					</div>
+				</div>
+				
 			</div>
 			<div ng-show="list.length===0 && !selectedContact" class="table table-bordered">
 				No Companies found
@@ -25,7 +41,7 @@
 					<tr ng-repeat="row in $data" class="mouse-over-pointer" ng-click="setCompany(row)" ng-class="{'success':selectedCompany.id===row.id}">
 						<td ng-repeat="col in $columns" class="text-center" ng-class="{'hidden-print':col.field==='controls'}">
 							{{ col.field!=='controls' ? col.isdate? (row[col.field] | date:'MM/dd/yyyy') : col.ismoney ? (row[col.field] | currency:'$') : row[col.field] : ''}}
-							<button type="button" class="btn btn-sm btn-info" ng-click="copycompany($event, row)" ng-show="col.field==='controls' && (data.showCopy || data.showCopyPayrolls)"><i class="fa fa-copy"></i></button>
+							<a class="btn btn-info btn-icon btn-circle btn-lg" ng-click="copycompany($event, row)" ng-show="col.field==='controls' && (data.showCopy || data.showCopyPayrolls)"><i class="fa fa-copy"></i></a>
 						</td>
 						
 					</tr>
@@ -51,10 +67,7 @@
 					</ul>
 				</script>
 			</div>
-			<div class="row hidden-print">
-				<button class="btn btn-sm btn-primary" ng-show="mainData.selectedHost && !selectedCompany" ng-click="addCompany()">Add</button>
-			</div>
-
+		
 			<!-- end panel -->
 		</div>
 	</div>

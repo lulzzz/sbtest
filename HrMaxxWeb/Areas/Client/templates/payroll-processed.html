@@ -46,12 +46,12 @@
 			<span>{{item.taxPayDay | date: 'MM/dd/yyyy'}}</span>
 
 		</div>
-		<div class="form-group">
+		<div class="form-group" ng-show="datasvc.canRunHistoryPayroll">
 			<label></label>
 			<div>
 				<label for="ishistory" class="switch">
 					Is History Payroll?
-					<input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="true"/><i></i>
+					<input id="ishistory" type="checkbox" ng-model="item.isHistory" ng-disabled="true" /><i></i>
 				</label>
 			</div>
 
@@ -61,29 +61,21 @@
 	<div class="col-sm-12" ng-if="item.notes">
 		<label>Notes: </label> {{item.notes}}
 	</div>
-	<pre class="col-sm-12 alert alert-info text-center" ng-if="company.contract.invoiceSetup.invoiceType===1 && (item.status===2 || item.status===6)">
-		<b>These checks will be issued under and paid from {{mainData.selectedHost.firmName}}'s bank account!</b>
-	</pre>
-	<pre class="col-sm-12 alert alert-info text-center" ng-if="!(item.status===2 || item.status===6)">
-		<b>{{company.payCheckStock===1? 'MICR' : company.payCheckStock===2 ? 'Laser Middle' : company.payCheckStock===3 ? 'Laser Top' : 'MICR QB'}}!</b>
-	</pre>
-	<div class="col-sm-12 text-center">
-		<button class="btn btn-sm btn-success" ng-click="showTaxes=!showTaxes">{{showTaxes? 'Show Rates' : 'Show Taxes'}}</button>
-		<button class="btn btn-sm btn-success" ng-click="fixPayrollYTD()" ng-show="datasvc.showFixYTD && (item.status>2 && item.status!==6)">Fix YTD</button>
-	</div>
+	
+	
 	<div class="col-sm-12 text-center alert alert-warning" ng-if="(item.status===2 || item.status===6) && item.warnings" ng-bind-html="item.warnings">
 
 	</div>
 
 	<div class="col-sm-12">
 		
-		<table ng-table="tableParams" class="table  table-condensed table-striped" show-filter="true" template-pagination="custom/nopager">
+		<table ng-table="tableParams" class="table  table-condensed table-striped table-scroll" show-filter="true" template-pagination="custom/nopager">
 
 			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2), 'info':(listitem.isReIssued && !listitem.isVoid)}">
-				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' ">
+				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " class="col-sm-1">
 					{{listitem.companyEmployeeNo}}
 				</td>
-				<td data-title=" 'Check #' " filter="{ 'checkNumber': 'text' }" sortable=" 'checkNumber' ">
+				<td data-title=" 'Check #' " filter="{ 'checkNumber': 'text' }" sortable=" 'checkNumber' " class="col-sm-1">
 					{{listitem.paymentMethod===1 ? listitem.checkNumber : 'EFT'}}<span ng-show="listitem.isReIssued" class="show-red">({{listitem.paymentMethod===1 ? listitem.originalCheckNumber : 'EFT'}})</span>
 				</td>
 				<td data-title=" 'Employee' " filter="{ 'name': 'text' }" sortable=" 'name' " class="col-sm-2">
@@ -92,7 +84,7 @@
 				<td data-title=" 'Gross Pay' " sortable=" 'grossWage' " class="col-sm-1 text-right">
 					{{listitem.grossWage | currency:"$"}}
 				</td>
-				<td data-title=" 'Deductions' " sortable=" 'grossWage' " class="col-sm-1 text-right">
+				<td data-title=" 'Deductions' " sortable=" 'deductionAmount' " class="col-sm-1 text-right">
 					{{listitem.deductionAmount | currency:"$"}}
 				</td>
 				<td data-title=" 'Pay Rates' " class="col-sm-3 text-right" ng-if="!showTaxes">
@@ -156,39 +148,46 @@
 					{{listitem.netWage | currency:"$"}}
 				</td>
 
-				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-2">
-					<div class="col-sm-2 text-left">{{listitem.paymentMethodText}}</div>
-					<div class="col-sm-10 text-right  dt-buttons button-group">
-						<button class="btn btn-xs btn-warning" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></button>
-						<button class="btn btn-xs btn-danger" ng-show="datasvc.showVoidPaycheck && item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></button>
-						<button class="btn btn-xs btn-success" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></button>
-						<button class="btn btn-xs btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></button>
-						<button class="btn btn-xs btn-info" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
-					</div>
+				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-1">
+					
+					<span>{{listitem.paymentMethodText}}</span>
+					<button class="btn btn-xs btn-warning" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></button>
+					<button class="btn btn-xs btn-danger" ng-show="datasvc.showVoidPaycheck && item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></button>
+					<button class="btn btn-xs btn-success" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></button>
+					<button class="btn btn-xs btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></button>
+					<button class="btn btn-xs btn-info" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
 				</td>
-
 			</tr>
+			
 			<tr class="danger">
-				<td colspan="3" class="text-right"><strong><em><u># Checks = {{totalChecks}}</u></em></strong></td>
-				<td class="text-right"><strong><em><u>{{item.totalGrossWage | currency:'$'}}</u></em></strong></td>
-				<td class="text-right"><strong><em><u>{{item.deductionAmount | currency:'$'}}</u></em></strong></td>
-				<td ng-show="showPayRates"></td>
-				<td class="text-right"><strong><em><u>{{item.totalNetWage | currency:'$'}}</u></em></strong></td>
-				<td></td>
-				<td></td>
+				<td class="col-sm-5 text-right"><strong><em><u># Checks = {{totalChecks}}</u></em></strong></td>
+				<td class="col-sm-1 text-right"><strong><em><u>{{item.totalGrossWage | currency:'$'}}</u></em></strong></td>
+				<td class="col-sm-1 text-right"><strong><em><u>{{item.deductionAmount | currency:'$'}}</u></em></strong></td>
+				<td class="col-sm-3">&nbsp;</td>
+				<td class="col-sm-1 text-right"><strong><em><u>{{item.totalNetWage | currency:'$'}}</u></em></strong></td>
+				<td class="col-sm-1"></td>
+				
 			</tr>
 		</table>
 		
 		
 	</div>
-	<div class="col-sm-12">
-		<button class="btn btn-sm btn-primary pull-right" ng-if="item.status===2 || item.status===6" ng-disabled="!canConfirm()" ng-click="save()" ng-show="datasvc.canConfirm">confirm <span class="badge">{{totalChecks}}</span></button>
-		<button class="btn btn-sm btn-default" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
-		<button class="btn btn-sm btn-success" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print timesheet</button>
-		<button class="btn btn-sm btn-success" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print report</button>
-		<button class="btn btn-sm btn-success" ng-click="printPayrollChecks(item, false)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> print checks</button>
-		<button class="btn btn-sm btn-danger" ng-click="printPayrollChecks(item, true)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> re-print checks</button>
-		<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
+	<div class="col-sm-12 text-center">
+		<div class="col-sm-4 pull-left">
+			<button class="btn btn-sm btn-default pull-left" ng-click="cancel()">{{item.status===2 || item.status===6? 'back' : 'cancel'}}</button>
+			<button class="btn btn-sm btn-success  pull-left pull-left" ng-click="printPayrollTimesheet(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print timesheet</button>
+			<button class="btn btn-sm btn-success  pull-left" ng-click="printPayrollReport(item)" ng-show="item.status!==1 && item.status!==2 && isPrintable(item)"><i class="fa fa-print m-r-5"></i> print report</button>
+			<button class="btn btn-sm btn-success  pull-left" ng-click="printPayrollChecks(item, false)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> print checks</button>
+			<button class="btn btn-sm btn-danger  pull-left" ng-click="printPayrollChecks(item, true)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> re-print checks</button>
+		</div>
+		<div class="col-sm-4">
+			<button class="btn btn-sm btn-success" ng-click="showTaxes=!showTaxes">{{showTaxes? 'Show Rates' : 'Show Taxes'}}</button>
+			<button class="btn btn-sm btn-success" ng-click="fixPayrollYTD()" ng-show="datasvc.showFixYTD && (item.status>2 && item.status!==6)">Fix YTD</button>
+		</div>
+		<div class="col-sm-4 pull-right">
+			<button class="btn btn-sm btn-primary pull-right" ng-if="item.status===2 || item.status===6" ng-disabled="!canConfirm()" ng-click="save()" ng-show="datasvc.canConfirm">confirm <span class="badge">{{totalChecks}}</span></button>
+			<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
+		</div>
 	</div>
 	
 	<script type="text/ng-template" id="popover/reviewpaycheck.html">

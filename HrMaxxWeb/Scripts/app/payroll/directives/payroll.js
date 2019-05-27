@@ -25,8 +25,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						showingWarnings: false,
 						showingSelected: false,
 						showWCWarnings: false,
-						importInProgress: false
-					}
+						importInProgress: false,
+						showAllEmployees: false,
+				}
 					
 					$scope.list = [];
 					$scope.maindata = $scope.$parent.$parent.mainData;
@@ -653,6 +654,7 @@ common.controller('updateCompsCtrl', function ($scope, $uibModalInstance, $filte
 		markUsed();
 	}
 	_init();
+
 });
 
 common.controller('updateJobCostCtrl', function ($scope, $uibModalInstance, $filter, paycheck) {

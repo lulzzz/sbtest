@@ -163,23 +163,10 @@ label {
 	color: gray;
 }
 
-
-.uib-datepicker .btn.btn-default {
-    color: #333;
-    background: #fff;
-    border-color: #b6c2c9;
-}
-.uib-datepicker .btn.btn-default.btn-info {
-       color: #fff;
-    background: #49b6d6;
-    border-color: #49b6d6;
-}
 .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
     border: none;
 }
-@media (min-width: 1400px) {
-  .my-modal-popup .modal-lg { width: 1300px!important; }
-}
+
 
 .viewer {
 	height: 800px;

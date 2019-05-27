@@ -44,11 +44,11 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<int> GetJournalIds(Guid companyId, int accountId, DateTime startDate, DateTime endDate, int transactionType);
 
 		//Companies
-		List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = null);
+		List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = 1);
 		Company GetCompany(Guid companyId);
 
 		//Employees
-		List<Employee> GetEmployees(Guid? host = null, Guid? company = null, int? status = null);
+		List<Employee> GetEmployees(Guid? host = null, Guid? company = null, int? status = 1);
 		Employee GetEmployee(Guid employeeId);
 
 		//Extracts

@@ -46,7 +46,7 @@
 		public const string Mementos = "Mementos/{sourceId:guid}/{sourceTypeId:int}";
 
 		public const string FillSearchTable = "FillSearchTable";
-		public const string GetHostsAndCompanies = "HostsAndCompanies";
+		public const string GetHostsAndCompanies = "HostsAndCompanies/{status:int?}";
 
 		public const string GetTaxes = "GetTaxes/{year:int}";
 		public const string SaveTaxes = "SaveTaxes";

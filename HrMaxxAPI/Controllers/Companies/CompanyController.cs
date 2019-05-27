@@ -314,10 +314,9 @@ namespace HrMaxxAPI.Controllers.Companies
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(CompanyRoutes.EmployeeList)]
 		[DeflateCompression]
-		public List<EmployeeResource> EmployeeList(Guid companyId)
+		public List<EmployeeResource> EmployeeList(Guid companyId, int? status = 1)
 		{
-			//var employees = MakeServiceCall(() => _companyService.GetEmployeeList(companyId), string.Format("getting list of employees for {0}", companyId), true);
-			var employees = MakeServiceCall(() => _readerService.GetEmployees(company:companyId), string.Format("getting list of employees for {0}", companyId), true);
+			var employees = MakeServiceCall(() => _readerService.GetEmployees(company:companyId, status: status), string.Format("getting list of employees for {0} status {1}", companyId, status), true);
 			if (CurrentUser.Employee != Guid.Empty)
 			{
 				employees = employees.Where(e => e.Id == CurrentUser.Employee).ToList();

@@ -227,6 +227,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool ApplyEnvironmentalFee { get; set; }
 		public bool ApplyWCCharge { get; set; }
 		public bool PrintClientName { get; set; }
+		public bool PaysByAch { get; set; }
 		public List<RecurringCharge> RecurringCharges { get; set; }
 		public SalesRep SalesRep { get; set; } 
 	}

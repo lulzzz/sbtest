@@ -247,6 +247,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public bool ApplyEnvironmentalFee { get; set; }
 		public bool ApplyWCCharge { get; set; }
 		public bool PrintClientName { get; set; }
+		public bool PaysByAch { get; set; }
 		public List<RecurringChargeResource> RecurringCharges { get; set; }
 		public SalesRepResource SalesRep { get; set; } 
 	}

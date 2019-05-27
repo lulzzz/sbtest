@@ -621,7 +621,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-	  public List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = null)
+	  public List<Company> GetCompanies(Guid? host = null, Guid? company = null, int? status = 1)
 	  {
 			try
 			{
@@ -666,7 +666,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 	  }
 
-	  public List<Employee> GetEmployees(Guid? host = null, Guid? company = null, int? status = null)
+	  public List<Employee> GetEmployees(Guid? host = null, Guid? company = null, int? status = 1)
 	  {
 			try
 			{

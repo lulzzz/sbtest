@@ -132,3 +132,26 @@
 	-webkit-user-select: none;
 	cursor: col-resize;
 }
+.table-scroll thead {
+    display: table;
+    width: 100%;
+    table-layout: auto;
+}
+
+.table-scroll tbody {
+    max-height: 400px;
+    overflow-y: auto;
+    display: block;
+    width: 100%;
+    table-layout: auto;
+}
+
+.table-scroll tr {
+    display: table;
+    table-layout: auto;
+    width: 100%;
+}
+
+.table-scroll td {
+    height: 47px; 
+}

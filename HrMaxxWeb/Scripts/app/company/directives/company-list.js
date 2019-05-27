@@ -31,6 +31,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						{ field: "ein", title: "EIN", show: false },
 						{ field: "insuranceInfo", title: "Insurance", show: false },
 						{ field: "stateEIN", title: "State EIN", show: false },
+						{ field: "paysAch", title: "Pays ACH?", show: true, sortable: "paysAch", filter: { salesRep: "text" } },
 						{ field: "salesRep", title: "Sales Rep", show: true, sortable: "salesRep", filter: { salesRep: "text" } },
 						{ field: "commission", title: "Commission", show: true, sortable: "commission" },
 						{ field: "contactName", title: "Contact", show: true, sortable: "contactName", filter: { contactName: "text" } },
@@ -272,7 +273,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						});
 					}
 					$scope.refreshData = function (event) {
-						event.stopPropagation();
+						if(event)
+							event.stopPropagation();
 						$scope.$parent.$parent.refreshHostAndCompanies();
 					}
 					var init = function () {

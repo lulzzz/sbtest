@@ -232,9 +232,9 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
-			getEmployees: function (companyId) {
+			getEmployees: function (companyId, status) {
 				var deferred = $q.defer();
-				companyServer.one('Employees').one(companyId).getList().then(function (data) {
+				companyServer.one('Employees').one(companyId, status).getList().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

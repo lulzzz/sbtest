@@ -317,9 +317,9 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
-			getHostsAndCompanies: function () {
+			getHostsAndCompanies: function (includeall) {
 				var deferred = $q.defer();
-				commonServer.one('HostsAndCompanies').get().then(function (data) {
+				commonServer.one('HostsAndCompanies', includeall).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

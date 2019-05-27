@@ -347,10 +347,8 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							$scope.item.endDate = moment($scope.item.endDate).toDate();
 						}
 						
-						if($scope.item.status===2)
-							$scope.datasvc.isBodyOpen = false;
-						else
-							$scope.datasvc.isBodyOpen = true;
+						$scope.datasvc.isBodyOpen = false;
+						
 						$scope.list = $scope.item.payChecks;
 						$scope.totalChecks = $filter('filter')($scope.list, { included: true }, true).length;
 						$.each($scope.list, function(i, p) {

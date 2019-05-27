@@ -32,3 +32,18 @@
     -webkit-box-shadow: inset 0 0 1px rgba(0,0,0,.5), inset 0 0 40px red;
 }
 
+
+
+.uib-datepicker .btn.btn-default {
+    color: #333;
+    background: #fff;
+    border-color: #b6c2c9;
+}
+.uib-datepicker .btn.btn-default.btn-info {
+       color: #fff;
+    background: #49b6d6;
+    border-color: #49b6d6;
+}
+@media (min-width: 1400px) {
+  .my-modal-popup .modal-lg { width: 1300px!important; }
+}

@@ -53,7 +53,6 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 				}
 					$scope.list = [];
 					
-
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -814,8 +813,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					var getEmployees = function (companyId) {
 						var deferred = $q.defer();
 						if (!dataSvc.employeesLoaded) {
-							companyRepository.getEmployees(companyId).then(function(data) {
-								dataSvc.employees = $filter('filter')(data, { statusId: '!' + 3 });
+							companyRepository.getEmployees(companyId, 1).then(function(data) {
+								dataSvc.employees = data;
 								dataSvc.employeesLoaded = true;
 								deferred.resolve();
 								console.log("loaded employees");

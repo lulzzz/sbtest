@@ -104,6 +104,11 @@ namespace HrMaxxAPI.Resources.Common
 		{
 			get { return Contact != null ? !string.IsNullOrWhiteSpace(Contact.Phone) && Contact.Phone.Length > 9 ? string.Format("({0}) {1}-{2}", Contact.Phone.Substring(0, 3), Contact.Phone.Substring(3, 3), Contact.Phone.Substring(6, 4)) : !string.IsNullOrWhiteSpace(Contact.Mobile) && Contact.Mobile.Length > 9 ? string.Format("({0}) {1}-{2}", Contact.Mobile.Substring(0, 3), Contact.Mobile.Substring(3, 3), Contact.Mobile.Substring(6, 4)) : string.Empty : string.Empty; }
 		}
+
+		public bool PaysAch
+		{
+			get { return InvoiceSetup.PaysByAch; }
+		}
 		
 		public decimal? UIRate { get; set; }
 		public decimal? ETTRate { get; set; }

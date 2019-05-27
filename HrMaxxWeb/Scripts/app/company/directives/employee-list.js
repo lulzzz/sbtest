@@ -16,7 +16,8 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 					var dataSvc = {
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
-						employeesLoadedFor: null
+						employeesLoadedFor: null,
+						includeAll: false
 						
 					}
 					
@@ -352,9 +353,10 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						});
 					}
 					$scope.getEmployees = function (companyId) {
-						if (!dataSvc.employeesLoadedFor || dataSvc.employeesLoadedFor != companyId) {
+						if (!dataSvc.employeesLoadedFor || dataSvc.employeesLoadedFor != companyId || dataSvc.employeesLoadedForStatus !== dataSvc.includeAll) {
 							dataSvc.employeesLoadedFor = companyId;
-							companyRepository.getEmployees(companyId).then(function (data) {
+							dataSvc.employeesLoadedForStatus = dataSvc.includeAll;
+							companyRepository.getEmployees(companyId, dataSvc.includeAll ? 0 : 1).then(function (data) {
 								
 								$scope.list = data;
 								$scope.tableParams.reload();

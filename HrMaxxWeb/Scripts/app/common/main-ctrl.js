@@ -100,6 +100,8 @@
 				}
 			},
 			refreshedOn: null,
+			includeAllCompanies: false,
+			searchCompany: null,
 			hasClaim : function (type1, value) {
 				var match = $filter('filter')(this.userClaims, { Type: type1 }, true);
 				return match.length > 0;
@@ -107,7 +109,7 @@
 		};
 		$scope.data = dataSvc;
 		$scope.refreshHostAndCompanies = function() {
-			commonRepository.getHostsAndCompanies().then(function (data) {
+			commonRepository.getHostsAndCompanies(dataSvc.includeAllCompanies ? 0 : 1).then(function (data) {
 				dataSvc.hosts = data.hosts;
 				dataSvc.companies = data.companies;
 				dataSvc.refreshedOn = new Date();
@@ -181,6 +183,12 @@
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
 				if (dataSvc.selectedCompany1) {
 					$scope.companySelected(url, true);
+
+				} else {
+					dataSvc.includeAllCompanies = true;
+					dataSvc.searchCompany = companyId;
+					dataSvc.searchUrl = url;
+					$scope.refreshHostAndCompanies();
 					
 				}
 				
@@ -229,6 +237,10 @@
 			dataSvc.hostCompanies = $filter('filter')(dataSvc.companies, {hostId: dataSvc.selectedHost.id});
 			if (dataSvc.userCompany) {
 				$scope.setHostandCompany(dataSvc.userHost, dataSvc.userCompany, "#!/Client/Employees/" + (new Date().getTime()));
+			}
+			else if (dataSvc.searchCompany) {
+				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: dataSvc.searchCompany })[0];
+				$scope.companySelected(dataSvc.searchUrl, true);
 			}
 		}
 		$scope.hostSelected = function () {
