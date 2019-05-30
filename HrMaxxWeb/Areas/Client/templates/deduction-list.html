@@ -55,29 +55,22 @@
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-xs btn-info" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit m-r-5"></i> edit
-						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-xs btn-success">
-							<i class="fa fa-save m-r-5"></i> save
-						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-xs btn-default">
-							<i class="fa fa-remove m-r-5"></i> cancel
-						</button>
+						<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!rowform.$visible" ng-click="rowform.$show();setSelected($index)" title="Edit"><i class="fa fa-edit"></i></a>
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-circle btn-icon btn-success btn-lg">
+							<i class="fa fa-save m-r-5"></i> </button>
+						<a class="btn btn-default btn-icon btn-circle btn-lg" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" title="cancel"><i class="fa fa-remove"></i></a>
+						
+						
 					</form>
 				</td>
 				
 			</tr>
 			<tr ng-show="!selected">
-				<td colspan="6">
+				<td colspan="7">
 					<span ng-show="list.length===0">No items found</span>
+					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selected && showcontrols" ng-click="add()" title="Add"><i class="fa fa-plus"></i></a>
 				</td>
 
-				<td ng-show="showControls">
-					<button type="button" ng-click="add()" ng-show="!selected" class="btn btn-xs btn-primary">
-						<i class="fa fa-plus-circle m-r-5"></i>Add
-					</button>
-				</td>
 			</tr>
 			
 		</tbody>

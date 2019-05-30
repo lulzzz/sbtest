@@ -33,29 +33,27 @@
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" onbeforesave="save(item)" name="rowform" class="form-buttons form-inline" shown="selected===item">
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn bt-xs btn-success">
-							<i class="fa fa-save m-r-5"></i> save
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle">
+							<i class="fa fa-save"></i> save
 						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-xs btn-default">
-							<i class="fa fa-remove m-r-5"></i> cancel
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default btn-icon btn-circle">
+							<i class="fa fa-remove"></i> cancel
 						</button>
-						<button type="button"  ng-show="item.id" ng-click="jump(item)" class="btn btn-xs btn-info">
-							<i class="fa fa-anchor m-r-5"></i> jump
+						<button type="button" ng-show="item.id" ng-click="jump(item)" class="btn btn-lg btn-info  btn-icon btn-circle">
+							<i class="fa fa-anchor"></i>
 						</button>
 					</form>
 				</td>
 				
 			</tr>
 			<tr ng-show="!selected">
-				<td colspan="3">
+				<td colspan="4">
 					<span ng-show="list.length===0">No Locationst found</span>
-				</td>
-
-				<td ng-show="showControls">
-					<button type="button" ng-click="add()" class="btn btn-xs btn-primary">
-						<i class="fa fa-plus-circle m-r-5"></i>Add
+					<button type="button" ng-click="add()" class="btn btn-lg btn-success btn-icon btn-circle" ng-show="showControls">
+						<i class="fa fa-plus"></i>
 					</button>
 				</td>
+
 			</tr>
 			
 		</tbody>

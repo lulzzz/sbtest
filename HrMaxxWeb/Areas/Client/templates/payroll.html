@@ -6,26 +6,27 @@
 		<form data-parsley-validate="true" name="payrollstep1">
 			<div class="row">
 				<div class="col-sm-12 m-b-5">
-					<div class="col-sm-1 form-group">
+					<div class="col-sm-2 form-group">
 						<div class="form-group">
 							<label class="control-label">Start Date <span class="text-danger">*</span></label>
 							<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
 						</div>
 						
+						<div class="form-group">
+							<label class="control-label">End Date <span class="text-danger">*</span></label>
+							<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="!item.startDate" ng-if="item.startDate" />
 
+						</div>
 					</div>
-					<div class="col-sm-1 form-group">
-						<label class="control-label">End Date <span class="text-danger">*</span></label>
-						<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="!item.startDate" ng-if="item.startDate" />
-
-					</div>
-					<div class="col-sm-1 form-group">
-						<label class="control-label">Check Date <span class="text-danger">*</span></label>
-						<date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" disabled="!item.startDate && !item.endDate" />
-					</div>
+					
+					
 					<div class="col-sm-2 form-group">
+						<div class="form-group">
+							<label class="control-label">Check Date <span class="text-danger">*</span></label>
+							<date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" disabled="!item.startDate && !item.endDate" />
+						</div>
 						<label class="control-label">Starting Check Number <span class="text-danger">*</span></label>
-						<div class="input-group date">
+						<div class="form-group">
 							<input type="number" ng-model="item.startingCheckNumber" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,9}$/" data-parsley-type="number" step="1" />
 
 						</div>
@@ -150,7 +151,7 @@
 							</td>
 							<td data-title=" '' " class="col-sm-1">
 								<a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="showcomps(listitem)" tabindex="-1" title="Compensations"><i class="fa fa-arrow-circle-o-up"></i></a>
-								<a class="btn btn-danger btn-icon btn-circle btn-lg" ng-click="showcomps(listitem)" tabindex="-1" title="Deductions"><i class="fa fa-arrow-circle-o-down"></i></a>
+								<a class="btn btn-danger btn-icon btn-circle btn-lg" ng-click="showdeds(listitem)" tabindex="-1" title="Deductions"><i class="fa fa-arrow-circle-o-down"></i></a>
 								
 							</td>
 						</tr>
@@ -167,7 +168,7 @@
 				<script type="text/ng-template" id="popover/updatecomps1.html">
 
 					<div class="modal-header">
-						<h2 class="modal-title">Comepnsations for {{paycheck.employee.name}}<i class="fa fa-plus-circle fa-lg" ng-show="availablePayTypes().length>0" ng-click="addPayType()"></i></h2>
+						<h2 class="modal-title">Comepnsations for {{paycheck.employee.name}}<button class="btn btn-lg btn-success btn-icon btn-circle" ng-show="availablePayTypes().length>0" ng-click="addPayType()"><i class="fa fa-plus"></i></button></h2>
 					</div>
 					<div class="modal-body">
 						<form name="compform" data-parsley-validate="true">
@@ -181,7 +182,7 @@
 												 ng-model="paytype.amount" required data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
 								</div>
 								<div class="col-sm-1">
-									<button class="btn btn-sm btn-danger" ng-show="!item.id" ng-click="remove($index)"><i class="fa fa-remove"></i></button>
+									<button class="btn  btn-sm btn-icon btn-circle btn-danger" ng-show="!item.id" ng-click="remove($index)"><i class="fa fa-trash"></i></button>
 								</div>
 							</div>
 							<div class="row" ng-repeat="paytype in newPayTypes track by $index">
@@ -200,7 +201,7 @@
 												 ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
 								</div>
 								<div class="col-sm-1">
-									<button class="btn btn-sm btn-danger" ng-show="!item.id && paytype.payType" ng-click="removeFromNew($index)"><i class="fa fa-remove"></i></button>
+									<button class="btn  btn-lg btn-icon btn-circle btn-danger" ng-show="!item.id && paytype.payType" ng-click="removeFromNew($index)"><i class="fa fa-trash"></i></button>
 								</div>
 							</div>
 
@@ -208,8 +209,8 @@
 					</div>
 					<div class="modal-footer">
 						<div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
-							<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-							<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()"><i class="fa fa-save m-r-5"></i> Save</button>
+							<button type="button" class="btn btn-default  btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+							<button type="button" class="btn btn-success  btn-lg btn-icon btn-circle pull-right" ng-click="save()"><i class="fa fa-save"></i></button>
 						</div>
 
 					</div>
@@ -277,8 +278,8 @@
 					</div>
 					<div class="modal-footer">
 						<div class="col-sm-12">
-							<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-							<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()"><i class="fa fa-save m-r-5"></i> Save</button>
+							<button type="button" class="btn btn-default  btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+							<button type="button" class="btn btn-success  btn-lg btn-icon btn-circle pull-right" ng-click="save()"><i class="fa fa-save"></i></button>
 						</div>
 
 					</div>
@@ -331,8 +332,8 @@
 							<div class="col-sm-6 form-group">
 								<label>Select File (csv or xlsx or txt (comma separated values) )</label><br />
 								<label ng-show="files.length===1">File Name  = {{files[0].doc.file.name}}</label>
-								<button class="btn btn-sm btn-success attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
-									<i class="fa fa-upload"></i>Import Timesheets
+								<button class="btn btn-lg btn-success  btn-lg btn-icon btn-circle attach-button pull-right" id="attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
+									<i class="fa fa-upload"></i>
 								</button>
 							</div>
 							<div class="col-sm-2 form-group">
@@ -387,7 +388,7 @@
 											<td class="col-sm-6">Field</td>
 											<td class="col-sm-3">Position/Column #</td>
 											<td>
-												<button class="btn btn-sm btn-primary" ng-click="add()" ng-show="availableColumns(-1).length>0 && !selected">add</button>
+												<button class="btn  btn-lg btn-icon btn-circle btn-success" ng-click="add()" ng-show="availableColumns(-1).length>0 && !selected">add</button>
 											</td>
 										</tr>
 									</thead>
@@ -408,17 +409,17 @@
 											<td style="white-space: nowrap">
 												<!-- form -->
 												<form editable-form id="rowform" name="rowform" onbeforesave="saveSelected(f)" class="form-buttons form-inline" shown="selected===f">
-													<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-														<i class="fa fa-edit m-r-5"></i>
+													<button type="button" ng-show="!rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+														<i class="fa fa-edit"></i>
 													</button>
-													<button type="button" ng-show="!rowform.$visible" class="btn btn-danger" ng-click="delete($index)">
-														<i class="fa fa-recycle m-r-5"></i>
+													<button type="button" ng-show="!rowform.$visible" class="btn btn-danger btn-lg btn-icon btn-circle" ng-click="delete($index)">
+														<i class="fa fa-trash"></i>
 													</button>
-													<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success">
-														<i class="fa fa-save m-r-5"></i>
+													<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle">
+														<i class="fa fa-save"></i>
 													</button>
-													<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default">
-														<i class="fa fa-remove m-r-5"></i>
+													<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default btn-lg btn-icon btn-circle">
+														<i class="fa fa-remove"></i>
 													</button>
 												</form>
 											</td>
@@ -495,8 +496,8 @@
 					</div>
 					<div class="modal-footer">
 						<div class="col-sm-12">
-							<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-							<button type="button" class="btn btn-primary btn-sm pull-right" ng-disabled="!ready()" ng-click="uploadDocument()"><i class="fa fa-save m-r-5"></i> import <span class="badge" ng-show="importMap.lastRow">{{importMap.lastRow - importMap.startingRow + 1}}</span></button>
+							<button type="button" class="btn btn-default btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+							<button type="button" class="btn btn-success btn-lg btn-icon btn-circle pull-right" ng-disabled="!ready()" ng-click="uploadDocument()"><i class="fa fa-save"></i></button>
 						</div>
 
 					</div>

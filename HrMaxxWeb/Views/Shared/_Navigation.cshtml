@@ -15,19 +15,16 @@
 		<!-- begin sidebar user -->
 		<ul class="nav">
 			<li class="nav-profile">
-				<div class="image">
-					<img src="@CurrentUser.Photo" alt=""/>
-				</div>
+				
 				<div class="info">
-					@CurrentUser.FullName
-					
+					&nbsp;
 				</div>
 			</li>
 		</ul>
 		<!-- end sidebar user -->
 		<!-- begin sidebar nav -->
 		<ul class="nav">
-			<li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>
+			<li></li>
 			@if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.Master.GetDbName()) || CurrentUser.IsInRole(RoleTypeEnum.CorpStaff.GetDbName()))
 			{
 				<li class="has-sub">

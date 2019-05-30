@@ -317,9 +317,13 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
-			getHostsAndCompanies: function (includeall) {
+			getHostsAndCompanies: function (status, company) {
 				var deferred = $q.defer();
-				commonServer.one('HostsAndCompanies', includeall).get().then(function (data) {
+				var url = 'HostsAndCompanies/' + status;
+				if (company)
+					url += '/' + company;
+
+				commonServer.one(url).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

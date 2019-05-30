@@ -69,7 +69,7 @@
 
 	<div class="col-sm-12">
 		
-		<table ng-table="tableParams" class="table  table-condensed table-striped table-scroll" show-filter="true" template-pagination="custom/nopager">
+		<table ng-table="tableParams" class="table table-condensed table-striped table-scroll" show-filter="true" template-pagination="custom/nopager">
 
 			<tr ng-repeat="listitem in tableData track by $index" class="mouse-over-pointer" ng-class="{'warning': listitem.isVoid, 'danger':((listitem.netWage===0 || listitem.netWage<0) && item.status===2), 'info':(listitem.isReIssued && !listitem.isVoid)}">
 				<td data-title=" '#' " filter="{ 'companyEmployeeNo': 'text' }" sortable=" 'companyEmployeeNo' " class="col-sm-1">
@@ -148,17 +148,18 @@
 					{{listitem.netWage | currency:"$"}}
 				</td>
 
-				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-1">
-					
+				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-2">
+
 					<span>{{listitem.paymentMethodText}}</span>
-					<button class="btn btn-xs btn-warning" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></button>
-					<button class="btn btn-xs btn-danger" ng-show="datasvc.showVoidPaycheck && item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></button>
-					<button class="btn btn-xs btn-success" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></button>
-					<button class="btn btn-xs btn-success" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></button>
-					<button class="btn btn-xs btn-info" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></button>
+					<a class="btn btn-warning btn-icon btn-circle btn-sm" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></a>
+					<a class="btn btn-danger btn-icon btn-circle btn-sm" ng-show="datasvc.showVoidPaycheck && item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-sm" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-sm" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></a>
+					<a class="btn btn-info btn-icon btn-circle btn-sm" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></a>
+
 				</td>
 			</tr>
-			
+
 			<tr class="danger">
 				<td class="col-sm-5 text-right"><strong><em><u># Checks = {{totalChecks}}</u></em></strong></td>
 				<td class="col-sm-1 text-right"><strong><em><u>{{item.totalGrossWage | currency:'$'}}</u></em></strong></td>
@@ -166,7 +167,7 @@
 				<td class="col-sm-3">&nbsp;</td>
 				<td class="col-sm-1 text-right"><strong><em><u>{{item.totalNetWage | currency:'$'}}</u></em></strong></td>
 				<td class="col-sm-1"></td>
-				
+
 			</tr>
 		</table>
 		

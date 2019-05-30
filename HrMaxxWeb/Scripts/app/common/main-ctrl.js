@@ -108,6 +108,16 @@
 			}
 		};
 		$scope.data = dataSvc;
+		$scope.addMissingCompany = function(host, company, url) {
+			commonRepository.getHostsAndCompanies(0, company).then(function (data) {
+				dataSvc.companies.push(data.companies[0]);
+				dataSvc.hostCompanies.push(data.companies[0]);
+				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: company })[0];
+				$scope.companySelected(url? url : null, url? true : false);
+			}, function (error) {
+				$scope.addAlert('error getting list of hosts', 'danger');
+			});
+		}
 		$scope.refreshHostAndCompanies = function() {
 			commonRepository.getHostsAndCompanies(dataSvc.includeAllCompanies ? 0 : 1).then(function (data) {
 				dataSvc.hosts = data.hosts;
@@ -185,10 +195,11 @@
 					$scope.companySelected(url, true);
 
 				} else {
-					dataSvc.includeAllCompanies = true;
-					dataSvc.searchCompany = companyId;
-					dataSvc.searchUrl = url;
-					$scope.refreshHostAndCompanies();
+					$scope.addMissingCompany(hostId, companyId, url);
+					//dataSvc.includeAllCompanies = true;
+					//dataSvc.searchCompany = companyId;
+					//dataSvc.searchUrl = url;
+					
 					
 				}
 				
@@ -210,30 +221,23 @@
 		$scope.setHostandCompanyFromInvoice = function(hostId, companyId){
 			if (!dataSvc.selectedHost || (dataSvc.selectedHost && dataSvc.selectedHost.id !== hostId)) {
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: hostId })[0];
+				$scope.getCompanies(null);
 				$scope.hostSelected();
 			}
 			if (!dataSvc.selectedCompany || (dataSvc.selectedCompany && dataSvc.selectedCompany.id !== companyId)) {
-				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];;
-				$scope.companySelected(null, false);
+				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: companyId })[0];
+				if (dataSvc.selectedCompany1)
+					$scope.companySelected(null, false);
+				else {
+					$scope.addMissingCompany(hostId, companyId);
+					
+				}
 			}
 			
 		}
 
 		$scope.getCompanies = function (sel) {
-			//companyRepository.getCompanyList(dataSvc.selectedHost.id).then(function (data) {
-			//	dataSvc.companies = data;
-			//	if (dataSvc.userCompany) {
-			//		var selected = $filter('filter')(dataSvc.companies, {id: dataSvc.userCompany})[0];
-			//		dataSvc.selectedCompany = selected;
-			//		$window.location.href = "#!/Client/Company/" + (new Date().getTime());
-			//	}
-			//	else if (sel) {
-			//		var selected2 = $filter('filter')(dataSvc.companies, { id: sel.id })[0];
-			//		dataSvc.selectedCompany = selected2;
-			//	}
-			//}, function (erorr) {
-			//	$scope.addAlert('error getting company list', 'danger');
-			//});
+			
 			dataSvc.hostCompanies = $filter('filter')(dataSvc.companies, {hostId: dataSvc.selectedHost.id});
 			if (dataSvc.userCompany) {
 				$scope.setHostandCompany(dataSvc.userHost, dataSvc.userCompany, "#!/Client/Employees/" + (new Date().getTime()));
@@ -249,10 +253,7 @@
 			dataSvc.fromSearch = null;
 			if (dataSvc.selectedHost) {
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
-				//dataSvc.selectedHost = angular.copy(match);
-				//if (!dataSvc.selectedHost.company) {
-				//	getHostDetails();
-				//}
+				
 				$scope.getCompanies(null);
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 			}

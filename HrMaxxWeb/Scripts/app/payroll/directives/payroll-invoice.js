@@ -402,7 +402,8 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						//}, function (error) {
 
 						//});
-						dataSvc.companyContact = $scope.mainData.selectedCompany.contact;
+						if ($scope.mainData.selectedCompany)
+							dataSvc.companyContact = $scope.mainData.selectedCompany.contact;
 					}
 					$scope.getContactPhone = function(c) {
 						var p = '';

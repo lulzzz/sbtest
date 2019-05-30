@@ -1,8 +1,4 @@
 ﻿<div class="col-sm-12">
-	<div class="col-sm-12 m-t-10 m-b-10 hidden-print" ng-if="invoice.id && showControls">
-		<uib-progressbar class="progress-striped" value="getProgressBarValue()" ng-type="getProgressType()"><b>{{item.statusText}}</b></uib-progressbar>
-
-	</div>
 	<div class="col-sm-12 hidden-print" ng-if="invoice.status>2">
 		<div class="col-sm-12">
 			<div class="col-sm-3 form-group">
@@ -103,21 +99,20 @@
 				</div>
 				<div class="col-sm-2 show-red" ng-if="unsavedPayments">changes will apply when you save</div>
 				<div class="col-sm-10">
-					<button class="btn btn-sm btn-success pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2 && data.showDelivery"><i class="fa fa-truck m-r-5"></i> Delivered</button>
-					<button class="btn btn-sm btn-danger pull-left" ng-click="delayTaxes()" ng-show="!mainData.userCompany && invoice.status>2 && !invoice.taxesDelayed  && data.showEditable"><i class="fa fa-pause m-r-5"></i> Delay Taxes</button>
-					<button class="btn btn-sm btn-danger pull-left" ng-click="reDateInvoicePayroll()" ng-disabled="!data.reDate" ng-show="!mainData.userCompany && invoice.taxesDelayed"><i class="fa fa-play m-r-5"></i> Re-Date</button>
-
-
-					<button class="btn btn-sm btn-info pull-right" ng-click="print()" ng-show="invoice.status>1"><i class="fa fa-print m-r-5"></i> print</button>
-					<button class="btn btn-sm btn-danger pull-right" ng-click="delete()" ng-show="data.showDelete && !mainData.userCompany && invoice.status===1"><i class="fa fa-recycle m-r-5"></i> Delete</button>
-					<button class="btn btn-sm btn-default pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-
-					<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2  && data.showEditable" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
-
-					<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable() && data.showEditable" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
-					<button class="btn btn-sm btn-info pull-right" ng-click="recreate()" ng-show="invoice.status<3 && !mainData.userCompany && isInvoiceEditable() && data.showEditable" ng-disabled="isInvoiceInvalid()"><i class="fa fa-refresh m-r-5"></i> Refresh</button>
+					
+					<a class="btn btn-danger btn-icon btn-circle btn-lg" ng-click="reDateInvoicePayroll()" ng-disabled="!data.reDate" ng-show="!mainData.userCompany && invoice.taxesDelayed" title="Re-Date"><i class="fa fa-retweet"></i></a>
+					<a class="btn btn-danger btn-icon btn-circle btn-lg" ng-click="delayTaxes()" ng-show="!mainData.userCompany && invoice.status>2 && !invoice.taxesDelayed  && data.showEditable" title="Delay Taxes"><i class="fa fa-pause"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-lg pull-right" ng-click="print()" ng-show="invoice.status>1" title="Print"><i class="fa fa-print"></i></a>
+					<a class="btn btn-danger btn-icon btn-circle btn-lg pull-right" ng-click="delete()" ng-show="data.showDelete && !mainData.userCompany && invoice.status===1" title="Delete"><i class="fa fa-trash"></i></a>
+					<a class="btn btn-default btn-icon btn-circle btn-lg pull-right" ng-click="cancel()" title="Cancel"><i class="fa fa-times"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-lg pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable() && data.showEditable" ng-disabled="isInvoiceInvalid()" title="Save"><i class="fa fa-save"></i></a>
+					
+					<a class="btn btn-info btn-icon btn-circle btn-lg pull-none" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2  && data.showEditable" ng-disabled="isInvoiceInvalid()" title="Approve"><i class="fa fa-check"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-lg pull-none" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2 && data.showDelivery" title="Delivered"><i class="fa fa-truck"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-lg pull-none" ng-click="recreate()" ng-show="invoice.status<3 && !mainData.userCompany && isInvoiceEditable() && data.showEditable" ng-disabled="isInvoiceInvalid()" title="Refresh"><i class="fa fa-recycle"></i></a>
 					
 
+					
 
 				</div>
 			</div>
@@ -128,15 +123,7 @@
 			</div>
 		
 			<div class="col-sm-12 table-responsive">
-				<div class="alert alert-danger hidden-print" ng-if="invoice.company.notes">
-					{{invoice.company.notes}}
-				</div>
-				<pre class="alert alert-danger hidden-print" ng-if="invoice.notes">
-					{{invoice.notes}}
-				</pre>
-				<div class="alert alert-info hidden-print" >
-					<strong>Tax Deposit Frequency: {{invoice.company.taxDepositFrequency}}</strong>
-				</div>
+				
 				<table class="table table-borderless" >
 					<tr>
 						<td class="col-sm-7">
@@ -405,34 +392,25 @@
 						<span class="m-r-10"><i class="fa fa-envelope"></i> {{data.hostContact.email}}</span>
 					</p>
 				</div>
-				<div class="col-sm-12 hidden-print" ng-show="showControls">
-					<div class="col-sm-2 form-group">
-						<select name="courier" ng-model="invoice.courier" class="form-control pull-right" ng-show="!mainData.userCompany && invoice.status===2" ng-options="ctx for ctx in data.config.couriers">
-							<option value="">Select Courier</option>
-						</select>
-					</div>
-					<div class="col-sm-10">
-						<button class="btn btn-sm btn-success pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-show="!mainData.userCompany && invoice.status===2 && data.showDelivery"><i class="fa fa-truck m-r-5"></i> Delivered</button>
-
-						<button class="btn btn-sm btn-info pull-right" ng-click="print()" ng-show="invoice.status>1"><i class="fa fa-print m-r-5"></i> print</button>
-						<button class="btn btn-sm btn-danger pull-right" ng-click="delete()" ng-show="data.showDelete && !mainData.userCompany && invoice.status===1"><i class="fa fa-recycle m-r-5"></i> Delete</button>
-						<button class="btn btn-sm btn-default pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-
-						<button class="btn btn-sm btn-success pull-right" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2 && data.showEditable" ng-disabled="isInvoiceInvalid()"><i class="fa fa-check m-r-5"></i> Approve</button>
-
-						<button class="btn btn-sm btn-primary pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable()  && data.showEditable" ng-disabled="isInvoiceInvalid()"><i class="fa fa-save m-r-5"></i> Save</button>
-						<button class="btn btn-sm btn-info pull-right" ng-click="recreate()" ng-show="invoice.status<3 && !mainData.userCompany && isInvoiceEditable()  && data.showEditable" ng-disabled="isInvoiceInvalid()"><i class="fa fa-refresh m-r-5"></i> Refresh</button>
-
-					</div>
-				</div>
+				
 
 			</div>
 
 		</div>
 		<div class="col-sm-4  hidden-print" ng-if="!mainData.userCompany && showControls">
+			<div class="alert alert-danger hidden-print col-sm-12 m-l-20" ng-if="invoice.company.notes">
+				{{invoice.company.notes}}
+			</div>
+			<div class="alert alert-danger hidden-print col-sm-12 m-l-20" ng-if="invoice.notes">
+				{{invoice.notes}}
+			</div>
+			<div class="alert alert-info hidden-print col-sm-12 m-l-20">
+				<strong>Tax Deposit Frequency: {{invoice.company.taxDepositFrequency}}</strong>
+			</div>
 			<div class="col-sm-12 m-l-20" ng-if="invoice.id && data.showEditable">
 				<comment-list source-type-id="2" source-id="invoice.companyId" list="invoice.comments" heading="'Internal Notes'" />
 			</div>
+			
 			<div class="col-sm-12 m-l-20" id="versions" ng-if="invoice.id" ng-show="data.showVersions">
 				<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="invoice.id" heading="'Invoice Versions'" />
 			</div>

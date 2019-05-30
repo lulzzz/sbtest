@@ -133,13 +133,13 @@
 	cursor: col-resize;
 }
 .table-scroll thead {
-    display: table;
-    width: 100%;
-    table-layout: auto;
+    display: block;
+		width: calc(100% - 1em);
+    table-layout:auto;
 }
 
 .table-scroll tbody {
-    max-height: 400px;
+    max-height: 450px;
     overflow-y: auto;
     display: block;
     width: 100%;
@@ -155,3 +155,4 @@
 .table-scroll td {
     height: 47px; 
 }
+

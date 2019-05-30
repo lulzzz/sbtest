@@ -306,17 +306,17 @@
 																<td style="white-space: nowrap">
 																	<!-- form -->
 
-																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-primary btn-xs" ng-click="setSelectedBank($index)">
-																		<i class="fa fa-edit m-r-5"></i> edit
+																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-success btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
+																		<i class="fa fa-edit"></i> edit
 																	</button>
-																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-xs" ng-click="delete($index)">
-																		<i class="fa fa-recycle m-r-5"></i> delete
+																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-sm  btn-icon btn-circle" ng-click="delete($index)">
+																		<i class="fa fa-recycle"></i> delete
 																	</button>
-																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-xs">
-																		<i class="fa fa-save m-r-5"></i> enter
+																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-sm btn-icon btn-circle">
+																		<i class="fa fa-save"></i> enter
 																	</button>
-																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-xs">
-																		<i class="fa fa-remove m-r-5"></i> cancel
+																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-sm btn-icon btn-circle">
+																		<i class="fa fa-remove"></i> cancel
 																	</button>
 
 																</td>
@@ -473,8 +473,8 @@
 
 						</div>
 						<div class="col-sm-4 col-sm-offset-4" ng-show="showControls">
-							<button class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="!validate()"><i class="fa fa-save m-r-5"></i> Save</button>
-							<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+							<button class="btn btn-lg btn-success btn-icon btn-circle" ng-click="save()" ng-disabled="!validate()"><i class="fa fa-save"></i></button>
+							<button class="btn btn-lg btn-default btn-icon btn-circle" ng-click="cancel()"><i class="fa fa-remove"></i></button>
 						</div>
 					</form>
 				</div>
@@ -551,9 +551,9 @@
 							<td class="text-right">{{pt.available}}</td>
 							<td class="text-right">{{calculateAvailableWage(pt) | currency:'$'}}</td>
 							<td ng-show="data.editableAccumulations">
-								<button class="btn btn-xs btn-info" ng-show="!selectedAccumulation" ng-click="setSelectedAccumulation(pt, $index)"><i class="fa fa-pencil"></i></button>
-								<button class="btn btn-xs btn-success" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="saveEmployeeAccumulation(pt)"><i class="fa fa-save"></i></button>
-								<button class="btn btn-xs btn-default" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="cancelAccumulation(pt)"><i class="fa fa-remove"></i></button>
+								<button class="btn btn-lg btn-icon btn-circle btn-success" ng-show="!selectedAccumulation" ng-click="setSelectedAccumulation(pt, $index)"><i class="fa fa-pencil"></i></button>
+								<button class="btn btn-lg btn-icon btn-circle btn-success" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="saveEmployeeAccumulation(pt)"><i class="fa fa-save"></i></button>
+								<button class="btn btn-lg btn-icon btn-circle btn-default" ng-show="selectedAccumulation && selectedAccumulationIndex===$index" ng-click="cancelAccumulation(pt)"><i class="fa fa-remove"></i></button>
 							</td>
 						</tr>
 

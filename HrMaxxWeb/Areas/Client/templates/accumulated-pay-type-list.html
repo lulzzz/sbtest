@@ -68,29 +68,27 @@
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-xs btn-info" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit m-r-5"></i> edit
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+							<i class="fa fa-edit"></i>
 						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-xs btn-success">
-							<i class="fa fa-save m-r-5"></i> save
+						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+							<i class="fa fa-save"></i>
 						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-xs btn-default">
-							<i class="fa fa-remove m-r-5"></i> cancel
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+							<i class="fa fa-remove"></i>
 						</button>
 					</form>
 				</td>
 				
 			</tr>
-			<tr ng-show="!selected" ng-show="showControls">
-				<td colspan="6">
+			<tr ng-show="!selected && showControls">
+				<td colspan="8">
 					<span ng-show="list.length===0">No items found</span>
-				</td>
-
-				<td>
-					<button type="button" ng-click="add()" ng-show="availablePayTypes().length>0" class="btn btn-xs btn-primary">
-						<i class="fa fa-plus-circle m-r-5"></i>Add
+					<button type="button" ng-click="add()" ng-show="availablePayTypes().length>0" class="btn btn-lg  btn-icon btn-circle btn-success">
+						<i class="fa fa-plus"></i>
 					</button>
 				</td>
+
 			</tr>
 			
 		</tbody>

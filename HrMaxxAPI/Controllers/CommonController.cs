@@ -160,13 +160,13 @@ namespace HrMaxxAPI.Controllers
 
 		[HttpGet]
 		[Route(HrMaxxRoutes.GetHostsAndCompanies)]
-		public HostAndCompaniesResource GetHostsAndCompanies(int? status = 1)
+		public HostAndCompaniesResource GetHostsAndCompanies(int? status = 1, Guid? company = null)
 		{
 			var paramList = new List<FilterParam>
 			{
 				new FilterParam() {Key = "host", Value = CurrentUser.Host==Guid.Empty ? null : CurrentUser.Host.ToString()},
 				new FilterParam() {Key = "status", Value = status.ToString()},
-				new FilterParam() {Key = "company", Value = CurrentUser.Company==Guid.Empty ? null : CurrentUser.Company.ToString()},
+				new FilterParam() {Key = "company", Value = CurrentUser.Company==Guid.Empty ? company.HasValue ? company.Value.ToString(): default(Guid?).ToString() : CurrentUser.Company.ToString()},
 				new FilterParam() {Key = "role", Value = (CurrentUser.Role==RoleTypeEnum.Master.GetDbName() ||CurrentUser.Role==RoleTypeEnum.SuperUser.GetDbName()) ? null : CurrentUser.Role}
 			};
 

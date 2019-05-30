@@ -1,26 +1,26 @@
 ﻿@using HrMaxx.Infrastructure.Security
-<div id="header" class="header navbar navbar-default navbar-fixed-top hidden-print">
+<div id="header" class="header navbar navbar-inverse navbar-fixed-top hidden-print">
 	<!-- begin container-fluid -->
 	<div class="container-fluid">
 		<!-- begin mobile sidebar expand / collapse button -->
 		<div class="navbar-header" id="hostlogo" ng-controller="hostlogo">
-			<a href="#!/" class="navbar-brand">
-				<img src="{{getPaxolLogo()}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" />
+			<a href="#!/" ng-if="getDocumentUrl(logo)" style="background-color:transparent">
+				<img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
 			</a>
-			<a href="#!/" class="navbar-brand" ng-if="getDocumentUrl(logo)">
-				<img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:200px;height:40px" />
-			</a>
-			<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
+			
+			
 		</div>
+		
 		<!-- end mobile sidebar expand / collapse button -->
 		<!-- begin header navigation right -->
 		<ul class="nav navbar-nav navbar-right">
 			@if (Request.IsAuthenticated)
 			{
+				<li>
+					<a href="#!/" class="navbar-brand pull-right" style="background-color:transparent">
+						<img src="{{zionAPI.Web}}/Content/images/logo.png" style="width:150px;" />
+					</a>
+				</li>
 				<li ng-controller="searchResult" style="width:600px">
 					@if (CurrentUser.Role != "Employee")
 					{
