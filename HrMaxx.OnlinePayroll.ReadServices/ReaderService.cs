@@ -626,7 +626,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			try
 			{
 				var paramList = new List<FilterParam> ();
-				if (status.HasValue)
+				if (status.HasValue && status>0)
 				{
 					paramList.Add(new FilterParam { Key = "status", Value = ((int)status).ToString() });
 				}

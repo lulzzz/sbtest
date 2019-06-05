@@ -35,5 +35,6 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public bool TaxesDelayed { get; set; }
 		public string Notes { get; set; }
 		public string SpecialRequest { get; set; }
+		public string InvoiceSetup1 { get; set; }
 	}
 }

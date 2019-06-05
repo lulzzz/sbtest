@@ -39,6 +39,13 @@ namespace HrMaxxAPI.Resources.Payroll
 		public bool TaxesDelayed { get; set; }
 		public string Notes { get; set; }
 		public string SpecialRequest { get; set; }
+		public InvoiceSetup InvoiceSetup { get; set; }
+
+		public bool PaysByAch
+		{
+			get { return InvoiceSetup.PaysByAch; }
+		}
+
 		public string StatusText
 		{
 			get { return Status.GetDbName(); }
@@ -82,6 +89,12 @@ namespace HrMaxxAPI.Resources.Payroll
 				penalty = Math.Round((configRow.Rate / 100) * taxes, 2, MidpointRounding.AwayFromZero);
 				return penalty;
 			}
+		}
+		public string CheckNumberDisplay 
+		{ 
+			get{
+					return string.IsNullOrWhiteSpace(CheckNumbers) && InvoiceSetup.PaysByAch ? "C-ACH" : CheckNumbers;
+				} 
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-common.directive('address', ['zionAPI','localStorageService','version',
+common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 	function (zionAPI, localStorageService, version) {
 		return {
 			restrict: 'E',

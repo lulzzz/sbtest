@@ -88,6 +88,31 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						}
 						return total;
 					}
+					$scope.getSubTotal = function () {
+						var total = 0;
+						if ($scope.invoice) {
+							//total += +($scope.getLineItemTotal()).toFixed(2);
+
+							if ($scope.invoice.companyInvoiceSetup.invoiceType === 1) {
+								total += +($scope.invoice.grossWages).toFixed(2);
+								total += +($scope.invoice.employerContribution).toFixed(2);
+								total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+							}
+							else if ($scope.invoice.companyInvoiceSetup.invoiceType === 2) {
+								total += +($scope.invoice.employeeContribution).toFixed(2);
+								total += +($scope.invoice.employerContribution).toFixed(2);
+								total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+
+							}
+							else if ($scope.invoice.companyInvoiceSetup.invoiceType === 4) {
+								total += +($scope.invoice.workerCompensationCharges).toFixed(2);
+							}
+							else if ($scope.invoice.companyInvoiceSetup.invoiceType === 5) {
+								total = +($scope.invoice.workerCompensationCharges).toFixed(2);
+							}
+						}
+						return total;
+					}
 					$scope.updateWC = function() {
 						var wctotal = 0;
 						$.each($scope.invoice.workerCompensations, function (index, wc1) {

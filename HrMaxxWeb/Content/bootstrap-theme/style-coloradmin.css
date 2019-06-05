@@ -451,7 +451,7 @@ label {
     -webkit-animation: none;
 }
 .navbar-form .form-control {
-    width: 400px;
+    width: 200px;
     padding: 5px 15px;
     height: 30px;
     -webkit-border-radius: 30px;
@@ -459,7 +459,7 @@ label {
     border-radius: 30px;
 }
 .navbar-form .form-control:focus {
-    width: 400px;
+    width: 300px;
     animation: expand .2s;
     -webkit-animation: expand .2s;
 }
@@ -1062,7 +1062,7 @@ label {
 .has-error .form-control-feedback {
     color: #ff5b57;
 }
-.has-error.form-control {
+.has-error .form-control {
     border-color: #ff5b57;
 }
 .has-error .form-control:focus {
@@ -3901,7 +3901,12 @@ body .fc button:active {
     background: #f0f3f4;
     padding: 20px;
 }
-
+.invoice-from,
+.invoice-to,
+.invoice-date {
+    display: table-cell;
+    width: 1%;
+}
 .invoice-from,
 .invoice-to {
     padding-right: 20px;

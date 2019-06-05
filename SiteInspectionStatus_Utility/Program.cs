@@ -140,11 +140,41 @@ namespace SiteInspectionStatus_Utility
 				case 28:
 					UpdateCBCSUIManagementRate(container);
 					break;
+				case 29:
+					UpdateCompanyACH(container);
+					break;
 				default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
+		}
+
+		private static void UpdateCompanyACH(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var companyservice = scope.Resolve<ICompanyService>();
+				var companyrepository = scope.Resolve<ICompanyRepository>();
+				var achInvoices =
+					readerservice.GetPayrollInvoices(paymentMethods: new List<InvoicePaymentMethod> {InvoicePaymentMethod.ACH});
+
+				var companies = readerservice.GetCompanies(status:0);
+				var updatedCount = (int) 0;
+				var distinctCompanies = achInvoices.Select(i => i.CompanyId).Distinct().ToList();
+				distinctCompanies.ForEach(cid =>
+				{
+					var company = companies.First(c => c.Id == cid);
+					if (!company.Contract.InvoiceSetup.PaysByAch)
+					{
+						company.Contract.InvoiceSetup.PaysByAch = true;
+						companyrepository.SaveCompanyContract(company, company.Contract);
+						updatedCount++;
+					}
+				});
+				Console.WriteLine("companies updated " + updatedCount);
+			}
 		}
 
 		private static void UpdateCBCSUIManagementRate(IContainer container)
