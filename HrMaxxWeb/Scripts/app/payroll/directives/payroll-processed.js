@@ -179,6 +179,19 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('Error: ' + error, 'danger');
 						});
 					}
+					$scope.printPayrollPack = function (payroll) {
+						payrollRepository.printPayrollPack(payroll).then(function (data) {
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+							
+						}, function (error) {
+							addAlert('Error: ' + error, 'danger');
+						});
+					}
 					
 					$scope.printPayrollReport = function (payroll) {
 						payroll.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;

@@ -13,6 +13,7 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxxAPI.Code.Filters;
 using HrMaxxAPI.Controllers.Journals;
 using HrMaxxAPI.Resources;
@@ -320,6 +321,31 @@ namespace HrMaxxAPI.Controllers.Reports
 		public ProfitStarsReportResponse ProfitStars9am()
 		{
 			return MakeServiceCall(() => _achService.ProfitStarsStatusUpdate(), "Profit Stars 1pm  ", true);
+		}
+
+		[HttpGet]
+		[Route(ReportRoutes.CompanyDashboard)]
+		public CompanyDashboard CompanyDashboard(Guid id)
+		{
+			return MakeServiceCall(() => _reportService.GetCompanyDashboard(id), "company dashboard  ", true);
+		}
+		[HttpGet]
+		[Route(ReportRoutes.EmployeeDashboard)]
+		public CompanyDashboard EmployeeDashboard(Guid companyId, Guid employeeId)
+		{
+			return MakeServiceCall(() => _reportService.GetEmployeeDashboard(companyId, employeeId), "employee dashboard  ", true);
+		}
+		[HttpGet]
+		[Route(ReportRoutes.ExtractDashboard)]
+		public CompanyDashboard ExtractDashboard()
+		{
+			return MakeServiceCall(() => _reportService.GetExtractDashboard(), "extract dashboard  ", true);
+		}
+		[HttpGet]
+		[Route(ReportRoutes.StaffDashboard)]
+		public StaffDashboard StaffDashboard(Guid? hostId = null)
+		{
+			return MakeServiceCall(() => _reportService.GetStaffDashboard(hostId), "staff dashboard  ", true);
 		}
 
 	}

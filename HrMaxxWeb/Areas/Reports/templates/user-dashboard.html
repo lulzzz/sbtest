@@ -1,6 +1,21 @@
 ﻿<div class="row">
 	<!--Load the AJAX API-->
 
+	<div class="ticker-wrap">
+		<div class="ticker">
+			<div class="ticker_item" ng-repeat="news in data.myNews">
+				{{news.title}}: {{news.newsContent}} - by {{news.userName}}
+			</div>
+		</div>
+	</div>
+	<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
+		<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">General</span></a></li>
+		<li ng-class="{'active':data.tab===4}" ng-click="tabChanged(4)" ng-show="data.viewCompanyList"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Companies</span></a></li>
+		<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)" ng-show="data.viewAccountReceivables"><a data-toggle="tab"><i class="fa fa-money"></i> <span class="hidden-xs">A.R.</span></a></li>
+		<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)" ng-show="data.viewPerformance"><a data-toggle="tab"><i class="fa fa-dollar"></i> <span class="hidden-xs">Performance</span></a></li>
+		<li ng-class="{'active':data.tab===5}" ng-click="tabChanged(5)" ng-show="false && data.viewClearance"><a data-toggle="tab"><i class="fa fa-dollar"></i> <span class="hidden-xs">Clearance</span></a></li>
+	</ul>
+	
 	<div class="panel panel-inverse">
 		<script type="text/ng-template" id="companyschedule.html">
 			<div class="col-sm-12 alert-warning" ng-class="{'hidden-print': pc.minimized}">
@@ -40,45 +55,36 @@
 			
 			
 		</script>
-		<div class="panel-heading hidden-print">
-			<ul class="nav nav-tabs  nav-tabs-inverse" id="dashboardtabs">
-				<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">General</span></a></li>
-				<li ng-class="{'active':data.tab===4}" ng-click="tabChanged(4)" ng-show="data.viewCompanyList"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Companies</span></a></li>
-				<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)" ng-show="data.viewAccountReceivables"><a data-toggle="tab"><i class="fa fa-money"></i> <span class="hidden-xs">A.R.</span></a></li>
-				<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)" ng-show="data.viewPerformance"><a data-toggle="tab"><i class="fa fa-dollar"></i> <span class="hidden-xs">Performance</span></a></li>
-				<li ng-class="{'active':data.tab===5}" ng-click="tabChanged(5)" ng-show="false && data.viewClearance"><a data-toggle="tab"><i class="fa fa-dollar"></i> <span class="hidden-xs">Clearance</span></a></li>
-			</ul>
-			<h2 class="panel-title"></h2>
-		</div>
 		<div class="panel-body">
 			<div class="row hidden-print" ng-show="data.tab===2 || data.tab===3">
 				<report-filter filter="mainData.reportFilter" callback="getReport()" show-dates="true" show-periods="false" show-history="false" show-active="true" show-include-clients="false" />
 			</div>
 			<div class="row hidden-print" ng-show="data.tab===1">
-				<div class="col-sm-12 hidden-print table-responsive">
+				<staff-dashboard main-data="mainData"/>
+				<!--<div class="col-sm-12 hidden-print table-responsive">
 
-					<div class="col-sm-6 col-sm-offset-3">
-						<div uib-carousel active="active" interval="5000" no-wrap="true">
-							<div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
-								<img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
-								<div class="carousel-caption">
-									<h3>{{news.title}}</h3>
-									<p style="font-size: 14pt">
-										{{news.newsContent}}
-										<br />
-										<i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss a'}}</i>
-									</p>
-								</div>
+					    <div class="col-sm-6 col-sm-offset-3">
+						    <div uib-carousel active="active" interval="5000" no-wrap="true">
+							    <div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
+								    <img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
+								    <div class="carousel-caption">
+									    <h3>{{news.title}}</h3>
+									    <p style="font-size: 14pt">
+										    {{news.newsContent}}
+										    <br />
+										    <i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss a'}}</i>
+									    </p>
+								    </div>
 
-								<div class="carousel-control">
-									News
-								</div>
+								    <div class="carousel-control">
+									    News
+								    </div>
 
-							</div>
-						</div>
-					</div>
+							    </div>
+						    </div>
+					    </div>
 
-				</div>
+				    </div>-->
 
 
 			</div>
@@ -237,6 +243,7 @@
 			<div class="row  hidden-print" ng-show="data.tab===2">
 				<div class="row col-md-12">
 					<div class="col-md-6">
+						
 						<div id="invoiceststusChart"></div>
 
 

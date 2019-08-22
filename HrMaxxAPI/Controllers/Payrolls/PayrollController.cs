@@ -167,6 +167,15 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			return Printed(printed);
 		}
 		[HttpPost]
+		[Route(PayrollRoutes.PrintPayrollPack)]
+		[DeflateCompression]
+		public HttpResponseMessage PrintPayrollPack(PayrollResource payroll)
+		{
+			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
+			var printed = MakeServiceCall(() => _payrollService.PrintPayrollPack(mapped), string.Format("print payroll pack {0} - {1}", mapped.Id, mapped.Company.Name), true);
+			return Printed(printed);
+		}
+		[HttpPost]
 		[Route(PayrollRoutes.PrintPayrollTimesheet)]
 		[DeflateCompression]
 		public HttpResponseMessage PrintPayrollTimesheet(PayrollResource payroll)
@@ -205,6 +214,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			var printed = MakeServiceCall(() => _payrollService.PrintPayrollChecks(payrollId, companyCheckPrintOrder), string.Format("print all check for payroll with id {0}" , payrollId), true);
 			return Printed(printed);
 		}
+
 
 		[HttpGet]
 		[Route(PayrollRoutes.PrintPayrollPaySlips)]

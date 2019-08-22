@@ -170,7 +170,7 @@
 				}, function (error) {
 
 				});
-				commonRepository.getUsers(null, null).then(function (result) {
+				commonRepository.getAllUsers().then(function (result) {
 					dataSvc.users = angular.copy($filter('filter')(result, {active:true}));
 
 				}, function (error) {
@@ -240,7 +240,7 @@
 			
 			dataSvc.hostCompanies = $filter('filter')(dataSvc.companies, {hostId: dataSvc.selectedHost.id});
 			if (dataSvc.userCompany) {
-				$scope.setHostandCompany(dataSvc.userHost, dataSvc.userCompany, "#!/Client/Employees/" + (new Date().getTime()));
+				$scope.setHostandCompany(dataSvc.userHost, dataSvc.userCompany, "#!/Admin/Dashboard/");
 			}
 			else if (dataSvc.searchCompany) {
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: dataSvc.searchCompany })[0];

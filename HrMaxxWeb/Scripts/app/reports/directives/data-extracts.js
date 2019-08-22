@@ -16,7 +16,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						isBodyOpenExtract: false,
 						isBodyOpenWC: false,
 						isBodyOpenPP: false,
-						openedRack:0,
+						openedRack:2,
 						response: null,
 						minYear: 2015,
 						hosts: [],
@@ -601,7 +601,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							startDate: moment(dataSvc.filterWC.startDate).format("MM/DD/YYYY"),
 							endDate: moment(dataSvc.filterWC.endDate).format("MM/DD/YYYY"),
 							depositSchedule: null,
-							depositDate: null
+							depositDate: null,
+							includeHistory: dataSvc.filterWC.includeHistory
 						}
 						if (dataSvc.selectedHost) {
 							request.hostId = dataSvc.selectedHost.id;
@@ -624,7 +625,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							month: 0,
 							
 							depositSchedule: null,
-							depositDate: null
+							depositDate: null,
+							includeHistory: dataSvc.filterWC.includeHistory
 						}
 						if (dataSvc.selectedHost) {
 							request.hostId = dataSvc.selectedHost.id;

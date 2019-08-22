@@ -561,7 +561,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup && data.viewReports">
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup && (mainData.userRole==='Employee' || data.viewReports)">
 			<div class="panel-heading">
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">

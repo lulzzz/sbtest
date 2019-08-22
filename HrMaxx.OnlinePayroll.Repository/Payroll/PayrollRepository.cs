@@ -692,6 +692,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			const string deletepaycheckworkercomps = "delete from PayCheckWorkerCompensation where PayCheckId=@Id; ";
 			const string deletepaychecks = "delete from PayrollPayCheck where PayrollId=@Id; ";
 			const string deletepayroll = "delete from Payroll where Id=@Id;";
+			const string logquery = @"insert into PayrollVoidLog(PayrollId, CompanyId, CompanyName, StartDate, EndDate, PayDay, Action, [User], TS) values (@PayrollId, @CompanyId, @CompanyName, @StartDate, @EndDate, @PayDay, 2, @User, getdate())";
 			using (var conn = GetConnection())
 			{
 				Log.Info("delete payroll started " + DateTime.Now);
@@ -714,6 +715,17 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 					Log.Info("deleted checks " + DateTime.Now);
 					
 					conn.Execute(deletepayroll, new {Id = payroll.Id});
+					conn.Execute(logquery,
+						new
+						{
+							PayrollId = payroll.Id,
+							CompanyId = payroll.Company.Id,
+							CompanyName = payroll.Company.Name,
+							StartDate = payroll.StartDate,
+							EndDate = payroll.EndDate,
+							PayDay = payroll.PayDay,
+							User = payroll.UserName
+						});
 					Log.Info("deleted payroll " + DateTime.Now);
 				}
 				
@@ -743,12 +755,14 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
-		public void VoidPayroll(Guid id, string userName)
+		public void VoidPayroll(Models.Payroll payroll, string userName)
 		{
 			const string query = @"update Journal set IsVoid=1, LastModifiedBy=@User, LastModified=getdate() Where PayrollId=@Id;update PayrollPayCheck set IsVoid=1, Status=7, VoidedOn=getdate(), LastModifiedBy=@User, LastModified=getdate(), VoidedBy=@User Where PayrollId=@Id;update Payroll set IsVoid=1, VoidedOn=getDate(), VoidedBy=@User, LastModified=getdate() where Id=@Id;";
+			const string logquery = @"insert into PayrollVoidLog(PayrollId, CompanyId, CompanyName, StartDate, EndDate, PayDay, Action, [User], TS) values (@PayrollId, @CompanyId, @CompanyName, @StartDate, @EndDate, @PayDay, 1, @User, getdate())";
 			using (var conn = GetConnection())
 			{
-				conn.Execute(query, new {Id = id, User = userName});
+				conn.Execute(query, new {Id = payroll.Id, User = userName});
+				conn.Execute(logquery, new { PayrollId=payroll.Id, CompanyId = payroll.Company.Id, CompanyName = payroll.Company.Name, StartDate = payroll.StartDate, EndDate = payroll.EndDate, PayDay = payroll.PayDay, User = userName });
 			}
 		}
 		public void UnVoidPayroll(Guid id, string userName)

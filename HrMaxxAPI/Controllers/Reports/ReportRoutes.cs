@@ -33,5 +33,9 @@
 		public const string CommissionsReport = "Reports/CommissionsReport";
 		public const string PayCommissions = "Reports/PayCommissions";
 		public const string MinWageEligibilityReport = "Reports/MinWageEligibilityReport";
+		public const string CompanyDashboard = "Reports/CompanyDashboard/{id:guid}";
+		public const string ExtractDashboard = "Reports/ExtractDashboard/";
+		public const string EmployeeDashboard = "Reports/EmployeeDashboard/{companyId:guid}/{employeeId:guid}";
+		public const string StaffDashboard = "Reports/StaffDashboard/{hostId:guid?}";
 	}
 }

@@ -1,10 +1,15 @@
 ﻿<div class="row hidden-print">
-	<!-- begin panel -->
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-show="data.viewAll">
-		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===1?0:1)">
-			<h4 class="panel-title">Form Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===1, 'glyphicon-chevron-right': data.openedRack!==1}"></i></h4>
-		</div>
-		<div class="panel-body" ng-show="data.openedRack===1">
+	<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
+		<li ng-class="{'active':data.openedRack===2}" ng-click="data.openedRack=2"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Tax Payments</span></a></li>
+		<li ng-class="{'active':data.openedRack===1}" ng-click="data.openedRack=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Form Extracts</span></a></li>
+		<li ng-class="{'active':data.openedRack===3}" ng-click="data.openedRack=3"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Misc Extracts</span></a></li>
+		<li ng-class="{'active':data.openedRack===4}" ng-click="data.openedRack=4"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Extract History</span></a></li>
+		<li ng-class="{'active':data.openedRack===5}" ng-click="data.openedRack=5"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Dashboard</span></a></li>
+
+
+	</ul>
+	<div class="panel panel-inverse" ng-show="data.openedRack===1">
+		<div class="panel-body">
 			<div class="col-sm-8">
 				<div class="row">
 					<h4><u>Federal Forms</u></h4>
@@ -21,12 +26,12 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-3 form-group">
-							
-								<label for="fp940history" class="switch">
-									Include History?
-									<input id="fp940history" type="checkbox" ng-model="data.filter940.includeHistory"  /><i></i>
-								</label>
-							
+
+							<label for="fp940history" class="switch">
+								Include History?
+								<input id="fp940history" type="checkbox" ng-model="data.filter940.includeHistory" /><i></i>
+							</label>
+
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport940()" ng-disabled="!data.filter940.year">Review</button>
@@ -56,12 +61,12 @@
 							</select>
 						</div>
 						<div class="col-sm-3 form-group">
-							
-								<label for="fp941history" class="switch">
-									Include History?
-									<input id="fp941history" type="checkbox" ng-model="data.paperless941.includeHistory" /><i></i>
-								</label>
-							
+
+							<label for="fp941history" class="switch">
+								Include History?
+								<input id="fp941history" type="checkbox" ng-model="data.paperless941.includeHistory" /><i></i>
+							</label>
+
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport941()" ng-disabled="!data.paperless941.year || !data.paperless941.quarter">Review</button>
@@ -84,12 +89,12 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-3 form-group">
-							
+
 							<label for="w2history" class="switch">
 								Include History?
 								<input id="w2history" type="checkbox" ng-model="data.filterW2.includeHistory" /><i></i>
 							</label>
-							
+
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">Review</button>
@@ -100,7 +105,7 @@
 					</div>
 
 				</div>
-				
+
 				<div class="col-sm-12">
 					<div class="col-sm-12">
 						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Federal 1095-C File </em></span></h5>
@@ -142,7 +147,7 @@
 						</div>
 						<div class="col-sm-3"></div>
 						<div class="col-sm-3 form-group">
-							
+
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReport1099()" ng-disabled="!data.filter1099.year">Review</button>
@@ -180,12 +185,12 @@
 							</select>
 						</div>
 						<div class="col-sm-3 form-group">
-						
-								<label for="de6history" class="switch">
-									Include History?
-									<input id="de6history" type="checkbox" ng-model="data.filterDE6Q.includeHistory" /><i></i>
-								</label>
-							
+
+							<label for="de6history" class="switch">
+								Include History?
+								<input id="de6history" type="checkbox" ng-model="data.filterDE6Q.includeHistory" /><i></i>
+							</label>
+
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE6()" ng-disabled="!data.filterDE6Q.year || !data.filterDE6Q.quarter">Review</button>
@@ -194,7 +199,7 @@
 					</div>
 
 				</div>
-				
+
 				<div class="col-sm-12">
 					<div class="col-sm-12">
 						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California Quarterly DE-9 Reporting File (Zip and XML)</em></span></h5>
@@ -215,12 +220,12 @@
 							</select>
 						</div>
 						<div class="col-sm-3 form-group">
-							
-								<label for="de9history" class="switch">
-									Include History?
-									<input id="de9history" type="checkbox" ng-model="data.filterDE9Q.includeHistory" /><i></i>
-								</label>
-							
+
+							<label for="de9history" class="switch">
+								Include History?
+								<input id="de9history" type="checkbox" ng-model="data.filterDE9Q.includeHistory" /><i></i>
+							</label>
+
 						</div>
 						<div class="col-sm-3">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE9()" ng-disabled="!data.filterDE9Q.year || !data.filterDE9Q.quarter">Review</button>
@@ -234,11 +239,8 @@
 
 		</div>
 	</div>
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-show="data.viewAll">
-		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===2?0:2)">
-			<h4 class="panel-title">Tax Payments Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===2, 'glyphicon-chevron-right': data.openedRack!==2}"></i></h4>
-		</div>
-		<div class="panel-body" ng-show="data.openedRack===2">
+	<div class="panel panel-inverse" ng-show="data.openedRack===2">
+		<div class="panel-body">
 			<div class="col-sm-10">
 				<div class="row">
 					<div class="row">
@@ -556,17 +558,14 @@
 
 		</div>
 	</div>
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-show="data.viewAll || data.viewMisc">
-		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===3?0:3)">
-			<h4 class="panel-title">Misc Extracts<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===3, 'glyphicon-chevron-right': data.openedRack!==3}"></i></h4>
-		</div>
-		<div class="panel-body" ng-show="data.openedRack===3">
+	<div class="panel panel-inverse" ng-show="data.openedRack===3">
+		<div class="panel-body">
 			<div class="row col-sm-10">
 				<div class="row">
 					<h4><u>WC InsuranceC Extract</u></h4>
 				</div>
 				<div class="col-sm-12">
-					<div class="col-sm-4 form-group">
+					<div class="col-sm-2 form-group">
 						<label>Host</label>
 						<select id="host" class="form-control" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
 							<option value="">Select Host</option>
@@ -580,7 +579,15 @@
 						<label>End Date</label>
 						<date-ctrl model="data.filterWC.endDate" disabled="false" min="data.filterWC.startDate" />
 					</div>
-					<div class="col-sm-4 form-group">
+					<div class="col-sm-1 form-group">
+
+						<label for="wchistory" class="switch">
+							Include History?
+							<input id="wchistory" type="checkbox" ng-model="data.filterWC.includeHistory" /><i></i>
+						</label>
+
+					</div>
+					<div class="col-sm-3 form-group">
 						<label></label><br />
 						<button class="btn btn-sm btn-primary" ng-click="getHostWCReport()" ng-disabled="!data.filterWC.startDate || !data.filterWC.endDate">WC Extract</button>
 						<button class="btn btn-sm btn-primary" ng-click="getHostWCReportSpecial()" ng-show="mainData.userRole==='SuperUser'" ng-disabled="!data.filterWC.startDate || !data.filterWC.endDate">WC for Redated</button>
@@ -681,9 +688,9 @@
 					</div>
 
 				</div>
-				
+
 				<div class="row">
-					<h4><u>Tax Report</u></h4> 
+					<h4><u>Tax Report</u></h4>
 				</div>
 				<div class="col-sm-12">
 					<div class="col-sm-3">
@@ -720,7 +727,7 @@
 					</div>
 					<div class="col-sm-3">
 						<button class="btn btn-sm btn-primary" ng-click="getTaxReport()" ng-disabled="!data.taxreport.year">Extract</button>
-						
+
 					</div>
 
 				</div>
@@ -730,17 +737,29 @@
 
 		</div>
 	</div>
-	
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-show="data.viewAll">
-		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===4?0:4)">
-			<h4 class="panel-title">Extract History<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===4, 'glyphicon-chevron-right': data.openedRack!==4}"></i></h4>
-		</div>
-		<div class="panel-body" ng-show="data.openedRack===4">
+	<div class="panel panel-inverse" ng-show="data.openedRack===4">
+		<div class="panel-body">
 
 			<extract-view-list main-data="mainData" />
 
 		</div>
 	</div>
+	<div class="panel panel-inverse" ng-show="data.openedRack===5">
+		<div class="panel-body">
+
+			<extract-dashboard main-data="mainData" />
+
+		</div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+
+
 	
 	<script type="text/ng-template" id="popover/extractView.html">
 

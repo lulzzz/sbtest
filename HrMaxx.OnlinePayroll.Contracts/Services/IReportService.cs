@@ -7,6 +7,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
 {
@@ -15,7 +16,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ReportResponse GetReport(ReportRequest request);
 		FileDto GetReportDocument(ReportRequest request);
 		Extract GetExtractDocument(ReportRequest request);
-		FileDto PrintPayrollSummary(Payroll payroll );
+		FileDto PrintPayrollSummary(Payroll payroll, bool saveToDisk = false, string path = "");
 		List<DashboardData> GetDashboardData(DashboardRequest dashboardRequest);
 		List<MasterExtract> GetExtractList(string report);
 		List<SearchResult> GetSearchResults(string criteria, string role, Guid host, Guid company);
@@ -37,5 +38,10 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto GetExtractTransformedAndPrinted(Extract extract);
 		FileDto GetExtractTransformedAndPrintedZip(Extract extract);
 		List<MinWageEligibileCompany> GetMinWageEligibilityReport(MinWageEligibilityCriteria criteria);
+		CompanyDashboard GetCompanyDashboard(Guid id);
+		CompanyDashboard GetEmployeeDashboard(Guid companyId, Guid id);
+		CompanyDashboard GetExtractDashboard();
+
+		StaffDashboard GetStaffDashboard(Guid? hostId);
 	}
 }

@@ -4,6 +4,9 @@
 	<div class="container-fluid">
 		<!-- begin mobile sidebar expand / collapse button -->
 		<div class="navbar-header" id="hostlogo" ng-controller="hostlogo">
+			<a href="#!/" class="navbar-brand pull-left" style="background-color:transparent">
+				<img src="{{zionAPI.Web}}/Content/images/logo.png" style="width:150px;" />
+			</a>
 			<a href="#!/" ng-if="getDocumentUrl(logo)" style="background-color:transparent">
 				<img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
 			</a>
@@ -14,13 +17,12 @@
 		<!-- end mobile sidebar expand / collapse button -->
 		<!-- begin header navigation right -->
 		<ul class="nav navbar-nav navbar-right">
+			<li>
+				
+			</li>
 			@if (Request.IsAuthenticated)
 			{
-				<li>
-					<a href="#!/" class="navbar-brand pull-right" style="background-color:transparent">
-						<img src="{{zionAPI.Web}}/Content/images/logo.png" style="width:150px;" />
-					</a>
-				</li>
+				
 				<li ng-controller="searchResult" style="width:600px">
 					@if (CurrentUser.Role != "Employee")
 					{

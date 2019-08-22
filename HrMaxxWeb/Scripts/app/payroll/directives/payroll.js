@@ -186,14 +186,17 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						//	addAlert('Error processing payroll: ' + error.statusText, 'danger');
 						//});
 					}
-					$scope.showList = function() {
+					$scope.showList = function () {
+						var returnVal = false;
 						if (moment($scope.item.endDate) < moment($scope.item.startDate) || moment($scope.item.payDay) < $scope.minPayDate)
-							return false;
+							returnVal= false;
 						else if ($scope.list.length > 0 && $scope.item.startDate && $scope.item.endDate && $scope.item.payDay && $scope.item.startingCheckNumber && !dataSvc.importInProgress)
-							return true;
+							returnVal = true;
 						
 						else
-							return false;
+							returnVal = false;
+						
+						return returnVal;
 					}
 					$scope.isPayrollInvalid = function () {
 						var returnVal = false;

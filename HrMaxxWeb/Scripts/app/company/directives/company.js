@@ -335,6 +335,9 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selectedCompany.contract.bankDetails.sourceTypeId = $scope.sourceTypeId;
 							$scope.selectedCompany.contract.bankDetails.sourceId = $scope.selectedCompany.id;
 						}
+						if ($scope.selectedCompany.isAddressSame) {
+							$scope.selectedCompany.businessAddress = $scope.selectedCompany.companyAddress;
+						}
 						var confirmMessage = "";
 						if ($scope.mainData.selectedHost.isPeoHost && ($scope.original.contract.invoiceSetup && !angular.equals($scope.original.contract.invoiceSetup, $scope.selectedCompany.contract.invoiceSetup))) {
 							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";

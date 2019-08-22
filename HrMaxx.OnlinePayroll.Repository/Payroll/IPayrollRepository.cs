@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void DeletePayroll(Models.Payroll id);
 		bool CanUpdateCheckNumbers(Guid id, int startingCheckNumber, int count);
 		void UpdatePayrollCheckNumbers(Models.Payroll payroll);
-		void VoidPayroll(Guid id, string userName);
+		void VoidPayroll(Models.Payroll id, string userName);
 		//PayChecks
 		void SavePayCheck(PayCheck pc);
 		void UpdatePayCheckYTD(PayCheck employeeFutureCheck);

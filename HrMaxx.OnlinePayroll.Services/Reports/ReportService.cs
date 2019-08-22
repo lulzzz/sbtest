@@ -35,6 +35,7 @@ using Magnum.Serialization;
 using MassTransit.Logging;
 using MassTransit.NewIdProviders;
 using Newtonsoft.Json;
+using Tax = HrMaxx.OnlinePayroll.Models.Tax;
 
 namespace HrMaxx.OnlinePayroll.Services.Reports
 {
@@ -449,7 +450,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			if (!filtered.Any())
 				throw new Exception(NoData);
 			var hosts = _hostService.GetHostList(Guid.Empty);
-			var companies = _readerService.GetCompanies();
+			var companies = _readerService.GetCompanies(status:0);
 			var hostList = new List<ExtractHost>();
 			var companyList = new List<ExtractCompany>();
 			filtered.ForEach(j =>
@@ -457,10 +458,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				if (companyList.All(c => c.Company.Id != j.CompanyId))
 				{
 					var company = companies.First(c => c.Id == j.CompanyId);
-					companyList.Add(new ExtractCompany()
-					{
-						Company = company
-					});
+					
+						companyList.Add(new ExtractCompany()
+						{
+							Company = company
+						});
+					
+					
 					
 				}
 			});
@@ -696,6 +700,85 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			if(criteria.MaxEmployeeCount.HasValue)
 				data = data.Where(c => c.PaidEmployeeCount <= criteria.MaxEmployeeCount.Value).ToList();
 			return data;
+		}
+
+		public CompanyDashboard GetCompanyDashboard(Guid id)
+		{
+			try
+			{
+				var filters = new List<FilterParam>();
+				filters.Add(new FilterParam{ Key = "company", Value = id.ToString()});
+				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetCompanyDashboard", filters);
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Company Dashboard for {0}", id.ToString()));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CompanyDashboard GetEmployeeDashboard(Guid companyId, Guid employeeId)
+		{
+			try
+			{
+				var filters = new List<FilterParam>();
+				filters.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
+				filters.Add(new FilterParam { Key = "employee", Value = employeeId.ToString() });
+				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetEmployeeDashboard", filters);
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Employee Dashboard for {0} {1}", companyId.ToString(), employeeId.ToString()));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public CompanyDashboard GetExtractDashboard()
+		{
+			try
+			{
+				var filters = new List<FilterParam>();
+				
+				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetExtractDashboard", filters);
+				data.PendingExtractsByDates =
+					data.PendingExtracts.GroupBy(e => new {e.ExtractName, e.DepositDate})
+						.Select(g => new TaxExtract {DepositDate = g.Key.DepositDate, ExtractName = g.Key.ExtractName, Amount = g.Sum(g1 => g1.Amount), Details = g.GroupBy(g1=>g1.CompanyName).Select(g1=>new TaxExtract{CompanyName = g1.Key, Amount = g1.Sum(g2=>g2.Amount)}).ToList()})
+						.ToList();
+				data.PendingExtractsByCompany =
+					data.PendingExtracts.GroupBy(e => new { e.ExtractName, e.CompanyName })
+						.Select(g => new TaxExtract {CompanyName = g.Key.CompanyName, ExtractName = g.Key.ExtractName, Details = g.ToList()})
+						.ToList();
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Extract Dashboard"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public StaffDashboard GetStaffDashboard(Guid? hostId)
+		{
+			try
+			{
+				var filters = new List<FilterParam>();
+				if(hostId.HasValue)
+					filters.Add(new FilterParam { Key = "host", Value = hostId.ToString() });
+				var data = _readerService.GetDataFromStoredProc<StaffDashboard, StaffDashboardJson>("GetStaffDashboard", filters);
+				
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Extract Dashboard"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 		}
 
 		private void GetExractTransformedAndSaved(Extract extract, ExtractCompany company, string dir)
@@ -1584,7 +1667,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 		}
 
-		public FileDto PrintPayrollSummary(Models.Payroll payroll )
+		public FileDto PrintPayrollSummary(Models.Payroll payroll, bool saveToDisk =false, string path = "")
 		{
 			var fileName = string.Format("Payroll_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
 			var xml = GetXml<Models.Payroll>(payroll);
@@ -1598,7 +1681,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrolltimesheet.xslt"), args);
 
 			//return _pdfService.PrintHtml(transformed.Reports.First());
-			return _pdfService.PrintHtmls(new List<Report>(){transformed.Reports.First(), transformedtimesheet.Reports.First()});
+			return _pdfService.PrintHtmls(new List<Report>(){transformed.Reports.First(), transformedtimesheet.Reports.First()}, saveToDisk, path);
 			//return _pdfService.AppendAllDocuments(payroll.Id, fileName, new List<Guid>(), summary.Data);
 		}
 

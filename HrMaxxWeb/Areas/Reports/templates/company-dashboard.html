@@ -1,0 +1,341 @@
+﻿<div class="row">
+<div class="panel panel-inverse">
+	<div class="panel-heading hidden-print">
+		<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
+			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Tax Payments</span></a></li>
+			<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Payroll</span></a></li>
+
+		</ul>
+		<h2 class="panel-title"></h2>
+	</div>
+	<div class="panel-body">
+		<div class="row" ng-show="data.tab===1">
+			<!-- begin col-3 -->
+			<div class="col-md-3 col-sm-6">
+				<div class="widget widget-stats bg-green">
+					<div class="stats-icon">941</div>
+					<div class="stats-title">Last Deposit - {{data.dashboard.last941Extract.depositDate | date:'MM/dd/yyyy'}}</div>
+					<div class="stats-number">{{data.dashboard.last941Extract.amount | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-number">{{data.dashboard.ytd941Extract | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">Pending</div>
+					<div class="stats-number">{{data.dashboard.pending941Amount | currency}}<i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
+					<div class="stats-link">
+						<a href="javascript:;" ng-click="showChart(1)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 col-sm-6">
+				<div class="widget widget-stats bg-blue">
+					<div class="stats-icon">940</div>
+					<div class="stats-title">Last Deposit - {{data.dashboard.last940Extract.depositDate | date:'MM/dd/yyyy'}}</div>
+					<div class="stats-number">{{data.dashboard.last940Extract.amount | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-number">{{data.dashboard.ytd940Extract | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">Pending</div>
+					<div class="stats-number">{{data.dashboard.pending940Amount | currency}}<i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
+					<div class="stats-link">
+						<a href="javascript:;" ng-click="showChart(2)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3 col-sm-6">
+				<div class="widget widget-stats bg-purple">
+					<div class="stats-icon">PIT & DI</div>
+					<div class="stats-title">Last Deposit - {{data.dashboard.lastCAPITExtract.depositDate | date:'MM/dd/yyyy'}}</div>
+					<div class="stats-number">{{data.dashboard.lastCAPITExtract.amount | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-number">{{data.dashboard.ytdCAPITExtract | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">Pending</div>
+					<div class="stats-number">{{data.dashboard.pendingPitAmount | currency}}<i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
+					<div class="stats-link">
+						<a href="javascript:;" ng-click="showChart(3)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3 col-sm-6">
+				<div class="widget widget-stats bg-black">
+					<div class="stats-icon">UI & ETT</div>
+					<div class="stats-title">Last Deposit - {{data.dashboard.lastCAUIETTExtract.depositDate | date:'MM/dd/yyyy'}}</div>
+					<div class="stats-number">{{data.dashboard.lastCAUIETTExtract.amount | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-number">{{data.dashboard.ytdCAUIETTExtract | currency}}</div>
+					<div class="stats-progress progress">
+						<div class="progress-bar" style="width: 100%;"></div>
+					</div>
+					<div class="stats-title">Pending</div>
+					<div class="stats-number">{{data.dashboard.pendingUiEttAmount | currency}} <i class="fa fa-lg fa-exclamation-triangle" style="color:red"></i></div>
+					<div class="stats-link">
+						<a href="javascript:;" ng-click="showChart(4)">View Detail <i class="fa fa-arrow-circle-o-right"></i></a>
+					</div>
+				</div>
+
+			</div>
+
+
+
+
+		</div>
+
+		<!-- end row -->
+		<!-- begin row -->
+		<div class="row" ng-show="data.tab===1">
+			<!-- begin col-8 -->
+			<div class="col-md-8" ng-show="data.showChart">
+				<div class="widget-chart with-sidebar bg-black">
+					<div class="widget-chart-content">
+						<h4 class="chart-title">
+							{{data.chartTitle}} - Paid
+						</h4>
+						<div id="extract-paid" class="morris-inverse" style="height: 260px;"></div>
+					</div>
+					<div class="widget-chart-sidebar bg-black-darker">
+						<div class="chart-number">
+							{{data.donutChartTotal | currency}}
+						</div>
+						<div id="extract-donut" style="height: 160px"></div>
+						<ul class="chart-legend">
+							<li><i class="fa fa-circle-o fa-fw text-success m-r-5"></i> {{data.donutPaidPercentage | currency:''}}% <span>Paid</span></li>
+							<li><i class="fa fa-circle-o fa-fw text-primary m-r-5"></i> {{data.donutPendingPercentage | currency:''}}% <span>Pending</span></li>
+						</ul>
+					</div>
+				</div>
+				<div class="panel panel-success" data-sortable-id="index-8">
+					<div class="panel-heading">
+						<div class="panel-heading-btn">
+						
+						</div>
+						<h4 class="panel-title">{{data.chartTitle}} - Paid </h4>
+					</div>
+					<div class="panel-body p-0">
+						<ul class="todolist">
+							<li ng-repeat="item in data.filteredExtracts">
+								<a href="javascript:;" class="todolist-container active" data-click="todolist">
+									<div class="todolist-input">{{item.depositDate | date:'MM/dd/yyyy'}}</div>
+									<div class="todolist-title">{{item.amount | currency}}</div>
+								</a>
+							</li>
+						
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-4" ng-show="data.showChart">
+				<div class="widget-chart with-sidebar bg-black">
+					<div class="widget-chart-content">
+						<h4 class="chart-title">
+							{{data.chartTitle}} - Pending
+						</h4>
+						<div id="extract-pending" class="morris-inverse" style="height: 260px;"></div>
+					</div>
+				</div>
+				<div class="panel panel-danger" data-sortable-id="index-8">
+					<div class="panel-heading">
+						<div class="panel-heading-btn">
+
+						</div>
+						<h4 class="panel-title">{{data.chartTitle}} - Pending </h4>
+					</div>
+					<div class="panel-body p-0">
+						<ul class="todolist">
+							<li ng-repeat="item in data.filteredPendingExtracts">
+								<a href="javascript:;" class="todolist-container active" data-click="todolist">
+									<div class="todolist-input">{{item.depositDate | date:'MM/dd/yyyy'}}</div>
+									<div class="todolist-title">{{item.amount | currency}}</div>
+								</a>
+							</li>
+
+						</ul>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- end row -->
+		
+		<div class="row" ng-show="data.tab===2">
+			<!-- begin col-3 -->
+			<div class="col-md-2 col-sm-4">
+				<div class="widget widget-stats bg-primary">
+					<div class="stats-icon"></div>
+					<div class="stats-info">
+						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+						<p>{{data.dashboard.lastPayroll.noOfChecks}}</p>
+					</div>
+					<div class="stats-info">
+						<h4>YTD</h4>
+						<p>{{data.dashboard.ytdPayroll.noOfChecks}}</p>
+					</div>
+					<div class="stats-link">
+						<a href="javascript:;">No. of Checks</a>
+					</div>
+				</div>
+
+			</div>
+			<div class="col-md-2 col-sm-4">
+				<div class="widget widget-stats bg-green">
+					<div class="stats-icon"></div>
+					<div class="stats-info">
+						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+						<p>{{data.dashboard.lastPayroll.grossWage | currency}}</p>
+					</div>
+					<div class="stats-info">
+						<h4>YTD</h4>
+						<p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
+					</div>
+					<div class="stats-link">
+						<a href="javascript:;">Gross Wage</a>
+					</div>
+				</div>
+				
+			</div>
+			<div class="col-md-2 col-sm-4">
+				<div class="widget widget-stats bg-blue">
+					<div class="stats-icon"></div>
+					<div class="stats-info">
+						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+						<p>{{data.dashboard.lastPayroll.netWage | currency}}</p>
+					</div>
+					<div class="stats-info">
+						<h4>YTD</h4>
+						<p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
+					</div>
+					<div class="stats-link">
+						<a href="javascript:;">Net Wage</a>
+					</div>
+				</div>
+
+				
+			</div>
+			<div class="col-md-2 col-sm-4">
+				<div class="widget widget-stats bg-purple">
+					<div class="stats-icon"></div>
+					<div class="stats-info">
+						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+						<p>{{data.dashboard.lastPayroll.employeeTaxes | currency}}</p>
+					</div>
+					<div class="stats-info">
+						<h4>YTD</h4>
+						<p>{{data.dashboard.ytdPayroll.employeeTaxes | currency}}</p>
+					</div>
+					<div class="stats-link">
+						<a href="javascript:;">Employee Taxes</a>
+					</div>
+
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-4">
+				<div class="widget widget-stats bg-red">
+					<div class="stats-icon"></div>
+					<div class="stats-info">
+						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+						<p>{{data.dashboard.lastPayroll.employerTaxes | currency}}</p>
+					</div>
+					<div class="stats-info">
+						<h4>YTD</h4>
+						<p>{{data.dashboard.ytdPayroll.employerTaxes | currency}}</p>
+					</div>
+					<div class="stats-link">
+						<a href="javascript:;">Employer Taxes</a>
+					</div>
+
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-4">
+				<div class="widget widget-stats bg-black">
+					<div class="stats-icon"></div>
+					<div class="stats-info">
+						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+						<p>{{data.dashboard.lastPayroll.deductions | currency}}</p>
+					</div>
+					<div class="stats-info">
+						<h4>YTD</h4>
+						<p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
+					</div>
+					<div class="stats-link">
+						<a href="javascript:;">Deductions</a>
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+		</div>
+		
+		<div class="row" ng-show="data.tab===2">
+			<!-- begin col-8 -->
+			<div class="col-md-12">
+				<div class="widget-chart with-sidebar bg-black">
+					<div class="widget-chart-content">
+						<h4 class="chart-title">
+							Payrolls
+						</h4>
+						<div id="payrolls" class="morris-inverse" style="height: 360px;"></div>
+					</div>
+					
+				</div>
+				<div class="panel panel-inverse" data-sortable-id="index-8">
+					<div class="panel-heading">
+						<div class="panel-heading-btn">
+
+						</div>
+						<h4 class="panel-title">Payrolls Summary </h4>
+					</div>
+					<div class="panel-body p-0">
+						<table class="table table-bordered table-condensed">
+							<tr >
+								<th>Pay Day</th>
+								<th>Checks</th>
+								<th>Gross Wage</th>
+								<th>Net Wage</th>
+								<th>Employee Taxes</th>
+								<th>Employer Taxes</th>
+								<th>Deductions</th>
+							</tr>
+							<tr ng-repeat="item in data.dashboard.payrollHistory">
+								
+									<td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
+									<td>{{item.noOfChecks}}</td>
+									<td>{{item.grossWage | currency}}</td>
+									<td>{{item.netWage | currency}}</td>
+									<td>{{item.employeeTaxes | currency}}</td>
+									<td>{{item.employerTaxes | currency}}</td>
+									<td>{{item.deductions | currency}}</td>
+								
+							</tr>
+
+						</table>
+					</div>
+				</div>
+			</div>
+			
+			
+
+		</div>
+	</div>
+</div>
+</div>

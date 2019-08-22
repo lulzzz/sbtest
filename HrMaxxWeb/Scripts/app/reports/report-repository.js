@@ -154,6 +154,49 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			getStaffDashboard: function (hostId) {
+				var deferred = $q.defer();
+				var url = "StaffDashboard";
+				if (hostId)
+					url += "/" + hostId;
+				reportServer.one(url).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getCompanyDashboard: function (companyId) {
+				var deferred = $q.defer();
+				reportServer.one('CompanyDashboard/' + companyId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getEmployeeDashboard: function (companyId, employeeId) {
+				var deferred = $q.defer();
+				reportServer.one('EmployeeDashboard').one(companyId, employeeId).get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getExtractDashboard: function () {
+				var deferred = $q.defer();
+				reportServer.one('ExtractDashboard/').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getACHExtractById: function (report) {
 				var deferred = $q.defer();
 				reportServer.one('ACHExtract/' + report).get().then(function (data) {

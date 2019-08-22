@@ -278,6 +278,10 @@
     <Content Include="Areas\Reports\templates\ach-report.html" />
     <Content Include="Areas\Reports\templates\ACH.html" />
     <Content Include="Areas\Reports\templates\commissions-view.html" />
+    <Content Include="Areas\Reports\templates\news-ticker.html" />
+    <Content Include="Areas\Reports\templates\staff-dashboard.html" />
+    <Content Include="Areas\Reports\templates\extract-dashboard.html" />
+    <Content Include="Areas\Reports\templates\employee-dashboard.html" />
     <Content Include="Areas\Reports\templates\Dashboard.html" />
     <Content Include="Areas\Reports\templates\data-extracts.html" />
     <Content Include="Areas\Reports\templates\extract-view-list.html" />
@@ -286,8 +290,20 @@
     <Content Include="Areas\Reports\templates\cpa-report.html" />
     <Content Include="Areas\Reports\templates\profit-stars-report.html" />
     <Content Include="Areas\Reports\templates\ProfitStars.html" />
+    <Content Include="Areas\Reports\templates\company-dashboard.html" />
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
+    <Content Include="Content\32px.png" />
+    <Content Include="Content\morris.css" />
+    <Content Include="Content\jstree.min.css" />
+    <Content Include="Scripts\app\reports\directives\news-ticker.js" />
+    <Content Include="Scripts\app\reports\directives\staff-dashboard.js" />
+    <Content Include="Scripts\app\reports\directives\extract-dashboard.js" />
+    <Content Include="Scripts\app\reports\directives\employee-dashboard.js" />
+    <Content Include="Scripts\flot\jquery.flot.min.js" />
+    <Content Include="Scripts\flot\jquery.flot.pie.min.js" />
+    <Content Include="Scripts\flot\jquery.flot.resize.min.js" />
+    <Content Include="Scripts\flot\jquery.flot.time.min.js" />
     <Content Include="Content\images\blank.png" />
     <Content Include="Content\images\icon.png" />
     <Content Include="Content\images\logo.png" />
@@ -295,6 +311,7 @@
     <Content Include="Content\ng-table.min.css" />
     <Content Include="Content\ng-tags-input.bootstrap.css" />
     <Content Include="Content\print.css" />
+    <Content Include="Content\ticker.css" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1374,6 +1391,7 @@
     <Content Include="Scripts\app\reports\directives\other-forms.js" />
     <Content Include="Scripts\app\reports\directives\income-statement.js" />
     <Content Include="Scripts\app\reports\directives\govt-forms.js" />
+    <Content Include="Scripts\app\reports\directives\company-dashboard.js" />
     <Content Include="Scripts\app\reports\directives\user-dashboard.js" />
     <Content Include="Scripts\app\reports\directives\worker-compensation-report.js" />
     <Content Include="Scripts\app\reports\directives\deduction-report.js" />
@@ -1419,6 +1437,8 @@
     <Content Include="Scripts\date.js" />
     <Content Include="Scripts\es5-shim.js" />
     <Content Include="Scripts\es5-shim.min.js" />
+    <Content Include="Scripts\flot\morris.min.js" />
+    <Content Include="Scripts\flot\raphael.min.js" />
     <Content Include="Scripts\form-editable.min.js" />
     <Content Include="Scripts\html5shiv\html5shiv-printshiv.js" />
     <Content Include="Scripts\html5shiv\html5shiv-printshiv.min.js" />
@@ -1573,6 +1593,7 @@
     <Content Include="Scripts\jquery\jquery-1.9.0.min.js" />
     <Content Include="Scripts\jquery\jquery.cookie.min.js" />
     <Content Include="Scripts\jquery\jquery.ui.widget.min.js" />
+    <Content Include="Scripts\jstree.min.js" />
     <Content Include="Scripts\lodash\lodash.js" />
     <Content Include="Scripts\lodash\lodash.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
@@ -1583,6 +1604,7 @@
     <Content Include="Scripts\respond\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond\respond.min.js" />
+    <Content Include="Scripts\sparkline\jquery.sparkline.min.js" />
     <Content Include="Scripts\Toastr\toastr.min.js" />
     <Content Include="Content\templates\mynews.html" />
     <Content Include="Web.config">

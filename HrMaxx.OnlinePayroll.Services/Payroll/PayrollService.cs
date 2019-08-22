@@ -49,9 +49,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IStagingDataService _stagingDataService;
 		private readonly IMetaDataRepository _metaDataRepository;
 		private readonly IReaderService _readerService;
+		private readonly IDocumentService _documentService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService, IStagingDataService stagingDataService, IMetaDataRepository metaDataRepository, IReaderService readerService)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService, IStagingDataService stagingDataService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -67,6 +68,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_stagingDataService = stagingDataService;
 			_metaDataRepository = metaDataRepository;
 			_readerService = readerService;
+			_documentService = documentService;
 		}
 
 
@@ -1545,7 +1547,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					Log.Info("Checks Voided" + DateTime.Now.ToString("hh:mm:ss:fff"));
 
 
-					_payrollRepository.VoidPayroll(payroll.Id, userName);
+					_payrollRepository.VoidPayroll(payroll, userName);
 					txn.Complete();
 					
 				}
@@ -1768,6 +1770,32 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			return null;
 			
+		}
+
+		public FileDto PrintPayrollPack(Models.Payroll payroll)
+		{
+			var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
+			if ((int)payroll.Status > 2 && (int)payroll.Status < 6)
+			{
+				journals = journals.Where(j => j.PEOASOCoCheck == payroll.PEOASOCoCheck).ToList();
+				var payChecks = payroll.PayChecks.Where(pc => !pc.IsVoid);
+				if (payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)
+					payChecks = payChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo);
+				else
+				{
+					payChecks = payChecks.OrderBy(pc => pc.Employee.FullNameSpecial);
+				}
+				var models = PrintPayrollPackPayChecks(payroll, payChecks.ToList(), journals);
+				var dir = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy"));
+				dir = _documentService.CreateDirectory(dir);
+				_pdfService.PrintPayrollPack(dir, models);
+				_reportService.PrintPayrollSummary(payroll, true, string.Format("{0}//PayrollSummary.pdf", dir));
+				var returnFile = _documentService.ZipDirectory(dir, string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")));
+				_documentService.DeleteDirectory(dir);
+				return new FileDto() { Data = returnFile, DocumentExtension = ".zip", Filename = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")), MimeType = "application/octet-stream" };
+			}
+			return null;
+
 		}
 
 		public FileDto PrintPayrollPayslips(Guid payrollId)
@@ -2986,6 +3014,54 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var file = _pdfService.Print(fileName, pdfs);
 				//Log.Info(string.Format("File Ready {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 				return file;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Get Print Pay Check By id=" + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private List<PDFModel> PrintPayrollPackPayChecks(Models.Payroll payroll, List<PayCheck> payChecks, List<Models.Journal> journals)
+		{
+			try
+			{
+
+				var host = _hostService.GetHost(payroll.Company.HostId);
+				var company1 = _readerService.GetCompany(payroll.Company.Id);
+				var coas = new List<Account>();
+				if (payroll.PEOASOCoCheck)
+					coas = _companyService.GetComanyAccounts(host.Company.Id);
+				else
+					coas = _companyService.GetComanyAccounts(payroll.Company.Id);
+
+				var company = payroll.Company;
+				if (payroll.PEOASOCoCheck)
+					company = host.Company;
+
+				var nameCompany = payroll.Company.Contract.InvoiceSetup.PrintClientName ? payroll.Company : company;
+
+				var bankcoa = coas.First(c => c.Id == journals.First().MainAccountId);
+				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
+						company.Id);
+				var signature = companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
+				var pdfs = new List<PDFModel>();
+				foreach (var payCheck in payChecks)
+				{
+					var model = new PDFModel();
+					if (payCheck.Employee.PayType == EmployeeType.JobCost)
+						model = GetPdfModelJobCost(payroll, payCheck, journals.First(j => j.PayrollPayCheckId == payCheck.Id), company, nameCompany, company1, bankcoa, signature);
+					else
+					{
+						model = GetPdfModel(payroll, payCheck, journals.First(j => j.PayrollPayCheckId == payCheck.Id), company, nameCompany, company1, bankcoa, signature);
+					}
+					model.Name = payCheck.Employee.FullName + ".pdf";
+					pdfs.Add(model);
+
+				}
+				
+				return pdfs;
 			}
 			catch (Exception e)
 			{

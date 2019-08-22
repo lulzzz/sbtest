@@ -780,6 +780,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "includeVoids", Value = request.IncludeVoids.ToString() });
 				}
+				if (request.IncludeHistory)
+				{
+					paramList.Add(new FilterParam { Key = "includeHistory", Value = request.IncludeHistory.ToString() });
+				}
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractData", paramList);
 				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
@@ -836,6 +840,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (request.IncludeVoids)
 				{
 					paramList.Add(new FilterParam { Key = "includeVoids", Value = request.IncludeVoids.ToString() });
+				}
+				if (request.IncludeHistory)
+				{
+					paramList.Add(new FilterParam { Key = "includeHistory", Value = request.IncludeHistory.ToString() });
 				}
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractDataSpecial", paramList);

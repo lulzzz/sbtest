@@ -254,7 +254,14 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.transactionID, opt => opt.MapFrom(src => string.Format("{0}{1}", ((ProfitStarsPaymentType)src.Type).GetHrMaxxName(), src.Id)))
 				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccNum)))
 				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNum)));
-			
+
+			CreateMap<Models.JsonDataModel.CompanyDashboardJson, Models.CompanyDashboard>();
+			CreateMap<Models.JsonDataModel.TaxExtractJson, Models.TaxExtract>();
+			CreateMap<Models.JsonDataModel.PayrollMetricJson, Models.PayrollMetric>();
+
+			CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>();
+			CreateMap<Models.JsonDataModel.StaffDashboardCubeJson, Models.StaffDashboardCube>();
+
 		}
 	}
 }

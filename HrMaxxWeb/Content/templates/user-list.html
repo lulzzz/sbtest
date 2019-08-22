@@ -96,7 +96,7 @@
 							<div class="form-group">
 								<label class="col-md-4 control-label">Phone <i class="fa fa-mobile"></i></label>
 								<div class="col-md-8">
-									<input type="text" name="phone" placeholder="Email" class="form-control" ng-model="selectedUser.phone" ui-mask="(999) 999-9999" />
+									<input type="text" name="phone1" placeholder="phone" class="form-control" ng-model="selectedUser.phone" ui-mask="(999) 999-9999" />
 								</div>
 							</div>
 							<div class="form-group">
@@ -117,7 +117,7 @@
 									<select id="company" class="form-control" ng-disabled="!data.selectedHost || companyId" ng-change="companySelected()" ng-model="data.selectedCompany" ng-options="c.name for c in data.filteredCompanies track by c.id"></select>
 								</div>
 							</div>
-							<div class="form-group" ng-if="selectedUser.companyId && selectedUser.role.roleId<1">
+							<div class="form-group" ng-if="selectedUser.company && selectedUser.role.roleId<1">
 								<label class="col-md-4 control-label">Employee</label>
 								<div class="col-md-8">
 									<select id="employee" class="form-control" ng-disabled="!data.selectedCompany || employeeId" ng-change="employeeSelected()" ng-model="data.selectedEmployee" ng-options="c.name for c in data.filteredEmployees track by c.id"></select>

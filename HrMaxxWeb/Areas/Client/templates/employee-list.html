@@ -1,12 +1,12 @@
 ﻿<div class="row" ng-show="mainData.selectedHost">
 	<!-- begin panel -->
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany && mainData.userRole!=='Employee'">
 		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
 			<h4 class="panel-title">Employees<i class="pull-right glyphicon hidden-print" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpen">
-			<div class="col-sm-12 visible-print" ><h6><u>Employee List</u></h6></div>
+			<div class="col-sm-12 visible-print"><h6><u>Employee List</u></h6></div>
 			<div class="row hidden-print" ng-if="mainData.userRole!=='Employee'">
 				<div class="col-sm-1" ng-dropdown-multiselect="" options="cols" extra-settings="{displayProp: 'title', idProp: 'field', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedHeaders">
 
@@ -19,7 +19,7 @@
 					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="mainData.selectedCompany && !selected" ng-click="add()"><i class="fa fa-plus"></i></a>
 				</div>
 				<div class="col-sm-2 form-group pull-right">
-					
+
 					<label></label>
 					<div>
 						<label for="includeall" class="switch">
@@ -28,26 +28,24 @@
 						</label>
 					</div>
 				</div>
-				
+
 			</div>
 			<div ng-show="list.length===0 && !selectedContact" class="table table-bordered">
 				No Employees found
 			</div>
 			<div class="row" ng-show="list.length>0 && mainData.userRole!=='Employee'">
 				<table ng-table-dynamic="tableParamsNew with cols"
-				       class="table" show-filter="showFilter" template-pagination="custom/pager">
+							 class="table" show-filter="showFilter" template-pagination="custom/pager">
 					<tr ng-repeat="row in $data" class="mouse-over-pointer" ng-click="set(row)" ng-class="{'success':selected.id===row.id}">
 						<td ng-repeat="col in $columns" class="text-center" ng-class="{'hidden-print' : col.field==='controls'}">
 							{{ col.field!=='controls' && col.field!=='isTerminate' ? col.isdate? (row[col.field] | date:'MM/dd/yyyy') : col.ismoney ? (row[col.field] | currency:'$') : row[col.field] : ''}}
 							<input type="checkbox" name="empTerminate" ng-model="row.isTerminated" ng-click="empTerminate(row, $event)" ng-show="showBulkTerminate && col.field==='isTerminate' && row.statusId===1" ng-value="''" />
 							<a class="btn btn-info btn-icon btn-circle btn-lg" ng-click="viewPayCheckList(row, $event)" ng-show="showPayChecks && row.lastPayrollDate && col.field==='controls'"><i class="fa fa-money"></i></a>
 						</td>
-						<td title=" 'cheks' " class="hidden-print">
-							
-						</td>
+						<td title=" 'cheks' " class="hidden-print"></td>
 					</tr>
 				</table>
-				
+
 				<script type="text/ng-template" id="custom/pager">
 					<ul class="pager ng-cloak hidden-print" ng-if="mainData.userRole!=='Employee'">
 						<li ng-repeat="page in pages"
@@ -69,14 +67,14 @@
 				</script>
 			</div>
 			<div class="row hidden-print" ng-if="mainData.userRole!=='Employee'">
-				
-				
+
+
 				<button class="btn btn-xs btn-danger pull-right" ng-click="bulkTerminateEmployees()" ng-if="showBulkTerminate && bulkTerminateAvailable()>0">Bulk Terminate ({{bulkTerminateAvailable()}})</button>
 				<button class="btn btn-xs btn-info attach-button pull-right" ng-show="showImportExport" id=" attachments" ng-file-select="onFileSelect($files)" data-multiple="false" title="select file" onclick="this.value = null" style="position: relative;">
 					<i class="fa fa-upload"></i>Import Employees
 				</button>
 				&nbsp;
-				<button class="btn btn-xs btn-warning pull-right"  ng-show="showImportExport && mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template/Export</button>
+				<button class="btn btn-xs btn-warning pull-right" ng-show="showImportExport && mainData.selectedCompany && !selected" ng-click="getEmployeeImportTemplate()"><i class="fa fa-download"></i>Import Template/Export</button>
 				&nbsp;
 				<button class="btn btn-xs btn-success pull-right" ng-show="showCopyEmployees" ng-click="copyemployees($event)"><i class="fa fa-copy fa-users"></i>Copy Employees</button>
 				&nbsp;

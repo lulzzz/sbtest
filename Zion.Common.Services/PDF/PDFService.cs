@@ -40,6 +40,7 @@ namespace HrMaxx.Common.Services.PDF
 				var returnDoc = new PdfSharp.Pdf.PdfDocument();
 				var objPDF = new PdfManager();
 				var docs = new List<FileDto>();
+				
 				models.ForEach(model =>
 				{
 					var objDoc = objPDF.OpenDocument(_templatePath + model.Template);
@@ -226,7 +227,82 @@ namespace HrMaxx.Common.Services.PDF
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
-		
+
+		public void PrintPayrollPack(string dir, List<PDFModel> models)
+		{
+			try
+			{
+				var returnDoc = new PdfSharp.Pdf.PdfDocument();
+				var objPDF = new PdfManager();
+				
+
+				models.ForEach(model =>
+				{
+					var filename = string.Format("{0}/{1}", dir, model.Name);
+					var objDoc = objPDF.OpenDocument(_templatePath + model.Template);
+					var objFont = objDoc.Fonts["Helvetica"];
+					var objFontBold = objDoc.Fonts["Helvetica-Bold"];
+					// Obtain font.
+
+					objDoc.Form.RemoveXFA();
+					var fileFields = objDoc.Form.Fields;
+					for (var m = 1; m <= fileFields.Count; m++)
+					{
+						var objField = fileFields[m];
+						var normalField = model.NormalFontFields.FirstOrDefault(nf => nf.Key.ToLower().Equals(objField.FieldName.ToLower()));
+						var boldField = model.BoldFontFields.FirstOrDefault(nf => nf.Key.ToLower().Equals(objField.FieldName.ToLower()));
+						if (normalField.Key != null && normalField.Value != null)
+						{
+							if (normalField.Key.Equals("MICR"))
+							{
+								var micrFont = objDoc.Fonts.LoadFromFile(_templatePath + "micro.ttf");
+								objField.SetFieldValue(normalField.Value, micrFont);
+							}
+							else
+							{
+								objField.SetFieldValue(normalField.Value, objFont);
+
+							}
+						}
+						else if (boldField.Key != null && boldField.Value != null)
+						{
+							objField.SetFieldValue(boldField.Value, objFontBold);
+						}
+						else
+						{
+							if (string.IsNullOrWhiteSpace(objField.FieldValue))
+								objField.SetFieldValue(string.Empty, objFont);
+						}
+					}
+
+					if (model.Signature != null)
+					{
+						var sign = objDoc.OpenImage(model.Signature.Path);
+						var page = objDoc.Pages[1];
+						var param = objPDF.CreateParam();
+
+						param["x"] = model.Signature.X;
+						param["y"] = model.Signature.Y;
+						param["ScaleX"] = model.Signature.ScaleX;
+						param["ScaleY"] = model.Signature.ScaleY;
+						page.Canvas.DrawImage(sign, param);
+					}
+					objDoc.Save(filename, true);
+					objDoc.Close();
+					objDoc.Dispose();
+
+
+				});
+				
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " Print multi page PDF");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public FileDto AppendAllDocuments(Guid identifier, string fileName, List<Guid> documents, byte[] data)
 		{
 			try
@@ -514,7 +590,7 @@ namespace HrMaxx.Common.Services.PDF
 			}
 		}
 
-		public FileDto PrintHtmls(List<Report> reports)
+		public FileDto PrintHtmls(List<Report> reports, bool saveToDisk, string path)
 		{
 			try
 			{
@@ -540,7 +616,11 @@ namespace HrMaxx.Common.Services.PDF
 					objDoc.Dispose();
 					finalDoc.AppendDocument(objPDF.OpenDocument(result));
 				});
-				
+				if (saveToDisk)
+				{
+					finalDoc.Save(path, true);
+					return new FileDto();
+				}
 				return new FileDto
 				{
 					Data = finalDoc.SaveToMemory(),

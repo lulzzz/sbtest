@@ -86,6 +86,14 @@ namespace HrMaxxAPI.Controllers.User
 			}
 			return Mapper.Map<List<UserModel>, List<UserResource>>(users);
 		}
+		[HttpGet]
+		[Route(UserRoutes.AllUsers)]
+		public List<UserResource> GetAllUsers()
+		{
+			var users = MakeServiceCall(() => _userService.GetUsers(null, null), string.Format("Get All Users for scope"), true);
+			
+			return Mapper.Map<List<UserModel>, List<UserResource>>(users);
+		}
 
 		[HttpPost]
 		[Route(UserRoutes.SaveUserProfile)]

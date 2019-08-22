@@ -14,7 +14,8 @@ namespace HrMaxx.Common.Contracts.Services
 		FileDto PrintReport(ReportTransformed pdfModels, bool saveToDisk = false);
 		FileDto GetTemplateFile(string baseFile, int year, string w4);
 		FileDto PrintHtml(Report report);
-		FileDto PrintHtmls(List<Report> reports);
+		FileDto PrintHtmls(List<Report> reports, bool saveToDisk, string path);
 		FileDto AppendAllDocuments(Guid name, string fileName, List<FileDto> documents);
+		void PrintPayrollPack(string dir, List<PDFModel> models);
 	}
 }

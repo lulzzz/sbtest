@@ -30,6 +30,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintAndSavePayroll(Payroll payroll, List<Journal> journals );
 		FileDto PrintPayrollPayslips(Guid payrollId);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
+		FileDto PrintPayrollPack(Payroll payroll);
 		Payroll VoidPayroll(Payroll mappedResource, string userName, string userId, bool forceDelete = false);
 		Payroll UnVoidPayroll(Payroll mappedResource, string userName, string userId);
 

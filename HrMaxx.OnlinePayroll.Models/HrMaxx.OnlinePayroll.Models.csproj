@@ -63,6 +63,7 @@
     <Compile Include="BankAccount.cs" />
     <Compile Include="CheckBookMetaDataRequest.cs" />
     <Compile Include="Company.cs" />
+    <Compile Include="CompanyDashboard.cs" />
     <Compile Include="CompanyMetaData.cs" />
     <Compile Include="CompanyPayrollCube.cs" />
     <Compile Include="CompanySUIRate.cs" />
@@ -257,6 +258,7 @@
     <Compile Include="InvoiceRecurringCharge.cs" />
     <Compile Include="JournalPayee.cs" />
     <Compile Include="JsonDataModel\Company.cs" />
+    <Compile Include="JsonDataModel\CompanyDashboard.cs" />
     <Compile Include="JsonDataModel\CompanyPayrollCube.cs" />
     <Compile Include="JsonDataModel\EmployeeJson.cs" />
     <Compile Include="JsonDataModel\ExtractInvoicePaymentJson.cs" />
@@ -270,11 +272,13 @@
     <Compile Include="JsonDataModel\PayrollInvoiceListItem.cs" />
     <Compile Include="JsonDataModel\PayrollPayCheck.cs" />
     <Compile Include="JsonDataModel\ProfitStarsFundJson.cs" />
+    <Compile Include="JsonDataModel\StaffDashboardJson.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
     <Compile Include="MinWageEligibileCompany.cs" />
     <Compile Include="MinWageEligibilityCriteria.cs" />
     <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ProfitStars.cs" />
+    <Compile Include="StaffDashboard.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="InvoiceDeliveryClaim.cs" />

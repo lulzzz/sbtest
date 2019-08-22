@@ -220,28 +220,28 @@
 							</tr>
 
 							<tr ng-repeat="wc in invoice.workerCompensations | orderBy:'tax.id'" ng-if="invoice.workerCompensations.length>0">
-								<td>{{wc.workerCompensation.code + ': ' + wc.workerCompensation.description}}</td>
+								<td> - {{wc.workerCompensation.code + ': ' + wc.workerCompensation.description}}</td>
 								<td>{{wc.wage | currency:'$'}}</td>
 								<td>{{wc.workerCompensation.rate | currency:''}}%</td>
 								<td class="text-left">{{wc.amount | currency:'$'}}</td>
 							</tr>
 							<tr class="default">
 								<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle hidden-print" ng-click="addLineItem()"></i></strong><button class="btn btn-xs btn-danger" ng-click="removeAllVoidedCredits()" ng-show="invoice.hasVoidedCredits"><i class="fa fa-remove"></i> remove all voided credits</button></td>
-								<td class="text-right"><em><u>{{getLineItemTotal() | currency:'$'}}</u></em></td>
+								<td class="text-right">{{getLineItemTotal() | currency:'$'}}<i class="fa fa-check-circle fa-lg" style="color:green"></i></td>
 							</tr>
 
 							<tr ng-if="invoice.adminFee > 0">
 								<td>ADMINISTRATION FEE</td>
 								<td></td>
 								<td>{{ invoice.companyInvoiceSetup.adminFeeMethod===1 ? '$' : ''}}{{invoice.companyInvoiceSetup.adminFee | currency:''}}{{ invoice.companyInvoiceSetup.adminFeeMethod===1 ? '' : '%'}}</td>
-								<td>{{invoice.adminFee | currency:'$'}}<i class="fa fa-check-circle fa-lg" style="color:green"></i></td>
+								<td>{{invoice.adminFee | currency:'$'}}</td>
 
 							</tr>
 							<tr ng-if="invoice.environmentalFee > 0">
 								<td>Environmental FEE</td>
 								<td></td>
 								<td>{{invoice.environmentalFee/invoice.noOfChecks | currency:'$'}} per check</td>
-								<td>{{invoice.environmentalFee | currency:'$'}}<i class="fa fa-check-circle fa-lg" style="color:green"></i></td>
+								<td>{{invoice.environmentalFee | currency:'$'}}</td>
 
 							</tr>
 							<tr ng-repeat="lineitem in invoice.miscCharges track by $index" ng-class="{'danger': lineitem.amount<0}">
@@ -289,7 +289,12 @@
 					</div>
 				</div>
 			</div>
-			<div class="invoice-note" ng-if="!isInvoiceEditable()">
+			<div class="invoice-note hidden-print" ng-if="!isInvoiceEditable()">
+				* {{invoice.notes}}<br />
+				* {{invoice.specialRequest}}<br />
+				* If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
+			</div>
+			<div class="invoice-note visible-print">
 				* {{invoice.notes}}<br />
 				* {{invoice.specialRequest}}<br />
 				* If you have any questions concerning this invoice, contact  [Name, Phone Number, Email]
