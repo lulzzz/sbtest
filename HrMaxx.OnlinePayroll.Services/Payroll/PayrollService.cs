@@ -50,9 +50,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IMetaDataRepository _metaDataRepository;
 		private readonly IReaderService _readerService;
 		private readonly IDocumentService _documentService;
+		private readonly IEmailService _emailService;
 		public IBus Bus { get; set; }
 
-		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService, IStagingDataService stagingDataService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService)
+		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService, IStagingDataService stagingDataService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService, IEmailService emailService)
 		{
 			_payrollRepository = payrollRepository;
 			_taxationService = taxationService;
@@ -69,6 +70,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_metaDataRepository = metaDataRepository;
 			_readerService = readerService;
 			_documentService = documentService;
+			_emailService = emailService;
 		}
 
 
@@ -1795,6 +1797,66 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				return new FileDto() { Data = returnFile, DocumentExtension = ".zip", Filename = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")), MimeType = "application/octet-stream" };
 			}
 			return null;
+
+		}
+		public List<string> EmailPayrollPack(Models.Payroll payroll)
+		{
+			var dir = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy"));
+			try
+			{
+				var returnList = new List<string>();
+				var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
+				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
+				{
+					journals = journals.Where(j => j.PEOASOCoCheck == payroll.PEOASOCoCheck).ToList();
+					var payChecks = payroll.PayChecks.Where(pc => !pc.IsVoid);
+					if (payroll.Company.CompanyCheckPrintOrder == CompanyCheckPrintOrder.CompanyEmployeeNo)
+						payChecks = payChecks.OrderBy(pc => pc.Employee.CompanyEmployeeNo);
+					else
+					{
+						payChecks = payChecks.OrderBy(pc => pc.Employee.FullNameSpecial);
+					}
+					var models = PrintPayrollPackPayChecks(payroll, payChecks.ToList(), journals);
+					
+					dir = _documentService.CreateDirectory(dir);
+					_pdfService.PrintPayrollPack(dir, models);
+					_reportService.PrintPayrollSummary(payroll, true, string.Format("{0}//PayrollSummary.pdf", dir));
+					var returnFile = _documentService.ZipDirectory(dir,
+						string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")));
+					payChecks.Where(pc => pc.PaymentMethod == EmployeePaymentMethod.DirectDebit).ToList().ForEach(async pc =>
+					{
+						if (string.IsNullOrWhiteSpace(pc.Employee.Contact.Email))
+							returnList.Add(string.Format("No Email Sent. Invalid email found for Employee {0}", pc.Employee.FullName));
+						else
+						{
+							await _emailService.SendEmail("sherjeel.bedaar@gmail.com", "PayrollTaxDepartment@hrmaxx.com",
+								string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeSubject, pc.PayDay.ToString("MM/dd/yyyy")),
+								string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeBody, pc.PayDay.ToString("MM/dd/yyyy")),
+								"sherjeel.bedaar@gmail.com",
+								string.Format("{0}/{1}.pdf", dir, pc.Employee.FullName));
+							returnList.Add(string.Format("Email Sent to {0} at {1} with ACH Pay Check", pc.Employee.FullName,
+								pc.Employee.Contact.Email));
+						}
+
+					});
+
+
+					
+				}
+				return returnList;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+					" Emails to ACH employees for payroll id=" + payroll.Id);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+			finally
+			{
+				_documentService.DeleteDirectory(dir);
+			}
+			
 
 		}
 

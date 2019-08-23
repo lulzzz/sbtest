@@ -24,14 +24,23 @@ namespace HrMaxxAPI.Controllers
 		private readonly IMementoDataService _mementoDataService;
 		private readonly IReaderService _readerService;
 		private readonly ITaxationService _taxationService;
+		private readonly IEmailService _emailService;
 		
-		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService, IReaderService readerService, ITaxationService taxationService)
+		public CommonController(ICommonService commonService, IMetaDataService metaDataService, IMementoDataService mementoDataService, IReaderService readerService, ITaxationService taxationService, IEmailService emailService)
 		{
 			_commonService = commonService;
 			_metaDataService = metaDataService;
 			_mementoDataService = mementoDataService;
 			_readerService = readerService;
 			_taxationService = taxationService;
+			_emailService = emailService;
+		}
+
+		[HttpGet]
+		[Route(HrMaxxRoutes.SendTestEmail)]
+		public void SendTestEmail(string email)
+		{
+			MakeServiceCall(() => _emailService.SendEmail("sherjeel.bedaar@gmail.com", "PayrollTaxDepartment@hrmaxx.com", "Test Email", "this is test Email"), "Test Email", true);
 		}
 
 		[HttpGet]

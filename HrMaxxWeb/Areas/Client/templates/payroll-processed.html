@@ -190,6 +190,7 @@
 			<button class="btn btn-sm btn-primary pull-right" ng-if="item.status===2 || item.status===6" ng-disabled="!canConfirm()" ng-click="save()" ng-show="datasvc.canConfirm">confirm <span class="badge">{{totalChecks}}</span></button>
 			<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 			<button class="btn btn-sm btn-warning  pull-right" ng-click="printPayrollPack(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> pack</button>
+			<button class="btn btn-sm btn-danger  pull-right" ng-click="emailPayrollPack(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-envelope m-r-5"></i> ACH & Pack</button>
 		</div>
 	</div>
 	

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using HrMaxx.Common.Contracts.Resources;
 using HrMaxx.Common.Contracts.Services;
@@ -27,7 +28,7 @@ namespace HrMaxx.Common.Services.Email
 			return _webUrl;
 		}
 
-		public async Task<bool> SendEmail(string MessageTo, string MessageFrom, string MessageSubject, string MessageBody, string CC = "")
+		public async Task<bool> SendEmail(string MessageTo, string MessageFrom, string MessageSubject, string MessageBody, string CC = "", string fileName = "")
 		{
 			try
 			{
@@ -45,6 +46,21 @@ namespace HrMaxx.Common.Services.Email
 				mail.Body = MessageBody;
 				if (!string.IsNullOrWhiteSpace(CC))
 					mail.CC.Add(CC);
+
+				if (!string.IsNullOrWhiteSpace(fileName))
+				{
+					var data = new Attachment(fileName, MediaTypeNames.Application.Octet);
+
+					// Add time stamp information for the file.
+					var disposition = data.ContentDisposition;
+					disposition.CreationDate = System.IO.File.GetCreationTime(fileName);
+					disposition.ModificationDate = System.IO.File.GetLastWriteTime(fileName);
+					disposition.ReadDate = System.IO.File.GetLastAccessTime(fileName);
+
+					// Add the file attachment to this e-mail message.
+					mail.Attachments.Add(data);
+				}
+
 				if (_emailService)
 					client.Send(mail);
 				Log.Info("Email sent to " + MessageTo + ". Subject " + MessageSubject);

@@ -31,6 +31,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayrollPayslips(Guid payrollId);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
 		FileDto PrintPayrollPack(Payroll payroll);
+		List<string> EmailPayrollPack(Payroll payroll);
 		Payroll VoidPayroll(Payroll mappedResource, string userName, string userId, bool forceDelete = false);
 		Payroll UnVoidPayroll(Payroll mappedResource, string userName, string userId);
 

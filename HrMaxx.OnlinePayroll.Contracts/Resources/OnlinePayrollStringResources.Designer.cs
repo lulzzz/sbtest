@@ -61,6 +61,42 @@ namespace HrMaxx.OnlinePayroll.Contracts.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please find attached the PayCheck copy for the Pay Date{0}.
+        /// </summary>
+        public static string EMAIL_ACH_EmployeeBody {
+            get {
+                return ResourceManager.GetString("EMAIL_ACH_EmployeeBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ACH Pay Check.
+        /// </summary>
+        public static string EMAIL_ACH_EmployeeSubject {
+            get {
+                return ResourceManager.GetString("EMAIL_ACH_EmployeeSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please find attached the Payroll Pack for the Pay Date {0}.
+        /// </summary>
+        public static string EMAIL_Company_PayrollBody {
+            get {
+                return ResourceManager.GetString("EMAIL_Company_PayrollBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payroll Pack.
+        /// </summary>
+        public static string EMAIL_Company_PayrollSubject {
+            get {
+                return ResourceManager.GetString("EMAIL_Company_PayrollSubject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not delete memento..
         /// </summary>
         public static string ERROR_CouldNotDeleteMementos {

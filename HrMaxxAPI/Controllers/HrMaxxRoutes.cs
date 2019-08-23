@@ -55,5 +55,7 @@
 		public const string GetTaxTableYear = "GetTaxTableYears";
 		public const string Encrypt = "Encrypt/{data}";
 		public const string Decrypt = "Decrypt/{data}";
+
+		public const string SendTestEmail = "SendTestEmail/{email}";
 	}
 }
