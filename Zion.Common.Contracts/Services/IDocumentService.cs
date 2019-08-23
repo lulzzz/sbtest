@@ -15,7 +15,7 @@ namespace HrMaxx.Common.Contracts.Services
 		string CreateDirectory(string dirName);
 		void DeleteDirectory(string dirName);
 		void CopyFile(string source, string destination);
-		byte[] ZipDirectory(string source, string fileName);
+		byte[] ZipDirectory(string source, string fileName, bool delete = true);
 		IList<string> GetStoredFiles();
 		void MoveAnnotatedDocument(MoveDocumentDto moveDocumentDto);
 		void SaveUserImage(string user, string image);

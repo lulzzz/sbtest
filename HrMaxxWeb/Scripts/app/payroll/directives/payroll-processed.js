@@ -192,12 +192,33 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							addAlert('Error: ' + error, 'danger');
 						});
 					}
+					$scope.eftChecks = function() {
+						var fil = $filter('filter')($scope.item.payChecks, { paymentMethod: 2 });
+						return fil;
+					}
 					$scope.emailPayrollPack = function (payroll) {
-						payrollRepository.emailPayrollPack(payroll).then(function (data) {
-							$scope.$parent.$parent.addAlert(data, 'success');
-						}, function (error) {
-							addAlert('Error: ' + error, 'danger');
+						var confirmMessage = "Are you sure you want to send emails to client Employees with ACH check? please verify below employees below <br/><br/> <ul>";
+						$.each($scope.eftChecks(), function(i, pc) {
+							if (pc.paymentMethod === 2) {
+								if(pc.employee.contact.email)
+									confirmMessage += "<li>" + pc.name + " (" + pc.employee.contact.email + " )" + "</li>";
+								else
+									confirmMessage += "<li>" + pc.name + " ( No Email Address Available )" + "</li>";
+							}
 						});
+						confirmMessage += "</ul>";
+						$scope.$parent.$parent.$parent.$parent.confirmDialog(confirmMessage, 'warning', function () {
+							payrollRepository.emailPayrollPack(payroll).then(function (data) {
+								
+								$scope.$parent.$parent.$parent.$parent.addAlerts('', data, 'success');
+								}, function (error) {
+									addAlert('Error: ' + error, 'danger');
+								});
+							}
+						);
+
+
+						
 					}
 					
 					$scope.printPayrollReport = function (payroll) {

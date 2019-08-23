@@ -40,7 +40,7 @@ namespace HrMaxxAPI.Controllers
 		[Route(HrMaxxRoutes.SendTestEmail)]
 		public void SendTestEmail(string email)
 		{
-			MakeServiceCall(() => _emailService.SendEmail("sherjeel.bedaar@gmail.com", "PayrollTaxDepartment@hrmaxx.com", "Test Email", "this is test Email"), "Test Email", true);
+			MakeServiceCall(() => _emailService.SendEmail("sherjeel.bedaar@gmail.com", "Paxol@hrmaxx.com", "Test Email", "this is test Email"), "Test Email", true);
 		}
 
 		[HttpGet]

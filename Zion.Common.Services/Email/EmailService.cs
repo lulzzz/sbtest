@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
@@ -32,39 +33,44 @@ namespace HrMaxx.Common.Services.Email
 		{
 			try
 			{
-				var mail = new MailMessage(MessageFrom, MessageTo);
-				mail.IsBodyHtml = true;
-				var client = new SmtpClient
+
+				using (var mail = new MailMessage(MessageFrom, MessageTo))
 				{
-					Port = 25,
-					DeliveryMethod = SmtpDeliveryMethod.Network,
-					UseDefaultCredentials = false,
-					Host = _smptServer,
-					Credentials = new NetworkCredential("payrollApp@hrmaxx.com", "hrMaxx123")
-				};
-				mail.Subject = MessageSubject;
-				mail.Body = MessageBody;
-				if (!string.IsNullOrWhiteSpace(CC))
-					mail.CC.Add(CC);
+					mail.From = new MailAddress(MessageFrom, "PAXol");
+					mail.IsBodyHtml = true;
+					var client = new SmtpClient
+					{
+						Port = 25,
+						DeliveryMethod = SmtpDeliveryMethod.Network,
+						UseDefaultCredentials = false,
+						Host = _smptServer,
+						Credentials = new NetworkCredential("payrollApp@hrmaxx.com", "hrMaxx123")
+					};
+					mail.Subject = MessageSubject;
+					mail.Body = MessageBody;
+					if (!string.IsNullOrWhiteSpace(CC))
+						mail.CC.Add(CC);
 
-				if (!string.IsNullOrWhiteSpace(fileName))
-				{
-					var data = new Attachment(fileName, MediaTypeNames.Application.Octet);
+					if (!string.IsNullOrWhiteSpace(fileName))
+					{
+						var data = new Attachment(fileName, MediaTypeNames.Application.Octet);
 
-					// Add time stamp information for the file.
-					var disposition = data.ContentDisposition;
-					disposition.CreationDate = System.IO.File.GetCreationTime(fileName);
-					disposition.ModificationDate = System.IO.File.GetLastWriteTime(fileName);
-					disposition.ReadDate = System.IO.File.GetLastAccessTime(fileName);
+						// Add time stamp information for the file.
+						var disposition = data.ContentDisposition;
+						disposition.CreationDate = System.IO.File.GetCreationTime(fileName);
+						disposition.ModificationDate = System.IO.File.GetLastWriteTime(fileName);
+						disposition.ReadDate = System.IO.File.GetLastAccessTime(fileName);
 
-					// Add the file attachment to this e-mail message.
-					mail.Attachments.Add(data);
+						// Add the file attachment to this e-mail message.
+						mail.Attachments.Add(data);
+					}
+
+					if (_emailService)
+						client.Send(mail);
+					Log.Info("Email sent to " + MessageTo + ". Subject " + MessageSubject);
+					await Task.FromResult(0);
 				}
-
-				if (_emailService)
-					client.Send(mail);
-				Log.Info("Email sent to " + MessageTo + ". Subject " + MessageSubject);
-				await Task.FromResult(0);
+				
 			}
 			catch (Exception e)
 			{
@@ -75,5 +81,6 @@ namespace HrMaxx.Common.Services.Email
 			}
 			return true;
 		}
+		
 	}
 }

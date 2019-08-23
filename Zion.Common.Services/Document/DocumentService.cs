@@ -104,9 +104,9 @@ namespace HrMaxx.Common.Services.Document
 			_fileRepository.CopyFile(source, destination);
 		}
 
-		public byte[] ZipDirectory(string source, string fileName)
+		public byte[] ZipDirectory(string source, string fileName, bool delete = true)
 		{
-			return _fileRepository.ZipDirectory(source, fileName);
+			return _fileRepository.ZipDirectory(source, fileName, delete);
 		}
 
 		public IList<string> GetStoredFiles()

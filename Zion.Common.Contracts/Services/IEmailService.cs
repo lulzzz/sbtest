@@ -7,6 +7,7 @@ namespace HrMaxx.Common.Contracts.Services
 	{
 		Task<bool> SendEmail(string MessageTo, string MessageFrom, string MessageSubject, string MessageBody, string cc = "", string fileName = "");
 		
+		
 		string GetWebUrl();
 	}
 }

@@ -154,13 +154,13 @@
     <value>Unhandled error returned to controller.</value>
   </data>
   <data name="EMAIL_ACH_EmployeeBody" xml:space="preserve">
-    <value>Please find attached the PayCheck copy for the Pay Date{0}</value>
+    <value>Dear {1}, <br/><br/> Please find attached the ACH Pay Check copy for the Pay Date <i>{0}</i> <br/><br/> <i><u>Do Not reply to this message</u></i></value>
   </data>
   <data name="EMAIL_ACH_EmployeeSubject" xml:space="preserve">
-    <value>ACH Pay Check</value>
+    <value>ACH Pay Check for {0}</value>
   </data>
   <data name="EMAIL_Company_PayrollBody" xml:space="preserve">
-    <value>Please find attached the Payroll Pack for the Pay Date {0}</value>
+    <value>Dear {1}, <br/><br/> Please find attached the Payroll Pack for the Pay Date <i>{0}</i> <br/><br/> <i><u>Do Not reply to this message</u></i></value>
   </data>
   <data name="EMAIL_Company_PayrollSubject" xml:space="preserve">
     <value>Payroll Pack</value>

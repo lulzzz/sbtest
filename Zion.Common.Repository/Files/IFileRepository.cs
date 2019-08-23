@@ -25,7 +25,7 @@ namespace HrMaxx.Common.Repository.Files
 		string CreateDirectory(string dirName);
 		void DeleteDirectory(string dirName);
 		void CopyFile(string source, string destination);
-		byte[] ZipDirectory(string source, string fileName);
+		byte[] ZipDirectory(string source, string fileName, bool delete = true);
 		List<string> GetDirectoryFiles();
 		void MoveDestinationFile(string sourceFileName, string destinationFileName);
 		void MoveFile(string source, string destination, byte[] file);

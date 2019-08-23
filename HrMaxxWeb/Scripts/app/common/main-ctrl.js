@@ -32,6 +32,33 @@
 			});
 			
 		};
+		$scope.addAlerts = function (message, list, type) {
+			var alerts = [];
+			
+			$.each(list, function (index, er) {
+				alerts.push({
+						msg: er,
+						type: type
+					});
+				
+
+			});
+
+			var modalInstance = $modal.open({
+				templateUrl: 'popover/messages.html',
+				controller: 'messageCtrl',
+				backdrop: true,
+				keyboard: true,
+				backdropClick: true,
+				size: 'lg',
+				resolve: {
+					alerts: function () {
+						return alerts;
+					}
+				}
+			});
+
+		};
 		$scope.confirmDialog = function(message, type, callback, nocallback) {
 			var modalInstance = $modal.open({
 				templateUrl: 'popover/confirm.html',

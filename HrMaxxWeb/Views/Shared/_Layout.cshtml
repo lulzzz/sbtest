@@ -220,8 +220,8 @@
 
 					</div>
 					<div class="modal-body">
-						<div class="alert alert-{{type}}">
-							<pre class="alert alert-{{type}}" style="word-wrap:break-word">{{message}}</pre>
+						<div class="alert alert-{{type}}" ng-bind-html="message">
+							
 						</div>
 					</div>
 					<div class="modal-footer text-center">

@@ -125,7 +125,7 @@ namespace HrMaxx.Common.Repository.Files
 				File.Copy(_destinationPath + source, destination);
 		}
 
-		public byte[] ZipDirectory(string source, string fileName)
+		public byte[] ZipDirectory(string source, string fileName, bool delete = true)
 		{
 			if (Directory.Exists(source))
 			{
@@ -135,7 +135,8 @@ namespace HrMaxx.Common.Repository.Files
 			}
 			//Directory.Delete(source, true);
 			var bytes = GetFileBytesByPath(_destinationPath + fileName);
-			File.Delete(_destinationPath + fileName);
+			if(delete)
+				File.Delete(_destinationPath + fileName);
 			return bytes;
 		}
 

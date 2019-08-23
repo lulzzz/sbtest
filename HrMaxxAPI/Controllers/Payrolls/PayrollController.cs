@@ -172,8 +172,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		public List<string> EmailPayrollReport(PayrollResource payroll)
 		{
 			var mapped = Mapper.Map<PayrollResource, Payroll>(payroll);
-			return MakeServiceCall(() => _payrollService.EmailPayrollPack(mapped), string.Format("email payroll report {0} - {1}", mapped.Id, mapped.Company.Name), true);
-			
+			var result = MakeServiceCall(() => _payrollService.EmailPayrollPack(mapped), string.Format("email payroll report {0} - {1}", mapped.Id, mapped.Company.Name), true);
+			return result.Result;
+
 		}
 		[HttpPost]
 		[Route(PayrollRoutes.PrintPayrollPack)]

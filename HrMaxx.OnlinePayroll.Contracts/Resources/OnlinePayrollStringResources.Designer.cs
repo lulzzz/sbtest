@@ -61,7 +61,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please find attached the PayCheck copy for the Pay Date{0}.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string EMAIL_ACH_EmployeeBody {
             get {
@@ -70,7 +70,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACH Pay Check.
+        ///   Looks up a localized string similar to ACH Pay Check for {0}.
         /// </summary>
         public static string EMAIL_ACH_EmployeeSubject {
             get {
@@ -79,7 +79,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please find attached the Payroll Pack for the Pay Date {0}.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string EMAIL_Company_PayrollBody {
             get {
