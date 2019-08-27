@@ -1810,6 +1810,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			{
 				var returnList = new List<string>();
 				var journals = _journalService.GetPayrollJournals(payroll.Id, payroll.PEOASOCoCheck);
+				var employees = _readerService.GetEmployees(company: payroll.Company.Id);
+				var company = _readerService.GetCompany(payroll.Company.Id);
 				if ((int) payroll.Status > 2 && (int) payroll.Status < 6)
 				{
 					journals = journals.Where(j => j.PEOASOCoCheck == payroll.PEOASOCoCheck).ToList();
@@ -1829,29 +1831,30 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")), false);
 					payChecks.Where(pc => pc.PaymentMethod == EmployeePaymentMethod.DirectDebit).ToList().ForEach(async pc =>
 					{
-						if (string.IsNullOrWhiteSpace(pc.Employee.Contact.Email))
-							returnList.Add(string.Format("No Email Sent. Invalid email found for Employee {0}", pc.Employee.FullName));
+						var employee = employees.First(e => e.Id == pc.EmployeeId);
+						if (string.IsNullOrWhiteSpace(employee.Contact.Email))
+							returnList.Add(string.Format("No Email Sent. Invalid email found for Employee {0}", employee.FullName));
 						else
 						{
-							
-							await _emailService.SendEmail(pc.Employee.Contact.Email, "Paxol@hrmaxx.com",
-								string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeSubject, pc.Employee.FullName),
-								string.Format(employeeEmailBody, pc.PayDay.ToString("MM/dd/yyyy"), pc.Employee.FullName),
-								"mc.hrmaxx@gmail.com",
-								string.Format("{0}/{1}.pdf", dir, pc.Employee.FullName));
-							returnList.Add(string.Format("Email Sent to {0} at {1} with ACH Pay Check", pc.Employee.FullName,
-								pc.Employee.Contact.Email));
+
+							await _emailService.SendEmail(employee.Contact.Email,
+								string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeSubject, employee.FullName),
+								string.Format(employeeEmailBody, pc.PayDay.ToString("MM/dd/yyyy"), employee.FullName),
+								cc: _emailService.GetACHPackCC(),
+								fileName: string.Format("{0}/{1}.pdf", dir, pc.Employee.FullName));
+							returnList.Add(string.Format("Email Sent to {0} at {1} with ACH Pay Check", employee.FullName,
+								employee.Contact.Email));
 						}
 
 					});
-					await _emailService.SendEmail(payroll.Company.Contact.Email, "Paxol@hrmaxx.com",
+					await _emailService.SendEmail(company.Contact.Email,
 								OnlinePayrollStringResources.EMAIL_Company_PayrollSubject,
-								string.Format(companyEmailBody, payroll.PayDay.ToString("MM/dd/yyyy"), payroll.Company.Contact.FullName),
-								"mc.hrmaxx@gmail.com",
-								string.Format("{0}.zip", dir));
+								string.Format(companyEmailBody, payroll.PayDay.ToString("MM/dd/yyyy"), company.Contact.FullName),
+								cc: _emailService.GetACHPackCC(),
+								fileName: string.Format("{0}.zip", dir));
 					
-					returnList.Add(string.Format("Email Sent to {0} at {1} with Payroll Pack", payroll.Company.Contact.FullName,
-								payroll.Company.Contact.Email));
+					returnList.Add(string.Format("Email Sent to {0} at {1} with Payroll Pack", company.Contact.FullName,
+								company.Contact.Email));
 
 
 					_fileRepository.DeleteDestinationFile(string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")));

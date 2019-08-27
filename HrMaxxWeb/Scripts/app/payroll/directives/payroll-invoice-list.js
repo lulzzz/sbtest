@@ -17,7 +17,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						startDate: null,
 						endDate: null,
 						selectedCompany: null,
-						includeDelayedTaxes: false
+						includeDelayedTaxes: false,
+						includeRedated: false
 
 				}
 					$scope.printList = function (event) {
@@ -229,7 +230,10 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 								$scope.selectedPaymentMethod.push(st.id);
 						});
 						var comp = dataSvc.selectedCompany ? dataSvc.selectedCompany.id : null;
-						payrollRepository.getInvoicesForHost(comp, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null, dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus, $scope.selectedPaymentStatus, $scope.selectedPaymentMethod, dataSvc.includeDelayedTaxes).then(function (data) {
+						payrollRepository.getInvoicesForHost(comp, dataSvc.startDate ? moment(dataSvc.startDate).format("MM/DD/YYYY") : null,
+																									dataSvc.endDate ? moment(dataSvc.endDate).format("MM/DD/YYYY") : null, $scope.selectedStatus, $scope.selectedPaymentStatus,
+																									$scope.selectedPaymentMethod, dataSvc.includeDelayedTaxes, dataSvc.includeRedated
+																									).then(function (data) {
 							$scope.list = data;
 							//$scope.processors = $filter('unique')($scope.list, 'processedBy');
 							$scope.tableParams.reload();

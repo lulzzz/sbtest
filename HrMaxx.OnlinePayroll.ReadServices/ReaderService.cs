@@ -49,6 +49,19 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				throw new HrMaxxApplicationException(message, e);
 		  }
 	  }
+		public T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList, XmlRootAttribute xmlRootAttribute)
+		{
+			try
+			{
+				return _reader.GetDataFromStoredProc1<T>(proc, paramList, xmlRootAttribute);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Proc:{0} Params:{1}", proc, paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList)
 		{

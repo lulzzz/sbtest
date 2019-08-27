@@ -15,6 +15,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IReaderService
 	{
 		T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList);
+		T GetDataFromStoredProc<T>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute);
 		T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList);
 		T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute);
 		T GetDataFromJsonStoredProc<T, T1>(string proc, List<FilterParam> paramList);

@@ -10,11 +10,12 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 			},
 			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/user-dashboard.html?v=' + version),
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', 'commonRepository', 'NgTableParams', 'ClaimTypes',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, commonRepository, ngTableParams, ClaimTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository', '$anchorScroll', 'commonRepository', 'NgTableParams', 'ClaimTypes', 'payrollRepository', 'anchorSmoothScroll',
+				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, commonRepository, ngTableParams, ClaimTypes, payrollRepository, anchorSmoothScroll) {
 					var dataSvc = {
 						isBodyOpen: true,
 						response: null,
+						
 						approachingPayrolls: [],
 						filteredApproachingPayrolls: [],
 						payrollsWithoutInvoice: [],
@@ -34,6 +35,58 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 						viewPerformance: $scope.mainData.hasClaim(ClaimTypes.DashboardPerformance, 1),
 						viewClearance: $scope.mainData.hasClaim(ClaimTypes.DashboardAccountReceivable,1),
 					}
+					$scope.invoiceStatusList = [];
+					$scope.selectedInvoice = null;
+					$scope.set = function (item) {
+						$scope.selectedInvoice = null;
+						if (item && item.id) {
+							payrollRepository.getInvoiceById(item.id).then(function (invoice) {
+								$scope.selectedInvoice = invoice;
+								$scope.$parent.$parent.setHostandCompanyFromInvoice(invoice.company.hostId, invoice.company.id);
+								$location.hash("invoice");
+								anchorSmoothScroll.scrollTo('invoice');
+							}, function (error) {
+								$scope.addAlert('error getting invoices', 'danger');
+
+							});
+						}
+					}
+					$scope.tableData1 = [];
+					$scope.tableParams1 = new ngTableParams({
+						page: 1,            // show first page
+						count: 10,
+
+						sorting: {
+							invoiceNumber: 'desc'     // initial sorting
+						}
+					}, {
+						total: $scope.invoiceStatusList ? $scope.invoiceStatusList.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableData1(params);
+							return $scope.tableData1;
+						}
+					});
+					if ($scope.tableParams1.settings().$scope == null) {
+						$scope.tableParams1.settings().$scope = $scope;
+					}
+					$scope.fillTableData1 = function (params) {
+						// use build-in angular filter
+						if ($scope.invoiceStatusList && $scope.invoiceStatusList.length > 0) {
+
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.invoiceStatusList, params.filter()) :
+																$scope.invoiceStatusList;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParams1 = params;
+							$scope.tableData1 = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
 					$scope.print = function(option) {
 						dataSvc.printOption = option;
 						$timeout(function() {
@@ -339,9 +392,11 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 								var row = selection[0].row;
 								var key = options.chartKey;
 								var ctx = $filter('filter')($scope.chartData, { chartName: key }, true);
-								var criteria = ctx[0].chartData[row+1][0];
+								var criteria = ctx[0].chartData[row + 1][0];
+								dataSvc.selectedStatus = criteria;
 								$scope.drawInvoiceStatusPastDueChart(criteria);
 								$scope.drawInvoiceStatusDetailedChart(criteria);
+								$scope.getInvoiceStatusList(criteria);
 							});
 						}
 
@@ -380,6 +435,19 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 							console.log(error);
 						});
 						
+
+
+					};
+					$scope.getInvoiceStatusList = function (status) {
+						reportRepository.getInvoiceStatusList('GetInvoiceStatusList', $scope.mainData.reportFilter.filterStartDate, $scope.mainData.reportFilter.filterEndDate, status, $scope.mainData.reportFilter.filter.onlyActive).then(function (data1) {
+							$scope.invoiceStatusList = data1;
+							
+							$scope.tableParams1.reload();
+							$scope.fillTableData1($scope.tableParams1);
+						}, function (error) {
+							console.log(error);
+						});
+
 
 
 					};

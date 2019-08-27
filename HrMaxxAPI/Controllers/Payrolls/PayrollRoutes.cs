@@ -63,5 +63,6 @@
 		public const string FixPayrollYTD = "Payroll/FixPayrollYTD/{payrollId:guid}";
 		public const string FixEmployeeYTD = "Payroll/FixEmployeeYTD/{employeeId:guid}";
 		public const string RecalculateEmployeePayTypeAccumulations = "Payroll/RecalculateEmployeePayTypeAccumulations/{employeeId:guid}";
+		
 	}
 }

@@ -50,6 +50,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						canRunHistoryPayroll: $scope.mainData.hasClaim(ClaimTypes.PayrollHistoryPayroll, 1),
 						canConfirm: $scope.mainData.hasClaim(ClaimTypes.PayrollConfirm, 1),
 						canReProcessReConfirm: $scope.mainData.hasClaim(ClaimTypes.PayrollReProcessReConfirm, 1),
+						canACHEmail: $scope.mainData.hasClaim(ClaimTypes.PayrollACHPackEmail, 1)
 				}
 					$scope.list = [];
 					

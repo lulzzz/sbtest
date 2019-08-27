@@ -36,5 +36,10 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string Notes { get; set; }
 		public string SpecialRequest { get; set; }
 		public string InvoiceSetup1 { get; set; }
+		public bool IsRedated
+		{
+			get { return PayrollPayDay != PayrollTaxPayDay; }
+
+		}
 	}
 }

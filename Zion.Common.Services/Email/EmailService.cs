@@ -16,12 +16,19 @@ namespace HrMaxx.Common.Services.Email
 		private readonly bool _emailService;
 		private readonly string _smptServer;
 		private readonly string _webUrl;
+		private readonly string _achPackCC;
 
-		public EmailService(bool emailService, string smtpServer, string webUrl)
+		public EmailService(bool emailService, string smtpServer, string webUrl, string achpackcc)
 		{
 			_emailService = emailService;
 			_smptServer = smtpServer;
 			_webUrl = webUrl;
+			_achPackCC = achpackcc;
+		}
+
+		public string GetACHPackCC()
+		{
+			return _achPackCC;
 		}
 
 		public string GetWebUrl()
@@ -29,14 +36,14 @@ namespace HrMaxx.Common.Services.Email
 			return _webUrl;
 		}
 
-		public async Task<bool> SendEmail(string MessageTo, string MessageFrom, string MessageSubject, string MessageBody, string CC = "", string fileName = "")
+		public async Task<bool> SendEmail(string to, string subject, string body, string from = "Paxol@hrmaxx.com", string cc = "", string fileName = "")
 		{
 			try
 			{
 
-				using (var mail = new MailMessage(MessageFrom, MessageTo))
+				using (var mail = new MailMessage(from, to))
 				{
-					mail.From = new MailAddress(MessageFrom, "PAXol");
+					mail.From = new MailAddress(from, "PAXol");
 					mail.IsBodyHtml = true;
 					var client = new SmtpClient
 					{
@@ -46,10 +53,10 @@ namespace HrMaxx.Common.Services.Email
 						Host = _smptServer,
 						Credentials = new NetworkCredential("payrollApp@hrmaxx.com", "hrMaxx123")
 					};
-					mail.Subject = MessageSubject;
-					mail.Body = MessageBody;
-					if (!string.IsNullOrWhiteSpace(CC))
-						mail.CC.Add(CC);
+					mail.Subject = subject;
+					mail.Body = body;
+					if (!string.IsNullOrWhiteSpace(cc))
+						mail.CC.Add(cc);
 
 					if (!string.IsNullOrWhiteSpace(fileName))
 					{
@@ -67,7 +74,7 @@ namespace HrMaxx.Common.Services.Email
 
 					if (_emailService)
 						client.Send(mail);
-					Log.Info("Email sent to " + MessageTo + ". Subject " + MessageSubject);
+					Log.Info("Email sent to " + to + ". Subject " + subject);
 					await Task.FromResult(0);
 				}
 				
@@ -75,7 +82,7 @@ namespace HrMaxx.Common.Services.Email
 			catch (Exception e)
 			{
 				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX,
-					"Send Email for " + MessageSubject + " to " + MessageTo);
+					"Send Email for " + subject + " to " + to);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

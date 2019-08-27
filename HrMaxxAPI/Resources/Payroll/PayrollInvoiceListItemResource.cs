@@ -96,5 +96,7 @@ namespace HrMaxxAPI.Resources.Payroll
 					return string.IsNullOrWhiteSpace(CheckNumbers) && InvoiceSetup.PaysByAch ? "C-ACH" : CheckNumbers;
 				} 
 		}
+
+		public bool IsRedated { get; set; }
 	}
 }

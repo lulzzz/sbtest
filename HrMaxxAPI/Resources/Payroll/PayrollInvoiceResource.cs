@@ -145,6 +145,11 @@ namespace HrMaxxAPI.Resources.Payroll
 					: string.Empty;
 			}
 		}
+		public bool IsRedated
+		{
+			get { return PayrollPayDay != PayrollTaxPayDay; }
+
+		}
 	}
 	
 }

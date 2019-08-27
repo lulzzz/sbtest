@@ -595,6 +595,10 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			{
 				invoices = invoices.Where(i => !(i.HostId == appConfig.RootHostId && i.IsHostCompany)).ToList();
 			}
+			if (resource.IncludeRedated)
+			{
+				invoices = invoices.Where(i => i.IsRedated).ToList();
+			}
 			var result = Mapper.Map<List<PayrollInvoiceListItem>, List<PayrollInvoiceListItemResource>>(invoices);
 			var ic = _taxationService.GetApplicationConfig().InvoiceLateFeeConfigs;
 			result.ForEach(i => i.TaxPaneltyConfig = ic);

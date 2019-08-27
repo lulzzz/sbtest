@@ -86,7 +86,7 @@
 	
 	<div class="col-sm-12">
 		<div class="invoice col-sm-8" id="print">
-			<div class="invoice-company hidden-print">
+			<div class="invoice-company hidden-print" ng-show="showControls">
 				<span class="pull-left input-group">
 					
 					
@@ -141,7 +141,7 @@
 					<div class="invoice-detail">
 						No. of Checks: {{invoice.noOfChecks}}<br />
 						Payroll Pay Day: {{invoice.payrollPayDay | date:'MM/dd/yyyy'}}<br/>
-						Tax Pay Day: {{invoice.payrollTaxPayDay | date:'MM/dd/yyyy'}}<br />
+						Tax Pay Day: {{invoice.payrollTaxPayDay | date:'MM/dd/yyyy'}} <i class="fa fa-circle hidden-print" style="color:red" ng-show="invoice.isRedated"></i><br />
 						Payroll Pay Period: {{invoice.periodStart | date:'MM/dd/yyyy'}} - {{invoice.periodEnd | date:'MM/dd/yyyy'}}<br/>
 						Check Pay: {{invoice.checkPay | currency:'$'}}<br/>
 						DD Pay: {{invoice.ddPay | currency:'$'}}<br/>
@@ -331,7 +331,7 @@
 			</div>
 		</div>
 		
-		<div class="col-sm-4  hidden-print" ng-if="!mainData.userCompany && showControls">
+		<div class="col-sm-4  hidden-print" ng-if="!mainData.userCompany">
 			<div class="alert alert-danger hidden-print col-sm-12 m-l-20" ng-if="invoice.company.notes">
 				{{invoice.company.notes}}
 			</div>

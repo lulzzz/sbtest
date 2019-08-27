@@ -18,6 +18,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 		protected override void Load(ContainerBuilder builder)
 		{
 			bool _emailServiceSwitch = ConfigurationManager.AppSettings["EmailServiceSwitch"].Equals("1");
+			string achpackcc = ConfigurationManager.AppSettings["achpackcc"];
 			string _smtpServer = ConfigurationManager.AppSettings["SMTPServer"];
 			string webUrl = ConfigurationManager.AppSettings["WebURL"];
 			string tokenVersion = ConfigurationManager.AppSettings["TokenVersion"];
@@ -56,6 +57,7 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.WithParameter(new NamedParameter("emailService", _emailServiceSwitch))
 				.WithParameter(new NamedParameter("smtpServer", _smtpServer))
 				.WithParameter(new NamedParameter("webUrl", webUrl))
+				.WithParameter(new NamedParameter("achpackcc", achpackcc))
 				.As<IEmailService>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

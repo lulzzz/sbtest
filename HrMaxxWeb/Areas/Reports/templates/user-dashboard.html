@@ -88,7 +88,7 @@
 
 
 			</div>
-			<div class="row" ng-show="data.tab===4">
+			<div class="row" ng-if="data.tab===4">
 				<div class="col-sm-12">
 					<div class="col-sm-6">
 
@@ -240,7 +240,7 @@
 				</div>
 
 			</div>
-			<div class="row  hidden-print" ng-show="data.tab===2">
+			<div class="row  hidden-print" ng-if="data.tab===2">
 				<div class="row col-md-12">
 					<div class="col-md-6">
 						
@@ -249,18 +249,80 @@
 
 
 					</div>
+
 					<div class="col-md-6">
 						<div id="invoicestatusdetailedChart"></div>
 
 					</div>
 				</div>
 				<div class="row col-md-12">
-					<div class="col-md-6" />
+					<div class="col-md-6" ng-show="invoiceStatusList.length>0">
+						<h4><strong>Invoice Status List where Status = {{data.selectedStatus}}</strong></h4>
+						<table ng-table="tableParams1" class="table" show-filter="true" template-pagination="custom/pager1">
+							<tr ng-repeat="item in tableData1 track by $index" class="mouse-over-pointer" ng-class="{'success':selectedInvoice.id===item.id}">
+
+								<td data-title=" 'Company' " filter="{ 'companyName': 'text' }" sortable=" 'companyName' " class="col-sm-4 text-center">
+									{{item.companyName}}
+								</td>
+								<td data-title=" 'Invoice #' " filter="{'invoiceNumber':'text'}" sortable=" 'invoiceNumber' " class="col-sm-1 text-center">
+									{{item.invoiceNumber}}
+								</td>
+								<td data-title=" 'Invoice Date' " sortable=" 'invoiceDate' " class="col-sm-1 text-center" ng-class="{'show-red': item.isRedated}">
+									{{item.invoiceDate | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Pay Day' " sortable=" 'payDay' " class="col-sm-1 text-center">
+									{{item.payDay | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Tax Pay Day' " sortable=" 'taxPayDay' " class="col-sm-1 text-center">
+									{{item.taxPayDay | date:'MM/dd/yyyy'}}<i class="fa fa-circle" style="color:red" ng-show="item.payDay!==item.taxPayDay"></i>
+								</td>
+
+								<td data-title=" 'Status' " filter="{ 'statusText': 'text' }" sortable=" 'statusText' " class="col-sm-2 text-center">
+									{{item.statusText}} <i class="fa fa-pause" style="color:red" ng-if="item.taxesDelayed"></i>
+								</td>
+								<td class="col-sm-2 text-center"><button class="btn btn-primary btn-icon btn-circle btn-sm" ng-click="set(item)"><i class="fa fa-eye"></i></button></td>
+
+							</tr>
+
+						</table>
+						<script type="text/ng-template" id="custom/pager1">
+							<ul class="pager ng-cloak hidden-print">
+								<li ng-repeat="page in pages"
+										ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+										ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+									<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+									<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+								</li>
+								<li>
+									<div class="btn-group">
+										<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+										<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+										<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(params.total())" class="btn btn-default btn-sm">All</button>
+									</div>
+								</li>
+							</ul>
+						</script>
+					</div>
 					<div class="col-md-6">
 						<div id="invoicestatuspastdueChart"></div>
-
+						
 					</div>
 
+				</div>
+				<div class="row col-md-12">
+					<a id="invoice"></a>
+					<div class="panel panel-inverse" ng-if="selectedInvoice">
+						<div class="panel-heading hidden-print" ng-if="selectedInvoice">
+							<h4 class="panel-title">Invoice Details</h4>
+						</div>
+						<div class="panel-body tab-content" ng-if="selectedInvoice">
+							<form data-parsley-validate="true" name="invoice">
+								<payroll-invoice invoice="selectedInvoice" datasvc="data" host="mainData.selectedHost" main-data="mainData" show-controls="false" />
+							</form>
+						</div>
+					</div>
 				</div>
 				<br />
 			</div>

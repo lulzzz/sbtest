@@ -476,6 +476,22 @@ common.factory('reportRepository', [
 					deferred.reject(error);
 				});
 				return deferred.promise;
+			},
+			getInvoiceStatusList: function (report, startdate, enddate, criteria, onlyActive) {
+				var deferred = $q.defer();
+
+				reportServer.all('InvoiceStatusList').post({
+					report: report,
+					startDate: startdate,
+					endDate: enddate,
+					criteria: criteria,
+					onlyActive: onlyActive
+				}).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
 			}
 
 		};

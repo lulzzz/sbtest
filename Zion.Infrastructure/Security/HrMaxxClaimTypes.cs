@@ -61,6 +61,7 @@
 		public const string PayrollUnVoidCheck = "http://Paxol/Payroll/UnVoidCheck";
 		public const string PayrollHistoryPayroll = "http://Paxol/Payroll/HistoryPayroll";
 		public const string PayrollDelivery = "http://Paxol/Payroll/Delivery";
+		public const string PayrollACHPackEmail = "http://Paxol/Payroll/ACHPackEmail";
 		public const string PayrollAwaitingPrint = "http://Paxol/Payroll/AwaitingPrint";
 		public const string InvoiceList = "http://Paxol/Invoice/List";
 		public const string InvoiceCommissions = "http://Paxol/Invoice/Commissions";

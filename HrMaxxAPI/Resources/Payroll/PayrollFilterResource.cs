@@ -32,6 +32,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 		public bool IncludeDelayedTaxes { get; set; }
+		public bool IncludeRedated { get; set; }
 	}
 
 	public class MoveCopyPayrollRequest

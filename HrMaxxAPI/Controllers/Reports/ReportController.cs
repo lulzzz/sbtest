@@ -8,8 +8,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Xml.Serialization;
 using Autofac.Features.Metadata;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
@@ -29,16 +31,18 @@ namespace HrMaxxAPI.Controllers.Reports
 	public class ReportController : BaseApiController
 	{
 		public readonly IReportService _reportService;
+		public readonly IReaderService _readerService;
 		public readonly IJournalService _journalService;
 		public readonly IACHService _achService;
 		public readonly IDocumentService _documentService;
 
-		public ReportController(IReportService reportService, IJournalService journalService, IACHService achService, IDocumentService documentService)
+		public ReportController(IReportService reportService, IJournalService journalService, IACHService achService, IDocumentService documentService, IReaderService readerService)
 		{
 			_reportService = reportService;
 			_journalService = journalService;
 			_achService = achService;
 			_documentService = documentService;
+			_readerService = readerService;
 		}
 		
 		[HttpPost]
@@ -173,6 +177,26 @@ namespace HrMaxxAPI.Controllers.Reports
 				dashboardRequest.Host = CurrentUser.Host;
 			dashboardRequest.Role = CurrentUser.Role;
 			return MakeServiceCall(() => _reportService.GetDashboardData(dashboardRequest), "Get Dashboard Data for a Request " + request.ReportName, true);
+
+		}
+		[HttpPost]
+		[Route(ReportRoutes.InvoiceStatusList)]
+		[DeflateCompression]
+		public List<InvoiceStatusListItem> InvoiceStatusList(DashboardRequestResource request)
+		{
+			var dashboardRequest = Mapper.Map<DashboardRequestResource, DashboardRequest>(request);
+			
+			dashboardRequest.Role = CurrentUser.Role;
+			var filterParams = new List<FilterParam>();
+			filterParams.Add(new FilterParam(){Key="startdate", Value = dashboardRequest.StartDate.ToString()});
+			filterParams.Add(new FilterParam() { Key = "enddate", Value = dashboardRequest.EndDate.ToString() });
+			if (CurrentUser.Host != Guid.Empty)
+				filterParams.Add(new FilterParam() { Key = "host", Value = CurrentUser.Host.ToString() });
+			filterParams.Add(new FilterParam() { Key = "role", Value = CurrentUser.Role });
+			filterParams.Add(new FilterParam() { Key = "criteria", Value = request.Criteria });
+			filterParams.Add(new FilterParam() { Key = "onlyActive", Value = request.OnlyActive.ToString() });
+
+			return MakeServiceCall(() => _readerService.GetDataFromStoredProc<List<InvoiceStatusListItem>>("GetInvoiceStatusList", filterParams, new XmlRootAttribute("InvoiceStatusList")), "Get Dashboard Data for a Request " + request.ReportName, true);
 
 		}
 

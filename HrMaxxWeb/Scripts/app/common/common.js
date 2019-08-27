@@ -60,7 +60,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.3.24');
+common.constant('version', '1.0.3.26');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -125,6 +125,7 @@ common.constant('ClaimTypes', {
 	PayrollUnVoidCheck: 'http://Paxol/Payroll/UnVoidCheck',
 	PayrollHistoryPayroll: 'http://Paxol/Payroll/HistoryPayroll',
 	PayrollDelivery: 'http://Paxol/Payroll/Delivery',
+	PayrollACHPackEmail: 'http://Paxol/Payroll/ACHPackEmail',
 	PayrollAwaitingPrint: 'http://Paxol/Payroll/AwaitingPrint',
 	InvoiceList: 'http://Paxol/Invoice/List',
 	InvoiceCommissions: 'http://Paxol/Invoice/Commissions',
