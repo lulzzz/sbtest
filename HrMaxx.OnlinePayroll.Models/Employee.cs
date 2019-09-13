@@ -7,6 +7,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
@@ -62,6 +63,8 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				var searchText = string.Empty;
 				searchText += FullName + " (" + SSN + ")";
+				if (StatusId == StatusOption.Terminated || StatusId == StatusOption.InActive)
+					searchText += " - " + StatusId.GetDbName();
 				return searchText;
 			}
 		}
@@ -123,5 +126,22 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid EmployeeId { get; set; }
 		public decimal Percentage { get; set; }
 		public BankAccount BankAccount { get; set; }
+	}
+
+	public class EmployeeMinified
+	{
+		public Guid HostId { get; set; }
+		public Guid CompanyId { get; set; }
+		public int EmployeeIntId { get; set; }
+		public string FirstName { get; set; }
+		public string MiddleInitial { get; set; }
+		public string LastName { get; set; }
+		public Contact Contact { get; set; }
+		
+		public string SSN { get; set; }
+		
+		//Employment
+		public DateTime HireDate { get; set; }
+		
 	}
 }

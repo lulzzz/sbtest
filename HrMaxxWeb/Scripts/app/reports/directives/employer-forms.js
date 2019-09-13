@@ -23,7 +23,9 @@ common.directive('employerForms', ['zionAPI', '$timeout', '$window', 'version',
 							reportType:1
 						},
 						filterDE34: {
-							hireDate : null
+							hireDate: null,
+							startDate: null,
+							endDate: null
 						}
 					}
 					
@@ -37,16 +39,16 @@ common.directive('employerForms', ['zionAPI', '$timeout', '$window', 'version',
 					};
 
 					$scope.getReportW4 = function() {
-						getReport('W4_'+dataSvc.filterW4.reportType, 'W4', 0, null, null);
+						getReport('W4_'+dataSvc.filterW4.reportType, 'W4', 0, null, null, null);
 					}
 					$scope.getReportI9 = function () {
-						getReport('I9_'+dataSvc.filterI9.reportType, 'I9', 0, null, null);
+						getReport('I9_'+dataSvc.filterI9.reportType, 'I9', 0, null, null, null);
 					}
 					$scope.getReportDE34 = function () {
-						getReport('CaliforniaDE34', 'California DE 34', 0, null, dataSvc.filterDE34.hireDate);
+						getReport('CaliforniaDE34', 'California DE 34', 0, null, dataSvc.filterDE34.startDate, dataSvc.filterDE34.endDate);
 					}
 					
-					var getReport = function(reportName, desc, year, quarter, date) {
+					var getReport = function(reportName, desc, year, quarter, date, enddate) {
 						var m = $scope.mainData;
 						var request = {
 							reportName: reportName,
@@ -56,7 +58,7 @@ common.directive('employerForms', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: quarter,
 							month: null,
 							startDate:date,
-							endDate: null
+							endDate: enddate
 						}
 						reportRepository.getReportDocument(request).then(function (data) {
 							var a = document.createElement('a');

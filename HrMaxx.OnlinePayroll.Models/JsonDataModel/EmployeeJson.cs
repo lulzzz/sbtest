@@ -57,6 +57,25 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
 		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
 	}
+	[Serializable]
+	[XmlRoot("EmployeeMinifiedList")]
+	public class EmployeeMinifiedJson
+	{
+		public Guid Id { get; set; }
+		public Guid CompanyId { get; set; }
+		public Guid HostId { get; set; }
+		public int EmployeeIntId { get; set; }
+		public int StatusId { get; set; }
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+		public string MiddleInitial { get; set; }
+		public string Contact { get; set; }
+		
+		public string SSN { get; set; }
+		
+		public DateTime HireDate { get; set; }
+		
+	}
 	 public class EmployeeDeduction
     {
         public int Id { get; set; }

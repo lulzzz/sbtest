@@ -27,7 +27,7 @@ namespace OPImportUtility
 		{
 			const string taxyearrate = "delete from TaxYearRate;" +
 			                           "insert into TaxYearRate(taxid, TaxYear, Rate, AnnualMaxPerEmployee, TaxRateLimit) " +
-			                           "select (select Id from paxoltest.dbo.tax where code=taxcode collate Latin1_General_CI_AI) taxid, year(startdate) taxyear, TaxRatePercentage, AnnualMaxPerEmployee, TaxRateLimit from OnlinePayroll.dbo.TaxRuleTable " +
+			                           "select (select Id from paxol.dbo.tax where code=taxcode collate Latin1_General_CI_AI) taxid, year(startdate) taxyear, TaxRatePercentage, AnnualMaxPerEmployee, TaxRateLimit from OnlinePayroll.dbo.TaxRuleTable " +
 			                           "order by taxyear, taxid;" +
 			                           "update tyr set Rate=t.DefaultRate from TaxYearRate tyr, Tax t where tyr.TaxId=t.Id and t.IsCompanySpecific=1 and tyr.Rate is null;";
 			const string fit = "truncate table FITTaxTable;" +
@@ -68,7 +68,7 @@ namespace OPImportUtility
 			
 
 			const string userstuff =
-				"insert into aspnetroles select * from paxol.dbo.AspNetRoles;insert into aspnetusers select * from Paxol.dbo.AspNetUsers where username='sherjeel';insert into AspNetUserRoles select * from Paxol.dbo.AspNetUserRoles where USERID=(select Id from Paxol.dbo.AspNetUsers where username='sherjeel');insert into AspNetUserClaims(userid, claimtype, claimvalue) select userid, claimtype, claimvalue from paxol.dbo.AspNetUserClaims where userid=(select Id from paxol.dbo.AspNetUsers where username='sherjeel')";
+				"insert into aspnetusers select * from Paxol.dbo.AspNetUsers where username='sherjeel';insert into AspNetUserRoles select * from Paxol.dbo.AspNetUserRoles where USERID=(select Id from Paxol.dbo.AspNetUsers where username='sherjeel');insert into AspNetUserClaims(userid, claimtype, claimvalue) select userid, claimtype, claimvalue from paxol.dbo.AspNetUserClaims where userid=(select Id from paxol.dbo.AspNetUsers where username='sherjeel')";
 
 			const string config = "delete from ApplicationConfiguration;set identity_insert ApplicationConfiguration On;insert into ApplicationConfiguration (Id, config, RootHostId) select * from paxol.dbo.ApplicationConfiguration; set identity_insert ApplicationConfiguration Off;";
 			using (var con = GetConnection())

@@ -11,6 +11,7 @@ using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -156,11 +157,12 @@ namespace HrMaxx.OnlinePayroll.Models
 		
 		public Accumulation PayCheckAccumulation { get; set; }
 		public Accumulation VoidedAccumulation { get; set; }
+		public List<CompanyTaxState> States { get; set; }
 
 		public string Title { get { return string.Format("{0}", Company.DescriptiveName); } }
 		public Guid Id { get { return Company.Id; } }
-		public List<PayrollSummary> Summaries { get; set; } 
-		
+		public List<PayrollSummary> Summaries { get; set; }
+		public List<EmployeeMinified> Employees { get; set; } 
 	}
 
 	public class PayrollSummary
@@ -270,7 +272,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		public Guid? ParentId { get; set; }
 		public decimal MinWage { get; set; }
 		public int CompanyCheckPrintOrder { get; set; }
-		
+
+		public List<EmployeeMinifiedJson> Employees { get; set; } 
+
+		public List<ExtractTaxState> States { get; set; }
 		public List<ExtractPayCheck> PayChecks { get; set; }
 		public List<ExtractPayCheck> VoidedPayChecks { get; set; }
 		public List<Accumulation> Accumulations { get; set; }

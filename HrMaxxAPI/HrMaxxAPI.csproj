@@ -341,6 +341,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\extracts\C1095PDF-2018.xslt" />
+    <Content Include="templates\transformers\extracts\HostCADE34.xslt" />
     <Content Include="templates\transformers\extracts\CAUIETTEFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\CAPITEFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\CBT-ACHTransformer.xslt" />

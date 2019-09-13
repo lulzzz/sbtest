@@ -199,8 +199,8 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			try
 			{
-				var companies = _readerService.GetCompanies(); //_companyService.GetAllCompanies();
-				var employees = _readerService.GetEmployees();
+				var companies = _readerService.GetCompanies(status:0); //_companyService.GetAllCompanies();
+				var employees = _readerService.GetEmployees(status:0);
 				var searchResults = new List<SearchResult>();
 				foreach (var company in companies)
 				{

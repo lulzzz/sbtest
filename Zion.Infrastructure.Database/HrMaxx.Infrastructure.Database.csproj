@@ -73,6 +73,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Scripts\Maintenance\SchemaChanges\009R2_Separations of archive and real.sql" />
     <Content Include="Scripts\Maintenance\SchemaChanges\012K_Closing a year.sql" />
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\013F_DE34 host extract.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\013E_invoice status charts and lists.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

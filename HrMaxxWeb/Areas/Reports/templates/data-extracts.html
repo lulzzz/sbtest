@@ -234,6 +234,37 @@
 					</div>
 
 				</div>
+				
+				<div class="col-sm-12">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California DE-34 Reporting File for Host</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-4 form-group">
+							<label>Host</label>
+							<select id="host1" class="form-control" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
+								<option value="">Select Host</option>
+							</select>
+						</div>
+						<div class="col-sm-2 form-group">
+							<label>Start Date</label>
+							<date-ctrl model="data.filterDE34.startDate" disabled="false" />
+						</div>
+						<div class="col-sm-2 form-group">
+							<label>End Date</label>
+							<date-ctrl model="data.filterDE34.endDate" disabled="false" min="data.filterDE34.startDate" />
+						</div>
+						<div class="col-sm-1 form-group">
+
+						</div>
+						<div class="col-sm-3 form-group">
+							<label></label><br />
+							<button class="btn btn-sm btn-primary" ng-click="getHostDE34Report()" ng-disabled="!data.selectedHost || !data.filterDE34.startDate || !data.filterDE34.endDate">Host DE 34</button>
+
+
+						</div>
+					</div>
+				</div>
 			</div>
 
 

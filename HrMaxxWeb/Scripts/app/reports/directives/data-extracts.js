@@ -36,6 +36,11 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							endDate: moment().add(-1, 'month').endOf('month').toDate(),
 							includeHistory: false
 						},
+						filterDE34: {
+							startDate: moment().add(-1, 'month').startOf('month').toDate(),
+							endDate: moment().add(-1, 'month').endOf('month').toDate(),
+							includeHistory: false
+						},
 						filterG: {
 							startDate: moment().add(-1, 'month').startOf('month').toDate(),
 							endDate: moment().add(-1, 'month').endOf('month').toDate()
@@ -614,6 +619,35 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						}, function (erorr) {
 							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
 						});
+						
+					}
+					$scope.getHostDE34Report = function () {
+						var request = {
+							reportName: 'HostDE34Report',
+							year: moment().year(),
+							quarter: 0,
+							month: 0,
+							startDate: moment(dataSvc.filterDE34.startDate).format("MM/DD/YYYY"),
+							endDate: moment(dataSvc.filterDE34.endDate).format("MM/DD/YYYY"),
+							depositSchedule: null,
+							depositDate: null,
+							includeHistory: false
+						}
+						if (dataSvc.selectedHost) {
+							request.hostId = dataSvc.selectedHost.id;
+						}
+						reportRepository.getReportDocument(request).then(function (data) {
+
+							var a = document.createElement('a');
+							a.href = data.file;
+							a.target = '_blank';
+							a.download = data.name;
+							document.body.appendChild(a);
+							a.click();
+						}, function (erorr) {
+							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
+						});
+						
 
 					}
 

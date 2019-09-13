@@ -165,6 +165,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetI9Report(request, true);
 				else if (request.ReportName.Equals("CaliforniaDE34"))
 					return GetCaliforniaDE34(request);
+				else if (request.ReportName.Equals("HostDE34Report"))
+					return GetExtractDE34(request);
 
 				else if (request.ReportName.StartsWith("Federal8109B"))
 					return GetFederal8109B(request);
@@ -2466,6 +2468,22 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/employer/CADE34.xslt");
 
 		}
+		private FileDto GetExtractDE34(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			var data = _readerService.GetExtractDE34(request.ReportName, request.StartDate, request.EndDate, request.HostId, checkEFileFormsFlag: false, checkTaxPaymentFlag:false);
+			data.Hosts.ForEach(h =>
+			{
+				h.Companies = h.Companies.Where(c => c.Employees.Any()).ToList();
+
+			});
+			data.Hosts = data.Hosts.Where(h => h.Companies.Any()).ToList();
+			if(!data.Hosts.Any())
+				throw new Exception(NoData);
+			var argList = new XsltArgumentList();
+
+			return GetReportTransformedAndPrinted(request, data, argList, "transformers/extracts/HostCADE34.xslt");
+		}
 		private FileDto GetCaliforniaDE88(ReportRequest request)
 		{
 			var response = new ReportResponse();
@@ -2717,8 +2735,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			else
 			{
-				request.StartDate = new DateTime(DateTime.Now.Year, 1, 1).Date;
-				request.EndDate = new DateTime(DateTime.Now.Year, 12, 31).Date;
+				request.StartDate = request.StartDate != DateTime.MinValue ? request.StartDate : new DateTime(DateTime.Now.Year, 1, 1).Date;
+				request.EndDate = request.EndDate != DateTime.MinValue ? request.EndDate : new DateTime(DateTime.Now.Year, 12, 31).Date;
 			}
 		}
 

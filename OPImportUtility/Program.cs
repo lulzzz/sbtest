@@ -942,7 +942,7 @@ namespace OPImportUtility
 			write.ExecuteQuery("update Employee set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where EmployeeId=Employee.Id and isvoid=0)", new {  });
 			write.ExecuteQuery("update Company set LastPayrollDate=(select max(PayDay) from PayrollPayCheck where CompanyId=Company.Id and isvoid=0)", new { });
 			write.ExecuteQuery("update pc set VoidedOn=j.EnteredDate, VoidedBy=j.EnteredBy from PayrollPayCheck pc, OnlinePayroll.dbo.Journal j, OnlinePayroll.dbo.COA_Company cc where pc.id=j.PayrollID and pc.IsVoid=1 and j.TransactionType=6 and j.MainCOAID=cc.COAID and cc.CompanyID=pc.CompanyIntId", new {});
-			write.ExecuteQuery("update company set IsHostCompany=1 where CompanyIntId in (111, 94, 44, 190, 80, 30, 141, 35, 87, 395, 119, 42, 450, 62, 114);", new { });
+			write.ExecuteQuery("update company set IsHostCompany=1 where CompanyIntId in (111, 94, 44, 190, 80, 30, 141, 35, 87, 395, 119, 42, 450, 62, 114, 92);", new { });
 			write.ExecuteQuery("update h set CompanyId=c.Id from host h, company c  where h.id=c.HostId and c.IsHostCompany=1 and h.CompanyId is null;", new { });
 			
 		}
@@ -1044,8 +1044,8 @@ namespace OPImportUtility
 			var compList =
 				read.GetQueryData<KeyValuePair<int, Guid>>("select CompanyIntId as [Key], Id as [Value] from paxolop.dbo.Company where CompanyIntId=" +
 				                                           companyId);
-			var companies = readservice.GetCompanies(company: compList.First().Value);
-			var employees = readservice.GetEmployees(company: compList.First().Value);
+			var companies = readservice.GetCompanies(company: compList.First().Value, status:0);
+			var employees = readservice.GetEmployees(company: compList.First().Value, status:0);
 			oppayrollpayrates.ForEach(opc =>
 			{
 				var c = companies.First(c1 => c1.CompanyIntId == opc.CompanyID);
@@ -1308,7 +1308,7 @@ namespace OPImportUtility
 			}
 			var companies = readservice.GetCompanies(null, null, null);
 			var hosts = hostservice.GetHostList(Guid.Empty);
-			var appUsers = new List<UserResource>();
+			 var appUsers = new List<UserResource>();
 			if (level == 0)
 			{
 
@@ -1420,7 +1420,7 @@ namespace OPImportUtility
 				contacts = read.GetQueryData<Contact>(Queries.contacts);
 			if (!CompanyList.Any())
 				CompanyList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Company>(string.Format(Queries.pxcompanies, companyId));
-			var companies = companyservice.GetCompanies(company: CompanyList.First().Id);
+			var companies = companyservice.GetCompanies(company: CompanyList.First().Id, status:0);
 			var mapper = scope.Resolve<IMapper>();
 			var employees = read.GetQueryData<Employee>(string.Format(Queries.employees, companyId));
 			

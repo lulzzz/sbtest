@@ -262,6 +262,11 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 			CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>();
 			CreateMap<Models.JsonDataModel.StaffDashboardCubeJson, Models.StaffDashboardCube>();
 
+			CreateMap<Models.JsonDataModel.EmployeeMinifiedJson, Models.EmployeeMinified>()
+				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.HostId))
+				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Decrypt(src.SSN)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)));
+
 		}
 	}
 }
