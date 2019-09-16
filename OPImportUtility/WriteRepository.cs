@@ -64,7 +64,8 @@ namespace OPImportUtility
 			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 197429 and 197435;" +
 			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 176912 and 176915;" +
 			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 165227 and 165276;" +
-			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 165127 and 165176;";
+			                       "update OnlinePayroll.dbo.Journal set status='Void' where journalid between 165127 and 165176;" +
+														 "update OnlinePayroll.dbo.UserAccount set UserFirstName='Admin' where UserId=1;update OnlinePayroll.dbo.UserAccount set UserFirstName='Master' where UserId=17;";
 			
 
 			const string userstuff =
