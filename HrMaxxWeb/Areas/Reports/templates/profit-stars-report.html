@@ -47,10 +47,12 @@
 			</div>
 		</div>
 	</div>
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-click="data.showPayrolls = !data.showPayrolls">
-		<div class="panel-heading">
-			<h4 class="panel-title">Profit Stars Payrolls <button class="btn btn-sm btn-primary" ng-click="getReport($event)"><i class="fa fa-refresh"></i></button>
-				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.showPayrolls, 'glyphicon-chevron-right': !data.showPayrolls}"></i></h4>
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+		<div class="panel-heading" ng-click="data.showPayrolls = !data.showPayrolls">
+			<h4 class="panel-title">
+				Profit Stars Payrolls <button class="btn btn-sm btn-primary" ng-click="getReport($event)"><i class="fa fa-refresh"></i></button>
+				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.showPayrolls, 'glyphicon-chevron-right': !data.showPayrolls}"></i>
+			</h4>
 		</div>
 		<div class="panel-body" ng-show="data.showPayrolls">
 			
