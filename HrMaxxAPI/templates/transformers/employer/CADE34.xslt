@@ -38,11 +38,11 @@
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'city'"/>
-		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/City,', ','CA',' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/City,', ',BusinessAddress/StateCode,' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'compAddress1'"/>
-		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/AddressLine1, ', ',BusinessAddress/City,', ','CA',' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/AddressLine1, ', ',BusinessAddress/City,', ',BusinessAddress/StateCode,' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'edd'"/>

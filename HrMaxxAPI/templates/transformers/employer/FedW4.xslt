@@ -8,7 +8,7 @@
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
-	<xsl:variable name="compDetails" select="translate(concat(/ReportResponse/Company/TaxFilingName, ':' ,/ReportResponse/Company/BusinessAddress/AddressLine1,' ',/ReportResponse/Company/BusinessAddress/City,', ','CA',', ',/ReportResponse/Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
+	<xsl:variable name="compDetails" select="translate(concat(/ReportResponse/Company/TaxFilingName, ':' ,/ReportResponse/Company/BusinessAddress/AddressLine1,' ',/ReportResponse/Company/BusinessAddress/City,', ',/ReportResponse/Company/BusinessAddress/StateCode,', ',/ReportResponse/Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	
 <xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">
@@ -36,7 +36,7 @@
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f1_15(0)'"/>
-				<xsl:with-param name="val1" select="concat(Contact/Address/City,', ','CA',' ',Contact/Address/Zip)"/>
+				<xsl:with-param name="val1" select="concat(Contact/Address/City,', ',Contact/Address/StateCode,' ',Contact/Address/Zip)"/>
 			</xsl:call-template>
 			<xsl:if test="FederalStatus='Single'">
 				<xsl:call-template name="CheckTemplate">

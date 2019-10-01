@@ -12,6 +12,7 @@ namespace HrMaxxAPI.Resources.Common
 		[Required]
 		public string AddressLine1 { get; set; }
 		public string City { get; set; }
+		public string County { get; set; }
 		[Required]
 		public int StateId { get; set; }
 		[Required]

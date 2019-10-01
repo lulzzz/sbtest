@@ -35,6 +35,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool CheckTaxPaymentFlag { get; set; }
 		public int MasterExtractId { get; set; }
 		public bool IsReverse { get; set; }
+		public int? State { get; set; }
 
 		public string ExtractDepositName
 		{

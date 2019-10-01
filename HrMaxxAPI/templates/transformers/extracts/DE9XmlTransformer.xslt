@@ -79,7 +79,7 @@
 									<xsl:value-of select="HostCompany/BusinessAddress/City"/>
 								</City>
 								<State>
-									<xsl:value-of select="'CA'"/>
+									<xsl:value-of select="HostCompany/BusinessAddress/StateCode"/>
 								</State>
 								<ZIPCode>
 									<xsl:value-of select="HostCompany/BusinessAddress/Zip"/>

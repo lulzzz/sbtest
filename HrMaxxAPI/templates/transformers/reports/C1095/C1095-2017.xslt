@@ -67,9 +67,9 @@
 	<xsl:variable name="empname" select="translate(concat(FirstName, ' ', LastName),$smallcase,$uppercase)"/>
 	<xsl:variable name="address" select="translate(Contact/Address/AddressLine1,$smallcase,$uppercase)"/>
 	<xsl:variable name="city" select="translate(Contact/Address/City,$smallcase,$uppercase)"/>
-	<xsl:variable name="state" select="translate('CA',$smallcase,$uppercase)"/>
+	<xsl:variable name="state" select="translate(Contact/Address/StateCode,$smallcase,$uppercase)"/>
 	<xsl:variable name="zip" select="translate(Contact/Address/Zip,$smallcase,$uppercase)"/>
-	<xsl:variable name="compstate" select="translate('CA',$smallcase, $uppercase)"/>
+	<xsl:variable name="compstate" select="translate(Contact/Address/StateCode,$smallcase, $uppercase)"/>
 	<xsl:variable name="phone">
 		<xsl:choose>
 			<xsl:when test="/ReportResponse/Contact">

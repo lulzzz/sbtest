@@ -302,7 +302,7 @@
 				</Cell>
 				<Cell >
 					<Data ss:Type="String">
-						<xsl:value-of select="'CA'"/>
+						<xsl:value-of select="$comp/CompanyAddress/StateCode"/>
 					</Data>
 				</Cell>
 				<Cell >
@@ -362,7 +362,7 @@
 					</Cell>
 					<Cell >
 						<Data ss:Type="String">
-							<xsl:value-of select="'CA'"/>
+							<xsl:value-of select="$comp/CompanyAddress/StateCode"/>
 						</Data>
 					</Cell>
 					<Cell >

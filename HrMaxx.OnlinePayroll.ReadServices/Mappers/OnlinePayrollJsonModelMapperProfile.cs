@@ -74,6 +74,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 			CreateMap<Models.JsonDataModel.CompanyTaxState, State>()
 				.ForMember(dest => dest.Abbreviation, opt => opt.MapFrom(src => src.StateCode))
 				.ForMember(dest => dest.TaxesEnabled, opt => opt.Ignore())
+				.ForMember(dest => dest.HasCounties, opt => opt.Ignore())
+				.ForMember(dest => dest.EinFormat, opt => opt.Ignore())
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 
@@ -255,11 +257,19 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.AccountNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.AccNum)))
 				.ForMember(dest => dest.RoutingNumber, opt => opt.MapFrom(src => Crypto.Decrypt(src.RoutingNum)));
 
-			CreateMap<Models.JsonDataModel.CompanyDashboardJson, Models.CompanyDashboard>();
-			CreateMap<Models.JsonDataModel.TaxExtractJson, Models.TaxExtract>();
+			CreateMap<Models.JsonDataModel.CompanyDashboardJson, Models.CompanyDashboard>()
+				.ForMember(dest => dest.PendingUiEtt, opt => opt.Ignore())
+				.ForMember(dest => dest.Pending940, opt => opt.Ignore())
+				.ForMember(dest => dest.Pending941, opt => opt.Ignore())
+				.ForMember(dest => dest.PendingPit, opt => opt.Ignore())
+				.ForMember(dest => dest.PendingExtractsByCompany, opt => opt.Ignore())
+				.ForMember(dest => dest.PendingExtractsByDates, opt => opt.Ignore());
+			CreateMap<Models.JsonDataModel.TaxExtractJson, Models.TaxExtract>()
+				.ForMember(dest => dest.Details, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.PayrollMetricJson, Models.PayrollMetric>();
 
-			CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>();
+			CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>()
+				.ForMember(dest => dest.MissedPayrollsYesterday, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.StaffDashboardCubeJson, Models.StaffDashboardCube>();
 
 			CreateMap<Models.JsonDataModel.EmployeeMinifiedJson, Models.EmployeeMinified>()

@@ -10,7 +10,7 @@
   <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
-	<xsl:variable name="compDetails" select="translate(concat(/ReportResponse/Company/TaxFilingName, ', ' ,/ReportResponse/Company/BusinessAddress/AddressLine1,' ',/ReportResponse/Company/BusinessAddress/City,', ','CA',', ',/ReportResponse/Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
+	<xsl:variable name="compDetails" select="translate(concat(/ReportResponse/Company/TaxFilingName, ', ' ,/ReportResponse/Company/BusinessAddress/AddressLine1,' ',/ReportResponse/Company/BusinessAddress/City,', ',/ReportResponse/Company/BusinessAddress/StateCode,', ',/ReportResponse/Company/BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	
 <xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">

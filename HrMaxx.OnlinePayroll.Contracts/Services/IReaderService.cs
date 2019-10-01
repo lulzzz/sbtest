@@ -65,21 +65,21 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, 
 			bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag=true,
-			string extractDepositName=null);
+			string extractDepositName=null, int? state=null);
 
 		ExtractResponse GetExtractDE34(string report, DateTime startDate, DateTime endDate, Guid? host = null,
 			DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false,
 			bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag = true,
-			string extractDepositName = null);
+			string extractDepositName = null, int? state = null);
 
 		ExtractResponse GetExtractAccumulationReverse(string report, int masterExtractId, Guid? host = null,
 			DepositSchedule941? depositSchedule941 = null, bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false,
 			bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag = true,
-			string extractDepositName = null);
+			string extractDepositName = null, int? state = null);
 
 		ExtractResponse GetTaxEligibilityAccumulation(DepositSchedule941? depositSchedule);
 
@@ -96,7 +96,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
-			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null, bool includeClientEmployees = false, bool includeMedicareExtraWages = false);
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null,
+			bool includeClientEmployees = false, bool includeMedicareExtraWages = false, int? state = null);
 
 
 		List<CompanyRecurringCharge> GetCompanyRecurringCharges(Guid id);
@@ -105,6 +106,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
-			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null);
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null, int? state = null);
 	}
 }

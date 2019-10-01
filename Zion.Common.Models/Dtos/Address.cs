@@ -12,8 +12,10 @@ namespace HrMaxx.Common.Models.Dtos
 	{
 		public string AddressLine1 { get; set; }
 		public string City { get; set; }
+		public string County { get; set; }
 		public int StateId { get; set; }
 		public int CountryId { get; set; }
+
 		public string Zip { get; set; }
 		public string ZipExtension { get; set; }
 		public AddressType Type { get; set; }
@@ -27,8 +29,8 @@ namespace HrMaxx.Common.Models.Dtos
 		{
 			get
 			{
-				return string.Format("{0}, {1} {2}{3}", City, "CA", Zip,
-					!string.IsNullOrWhiteSpace(ZipExtension) ? "-" + ZipExtension : string.Empty);
+				return string.Format("{0},{4} {1} {2}{3}", City, ((States)StateId).GetHrMaxxName(), Zip,
+					!string.IsNullOrWhiteSpace(ZipExtension) ? "-" + ZipExtension : string.Empty, !string.IsNullOrWhiteSpace(County) ? " " + County + "," : string.Empty);
 			}
 			set { }
 		}
@@ -40,6 +42,13 @@ namespace HrMaxx.Common.Models.Dtos
 		public string StateName { get; set; }
 		public string Abbreviation { get; set; }
 		public bool TaxesEnabled { get; set; }
+
+		public States StateOption
+		{
+			get { return (States) StateId; }
+		}
+		public bool HasCounties { get; set; }
+		public string EinFormat { get; set; }
 	}
 
 	public class Country

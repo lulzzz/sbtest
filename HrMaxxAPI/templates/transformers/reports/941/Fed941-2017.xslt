@@ -250,7 +250,7 @@
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2-34-1'"/>
-		<xsl:with-param name="val1" select="translate('CA',$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(Company/BusinessAddress/StateCode,$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'f2-35'"/>
@@ -324,7 +324,7 @@
 <xsl:template match="BusinessAddress">
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-12'"/><xsl:with-param name="val1" select="translate(AddressLine1,$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-13'"/><xsl:with-param name="val1" select="translate(City,$smallcase,$uppercase)"/></xsl:call-template>
-	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-14'"/><xsl:with-param name="val1" select="translate('CA',$smallcase,$uppercase)"/></xsl:call-template>
+	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-14'"/><xsl:with-param name="val1" select="translate(StateCode,$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1-15'"/><xsl:with-param name="val1" select="concat(Zip, '-',ZipExtension)"/></xsl:call-template>	
 	
 </xsl:template>

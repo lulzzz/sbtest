@@ -645,7 +645,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
+							addAlert('Error generating Host WC extract: ' + erorr, 'danger');
 						});
 						
 

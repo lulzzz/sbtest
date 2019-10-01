@@ -392,7 +392,7 @@
 													<div class="form-group">
 														<label>State EIN</label>
 														<div>
-															<input type="text" ng-model="state.stateEIN" class="form-control" required data-parsley-group="wizard-step-3" ui-mask="999-9999-9" ng-disabled="selectedCompany.isLocation" />
+															<input type="text" ng-model="state.stateEIN" class="form-control" required data-parsley-group="wizard-step-3" ui-mask="{{getStateEinFormat(state)}}" ng-disabled="selectedCompany.isLocation" />({{getStateEinFormat(state)}})
 														</div>
 													</div>
 
@@ -791,7 +791,7 @@
 			</div>
 			<div id="collapseFour" class="panel-collapse collapse">
 				<div class="panel-body">
-					<tax-year-rate-list list="selectedCompany.companyTaxRates" company-id="selectedCompany.id" meta-data="data.companyMetaData.taxes" show-controls="showControls" />
+					<tax-year-rate-list list="selectedCompany.companyTaxRates" company="selectedCompany" meta-data="data.companyMetaData.taxes" show-controls="showControls" />
 				</div>
 			</div>
 		</div>

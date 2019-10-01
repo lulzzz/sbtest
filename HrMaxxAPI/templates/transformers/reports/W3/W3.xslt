@@ -14,9 +14,9 @@
 	<xsl:variable name="c" select="/ReportResponse/CompanyAccumulations/PayCheckWages/EmployeeCount"/>
 	<xsl:variable name="e" select="concat(substring(/ReportResponse/Company/FederalEIN,1,2),'-',substring(/ReportResponse/Company/FederalEIN,3,7))"/>
 	<xsl:variable name="f" select="translate(/ReportResponse/Company/TaxFilingName,$smallcase,$uppercase)"/>
-	<xsl:variable name="g" select="translate(concat(/ReportResponse/Company/BusinessAddress/AddressLine1,'\n',/ReportResponse/Company/BusinessAddress/City,', ','CA',', ',/ReportResponse/Company/BusinessAddress/Zip,'-',/ReportResponse/Company/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
+	<xsl:variable name="g" select="translate(concat(/ReportResponse/Company/BusinessAddress/AddressLine1,'\n',/ReportResponse/Company/BusinessAddress/City,', ',/ReportResponse/Company/BusinessAddress/StateCode,', ',/ReportResponse/Company/BusinessAddress/Zip,'-',/ReportResponse/Company/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
 	<xsl:variable name="line15a" select="concat(substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
-	<xsl:variable name="line15" select="'CA'"/>
+	<xsl:variable name="line15" select="/ReportResponse/Company/BusinessAddress/StateCode"/>
 	
 	<xsl:output method="xml" indent="yes"/>
 <xsl:template match="ReportResponse">

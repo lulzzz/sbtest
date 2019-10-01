@@ -77,7 +77,7 @@ common.directive('staffDashboard', ['zionAPI', '$timeout', '$window', 'version',
 
 				
 					$scope.loadData = function() {
-						reportRepository.getStaffDashboard($scope.mainData.userRole==='Host' ? $scope.mainData.userHost : null).then(function (data) {
+						reportRepository.getStaffDashboard($scope.mainData.userRole==='Host' || $scope.mainData.userRole==='HostStaff'  ? $scope.mainData.userHost : null).then(function (data) {
 							dataSvc.dashboard = data;
 							dataSvc.isDataLoaded = true;
 							$timeout(function() {

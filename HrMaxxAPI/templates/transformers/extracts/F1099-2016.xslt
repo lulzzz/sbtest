@@ -322,7 +322,7 @@ B<xsl:value-of select="$selectedYear"/>$$spaces1$$<xsl:call-template name="padRi
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vendor/Contact/Address/AddressLine1,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="40"/></xsl:call-template>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="translate(Vendor/Contact/Address/City,$smallcase,$uppercase)"/><xsl:with-param name="count" select="40"/></xsl:call-template>
-<xsl:value-of select="'CA'"/>
+<xsl:value-of select="Vendor/Contact/Address/StateCode"/>
 <xsl:call-template name="padRight"><xsl:with-param name="data" select="Vendor/Contact/Address/Zip"/><xsl:with-param name="count" select="9"/></xsl:call-template>
 $$spaces1$$mainCounter<xsl:call-template name="padRight"><xsl:with-param name="data" select="''"/><xsl:with-param name="count" select="36"/></xsl:call-template>
 <xsl:choose>

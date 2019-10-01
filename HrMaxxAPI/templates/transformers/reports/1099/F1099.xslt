@@ -12,8 +12,8 @@
   <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 	
 	<xsl:variable name="fein" select="concat(substring(/ReportResponse/Company/FederalEIN,1,2),'-',substring(/ReportResponse/Company/FederalEIN,3,7))"/>
-	<xsl:variable name="compDetails" select="translate(concat(/ReportResponse/Company/BusinessAddress/AddressLine1,'\n',/ReportResponse/Company/BusinessAddress/City,', ','CA',', ',/ReportResponse/Company/BusinessAddress/Zip,'-',/ReportResponse/Company/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
-	<xsl:variable name="sein" select="concat('CA',' ', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
+	<xsl:variable name="compDetails" select="translate(concat(/ReportResponse/Company/BusinessAddress/AddressLine1,'\n',/ReportResponse/Company/BusinessAddress/City,', ',/ReportResponse/Company/BusinessAddress/StateCode,', ',/ReportResponse/Company/BusinessAddress/Zip,'-',/ReportResponse/Company/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
+	<xsl:variable name="sein" select="concat(/ReportResponse/Company/BusinessAddress/StateCode,' ', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring(/ReportResponse/Company/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
 <xsl:output method="xml" indent="no"/>
 <xsl:template match="ReportResponse">
 	<ReportTransformed>
@@ -49,7 +49,7 @@
 </xsl:template>
 <xsl:template match="BusinessAddress">
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'compAddress'"/><xsl:with-param name="val1" select="translate(AddressLine1,$smallcase,$uppercase)"/></xsl:call-template>
-	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'compAddress1'"/><xsl:with-param name="val1" select="translate(concat(City,', ','CA'),$smallcase,$uppercase)"/></xsl:call-template>
+	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'compAddress1'"/><xsl:with-param name="val1" select="translate(concat(City,', ',StateCode),$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'contactName'"/><xsl:with-param name="val1" select="translate(concat(../../CompanyContact/FirstName,' ',../../CompanyContact/LastName),$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:if test="../../CompanyContact/Phone"><xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'phone'"/><xsl:with-param name="val1" select="concat('(',substring(../../CompanyContact/Phone,1,3),') ',substring(../../CompanyContact/Phone,4,3),'-',substring(../../CompanyContact/Phone,7,11))"/></xsl:call-template></xsl:if>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'email'"/><xsl:with-param name="val1" select="translate(../../CompanyContact/Email,$smallcase,$uppercase)"/></xsl:call-template>
@@ -84,7 +84,7 @@
 			</xsl:choose>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'vendorName'"/><xsl:with-param name="val1" select="translate(Name,$smallcase,$uppercase)"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'vendorAddress'"/><xsl:with-param name="val1" select="translate(Contact/Address/AddressLine1,$smallcase,$uppercase)"/></xsl:call-template>
-			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'vendorCity'"/><xsl:with-param name="val1" select="translate(concat(Contact/Address/City,', ','CA',', ',Contact/Address/Zip),$smallcase,$uppercase)"/></xsl:call-template>
+			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'vendorCity'"/><xsl:with-param name="val1" select="translate(concat(Contact/Address/City,', ',Contact/Address/StateCode,', ',Contact/Address/Zip),$smallcase,$uppercase)"/></xsl:call-template>
 			
 			<xsl:choose>
 				<xsl:when test="Type1099='MISC'">

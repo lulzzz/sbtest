@@ -36,11 +36,11 @@
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'city'"/>
-		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/City,', ','CA',' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/City,', ',BusinessAddress/StateCode,' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'compAddress1'"/>
-		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/AddressLine1, ', ',BusinessAddress/City,', ','CA',' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/AddressLine1, ', ',BusinessAddress/City,', ',BusinessAddress/StateCode,' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'edd'"/>
@@ -68,11 +68,11 @@
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'city'"/>
-		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/City,', ','CA',' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/City,', ',BusinessAddress/StateCode,' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'compAddress1'"/>
-		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/AddressLine1, ', ',BusinessAddress/City,', ','CA',' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
+		<xsl:with-param name="val1" select="translate(concat(BusinessAddress/AddressLine1, ', ',BusinessAddress/City,', ',BusinessAddress/StateCode,' ', BusinessAddress/Zip),$smallcase,$uppercase)"/>
 	</xsl:call-template>
 	<xsl:call-template name="FieldTemplate">
 		<xsl:with-param name="name1" select="'edd'"/>
@@ -87,7 +87,7 @@
 	
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="concat('empName',position())"/><xsl:with-param name="val1" select="translate(concat(FirstName,' ', LastName),$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="concat('empSSN', position())"/><xsl:with-param name="val1" select="concat(substring(SSN, 1, 3),'-',substring(SSN,4,2),'-',substring(SSN,6,4))"/></xsl:call-template>
-	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="concat('empAddress', position())"/><xsl:with-param name="val1" select="concat(Contact/Address/AddressLine1,', ',Contact/Address/City,', ','CA',', ',Contact/Address/Zip)"/></xsl:call-template>
+	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="concat('empAddress', position())"/><xsl:with-param name="val1" select="concat(Contact/Address/AddressLine1,', ',Contact/Address/City,', ',Contact/Address/StateCode,', ',Contact/Address/Zip)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="concat('empHireDate', position())"/><xsl:with-param name="val1" select="msxsl:format-date(HireDate, 'MM/dd/yyyy')"/></xsl:call-template>
 			
 </xsl:template>

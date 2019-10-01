@@ -797,6 +797,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "includeHistory", Value = request.IncludeHistory.ToString() });
 				}
+			  if (request.State > 0)
+			  {
+					paramList.Add(new FilterParam { Key = "state", Value = request.State.ToString() });
+			  }
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractData", paramList);
 				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
@@ -858,6 +862,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "includeHistory", Value = request.IncludeHistory.ToString() });
 				}
+				if (request.State > 0)
+				{
+					paramList.Add(new FilterParam { Key = "state", Value = request.State.ToString() });
+				}
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractDataSpecial", paramList);
 				var returnVal = Mapper.Map<ExtractResponseDB, ExtractResponse>(dbReport);
@@ -900,7 +908,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, 
 			bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag=true,
-			string extractDepositName=null)
+			string extractDepositName=null, int? state = null)
 	  {
 			try
 			{
@@ -969,6 +977,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
 				}
+				if (state.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "state", Value = state.ToString() });
+				}
 				
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractAccumulation", paramList);
@@ -1012,7 +1024,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		 bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 		 bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false,
 		 bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true, bool checkTaxPaymentFlag = true,
-		 string extractDepositName = null)
+		 string extractDepositName = null, int? state = null)
 		{
 			try
 			{
@@ -1081,6 +1093,11 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
 				}
+				if (state.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "state", Value = state.ToString() });
+				}
+				
 
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
 					"GetExtractDE34", paramList);
@@ -1124,7 +1141,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 		  bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false,
 		  bool includeHistory = false, bool includeC1095 = false, bool checkEFileFormsFlag = true,
-		  bool checkTaxPaymentFlag = true, string extractDepositName = null)
+		  bool checkTaxPaymentFlag = true, string extractDepositName = null, int? state = null)
 	  {
 			try
 			{
@@ -1192,6 +1209,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (!string.IsNullOrWhiteSpace(extractDepositName))
 				{
 					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
+				}
+				if (state.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "state", Value = state.ToString() });
 				}
 
 				var dbReport = GetDataFromStoredProc<Models.ExtractResponseDB>(
@@ -1376,7 +1397,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = true,
 			string report = null, bool includeHistory = false, bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, 
-			string extractDepositName = null, bool includeClientEmployees = false, bool includeMedicareExtraWages = false)
+			string extractDepositName = null, bool includeClientEmployees = false, bool includeMedicareExtraWages = false, int? state = null)
 		{
 			try
 			{
@@ -1466,6 +1487,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				{
 					paramList.Add(new FilterParam { Key = "includeMedicareExtraWage", Value = includeMedicareExtraWages.ToString() });
 				}
+				if (state.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "state", Value = state.ToString() });
+				}
 				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
 					proc, paramList, new XmlRootAttribute("AccumulationList"));
 
@@ -1523,7 +1548,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			bool includeVoids = false, bool includeTaxes = false,
 			bool includedDeductions = false, bool includedCompensations = false, bool includeWorkerCompensations = false,
 			bool includePayCodes = false, bool includeDailyAccumulation = false, bool includeMonthlyAccumulation = false, bool includePayTypeAccumulation = false, string report = null, bool includeHistory = false,
-			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null)
+			bool includeC1095 = false, bool includeClients = false, bool includeTaxDelayed = false, Guid? employee = null, string extractDepositName = null, int? state=null)
 	  {
 			try
 			{
@@ -1598,6 +1623,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 				if (!string.IsNullOrWhiteSpace(extractDepositName))
 				{
 					paramList.Add(new FilterParam { Key = "extractDepositName", Value = extractDepositName });
+				}
+				if (state.HasValue)
+				{
+					paramList.Add(new FilterParam { Key = "state", Value = state.ToString() });
 				}
 				return GetDataFromStoredProc<List<Accumulation>, List<Accumulation>>(
 					proc, paramList, new XmlRootAttribute("AccumulationList"));

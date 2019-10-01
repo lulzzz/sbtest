@@ -13,19 +13,23 @@
 	</div>
 	<div class="row">
 		<div class="col-sm-6 row">
-			<div class="form-group  col-sm-6">
+			<div class="form-group  col-sm-4">
 				<label for="country">Country</label>
 				<select id="country" class="form-control" name="country" placeholder="country" ng-change="countrySelected()" ng-disabled="(data && countries.length===1) || showDisabled" ng-model="data.selectedCountry" ng-options="country.countryName for country in countries track by country.countryId" required data-parsley-group="{{valGroup}}">
 					<option value="">Please select...</option>
 				</select>
 			</div>
-			<div class="form-group  col-sm-6">
+			<div class="form-group  col-sm-5">
 				<label for="state">State</label>
 				<select id="state" class="form-control" name="state" placeholder="state" required ng-model="data.selectedState" ng-change="stateSelected()" ng-disabled="showDisabled" ng-options="state.stateName for state in availableStates track by state.stateId" data-parsley-group="{{valGroup}}">
 					<option value="">Please select...</option>
 				</select>
 			</div>
-			
+			<div class="form-group col-sm-3" ng-if="data.selectedState.hasCounties">
+				<label for="city">County</label>
+				<input type="text" id="county" class="form-control" placeholder="County" ng-model="data.county" ng-required="data.selectedState.hasCounties" />
+
+			</div>
 
 		</div>
 		<div class="col-sm-6">

@@ -69,8 +69,8 @@
 	<xsl:variable name="host" select="/ExtractResponse/Hosts/ExtractHost[HostCompany/Id=$hostcompanyid]"/>
 	<xsl:variable name="hostcompany" select="$host/HostCompany"/>
 	<xsl:variable name="fein" select="concat(substring($hostcompany/FederalEIN,1,2),'-',substring($hostcompany/FederalEIN,3,7))"/>
-	<xsl:variable name="compDetails" select="translate(concat($hostcompany/TaxFilingName,'\n',$hostcompany/BusinessAddress/AddressLine1,'\n',$hostcompany/BusinessAddress/City,', ','CA',', ',$hostcompany/BusinessAddress/Zip,'-',$hostcompany/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
-	<xsl:variable name="sein" select="concat('CA',' ', substring($host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring($host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring($host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
+	<xsl:variable name="compDetails" select="translate(concat($hostcompany/TaxFilingName,'\n',$hostcompany/BusinessAddress/AddressLine1,'\n',$hostcompany/BusinessAddress/City,', ',$hostcompany/BusinessAddress/StateCode,', ',$hostcompany/BusinessAddress/Zip,'-',$hostcompany/BusinessAddress/ZipExtension),$smallcase,$uppercase)"/>
+	<xsl:variable name="sein" select="concat($hostcompany/BusinessAddress/StateCode,' ', substring($host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 1, 3), '-', substring($host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 4, 4), '-', substring($host/States[CompanyTaxState/State/StateId=1]/CompanyTaxState/StateEIN, 8, 1))"/>
 
 	<xsl:variable name="ssn" select="concat(substring(SSNVal,1,3),'-',substring(SSNVal,4,2),'-',substring(SSNVal,6,4))"/>
 	<xsl:variable name="empDetails" select="translate(concat(FirstName, ' ', LastName,'\n',Contact/Address/AddressLine1,'\n',Contact/Address/AddressLine2),$smallcase,$uppercase)"/>

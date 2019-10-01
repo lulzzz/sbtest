@@ -235,7 +235,7 @@
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_035(0)'"/>
-				<xsl:with-param name="val1" select="translate('ca',$smallcase,$uppercase)"/>
+				<xsl:with-param name="val1" select="translate(/ReportResponse/Host/Company/BusinessAddress/StateCode,$smallcase,$uppercase)"/>
 			</xsl:call-template>
 			<xsl:call-template name="FieldTemplate">
 				<xsl:with-param name="name1" select="'f2_028(0)'"/>
@@ -375,7 +375,7 @@
 <xsl:template match="BusinessAddress">
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_012(0)'"/><xsl:with-param name="val1" select="translate(AddressLine1,$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_013(0)'"/><xsl:with-param name="val1" select="translate(City,$smallcase,$uppercase)"/></xsl:call-template>
-	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_014(0)'"/><xsl:with-param name="val1" select="translate('CA',$smallcase,$uppercase)"/></xsl:call-template>
+	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_014(0)'"/><xsl:with-param name="val1" select="translate(StateCode,$smallcase,$uppercase)"/></xsl:call-template>
 	<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'f1_015(0)'"/><xsl:with-param name="val1" select="concat(Zip, '-', ZipExtension)"/></xsl:call-template>	
 	
 </xsl:template>

@@ -236,6 +236,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.DataModel.CompanyTaxState, State>()
 				.ForMember(dest => dest.Abbreviation, opt => opt.MapFrom(src => src.StateCode))
 				.ForMember(dest => dest.TaxesEnabled, opt => opt.Ignore())
+				.ForMember(dest => dest.HasCounties, opt => opt.Ignore())
+				.ForMember(dest => dest.EinFormat, opt => opt.Ignore())
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 
@@ -763,6 +765,11 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Total))
 				.ForMember(dest => dest.IsPayrollDelivery, opt => opt.MapFrom(src => true))
 				.ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes));
+
+			CreateMap<Models.JsonDataModel.EmployeeMinifiedJson, Models.EmployeeMinified>()
+				.ForMember(dest => dest.HostId, opt => opt.MapFrom(src => src.HostId))
+				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Decrypt(src.SSN)))
+				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)));
 
 
 		}

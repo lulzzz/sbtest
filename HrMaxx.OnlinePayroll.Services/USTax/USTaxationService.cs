@@ -328,12 +328,12 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			{
 				if (tax.Tax.Code.Equals("SIT"))
 					return GetCASIT(payCheck, grossWage, payDay, tax, employeeAccumulation);
-				else if (tax.Tax.Code.Equals("SDI"))
+				else //if (tax.Tax.Code.Equals("SDI"))
 					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
-				else if (tax.Tax.Code.Equals("ETT"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
-				else if (tax.Tax.Code.Equals("SUI"))
-					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
+				//else if (tax.Tax.Code.Equals("ETT"))
+				//	return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
+				//else if (tax.Tax.Code.Equals("SUI"))
+				//	return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 			}
 			return new PayrollTax();
 

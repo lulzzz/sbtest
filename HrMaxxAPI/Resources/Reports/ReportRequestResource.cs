@@ -27,6 +27,7 @@ namespace HrMaxxAPI.Resources.Reports
 		public bool IncludeClientEmployees { get; set; }
 		public bool IncludeTaxDelayed { get; set; }
 		public bool IsBatchPrinting { get; set; }
+		public int? State { get; set; }
 	}
 
 	public class CommissionsReportRequestResource

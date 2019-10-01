@@ -115,11 +115,17 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.isStateTaxAvailable = function (st) {
 						if (dataSvc.companyMetaData) {
 							var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
+							st.einFormat = cst.einFormat;
 							return cst.taxesEnabled;
 						} else {
 							return false;
 						}
 						
+
+					}
+					$scope.getStateEinFormat = function (st) {
+						var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
+						return (cst && cst.einFormat) ? cst.einFormat : "999-9999-9";
 
 					}
 					$scope.validateRoutingNumber = function (rtn) {
@@ -338,6 +344,21 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						if ($scope.selectedCompany.isAddressSame) {
 							$scope.selectedCompany.businessAddress = $scope.selectedCompany.companyAddress;
 						}
+						if (!$scope.selectedCompany.id) {
+							$.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
+								if ((taxyearrate.tax.stateId && taxyearrate.tax.stateId === $scope.selectedCompany.states[0].state.stateId) || !taxyearrate.tax.stateId) {
+									$scope.selectedCompany.companyTaxRates.push({
+										id: 0,
+										taxId: taxyearrate.tax.id,
+										companyId: null,
+										taxCode: taxyearrate.tax.code,
+										taxYear: taxyearrate.taxYear,
+										rate: taxyearrate.rate
+									});
+								}
+
+							});
+						}
 						var confirmMessage = "";
 						if ($scope.mainData.selectedHost.isPeoHost && ($scope.original.contract.invoiceSetup && !angular.equals($scope.original.contract.invoiceSetup, $scope.selectedCompany.contract.invoiceSetup))) {
 							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";
@@ -367,18 +388,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						});
 					}
 					var ready = function () {
-						if (!$scope.selectedCompany.id) {
-							$.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
-								$scope.selectedCompany.companyTaxRates.push({
-									id: 0,
-									taxId: taxyearrate.tax.id,
-									companyId: null,
-									taxCode: taxyearrate.tax.code,
-									taxYear: taxyearrate.taxYear,
-									rate: taxyearrate.rate
-								});
-							});
-						}
+						
 						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
 							$scope.selectedCompany.contract.invoiceSetup = {
 								invoiceType: 1,

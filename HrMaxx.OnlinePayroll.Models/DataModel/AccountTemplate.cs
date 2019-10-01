@@ -25,6 +25,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int SubType { get; set; }
         public string Name { get; set; }
         public string TaxCode { get; set; }
+        public Nullable<int> StateId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CompanyAccount> CompanyAccounts { get; set; }
