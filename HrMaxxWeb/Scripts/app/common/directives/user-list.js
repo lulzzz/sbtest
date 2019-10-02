@@ -170,6 +170,9 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 				};
 				$scope.cancel=function() {
 					$scope.selectedUser = null;
+					dataSvc.selectedCompany = null;
+					dataSvc.selectedHost = null;
+					dataSvc.selectedEmployee = null;
 					dataSvc.viewAccess = false;
 				}
 				$scope.setSelectedUser = function(item) {
@@ -189,11 +192,11 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 				}
 				$scope.roleChanged = function () {
 					var item = $scope.selectedUser;
-					if ($scope.originalUser) {
+					//if ($scope.originalUser) {
 						if (item.role.roleId === 0) {
-							item.host = $scope.originalUser.host;
-							item.company = $scope.originalUser.company;
-							item.employee = $scope.originalUser.employee;
+							item.host = $scope.originalUser ? $scope.originalUser.host : item.host;
+							item.company = $scope.originalUser ? $scope.originalUser.company : item.company;
+							item.employee = $scope.originalUser ? $scope.originalUser.employee : item.employee;
 							dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
 							if (dataSvc.selectedHost)
 								$scope.hostSelected();
@@ -203,24 +206,33 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 							dataSvc.selectedEmployee = item.employee ? $filter('filter')(dataSvc.employees, { id: item.employee })[0] : null;
 						}
 						else if (item.role.roleId >0 && item.role.roleId <31) {
-							item.host = $scope.originalUser.host;
-							item.company = $scope.originalUser.company;
+							item.host = $scope.originalUser ? $scope.originalUser.host : item.host;
+							item.company = $scope.originalUser ? $scope.originalUser.company : item.company;
 							dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
 							dataSvc.selectedCompany = item.company ? $filter('filter')(dataSvc.companies, { id: item.company })[0] : null;
+							dataSvc.selectedEmployee = null;
+							item.employee = null;
 						}
 						else if (item.role.roleId < 51 && item.role.roleId > 30) {
-							item.host = $scope.originalUser.host;
+							item.host = $scope.originalUser ? $scope.originalUser.host : item.host;
 							item.company = null;
+							item.employee = null;
+							dataSvc.selectedCompany = null;
+							dataSvc.selectedEmployee = null;
 							dataSvc.selectedHost = item.host ? $filter('filter')(dataSvc.hosts, { id: item.host })[0] : null;
 						}
 						else if (item.role.roleId >50) {
 							item.host = null;
 							item.company = null;
+							item.employee = null;
+							dataSvc.selectedHost = null;
+							dataSvc.selectedCompany = null;
+							dataSvc.selectedEmployee = null;
 						}
 						
 						
 						
-					}
+				//	}
 					$scope.buildAccesses();
 				}
 				

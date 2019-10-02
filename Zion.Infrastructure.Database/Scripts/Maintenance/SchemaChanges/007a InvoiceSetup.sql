@@ -63,7 +63,7 @@ CREATE TABLE [dbo].[PayrollInvoice](
 	[Id] [uniqueidentifier] NOT NULL,
 	[CompanyId] [uniqueidentifier] NOT NULL,
 	[PayrollId] [uniqueidentifier] NOT NULL,
-	[InvoiceNumber] [int] NOT NULL,
+	[InvoiceNumber] [int] IDENTITY(1,1) NOT NULL,
 	[PeriodStart] [datetime] NOT NULL,
 	[PeriodEnd] [datetime] NOT NULL,
 	[InvoiceSetup] [varchar](max) NOT NULL,
