@@ -60,16 +60,18 @@ namespace HrMaxx.OnlinePayroll.Models
 			{
 				if (ReportName.Equals("Federal940") || ReportName.Equals("Paperless940"))
 					return ExtractType.Federal940;
-				if (ReportName.Equals("Federal941") || ReportName.Equals("Paperless941"))
+				else if (ReportName.Equals("Federal941") || ReportName.Equals("Paperless941"))
 					return ExtractType.Federal941;
-				if (ReportName.Equals("StateCAPIT"))
+				else if (ReportName.Equals("StateCAPIT"))
 					return ExtractType.CAPITSDI;
-				if (ReportName.Equals("StateCAUI"))
+				else if (ReportName.Equals("StateCAUI"))
 					return ExtractType.CAETTUI;
-				if (ReportName.Equals("StateCADE9") || ReportName.Equals("StateCADE6"))
+				else if (ReportName.Equals("StateCADE9") || ReportName.Equals("StateCADE6"))
 					return ExtractType.CADE9;
-
-				return ExtractType.NA;
+				else if (ReportName.Equals("TXSuta"))
+					return ExtractType.TXSuta;
+				else
+					return ExtractType.NA;
 			}
 		}
 	}

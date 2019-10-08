@@ -57,6 +57,11 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: 0,
 							includeHistory: true
 						},
+						txsuta: {
+							year: 0,
+							quarter: 0,
+							includeHistory: true
+						},
 						
 						filterW2: {
 							year: 0,
@@ -405,6 +410,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.getReport941 = function () {
 						getReport('Paperless941', 'Paperless 941', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, true, dataSvc.paperless941.includeHistory);
+					}
+					$scope.getReportTXSuta = function () {
+						getReport('TXSuta', 'Texas UmEmployment', dataSvc.txsuta.year, dataSvc.txsuta.quarter, null, null, null, null, null, true, dataSvc.txsuta.includeHistory);
 					}
 					$scope.getReportHostClientSummary = function () {
 						getReport('HostClientSummary', 'Host Client Summary', dataSvc.paperless941.year, dataSvc.paperless941.quarter, null, null, null, null, null, false, dataSvc.paperless941.includeHistory);

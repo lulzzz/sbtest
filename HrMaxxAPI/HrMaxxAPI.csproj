@@ -353,6 +353,9 @@
     <Content Include="templates\transformers\extracts\Federal941EFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\GarnishmentReport.xslt" />
     <Content Include="templates\transformers\extracts\Paperless941-2019.xslt" />
+    <Content Include="templates\transformers\extracts\TXSuta.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\extracts\TaxReport.xslt" />
     <Content Include="templates\transformers\extracts\HostClientSummary.xslt" />
     <Content Include="templates\transformers\extracts\InternalPositivePayReport.xslt" />
@@ -423,6 +426,7 @@
     </Content>
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
+    <Content Include="templates\transformers\reports\TXForms\SUTA.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />
     <Content Include="templates\transformers\reports\W2\W2.xslt" />
     <Content Include="templates\transformers\reports\W2\W2-Employer.xslt" />

@@ -39,6 +39,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime BirthDate { get; set; }
 		public string BirthDateString { get; set; }
 		public string HireDateString { get; set; }
+		public string HireDateStr {
+			get { return HireDate.ToString("MM-dd-yyyy"); }
+			set { } }
 		public int EmpPayType { get; set; }
 		public EmployeeType PayType{get
 			{
@@ -100,10 +103,11 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string FullName { get { return string.Format("{0} {1} {2}", FirstName, MiddleInitial, LastName); } set { } }
 
-		public bool HasCalifornia { get { return States != null && States.Any(s => s.CountryId == 1 && s.StateId == 1); } set { } }
-		public decimal CaliforniaEmployeeTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == 1 && t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
-		public decimal CaliforniaEmployerTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == 1 && !t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
-		public decimal CaliforniaTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == 1).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public bool HasCalifornia { get { return States != null && States.Any(s => s.CountryId == 1 && s.StateId == (int)Common.Models.Enum.States.California); } set { } }
+		public decimal CaliforniaEmployeeTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California && t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal CaliforniaEmployerTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California && !t.Tax.IsEmployeeTax).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal CaliforniaTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.California).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
+		public decimal TexasTaxes { get { return Math.Round(Taxes.Where(t => t.Tax.StateId.HasValue && t.Tax.StateId.Value == (int)Common.Models.Enum.States.Texas).Sum(t => t.YTD), 2, MidpointRounding.AwayFromZero); } set { } }
 
 		public decimal Overtime { get { return Math.Round(PayCodes.Sum(pc => pc.YTDOvertime), 2, MidpointRounding.AwayFromZero); } set { } }
 		public decimal Regular { get { return Math.Round(PayCodes.Sum(pc => pc.YTDAmount), 2, MidpointRounding.AwayFromZero); } set { } }
@@ -123,17 +127,22 @@ namespace HrMaxx.OnlinePayroll.Models
 					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI")).ToList();
 				if (ExtractType == ExtractType.CADE9)
 					return Taxes.Where(t => t.Tax.Code.Equals("ETT") || t.Tax.Code.Equals("SUI") || t.Tax.Code.Equals("SIT") || t.Tax.Code.Equals("SDI")).ToList();
+				if (ExtractType == ExtractType.TXSuta)
+					return Taxes.Where(t => t.Tax.Code.Equals("TX-SUTA")).ToList();
 				return Taxes;
 
 			}
+			set { }
 		}
 		public decimal ApplicableWages
 		{
 			get { return ApplicableTaxes.Sum(t => t.YTDWage); }
+			set { }
 		}
 		public decimal ApplicableAmounts
 		{
 			get { return ApplicableTaxes.Sum(t => t.YTD); }
+			set { }
 		}
 
 		public void AddAccumulation(Accumulation acc)

@@ -259,7 +259,7 @@
 
 			</div>
 
-			<div class="col-sm-6" ng-if="hasCalifornia()">
+			<div class="col-sm-6" ng-if="hasState(1)">
 				<div class="row">
 					<h4><u>California State Forms</u></h4>
 				</div>
@@ -301,6 +301,54 @@
 						</div>
 						<div class="col-sm-2">
 							<button class="btn btn-sm btn-primary" ng-click="getReportDE9()" ng-disabled="!data.filterde9.year || !data.filterde9.quarter">Display DE-9</button>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+			<div class="col-sm-6" ng-if="hasState(42)">
+				<div class="row">
+					<h4><u>Texas State Forms</u></h4>
+				</div>
+
+				<div class="row">
+					<div class="col-sm-12">
+						<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>California Quarterly Unemployment Report</em></span></h5>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-3">
+							<select name="yearde9" ng-model="data.filterTxSuta.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
+								<option value=""> select year</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select name="quarterde9" ng-model="data.filterTxSuta.quarter" class="form-control" convert-to-number>
+								<option value="0"> select quarter</option>
+								<option value="1"> First Quarter</option>
+								<option value="2"> Second Quarter</option>
+								<option value="3"> Third Quarter</option>
+								<option value="4"> Fourth Quarter</option>
+							</select>
+						</div>
+						<div class="col-sm-2 form-group">
+
+							<label for="txsutahistory" class="switch">
+								Include History?
+								<input id="txsutahistory" type="checkbox" ng-model="data.filterTxSuta.includeHistory" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2 form-group" ng-if="showincludeclients">
+
+							<label for="txsutaclients" class="switch">
+								Include Clients/locations?
+								<input id="txsutaclients" type="checkbox" ng-model="data.filterTxSuta.includeClients" /><i></i>
+							</label>
+
+						</div>
+						<div class="col-sm-2">
+							<button class="btn btn-sm btn-primary" ng-click="getReportTXSuta()" ng-disabled="!data.filterTxSuta.year || !data.filterTxSuta.quarter">Report</button>
 						</div>
 
 					</div>

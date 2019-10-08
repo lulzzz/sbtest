@@ -585,6 +585,51 @@
 
 
 				</div>
+				<div class="row">
+					<div class="row">
+						<h4><u>Texas State Tax Payment Extracts</u></h4>
+					</div>
+					<div class="col-sm-12">
+						<div class="col-sm-12">
+							<h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Texas UnEmployment File </em></span></h5>
+						</div>
+						<div class="col-sm-12">
+							<div class="col-sm-3">
+								<select ng-model="data.txsuta.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
+									<option value=""> select year</option>
+								</select>
+							</div>
+							<div class="col-sm-3">
+								<select ng-model="data.txsuta.quarter" class="form-control" convert-to-number>
+									<option value="0"> select quarter</option>
+									<option value="1"> First Quarter</option>
+									<option value="2"> Second Quarter</option>
+									<option value="3"> Third Quarter</option>
+									<option value="4"> Fourth Quarter</option>
+								</select>
+							</div>
+							<div class="col-sm-3 form-group">
+
+								<label for="txsutahistory" class="switch">
+									Include History?
+									<input id="txsutahistory" type="checkbox" ng-model="data.txsuta.includeHistory" /><i></i>
+								</label>
+
+							</div>
+							<div class="col-sm-3">
+								<button class="btn btn-sm btn-primary" ng-click="getReportTXSuta()" ng-disabled="!data.txsuta.year || !data.txsuta.quarter">Review</button>
+								
+							</div>
+
+						</div>
+
+					</div>
+
+					
+
+
+
+				</div>
 			</div>
 
 		</div>

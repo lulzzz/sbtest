@@ -176,6 +176,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetBlankForms(request);
 				else if (request.ReportName.Equals("CompanySickLeaveExport"))
 					return GetCompanySickLeaveExport(request);
+				else if (request.ReportName.Equals("TXSuta"))
+					return GetTexasStateUnEmployment(request);
 				
 				return null;
 			}
@@ -216,6 +218,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				CalculateDates(ref request);
 				if (request.ReportName.Equals("Paperless941"))
 					return GetPaperless941(request);
+				else if (request.ReportName.Equals("TXSuta"))
+					return GetTxSutaExtract(request);
 				else if (request.ReportName.Equals("HostClientSummary"))
 					return GetHostClientSummary(request);
 				else if (request.ReportName.Equals("Paperless940"))
@@ -1083,6 +1087,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 							report: request.ReportName, includeHistory: request.IncludeHistory, includeClients: true, state: request.State);
 
 						h.EmployeeAccumulationList = ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+						h.EmployeeAccumulationList.ForEach(ea1=>ea1.ExtractType=request.ExtractType);
 					}
 					if (buildCompanyEmployeeAccumulation)
 					{
@@ -1091,10 +1096,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 							var ea = _readerService.GetTaxAccumulations(company: c.Company.Id, startdate: request.StartDate,
 							enddate: request.EndDate, type: AccumulationType.Employee, includeWorkerCompensations: includeWorkerCompensations, 
 							includeTaxes: includeTaxes, includedCompensations: includeCompensaitons, includedDeductions: includeDeductions, 
-							report: request.ReportName, includeHistory: request.IncludeHistory, state: request.State);
+							report: request.ReportName, includeHistory: request.IncludeHistory, state: request.State, includePayCodes: includePayCodes);
 							
 							c.EmployeeAccumulationList =
 								ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+							c.EmployeeAccumulationList.ForEach(cea => cea.ExtractType = request.ExtractType);
 						});
 					}
 					h.Companies.ForEach(c =>
@@ -1472,6 +1478,24 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2.xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
 			
+		}
+		private Extract GetTxSutaExtract(ReportRequest request)
+		{
+			request.Description = string.Format("Texas UmEmployment for {0}-{1} ", request.Year, request.Quarter);
+			request.AllowFiling = false;
+			request.CheckEFileFormsFlag = true;
+			request.CheckTaxPaymentFlag = false;
+			request.State = (int) States.Texas;
+			var data = GetExtractResponse(request, includeTaxes: true, buildEmployeeAccumulations: true, includePayCodes:true);
+
+			var config = _taxationService.GetApplicationConfig();
+			var argList = new List<KeyValuePair<string, string>>();
+			argList.Add(new KeyValuePair<string, string>("MagFileUserId", config.SsaBsoW2MagneticFileId));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("lastmonth", request.EndDate.ToString("MM")));
+
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/TXSuta.xslt", "txt", string.Format("Texas UmEmployment Report-{0}-{1}.txt", request.Year, request.Quarter));
+
 		}
 		private Extract GetSSAMagneticReport(ReportRequest request)
 		{
@@ -2525,6 +2549,38 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		}
 
+		private FileDto GetTexasStateUnEmployment(ReportRequest request)
+		{
+			var response = new ReportResponse();
+			request.State = (int) States.Texas;
+			
+			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, state: request.State).First();
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, report: "CaliforniaDE9C", state: request.State).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+			if (!response.EmployeeAccumulationList.Any())
+				throw new Exception(NoData);
+			response.EmployeeAccumulationList.ForEach(ea => ea.ExtractType = request.ExtractType);
+			response.Company = GetCompany(request.CompanyId);
+			response.Host = GetHost(request.HostId);
+			response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
+
+			if (response.Company.FileUnderHost)
+			{
+				response.Company = response.Host.Company;
+			}
+			var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
+				DateTime.DaysInMonth(request.Year, request.Quarter * 3));
+			var dueDate = quarterEndDate.AddDays(1);
+			var argList = new XsltArgumentList();
+
+			argList.AddParam("county","", response.EmployeeAccumulationList.GroupBy(e=>e.Contact.Address.County).OrderBy(g=>g.ToList().Count()).Last().Key);
+
+			var data = XmlTransform(GetXml(response), string.Format("{0}{1}", _templatePath, "transformers/reports/TXForms/SUTA.xslt"), argList);
+			data = Transform(data);
+			return new FileDto()
+			{
+				Data = Encoding.UTF8.GetBytes(data), DocumentExtension = ".txt", Filename = string.Format("{0} -Texas SUTA-{1}-{2}.csv", response.Company.Name, request.Year, request.Quarter), MimeType = "text/plain"
+			};
+		}
 
 		private FileDto GetQuarterAnnualReport(ReportRequest request)
 		{

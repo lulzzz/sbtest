@@ -61,6 +61,12 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: 0,
 							includeHistory: true,
 							includeClients: false
+						},
+						filterTxSuta: {
+							year: 0,
+							quarter: 0,
+							includeHistory: true,
+							includeClients: false
 						}
 					}
 					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && ($scope.mainData.selectedCompany.hasLocations || $scope.mainData.selectedCompany.isLocation)) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedHost.isPeoHost) ? true : false;
@@ -109,6 +115,9 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.getReportC1095 = function () {
 						getReport('C1095', 'Federal 1095-C', dataSvc.filterC1095.year, null, dataSvc.filterC1095.includeHistory, dataSvc.filterC1095.includeClients);
 					}
+					$scope.getReportTXSuta = function () {
+						getReport('TXSuta', 'Texas Unemployement', dataSvc.filterTxSuta.year, dataSvc.filterTxSuta.quarter, dataSvc.filterTxSuta.includeHistory, dataSvc.filterTxSuta.includeClients);
+					}
 
 					var getReport = function(reportName, desc, year, quarter, includeHistory, includeClients) {
 						var m = $scope.mainData;
@@ -136,10 +145,10 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
 						});
 					}
-					$scope.hasCalifornia = function() {
+					$scope.hasState = function(stateId) {
 						var comp = $scope.mainData.selectedCompany;
 						if (comp) {
-							var cal = $filter('filter')(comp.states, { state : { stateId: 1 } });
+							var cal = $filter('filter')(comp.states, { state : { stateId: stateId } });
 							if (cal.length>0)
 								return true;
 							else
