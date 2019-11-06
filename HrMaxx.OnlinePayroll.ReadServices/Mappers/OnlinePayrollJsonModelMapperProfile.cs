@@ -207,6 +207,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.WorkerCompensation, opt => opt.MapFrom(src => src.CompanyWorkerCompensation))
 				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.LastModifiedBy))
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => src.LastModified))
+				.ForMember(dest => dest.LastPayrollDate, opt => opt.MapFrom(src => src.LastPayDay))
 				.ForMember(dest => dest.BankAccounts, opt => opt.MapFrom(src => src.EmployeeBankAccounts))
 				.ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.EmployeeDeductions));
 

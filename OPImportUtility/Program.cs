@@ -84,85 +84,104 @@ namespace OPImportUtility
 			log4net.Config.BasicConfigurator.Configure();
 			Logger = log4net.LogManager.GetLogger(typeof(Program));  
 			var companyId = (int) 0;
-			Logger.Info("starting :)");
-			Console.WriteLine("Staring Migration " + DateTime.Now.ToShortTimeString());
-			Console.WriteLine("Enter 1 for Base Data, 2 for Hosts 3 for Company ");
-			var command = Convert.ToInt32(Console.ReadLine());
-			switch (command)
+			try
 			{
-				case 1:
-					CopyBaseData(container);
-					break;
-				case 2:
-					ImportHosts(container);
-					break;
-				case 3:
-					Console.WriteLine("Companies: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					ImportCompanies(container, companyId);
-					break;
-				case 4:
-					Console.WriteLine("Accounts: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					ImportCompanyAccounts(container, companyId);
-					break;
-				case 5:
-					Console.WriteLine("Vendors: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					ImportCompanyVendors(container, companyId);
-					break;
-				case 6:
-					Console.WriteLine("Employees: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					ImportEmployees(container, companyId);
-					break;
-				case 7:
-					Console.WriteLine("Payrolls: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					ImportPayrolls(container, companyId);
-					break;
-				case 8:
-					Console.WriteLine("Journals: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					ImportJournals(container, companyId);
-					break;
-				case 9:
-					Console.WriteLine("Users: Enter Company Id");
-					companyId = Convert.ToInt32(Console.ReadLine());
-					var level = Convert.ToInt32(Console.ReadLine());
-					ImportUsers(container, level, companyId);
-					break;
-				case 10:
-					Console.WriteLine("Bulk Companies: Status");
-					var status = Console.ReadLine();
-					ImportBulkCompanies(container, status);
-					break;
-				case 11:
-					Console.WriteLine("Fill Extracts");
-					PayrollStatusesAndExtracts(container);
-					RunExtracts(container);
-					break;
-				case 12:
-					Console.WriteLine("Profit Stars");
-					ImportProfitStarsData(container);
-					break;
-				case 13:
-					Console.WriteLine("semi weekly 941, enter year: ");
-					var year = Console.ReadLine();
-					SemiWeeklyExtract(container, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly,
-						new List<int> {1, 2, 3, 4, 5}, "Federal941", 1, true, year);
-					SemiWeeklyExtract(container, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly,
-						new List<int> { 7, 8 }, "StateCAPIT", 1, true, year);
-					break;
-				case 14:
-					Console.WriteLine("Fill Extracts files");
-					FillExtracts(container);
-					break;
-				default:
-					break;
+				Logger.Info("starting :)");
+				Console.WriteLine("Staring Migration " + DateTime.Now.ToShortTimeString());
+				Console.WriteLine("Enter 1 for Base Data, 2 for Hosts 3 for Company ");
+				var command = Convert.ToInt32(Console.ReadLine());
+				switch (command)
+				{
+					case 1:
+						CopyBaseData(container);
+						break;
+					case 2:
+						ImportHosts(container);
+						break;
+					case 3:
+						Console.WriteLine("Companies: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						ImportCompanies(container, companyId);
+						break;
+					case 4:
+						Console.WriteLine("Accounts: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						ImportCompanyAccounts(container, companyId);
+						break;
+					case 5:
+						Console.WriteLine("Vendors: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						ImportCompanyVendors(container, companyId);
+						break;
+					case 6:
+						Console.WriteLine("Employees: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						ImportEmployees(container, companyId);
+						break;
+					case 7:
+						Console.WriteLine("Payrolls: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						ImportPayrolls(container, companyId);
+						break;
+					case 8:
+						Console.WriteLine("Journals: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						ImportJournals(container, companyId);
+						break;
+					case 9:
+						Console.WriteLine("Users: Enter Company Id");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						var level = Convert.ToInt32(Console.ReadLine());
+						ImportUsers(container, level, companyId);
+						break;
+					case 10:
+						Console.WriteLine("Bulk Companies: Status");
+						var status = Console.ReadLine();
+						ImportBulkCompanies(container, status);
+						break;
+					case 11:
+						Console.WriteLine("Fill Extracts");
+						PayrollStatusesAndExtracts(container);
+						RunExtracts(container);
+						break;
+					case 12:
+						Console.WriteLine("Profit Stars");
+						ImportProfitStarsData(container);
+						break;
+					case 13:
+						Console.WriteLine("semi weekly 941, enter year: ");
+						var year = Console.ReadLine();
+						SemiWeeklyExtract(container, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly,
+							new List<int> { 1, 2, 3, 4, 5 }, "Federal941", 1, true, year);
+						SemiWeeklyExtract(container, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.SemiWeekly,
+							new List<int> { 7, 8 }, "StateCAPIT", 1, true, year);
+						break;
+					case 14:
+						Console.WriteLine("Fill Extracts files");
+						FillExtracts(container);
+						break;
+					case 15:
+						Console.WriteLine("Update Bulk Companies");
+						Console.WriteLine("Enter Company Id or 0 to update all");
+						companyId = Convert.ToInt32(Console.ReadLine());
+						UpdateBulkCompanies(container, companyId);
+						break;
+					case 16:
+						Console.WriteLine("Gap between systems");
+						CreateSystemGap(container);
+						break;
+					default:
+						break;
+				}
+
+				Console.WriteLine("Finished Migration " + DateTime.Now.ToShortTimeString());
+			}
+			catch (Exception e)
+			{
+				Logger.Error(e);
+				Console.WriteLine("Finished Migration With Error" + DateTime.Now.ToShortTimeString());
 			}
 			
-			Console.WriteLine("Finished Migration " + DateTime.Now.ToShortTimeString());
 			//var command = Convert.ToInt32(Console.ReadLine());
 		}
 
@@ -182,6 +201,26 @@ namespace OPImportUtility
 				
 				
 				Console.WriteLine("{1} -- Finished company {0}", c, counter++);
+			});
+		}
+		private static void UpdateBulkCompanies(IContainer scope, int companyId = 0)
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var companies =
+				read.GetQueryData<int>(
+					string.Format("select CompanyId from Company where CompanyId in (select CompanyIntId from paxolop.dbo.Company);"));
+			Logger.Info(string.Format("Companies to be updated {0} ",  companies.Count));
+			if (companyId > 0)
+				companies = companies.Where(c => c >= companyId).ToList();
+			var counter = (int)0;
+			companies.ForEach(c =>
+			{
+				Logger.Info(string.Format("Starting update for company {0}", c));
+
+				UpdateCompany(scope, c);
+
+
+				Logger.Info(string.Format("{1} -- Finished Updating company {0}", c, counter++));
 			});
 		}
 
@@ -206,6 +245,36 @@ namespace OPImportUtility
 			//ImportPayrolls(container);
 			//Console.WriteLine("Finsihed copying payrolls");
 			
+		}
+		private static void CreateSystemGap(IContainer scope)
+		{
+			const string reSeedTablesSql = "declare @newreseed int " +
+			                               "select @newreseed = max(Id)+2000 from CompanyAccount; " +
+			                               "DBCC CHECKIDENT ('CompanyAccount', RESEED, @newreseed); " +
+			                               "select @newreseed = max(Id)+5000 from Journal; " +
+			                               "DBCC CHECKIDENT ('Journal', RESEED, @newreseed); " +
+			                               "select @newreseed = max(Id)+5000 from CheckbookJournal; " +
+			                               "DBCC CHECKIDENT ('CheckbookJournal', RESEED, @newreseed); " +
+			                               "select @newreseed = max(Id)+5000 from PayrollPayCheck; " +
+			                               "DBCC CHECKIDENT ('PayrollPayCheck', RESEED, @newreseed); " +
+			                               "select @newreseed = max(Id)+2000 from BankAccount; " +
+			                               "DBCC CHECKIDENT ('BankAccount', RESEED, @newreseed); " +
+			                               "select @newreseed = max(EmployeeIntId)+2000 from Employee; " +
+			                               "DBCC CHECKIDENT ('Employee', RESEED, @newreseed); " +
+			                               "select @newreseed = max(CompanyIntId)+500 from Company; " +
+			                               "DBCC CHECKIDENT ('Company', RESEED, @newreseed); " +
+			                               "select @newreseed = max(VendorCustomerIntId)+1000 from VendorCustomer; " +
+			                               "DBCC CHECKIDENT ('VendorCustomer', RESEED, @newreseed); " +
+			                               "select @newreseed = max(Id)+500 from CompanyDeduction; " +
+			                               "DBCC CHECKIDENT ('CompanyDeduction', RESEED, @newreseed); " +
+																		 "select @newreseed = max(HostIntId)+50 from Host; " +
+																		 "DBCC CHECKIDENT ('Host', RESEED, @newreseed); " +
+																		 "select @newreseed = max(Id)+1000 from MasterExtracts; " +
+																		 "DBCC CHECKIDENT ('MasterExtracts', RESEED, @newreseed); " +
+			                               "select @newreseed = max(Id)+100 from CompanyAccumlatedPayType; " +
+			                               "DBCC CHECKIDENT ('CompanyAccumlatedPayType', RESEED, @newreseed);";
+			var write = scope.Resolve<IWriteRepository>();
+			write.ExecuteQuery(reSeedTablesSql, new {});
 		}
 
 		
@@ -362,11 +431,11 @@ namespace OPImportUtility
 						journals.Any(
 							j1 =>
 								j1.CompanyId == j.CompanyId && j1.TransactionType == j.TransactionType && j1.CheckNumber > 0 && j1.TransactionDate.Year == j.TransactionDate.Year &&
-								j1.CheckNumber == j.CheckNumber))
+								j1.CheckNumber == j.CheckNumber && j1.Id!=j.Id))
 					{
 						var newchecknumber = journals.Where(j1 =>
 							j1.CompanyId == j.CompanyId && j1.TransactionType == j.TransactionType && j1.CheckNumber > 0 &&
-							j1.TransactionDate.Year == j.TransactionDate.Year)
+							j1.TransactionDate.Year == j.TransactionDate.Year && j1.Id != j.Id)
 							.Max(j1 => j1.CheckNumber) + 1;
 						changedchecknumber.AppendLine(string.Format("Company: {0}, TransactionType:{1}, Old:{2}, New:{3}, Id:{4}",
 							j.CompanyIntId, j.TransactionType, j.CheckNumber, newchecknumber, j.Id));
@@ -952,65 +1021,89 @@ namespace OPImportUtility
 			var read = scope.Resolve<IOPReadRepository>();
 			var write = scope.Resolve<IWriteRepository>();
 
-			write.ExecuteQuery("truncate table DDPayroll;set identity_insert DDPayroll On; insert into DDPayroll(DDPayrollId, payrollId, payrollFundId, employeeId, companyId, netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, HostCheck, PayingCompanyId) " +
-			                   "select DDPayrollId, payrollId, payrollFundId, " +
-			                   "(select Id from Employee where EmployeeIntId=employeeId), " +
-			                   "(select Id from Company where CompanyIntId=companyId), " +
-												 "netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, 0, (select Id from Company where CompanyIntId=companyId)" +
-			                   " from OnlinePayroll.dbo.DDPayroll;set identity_insert DDPayroll Off; ", new { });
-			write.ExecuteQuery("truncate table DDPayrollFund;set identity_insert DDPayrollFund On; " +
-												 "insert into DDPayrollFund(DDPayrollFundId, companyId, netsum, entereddate) " +
-												 "select DDPayrollFundId," +
-												 "(select Id from Company where CompanyIntId=companyId), " +
-												 "netSum, entereddate" +
-												 " from OnlinePayroll.dbo.DDPayrollFund;" +
-			                   "set identity_insert DDPayrollFund Off; ", new { });
-			write.ExecuteQuery("truncate table DDPayrollFundRequest;set identity_insert DDPayrollFundRequest On; " +
-												 "insert into DDPayrollFundRequest(DDPayrollFundRequestId, DDPayrollFundId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, ResultCode, requestDocumentId, refNum) " +
-												 "select DDPayrollFundRequestId, DDPayrollFundId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, ResultCode, requestDocumentId, refNum" +
-												 " from OnlinePayroll.dbo.DDPayrollFundRequest;" +
-												 "set identity_insert DDPayrollFundRequest Off; ", new { });
-			write.ExecuteQuery("truncate table DDPayrollFundReport;set identity_insert DDPayrollFundReport On; " +
-												 "insert into DDPayrollFundReport(DDPayrollFundReportId, DDPayrollFundRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId, manualUpdate) " +
-												 "select DDPayrollFundReportId, DDPayrollFundRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId, manualUpdate" +
-												 " from OnlinePayroll.dbo.DDPayrollFundReport;" +
-												 "set identity_insert DDPayrollFundReport Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayroll On; " +
+			                   "merge DDPayroll t using (select DDPayrollId, payrollId, payrollFundId, " +
+			                   "(select Id from Employee where EmployeeIntId=employeeId) employeeId, " +
+			                   "(select Id from Company where CompanyIntId=companyId) companyId, " +
+			                   "netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, 0 hostcheck, " +
+			                   "(select Id from Company where CompanyIntId=companyId) payingcompanyId " +
+			                   "from OnlinePayroll.dbo.DDPayroll) s " +
+			                   "on (t.DDPayrollId=s.DDPayrollId) " +
+			                   "when matched and (t.Status<>s.Status collate Latin1_General_CI_AS or t.Voided<>s.Voided) then update set t.Status=s.Status, t.Voided=s.Voided " +
+			                   "when not matched by target then insert (DDPayrollId, payrollId, payrollFundId, employeeId, companyId, netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, HostCheck, PayingCompanyId) " +
+			                   "values (s.DDPayrollId, s.payrollId, s.payrollFundId, s.employeeId, s.companyId, s.netPayAmt, s.AccountType, s.AccountNumber, s.RoutingNumber, s.payDate, s.TransactionDate, s.enteredDate, s.Voided, s.status, s.HostCheck, s.PayingCompanyId) " +
+			                   "when not matched by source then delete;set identity_insert DDPayroll Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollFund On;" +
+			                   "merge DDPayrollFund t using (select DDPayrollFundId, " +
+			                   "(select Id from Company where CompanyIntId=companyId) CompanyId, netSum, entereddate from OnlinePayroll.dbo.DDPayrollFund) s " +
+			                   "on (t.DDPayrollFundId=s.DDPayrollFundId) " +
+			                   "when not matched then insert (DDPayrollFundId, companyId, netsum, entereddate) values (s.DDPayrollFundId, s.companyId, s.netsum, s.entereddate) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollFund Off;" , new { });
+			write.ExecuteQuery("set identity_insert DDPayrollFundRequest On; " +
+			                   "merge DDPayrollFundRequest t using (select DDPayrollFundRequestId, DDPayrollFundId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, ResultCode, requestDocumentId, refNum from OnlinePayroll.dbo.DDPayrollFundRequest) s " + 
+			                   "on (t.DDPayrollFundRequestId = s.DDPayrollFundRequestId) " +
+			                   "when not matched then  " +
+			                   "insert (DDPayrollFundRequestId, DDPayrollFundId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, ResultCode, requestDocumentId, refNum) " +
+			                   "values (s.DDPayrollFundRequestId, s.DDPayrollFundId, s.netSum, s.AccountType, s.AccountNumber, s.RoutingNumber, s.RequestDate, s.ResultCode, s.requestDocumentId, s.refNum) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollFundRequest Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollFundReport On; " +
+			                   "merge DDPayrollFundReport t using (select DDPayrollFundReportId, DDPayrollFundRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId, manualUpdate from OnlinePayroll.dbo.DDPayrollFundReport) s " +
+			                   "on t.DDPayrollFundReportId=s.DDPayrollFundReportId " +
+			                   "when matched and (t.TransactionStatus<>s.TransactionStatus collate Latin1_General_CI_AS or t.SettlementStatus<>s.SettlementStatus collate Latin1_General_CI_AS or t.reportDocumentId<>s.reportDocumentId collate Latin1_General_CI_AS or t.manualUpdate<>s.manualUpdate) then " +
+			                   "update set t.TransactionStatus=s.TransactionStatus, t.SettlementStatus=s.SettlementStatus, t.reportDocumentId=s.reportDocumentId, t.manualUpdate=s.manualUpdate " +
+			                   "when not matched then insert (DDPayrollFundReportId, DDPayrollFundRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId, manualUpdate) " +
+			                   "values (s.DDPayrollFundReportId, s.DDPayrollFundRequestId, s.ActionFlag, s.enteredDate, s.TransactionStatus, s.SettlementStatus, s.reportDocumentId, s.manualUpdate) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollFundReport Off; ", new { });
 
-			write.ExecuteQuery("truncate table DDPayrollPay;set identity_insert DDPayrollPay On; " +
-												 "insert into DDPayrollPay(DDPayrollPayId, DDPayrollId, enteredDate, payStatus) " +
-												 "select DDPayrollPayId, DDPayrollId, enteredDate, payStatus" +
-												 " from OnlinePayroll.dbo.DDPayrollPay;" +
-												 "set identity_insert DDPayrollPay Off; ", new { });
-			write.ExecuteQuery("truncate table DDPayrollPayRequest;set identity_insert DDPayrollPayRequest On; " +
-												 "insert into DDPayrollPayRequest(DDPayrollPayRequestId, DDPayrollPayId, netPay, AccountType, AccountNumber, RoutingNumber, payDate, enteredDate, ResultCode, requestDocumentId, refNum) " +
-												 "select DDPayrollPayRequestId, DDPayrollPayId, netPay, AccountType, AccountNumber, RoutingNumber, payDate, enteredDate, ResultCode, requestDocumentId, refNum" +
-												 " from OnlinePayroll.dbo.DDPayrollPayRequest;" +
-												 "set identity_insert DDPayrollPayRequest Off; ", new { });
-			write.ExecuteQuery("truncate table DDPayrollPayReport;set identity_insert DDPayrollPayReport On; " +
-												 "insert into DDPayrollPayReport(DDPayrollPayReportId, DDPayrollPayRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId) " +
-												 "select DDPayrollPayReportId, DDPayrollPayRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId" +
-												 " from OnlinePayroll.dbo.DDPayrollPayReport;" +
-												 "set identity_insert DDPayrollPayReport Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollPay On; " +
+			                   "merge DDPayrollPay t using (select DDPayrollPayId, DDPayrollId, enteredDate, payStatus from OnlinePayroll.dbo.DDPayrollPay) s " +
+			                   "on t.DDPayrollPayId=s.DDPayrollPayId " +
+			                   "when matched and (t.enteredDate<>s.enteredDate or t.payStatus<>s.payStatus collate Latin1_General_CI_AS) then Update set t.enteredDate=s.enteredDate, t.payStatus=s.PayStatus " +
+			                   "when not matched then insert (DDPayrollPayId, DDPayrollId, enteredDate, payStatus) values (s.DDPayrollPayId, s.DDPayrollId, s.enteredDate, s.payStatus) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollPay Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollPayRequest On; merge DDPayrollPayRequest t using " +
+			                   "(select DDPayrollPayRequestId, DDPayrollPayId, netPay, AccountType, AccountNumber, RoutingNumber, payDate, enteredDate, ResultCode, requestDocumentId, refNum from OnlinePayroll.dbo.DDPayrollPayRequest) s " +
+			                   "on t.DDPayrollPayRequestId=s.DDPayrollPayRequestId " +
+			                   "when not matched then insert (DDPayrollPayRequestId, DDPayrollPayId, netPay, AccountType, AccountNumber, RoutingNumber, payDate, enteredDate, ResultCode, requestDocumentId, refNum) " +
+			                   "values (s.DDPayrollPayRequestId, s.DDPayrollPayId, s.netPay, s.AccountType, s.AccountNumber, s.RoutingNumber, s.payDate, s.enteredDate, s.ResultCode, s.requestDocumentId, s.refNum) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollPayRequest Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollPayReport On; " +
+			                   "merge DDPayrollPayReport t using (select DDPayrollPayReportId, DDPayrollPayRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId " +
+			                   "from OnlinePayroll.dbo.DDPayrollPayReport)s " +
+			                   "on t.DDPayrollPayReportId=s.DDPayrollPayReportId " +
+			                   "when matched and (t.TransactionStatus<>s.TransactionStatus collate Latin1_General_CI_AS or t.SettlementStatus<>s.SettlementStatus collate Latin1_General_CI_AS or t.reportDocumentId<>s.reportDocumentId collate Latin1_General_CI_AS) then " +
+			                   "Update set t.reportDocumentId=s.reportDocumentId, t.TransactionStatus=s.TransactionStatus, t.SettlementStatus=s.SettlementStatus " +
+			                   "when not matched then insert (DDPayrollPayReportId, DDPayrollPayRequestId, ActionFlag, enteredDate, TransactionStatus, SettlementStatus, reportDocumentId) " +
+			                   "values (s.DDPayrollPayReportId, s.DDPayrollPayRequestId, s.ActionFlag, s.enteredDate, s.TransactionStatus, s.SettlementStatus, s.reportDocumentId) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollPayReport Off; ", new { });
 
-			write.ExecuteQuery("truncate table DDPayrollRefundRequest;set identity_insert DDPayrollRefundRequest On; " +
-												 "insert into DDPayrollRefundRequest(ddPayrollRefundId, ddPayrollPayId, companyId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, resultCode, refNum, requestDoc) " +
-												 "select ddPayrollRefundId, ddPayrollPayId, " +
-			                   "(select Id from Company where CompanyIntId=companyId), " +
-			                   "netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, resultCode, refNum, requestDoc" +
-												 " from OnlinePayroll.dbo.DDPayrollRefundRequest;" +
-												 "set identity_insert DDPayrollRefundRequest Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollRefundRequest On; " +
+			                   "merge DDPayrollRefundRequest t using (select ddPayrollRefundId, ddPayrollPayId, " +
+			                   "(select Id from Company where CompanyIntId=companyId) CompanyId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, resultCode, refNum, requestDoc " +
+			                   "from OnlinePayroll.dbo.DDPayrollRefundRequest) s " +
+			                   "on t.ddPayrollRefundId=s.ddPayrollRefundId " +
+			                   "when not matched then " +
+			                   "insert (ddPayrollRefundId, ddPayrollPayId, companyId, netSum, AccountType, AccountNumber, RoutingNumber, RequestDate, resultCode, refNum, requestDoc) " +
+			                   "values (s.ddPayrollRefundId, s.ddPayrollPayId, s.companyId, s.netSum, s.AccountType, s.AccountNumber, s.RoutingNumber, s.RequestDate, s.resultCode, s.refNum, s.requestDoc) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollRefundRequest Off; ", new { });
 
-			write.ExecuteQuery("truncate table DDPayrollRefundReport;set identity_insert DDPayrollRefundReport On; " +
-												 "insert into DDPayrollRefundReport(DDPayrollRefundReportId, DDPayrollRefundRequestId, ActionFlag, enteredDate, transactionStatus, settlementStatus, reportDocumentId) " +
-												 "select DDPayrollRefundReportId, DDPayrollRefundRequestId, ActionFlag, enteredDate, transactionStatus, settlementStatus, reportDocumentId" +
-												 " from OnlinePayroll.dbo.DDPayrollRefundReport;" +
-												 "set identity_insert DDPayrollRefundReport Off; ", new { });
+			write.ExecuteQuery("set identity_insert DDPayrollRefundReport On; " +
+			                   "merge DDPayrollRefundReport t using (select DDPayrollRefundReportId, DDPayrollRefundRequestId, ActionFlag, enteredDate, transactionStatus, settlementStatus, reportDocumentId " +
+			                   "from OnlinePayroll.dbo.DDPayrollRefundReport) s on t.DDPayrollRefundReportId=s.DDPayrollRefundReportId " +
+			                   "when matched and (t.TransactionStatus<>s.TransactionStatus collate Latin1_General_CI_AS or t.SettlementStatus<>s.SettlementStatus collate Latin1_General_CI_AS or t.reportDocumentId<>s.reportDocumentId collate Latin1_General_CI_AS) then  " +
+			                   "Update set t.reportDocumentId=s.reportDocumentId, t.TransactionStatus=s.TransactionStatus, t.SettlementStatus=s.SettlementStatus " +
+			                   "when not matched then insert (DDPayrollRefundReportId, DDPayrollRefundRequestId, ActionFlag, enteredDate, transactionStatus, settlementStatus, reportDocumentId) " +
+			                   "values (s.DDPayrollRefundReportId, s.DDPayrollRefundRequestId, s.ActionFlag, s.enteredDate, s.transactionStatus, s.settlementStatus, s.reportDocumentId) " +
+			                   "when not matched by source then delete;set identity_insert DDPayrollRefundReport Off;", new { });
 
-			write.ExecuteQuery("truncate table ProfitStarsReportLog;set identity_insert ProfitStarsReportLog On; " +
-												 "insert into ProfitStarsReportLog(reportItemId, eventItemId, operationType, eventType, eventDateTime, transactionDateTime, enteredDate, transactionStatus, SettlementStatus, sequenceNumber, transactionSequenceNumber, document) " +
-												 "select reportItemId, eventItemId, operationType, eventType, eventDateTime, transactionDateTime, enteredDate, transactionStatus, SettlementStatus, sequenceNumber, transactionSequenceNumber, document" +
-												 " from OnlinePayroll.dbo.RTGReportLog;" +
-												 "set identity_insert ProfitStarsReportLog Off; ", new { });
+			write.ExecuteQuery("set identity_insert ProfitStarsReportLog On; " +
+			                   "merge ProfitStarsReportLog t using (select reportItemId, eventItemId, operationType, eventType, eventDateTime, transactionDateTime, enteredDate, transactionStatus, SettlementStatus, sequenceNumber, transactionSequenceNumber, document " +
+			                   "from OnlinePayroll.dbo.RTGReportLog)s " +
+			                   "on t.reportItemId=s.reportItemId " +
+			                   "when not matched then " +
+			                   "insert (reportItemId, eventItemId, operationType, eventType, eventDateTime, transactionDateTime, enteredDate, transactionStatus, SettlementStatus, sequenceNumber, transactionSequenceNumber, document) " +
+			                   "values (s.reportItemId, s.eventItemId, s.operationType, s.eventType, s.eventDateTime, s.transactionDateTime, s.enteredDate, s.transactionStatus, s.SettlementStatus, s.sequenceNumber, s.transactionSequenceNumber, s.document) " +
+			                   "when not matched by source then delete;set identity_insert ProfitStarsReportLog Off;", new { });
 			
 		}
 		
@@ -1418,7 +1511,7 @@ namespace OPImportUtility
 			}
 			if(!contacts.Any())
 				contacts = read.GetQueryData<Contact>(Queries.contacts);
-			if (!CompanyList.Any())
+			if (!CompanyList.Any(c => c.CompanyIntId == companyId))
 				CompanyList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Company>(string.Format(Queries.pxcompanies, companyId));
 			var companies = companyservice.GetCompanies(company: CompanyList.First().Id, status:0);
 			var mapper = scope.Resolve<IMapper>();
@@ -1546,7 +1639,7 @@ namespace OPImportUtility
 				users = read.GetQueryData<UserAccount>(Queries.users);
 				//contacts = read.GetQueryData<Contact>(Queries.contacts);
 			}
-			if (!CompanyList.Any())
+			if (!CompanyList.Any(c => c.CompanyIntId == companyId))
 				CompanyList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Company>(string.Format(Queries.pxcompanies, companyId));
 			var mapper = scope.Resolve<IMapper>();
 			var vendors = read.GetQueryData<Vendors>(string.Format(Queries.vendors, companyId));
@@ -1582,7 +1675,7 @@ namespace OPImportUtility
 			using (var scope = container.BeginLifetimeScope())
 			{
 				var write = scope.Resolve<IWriteRepository>();
-				const string tmp = "insert into AccountTemplate values(1,2,'Bank',null);update OnlinePayroll.dbo.COA_SubTypeLookup set AccountName='Bank' where COA_SubTypeID=1;";
+				const string tmp = "insert into AccountTemplate values(1,2,'Bank',null, null);update OnlinePayroll.dbo.COA_SubTypeLookup set AccountName='Bank' where COA_SubTypeID=1;";
 				const string tmpEd = "update CompanyAccount set TemplateId=null where companyId=(select Id from Company where CompanyIntId=@CompanyId) and Type=1 and SubType=2;" +
 				                     "delete from AccountTemplate where Type=1 and SubType=2;" +
 				                     "Update OnlinePayroll.dbo.COA_SubTypeLookup set AccountName=null where COA_SubTypeID=1;";
@@ -1886,7 +1979,7 @@ namespace OPImportUtility
 				var users = userservice.GetUsers(null, null);
 				if (!hostList.Any())
 					hostList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Host>(Queries.pxhosts);
-				if (!CompanyList.Any())
+				if (!CompanyList.Any(c=>c.CompanyIntId==companyId))
 					CompanyList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Company>(string.Format(Queries.pxcompanies, companyId));
 				var subs = read.GetQueryData<Subscription>(string.Format(Queries.subsscription, companyId));
 				
@@ -1981,5 +2074,435 @@ namespace OPImportUtility
 
 
 		}
+
+		private static void UpdateCompany(IContainer container, int companyIntId)
+		{
+			var companyGuid = Guid.Empty;
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var read = scope.Resolve<IOPReadRepository>();
+				var write = scope.Resolve<IWriteRepository>();
+				var readerservice = scope.Resolve<IReaderService>();
+				var companyService = scope.Resolve<ICompanyService>();
+				
+				var compList =
+				read.GetQueryData<KeyValuePair<int, Guid>>("select CompanyIntId as [Key], Id as [Value] from paxolop.dbo.Company where  CompanyIntId=" +
+																									 companyIntId);
+
+				companyGuid = compList.First().Value;
+				var pxcompany = readerservice.GetCompany(companyGuid);
+					if (!users.Any())
+					{
+						users = read.GetQueryData<UserAccount>(Queries.users);
+					}
+					if (!contacts.Any())
+						contacts = read.GetQueryData<Contact>(Queries.contacts);
+					if (!hostList.Any())
+						hostList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Host>(Queries.pxhosts);
+					var data = read.GetQueryData<Company>(string.Format(Queries.company, compList.First().Key));
+					var mapper = scope.Resolve<IMapper>();
+					var companies = mapper.Map<List<Company>, List<HrMaxx.OnlinePayroll.Models.Company>>(data);
+					companies.ForEach(company =>
+					{
+						company.Id = pxcompany.Id;
+						company.CompanyTaxRates = pxcompany.CompanyTaxRates;
+						company.States = pxcompany.States;
+						company.Contract = pxcompany.Contract;
+						company.HostId = hostList.First(h => h.HostIntId == data.First().CPAID).Id;
+						
+
+						var mc = contacts.FirstOrDefault(co => co.EntityTypeID == 2 && co.EntityID == company.CompanyIntId && co.ContactType == 1);
+						var bc = contacts.First(co => co.EntityTypeID == 2 && co.EntityID == company.CompanyIntId && co.ContactType == 3);
+						if (mc == null)
+							mc = bc;
+						company.CompanyAddress = new Address
+						{
+							AddressLine1 = mc.AddressLine1,
+							AddressLine2 = mc.AddressLine2,
+							CountryId = 1,
+							StateId = ((USStates)HrMaaxxSecurity.GetEnumFromHrMaxxName<USStates>(mc.State)).GetDbId().Value,
+							City = mc.City,
+							Zip = mc.Zip,
+							ZipExtension = mc.ZipExtension,
+							Type = AddressType.Business
+						};
+						company.BusinessAddress = new Address
+						{
+							AddressLine1 = bc.AddressLine1,
+							AddressLine2 = bc.AddressLine2,
+							CountryId = 1,
+							StateId = ((USStates)HrMaaxxSecurity.GetEnumFromHrMaxxName<USStates>(bc.State)).GetDbId().Value,
+							City = bc.City,
+							Zip = bc.Zip,
+							ZipExtension = bc.ZipExtension,
+							Type = AddressType.Business
+						};
+						if (company.CompanyAddress.AddressLine1 == company.BusinessAddress.AddressLine1 &&
+								company.CompanyAddress.City == company.BusinessAddress.City &&
+								company.CompanyAddress.StateId == company.BusinessAddress.StateId &&
+								company.CompanyAddress.Zip == company.BusinessAddress.Zip)
+							company.IsAddressSame = true;
+
+						company.Contact = new HrMaxx.Common.Models.Dtos.Contact()
+						{
+							Address = company.CompanyAddress
+							,
+							Email = mc.Email1,
+							Id = CombGuid.Generate(),
+							Fax = Naturalize(mc.Fax),
+							FirstName = mc.ContactFirstName,
+							MiddleInitial = mc.ContactMiddleName,
+							LastName = mc.ContactLastName,
+							IsPrimary = true,
+							Mobile = Naturalize(mc.Phone2),
+							Phone = Naturalize(mc.Phone1),
+							LastModified = DateTime.Now,
+							UserName = "System Import"
+						};
+
+						company.States.First().StateEIN = Crypto.Decrypt(data.First(opc => opc.CompanyID == company.CompanyIntId).SEIN).Replace("-", string.Empty);
+						company.States.First().StatePIN =
+							string.IsNullOrWhiteSpace(Crypto.Decrypt(data.First(opc => opc.CompanyID == company.CompanyIntId).STPIN))
+								? "0000"
+								: Crypto.Decrypt(data.First(opc => opc.CompanyID == company.CompanyIntId).STPIN);
+						
+						company.FederalPin = string.IsNullOrWhiteSpace(company.FederalPin) ? "0000" : company.FederalPin;
+						var subs = read.GetQueryData<Subscription>(string.Format(Queries.subsscription, companyIntId));
+						var bds = read.GetQueryData<BillingDetail>(Queries.billing);	
+						var contract = company.Contract;
+						var csub = subs.Where(s => s.CompanyId == company.CompanyIntId).ToList();
+						if (csub.Any())
+						{
+
+							var sub = csub.OrderByDescending(s => s.StartDate).First();
+						
+							if (sub.BillingDetailId != 0)
+							{
+								var bd = bds.First(b => b.Id == sub.BillingDetailId);
+								var mbd = mapper.Map<BillingDetail, CreditCard>(bd);
+								contract.BillingOption = BillingOptions.CreditCard;
+								contract.CreditCardDetails = mbd;
+								contract.CreditCardDetails.CardName = string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardName)
+									? "NA"
+									: contract.CreditCardDetails.CardName;
+								contract.CreditCardDetails.BillingAddress.AddressLine1 = string.IsNullOrWhiteSpace(contract.CreditCardDetails.BillingAddress.AddressLine1)
+									? "NA"
+									: contract.CreditCardDetails.BillingAddress.AddressLine1;
+								if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length != 16)
+								{
+									contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
+								}
+								if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
+								{
+									contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
+								}
+								var stateid = HrMaaxxSecurity.GetEnumFromHrMaxxName<USStates>(Crypto.Decrypt(bd.billingAddressState));
+								if (stateid != null)
+									contract.CreditCardDetails.BillingAddress.StateId = (int)stateid;
+
+							}
+							else
+							{
+								contract.BillingOption = BillingOptions.None;
+
+							}
+
+						}
+					
+
+					});
+				
+					
+
+					companyService.Save(companies.First(), ignoreEinCheck:true);
+					write.SaveCompanyAssociatedData(compList.First().Key);
+
+			}
+
+			Logger.Info("Company Updated");
+			UpdateCompanyAccounts(container, companyGuid, companyIntId);
+			Logger.Info("Accounts Updated");
+			UpdateCompanyVendors(container, companyGuid, companyIntId);
+			Logger.Info("Vendors Updated");
+			UpdateEmployees(container, companyGuid, companyIntId);
+			//ImportUsers(container, level:3, companyId: companyId);
+			ImportPayrolls(container, companyIntId);
+			ImportJournals(container, companyIntId);
+			Logger.Info("Finsihed copying journals");
+
+		}
+		private static void UpdateCompanyAccounts(IContainer container, Guid companyId, int companyIntId)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var write = scope.Resolve<IWriteRepository>();
+
+				const string accountsql = "insert into AccountTemplate(Type, SubType, Name, TaxCode, StateId) values(1,2,'Bank',null, null);update OnlinePayroll.dbo.COA_SubTypeLookup set AccountName='Bank' where COA_SubTypeID=1;" +
+				                          "set identity_insert CompanyAccount On; " +
+				                          "merge CompanyAccount t using (select cc.coaid Id, (select Id from company where CompanyIntId=cc.CompanyId) CompanyId, act.Type, act.SubType, cc.COAName Name, act.TaxCode, act.Id TemplateId, " +
+				                          "cc.OpeningBalance, case when act.Type=1 and act.SubType=2 then (select accountid from onlinepayroll.dbo.BankAccount where entitytypeid=5 and EntityId=coaid) else null end BankAccountId, " +
+				                          "getdate() LastModified,'System Import' LastModifiedBy, " +
+				                          "case when act.Type=1 and act.SubType=2 and exists (select 'x' from onlinepayroll.dbo.BankAccount where entitytypeid=5 and EntityId=coaid and PayrollFlag='Y') then 1 else 0 end UsedInPayroll,0 UsedInInvoiceDeposit " +
+				                          "from OnlinePayroll.dbo.COA_Company cc, (select id, type, accounttemplate.subtype, name, accounttemplate.taxcode, COA_SubTypeID from AccountTemplate, OnlinePayroll.dbo.COA_SubTypeLookup where name=AccountName collate Latin1_General_CI_AS and Type=COA_TypeID) act " +
+				                          "where cc.COA_SubTypeID=act.COA_SubTypeID and cc.CompanyId=@CompanyIntId) s " +
+				                          "on (t.CompanyId=s.CompanyId and t.Id=s.Id) " +
+				                          "when matched and (t.OpeningBalance<>s.OpeningBalance or t.BankAccountId<>s.BankAccountId or t.UsedInPayroll<>s.UsedInPayroll or t.Name<>s.Name collate Latin1_General_CI_AS) " +
+				                          "then Update set t.OpeningBalance=s.OpeningBalance, t.BankAccountId=s.BankAccountId, t.UsedInPayroll=s.UsedInPayroll, t.Name=s.Name " +
+				                          "when not matched by target then insert (Id, CompanyId, Type, SubType, Name, TaxCode, TemplateId, OpeningBalance, BankAccountId, LastModified, LastModifiedBy, UsedInPayroll, UsedInInvoiceDeposit) " +
+				                          "values(s.Id, s.CompanyId, s.Type, s.SubType, s.Name, s.TaxCode, s.TemplateId, s.OpeningBalance, s.BankAccountId, s.LastModified, s.LastModifiedBy, s.UsedInPayroll, s.UsedInInvoiceDeposit); " +
+				                          "set identity_insert CompanyAccount Off; " +
+																	"update CompanyAccount set TemplateId=null where companyId=(select Id from Company where CompanyIntId=@CompanyIntId) and Type=1 and SubType=2;" +
+																	"delete from AccountTemplate where Type=1 and SubType=2;" +
+																	"Update OnlinePayroll.dbo.COA_SubTypeLookup set AccountName=null where COA_SubTypeID=1;";
+				
+				const string banksql = "set identity_insert BankAccount On;" +
+				                       "merge BankAccount t using (select AccountId Id, 2 EntityTypeId, (select Id from company where CompanyIntId=(select companyid from OnlinePayroll.dbo.COA_Company where coaid=EntityID)) EntityId, case when AccountType='Checking' then 1 else 2 end AccountType, " +
+				                       "BankName, BankName AccountName, AccountNumber, RoutingNumber, ba.LastUpdateDate LastModified, ba.LastUpdateBy LastModifiedBy,null FractionId " +
+				                       "from OnlinePayroll.dbo.BankAccount ba, OnlinePayroll.dbo.COA_Company cc where ba.EntityID=cc.COAID and EntityTypeID=5 and cc.COA_SubTypeID=1 and cc.CompanyId=@CompanyIntId) s " +
+				                       "on (t.EntityTypeId=2 and t.EntityId=s.EntityId and t.Id=s.Id) when matched and (t.AccountType<>s.AccountType or t.BankName<>s.BankName collate Latin1_General_CI_AS or t.AccountName<>s.AccountName collate Latin1_General_CI_AS or t.AccountNumber<>s.AccountNumber collate Latin1_General_CI_AS or t.RoutingNumber<>s.RoutingNumber collate Latin1_General_CI_AS) " +
+				                       "then Update set t.AccountType=s.AccountType, t.BankName=s.BankName, t.AccountName=s.AccountName, t.AccountNumber=s.AccountNumber, t.RoutingNumber=s.RoutingNumber " +
+				                       "when not matched by target then " +
+				                       "insert (Id, EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId) " +
+				                       "values(s.Id, s.EntityTypeId, s.EntityId, s.AccountType, s.BankName, s.AccountName, s.AccountNumber, s.RoutingNumber, s.LastModified, s.LastModifiedBy, s.FractionId); " +
+				                       "set identity_insert BankAccount Off; ";
+			
+				                       
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					
+					write.ExecuteQuery(banksql, new { CompanyId=companyId, CompanyIntId=companyIntId});
+					write.ExecuteQuery(accountsql, new { CompanyId = companyId, CompanyIntId = companyIntId });
+					
+					txn.Complete();
+				}
+			}
+		}
+		private static void UpdateCompanyVendors(IContainer scope, Guid companyId, int companyIntId)
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var write = scope.Resolve<IWriteRepository>();
+			var companyservice = scope.Resolve<ICompanyService>();
+			
+			if (!users.Any())
+			{
+				users = read.GetQueryData<UserAccount>(Queries.users);
+				//contacts = read.GetQueryData<Contact>(Queries.contacts);
+			}
+			if (!CompanyList.Any(c => c.CompanyIntId == companyIntId))
+				CompanyList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Company>(string.Format(Queries.pxcompanies, companyIntId));
+			var mapper = scope.Resolve<IMapper>();
+			var vendors = read.GetQueryData<Vendors>(string.Format(Queries.vendors, companyIntId));
+			var mapped = mapper.Map<List<Vendors>, List<HrMaxx.OnlinePayroll.Models.VendorCustomer>>(vendors);
+			var pxvendors = companyservice.GetVendorCustomers(companyId, true);
+			var pxcustomers = companyservice.GetVendorCustomers(companyId, false);
+			foreach (var vendorCustomer in mapped)
+			{
+				var src = vendors.First(v => v.VendorCustomerID == vendorCustomer.VendorCustomerIntId);
+				vendorCustomer.CompanyId = CompanyList.First(c => c.CompanyIntId == src.CompanyID).Id;
+				vendorCustomer.UserName = src.LastUpdatedBy.Equals(0) ? "System" : users.First(u => u.UserID == src.LastUpdatedBy).UserFullName;
+				vendorCustomer.IdentifierType = !vendorCustomer.IsVendor1099 || (string.IsNullOrWhiteSpace(vendorCustomer.IndividualSSN) && string.IsNullOrWhiteSpace(vendorCustomer.BusinessFIN))
+					? VCIdentifierType.NA
+					: !string.IsNullOrWhiteSpace(vendorCustomer.IndividualSSN)
+						? VCIdentifierType.IndividualSSN
+						: VCIdentifierType.BusinessFIN;
+
+				vendorCustomer.Contact.Address.Type = vendorCustomer.IdentifierType == VCIdentifierType.BusinessFIN
+					? AddressType.Business
+					: AddressType.Personal;
+				if (vendorCustomer.IsVendor && pxvendors.Any(vc => vc.VendorCustomerIntId == vendorCustomer.VendorCustomerIntId))
+				{
+					vendorCustomer.Id = pxvendors.First(vc => vc.VendorCustomerIntId == vendorCustomer.VendorCustomerIntId).Id;
+					companyservice.SaveVendorCustomers(vendorCustomer);
+				}
+				if (!vendorCustomer.IsVendor && pxcustomers.Any(vc => vc.VendorCustomerIntId == vendorCustomer.VendorCustomerIntId))
+				{
+					vendorCustomer.Id = pxcustomers.First(vc => vc.VendorCustomerIntId == vendorCustomer.VendorCustomerIntId).Id;
+					companyservice.SaveVendorCustomers(vendorCustomer);
+				}
+
+			}
+			mapped = mapped.Where(mvc=>(mvc.IsVendor && !pxvendors.Any(vc=>vc.VendorCustomerIntId==mvc.VendorCustomerIntId)) || (!mvc.IsVendor && !pxcustomers.Any(vc=>vc.VendorCustomerIntId==mvc.VendorCustomerIntId))).ToList();
+			var dbvendors = mapper.Map<List<VendorCustomer>, List<HrMaxx.OnlinePayroll.Models.DataModel.VendorCustomer>>(mapped);
+			using (var txn = TransactionScopeHelper.Transaction())
+			{
+				write.SaveVendors(dbvendors);
+				txn.Complete();
+			}
+			
+
+		}
+		private static void UpdateEmployees(IContainer scope, Guid companyId, int companyIntId)
+		{
+			var read = scope.Resolve<IOPReadRepository>();
+			var write = scope.Resolve<IWriteRepository>();
+			var companyservice = scope.Resolve<ICompanyService>();
+			var readerService = scope.Resolve<IReaderService>();
+			//
+			
+			if (!users.Any())
+			{
+				users = read.GetQueryData<UserAccount>(Queries.users);
+				
+			}
+			if(!contacts.Any())
+				contacts = read.GetQueryData<Contact>(Queries.contacts);
+			if (!CompanyList.Any(c => c.CompanyIntId == companyIntId))
+				CompanyList = read.GetQueryData<HrMaxx.OnlinePayroll.Models.DataModel.Company>(string.Format(Queries.pxcompanies, companyId));
+			var companies = readerService.GetCompanies(company: companyId, status:0);
+			var emps = readerService.GetEmployees(company: companyId, status: 0);
+			var mapper = scope.Resolve<IMapper>();
+			var employees = read.GetQueryData<Employee>(string.Format(Queries.employees, companyIntId));
+			
+			var employeepaytypess = read.GetQueryData<EmployeePayType>(Queries.employeepaytypes);
+			var employeepayratess = read.GetQueryData<EmployeePayRate>(Queries.employeepayrates);
+
+			var payTypes = read.GetQueryData<HrMaxx.OnlinePayroll.Models.PayType>("select * from paxolop.dbo.paytype");
+
+			var employeeList = new List<HrMaxx.OnlinePayroll.Models.Employee>();
+			employees.ForEach(e =>
+			{
+				var mapped = mapper.Map<Employee, HrMaxx.OnlinePayroll.Models.Employee>(e);
+				var company = companies.First(c => c.CompanyIntId == e.CompanyID);
+				mapped.HostId = company.HostId;
+				mapped.CompanyId = company.Id;
+				mapped.SSN = mapped.SSN.Replace("-", string.Empty);
+				mapped.State = new EmployeeState
+				{
+					AdditionalAmount = e.StateAdditionalAmount,
+					Exemptions = e.StateExemptions,
+					State = company.States.First().State,
+					TaxStatus =
+						e.StateFilingStatus.Equals("UHH")
+							? EmployeeTaxStatus.UnmarriedHeadofHousehold
+							: e.StateFilingStatus.Equals("MFJ") ? EmployeeTaxStatus.Married : EmployeeTaxStatus.Single
+				};
+				var bd = Crypto.Decrypt(e.BirthDate);
+				if (!string.IsNullOrWhiteSpace(bd))
+				{
+					DateTime bd1;
+					if (DateTime.TryParse(bd, out bd1))
+					{
+						mapped.BirthDate = bd1;
+					}
+					else if (DateTime.TryParseExact(bd, "M/dd/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out bd1))
+					{
+						mapped.BirthDate = bd1;
+					}
+					else
+					{
+						mapped.BirthDate = default(DateTime?);
+					}
+					if (mapped.BirthDate.HasValue && mapped.BirthDate.Value.Year < 1900)
+					{
+						mapped.BirthDate = new DateTime( 1900 + Convert.ToInt32(mapped.BirthDate.Value.Year.ToString("0000").Substring(2, 2)), mapped.BirthDate.Value.Month, mapped.BirthDate.Value.Day);
+					}
+				}
+
+				if (e.MultipleCompensationTypes)
+				{
+					var ept = employeepaytypess.Where(ep => ep.EmployeeId == e.EmployeeID).ToList();
+					ept.ForEach(ep => mapped.Compensations.Add(new HrMaxx.OnlinePayroll.Models.EmployeePayType()
+					{
+						Amount = ep.Amount,
+						PayType = payTypes.First(pt => pt.Id == ep.OtherTypeId)
+					}));
+				}
+				if (e.MultiplePayRates)
+				{
+					var epr = employeepayratess.Where(ep => ep.EmployeeId == e.EmployeeID).ToList();
+					epr.ForEach(ep => mapped.PayCodes.Add(company.PayCodes.First(cpc => cpc.Description.Equals(ep.PayRateDescription) && cpc.HourlyRate == ep.PayRateAmount)));
+				}
+				
+				mapped.WorkerCompensation = company.WorkerCompensations.FirstOrDefault(wc => wc.Code == e.WCJobClass);
+				mapped.UserName = e.LastUpdatedBy == 0 ? "System" : users.First(u => u.UserID == e.LastUpdatedBy).UserFullName;
+				var mc = contacts.First(c => c.EntityTypeID == 3 && c.EntityID == e.EmployeeID);
+				mapped.Contact = new HrMaxx.Common.Models.Dtos.Contact()
+				{
+					Address = new Address
+					{
+						AddressLine1 = mc.AddressLine1,
+						AddressLine2 = mc.AddressLine2,
+						CountryId = 1,
+						StateId = ((USStates)HrMaaxxSecurity.GetEnumFromHrMaxxName<USStates>(mc.State)).GetDbId().Value,
+						City = mc.City,
+						Zip = mc.Zip,
+						ZipExtension = mc.ZipExtension,
+						Type = AddressType.Business
+					}
+					,
+					Email = string.IsNullOrWhiteSpace(mc.Email1) ? "na@na.com" : string.Empty,
+					Id = CombGuid.Generate(),
+					Fax = Naturalize(mc.Fax),
+					FirstName = mc.ContactFirstName,
+					MiddleInitial = mc.ContactMiddleName,
+					LastName = mc.ContactLastName,
+					IsPrimary = true,
+					Mobile = Naturalize(mc.Phone2),
+					Phone = Naturalize(mc.Phone1),
+					LastModified = DateTime.Now,
+					UserName = "System Import"
+				};
+				mapped.SickLeaveHireDate = mapped.HireDate;
+				if(mapped.PayType==EmployeeType.Hourly && mapped.PayCodes.All(pc => pc.Id != 0))
+					mapped.PayCodes.Add(new CompanyPayCode()
+					{
+						Id = 0,
+						CompanyId = mapped.CompanyId,
+						Code = "Default",
+						Description = "Base Rate",
+						HourlyRate = mapped.Rate
+					});
+				employeeList.Add(mapped);
+
+
+			});
+			var newemployees = employeeList.Where(e => !emps.Any(e1 => e1.EmployeeIntId == e.EmployeeIntId)).ToList();
+			var oldemployees = employeeList.Where(e => emps.Any(e1 => e1.EmployeeIntId == e.EmployeeIntId)).ToList();
+			oldemployees.ForEach(e =>
+			{
+				e.Id = emps.First(e1 => e1.EmployeeIntId == e.EmployeeIntId).Id;
+			});
+			var dbmapped = mapper.Map<List<HrMaxx.OnlinePayroll.Models.Employee>, List<HrMaxx.OnlinePayroll.Models.DataModel.Employee>>(newemployees);
+			using (var txn = TransactionScopeHelper.Transaction())
+			{
+				write.SaveEmployees(dbmapped, companyIntId);
+				companyservice.SaveEmployees(oldemployees, true);
+				const string mergeemployeedeductions =
+					"merge EmployeeDeduction t using ( select (select Id from Employee where EmployeeIntId=ed.EmployeeId) EmployeeId, case ed.DedutionMethod when 2 then 1 when 1 then 2 else 0 end Method,ed.DeductionAmount Rate,ed.AnnualMaxAmt AnnualMax," +
+														"DeductionID CompanyDeductionId from OnlinePayroll.dbo.Employee_Deduction ed, " +
+														"OnlinePayroll.dbo.Employee e where ed.EmployeeId=e.EmployeeId and ed.DeductionID>0 and e.CompanyId=@CompanyId) s " +
+														"on (t.EmployeeId=s.EmployeeId and t.CompanyDeductionId=s.CompanyDeductionId) " +
+														"when matched and (t.Method<>s.Method or t.Rate<>s.Rate or t.AnnualMax<>s.AnnualMax) " +
+														"then Update set t.Method=s.Method, t.Rate=s.Rate, t.AnnualMax=s.AnnualMax " +
+														"when not matched by target then insert (EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId) " +
+														"values(s.EmployeeId, s.Method, s.Rate, s.AnnualMax, s.CompanyDeductionId); ";
+				const string mergebankaccounts =
+					"set identity_insert BankAccount On; " +
+					"merge BankAccount t using ( select AccountId Id, 3 EntityTypeId, (select Id from Employee where EmployeeIntId=EntityID) EntityId, " +
+					"case when AccountType='Checking' then 1 else 2 end AccountType, isnull(BankName,'') BankName, isnull(BankName,'') AccountName, AccountNumber, RoutingNumber, ba.LastUpdateDate LastModified, ba.LastUpdateBy LastModifiedBy,null FractionId " +
+					"from OnlinePayroll.dbo.BankAccount ba, OnlinePayroll.dbo.employee e " +
+					"where EntityTypeID=3 and ba.EntityId=e.EmployeeId and e.CompanyId=@CompanyId and ba.BankName<>'') s " +
+					"on (t.EntityId=s.EntityId and t.EntityTypeId=3 and t.Id=s.Id) " +
+					"when matched and (t.AccountType<>s.AccountType or t.BankName<>s.BankName collate Latin1_General_CI_AS or t.AccountName<>s.AccountName collate Latin1_General_CI_AS or t.AccountNumber<>s.AccountNumber collate Latin1_General_CI_AS or t.RoutingNumber<>s.RoutingNumber collate Latin1_General_CI_AS) " +
+					"then Update set t.AccountType=s.AccountType, t.BankName=s.BankName, t.AccountName=s.AccountName, t.AccountNumber=s.AccountNumber, t.RoutingNumber=s.RoutingNumber " +
+					"when not matched by target then " +
+					"insert (Id, EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId) " +
+					"values(s.Id, s.EntityTypeId, s.EntityId, s.AccountType, s.BankName, s.AccountName, s.AccountNumber, s.RoutingNumber, s.LastModified, s.LastModifiedBy, s.FractionId) " +
+					"when not matched by source and t.EntityTypeId=3 and t.EntityId in (select Id from Employee where CompanyId=(select Id from company where companyintid=@CompanyId)) then delete; " +
+					"set identity_insert BankAccount Off; " +
+					"merge EmployeeBankAccount t using ( select EntityId EmployeeId, Id BankAccountId, 100.00 Percentage from BankAccount where EntityTypeId=3 and EntityId in (select e.Id from Employee e, Company c where e.CompanyId=c.Id and c.CompanyIntId=30)) s " +
+					"on (t.EmployeeId=s.EmployeeId and t.BankAccountId=s.BankAccountId) " +
+					"when matched and (t.Percentage<>s.Percentage) then Update set t.Percentage=s.Percentage " +
+					"when not matched by target then insert (EmployeeId, BankAccountId, Percentage) values(s.EmployeeId, s.BankAccountId, s.Percentage); " ;
+				
+				write.ExecuteQuery(mergeemployeedeductions, new {CompanyId=companyIntId});
+				write.ExecuteQuery(mergebankaccounts, new {CompanyId=companyIntId});
+				
+				txn.Complete();
+			}
+			Console.WriteLine("finished Updateing employees for Company:{0} New Employees:{1}, Existing Employees:{2}", companyId, newemployees.Count, oldemployees.Count);
+		}
+
+		}
+
 	}
-}

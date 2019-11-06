@@ -47,6 +47,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string LastModifiedBy { get; set; }
 		public int? WorkerCompensationId { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
+		public DateTime? LastPayDay {get; set; }
 		public int? CompanyEmployeeNo { get; set; }
 		public string Notes { get; set; }
 

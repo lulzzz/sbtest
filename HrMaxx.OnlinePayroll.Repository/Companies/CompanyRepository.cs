@@ -48,7 +48,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		}
 
 
-		public Models.Company SaveCompany(Models.Company company)
+		public Models.Company SaveCompany(Models.Company company, bool ignoreEinCheck = false)
 		{
 			var dbMappedCompany = _mapper.Map<Models.Company, Models.DataModel.Company>(company);
 			var dbCompanies = _dbContext.Companies.Where(c => c.HostId == company.HostId && (c.Id == company.Id || (!company.IsLocation && c.FederalEIN==dbMappedCompany.FederalEIN))).ToList();
@@ -56,7 +56,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			{
 				_dbContext.Companies.Add(dbMappedCompany);
 			}
-			else if (!company.IsLocation && dbCompanies.Any(c => c.Id != company.Id && c.FederalEIN == dbMappedCompany.FederalEIN && !c.ParentId.HasValue))
+			else if (!ignoreEinCheck && !company.IsLocation && dbCompanies.Any(c => c.Id != company.Id && c.FederalEIN == dbMappedCompany.FederalEIN && !c.ParentId.HasValue))
 				throw new Exception("FEIN already exists for another Company withing the same Host");
 			else
 			{
@@ -400,7 +400,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _dbContext.Companies.Any(c => c.Id == companyId || c.FederalEIN.Equals(fein));
 		}
 
-		public Employee SaveEmployee(Employee employee)
+		public Employee SaveEmployee(Employee employee, bool ignoreSSNCheck = false)
 		{
 			if (employee.BankAccounts != null && employee.BankAccounts.Any())
 			{
@@ -435,7 +435,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					me.CompanyEmployeeNo = emps.Max(e => e.CompanyEmployeeNo) + 1;
 				_dbContext.Employees.Add(me);
 			}
-			else if(dbEmployees.Count>1)
+			else if(!ignoreSSNCheck && dbEmployees.Count>1)
 			{
 				throw new Exception("Another employee with the same SSN exists in this company");
 			}

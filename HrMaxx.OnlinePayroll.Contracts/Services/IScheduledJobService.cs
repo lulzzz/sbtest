@@ -9,6 +9,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IScheduledJobService
 	{
 		void UpdateInvoicePayments();
+		void UpdateLastPayrollDates();
 		void FillACHData();
 		void UpdateDBStats();
 		void ProfitStarsNineAM();

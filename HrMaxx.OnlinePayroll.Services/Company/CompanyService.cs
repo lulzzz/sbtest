@@ -72,7 +72,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public Company Save(Company company, bool updateEmployeeSchedules = false)
+		public Company Save(Company company, bool updateEmployeeSchedules = false, bool ignoreEinCheck = false)
 		{
 			try
 			{
@@ -88,9 +88,9 @@ namespace HrMaxx.OnlinePayroll.Services
 
 					});
 					
-					var savedcompany = _companyRepository.SaveCompany(company);
+					var savedcompany = _companyRepository.SaveCompany(company, ignoreEinCheck);
 					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, company.Contract);
-					if(company.RecurringCharges.Any())
+					if(company.RecurringCharges!=null && company.RecurringCharges.Any())
 						savedcompany.RecurringCharges = _companyRepository.SaveRecurringCharges(savedcompany, company.RecurringCharges);
 					//if (savedcontract.InvoiceSetup.RecurringCharges.Any())
 					//{
@@ -389,7 +389,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public List<Employee> SaveEmployees(List<Employee> employees)
+		public List<Employee> SaveEmployees(List<Employee> employees, bool ignoreSSNCheck = false)
 		{
 			try
 			{
@@ -397,7 +397,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				{
 					
 					var result = new List<Employee>();
-					employees.ForEach(e=>result.Add(SaveEmployee(e, false)));
+					employees.ForEach(e=>result.Add(SaveEmployee(e, false, ignoreSSNCheck)));
 					txn.Complete();
 					return result;
 				}
@@ -414,7 +414,7 @@ namespace HrMaxx.OnlinePayroll.Services
 		
 
 
-		public Employee SaveEmployee(Employee employee, bool sendNotification = true)
+		public Employee SaveEmployee(Employee employee, bool sendNotification = true , bool ignoreSSNCheck = false)
 		{
 			try
 			{
@@ -435,7 +435,7 @@ namespace HrMaxx.OnlinePayroll.Services
 							Id=0, CompanyId = employee.CompanyId, Code = "Default", Description = "Base Rate", HourlyRate = employee.Rate
 						});
 					}
-					var savedEmployee = _companyRepository.SaveEmployee(employee);
+					var savedEmployee = _companyRepository.SaveEmployee(employee, ignoreSSNCheck);
 					if (dbEmployee!=null && dbEmployee.SickLeaveHireDate < employee.SickLeaveHireDate)
 					{
 						_payrollRepository.UpdateEmployeeChecksForLeaveCycle(dbEmployee.Id, dbEmployee.SickLeaveHireDate,

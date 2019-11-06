@@ -1492,16 +1492,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					txn.Complete();
 
-					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
-					{
-						SavedObject = savedPaycheck,
-						HostId = payroll.Company.HostId,
-						UserId = new Guid(user),
-						TimeStamp = DateTime.Now,
-						EventType = NotificationTypeEnum.Updated,
-						AffectedChecks = employeeFutureChecks,
-						UserName = name
-					});
+					//Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
+					//{
+					//	SavedObject = savedPaycheck,
+					//	HostId = payroll.Company.HostId,
+					//	UserId = new Guid(user),
+					//	TimeStamp = DateTime.Now,
+					//	EventType = NotificationTypeEnum.Updated,
+					//	AffectedChecks = employeeFutureChecks,
+					//	UserName = name
+					//});
 				}
 				return _readerService.GetPayroll(payrollId);
 
@@ -1612,20 +1612,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				}
 				payroll = _readerService.GetPayroll(payroll.Id);
-				foreach (var payCheck in payroll.PayChecks)
-				{
-					Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
-					{
-						SavedObject = payCheck,
-						HostId = payroll.Company.HostId,
-						UserId = new Guid(userId),
-						TimeStamp = DateTime.Now,
-						EventType = NotificationTypeEnum.Updated,
-						AffectedChecks = affectedChecks.Where(pc => pc.Employee.Id == payCheck.Employee.Id).ToList(),
-						UserName = userName,
-						IsUnVoid=true
-					});
-				}
+				//foreach (var payCheck in payroll.PayChecks)
+				//{
+				//	Bus.Publish<PayCheckVoidedEvent>(new PayCheckVoidedEvent
+				//	{
+				//		SavedObject = payCheck,
+				//		HostId = payroll.Company.HostId,
+				//		UserId = new Guid(userId),
+				//		TimeStamp = DateTime.Now,
+				//		EventType = NotificationTypeEnum.Updated,
+				//		AffectedChecks = affectedChecks.Where(pc => pc.Employee.Id == payCheck.Employee.Id).ToList(),
+				//		UserName = userName,
+				//		IsUnVoid=true
+				//	});
+				//}
 				Log.Info("Void Payroll Finished" + DateTime.Now.ToString("hh:mm:ss:fff"));
 				_fileRepository.DeleteDestinationFile(payroll.Id + ".pdf");
 				return payroll;
@@ -3847,6 +3847,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Normalize PayChecks for " + companyId + " payrollId " + payrollId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void UpdateCompanyAndEmployeeLastPayrollDate()
+		{
+			try
+			{
+				_payrollRepository.UpdateCompanyAndEmployeeLastPayrollDate();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update company and employee last payroll dates ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

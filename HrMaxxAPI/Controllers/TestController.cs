@@ -28,6 +28,16 @@ namespace HrMaxxAPI.Controllers
 			MakeServiceCall(() => _scheduledJobService.UpdateInvoicePayments(), "Update Invoice Payments for deposited checks");
 			
 		}
+
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route("Scheduled/UpdateLastPayrollDates")]
+		public void UpdateLastPayrollDates()
+		{
+			MakeServiceCall(() => _scheduledJobService.UpdateLastPayrollDates(), "Update Last Payroll Dates");
+
+		}
+
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.AllowAnonymous]
 		[System.Web.Http.Route("Scheduled/UpdateDBStats")]

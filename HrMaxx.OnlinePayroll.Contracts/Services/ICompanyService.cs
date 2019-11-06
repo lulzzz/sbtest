@@ -17,7 +17,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<CaliforniaCompanyTax> GetCaliforniaCompanyTaxes(int year);
 
 
-		Company Save(Company mappedResource, bool updateEmployeeSchedules = false);
+		Company Save(Company mappedResource, bool updateEmployeeSchedules = false, bool ignoreEinCheck = false);
 		Company SaveHostCompany(Company company, Host savedHost);
 		CompanyDeduction SaveDeduction(CompanyDeduction deduction, string fullName, Guid userId);
 		CompanyWorkerCompensation SaveWorkerCompensation(CompanyWorkerCompensation workerCompensation, string fullName, Guid guid);
@@ -27,14 +27,14 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		VendorCustomer SaveVendorCustomers(VendorCustomer mappedResource);
 		
 		Account SaveCompanyAccount(Account mappedResource);
-		
-		Employee SaveEmployee(Employee mappedResource, bool sendNotification = true);
+
+		Employee SaveEmployee(Employee mappedResource, bool sendNotification = true, bool ignoreSSNCheck = false);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction mappedResource, string fullName);
 		void DeleteEmployeeDeduction(int deductionId);
 		
 		CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource, string fullName, Guid guid);
-		
-		List<Employee> SaveEmployees(List<Employee> employees);
+
+		List<Employee> SaveEmployees(List<Employee> employees, bool ignoreSSNCheck = false);
 
 		
 		void SaveTSImportMap(Guid id, ImportMap importMap);

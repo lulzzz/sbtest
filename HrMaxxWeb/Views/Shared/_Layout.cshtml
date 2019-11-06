@@ -276,10 +276,10 @@ else
 {
 	<div id="page-container" ng-controller="mainCtrl" class="fade page-without-sidebar page-header-fixed" ng-app="common" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-employee="@CurrentUser.Employee" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName" data-claims="@CurrentUser.GetClaimsSerialized()">
 		@Html.Partial("_TopNavbar")
-		@*<div class="embed-responsive" style="padding-bottom: 46%">
+		<div class="embed-responsive" style="padding-bottom: 47%">
 			<iframe class="embed-responsive-item" src="http://ipaxol.com/" allowfullscreen></iframe>
-		</div>*@
-		@Html.Partial("Welcome")
+		</div>
+		@*@Html.Partial("Welcome")*@
 		<div class="modal fade" id="modal-dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">

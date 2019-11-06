@@ -774,6 +774,15 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
+		public void UpdateCompanyAndEmployeeLastPayrollDate()
+		{
+			const string query = @"UPDATE C SET LASTPAYROLLDATE=mAXpAYDAY FROM company c, (select CompanyId, max(PayDay) MaxPayDay from Payroll where IsVoid=0 group by CompanyId) mpd where c.Id= mpd.CompanyId and (c.LastPayrollDate<>MaxPayDay OR (C.LastPayrollDate IS NULL AND MPD.MaxPayDay IS NOT NULL)); update e set LastPayrollDate=empd.payday FROM Employee E left outer join DBO.EMPLOYEELASTPAYDAY EMPD on E.ID= EMPD.EMPLOYEEid WHERE  e.LastPayrollDate<>empd.payday or (e.LastPayrollDate is null and empd.payday is not null);";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(query);
+			}
+		}
+
 		public void VoidPayChecks(List<PayCheck> payChecks, string userName)
 		{
 			payChecks.ForEach(pc =>
@@ -830,11 +839,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 				{
 					dbEmployee.LastPayrollDate = _dbContext.PayrollPayChecks.Where(pc => pc.EmployeeId == id && !pc.IsVoid).Max(pc=>pc.PayDay);
 				}
-				else
-				{
-					dbEmployee.LastPayrollDate = default (DateTime?);
-				}
-
+				
 				if (dbEmployee.Rate != rate)
 				{
 					dbEmployee.Rate = rate;

@@ -84,6 +84,11 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			}
 		}
 
+		public void UpdateLastPayrollDates()
+		{
+			_payrollService.UpdateCompanyAndEmployeeLastPayrollDate();
+		}
+
 		public void FillACHData()
 		{
 			try

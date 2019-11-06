@@ -381,7 +381,7 @@
 													<div class="form-group">
 														<label>State</label>
 														<div>
-															<select id="state" class="form-control" ng-model="state.state" ng-disabled="selectedCompany.isLocation" ng-options="st.stateName for st in data.companyMetaData.countries[0].states track by st.stateId" required data-parsley-group="wizard-step-3" ng-class="{'parsley-error': !state.state.stateId}"></select>
+															<select id="state" class="form-control" ng-model="state.state" ng-disabled="selectedCompany.isLocation" ng-options="st.stateName for st in data.companyMetaData.countries[0].states | filter:{taxesEnabled:'true'} track by st.stateId" required data-parsley-group="wizard-step-3" ng-class="{'parsley-error': !state.state.stateId}"></select>
 														</div>
 													</div>
 													<div class="form-group alert alert-danger" ng-show="!isStateTaxAvailable(state)">

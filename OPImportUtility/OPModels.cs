@@ -25,13 +25,15 @@ namespace OPImportUtility
 		public const string employeepayrates = "select * from employeepayrates";
 
 		public const string payrolls =
-			"select ps.CompanyId, ps.PayStartDate, ps.PayEndDate, ps.PayDay as SchedulePayDay, ps.ScheduleType, p.* from Payroll p, PayrollSchedule ps where p.PayrollScheduleID=ps.PayrollScheduleId and year(p.PayDay)>2006 and p.PayrollId not in (select Id from PaxolOp.dbo.PayrollPayCheck) and ps.CompanyId={0}";
+			"select ps.CompanyId, ps.PayStartDate, ps.PayEndDate, ps.PayDay as SchedulePayDay, ps.ScheduleType, p.* from Payroll p, PayrollSchedule ps " +
+			"where p.PayrollScheduleID=ps.PayrollScheduleId and year(p.PayDay)>2006 and p.PayrollId not in (select Id from PaxolOp.dbo.PayrollPayCheck) and ps.CompanyId={0}";
 
 		public const string payrolltax = "select PayrollId, FederalCode as TaxId, Amount, TaxableWage from FederalTax where PayrollId in ({0}) union select PayrollId, (StateCode+6) as TaxId, Amount, TaxableWage from StateTax  where PayrollId in ({0})";
 		public const string payrollcompensation = "select PayrollId, CompensationTypeId, Amount from payrollcompensations where PayrollId in ({0})";
 		public const string payrolldeduction = "select * from deduction_payroll where PayrollId in ({0})";
 		public const string payrollaccumulation = "select * from payrollleaveaccumulation where PayrollId in ({0})";
-		public const string journal = "select j.*, cc.CompanyId from Journal j, COA_Company cc where j.MainCOAID=cc.COAID and j.TransactionType in (1,2,3,4,5,8) and year(j.TransactionDate)>2006 and JournalId not in (select Id from paxolop.dbo.Journal union select Id from Paxolop.dbo.CheckbookJournal) and cc.CompanyId={0}";
+		public const string journal = "select j.*, cc.CompanyId from Journal j, COA_Company cc where j.MainCOAID=cc.COAID and j.TransactionType in (1,2,3,4,5,8) " +
+		                              "and year(j.TransactionDate)>2006 and JournalId not in (select Id from paxolop.dbo.Journal union select Id from Paxolop.dbo.CheckbookJournal) and cc.CompanyId={0} order by j.JournalId";
 
 		public const string payrollJournals =
 			"select *, (select CompanyId from COA_Company where COAID=MainCoaid) CompanyId from Journal where TransactionType=4 and PayrollId in ({0})";

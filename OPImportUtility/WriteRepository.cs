@@ -143,42 +143,90 @@ namespace OPImportUtility
 
 		public void SaveCompanyAssociatedData(int companyId)
 		{
-			const string taxrates =
-				"delete from CompanyTaxRate where CompanyId=(select Id from company where companyintid=@CompanyId); " +
-				"insert into CompanyTaxRate(CompanyId, TaxId, TaxYear, Rate) select (select Id from company where companyintid=@CompanyId), (select Id from Tax where Code=Taxcode collate Latin1_General_CI_AI), year(startdate), taxrate from OnlinePayroll.dbo.CompanyTaxRates where CompanyId=@CompanyId;";
-			const string paytypes =
-				"delete from CompanyAccumlatedPayType where CompanyId=(select Id from company where companyintid=@CompanyId); set identity_insert CompanyAccumlatedPayType On;insert into CompanyAccumlatedPayType(Id, PayTypeId, CompanyId, RatePerHour, AnnualLimit, CompanyManaged, IsLumpSum, IsEmployeeSpecific) select PayTypeID, 6, (select Id from company where companyintid=@CompanyId), PayTypeRate, PayTypeLimit, 0, 0, 0 from OnlinePayroll.dbo.CompanyPayType where CompanyId=@CompanyId;set identity_insert CompanyAccumlatedPayType Off;";
-			const string deductions =
-				"delete from CompanyDeduction where CompanyId=(select Id from company where companyintid=@CompanyId);" +
-				"set identity_insert CompanyDeduction On;" +
-				"insert into CompanyDeduction (Id, CompanyId, TypeId, Name, Description, AnnualMax, FloorPerCheck, ApplyInvoiceCredit) " +
-				"select DeductionId, (select Id from company where companyintid=@CompanyId), " +
-				"(select Id from DeductionType where Name=(select replace(DeductionType, 'Wage Advanced Repay','Wage Advance Repay') " +
-				"from OnlinePayroll.dbo.Deduction_Type where Id=DeductionTypeID) collate Latin1_General_CI_AI), " +
-				"DeductionName, DeductionDescription, AnnualMaxAmt, null, 0 " +
-				"from OnlinePayroll.dbo.Deduction_Company where CompanyID=@CompanyId;" +
-				"set identity_insert CompanyDeduction Off;";
-			const string wcs = "delete from CompanyWorkerCompensation where CompanyId=(select Id from company where companyintid=@CompanyId);" +
-			                   "insert into CompanyWorkerCompensation(CompanyId, Code, Description, Rate, MinGrossWage) " +
-			                   "select (select Id from company where companyintid=@CompanyId), " +
-			                   "case when WCCode<2 then 1 else WCCode end, WCDescription, WCRate, null " +
-			                   "from OnlinePayroll.dbo.WorkersComp_Company " +
-			                   "where CompanyID=@CompanyId";
-			const string pcs = "delete from CompanyPayCode where CompanyId=(select Id from company where companyintid=@CompanyId);" +
-			                   "insert into CompanyPayCode(CompanyId, Code, Description, HourlyRate) " +
-												 "select (select Id from company where companyintid=@CompanyId), format(ROW_NUMBER() OVER(Partition by c.CompanyId ORDER BY ep.PayRateDescription),'00##') AS Code, ep.PayRateDescription, ep.PayRateAmount " +
-												 "from OnlinePayroll.dbo.Company c, " +
-												 "(select distinct e.CompanyID,epr.PayRateDescription, epr.PayRateAmount from OnlinePayroll.dbo.employee e, OnlinePayroll.dbo.EmployeePayRates epr " +
-			                   "where e.EmployeeID=epr.EmployeeId) ep " +
-			                   "where c.Companyid=ep.CompanyID and c.CompanyId=@CompanyId";
+			const string mergetaxrates =
+				"merge CompanyTaxRate t using (Select (select Id from company where companyintid=@CompanyId) CompanyId, (select Id from Tax where Code=Taxcode collate Latin1_General_CI_AI) TaxId, year(startdate) TaxYear, taxrate from OnlinePayroll.dbo.CompanyTaxRates where CompanyId=@CompanyId) s " +
+				"on (t.CompanyId=s.CompanyId " +
+				"and t.TaxId=s.TaxId and t.TaxYear=s.TaxYear) " +
+				"when matched and t.Rate<>s.TaxRate then Update set t.Rate=s.taxrate " +
+				"when not matched by target then insert (CompanyId, TaxId, TaxYear, Rate) values( s.CompanyId, s.TaxId, s.TaxYear, s.taxrate );";// +
+																	 //"when not matched by source and t.CompanyId=(select Id from company where companyintid=@CompanyId) then delete; ";
+
+			const string mergepaytypes = "set identity_insert CompanyAccumlatedPayType On;" +
+																	 "merge CompanyAccumlatedPayType t using (select PayTypeId Id,(select Id from company where companyintid=@CompanyId) CompanyId, PayTypeRate, PayTypeLimit from OnlinePayroll.dbo.CompanyPayType where CompanyId=@CompanyId) s " +
+																	 "on (t.CompanyId=s.CompanyId and t.PayTypeId=6 and t.Id=s.Id) " +
+																	 "when matched and (t.RatePerHour<>s.PayTypeRate or t.AnnualLimit<>s.PayTypeLimit) then Update set t.RatePerHour=s.PayTypeRate, AnnualLimit=s.PayTypeLimit " +
+																	 "when not matched by target then insert (Id, PayTypeId, CompanyId, RatePerHour, AnnualLimit, CompanyManaged, IsLumpSum, IsEmployeeSpecific) " +
+																	 "values (s.Id, 6, s.CompanyId, s.PayTypeRate, s.PayTypeLimit, 0, 0, 0); " +
+																	 //"when not matched by source and t.CompanyId=(select Id from company where companyintid=@CompanyId) then delete; " +
+			                             "set identity_insert CompanyAccumlatedPayType Off;";
+
+			const string mergedeductions = "set identity_insert CompanyDeduction On;" +
+			                               "merge CompanyDeduction t using (select DeductionId Id, (select Id from company where companyintid=@CompanyId) CompanyId, (select Id from DeductionType where Name=(select replace(DeductionType, 'Wage Advanced Repay','Wage Advance Repay') from OnlinePayroll.dbo.Deduction_Type where Id=DeductionTypeID) collate Latin1_General_CI_AI) TypeId, DeductionName, DeductionDescription, AnnualMaxAmt, null FloorPerCheck, 0 ApplyInvoiceCredit from OnlinePayroll.dbo.Deduction_Company where CompanyId=@CompanyId) s" +
+			                               " on (t.CompanyId=s.CompanyId	and t.Id=s.Id) " +
+			                               "when matched and (t.Name<>s.DeductionName collate Latin1_General_CI_AI or t.Description<>s.DeductionDescription collate Latin1_General_CI_AI or t.AnnualMax<>s.AnnualMaxAmt) 	" +
+			                               "then Update set t.Name=s.DeductionName, Description=s.DeductionDescription, AnnualMax=s.AnnualMaxAmt " +
+			                               "when not matched by target then 	" +
+			                               "insert (Id, CompanyId, TypeId, Name, Description, AnnualMax, FloorPerCheck, ApplyInvoiceCredit) 	" +
+			                               "values(s.Id, s.CompanyId, s.TypeId, s.DeductionName, s.DeductionDescription, s.AnnualMaxAmt, s.FloorPerCheck, s.ApplyinvoiceCredit); " +
+			                               //"when not matched by source and t.CompanyId=(select Id from company where companyintid=@CompanyId) then delete; " +
+			                               "set identity_insert CompanyDeduction Off;";
+
+			const string mergewcs =
+				"merge CompanyWorkerCompensation t using (select (select Id from company where companyintid=@CompanyId) CompanyId,case when WCCode<2 then 1 else WCCode end Code, WCDescription, WCRate, null MinGrossWage from OnlinePayroll.dbo.WorkersComp_Company where CompanyId=@CompanyId) s " +
+				"on (t.CompanyId=s.CompanyId and t.Code=s.Code) " +
+				"when matched and (t.Description<>s.WCDescription  collate Latin1_General_CI_AI or t.Rate<>s.WCRate) then Update set t.Description=s.WCDescription, t.Rate=s.WCRate " +
+				"when not matched by target then insert (CompanyId, Code, Description, Rate, MinGrossWage) values (s.CompanyId, s.Code, s.WCDescription, s.WCRate, s.MinGrossWage); "; 
+															//+"when not matched by source and t.CompanyId=(select Id from company where companyintid=@CompanyId) then delete;";
+
+			const string mergepcs =
+				"merge CompanyPayCode t using (select (select Id from company where companyintid=@CompanyId) CompanyId, format(ROW_NUMBER() OVER(Partition by c.CompanyId ORDER BY ep.PayRateDescription),'00##') AS Code, ep.PayRateDescription, ep.PayRateAmount from OnlinePayroll.dbo.Company c, " +
+				"(select distinct e.CompanyID,epr.PayRateDescription, epr.PayRateAmount from OnlinePayroll.dbo.employee e, OnlinePayroll.dbo.EmployeePayRates epr where e.EmployeeID=epr.EmployeeId) ep where c.Companyid=ep.CompanyID and c.CompanyId=@CompanyId) s " +
+				"on (t.CompanyId=s.CompanyId and t.Code=s.Code) " +
+				"when matched and (t.Description<>s.PayRateDescription collate Latin1_General_CI_AI or t.HourlyRate<>s.PayRateAmount) then Update set t.Description=s.PayRateDescription, t.HourlyRate=s.PayRateAmount " +
+				"when not matched by target then insert (CompanyId, Code, Description, HourlyRate) values(s.CompanyId, s.Code, s.PayRateDescription, s.PayRateAmount); "; 
+															//+"when not matched by source and t.CompanyId=(select Id from company where companyintid=@CompanyId) then delete; ";
+			//const string taxrates =
+			//	"delete from CompanyTaxRate where CompanyId=(select Id from company where companyintid=@CompanyId); " +
+			//	"insert into CompanyTaxRate(CompanyId, TaxId, TaxYear, Rate) select (select Id from company where companyintid=@CompanyId), " +
+			//	"(select Id from Tax where Code=Taxcode collate Latin1_General_CI_AI), year(startdate), taxrate " +
+			//	"from OnlinePayroll.dbo.CompanyTaxRates where CompanyId=@CompanyId;";
+			//const string paytypes =
+			//	"delete from CompanyAccumlatedPayType where CompanyId=(select Id from company where companyintid=@CompanyId); " +
+			//	"set identity_insert CompanyAccumlatedPayType On;" +
+			//	"insert into CompanyAccumlatedPayType(Id, PayTypeId, CompanyId, RatePerHour, AnnualLimit, CompanyManaged, IsLumpSum, IsEmployeeSpecific) " +
+			//	"select PayTypeID, 6, (select Id from company where companyintid=@CompanyId), PayTypeRate, PayTypeLimit, 0, 0, 0 " +
+			//	"from OnlinePayroll.dbo.CompanyPayType where CompanyId=@CompanyId;set identity_insert CompanyAccumlatedPayType Off;";
+			//const string deductions =
+			//	"delete from CompanyDeduction where CompanyId=(select Id from company where companyintid=@CompanyId);" +
+			//	"set identity_insert CompanyDeduction On;" +
+			//	"insert into CompanyDeduction (Id, CompanyId, TypeId, Name, Description, AnnualMax, FloorPerCheck, ApplyInvoiceCredit) " +
+			//	"select DeductionId, (select Id from company where companyintid=@CompanyId), " +
+			//	"(select Id from DeductionType where Name=(select replace(DeductionType, 'Wage Advanced Repay','Wage Advance Repay') " +
+			//	"from OnlinePayroll.dbo.Deduction_Type where Id=DeductionTypeID) collate Latin1_General_CI_AI), " +
+			//	"DeductionName, DeductionDescription, AnnualMaxAmt, null, 0 " +
+			//	"from OnlinePayroll.dbo.Deduction_Company where CompanyID=@CompanyId;" +
+			//	"set identity_insert CompanyDeduction Off;";
+			//const string wcs = "delete from CompanyWorkerCompensation where CompanyId=(select Id from company where companyintid=@CompanyId);" +
+			//									 "insert into CompanyWorkerCompensation(CompanyId, Code, Description, Rate, MinGrossWage) " +
+			//									 "select (select Id from company where companyintid=@CompanyId), " +
+			//									 "case when WCCode<2 then 1 else WCCode end, WCDescription, WCRate, null " +
+			//									 "from OnlinePayroll.dbo.WorkersComp_Company " +
+			//									 "where CompanyID=@CompanyId";
+			//const string pcs = "delete from CompanyPayCode where CompanyId=(select Id from company where companyintid=@CompanyId);" +
+			//									 "insert into CompanyPayCode(CompanyId, Code, Description, HourlyRate) " +
+			//									 "select (select Id from company where companyintid=@CompanyId), format(ROW_NUMBER() OVER(Partition by c.CompanyId ORDER BY ep.PayRateDescription),'00##') AS Code, ep.PayRateDescription, ep.PayRateAmount " +
+			//									 "from OnlinePayroll.dbo.Company c, " +
+			//									 "(select distinct e.CompanyID,epr.PayRateDescription, epr.PayRateAmount from OnlinePayroll.dbo.employee e, OnlinePayroll.dbo.EmployeePayRates epr " +
+			//									 "where e.EmployeeID=epr.EmployeeId) ep " +
+			//									 "where c.Companyid=ep.CompanyID and c.CompanyId=@CompanyId";
 			using (var con = GetConnection())
 			{
 
-				con.Execute(taxrates, new {CompanyId=companyId});
-				con.Execute(paytypes, new { CompanyId = companyId });
-				con.Execute(deductions, new { CompanyId = companyId });
-				con.Execute(wcs, new { CompanyId = companyId });
-				con.Execute(pcs, new { CompanyId = companyId });
+				con.Execute(mergetaxrates, new {CompanyId=companyId});
+				con.Execute(mergepaytypes, new { CompanyId = companyId });
+				con.Execute(mergedeductions, new { CompanyId = companyId });
+				con.Execute(mergewcs, new { CompanyId = companyId });
+				con.Execute(mergepcs, new { CompanyId = companyId });
 
 			}
 		}
@@ -228,21 +276,33 @@ namespace OPImportUtility
 												 "insert into Employee(Id, CompanyId, StatusId, FirstName, LastName, MiddleInitial, Contact, Gender, SSN, BirthDate, HireDate, Department, EmployeeNo, Memo, PayrollSchedule, PayType, Rate, PayCodes, Compensations, PaymentMethod, DirectDebitAuthorized, TaxCategory, FederalStatus, FederalExemptions, FederalAdditionalAmount, State, LastModified, LastModifiedBy, LastPayrollDate, WorkerCompensationId, CompanyEmployeeNo, Notes, SickLeaveHireDate, CarryOver, EmployeeIntId)" +
 												 "values(@Id, @CompanyId, @StatusId, @FirstName, @LastName, @MiddleInitial, @Contact, @Gender, @SSN, @BirthDate, @HireDate, @Department, @EmployeeNo, @Memo, @PayrollSchedule, @PayType, @Rate, @PayCodes, @Compensations, @PaymentMethod, @DirectDebitAuthorized, @TaxCategory, @FederalStatus, @FederalExemptions, @FederalAdditionalAmount, @State, @LastModified, @LastModifiedBy, @LastPayrollDate, @WorkerCompensationId, @CompanyEmployeeNo, @Notes, @SickLeaveHireDate, @CarryOver, @EmployeeIntId);" +
 			                   "set identity_insert Employee Off; ";
-			const string dedsql = "insert into EmployeeDeduction(EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId) " +
-			                      "select (select Id from Employee where EmployeeIntId=ed.EmployeeId), case ed.DedutionMethod when 2 then 1 when 1 then 2 else 0 end,ed.DeductionAmount,ed.AnnualMaxAmt, " +
-														"DeductionID from OnlinePayroll.dbo.Employee_Deduction ed, " +
-			                      "OnlinePayroll.dbo.Employee e where ed.EmployeeId=e.EmployeeId and ed.DeductionID>0 and " +
-			                      "e.CompanyId=@CompanyId;";
+			const string dedsql = "merge EmployeeDeduction t using ( select (select Id from Employee where EmployeeIntId=ed.EmployeeId) EmployeeId, case ed.DedutionMethod when 2 then 1 when 1 then 2 else 0 end Method,ed.DeductionAmount Rate,ed.AnnualMaxAmt AnnualMax," +
+			                      "DeductionID CompanyDeductionId from OnlinePayroll.dbo.Employee_Deduction ed, " +
+			                      "OnlinePayroll.dbo.Employee e where ed.EmployeeId=e.EmployeeId and ed.DeductionID>0 and e.CompanyId=@CompanyId) s " +
+			                      "on (t.EmployeeId=s.EmployeeId and t.CompanyDeductionId=s.CompanyDeductionId) " +
+			                      "when matched and (t.Method<>s.Method or t.Rate<>s.Rate or t.AnnualMax<>s.AnnualMax) " +
+			                      "then Update set t.Method=s.Method, t.Rate=s.Rate, t.AnnualMax=s.AnnualMax " +
+			                      "when not matched by target then insert (EmployeeId, Method, Rate, AnnualMax, CompanyDeductionId) " +
+			                      "values(s.EmployeeId, s.Method, s.Rate, s.AnnualMax, s.CompanyDeductionId) " +
+			                      "when not matched by source and t.EmployeeId in (select Id from Employee where CompanyId=(select Id From Company where companyintid=@CompanyId)) then delete;";
 
 			const string banksql = "set identity_insert BankAccount On; " +
-															 "insert into BankAccount(Id, EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId) " +
-															 "select AccountId, 3, (select Id from Employee where EmployeeIntId=EntityID), " +
-															 "case when AccountType='Checking' then 1 else 2 end, isnull(BankName,''), isnull(BankName,''), AccountNumber, RoutingNumber, ba.LastUpdateDate, ba.LastUpdateBy,null " +
-															 "from OnlinePayroll.dbo.BankAccount ba, OnlinePayroll.dbo.employee e " +
-															 "where EntityTypeID=3 and ba.EntityId=e.EmployeeId and e.CompanyId=@CompanyId and ba.BankName<>'';" +
-															 "set identity_insert BankAccount Off;" +
-															 "insert into EmployeeBankAccount(EmployeeId, BankAccountId, Percentage) " +
-			                       "select EntityId, Id, 100.00 from BankAccount where EntityTypeId=3 and EntityId in (select e.Id from Employee e, Company c where e.CompanyId=c.Id and c.CompanyIntId=@CompanyId);";
+					"merge BankAccount t using ( select AccountId Id, 3 EntityTypeId, (select Id from Employee where EmployeeIntId=EntityID) EntityId, " +
+					"case when AccountType='Checking' then 1 else 2 end AccountType, isnull(BankName,'') BankName, isnull(BankName,'') AccountName, AccountNumber, RoutingNumber, ba.LastUpdateDate LastModified, ba.LastUpdateBy LastModifiedBy,null FractionId " +
+					"from OnlinePayroll.dbo.BankAccount ba, OnlinePayroll.dbo.employee e " +
+					"where EntityTypeID=3 and ba.EntityId=e.EmployeeId and e.CompanyId=@CompanyId and ba.BankName<>'') s " +
+					"on (t.EntityId=s.EntityId and t.EntityTypeId=3 and t.Id=s.Id) " +
+					"when matched and (t.AccountType<>s.AccountType or t.BankName<>s.BankName collate Latin1_General_CI_AS or t.AccountName<>s.AccountName collate Latin1_General_CI_AS or t.AccountNumber<>s.AccountNumber collate Latin1_General_CI_AS or t.RoutingNumber<>s.RoutingNumber collate Latin1_General_CI_AS) " +
+					"then Update set t.AccountType=s.AccountType, t.BankName=s.BankName, t.AccountName=s.AccountName, t.AccountNumber=s.AccountNumber, t.RoutingNumber=s.RoutingNumber " +
+					"when not matched by target then " +
+					"insert (Id, EntityTypeId, EntityId, AccountType, BankName, AccountName, AccountNumber, RoutingNumber, LastModified, LastModifiedBy, FractionId) " +
+					"values(s.Id, s.EntityTypeId, s.EntityId, s.AccountType, s.BankName, s.AccountName, s.AccountNumber, s.RoutingNumber, s.LastModified, s.LastModifiedBy, s.FractionId) " +
+					"when not matched by source and t.EntityTypeId=3 and t.EntityId in (select Id from Employee where CompanyId=(select Id from company where companyintid=@CompanyId)) then delete; " +
+					"set identity_insert BankAccount Off; " +
+					"merge EmployeeBankAccount t using ( select EntityId EmployeeId, Id BankAccountId, 100.00 Percentage from BankAccount where EntityTypeId=3 and EntityId in (select e.Id from Employee e, Company c where e.CompanyId=c.Id and c.CompanyIntId=30)) s " +
+					"on (t.EmployeeId=s.EmployeeId and t.BankAccountId=s.BankAccountId) " +
+					"when matched and (t.Percentage<>s.Percentage) then Update set t.Percentage=s.Percentage " +
+					"when not matched by target then insert (EmployeeId, BankAccountId, Percentage) values(s.EmployeeId, s.BankAccountId, s.Percentage); ";
 			using (var con = GetConnection())
 			{
 				con.Execute(sql, emplList);

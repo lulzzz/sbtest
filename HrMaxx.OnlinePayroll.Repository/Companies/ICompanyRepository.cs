@@ -14,8 +14,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		List<Account> GetCompanyAccounts(Guid companyId);
 		
 		VendorCustomer GetVendorCustomersById(Guid vcId);
-		
-		Models.Company SaveCompany(Models.Company company);
+
+		Models.Company SaveCompany(Models.Company company, bool ignoreEinCheck = false);
 		ContractDetails SaveCompanyContract(Company savedcompany, ContractDetails contract);
 		List<CompanyTaxState> SaveTaxStates(Company savedcompany, List<CompanyTaxState> states);
 		List<Models.CompanyRecurringCharge> SaveRecurringCharges(Company savedcompany, List<Models.CompanyRecurringCharge> states);
@@ -30,7 +30,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		Account SaveCompanyAccount(Account mappedResource);
 		bool CompanyExists(Guid companyId, string name);
 		
-		Employee SaveEmployee(Employee mappedResource);
+		Employee SaveEmployee(Employee mappedResource, bool ignoreSSNCheck = false);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction);
 		bool EmployeeExists(Guid id);
 		void DeleteEmployeeDeduction(int deductionId);
