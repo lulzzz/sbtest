@@ -107,6 +107,16 @@ common.factory('commonRepository', [
 				});
 				return deferred.promise;
 			},
+			saveDeductionType: function (dt) {
+				var deferred = $q.defer();
+
+				commonServer.all('SaveDeductionType').post(dt).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
 			deleteRelationship: function(sourceTypeId, targetTypeId, sourceId, targetId) {
 				var deferred = $q.defer();
 
@@ -298,9 +308,29 @@ common.factory('commonRepository', [
 
 				return deferred.promise;
 			},
+			saveHoliday: function (holiday, action) {
+				var deferred = $q.defer();
+				commonServer.one('BankHoliday/' + holiday + '/' + action).get().then(function (res) {
+					deferred.resolve(res);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			getInsuranceGroups: function () {
 				var deferred = $q.defer();
 				commonServer.one('InsuranceGroups').getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getBankHolidays: function () {
+				var deferred = $q.defer();
+				commonServer.one('BankHolidays').getList().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

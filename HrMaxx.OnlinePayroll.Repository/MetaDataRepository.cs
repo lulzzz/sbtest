@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
@@ -367,6 +368,46 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 				}
 			}
+		}
+
+		public DeductionType SaveDeductionType(DeductionType dt)
+		{
+			var mapped = Mapper.Map<Models.DeductionType, Models.DataModel.DeductionType>(dt);
+			const string sql =
+				"if exists(select 'x' from DeductionType where Id=@Id) " +
+				"begin Update DeductionType set Name=@Name, Category=@Category, W2_12=@W2_12, W2_13R=@W2_13R, R940_R=@R940_R where Id=@Id; select @Id; end " +
+				"else begin insert into DeductionType(Name, Category, W2_12, W2_13R, R940_R) " +
+				"values(@Name, @Category, @W2_12, @W2_13R, @R940_R); select cast(scope_identity() as int) end";
+			using (var conn = GetConnection())
+			{
+				mapped.Id = conn.Query<int>(sql, mapped).Single();
+			}
+			return Mapper.Map<Models.DataModel.DeductionType, Models.DeductionType>(mapped);
+		}
+
+		public List<KeyValuePair<int, DateTime>> GetBankHolidays()
+		{
+			const string sql = "select [Year] [Key], Holiday Value from Holidays order by Holiday desc";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<KeyValuePair<int, DateTime>>(sql).ToList();
+			}
+		}
+
+		public KeyValuePair<int, DateTime> SaveBankHoliday(DateTime holiday, bool action)
+		{
+			const string sqladd = "insert into Holidays values(@Year, @Holiday);";
+			const string sqlremove = "delete from Holidays where Holiday=@Holiday";
+			using (var conn = GetConnection())
+			{
+				if (action)
+					conn.Execute(sqladd, new {Year = holiday.Year, holiday});
+				else
+				{
+					conn.Execute(sqlremove, new {Year = holiday.Year, holiday});
+				}
+			}
+			return new KeyValuePair<int, DateTime>(holiday.Year, holiday);
 		}
 	}
 }

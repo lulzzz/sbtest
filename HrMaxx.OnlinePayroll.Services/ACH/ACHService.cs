@@ -29,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		private readonly IProfitStarsRepository _profitStarsRepository;
 		private readonly IEmailService _emailService;
 		private readonly IFileRepository _fileRepository;
+		private readonly IMetaDataService _metaDataService;
 		private const string StoreId = "86550";
 		private const string StoreKey = "TWgL+HBc2jts9vefoen+uZdRcwu1";
 		private const string MerchantId = "32493";
@@ -41,11 +42,12 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		
 		private readonly string _filePath;
 		private readonly string _templatePath;
-		public ACHService(IProfitStarsRepository profitStarsRepository, IEmailService emailService, IFileRepository fileRepository, string templatePath, string filePath, string psemailto, string psemailcc)
+		public ACHService(IProfitStarsRepository profitStarsRepository, IEmailService emailService, IFileRepository fileRepository, IMetaDataService metaDataService, string templatePath, string filePath, string psemailto, string psemailcc)
 		{
 			_profitStarsRepository = profitStarsRepository;
 			_emailService = emailService;
 			_fileRepository = fileRepository;
+			_metaDataService = metaDataService;
 			_templatePath = templatePath;
 			_filePath = filePath;
 			EmailTo = psemailto;
@@ -122,7 +124,10 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		{
 			try
 			{
-				return _profitStarsRepository.GetProfitStarsPayrollList();
+				var result =  _profitStarsRepository.GetProfitStarsPayrollList();
+				if (result==null)
+					result =  new List<ProfitStarsPayroll>();
+				return result;
 			}
 			catch (Exception e)
 			{
@@ -259,9 +264,10 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		{
 			var counter = (int) 1;
 			var threedaysafter = DateTime.Today;
+			var bankHolidays = _metaDataService.GetBankHolidays();
 			while (counter < 4)
 			{
-				if (threedaysafter.DayOfWeek != DayOfWeek.Saturday && threedaysafter.DayOfWeek != DayOfWeek.Sunday)
+				if (threedaysafter.DayOfWeek != DayOfWeek.Saturday && threedaysafter.DayOfWeek != DayOfWeek.Sunday && !bankHolidays.Any(b=>b.Value.Equals(threedaysafter)))
 				{
 					counter++;
 				}

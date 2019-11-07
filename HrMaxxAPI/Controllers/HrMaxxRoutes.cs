@@ -8,6 +8,8 @@
 		public const string DocumentUpload = "Document/UploadEntityDocument";
 		public const string Version = "Version";
 		public const string Countries = "Countries";
+		public const string DeductionTypes = "DeductionTypes";
+		public const string SaveDeductionType = "SaveDeductionType";
 	
 		
 		public const string GetUserFullName = "GetUserFullName";
@@ -38,6 +40,8 @@
 		public const string UserNewsfeed = "Common/UserNewsfeed";
 		public const string AccountsMetaData = "AccountsMetaData";
 		public const string Configs = "Configurations";
+		public const string BankHolidays = "BankHolidays";
+		public const string BankHoliday = "BankHoliday/{holiday}/{action1:bool}";
 		public const string ClearAll = "ClearAllNotifications";
 		public const string DeleteOldNotifications = "DeleteOldNotifications";
 

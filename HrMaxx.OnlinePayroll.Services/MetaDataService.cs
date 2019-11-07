@@ -170,6 +170,20 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
+		public IList<DeductionType> GetDeductionTypes()
+		{
+			try
+			{
+				return _metaDataRepository.GetDeductionTypes();
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Usrs ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		public List<TaxByYear> GetCompanyTaxesForYear(int year)
 		{
 			var taxes = _metaDataRepository.GetCompanyOverridableTaxes();
@@ -257,6 +271,52 @@ namespace HrMaxx.OnlinePayroll.Services
 		{
 			return _readerService.GetDataFromStoredProc<List<Access>, List<Access>>(
 					"GetAccessMetaData", new List<FilterParam>(), new XmlRootAttribute("AccessList"));
+		}
+
+		public DeductionType SaveDeductionType(DeductionType dt)
+		{
+			try
+			{
+				return _metaDataRepository.SaveDeductionType(dt);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " deduction type ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<KeyValuePair<int, DateTime>> GetBankHolidays()
+		{
+			try
+			{
+				var list = _metaDataRepository.GetBankHolidays();
+				if (list == null)
+					return new List<KeyValuePair<int, DateTime>>();
+				else
+					return list;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " bank holidays ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public object SaveBankHoliday(DateTime holiday, bool action)
+		{
+			try
+			{
+				return _metaDataRepository.SaveBankHoliday(holiday, action);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " bank holiday ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
 		}
 	}
 }

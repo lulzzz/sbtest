@@ -464,5 +464,74 @@
 			</div>
 		</div>
 	</div>
+	<div class="panel panel-inverse">
+
+		<div class="panel-heading" ng-click="data.openedRack=(data.openedRack===6?0:6)">
+			<h4 class=" panel-title">
+				Deduction Types <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.openedRack===6, 'glyphicon-chevron-right': data.openedRack!==6}"></i>
+			</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.openedRack===6">
+			<div class="row" ng-show="deductionTypes.length>0">
+				<table class="table table-bordered table-condensed" >
+					<tr>
+						<th>Category</th>
+						<th>Name</th>
+						<th>W2_12</th>
+						<th>W2_13R</th>
+						<th>940_R</th>
+						<th><a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selectedType" ng-click="addDeductionType()"><i class="fa fa-plus"></i></a></th>
+					</tr>
+					<tr ng-repeat="item in deductionTypes track by $index" class="mouse-over-pointer" ng-class="{'success':selectedType.id===item.id}">
+						<td>
+							<span e-ng-change="item.categoryOption = $data;" editable-select="item.categoryOption" e-name="type" e-form="rowform" e-ng-options="category.value for category in data.deductionCategories track by category.key">
+								{{ item.categoryOption? item.categoryOption.value : '' }}
+							</span>
+						</td>
+						<td>
+							<span e-ng-change="item.name = $data" editable-text="item.name" e-name="name" e-form="rowform" >
+								{{ item.name }}
+							</span>
+						</td>
+						<td>
+							<span e-ng-change="item.w2_12 = $data" editable-text="item.w2_12" e-name="w2_12" e-form="rowform">
+								{{ item.w2_12 }}
+							</span>
+						</td>
+						<td>
+							<div>
+								<label for="w2_13r{{$index}}" class="switch">
+									<input id="w2_13r{{$index}}" type="checkbox" ng-model="item.w2_13rVal" ng-disabled="!selectedType" /><i></i>
+								</label>
+							</div>
+						</td>
+						<td>
+							<span e-ng-change="item.r940_R = $data" editable-text="item.r940_R" e-name="w2_12" e-form="rowform">
+								{{ item.r940_R }}
+							</span>
+						</td>
+						<td style="white-space: nowrap">
+							<!-- form -->
+							<form editable-form id="rowform" name="rowform" onbeforesave="saveDeductionType($index)" class="form-buttons form-inline" shown="selectedType===item">
+								<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelectedType($index)">
+									<i class="fa fa-edit"></i>
+								</button>
+								<button type="submit" ng-disabled="rowform.$waiting || !isDeductionTypeValid()" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+									<i class="fa fa-save"></i>
+								</button>
+								<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelDeduction($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+									<i class="fa fa-remove"></i>
+								</button>
+							</form>
+						</td>
+					</tr>
+
+				</table>
+				
+			</div>
+		</div>
+
+	</div>
 </div>
 

@@ -53,6 +53,7 @@ namespace HrMaxxAPI.Controllers
 		{
 			return MakeServiceCall(() => _commonService.GetCountries(), "Get Countries in the System", true);
 		}
+		
 
 		[HttpGet]
 		[Route(HrMaxxRoutes.Configs)]

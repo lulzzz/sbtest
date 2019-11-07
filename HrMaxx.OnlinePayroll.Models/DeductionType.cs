@@ -22,5 +22,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get { return Category.GetDbName(); }
 		}
+		public bool W2_13rVal { get; set; }
+		public KeyValuePair<int, string> CategoryOption { get { return new KeyValuePair<int, string>((int)Category, Category.GetDbName()); } } 
 	}
 }

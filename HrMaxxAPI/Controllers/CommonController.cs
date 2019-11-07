@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Web.Http;
+using System.Web.Mvc;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
@@ -36,103 +36,128 @@ namespace HrMaxxAPI.Controllers
 			_emailService = emailService;
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.SendTestEmail)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.SendTestEmail)]
 		public void SendTestEmail(string email)
 		{
 			MakeServiceCall(() => _emailService.SendEmail("sherjeel.bedaar@gmail.com", "Test Email", "this is test Email"), "Test Email", true);
 		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.BankHolidays)]
+		public IList<KeyValuePair<int, DateTime>> GetBankHolidays()
+		{
+			return MakeServiceCall(() => _metaDataService.GetBankHolidays(), "Get Bank Holidays in the System", true);
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.BankHoliday)]
+		public object SaveBankHoliday(string holiday, bool action1)
+		{
+			return MakeServiceCall(() => _metaDataService.SaveBankHoliday(DateTime.ParseExact(holiday, "ddMMyyyy", null), action1), "save Bank Holidays in the System", true);
+			
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.DeductionTypes)]
+		public IList<DeductionType> GetDeductionTypes()
+		{
+			return MakeServiceCall(() => _metaDataService.GetDeductionTypes(), "Get Deduction Types in the System", true);
+		}
+		[HttpPost	]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveDeductionType)]
+		public DeductionType SaveDeductionType(DeductionType dt)
+		{
+			return MakeServiceCall(() => _metaDataService.SaveDeductionType(dt), "save Deduction Types in the System", true);
+		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.AccountsMetaData)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.AccountsMetaData)]
 		public object GetAccountsMetaData()
 		{
 			return MakeServiceCall(() => _metaDataService.GetAccountsMetaData(), "Accounts Meta Data", true);
 		}
 		
-		[HttpGet]
-		[Route(HrMaxxRoutes.DeleteRelationship)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.DeleteRelationship)]
 		public void DeleteRelationship(int sourceTypeId, int targetTypeId, Guid sourceId, Guid targetId)
 		{
 			MakeServiceCall(() => _commonService.DeleteEntityRelation((EntityTypeEnum)sourceTypeId, (EntityTypeEnum)targetTypeId, sourceId, targetId), "Delete Entity Relationship");
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.Addresses)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.Addresses)]
 		public IList<Address> Addresses(int sourceTypeId, Guid sourceId)
 		{
 			return MakeServiceCall(() => _commonService.GetRelatedEntities<Address>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Address, sourceId), "Get Entity Addresses", true);
 		}
-		[HttpGet]
-		[Route(HrMaxxRoutes.FirstAddress)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.FirstAddress)]
 		public Address FirstAddress(int sourceTypeId, Guid sourceId)
 		{
 			var address = MakeServiceCall(() => _commonService.FirstRelatedEntity<Address>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Address, sourceId), "Get First Entity Address", true);
 			return address;
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.Documents)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.Documents)]
 		public IList<DocumentDto> Documents(int sourceTypeId, Guid sourceId)
 		{
 			return MakeServiceCall(() => _commonService.GetRelatedEntities<DocumentDto>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Document, sourceId), "Get Entity Documents", true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.Comments)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.Comments)]
 		public IList<Comment> Comments(int sourceTypeId, Guid sourceId)
 		{
 			return MakeServiceCall(() => _commonService.GetRelatedEntityList<Comment>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Comment, sourceId), "Get Entity Comments", true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.Contacts)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.Contacts)]
 		public IList<Contact> Contacts(int sourceTypeId, Guid sourceId)
 		{
 			return MakeServiceCall(() => _commonService.GetRelatedEntities<Contact>((EntityTypeEnum)sourceTypeId, EntityTypeEnum.Contact, sourceId), "Get Entity Contcats", true);
 		}
 
-		[HttpPost]
-		[Route(HrMaxxRoutes.SaveComment)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveComment)]
 		public Comment SaveComment(CommentResource resource)
 		{
 			var comment = Mapper.Map<CommentResource, Comment>(resource);
 			return MakeServiceCall(() => _commonService.AddToList<Comment>(resource.SourceTypeId, EntityTypeEnum.Comment, resource.SourceId, comment), "Add Comment to List of Comments", true);
 		}
 
-		[HttpPost]
-		[Route(HrMaxxRoutes.SaveContact)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveContact)]
 		public Contact SaveContact(ContactResource resource)
 		{
 			var contact = Mapper.Map<ContactResource, Contact>(resource);
 			return MakeServiceCall(() => _commonService.SaveEntityRelation<Contact>(resource.SourceTypeId, EntityTypeEnum.Contact, resource.SourceId, contact), "Add contact", true);
 		}
-		[HttpPost]
-		[Route(HrMaxxRoutes.SaveAddress)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveAddress)]
 		public Address SaveAddress(AddressResource resource)
 		{
 			var address = Mapper.Map<AddressResource, Address>(resource);
 			return MakeServiceCall(() => _commonService.SaveEntityRelation<Address>(resource.SourceTypeId, EntityTypeEnum.Address, resource.SourceId, address), "Add Address", true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.Newsfeed)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.Newsfeed)]
 		public List<NewsResource> GetNewsfeed(int? audienceScope, Guid? audienceId = null)
 		{
 			var news = MakeServiceCall(() => _commonService.GetNewsforUser(audienceScope, audienceId), "get newsfeed", true);
 			return Mapper.Map<List<News>, List<NewsResource>>(news);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.UserNewsfeed)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.UserNewsfeed)]
 		public List<NewsResource> GetUserNewsfeed()
 		{
 			var news = MakeServiceCall(() => _commonService.GetUserNewsfeed(CurrentUser.Host, CurrentUser.Company, CurrentUser.UserId, CurrentUser.Role), "get newsfeed for current user", true);
 			return Mapper.Map<List<News>, List<NewsResource>>(news);
 		}
 
-		[HttpPost]
-		[Route(HrMaxxRoutes.SaveNewsfeed)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveNewsfeed)]
 		public NewsResource SaveNewsfeed(NewsResource resource)
 		{
 			var news = Mapper.Map<NewsResource, News>(resource);
@@ -140,35 +165,35 @@ namespace HrMaxxAPI.Controllers
 			return Mapper.Map<News, NewsResource>(news);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.InsuranceGroups)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.InsuranceGroups)]
 		public List<InsuranceGroupDto> GetInsuranceGroups()
 		{
 			return MakeServiceCall(() => _commonService.GetInsuranceGroups(), "get insurance groups ", true);
 		}
 
-		[HttpPost]
-		[Route(HrMaxxRoutes.InsuranceGroup)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.InsuranceGroup)]
 		public InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto resource)
 		{
 			return MakeServiceCall(() => _commonService.SaveInsuranceGroup(resource), "save insurance group ", true);
 		}
-		[HttpGet]
-		[Route(HrMaxxRoutes.Mementos)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.Mementos)]
 		public List<object> GetMementos(Guid sourceId, int sourceTypeId)
 		{
 			return MakeServiceCall(() => _mementoDataService.GetMementos((EntityTypeEnum)sourceTypeId, sourceId), "get mementos for source type " + sourceTypeId, true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.FillSearchTable)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.FillSearchTable)]
 		public List<SearchResult> FillSearchTable()
 		{
 			return MakeServiceCall(() => _metaDataService.FillSearchTable(), "fill search table", true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.GetHostsAndCompanies)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.GetHostsAndCompanies)]
 		public HostAndCompaniesResource GetHostsAndCompanies(int? status = 1, Guid? company = null)
 		{
 			var paramList = new List<FilterParam>
@@ -183,36 +208,36 @@ namespace HrMaxxAPI.Controllers
 			return Mapper.Map<HostAndCompanies, HostAndCompaniesResource>(data);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.GetTaxTableYear)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.GetTaxTableYear)]
 		public List<int> GetTaxTableYear()
 		{
 			return MakeServiceCall(() => _taxationService.GetTaxTableYears(), "Tax Tables Years", true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.GetTaxes)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.GetTaxes)]
 		public USTaxTables GetTaxes(int year)
 		{
 			return MakeServiceCall(() => _taxationService.GetTaxTables(year), "Tax Tables", true);
 		}
 
-		[HttpPost]
-		[Route(HrMaxxRoutes.SaveTaxes)]
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveTaxes)]
 		public USTaxTables SaveTaxes(SaveTaxesResource resource)
 		{
 			return MakeServiceCall(() => _taxationService.SaveTaxTables(resource.Year, resource.TaxTables), "Save Tax Tables", true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.CreateTaxes)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.CreateTaxes)]
 		public USTaxTables CreateTaxes(int year)
 		{
 			return MakeServiceCall(() => _taxationService.CreateTaxes(year), "create entries in Tax Tables for year " + year, true);
 		}
 
-		[HttpGet]
-		[Route(HrMaxxRoutes.AccessMetaData)]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.AccessMetaData)]
 		public List<Access> AccessMetaData()
 		{
 			return MakeServiceCall(() => _metaDataService.GetAccessMetaData(), "get access meta data", true);

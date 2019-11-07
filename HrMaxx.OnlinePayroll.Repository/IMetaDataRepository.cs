@@ -31,5 +31,8 @@ namespace HrMaxx.OnlinePayroll.Repository
 		List<VendorCustomer> GetGarnishmentAgencies();
 		int GetMaxRegularCheckNumber(int companyId);
 		int GetMaxCheckNumberWithoutPayroll(int companyIntId, Guid id);
+		DeductionType SaveDeductionType(DeductionType dt);
+		List<KeyValuePair<int, DateTime>> GetBankHolidays();
+		KeyValuePair<int, DateTime> SaveBankHoliday(DateTime holiday, bool action);
 	}
 }

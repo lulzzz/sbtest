@@ -95,6 +95,22 @@
 								</tbody>
 							</table>
 						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								<lable>Bank Holidays <a class="btn btn-danger btn-icon btn-circle btn-sm" ng-show="data.selectedHoliday" ng-click="removeHoliday()"><i class="fa fa-minus"></i></a></lable>
+								<select id="holidays" class="form-control" ng-model="data.selectedHoliday" ng-options="(holiday.value | date:'MM/dd/yyyy') for holiday in data.holidays track by holiday.value">
+									<option value="">select date</option>
+								</select>
+								
+							</div>
+							<div class="form-group">
+								<label class="control-label">New Holiday <a class="btn btn-success btn-icon btn-circle btn-sm" ng-disabled="holidayExists(data.newHoliday)" ng-show="data.newHoliday" ng-click="addHoliday()"><i class="fa fa-plus"></i></a></label>
+								<date-ctrl name="newholiday" model="data.newHoliday"  />
+								
+							</div>
+							
+							
+						</div>
 					</div>
 				</div>
 				<div class="col-sm-12">

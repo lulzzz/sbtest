@@ -79,8 +79,10 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 
-			CreateMap<Models.JsonDataModel.DeductionType, DeductionType>();
+			CreateMap<Models.JsonDataModel.DeductionType, DeductionType>()
+				.ForMember(dest => dest.W2_13rVal, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.W2_13R) && src.W2_13R == "1")); 
 			CreateMap<DeductionType, Models.DataModel.DeductionType>()
+				.ForMember(dest => dest.W2_13R, opt => opt.MapFrom(src => src.W2_13rVal ? "1" : "0"))
 				.ForMember(dest => dest.CompanyDeductions, opt => opt.Ignore());
 
 			CreateMap<Models.JsonDataModel.CompanyDeduction, CompanyDeduction>()
