@@ -3318,7 +3318,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					eeApplied = true;
 				}
 				d.Amount = 0;
-				
+				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
+				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
 				if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
 				    !d.Deduction.FloorPerCheck.HasValue)
 				{
@@ -3335,20 +3336,19 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					if (d.EmployeeDeduction.Limit.HasValue)
 					{
 						//var allPayChecks = _payrollRepository.GetEmployeePayChecks(payCheck.Employee.Id);
-						var allPayChecks = _readerService.GetPayChecks(employeeId: payCheck.Employee.Id);
-						var total =
-							allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
-								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
-						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
+						//var allPayChecks = _readerService.GetPayChecks(employeeId: payCheck.Employee.Id, isvoid:0);
+						//var total =
+						//	allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
+						//		.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
+						if (ytdVal + d.Amount > d.EmployeeDeduction.Limit.Value)
 						{
-							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - total);
+							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - ytdVal);
 						}
 							
 					}
 				}
 				
-				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
-				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
+				
 				if (d.AnnualMax.HasValue)
 				{
 					if (ytdVal + d.Amount > d.AnnualMax.Value)

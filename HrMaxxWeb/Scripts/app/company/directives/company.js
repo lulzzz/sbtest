@@ -347,14 +347,19 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						if (!$scope.selectedCompany.id) {
 							$.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
 								if ((taxyearrate.tax.stateId && taxyearrate.tax.stateId === $scope.selectedCompany.states[0].state.stateId) || !taxyearrate.tax.stateId) {
-									$scope.selectedCompany.companyTaxRates.push({
-										id: 0,
-										taxId: taxyearrate.tax.id,
-										companyId: null,
-										taxCode: taxyearrate.tax.code,
-										taxYear: taxyearrate.taxYear,
-										rate: taxyearrate.rate
-									});
+
+									var exists = $filter('filter')($scope.selectedCompany.companyTaxRates, { taxYear: taxyearrate.taxYear, taxId: taxyearrate.tax.id });
+									if (exists.length === 0) {
+										$scope.selectedCompany.companyTaxRates.push({
+											id: 0,
+											taxId: taxyearrate.tax.id,
+											companyId: null,
+											taxCode: taxyearrate.tax.code,
+											taxYear: taxyearrate.taxYear,
+											rate: taxyearrate.rate
+										});
+									}
+									
 								}
 
 							});
