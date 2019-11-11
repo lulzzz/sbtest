@@ -60,6 +60,7 @@
     <Compile Include="DataModel\InsuranceGroup.cs">
       <DependentUpon>CommonModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DocumentType.cs" />
     <Compile Include="Enum\ArchiveTypes.cs" />
     <Compile Include="Enum\CommonEnums.cs" />
     <Compile Include="ExcelRead.cs" />

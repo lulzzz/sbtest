@@ -11,7 +11,9 @@ namespace HrMaxx.Common.Models.Dtos
 		public string DocumentExtension { get; set; }
 		public string MimeType { get; set; }
 		public string DocumentPath { get; set; }
-		public DocumentType DocumentType { get; set; }
+		public Enum.OldDocumentType DocumentType { get; set; }
+		public DocumentType Type { get; set; }
+		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
 		public string Filename
 		{
 			get { return DocumentName + "." + DocumentExtension; }

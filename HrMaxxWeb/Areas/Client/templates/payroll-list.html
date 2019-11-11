@@ -129,7 +129,7 @@
 			<!-- end panel -->
 		</div>
 	</div>
- 	<payroll item="selected" datasvc="data" company="mainData.selectedCompany" ng-if="mainData.selectedCompany && selected" />
+ 	<payroll item="selected" datasvc="data" company="mainData.selectedCompany" ng-if="mainData.selectedCompany && selected" min-pay-day="getMaxPayDay()" />
 	
 		
 	<div class="panel panel-info hidden-print" ng-if="mainData.selectedCompany && processed">

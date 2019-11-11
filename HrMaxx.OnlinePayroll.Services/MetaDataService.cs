@@ -14,6 +14,7 @@ using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
+using HrMaxx.OnlinePayroll.ReadRepository;
 using HrMaxx.OnlinePayroll.Repository;
 using Magnum.Reflection;
 
@@ -26,17 +27,18 @@ namespace HrMaxx.OnlinePayroll.Services
 		
 		private readonly IMetaDataRepository _metaDataRepository;
 		private readonly IReaderService _readerService;
+		private readonly IReadRepository _reader;
 		private readonly ITaxationService _taxationService;
 		
 
-		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IReaderService readerService, ITaxationService taxationService)
+		public MetaDataService(IMetaDataRepository metaDataRepository, ICommonService commonService, ICompanyService companyService, IReaderService readerService, ITaxationService taxationService, IReadRepository reader)
 		{
 			_metaDataRepository = metaDataRepository;
 			_commonService = commonService;
 			_companyService = companyService;
 			_taxationService = taxationService;
 			_readerService = readerService;
-			
+			_reader = reader;
 		}
 
 		public object GetCompanyMetaData()
@@ -54,6 +56,28 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Company");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public DocumentServiceMetaData GetDocumentServiceMetaData(Guid companyId)
+		{
+			try
+			{
+				const string sql = "select " +
+												 "(select * from DocumentType for xml auto, elements, type) Types, " +
+												 "(select * from CompanyDocumentSubType where CompanyId='{0}' for xml path('CompanyDocumentSubType'), elements, type) CompanyDocumentSubTypes, " +
+												 "(select * from EntityRelation where SourceEntityId='{0}' and SourceEntityTypeId=2 and TargetEntityTypeId=13 for xml path('EntityRelationDocument'), elements, type) Docs " +
+												 "for Xml path('DocumentServiceMetaData') , elements, type";
+				
+				//var docs =_metaDataRepository.GetDocumentServiceMetaData(companyId);
+				var docs = _reader.GetQueryData<DocumentServiceMetaData>(string.Format(sql, companyId), new XmlRootAttribute("DocumentServiceMetaData"));
+				return docs;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Documents");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -278,6 +302,19 @@ namespace HrMaxx.OnlinePayroll.Services
 			try
 			{
 				return _metaDataRepository.SaveDeductionType(dt);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " deduction type ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType dt)
+		{
+			try
+			{
+				return _metaDataRepository.SaveDocumentSubType(dt);
 			}
 			catch (Exception e)
 			{

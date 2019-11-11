@@ -124,9 +124,10 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 
 					}
 					$scope.getStateEinFormat = function (st) {
-						var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
-						return (cst && cst.einFormat) ? cst.einFormat : "999-9999-9";
-
+						if (dataSvc.companyMetaData) {
+							var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
+							return (cst && cst.einFormat) ? cst.einFormat : "999-9999-9";
+						}
 					}
 					$scope.validateRoutingNumber = function (rtn) {
 						if (!rtn) {

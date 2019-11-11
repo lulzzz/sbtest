@@ -3073,7 +3073,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var bankcoa = coas.First(c => c.Id == journals.First().MainAccountId);
 				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
 						company.Id);
-				var signature = companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
+				var signature = companyDocs.Where(d => d.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
 				var pdfs = new List<PDFModel>();
 				foreach (var payCheck in payChecks)
 				{
@@ -3125,7 +3125,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var bankcoa = coas.First(c => c.Id == journals.First().MainAccountId);
 				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
 						company.Id);
-				var signature = companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
+				var signature = companyDocs.Where(d => d.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
 				var pdfs = new List<PDFModel>();
 				foreach (var payCheck in payChecks)
 				{
@@ -3336,11 +3336,11 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					if (d.EmployeeDeduction.Limit.HasValue)
 					{
 						//var allPayChecks = _payrollRepository.GetEmployeePayChecks(payCheck.Employee.Id);
-						//var allPayChecks = _readerService.GetPayChecks(employeeId: payCheck.Employee.Id, isvoid:0);
-						//var total =
-						//	allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
-						//		.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
-						if (ytdVal + d.Amount > d.EmployeeDeduction.Limit.Value)
+						var allPayChecks = _readerService.GetPayChecks(employeeId: payCheck.Employee.Id, isvoid: 0);
+						var total =
+							allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
+								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
+						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
 						{
 							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - ytdVal);
 						}

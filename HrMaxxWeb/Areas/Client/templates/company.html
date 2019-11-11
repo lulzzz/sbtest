@@ -12,7 +12,7 @@
 					<li ng-class="{'active':tab===2}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=2"><a data-toggle="tab"><i class="fa fa-users"></i> <span class="hidden-xs">Contacts</span></a></li>
 					<li ng-class="{'active':tab===3}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=3"><a data-toggle="tab"><i class="fa fa-user"></i> <span class="hidden-xs">Users</span></a></li>
 					<li ng-class="{'active':tab===4}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=4"><a data-toggle="tab"><i class="fa fa-newspaper-o"></i> <span class="hidden-xs">News</span></a></li>
-					<li ng-class="{'active':tab===5}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=5"><a data-toggle="tab"><i class="fa fa-file-archive-o"></i> <span class="hidden-xs">Documents</span></a></li>
+					<!--<li ng-class="{'active':tab===5}" ng-show=" selectedCompany.id && !isPopup" ng-click="tab=5"><a data-toggle="tab"><i class="fa fa-file-archive-o"></i> <span class="hidden-xs">Documents</span></a></li>-->
 					<li ng-class="{'active':tab===6}" ng-show=" selectedCompany.id && !isPopup && data.viewVersions" ng-click="tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
 				</ul>
 				<h2 class="panel-title">
@@ -736,9 +736,9 @@
 						<div class="tab-pane fade in" id="news" ng-if="selectedCompany.id && tab===4" ng-class="{'active':tab===4}">
 							<news-list audience-type-id="4" audience-id="selectedCompany.id" heading="'Newsfeed'" fetch="true" show-audience-list="false" main-data="data" />
 						</div>
-						<div class="tab-pane fade in" id="documents" ng-if="selectedCompany.id && tab===5" ng-class="{'active':tab===5}">
-							<document-list source-type-id="data.sourceTypeId" source-id="selectedCompany.id" heading="'Documents'" />
-						</div>
+						<!--<div class="tab-pane fade in" id="documents" ng-if="selectedCompany.id && tab===5" ng-class="{'active':tab===5}">
+							<document-list source-type-id="data.sourceTypeId" source-id="selectedCompany.id" heading="'Company and EmployeeDocuments'" />
+						</div>-->
 						<div class="tab-pane fade in" id="contacts" ng-if="selectedCompany.id && tab===2" ng-class="{'active':tab===2}">
 							<contact-list source-type-id="data.sourceTypeId" source-id="selectedCompany.id" heading="'Contacts'" />
 						</div>

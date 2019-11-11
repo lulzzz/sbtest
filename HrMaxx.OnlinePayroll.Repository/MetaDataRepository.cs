@@ -409,5 +409,19 @@ namespace HrMaxx.OnlinePayroll.Repository
 			}
 			return new KeyValuePair<int, DateTime>(holiday.Year, holiday);
 		}
+
+		public CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType subType)
+		{
+			const string sql =
+				"if exists(select 'x' from CompanyDocumentSubType where Id=@Id) " +
+				"begin Update CompanyDocumentSubType set Name=@Name, Type=@Type, IsEmployeeRequired=@IsEmployeeRequired, TrackAccess=@TrackAccess where Id=@Id; select @Id; end " +
+				"else begin insert into CompanyDocumentSubType(Name, Type, IsEmployeeRequired, TrackAccess, CompanyId) " +
+				"values(@Name, @Type, @IsEmployeeRequired, @TrackAccess, @CompanyId); select cast(scope_identity() as int) end";
+			using (var conn = GetConnection())
+			{
+				subType.Id = conn.Query<int>(sql, new { Id=subType.Id, Name= subType.Name, Type = subType.Category.Id, subType.IsEmployeeRequired, subType.TrackAccess, subType.CompanyId}).Single();
+			}
+			return subType;
+		}
 	}
 }

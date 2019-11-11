@@ -239,7 +239,7 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<PayrollDeductionResource, PayrollDeduction>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method.Key));
 			CreateMap<PayrollDeduction, PayrollDeductionResource>()
-				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method == DeductionMethod.Percentage ? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Fixed Rate"))); ;
+				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method == DeductionMethod.Percentage ? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount"))); ;
 
 			CreateMap<Journal, JournalResource>();
 			CreateMap<JournalResource, Journal>()

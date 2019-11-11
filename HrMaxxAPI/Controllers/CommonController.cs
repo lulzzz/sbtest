@@ -67,6 +67,20 @@ namespace HrMaxxAPI.Controllers
 		{
 			return MakeServiceCall(() => _metaDataService.SaveDeductionType(dt), "save Deduction Types in the System", true);
 		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(HrMaxxRoutes.SaveDocumentType)]
+		public CompanyDocumentSubType SaveDocumentType(CompanyDocumentSubType subType)
+		{
+			return MakeServiceCall(() => _metaDataService.SaveDocumentSubType(subType), "save document sub stype");
+
+		}
+
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.DocumentsMetaData)]
+		public DocumentServiceMetaData GetDocumentServiceMetaData(Guid companyId)
+		{
+			return MakeServiceCall(() => _metaDataService.GetDocumentServiceMetaData(companyId), "Documents Meta Data", true);
+		}
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(HrMaxxRoutes.AccountsMetaData)]

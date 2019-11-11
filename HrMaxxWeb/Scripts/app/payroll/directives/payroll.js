@@ -8,7 +8,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 			scope: {
 				item: "=item",
 				datasvc: "=datasvc",
-				company: "=company"
+				company: "=company",
+				minPayDay: "=minPayDay"
 
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=' + version,
@@ -519,6 +520,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						$scope.minPayDate = moment().startOf('day');
 						if ($scope.company.payrollDaysInPast > 0) {
 							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast * -1, 'day').startOf('day').toDate();
+						}
+						if (moment($scope.minPayDay) > $scope.minPayDate) {
+							$scope.minPayDate = moment($scope.minPayDay).startOf('day');
 						}
 						
 					}

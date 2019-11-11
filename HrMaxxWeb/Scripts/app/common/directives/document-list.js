@@ -6,8 +6,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 			restrict: 'E',
 			replace: true,
 			scope: {
-				sourceTypeId: "=sourceTypeId",
-				sourceId: "=sourceId",
+				mainData: "=mainData",
 				heading: "=heading"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/document-list.html?v=' + version,
@@ -15,8 +14,16 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 			controller: ['$scope', '$element', '$location', 'NgTableParams', '$filter', 'commonRepository', 'EntityTypes',
 				function ($scope, $element, $location, ngTableParams, $filter, commonRepository, EntityTypes) {
 					$scope.targetTypeId = EntityTypes.Document;
+					$scope.sourceTypeId = $scope.mainData.userRole.employee ? EntityTypes.Employee : EntityTypes.Company;
+					$scope.sourceId = $scope.mainData.selectedCompany.id;
 					$scope.list = [];
-					$scope.selectedType = 0;
+					$scope.documentTypes = [];
+					$scope.companyDocumentSubTypes = [];
+					
+					var dataSvc = {
+						selectedType: null, selectedSubType: null
+					}
+					$scope.data = dataSvc;
 					$scope.addAlert = function (error, type) {
 						$scope.alerts = [];
 						$scope.alerts.push({
@@ -73,7 +80,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 					$scope.onFileSelect = function ($files) {
 						for (var i = 0; i < $files.length; i++) {
 							var $file = $files[i];
-							if ($scope.selectedType===1 && (!$file || !($file.name.toLowerCase().endsWith(".bmp") || $file.name.toLowerCase().endsWith(".png") || $file.name.toLowerCase().endsWith(".jpg") || $file.name.toLowerCase().endsWith(".jpeg") || $file.name.toLowerCase().endsWith(".tiff") || $file.name.toLowerCase().endsWith(".gif")))) {
+							if (dataSvc.selectedType.id===1 && (!$file || !($file.name.toLowerCase().endsWith(".bmp") || $file.name.toLowerCase().endsWith(".png") || $file.name.toLowerCase().endsWith(".jpg") || $file.name.toLowerCase().endsWith(".jpeg") || $file.name.toLowerCase().endsWith(".tiff") || $file.name.toLowerCase().endsWith(".gif")))) {
 								$scope.alerts.push({
 									message: 'Please select an image (png, tiff, jpg, jpeg, bmp) file '
 								});
@@ -94,7 +101,9 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 													entityTypeId: $scope.sourceTypeId,
 													entityId: $scope.sourceId,
 													mimeType: $files[index].type,
-													type: $scope.selectedType
+													type: dataSvc.selectedType,
+													documentType: dataSvc.selectedType.id,
+													companyDocumentSubType: dataSvc.selectedSubType
 												}),
 												currentProgress: 0,
 												completed: false
@@ -147,13 +156,68 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 
 						return zionAPI.URL + 'Document/' + document.id;
 					};
+
+					$scope.addDocumentType = function () {
+						var dt = {
+							id: 0, name: '', category: null, isEmployeeRequired: false, trackAccess: false, companyId: $scope.mainData.selectedCompany.id
+						};
+						$scope.companyDocumentSubTypes.push(dt);
+						$scope.selectedDocumentType = dt;
+					}
+					$scope.cancel = function (dt) {
+						$scope.selectedDocumentType = null;
+						$scope.companyDocumentSubTypes[dt] = angular.copy($scope.original);
+						$scope.original = null;
+						if (!$scope.companyDocumentSubTypes[dt]) {
+							$scope.companyDocumentSubTypes.splice(dt, 1);
+						}
+					}
+					$scope.setSelectedDocumentType = function (dt) {
+						$scope.original = angular.copy($scope.companyDocumentSubTypes[dt]);
+						$scope.selectedDocumentType = $scope.companyDocumentSubTypes[dt];
+					}
+					$scope.isDocumentTypeValid = function () {
+						if ($scope.selectedDocumentType) {
+							if (!$scope.selectedDocumentType.category || !$scope.selectedDocumentType.name)
+								return false;
+							else
+								return true;
+						} else {
+							return true;
+						}
+
+					}
+					$scope.saveDocumentType = function (dt) {
+						if ($scope.selectedDocumentType) {
+							
+							commonRepository.saveDocumentType($scope.selectedDocumentType).then(function (data) {
+
+								addAlert('Successfully saved document type ', 'success');
+								$scope.companyDocumentSubTypes[dt] = angular.copy(data);
+								$scope.selectedDocumentType = null;
+								$scope.original = null;
+
+							}, function (error) {
+								addAlert('error in saving document type. ' + error.statusText, 'danger');
+							});
+						}
+					}
 				
 					var init = function() {
-						commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, $scope.sourceId).then(function(data) {
-							$scope.list = data;
+						//commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, c$scope.sourceId).then(function(data) {
+						//	$scope.list = data;
+						//	$scope.tableParams.reload();
+						//	$scope.fillTableData($scope.tableParams);
+						//}, function(erorr) {
+
+						//});
+						commonRepository.getDocumentsMetaData($scope.sourceId).then(function (data) {
+							$scope.list = data.documents;
+							$scope.documentTypes = data.types;
+							$scope.companyDocumentSubTypes = data.companyDocumentSubTypes;
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-						}, function(erorr) {
+						}, function (erorr) {
 
 						});
 					}

@@ -117,6 +117,16 @@ common.factory('commonRepository', [
 				});
 				return deferred.promise;
 			},
+			saveDocumentType: function (dt) {
+				var deferred = $q.defer();
+
+				commonServer.all('SaveDocumentType').post(dt).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
 			deleteRelationship: function(sourceTypeId, targetTypeId, sourceId, targetId) {
 				var deferred = $q.defer();
 
@@ -206,6 +216,16 @@ common.factory('commonRepository', [
 			getNewsfeedMetaData: function (news) {
 				var deferred = $q.defer();
 				commonServer.one('Host/NewsMetaData').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getDocumentsMetaData: function (news) {
+				var deferred = $q.defer();
+				commonServer.one('Document/MetaData').one(news).get().then(function (data) {
 					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);

@@ -137,6 +137,8 @@ namespace HrMaxxAPI.Controllers
 			MakeServiceCall(() => _documentService.DeleteEntityDocument(entityTypeId, entityId, documentId), "delete Entity Document");
 			return this.Request.CreateResponse(HttpStatusCode.OK);
 		}
+
+		
 	}
 
 }

@@ -34,5 +34,7 @@ namespace HrMaxx.OnlinePayroll.Repository
 		DeductionType SaveDeductionType(DeductionType dt);
 		List<KeyValuePair<int, DateTime>> GetBankHolidays();
 		KeyValuePair<int, DateTime> SaveBankHoliday(DateTime holiday, bool action);
+		
+		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType dt);
 	}
 }

@@ -13,6 +13,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	public interface IMetaDataService
 	{
 		object GetCompanyMetaData();
+		DocumentServiceMetaData GetDocumentServiceMetaData(Guid companyId);
 		object GetAccountsMetaData();
 		object GetEmployeeMetaData();
 		object GetPayrollMetaData(CheckBookMetaDataRequest companyId);
@@ -31,5 +32,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		DeductionType SaveDeductionType(DeductionType dt);
 		List<KeyValuePair<int, DateTime>> GetBankHolidays();
 		object SaveBankHoliday(DateTime holiday, bool action);
+		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType subType);
 	}
 }

@@ -53,7 +53,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						canACHEmail: $scope.mainData.hasClaim(ClaimTypes.PayrollACHPackEmail, 1)
 				}
 					$scope.list = [];
-					
+					$scope.maxPayDay = null;
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -689,6 +689,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								$scope.fillTableData($scope.tableParams);
 								$scope.selected = null;
 								$scope.mainData.fromPayrollsWithoutInvoice = false;
+								
 							}, function (error) {
 								$scope.addAlert('error getting payrolls without invoice', 'danger');
 							});
@@ -709,11 +710,18 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								} else {
 									$scope.set(null);
 								}
+								
 							}, function (error) {
 								$scope.addAlert('error getting payrolls', 'danger');
 							});
 						}
-						
+
+					}
+					$scope.getMaxPayDay = function() {
+						var sortedList = $filter('orderBy')($scope.list, 'payDay', true);
+						if (sortedList.length > 0)
+							$scope.maxPayDay = sortedList[0].payDay;
+						return $scope.maxPayDay;
 					}
 					$scope.getPayrollList = function (selectedItemId) {
 						getPayrolls($scope.mainData.selectedCompany.id, dataSvc.reportFilter.filterStartDate ? moment(dataSvc.reportFilter.filterStartDate).format('MM/DD/YYYY') : null, dataSvc.reportFilter.filterEndDate ? moment(dataSvc.reportFilter.filterEndDate).format('MM/DD/YYYY') : null, selectedItemId);

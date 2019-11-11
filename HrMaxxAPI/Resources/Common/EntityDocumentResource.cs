@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using Newtonsoft.Json;
 
@@ -13,9 +14,14 @@ namespace HrMaxxAPI.Resources.Common
 		public EntityTypeEnum EntityTypeId { get; set; }
 		[JsonProperty("mimeType")]
 		public string MimeType { get; set; }
-		[JsonProperty("type")]
+		[JsonProperty("documentType")]
 		public int DocumentType { get; set; }
-		
+
+		[JsonProperty("type")]
+		public DocumentType type { get; set; }
+		[JsonProperty("companyDocumentSubType")]
+		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
+
 		[JsonIgnore]
 		public string FileName { get; set; }
 		[JsonIgnore]

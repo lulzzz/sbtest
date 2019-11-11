@@ -1,106 +1,187 @@
-﻿	<div class="row">
-		<script type="text/ng-template" id="DocumentView.html">
-			<a ng-href="{{getDocumentUrl()}}" target="_blank" />
-		</script>
-		<!-- begin panel -->
-		<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-			<div class="panel-heading">
-				<div class="panel-heading-btn">
-					<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
-					<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" ng-click="isChangePassword = !isChangePassword"><i class="fa fa-times"></i></a>
-				</div>
-				<h4 class="panel-title">{{heading}}</h4>
-			</div>
-			<div class="panel-body">
-				<div class="row">
-					<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-				</div>
-
-				<div ng-show="list.length===0">
-					No records found
-				</div>
-				<div class="row" ng-show="list.length>0">
-					<table ng-table="tableParams" id="grdDocuments" class="table" show-filter="true" template-pagination="custom/pager">
-						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="ShowAvailable(item)">
-							<td data-title="' No'" class="col-sm-1">
-								{{$index+1}}
-							</td>
-							<td data-title=" 'Name' " filter="{ 'documentName': 'text' }" sortable=" 'documentName' " class="col-sm-3">
-								{{item.documentName}}.{{item.documentExtension}}
-							</td>
-							<td data-title=" 'Name' " filter="{ 'documentName': 'text' }" sortable=" 'documentName' " class="col-sm-3">
-								{{item.documentName}}.{{item.documentExtension}}
-							</td>
-							<td data-title=" 'Type' " filter="{ 'documentTypeText': 'text' }" sortable=" 'documentTypeText' " class="col-sm-1">
-								{{item.documentTypeText}}
-							</td>
-							<td data-title=" 'Uploaded' " filter="{ 'lastModified': 'text' }" sortable=" 'lastModified' " class="col-sm-1">
-								{{item.lastModified | date:'MM/dd/yyyy'}}
-							</td>
-							<td data-title=" 'Uploaded by' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-1">
-								{{item.userName}}
-							</td>
-							<td class="col-sm-2">
-								<a ng-href="{{getDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-primary">View</button></a>
-								<button class="btn btn-sm btn-danger" ng-click="deleteDocument(item)">Delete</button>
-							</td>
-
-						</tr>
-
-					</table>
-					<script type="text/ng-template" id="custom/pager">
-						<ul class="pager ng-cloak">
-							<li ng-repeat="page in pages"
-									ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
-									ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
-								<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
-								<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
-							</li>
-							<li>
-								<div class="btn-group">
-									<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
-									<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
-									<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
-									<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
-								</div>
-							</li>
-						</ul>
-					</script>
-				</div>
-				<div class="row">
-					<div class="col-sm-2 form-group">
-						<select ng-model="selectedType" name="type" class="form-control" convert-to-number>
-							<option value="0">Misc</option>
-							<option value="1">Signature</option>
-						</select>
-					</div>
-					<div class="col-sm-3">
-						<div ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;">
-							<button class="btn btn-success attach-button " id="attachments">
-								<span class="glyphicon glyphicon-paperclip mouse-over-pointer"></span>Attach
-							</button>
-							<input type="file" ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" multiple="multiple" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;">
-						</div>
-					</div>
-					<button class="glyphicon glyphicon-upload btn btn-primary btn-sm" ng-click="uploadAll()" ng-show="files.length>1">Upload All</button>
-					<button class="glyphicon glyphicon-rub btn btn-default btn-sm" ng-click="files=[]" ng-show="files.length>0">Clear All</button>
-				</div>
-				<div class="row" ng-repeat="file in files track by $index">
-					<div class="col-sm-4">{{file.doc.file.name}}</div>
-					<div class="col-sm-4"><progressbar animate="true" value="file.currentProgress" type="success"><b>{{file.currentProgress}}%</b></progressbar></div>
-					<div class="col-sm-4">
-						<div class="form-group">
-							<i class="fa fa-upload fa-lg" ng-click="uploadDocument($index)" ng-show="!file.doc.uploaded">upload</i>
-							<i class="fa fa-remove fa-lg" ng-click="removeFile($index)">delete</i>
-						</div>
-						
-					</div>
-					
-				</div>
-				
-			</div>
+﻿<div class="row">
+	<!-- begin panel -->
+	<div class="panel panel-inverse" ng-if="mainData.selectedCompany">
+		<div class="panel-heading">
+			<h4 class="panel-title">{{heading}}</h4>
 		</div>
-		<!-- end panel -->
+		<div class="panel-body">
+			<script type="text/ng-template" id="DocumentView.html">
+				<a ng-href="{{getDocumentUrl()}}" target="_blank" />
+			</script>
+			<div class="alert alert-{{alert.type}}" ng-repeat="alert in alerts">
+				{{alert.msg}}
+			</div>
+			
+			<div class="panel panel-success col-sm-5">
+				<div class="panel-heading">
+					<h4 class="panel-title">Custom Document Types</h4>
+				</div>
+				<div class="panel-body">
+
+					<div class="row">
+						<table class="table table-condensed">
+							<tr>
+								<th>Name</th>
+								<th>Category</th>
+								<th>Required from Employee?</th>
+								<th>Track Employee Access?</th>
+								<th><a class="btn btn-success btn-icon btn-circle" ng-show="!selectedDocumentType" ng-click="addDocumentType()"><i class="fa fa-plus"></i></a></th>
+							</tr>
+							<tr ng-repeat="item in companyDocumentSubTypes track by $index" class="mouse-over-pointer" ng-class="{'success':selectedDocumentType.id===item.id}">
+
+								<td>
+									<span e-ng-change="item.name = $data" editable-text="item.name" e-name="name" e-form="rowform">
+										{{ item.name }}
+									</span>
+								</td>
+								<td>
+									<span e-ng-change="item.category = $data;" editable-select="item.category" e-name="type" e-form="rowform" e-ng-options="c.name for c in documentTypes | filter:{ requiresSubTypes: 'true'} track by  c.id">
+										{{ item.category? item.category.name : '' }}
+									</span>
+								</td>
+
+								<td>
+									<div>
+										<label for="required{{$index}}" class="switch">
+											<input id="required{{$index}}" type="checkbox" ng-model="item.isEmployeeRequired" ng-disabled="!selectedDocumentType || item.category.id!==5" /><i></i>
+										</label>
+									</div>
+								</td>
+								<td>
+									<div>
+										<label for="access{{$index}}" class="switch">
+											<input id="access{{$index}}" type="checkbox" ng-model="item.trackAccess" ng-disabled="!selectedDocumentType || !item.category.collectMetaData" /><i></i>
+										</label>
+									</div>
+								</td>
+
+								<td style="white-space: nowrap">
+									<!-- form -->
+									<form editable-form id="rowform" name="rowform" onbeforesave="saveDocumentType($index)" class="form-buttons form-inline" shown="selectedDocumentType===item">
+										<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelectedDocumentType($index)">
+											<i class="fa fa-edit"></i>
+										</button>
+										<button type="submit" ng-disabled="rowform.$waiting || !isDocumentTypeValid()" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+											<i class="fa fa-save"></i>
+										</button>
+										<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+											<i class="fa fa-remove"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+							<tr ng-show="companyDeductions.length===0">
+								<td colspan="4">No custom document types found</td>
+								
+							</tr>
+						</table>
+
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-success col-sm-7">
+				<div class="panel-heading">
+					<h4 class="panel-title">Company Documents</h4>
+				</div>
+				<div class="panel-body">
+
+					<div class="row">
+						<div class="col-sm-3 form-group">
+							<select ng-model="data.selectedType" class="form-control" ng-options="c.name for c in documentTypes track by c.id">
+								<option value=""> select type</option>
+							</select>
+							
+						</div>
+						<div class="col-sm-3 form-group">
+							<select ng-model="data.selectedSubType" class="form-control" ng-disabled="!data.selectedType" ng-options="subtype.name for subtype in companyDocumentSubTypes | filter:{category:data.selectedType} track by subtype.id">
+								<option value=""> select sub type</option>
+							</select>
+
+						</div>
+						<div class="col-sm-3">
+							<div ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;">
+								<button class="btn btn-default attach-button " id="attachments" ng-show="data.selectedType && ((data.selectedType.requiresSubType && data.selectedSubType) || !data.selectedType.requiresSubType)">
+									<span class="glyphicon glyphicon-paperclip mouse-over-pointer"></span>
+								</button>
+								<input type="file" ng-file-select="onFileSelect($files)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" multiple="multiple" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;">
+							</div>
+						</div>
+						<button class="glyphicon glyphicon-upload btn btn-primary btn-sm" ng-click="uploadAll()" ng-show="files.length>1">Upload All</button>
+						<button class="glyphicon glyphicon-rub btn btn-default btn-sm" ng-click="files=[]" ng-show="files.length>0">Clear All</button>
+					</div>
+					<div class="row" ng-repeat="file in files track by $index">
+						<div class="col-sm-4">{{file.doc.file.name}}</div>
+						<div class="col-sm-4"><progressbar animate="true" value="file.currentProgress" type="success"><b>{{file.currentProgress}}%</b></progressbar></div>
+						<div class="col-sm-4">
+							<div class="form-group">
+								<i class="fa fa-upload fa-lg" ng-click="uploadDocument($index)" ng-show="!file.doc.uploaded">upload</i>
+								<i class="fa fa-remove fa-lg" ng-click="removeFile($index)">delete</i>
+							</div>
+
+						</div>
+
+					</div>
+					<div ng-show="list.length===0">
+						No records found
+					</div>
+					<div class="row" ng-show="list.length>0">
+						<table ng-table="tableParams" id="grdDocuments" class="table" show-filter="true" template-pagination="custom/pager">
+							<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer" ng-click="ShowAvailable(item)">
+								<td data-title="' No'" class="col-sm-1">
+									{{$index+1}}
+								</td>
+								<td data-title=" 'Name' " filter="{ 'documentName': 'text' }" sortable=" 'documentName' " class="col-sm-3">
+									{{item.documentName}}.{{item.documentExtension}}
+								</td>
+
+								<td data-title=" 'Type' " sortable=" 'type.name' " class="col-sm-1">
+									{{item.type.name}}
+								</td>
+								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-2">
+									{{item.companyDocumentSubType ? item.companyDocumentSubType.name : ''}}
+								</td>
+								<td data-title=" 'Uploaded' " filter="{ 'lastModified': 'text' }" sortable=" 'lastModified' " class="col-sm-1">
+									{{item.lastModified | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Uploaded by' " filter="{ 'userName': 'text' }" sortable=" 'userName' " class="col-sm-2">
+									{{item.userName}}
+								</td>
+								<td class="col-sm-2">
+									<a ng-href="{{getDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-success"><i class="fa fa-eye"></i></button></a>
+									<button class="btn btn-sm btn-danger" ng-click="deleteDocument(item)"><i class="fa fa-remove"></i></button>
+								</td>
+
+							</tr>
+
+						</table>
+						<script type="text/ng-template" id="custom/pager">
+							<ul class="pager ng-cloak">
+								<li ng-repeat="page in pages"
+										ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+										ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+									<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+									<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+								</li>
+								<li>
+									<div class="btn-group">
+										<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+										<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+										<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+									</div>
+								</li>
+							</ul>
+						</script>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
 	</div>
-	
+
+	<!-- end panel -->
+</div>
+
 

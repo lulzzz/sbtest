@@ -553,10 +553,10 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
 					company.Id);
 
-				if (companyDocs.Any(d => d.DocumentType == DocumentType.Signature))
+				if (companyDocs.Any(d => d.DocumentType == OldDocumentType.Signature))
 				{
 					var signature =
-						companyDocs.Where(d => d.DocumentType == DocumentType.Signature).OrderByDescending(d => d.LastModified).First();
+						companyDocs.Where(d => d.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.LastModified).First();
 					pdf.Signature = new PDFSignature
 					{
 						Path = _fileRepository.GetDocumentLocation(signature.Doc),

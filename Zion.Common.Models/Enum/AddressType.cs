@@ -24,11 +24,21 @@ namespace HrMaxx.Common.Models.Enum
 		Terminated=3
 	}
 
-	public enum DocumentType
+	public enum OldDocumentType
 	{
 		[HrMaxxSecurity(DbId = 0, DbName = "Misc")]
 		Misc=0,
 		[HrMaxxSecurity(DbId = 1, DbName = "Signature")]
 		Signature=1
+	}
+
+	public enum DocumentCategory
+	{
+		[HrMaxxSecurity(DbId = 1, DbName = "Company Document")]
+		Company = 1,
+		[HrMaxxSecurity(DbId = 3, DbName = "Employee Document")]
+		Employee = 3,
+		[HrMaxxSecurity(DbId = 2, DbName = "Company Document for Employee")]
+		CompanyEmployeeDocument = 2
 	}
 }

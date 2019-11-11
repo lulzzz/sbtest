@@ -18,6 +18,7 @@
 		public const string NotificationRead = "NotificationRead/{NotificationID:guid}";
 
 		public const string DeleteDocument = "Document/DeleteEntityDocument/{entityTypeId:int}/{entityId:guid}/{documentId:guid}";
+		public const string SaveDocumentType = "SaveDocumentType";
 
 		public const string Addresses = "Common/Addresses/{sourceTypeId:int}/{sourceId:guid}";
 		public const string FirstAddress = "Common/FirstAddress/{sourceTypeId:int}/{sourceId:guid}";
@@ -38,7 +39,8 @@
 		public const string SaveNewsfeed = "Common/Newsfeed";
 
 		public const string UserNewsfeed = "Common/UserNewsfeed";
-		public const string AccountsMetaData = "AccountsMetaData";
+		public const string AccountsMetaData = "AccountsMetaData"; 
+		public const string DocumentsMetaData = "Document/MetaData/{companyId:guid}";
 		public const string Configs = "Configurations";
 		public const string BankHolidays = "BankHolidays";
 		public const string BankHoliday = "BankHoliday/{holiday}/{action1:bool}";

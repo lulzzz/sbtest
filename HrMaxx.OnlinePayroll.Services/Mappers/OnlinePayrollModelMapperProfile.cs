@@ -402,7 +402,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => CombGuid.Generate()))
 				.ForMember(dest => dest.DocumentPath, opt => opt.Ignore())
-				.ForMember(dest => dest.DocumentType, opt => opt.MapFrom(src=>DocumentType.Misc))
+				.ForMember(dest => dest.DocumentType, opt => opt.MapFrom(src=>OldDocumentType.Misc))
 				.ForMember(dest => dest.DocumentName, opt => opt.MapFrom(src => src.OriginalFileName))
 				.ForMember(dest => dest.MimeType, opt => opt.MapFrom(src => src.MimeType))
 				.ForMember(dest => dest.DocumentExtension, opt => opt.MapFrom(src => src.FileExtension));

@@ -15,7 +15,9 @@ namespace HrMaxx.Common.Models
 		public string SourceFileName { get; set; }
 		public string FileExtension { get; set; }
 		public string MimeType { get; set; }
-		public DocumentType DocumentType { get; set; }
+		public OldDocumentType DocumentType { get; set; }
+		public DocumentType Type { get; set; }
+		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
 		public string UserName { get; set; }
 		public DateTime LastModified { get; set; }
 	}

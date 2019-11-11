@@ -277,7 +277,7 @@ namespace HrMaxx.Common.Services.Document
 						DocumentExtension = file.DocumentExtension,
 						DocumentName = file.Filename,
 						MimeType = file.MimeType,
-						DocumentType = DocumentType.Misc,
+						DocumentType = OldDocumentType.Misc,
 						Id = file.DocumentId
 
 					};
