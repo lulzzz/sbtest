@@ -54,17 +54,17 @@ namespace HrMaxx.Common.Services.Document
 		{
 			try
 			{
-				var document = _commonService.GetTargetEntity<DocumentDto>(EntityTypeEnum.Document, documentId);
+				var document = _commonService.GetDocument(documentId);
 				if (document == null)
 					return null;
-				byte[] fileData = _fileRepository.GetFile(documentId + "." + document.DocumentExtension);
+				byte[] fileData = _fileRepository.GetFile(documentId + "." + document.DocumentDto.DocumentExtension);
 				return new FileDto
 				{
 					DocumentId = documentId,
 					Data = fileData,
-					Filename = document.Filename,
-					DocumentExtension = document.DocumentExtension,
-					MimeType = document.MimeType
+					Filename = document.DocumentDto.Filename,
+					DocumentExtension = document.DocumentDto.DocumentExtension,
+					MimeType = document.DocumentDto.MimeType
 				};
 			}
 			catch (Exception e)
@@ -149,12 +149,11 @@ namespace HrMaxx.Common.Services.Document
 			
 		}
 
-		public IList<DocumentDto> GetEntityDocuments(int entityType, Guid entityId)
+		public IList<Models.Document> GetEntityDocuments(int entityType, Guid entityId)
 		{
 			try
 			{
-				return _commonService.GetRelatedEntities<DocumentDto>((EntityTypeEnum) entityType, EntityTypeEnum.Document,
-					entityId);
+				return _commonService.GetDocuments((EntityTypeEnum) entityType, entityId);
 			}
 			catch (Exception e)
 			{
@@ -164,7 +163,7 @@ namespace HrMaxx.Common.Services.Document
 			}
 		}
 
-		public DocumentDto AddEntityDocument(EntityDocumentAttachment doc)
+		public Models.Document AddEntityDocument(EntityDocumentAttachment doc)
 		{
 			try
 			{
@@ -177,11 +176,17 @@ namespace HrMaxx.Common.Services.Document
 						SourceFileName = doc.SourceFileName,
 						DestinationFileName = document.Id + "." + doc.FileExtension
 					});
-					_commonService.AddEntityRelation<DocumentDto>((EntityTypeEnum) doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
+					_commonService.AddDocument((EntityTypeEnum)doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
+					//_commonService.AddEntityRelation<DocumentDto>((EntityTypeEnum) doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
 						document);
+					if (doc.EntityTypeId == (int) EntityTypeEnum.Employee && doc.CompanyId.HasValue &&
+					    doc.CompanyDocumentSubType.IsEmployeeRequired)
+					{
+						_commonService.AddEmployeeDocument(doc.CompanyId, doc.EntityId, document);
+					}
 					txn.Complete();
 				}
-				return document;
+				return _commonService.GetDocument(document.Id);
 
 			}
 			catch (Exception e)
@@ -229,9 +234,11 @@ namespace HrMaxx.Common.Services.Document
 		{
 			try
 			{
-				var doc = _commonService.GetTargetEntity<DocumentDto>(EntityTypeEnum.Document, documentId);
-				_commonService.DeleteEntityRelation((EntityTypeEnum)entityTypeId, EntityTypeEnum.Document, entityId, documentId);
-				_fileRepository.DeleteDestinationFile(doc.Id + "." + doc.DocumentExtension);
+				//var doc = _commonService.GetTargetEntity<DocumentDto>(EntityTypeEnum.Document, documentId);
+				//_commonService.DeleteEntityRelation((EntityTypeEnum)entityTypeId, EntityTypeEnum.Document, entityId, documentId);
+				var doc = _commonService.GetDocument(documentId);
+				_commonService.DeleteDocument(entityId, documentId);
+				_fileRepository.DeleteDestinationFile(doc.DocumentDto.Id + "." + doc.DocumentDto.DocumentExtension);
 			}
 			catch (Exception e)
 			{

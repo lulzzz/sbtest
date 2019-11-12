@@ -9,6 +9,7 @@ using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
@@ -230,6 +231,70 @@ namespace HrMaxx.Common.Repository.Common
 					cmd.ExecuteNonQuery();
 					con.Close();
 				}
+			}
+		}
+
+		public void AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, DocumentDto targetObject)
+		{
+			const string sql = "insert into Document (SourceEntityTypeId, SourceEntityId, TargetEntityId, Type, CompanyDocumentSubType, TargetObject, Uploaded, UploadedBy) " +
+												 "values (@SourceEntityTypeId, @SourceEntityId, @TargetEntityId, @Type, @CompanyDocumentSubType, @TargetObject, @Uploaded, @UploadedBy); select cast(scope_identity() as int) as Id;";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new
+				{
+					SourceEntityTypeId = (int) source,
+					SourceEntityId = sourceId,
+					TargetEntityId = targetObject.Id,
+					Type = targetObject.Type.Id,
+					CompanyDocumentSubType =
+						targetObject.CompanyDocumentSubType == null ? default(int?) : targetObject.CompanyDocumentSubType.Id,
+						TargetObject = JsonConvert.SerializeObject(targetObject), Uploaded = DateTime.Now, UploadedBy = targetObject.UserName
+				});
+			}
+		}
+
+		public Document GetDocument(Guid documentId)
+		{
+			const string sql = "select * from Document where TargetEntityId=@Id";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<Document>(sql, new {Id = documentId}).First();
+			}
+		}
+
+		public void DeleteDocument(Guid entityId, Guid documentId)
+		{
+			const string sql = "delete from Document where SourceEntityId=@Source and TargetEntityId=@Id";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new {Source = entityId, Id = documentId});
+			}
+		}
+
+		public IList<Document> GetDocuments(EntityTypeEnum entityType, Guid entityId)
+		{
+			const string sql = "select * from Document where SourceEntityTypeId=@SourceType and SourceEntityId=@Id";
+			using (var conn = GetConnection())
+			{
+				return conn.Query<Document>(sql, new { Id = entityId, SourceType=entityType.GetDbId() }).ToList();
+			}
+		}
+
+		public void AddEmployeeDocument(Guid? companyId, Guid entityId, DocumentDto document)
+		{
+			const string sql = "insert into EmployeeDocument(CompanyDocumentSubType, EmployeeId, CompanyId, DocumentId, DateUploaded, UploadedBy) values(@CompanyDocumentSubType, @EmployeeId, @CompanyId, @DocumentId, @DateUploaded, @UploadedBy)";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql,
+					new
+					{
+						CompanyDocumentSubType = document.CompanyDocumentSubType.Id,
+						EmployeeId = entityId,
+						CompanyId = companyId,
+						DocumentId = document.Id,
+						DateUploaded = document.LastModified,
+						UploadedBy = document.UserName
+					});
 			}
 		}
 	}

@@ -550,16 +550,15 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 
 			if (journal.PaymentMethod == EmployeePaymentMethod.Check)
 			{
-				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
-					company.Id);
+				var companyDocs = _commonService.GetDocuments(EntityTypeEnum.Company, company.Id);
 
-				if (companyDocs.Any(d => d.DocumentType == OldDocumentType.Signature))
+				if (companyDocs.Any(d => d.DocumentDto.DocumentType == OldDocumentType.Signature))
 				{
 					var signature =
-						companyDocs.Where(d => d.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.LastModified).First();
+						companyDocs.Where(d => d.DocumentDto.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.DocumentDto.LastModified).First();
 					pdf.Signature = new PDFSignature
 					{
-						Path = _fileRepository.GetDocumentLocation(signature.Doc),
+						Path = _fileRepository.GetDocumentLocation(signature.DocumentDto.Doc),
 						X = 375,
 						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 587 : 330,
 						ScaleX = (float)0.7,

@@ -263,5 +263,84 @@ namespace HrMaxx.Common.Services.Common
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, DocumentDto targetObject)
+		{
+			try
+			{
+				_commonRepository.AddDocument(source, target, sourceId, targetObject);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" add related entityes {0}, {1}, {2}", source, target, sourceId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public Models.Document GetDocument(Guid documentId)
+		{
+			try
+			{
+				var doc = _commonRepository.GetDocument(documentId);
+				doc.DocumentType = doc.DocumentDto.Type;
+				doc.SubType = doc.DocumentDto.CompanyDocumentSubType;
+				return doc;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" get document {0}", documentId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void DeleteDocument(Guid entityId, Guid documentId)
+		{
+			try
+			{
+				_commonRepository.DeleteDocument(entityId, documentId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" delete document  {0}, {1}", entityId, documentId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public IList<Models.Document> GetDocuments(EntityTypeEnum entityType, Guid entityId)
+		{
+			try
+			{
+				var docs = _commonRepository.GetDocuments(entityType, entityId);
+				docs.ToList().ForEach(d=>
+				{
+					d.DocumentType = d.DocumentDto.Type;
+					d.SubType = d.DocumentDto.CompanyDocumentSubType;
+				});
+				return docs;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, string.Format(" get documents {0}", entityId));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void AddEmployeeDocument(Guid? companyId, Guid entityId, DocumentDto document)
+		{
+			try
+			{
+				_commonRepository.AddEmployeeDocument(companyId, entityId, document);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" add employee document  {0}, {1}, {2}", entityId, companyId, document.Id));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 	}
 }

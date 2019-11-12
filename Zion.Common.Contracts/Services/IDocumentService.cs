@@ -21,8 +21,8 @@ namespace HrMaxx.Common.Contracts.Services
 		void SaveUserImage(string user, string image);
 		void MoveDocument(MoveDocumentDto document, DateTime lastModified, bool addWatermark = false);
 
-		IList<DocumentDto> GetEntityDocuments(int entityType, Guid entityId);
-		DocumentDto AddEntityDocument(EntityDocumentAttachment document);
+		IList<Document> GetEntityDocuments(int entityType, Guid entityId);
+		Document AddEntityDocument(EntityDocumentAttachment document);
 		DocumentDto AddEntityPDF(EntityDocumentAttachment document, Guid documentId);
 		void DeleteEntityDocument(int entityTypeId, Guid entityId, Guid documentId);
 		FileDto GetDocumentById(Guid documentId, string extension , string fileName);

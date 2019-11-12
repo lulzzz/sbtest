@@ -44,7 +44,7 @@ Go
 IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'Notifications'
-                 AND COLUMN_NAME = 'Visible')
+                 AND COLUMN_NAME = 'IsVisible')
 Alter table Notifications Add IsVisible bit not null Default(1) ;
 Go
 /****** Object:  Table [dbo].[ApplicationConfiguration]    Script Date: 5/10/2016 7:16:55 PM ******/

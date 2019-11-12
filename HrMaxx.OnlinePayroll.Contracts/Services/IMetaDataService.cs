@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 	{
 		object GetCompanyMetaData();
 		DocumentServiceMetaData GetDocumentServiceMetaData(Guid companyId);
+		EmployeeDocumentMetaData GetEmployeeDocumentServiceMetaData(Guid companyId, Guid employeeId);
 		object GetAccountsMetaData();
 		object GetEmployeeMetaData();
 		object GetPayrollMetaData(CheckBookMetaDataRequest companyId);
@@ -33,5 +34,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		List<KeyValuePair<int, DateTime>> GetBankHolidays();
 		object SaveBankHoliday(DateTime holiday, bool action);
 		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType subType);
+		void SetEmployeeAccess(Guid employeeId, Guid documentId);
 	}
 }

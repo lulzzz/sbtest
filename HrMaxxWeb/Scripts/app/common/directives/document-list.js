@@ -7,7 +7,10 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 			replace: true,
 			scope: {
 				mainData: "=mainData",
-				heading: "=heading"
+				heading: "=heading",
+				mode: "=mode",
+				companyId: "=companyId",
+				employeeId: "=?employeeId"
 			},
 			templateUrl: zionAPI.Web + 'Content/templates/document-list.html?v=' + version,
 
@@ -15,13 +18,16 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 				function ($scope, $element, $location, ngTableParams, $filter, commonRepository, EntityTypes) {
 					$scope.targetTypeId = EntityTypes.Document;
 					$scope.sourceTypeId = $scope.mainData.userRole.employee ? EntityTypes.Employee : EntityTypes.Company;
-					$scope.sourceId = $scope.mainData.selectedCompany.id;
+					$scope.sourceId = $scope.companyId;
 					$scope.list = [];
+					$scope.listEmployeeAccess = [];
+					$scope.listEmployeeDocuments = [];
 					$scope.documentTypes = [];
 					$scope.companyDocumentSubTypes = [];
 					
 					var dataSvc = {
-						selectedType: null, selectedSubType: null
+						selectedType: null, selectedSubType: null,
+						isCustomerTypeOpen: false, isDocsOpen: true
 					}
 					$scope.data = dataSvc;
 					$scope.addAlert = function (error, type) {
@@ -76,6 +82,64 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 							params.total(orderedData.length); // set total for recalc pagination
 						}
 					};
+					$scope.tableDataEmployeeView = [];
+					$scope.tableParamsEmployeeView = new ngTableParams({
+						page: 1,            // show first page
+						count: 10
+					}, {
+						total: $scope.listEmployeeAccess ? $scope.listEmployeeAccess.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableDataEmployeeView(params);
+							return $scope.tableDataEmployeeView;
+						}
+					});
+
+					$scope.fillTableDataEmployeeView = function (params) {
+						// use build-in angular filter
+						if ($scope.listEmployeeAccess && $scope.listEmployeeAccess.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.listEmployeeAccess, params.filter()) :
+																$scope.listEmployeeAccess;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParamsEmployeeView = params;
+							$scope.tableDataEmployeeView = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					$scope.tableDataEmployeeRequired = [];
+					$scope.tableParamsEmployeeRequired = new ngTableParams({
+						page: 1,            // show first page
+						count: 10
+					}, {
+						total: $scope.listEmployeeDocuments ? $scope.listEmployeeDocuments.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableDataEmployeeRequired(params);
+							return $scope.tableDataEmployeeRequired;
+						}
+					});
+
+					$scope.fillTableDataEmployeeRequired = function (params) {
+						// use build-in angular filter
+						if ($scope.listEmployeeDocuments && $scope.listEmployeeDocuments.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.listEmployeeDocuments, params.filter()) :
+																$scope.listEmployeeDocuments;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableDataEmployeeRequired = params;
+							$scope.tableDataEmployeeRequired = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
 
 					$scope.onFileSelect = function ($files) {
 						for (var i = 0; i < $files.length; i++) {
@@ -115,6 +179,45 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						}
 					};
 
+					$scope.onFileSelectEmployee = function ($files, item) {
+						for (var i = 0; i < $files.length; i++) {
+							var $file = $files[i];
+							
+								var fileReader = new FileReader();
+								fileReader.readAsDataURL($files[i]);
+								var loadFile = function (fileReader, index) {
+									fileReader.onload = function (e) {
+										$timeout(function () {
+											$scope.files.push({
+												doc: {
+													file: $files[index],
+													file_data: e.target.result,
+													uploaded: false
+												},
+												data: JSON.stringify({
+													entityTypeId: EntityTypes.Employee,
+													entityId: item.employeeId,
+													mimeType: $files[index].type,
+													type: item.companyDocumentSubType.documentType,
+													documentType: item.companyDocumentSubType.documentType.id,
+													companyDocumentSubType: item.companyDocumentSubType,
+													companyId: $scope.companyId
+												}),
+												currentProgress: 0,
+												completed: false
+											});
+											item.fileIndex = $scope.files.length;
+										});
+									}
+								}(fileReader, i);
+							
+						}
+					};
+					$scope.clearSelections = function() {
+						$.each($scope.tableDataEmployeeRequired, function(i, e) {
+							$scope.tableDataEmployeeRequired[i].fileIndex = null;
+						});
+					}
 					$scope.uploadAll = function() {
 						$.each($scope.files, function (index, file) {
 							$scope.uploadDocument(index);
@@ -126,8 +229,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						
 							commonRepository.uploadDocument($scope.files[index]).then(function (doc) {
 								$scope.list.push(doc);
-								$scope.tableParams.reload();
-								$scope.fillTableData($scope.tableParams);
+								refillTables();
 							}, function() {
 								$scope.files[index].doc.uploaded = false;
 								$scope.files[index].currentProgress = 0;
@@ -138,14 +240,15 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						}
 					}
 					$scope.deleteDocument = function(doc) {
-						commonRepository.deleteDocument($scope.sourceTypeId, $scope.sourceId, doc.id).then(function () {
-							$scope.list.splice($scope.list.indexOf(doc), 1);
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-							$scope.addAlert('successfully removed file', 'success');
-						}, function () {
-							$scope.addAlert('error deleting document', 'danger');
+						$scope.$parent.$parent.confirmDialog('Are you sure you want to delete this document?', 'danger', function() {
+							commonRepository.deleteDocument($scope.sourceTypeId, $scope.sourceId, doc.targetEntityId).then(function() {
+								$scope.list.splice($scope.list.indexOf(doc), 1);
+								refillTables();
+								$scope.addAlert('successfully removed file', 'success');
+							}, function() {
+								$scope.addAlert('error deleting document', 'danger');
 
+							});
 						});
 					}
 					$scope.removeFile = function(index) {
@@ -154,12 +257,27 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 					}
 					$scope.getDocumentUrl = function (document) {
 
-						return zionAPI.URL + 'Document/' + document.id;
+						return zionAPI.URL + 'Document/' + document.targetEntityId;
 					};
-
+					$scope.getEmployeeDocumentUrl = function (document) {
+						if ($scope.mainData.userEmployee && $scope.mainData.userEmployee === $scope.employeeId)
+							return zionAPI.URL + 'EmployeeDocument/' + document.document.targetEntityId + '/' + $scope.employeeId;
+						else {
+							return zionAPI.URL + 'Document/' + document.document.targetEntityId;
+						}
+					};
+					$scope.updateEmployeeDocumentAccess = function (item) {
+						if ($scope.mainData.userEmployee && $scope.mainData.userEmployee === $scope.employeeId) {
+							var l = $filter('filter')($scope.listEmployeeAccess, { document: { id: item.document.id } })[0];
+							l.firstAccessed = l.firstAccessed ? l.firstAccessed : new Date();
+							l.lastAccessed = new Date();
+							refillTables();
+						}
+						
+					}
 					$scope.addDocumentType = function () {
 						var dt = {
-							id: 0, name: '', category: null, isEmployeeRequired: false, trackAccess: false, companyId: $scope.mainData.selectedCompany.id
+							id: 0, name: '', documentType: null, isEmployeeRequired: false, trackAccess: false, companyId: $scope.mainData.selectedCompany.id
 						};
 						$scope.companyDocumentSubTypes.push(dt);
 						$scope.selectedDocumentType = dt;
@@ -178,7 +296,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 					}
 					$scope.isDocumentTypeValid = function () {
 						if ($scope.selectedDocumentType) {
-							if (!$scope.selectedDocumentType.category || !$scope.selectedDocumentType.name)
+							if (!$scope.selectedDocumentType.documentType || !$scope.selectedDocumentType.name)
 								return false;
 							else
 								return true;
@@ -192,17 +310,28 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 							
 							commonRepository.saveDocumentType($scope.selectedDocumentType).then(function (data) {
 
-								addAlert('Successfully saved document type ', 'success');
+								$scope.addAlert('Successfully saved document type ', 'success');
 								$scope.companyDocumentSubTypes[dt] = angular.copy(data);
 								$scope.selectedDocumentType = null;
 								$scope.original = null;
 
 							}, function (error) {
-								addAlert('error in saving document type. ' + error.statusText, 'danger');
+								$scope.addAlert('error in saving document type. ' + error.statusText, 'danger');
 							});
 						}
 					}
-				
+					var refillTables = function() {
+						$scope.tableParams.reload();
+						$scope.fillTableData($scope.tableParams);
+						
+						
+						$scope.tableParamsEmployeeView.reload();
+						$scope.fillTableDataEmployeeView($scope.tableParamsEmployeeView);
+
+						$scope.tableParamsEmployeeRequired.reload();
+						$scope.fillTableDataEmployeeRequired($scope.tableParamsEmployeeRequired);
+						
+					}
 					var init = function() {
 						//commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, c$scope.sourceId).then(function(data) {
 						//	$scope.list = data;
@@ -211,15 +340,26 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						//}, function(erorr) {
 
 						//});
-						commonRepository.getDocumentsMetaData($scope.sourceId).then(function (data) {
-							$scope.list = data.documents;
-							$scope.documentTypes = data.types;
-							$scope.companyDocumentSubTypes = data.companyDocumentSubTypes;
-							$scope.tableParams.reload();
-							$scope.fillTableData($scope.tableParams);
-						}, function (erorr) {
+						if ($scope.mode===1) {
+							commonRepository.getDocumentsMetaData($scope.companyId).then(function(data) {
+								$scope.list = data.documents;
+								$scope.documentTypes = data.types;
+								$scope.companyDocumentSubTypes = data.companyDocumentSubTypes;
+								refillTables();
+							}, function(erorr) {
 
-						});
+							});
+						} else {
+							commonRepository.getEmployeeDocumentsMetaData($scope.companyId, $scope.employeeId).then(function (data) {
+								$scope.listEmployeeAccess = data.employeeDocumentAccesses;
+								$scope.listEmployeeDocuments = data.employeeDocumentRequirements;
+								refillTables();
+							}, function (erorr) {
+
+							});
+						}
+						
+						
 					}
 					init();
 

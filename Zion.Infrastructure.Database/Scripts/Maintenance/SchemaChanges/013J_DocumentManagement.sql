@@ -161,7 +161,7 @@ GO
 set identity_insert DocumentType On
 insert into DocumentType(Id, Name, Category, CollectMetaData, RequiresSubTypes) values(0, 'Misc', 1, 0, 0);
 insert into DocumentType(Id, Name, Category, CollectMetaData, RequiresSubTypes) values(1, 'Signature', 1, 0, 0);
-insert into DocumentType(Id, Name, Category, CollectMetaData, RequiresSubTypes) values(3, 'Company Compliance', 1, 0, 1);
+insert into DocumentType(Id, Name, Category, CollectMetaData, RequiresSubTypes) values(3, 'Company Compliance', 1, 1, 1);
 insert into DocumentType(Id, Name, Category, CollectMetaData, RequiresSubTypes) values(4, 'Employee On-Boarding', 2, 1, 1);
 insert into DocumentType(Id, Name, Category, CollectMetaData, RequiresSubTypes) values(5, 'Employee Compliance', 3, 0, 1);
 set identity_insert DocumentType Off

@@ -4,6 +4,7 @@
 	{
 		
 		public const string Document = "Document/{documentId:guid}";
+		public const string EmployeeDocument = "EmployeeDocument/{documentId:guid}/{employeeId:guid}";
 		public const string DocumentById = "DocumentById/{documentId:guid}/{extension}/{filename}";
 		public const string DocumentUpload = "Document/UploadEntityDocument";
 		public const string Version = "Version";
@@ -41,6 +42,7 @@
 		public const string UserNewsfeed = "Common/UserNewsfeed";
 		public const string AccountsMetaData = "AccountsMetaData"; 
 		public const string DocumentsMetaData = "Document/MetaData/{companyId:guid}";
+		public const string EmployeeDocumentsMetaData = "Document/EmployeeDocumentMetaData/{companyId:guid}/{employeeId:guid}";
 		public const string Configs = "Configurations";
 		public const string BankHolidays = "BankHolidays";
 		public const string BankHoliday = "BankHoliday/{holiday}/{action1:bool}";
@@ -63,5 +65,6 @@
 		public const string Decrypt = "Decrypt/{data}";
 
 		public const string SendTestEmail = "SendTestEmail/{email}";
+		
 	}
 }

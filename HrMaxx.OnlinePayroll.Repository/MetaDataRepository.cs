@@ -419,9 +419,22 @@ namespace HrMaxx.OnlinePayroll.Repository
 				"values(@Name, @Type, @IsEmployeeRequired, @TrackAccess, @CompanyId); select cast(scope_identity() as int) end";
 			using (var conn = GetConnection())
 			{
-				subType.Id = conn.Query<int>(sql, new { Id=subType.Id, Name= subType.Name, Type = subType.Category.Id, subType.IsEmployeeRequired, subType.TrackAccess, subType.CompanyId}).Single();
+				subType.Id = conn.Query<int>(sql, new { Id=subType.Id, Name= subType.Name, Type = subType.DocumentType.Id, subType.IsEmployeeRequired, subType.TrackAccess, subType.CompanyId}).Single();
 			}
 			return subType;
+		}
+
+		public void SetEmployeeDocumentAccess(Guid employeeId, Guid documentId)
+		{
+			const string sql =
+				"if exists(select 'x' from EmployeeDocumentAccess where EmployeeId=@EmployeeId and DocumentId=@DocumentId) " +
+				"begin Update EmployeeDocumentAccess set LastAccessed=getdate()  where EmployeeId=@EmployeeId and DocumentId=@DocumentId; end " +
+				"else begin insert into EmployeeDocumentAccess(EmployeeId, DocumentId, FirstAccessed, LastAccessed) " +
+				"values(@EmployeeId, @DocumentId, getdate(), getdate()) end";
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, new { EmployeeId = employeeId, DocumentId = documentId});
+			}
 		}
 	}
 }

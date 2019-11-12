@@ -81,6 +81,12 @@ namespace HrMaxxAPI.Controllers
 		{
 			return MakeServiceCall(() => _metaDataService.GetDocumentServiceMetaData(companyId), "Documents Meta Data", true);
 		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.EmployeeDocumentsMetaData)]
+		public EmployeeDocumentMetaData GetEmployeeDocumentsMetaData(Guid companyId, Guid employeeId)
+		{
+			return MakeServiceCall(() => _metaDataService.GetEmployeeDocumentServiceMetaData(companyId, employeeId), "Documents Meta Data for Employees", true);
+		}
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(HrMaxxRoutes.AccountsMetaData)]

@@ -36,5 +36,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		KeyValuePair<int, DateTime> SaveBankHoliday(DateTime holiday, bool action);
 		
 		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType dt);
+		void SetEmployeeDocumentAccess(Guid employeeId, Guid documentId);
 	}
 }

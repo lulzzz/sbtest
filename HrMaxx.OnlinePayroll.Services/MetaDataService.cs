@@ -67,8 +67,8 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				const string sql = "select " +
 												 "(select * from DocumentType for xml auto, elements, type) Types, " +
-												 "(select * from CompanyDocumentSubType where CompanyId='{0}' for xml path('CompanyDocumentSubType'), elements, type) CompanyDocumentSubTypes, " +
-												 "(select * from EntityRelation where SourceEntityId='{0}' and SourceEntityTypeId=2 and TargetEntityTypeId=13 for xml path('EntityRelationDocument'), elements, type) Docs " +
+												 "(select *, (select * from DocumentType where Id=Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where CompanyId='{0}' for xml path('CompanyDocumentSubType'), elements, type) CompanyDocumentSubTypes, " +
+												 "(select * from Document where SourceEntityId='{0}' and SourceEntityTypeId=2 for xml path('Document'), elements, type) Docs " +
 												 "for Xml path('DocumentServiceMetaData') , elements, type";
 				
 				//var docs =_metaDataRepository.GetDocumentServiceMetaData(companyId);
@@ -78,6 +78,41 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Documents");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public EmployeeDocumentMetaData GetEmployeeDocumentServiceMetaData(Guid companyId, Guid employeeId)
+		{
+			try
+			{
+				const string sql = "select (select ed.Id, d.TargetEntityId DocumentId," +
+				                   "(select *, (select * from DocumentType where Id=d.Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where Id=cd.Id for Xml path('CompanyDocumentSubType'), elements, type), " +
+				                   "FirstAccessed, LastAccessed, '{1}' EmployeeId, " +
+				                   "(select *, (select * from DocumentType where Id=d.Type for Xml path('DocumentType'), elements, type), " +
+				                   "(select *, (select * from DocumentType where Id=d.Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where Id=d.CompanyDocumentSubType for Xml path('CompanyDocumentSubType'), elements, type) " +
+				                   "from Document where TargetEntityId=d.TargetEntityId for Xml path('Document'), elements, type) " +
+				                   "from Document d inner join CompanyDocumentSubType cd on d.Type=cd.Type and d.CompanyDocumentSubType=cd.Id	" +
+				                   "left outer join EmployeeDocumentAccess ed on ed.DocumentId=d.TargetEntityId and ed.EmployeeId='{1}' " +
+				                   "where cd.TrackAccess=1 and cd.CompanyId='{0}' and cd.Type in (3,4) " +
+				                   "for xml path('EmployeeDocumentAccess'), elements, type) EmployeeDocumentAccesses, " +
+													 "(select ed.Id, (select *, (select * from DocumentType where Id=cd.Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where Id=cd.Id for Xml path('CompanyDocumentSubType'), elements, type),DateUploaded, ed.UploadedBy, '{1}' EmployeeId, '{0}' CompanyId, " +
+				                   "(select *, (select * from DocumentType where Id=cd.Type for Xml path('DocumentType'), elements, type), " +
+				                   "(select *, (select * from DocumentType where Id=cd.Type for Xml path('DocumentType'), elements, type) from CompanyDocumentSubType where Id=cd.Id for Xml path('CompanyDocumentSubType'), elements, type) " +
+				                   "from Document where TargetEntityId=ed.DocumentId for Xml path('Document'), elements, type) " +
+				                   "from CompanyDocumentSubType cd left outer join EmployeeDocument ed on ed.CompanyDocumentSubType=cd.Id and ed.EmployeeId='{1}' " +
+				                   "where cd.CompanyId='{0}' and cd.Type in (5) " +
+				                   "for xml path('EmployeeDocument'), elements, type) EmployeeDocumentRequirements " +
+				                   "for xml path('EmployeeDocumentMetaData'), elements, type";
+
+				//var docs =_metaDataRepository.GetDocumentServiceMetaData(companyId);
+				var docs = _reader.GetQueryData<EmployeeDocumentMetaData>(string.Format(sql, companyId, employeeId), new XmlRootAttribute("EmployeeDocumentMetaData"));
+				return docs;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, "Meta Data for Employee Documents");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -319,6 +354,20 @@ namespace HrMaxx.OnlinePayroll.Services
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " deduction type ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public void SetEmployeeAccess(Guid employeeId, Guid documentId)
+		{
+			try
+			{
+				_metaDataRepository.SetEmployeeDocumentAccess(employeeId, documentId);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " update employee document view ");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

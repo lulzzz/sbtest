@@ -24,7 +24,7 @@ namespace HrMaxx.Common.Models
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
-		public DocumentType Category { get; set; }
+		public DocumentType DocumentType { get; set; }
 		public bool IsEmployeeRequired { get; set; }
 		public bool TrackAccess { get; set; }
 		public Guid CompanyId { get; set; }
@@ -34,56 +34,74 @@ namespace HrMaxx.Common.Models
 	public class EmployeeDocument
 	{
 		public int Id { get; set; }
-		public CompanyDocumentSubType SubType { get; set; }
+		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
 		public Guid EmployeeId { get; set; }
 		public Guid CompanyId { get; set; }
-		public DateTime DateUploaded { get; set; }
+		public DateTime? DateUploaded { get; set; }
 		public string UploadedBy { get; set; }
 		public Guid? DocumentId { get; set; }
+		public Document Document { get; set; }
 	}
 
 	public class EmployeeDocumentAccess
 	{
-		public int Id { get; set; }
-		public CompanyDocumentSubType Type { get; set; }
-		public Guid EmployeeId { get; set; }
+		public int? Id { get; set; }
+		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
+		public Guid? EmployeeId { get; set; }
 		public Guid DocumentId { get; set; }
-		public DateTime FirstAccessed { get; set; }
-		public DateTime LastAccessed { get; set; }
+		public DateTime? FirstAccessed { get; set; }
+		public DateTime? LastAccessed { get; set; }
+		public Document Document { get; set; }
 	}
 
+	public class EmployeeDocumentMetaData
+	{
+		public List<EmployeeDocumentAccess> EmployeeDocumentAccesses { get; set; }
+		public List<EmployeeDocument> EmployeeDocumentRequirements { get; set; } 
+	}
 	public class DocumentServiceMetaData
 	{
 		public List<DocumentType> Types { get; set; }
 		public List<CompanyDocumentSubType> CompanyDocumentSubTypes { get; set; }
-		public List<EntityRelationDocument> Docs { get; set; }
+		public List<Document> Docs { get; set; }
 
-		public List<DocumentDto> Documents
+		public List<Document> Documents
 		{
 			get
 			{
-				var docs = Docs.Select(d => d.Document).ToList();
-				docs.ForEach(d=>d.Type = Types.First(c=>c.Id==(int)d.DocumentType));
-				return docs;
+				Docs.ForEach(d =>
+				{
+					d.DocumentType = Types.First(c => c.Id == (int) d.Type);
+					if (d.CompanyDocumentSubType.HasValue)
+						d.SubType = CompanyDocumentSubTypes.FirstOrDefault(st => st.Id == d.CompanyDocumentSubType);
+				});
+				return Docs;
 			}
 		}
 	}
 
-	public class EntityRelationDocument
+	public class Document
 	{
-		public int EntityRelationId { get; set; }
+		public int Id { get; set; }
 		public int SourceEntityTypeId { get; set; }
-		public int TargetEntityTypeId { get; set; }
 		public System.Guid SourceEntityId { get; set; }
 		public System.Guid TargetEntityId { get; set; }
 		public string TargetObject { get; set; }
+		public int Type { get; set; }
+		public int? CompanyDocumentSubType { get; set; }
+		public DocumentType DocumentType { get; set; }
+		public CompanyDocumentSubType SubType { get; set; }
+		public DateTime Uploaded { get; set; }
+		public string UploadedBy { get; set; }
 
-		public DocumentDto Document
+		public DocumentDto DocumentDto
 		{
 			get
 			{
 				return JsonConvert.DeserializeObject<DocumentDto>(TargetObject);
 			}
 		}
+		public string DocumentName { get { return DocumentDto.DocumentName; } }
 	}
+
 }

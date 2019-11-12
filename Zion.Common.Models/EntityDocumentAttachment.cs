@@ -20,5 +20,7 @@ namespace HrMaxx.Common.Models
 		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
 		public string UserName { get; set; }
 		public DateTime LastModified { get; set; }
+		public Guid? CompanyId { get; set; }
+
 	}
 }

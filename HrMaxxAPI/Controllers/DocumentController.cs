@@ -19,10 +19,12 @@ namespace HrMaxxAPI.Controllers
 	public class DocumentController : BaseApiController
 	{
 		private readonly IDocumentService _documentService;
+		private readonly IMetaDataService _metaDataService;
 		
-		public DocumentController(IDocumentService documentService)
+		public DocumentController(IDocumentService documentService, IMetaDataService metaDataService)
 		{
 			_documentService = documentService;
+			_metaDataService = metaDataService;
 		}
 
 		[System.Web.Http.HttpGet]
@@ -31,9 +33,26 @@ namespace HrMaxxAPI.Controllers
 		public HttpResponseMessage GetDocument(Guid documentId)
 		{
 			FileDto document = MakeServiceCall(() => _documentService.GetDocument(documentId), "Get Document By ID", true);
+			
 			var response = new HttpResponseMessage {Content = new StreamContent(new MemoryStream(document.Data))};
 			response.Content.Headers.ContentType = new MediaTypeHeaderValue(document.MimeType);
 			
+			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+			{
+				FileName = document.Filename
+			};
+			return response;
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route(HrMaxxRoutes.EmployeeDocument)]
+		public HttpResponseMessage GetEmployeeDocument(Guid documentId, Guid employeeId)
+		{
+			FileDto document = MakeServiceCall(() => _documentService.GetDocument(documentId), "Get Document By ID", true);
+			_metaDataService.SetEmployeeAccess(employeeId, documentId);
+			var response = new HttpResponseMessage { Content = new StreamContent(new MemoryStream(document.Data)) };
+			response.Content.Headers.ContentType = new MediaTypeHeaderValue(document.MimeType);
+
 			response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
 			{
 				FileName = document.Filename
@@ -91,7 +110,7 @@ namespace HrMaxxAPI.Controllers
 				entityDocument.UserName = CurrentUser.FullName;
 				entityDocument.LastModified = DateTime.Now;
 
-				DocumentDto document = MakeServiceCall(() => _documentService.AddEntityDocument(entityDocument),
+				var document = MakeServiceCall(() => _documentService.AddEntityDocument(entityDocument),
 					"Save Entity Document", true);
 
 				return this.Request.CreateResponse(HttpStatusCode.OK, document);

@@ -2466,7 +2466,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 		private PDFModel GetPdfModel(Models.Payroll payroll, PayCheck payCheck, Models.Journal journal, Company company,
-			Company nameCompany, Company company1, Account bankcoa, DocumentDto signature)
+			Company nameCompany, Company company1, Account bankcoa, Document signature)
 		{
 			var pdf = new PDFModel
 			{
@@ -2485,7 +2485,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					pdf.Signature = new PDFSignature
 					{
-						Path = _fileRepository.GetDocumentLocation(signature.Doc),
+						Path = _fileRepository.GetDocumentLocation(signature.DocumentDto.Doc),
 						X = 375,
 						Y =
 							company1.PayCheckStock == PayCheckStock.LaserTop || company1.PayCheckStock == PayCheckStock.MICREncodedTop ||
@@ -2861,7 +2861,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		}
 
 		private PDFModel GetPdfModelJobCost(Models.Payroll payroll, PayCheck payCheck, Models.Journal journal, Company company,
-			Company nameCompany, Company company1, Account bankcoa, DocumentDto signature)
+			Company nameCompany, Company company1, Account bankcoa, Document signature)
 		{
 			var pdf = new PDFModel
 				{
@@ -2929,7 +2929,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						
 						pdf.Signature = new PDFSignature
 						{
-							Path = _fileRepository.GetDocumentLocation(signature.Doc),
+							Path = _fileRepository.GetDocumentLocation(signature.DocumentDto.Doc),
 							X = 375,
 							Y = 325,
 							ScaleX = (float)0.7,
@@ -3071,9 +3071,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var nameCompany = payroll.Company.Contract.InvoiceSetup.PrintClientName ? payroll.Company : company;
 
 				var bankcoa = coas.First(c => c.Id == journals.First().MainAccountId);
-				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
-						company.Id);
-				var signature = companyDocs.Where(d => d.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
+				var companyDocs = _commonService.GetDocuments(EntityTypeEnum.Company, company.Id);
+				var signature = companyDocs.Where(d => d.DocumentDto.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.DocumentDto.LastModified).FirstOrDefault();
 				var pdfs = new List<PDFModel>();
 				foreach (var payCheck in payChecks)
 				{
@@ -3123,9 +3122,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var nameCompany = payroll.Company.Contract.InvoiceSetup.PrintClientName ? payroll.Company : company;
 
 				var bankcoa = coas.First(c => c.Id == journals.First().MainAccountId);
-				var companyDocs = _commonService.GetRelatedEntities<DocumentDto>(EntityTypeEnum.Company, EntityTypeEnum.Document,
-						company.Id);
-				var signature = companyDocs.Where(d => d.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.LastModified).FirstOrDefault();
+				var companyDocs = _commonService.GetDocuments(EntityTypeEnum.Company, company.Id);
+				var signature = companyDocs.Where(d => d.DocumentDto.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.DocumentDto.LastModified).FirstOrDefault();
 				var pdfs = new List<PDFModel>();
 				foreach (var payCheck in payChecks)
 				{

@@ -22,6 +22,9 @@ namespace HrMaxxAPI.Resources.Common
 		[JsonProperty("companyDocumentSubType")]
 		public CompanyDocumentSubType CompanyDocumentSubType { get; set; }
 
+		[JsonProperty("companyId")]
+		public Guid? CompanyId { get; set; }
+		
 		[JsonIgnore]
 		public string FileName { get; set; }
 		[JsonIgnore]

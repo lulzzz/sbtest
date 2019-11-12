@@ -26,5 +26,10 @@ namespace HrMaxx.Common.Contracts.Services
 		List<InsuranceGroupDto> GetInsuranceGroups();
 		InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto insuranceGroup);
 		List<News> GetUserNewsfeed(Guid host, Guid company, string id, string userId);
+		void AddDocument(EntityTypeEnum entityTypeId, EntityTypeEnum document, Guid entityId, DocumentDto documentDto);
+		Document GetDocument(Guid documentId);
+		void DeleteDocument(Guid entityId, Guid documentId);
+		IList<Document> GetDocuments(EntityTypeEnum entityType, Guid entityId);
+		void AddEmployeeDocument(Guid? companyId, Guid entityId, DocumentDto document);
 	}
 }
