@@ -308,16 +308,15 @@
 																	<!-- form -->
 
 																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-success btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
-																		<i class="fa fa-edit"></i> edit
-																	</button>
+																		<i class="fa fa-edit"></i> </button>
 																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-sm  btn-icon btn-circle" ng-click="delete($index)">
-																		<i class="fa fa-recycle"></i> delete
+																		<i class="fa fa-remove"></i> 
 																	</button>
 																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-sm btn-icon btn-circle">
-																		<i class="fa fa-save"></i> enter
+																		<i class="fa fa-save"></i> 
 																	</button>
 																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-sm btn-icon btn-circle">
-																		<i class="fa fa-remove"></i> cancel
+																		<i class="fa fa-backward"></i> 
 																	</button>
 
 																</td>

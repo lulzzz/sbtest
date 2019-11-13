@@ -14,6 +14,7 @@ using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
+using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxx.OnlinePayroll.Models;
@@ -214,22 +215,23 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			{
 				var requestStr = _fileRepository.GetFileText(file);
 				var requestBytes = Encoding.ASCII.GetBytes(requestStr);
-				//var webReq = (HttpWebRequest)WebRequest.Create(url);
-				//webReq.Method = "POST";
-				//webReq.ContentType = "application/x-www-form-urlencoded";
-				//webReq.ContentLength = requestBytes.Length;
-				//webReq.Timeout = 300000;
-				//ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-				//var postData = webReq.GetRequestStream();
-				//postData.Write(requestBytes, 0, requestBytes.Length);
-				//postData.Close();
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+				var webReq = (HttpWebRequest)WebRequest.Create(url);
+				webReq.Method = "POST";
+				webReq.ContentType = "application/x-www-form-urlencoded";
+				webReq.ContentLength = requestBytes.Length;
+				webReq.Timeout = 300000;
+				
+				var postData = webReq.GetRequestStream();
+				postData.Write(requestBytes, 0, requestBytes.Length);
+				postData.Close();
 
-				//var webResp = (HttpWebResponse)webReq.GetResponse();
-				//var answer = webResp.GetResponseStream();
-				//var _answer = new StreamReader(answer);
-				//var result = _answer.ReadToEnd();
-				//_fileRepository.SaveFile(_filePath, filename, ".xml", result);
-				var result = _fileRepository.GetFileText(string.Format("{0}{1}.xml", _filePath, url.Equals(ReportGateway) ? "samplereportresponse" : "samplepayresponse"));
+				var webResp = (HttpWebResponse)webReq.GetResponse();
+				var answer = webResp.GetResponseStream();
+				var _answer = new StreamReader(answer);
+				var result = _answer.ReadToEnd();
+				_fileRepository.SaveFile(_filePath, filename, ".xml", result);
+				//var result = _fileRepository.GetFileText(string.Format("{0}{1}.xml", _filePath, url.Equals(ReportGateway) ? "samplereportresponse" : "samplepayresponse"));
 				return result;
 			}
 			catch (Exception e)
@@ -248,8 +250,15 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			try
 			{
 				var payDay = GetDDDayForToday();
-				_profitStarsRepository.RefreshProfitStarsData(payDay);
-				return _profitStarsRepository.GetProfitStarsData();
+				var returnList = new List<ProfitStarsPayment>();
+				using (var txn = TransactionScopeHelper.Transaction())
+				{
+					_profitStarsRepository.RefreshProfitStarsData(payDay);
+					returnList = _profitStarsRepository.GetProfitStarsData();
+					txn.Complete();
+				}
+
+				return returnList;
 			}
 			catch (Exception e)
 			{
@@ -262,15 +271,10 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 
 		private DateTime GetDDDayForToday()
 		{
-			var counter = (int) 1;
-			var threedaysafter = DateTime.Today;
+			var threedaysafter = DateTime.Today.AddDays(3);
 			var bankHolidays = _metaDataService.GetBankHolidays();
-			while (counter < 4)
+			while (threedaysafter.DayOfWeek == DayOfWeek.Saturday || threedaysafter.DayOfWeek == DayOfWeek.Sunday || bankHolidays.Any(b => b.Value.Equals(threedaysafter)))
 			{
-				if (threedaysafter.DayOfWeek != DayOfWeek.Saturday && threedaysafter.DayOfWeek != DayOfWeek.Sunday && !bankHolidays.Any(b=>b.Value.Equals(threedaysafter)))
-				{
-					counter++;
-				}
 				threedaysafter = threedaysafter.AddDays(1);
 			}
 			return threedaysafter.Date;
