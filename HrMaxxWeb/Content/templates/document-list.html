@@ -194,14 +194,17 @@
 					<div ng-show="listEmployeeAccess.length===0">
 						No records found
 					</div>
+					<div ng-show="listEmployeeAccess.length>0 && employeeId!==mainData.userEmployee">
+						<i>* only the the employee login will update the timestamps for compliance</i>
+					</div>
 					<div class="row" ng-show="listEmployeeAccess.length>0">
 						<table ng-table="tableParamsEmployeeView" id="grdDocumentsEmployee" class="table" show-filter="true" template-pagination="custom/nopager">
 							<tr ng-repeat="item in tableDataEmployeeView track by $index" class="mouse-over-pointer" ng-class="{'danger' : !item.firstAccessed}">
 
-								<td data-title=" 'Type' " sortable=" 'document.documentType.name' " class="col-sm-1">
+								<td data-title=" 'Type' " sortable=" 'document.documentType.name' " class="col-sm-3">
 									{{item.document.documentType.name}}
 								</td>
-								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-2">
+								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-3">
 									{{item.companyDocumentSubType ? item.companyDocumentSubType.name : ''}}
 								</td>
 								<td data-title=" 'Uploaded' " sortable=" 'document.uploaded' " class="col-sm-1">
@@ -216,7 +219,7 @@
 								<td data-title=" 'Last Accessed' " sortable=" 'lastAccessed' " class="col-sm-2">
 									{{item.lastAccessed  | date:'MM/dd/yyyy'}}
 								</td>
-								<td class="col-sm-2">
+								<td class="col-sm-1">
 									<a ng-href="{{getEmployeeDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-success   btn-icon btn-circle" ng-click="updateEmployeeDocumentAccess(item)"><i class="fa fa-eye"></i></button></a>
 
 								</td>
@@ -243,12 +246,12 @@
 					</div>
 					<div class="row" ng-show="listEmployeeDocuments.length>0">
 						<table ng-table="tableParamsEmployeeRequired" id="grdDocumentsEmployeeRequired" class="table" show-filter="true" template-pagination="custom/nopager">
-							<tr ng-repeat="item in tableDataEmployeeRequired track by $index" class="mouse-over-pointer" ng-class="{'danger' : !item.id}">
+							<tr ng-repeat="item in tableDataEmployeeRequired track by $index" class="mouse-over-pointer" ng-class="{'danger' : !item.document}">
 
-								<td data-title=" 'Type' " sortable=" 'companyDocumentSubType.documentType.name' " class="col-sm-1">
+								<td data-title=" 'Type' " sortable=" 'companyDocumentSubType.documentType.name' " class="col-sm-3">
 									{{item.companyDocumentSubType.documentType.name}}
 								</td>
-								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-2">
+								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-3">
 									{{item.companyDocumentSubType ? item.companyDocumentSubType.name : ''}}
 								</td>
 								<td data-title=" 'Uploaded' " sortable=" 'document.dateUploaded' " class="col-sm-1">
@@ -257,10 +260,13 @@
 								<td data-title=" 'Uploaded by' " filter="{ 'uploadedBy': 'text' }" sortable=" 'uploadedBy' " class="col-sm-2">
 									{{item.uploadedBy}}
 								</td>
-								<td>{{ item.fileIndex ? files[item.fileIndex-1].doc.file.name : '' }}</td>
-								<td class="col-sm-2">
-									<a ng-href="{{getDocumentUrl(item)}}" target="_blank" ng-show="item.documentId"><button class="btn btn-sm btn-success   btn-icon btn-circle"><i class="fa fa-eye"></i></button></a>
-									<div ng-file-select="onFileSelectEmployee($files, item)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;" ng-show="!item.documentId && !item.fileIndex">
+								<td data-title=" 'Name' " sortable=" 'document.documentDto.documentName' " class="col-sm-2">
+									{{item.document ? item.document.documentDto.documentName : (item.fileIndex ? files[item.fileIndex-1].doc.file.name : '')}}
+								</td>
+								
+								<td class="col-sm-1">
+									<a ng-href="{{getDocumentUrl(item.document)}}" target="_blank" ng-show="item.document.id"><button class="btn btn-sm btn-success   btn-icon btn-circle"><i class="fa fa-eye"></i></button></a>
+									<div ng-file-select="onFileSelectEmployee($files, item)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;" ng-show="!item.document.id && !item.fileIndex">
 										<button class="btn btn-default attach-button " id="attachments">
 											<span class="glyphicon glyphicon-paperclip mouse-over-pointer"></span>
 										</button>
@@ -271,7 +277,7 @@
 							</tr>
 
 						</table>
-						<button class="glyphicon glyphicon-upload btn btn-primary btn-sm" ng-click="uploadAll()" ng-show="files.length>0">Upload All</button>
+						<button class="glyphicon glyphicon-upload btn btn-primary btn-sm" ng-click="uploadAllEmployeeDocuments()" ng-show="files.length>0">Upload All</button>
 						<button class="glyphicon glyphicon-rub btn btn-default btn-sm" ng-click="files=[];clearSelections()" ng-show="files.length>0">Clear All</button>
 					</div>
 

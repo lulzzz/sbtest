@@ -4,6 +4,7 @@
 		<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
 			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Tax Payments</span></a></li>
 			<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Payroll</span></a></li>
+			<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Documents</span></a></li>
 
 		</ul>
 		<h2 class="panel-title"></h2>
@@ -318,13 +319,13 @@
 							</tr>
 							<tr ng-repeat="item in data.dashboard.payrollHistory">
 								
-									<td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
-									<td>{{item.noOfChecks}}</td>
-									<td>{{item.grossWage | currency}}</td>
-									<td>{{item.netWage | currency}}</td>
-									<td>{{item.employeeTaxes | currency}}</td>
-									<td>{{item.employerTaxes | currency}}</td>
-									<td>{{item.deductions | currency}}</td>
+								<td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
+								<td>{{item.noOfChecks}}</td>
+								<td>{{item.grossWage | currency}}</td>
+								<td>{{item.netWage | currency}}</td>
+								<td>{{item.employeeTaxes | currency}}</td>
+								<td>{{item.employerTaxes | currency}}</td>
+								<td>{{item.deductions | currency}}</td>
 								
 							</tr>
 
@@ -335,6 +336,151 @@
 			
 			
 
+		</div>
+		
+		<div class="row" ng-show="data.tab===3">
+			<div class="panel panel-success col-sm-12">
+				<div class="panel-heading" ng-click="data.isViewOpen=!data.isViewOpen">
+					<h4 class="panel-title">
+						Documents to be Viewed
+						<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isViewOpen, 'glyphicon-chevron-right': !data.isViewOpen}"></i>
+					</h4>
+				</div>
+				<div class="panel-body" ng-show="data.isViewOpen">
+					<div ng-show="listEmployeeAccess.length===0">
+						No records found
+					</div>
+					<div ng-show="listEmployeeAccess.length>0 && employeeId!==mainData.userEmployee">
+						<i>* only the the employee login will update the timestamps for compliance</i>
+					</div>
+					<div class="row" ng-show="listEmployeeAccess.length>0">
+						<table ng-table="tableParamsEmployeeView" id="grdDocumentsEmployee" class="table" show-filter="true" template-pagination="custom/pager">
+							<tr ng-repeat="item in tableDataEmployeeView track by $index" class="mouse-over-pointer" ng-class="{'danger' : !item.firstAccessed}">
+								<td data-title=" 'Employee' " sortable=" 'employeeName' " class="col-sm-2">
+									{{item.employeeName}}
+								</td>
+								<td data-title=" 'Type' " sortable=" 'document.documentType.name' " class="col-sm-2">
+									{{item.document.documentType.name}}
+								</td>
+								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-2">
+									{{item.companyDocumentSubType ? item.companyDocumentSubType.name : ''}}
+								</td>
+								<td data-title=" 'Uploaded' " sortable=" 'document.uploaded' " class="col-sm-1">
+									{{item.document.uploaded | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Uploaded by' " filter="{ 'document.uploadedBy': 'text' }" sortable=" 'uploadedBy' " class="col-sm-2">
+									{{item.document.uploadedBy}}
+								</td>
+								<td data-title=" 'First Accessed' " sortable=" 'firstAccessed' " class="col-sm-1">
+									{{item.firstAccessed | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Last Accessed' " sortable=" 'lastAccessed' " class="col-sm-2">
+									{{item.lastAccessed  | date:'MM/dd/yyyy'}}
+								</td>
+								<td class="col-sm-1">
+									<a ng-href="{{getEmployeeDocumentUrl(item)}}" target="_blank"><button class="btn btn-sm btn-success   btn-icon btn-circle" ng-click="updateEmployeeDocumentAccess(item)"><i class="fa fa-eye"></i></button></a>
+
+								</td>
+
+							</tr>
+
+						</table>
+						<script type="text/ng-template" id="custom/pager">
+							<ul class="pager ng-cloak">
+								<li ng-repeat="page in pages"
+										ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+										ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+									<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+									<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+								</li>
+								<li>
+									<div class="btn-group">
+										<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+										<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+										<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+									</div>
+								</li>
+							</ul>
+						</script>
+					</div>
+
+
+				</div>
+			</div>
+
+			<div class="panel panel-success col-sm-12">
+				<div class="panel-heading">
+					<h4 class="panel-title" ng-click="data.isRequiredOpen=!data.isRequiredOpen">
+						Documents Required
+						<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isRequiredOpen, 'glyphicon-chevron-right': !data.isRequiredOpen}"></i>
+					</h4>
+				</div>
+				<div class="panel-body" ng-show="data.isRequiredOpen">
+					<div ng-show="listEmployeeDocuments.length===0">
+						No records found
+					</div>
+					<div class="row" ng-show="listEmployeeDocuments.length>0">
+						<table ng-table="tableParamsEmployeeRequired" id="grdDocumentsEmployeeRequired" class="table" show-filter="true" template-pagination="custom/pager1">
+							<tr ng-repeat="item in tableDataEmployeeRequired track by $index" class="mouse-over-pointer" ng-class="{'danger' : !item.document}">
+								
+								<td data-title=" 'Employee' " sortable=" 'employeeName' " class="col-sm-2">
+									{{item.employeeName}}
+								</td>
+								<td data-title=" 'Type' " sortable=" 'companyDocumentSubType.documentType.name' " class="col-sm-2">
+									{{item.companyDocumentSubType.documentType.name}}
+								</td>
+								<td data-title=" 'Sub Type' " sortable=" 'companyDocumentSubType.name' " class="col-sm-2">
+									{{item.companyDocumentSubType ? item.companyDocumentSubType.name : ''}}
+								</td>
+								<td data-title=" 'Uploaded' " sortable=" 'document.dateUploaded' " class="col-sm-1">
+									{{item.dateUploaded | date:'MM/dd/yyyy'}}
+								</td>
+								<td data-title=" 'Uploaded by' " filter="{ 'uploadedBy': 'text' }" sortable=" 'uploadedBy' " class="col-sm-2">
+									{{item.uploadedBy}}
+								</td>
+								<td data-title=" 'Name' " sortable=" 'document.documentDto.documentName' " class="col-sm-2">
+									{{item.document ? item.document.documentDto.documentName : (item.fileIndex ? files[item.fileIndex-1].doc.file.name : '')}}
+								</td>
+
+								<td class="col-sm-1" ng-show="false">
+									<a ng-href="{{getDocumentUrl(item.document)}}" target="_blank" ng-show="item.document.id"><button class="btn btn-sm btn-success   btn-icon btn-circle"><i class="fa fa-eye"></i></button></a>
+									<div ng-file-select="onFileSelectEmployee($files, item)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" style="position: relative;" ng-show="!item.document.id && !item.fileIndex">
+										<button class="btn btn-default attach-button " id="attachments">
+											<span class="glyphicon glyphicon-paperclip mouse-over-pointer"></span>
+										</button>
+										<input type="file" ng-file-select="onFileSelectEmployee($files, item)" data-multiple="true" title="select file" onclick="this.value = null" class="upload-button" multiple="multiple" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;">
+									</div>
+								</td>
+
+							</tr>
+
+						</table>
+						<button class="glyphicon glyphicon-upload btn btn-primary btn-sm" ng-click="uploadAllEmployeeDocuments()" ng-show="files.length>0">Upload All</button>
+						<button class="glyphicon glyphicon-rub btn btn-default btn-sm" ng-click="files=[];clearSelections()" ng-show="files.length>0">Clear All</button>
+						<script type="text/ng-template" id="custom/pager1">
+							<ul class="pager ng-cloak">
+								<li ng-repeat="page in pages"
+										ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+										ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+									<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+									<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+								</li>
+								<li>
+									<div class="btn-group">
+										<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+										<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+										<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+										<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+									</div>
+								</li>
+							</ul>
+						</script>
+					</div>
+
+
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

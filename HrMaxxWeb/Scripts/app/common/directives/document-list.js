@@ -239,6 +239,33 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 
 						}
 					}
+					$scope.uploadAllEmployeeDocuments = function () {
+						$.each($scope.files, function (index, file) {
+							$scope.uploadEmployeeDocument(index);
+						});
+						$scope.files = [];
+					};
+					$scope.uploadEmployeeDocument = function (index) {
+						var empItem = $filter('filter')($scope.tableDataEmployeeRequired, { fileIndex: index+1 })[0];
+						var listitem = $filter('filter')($scope.listEmployeeDocuments, { companyDocumentSubType: {id: empItem.companyDocumentSubType.id} })[0];
+						if (!$scope.files[index].uploaded) {
+
+							commonRepository.uploadDocument($scope.files[index]).then(function (doc) {
+								//$scope.list.push(doc);
+								listitem.document = doc;
+								listitem.dateUploaded = doc.uploaded;
+								listitem.uploadedBy = doc.uploadedBy;
+								empItem.fileIndex = null;
+								refillTables();
+							}, function () {
+								$scope.files[index].doc.uploaded = false;
+								$scope.files[index].currentProgress = 0;
+								$scope.addAlert('error uploading file', 'danger');
+
+							});
+
+						}
+					}
 					$scope.deleteDocument = function(doc) {
 						$scope.$parent.$parent.confirmDialog('Are you sure you want to delete this document?', 'danger', function() {
 							commonRepository.deleteDocument($scope.sourceTypeId, $scope.sourceId, doc.targetEntityId).then(function() {
@@ -256,7 +283,8 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						$scope.files.splice(index, 1);
 					}
 					$scope.getDocumentUrl = function (document) {
-
+						if (!document)
+							return '';
 						return zionAPI.URL + 'Document/' + document.targetEntityId;
 					};
 					$scope.getEmployeeDocumentUrl = function (document) {

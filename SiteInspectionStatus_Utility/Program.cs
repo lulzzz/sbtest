@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using Autofac;
 using HrMaxx.Bus.Contracts;
 using HrMaxx.Common.Contracts.Services;
+using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Models.Mementos;
@@ -143,6 +144,9 @@ namespace SiteInspectionStatus_Utility
 				case 29:
 					UpdateCompanyACH(container);
 					break;
+				case 30:
+					MigrateDocuments(container);
+					break;
 				default:
 					break;
 			}
@@ -174,6 +178,32 @@ namespace SiteInspectionStatus_Utility
 					}
 				});
 				Console.WriteLine("companies updated " + updatedCount);
+			}
+		}
+		private static void MigrateDocuments(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var readerservice = scope.Resolve<IReaderService>();
+				var documentService = scope.Resolve<IDocumentService>();
+				var commonService = scope.Resolve<ICommonService>();
+				var metaDataService = scope.Resolve<IMetaDataService>();
+				var reader = scope.Resolve<IReadRepository>();
+				const string readSql = "select * from Document";
+				const string documentTypeSql = "select * from DocumentType";
+				const string  updateSql = "Update Document set Type=@Type, Uploaded=@Uploaded, UploadedBy=@UploadedBy where Id=@Id;";
+				var docs = reader.GetQueryData<Document>(readSql);
+				var types = reader.GetQueryData<DocumentType>(documentTypeSql);
+				docs.ForEach(d =>
+				{
+					d.DocumentType = types.First(t => t.Id.Equals((int)d.DocumentDto.DocumentType));
+					d.Uploaded = d.DocumentDto.LastModified;
+					d.UploadedBy = d.DocumentDto.UserName;
+					commonService.ExecuteQuery<Document>(updateSql, new {Type=d.DocumentType.Id, Id=d.Id, Uploaded=d.Uploaded, UploadedBy = d.UploadedBy});
+				});
+
+
+			
 			}
 		}
 

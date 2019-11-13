@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Common.Models;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -30,7 +31,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public List<StaffDashboardCube> MissedPayrolls { get; set; }
 		public List<StaffDashboardCube> MissedPayrollsYesterday { get { return MissedPayrolls.Where(p => p.TS.Date == p.LastBusinessDay).ToList(); } }
-
+		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 	}
 
 	public class StaffDashboardCube

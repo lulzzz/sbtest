@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Common.Models;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 {
@@ -11,7 +12,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<TaxExtractJson> ExtractHistory { get; set; }
 		public List<TaxExtractJson> PendingExtracts { get; set; }
 		public List<PayrollMetricJson> PayrollHistory { get; set; }
-		
+		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 	}
 
 	public class TaxExtractJson

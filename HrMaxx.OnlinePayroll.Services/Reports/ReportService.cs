@@ -787,6 +787,25 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 		}
 
+		public EmployeeDocumentMetaData GetStaffDashboardDocuments(Guid? hostId)
+		{
+			try
+			{
+				var filters = new List<FilterParam>();
+				if (hostId.HasValue)
+					filters.Add(new FilterParam { Key = "host", Value = hostId.ToString() });
+				var data = _readerService.GetDataFromStoredProc<EmployeeDocumentMetaData, EmployeeDocumentMetaData>("GetStaffDashboardDocuments", filters);
+
+				return data;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Staff Document Dashboard"));
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
 		private void GetExractTransformedAndSaved(Extract extract, ExtractCompany company, string dir)
 		{
 			if (_fileRepository.FileExists(dir, company.Company.Name, ".pdf"))

@@ -31,5 +31,6 @@ namespace HrMaxx.Common.Repository.Common
 		void DeleteDocument(Guid entityId, Guid documentId);
 		IList<Document> GetDocuments(EntityTypeEnum entityType, Guid entityId);
 		void AddEmployeeDocument(Guid? companyId, Guid entityId, DocumentDto document);
+		void ExecuteQuery<T>(string sql, object param);
 	}
 }

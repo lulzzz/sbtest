@@ -297,5 +297,13 @@ namespace HrMaxx.Common.Repository.Common
 					});
 			}
 		}
+
+		public void ExecuteQuery<T>(string sql, object param)
+		{
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, param);
+			}
+		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HrMaxx.Common.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 
 namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
@@ -15,7 +16,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<StaffDashboardCubeJson> InvoicesDelivered { get; set; }
 		public List<StaffDashboardCubeJson> CompaniesUpdated { get; set; }
 		public List<StaffDashboardCubeJson> MissedPayrolls { get; set; }
-		
+		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 	}
 
 	public class StaffDashboardCubeJson

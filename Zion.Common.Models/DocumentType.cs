@@ -41,6 +41,9 @@ namespace HrMaxx.Common.Models
 		public string UploadedBy { get; set; }
 		public Guid? DocumentId { get; set; }
 		public Document Document { get; set; }
+		public string CompanyName { get; set; }
+		public string EmployeeName { get; set; }
+		public string HostName { get; set; }
 	}
 
 	public class EmployeeDocumentAccess
@@ -52,6 +55,9 @@ namespace HrMaxx.Common.Models
 		public DateTime? FirstAccessed { get; set; }
 		public DateTime? LastAccessed { get; set; }
 		public Document Document { get; set; }
+		public string CompanyName { get; set; }
+		public string EmployeeName { get; set; }
+		public string HostName { get; set; }
 	}
 
 	public class EmployeeDocumentMetaData

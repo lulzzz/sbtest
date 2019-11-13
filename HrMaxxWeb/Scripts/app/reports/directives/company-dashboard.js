@@ -10,8 +10,8 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 			},
 			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/company-dashboard.html?v=' + version),
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', 'ClaimTypes',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes) {
+			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository', '$anchorScroll', 'ClaimTypes', 'NgTableParams',
+				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes, ngTableParams) {
 					var dataSvc = {
 						dashboard: null,
 						showChart: false,
@@ -28,10 +28,16 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 				}
 					$scope.tabChanged = function(tab) {
 						dataSvc.tab = tab;
-						$timeout(function () {
-							var payrolls = $filter('orderBy')(dataSvc.dashboard.payrollHistory, 'dRank', true);
-							handlePayrollChart(payrolls, 'payrolls');
-						});
+						if (tab === 2) {
+							$timeout(function () {
+								var payrolls = $filter('orderBy')(dataSvc.dashboard.payrollHistory, 'dRank', true);
+								handlePayrollChart(payrolls, 'payrolls');
+							});
+						}
+						else if (tab === 3) {
+							
+						}
+						
 					}
 					$scope.zionAPI = zionAPI; 
 					$scope.data = dataSvc;
@@ -388,6 +394,87 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 						
 					}
 
+					$scope.listEmployeeAccess = [];
+					$scope.listEmployeeDocuments = [];
+					$scope.tableDataEmployeeView = [];
+					$scope.tableParamsEmployeeView = new ngTableParams({
+						page: 1,            // show first page
+						count: 10
+					}, {
+						total: $scope.listEmployeeAccess ? $scope.listEmployeeAccess.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableDataEmployeeView(params);
+							return $scope.tableDataEmployeeView;
+						}
+					});
+
+					$scope.fillTableDataEmployeeView = function (params) {
+						// use build-in angular filter
+						if ($scope.listEmployeeAccess && $scope.listEmployeeAccess.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.listEmployeeAccess, params.filter()) :
+																$scope.listEmployeeAccess;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableParamsEmployeeView = params;
+							$scope.tableDataEmployeeView = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					$scope.tableDataEmployeeRequired = [];
+					$scope.tableParamsEmployeeRequired = new ngTableParams({
+						page: 1,            // show first page
+						count: 10
+					}, {
+						total: $scope.listEmployeeDocuments ? $scope.listEmployeeDocuments.length : 0, // length of data
+						getData: function (params) {
+							$scope.fillTableDataEmployeeRequired(params);
+							return $scope.tableDataEmployeeRequired;
+						}
+					});
+
+					$scope.fillTableDataEmployeeRequired = function (params) {
+						// use build-in angular filter
+						if ($scope.listEmployeeDocuments && $scope.listEmployeeDocuments.length > 0) {
+							var orderedData = params.filter() ?
+																$filter('filter')($scope.listEmployeeDocuments, params.filter()) :
+																$scope.listEmployeeDocuments;
+
+							orderedData = params.sorting() ?
+														$filter('orderBy')(orderedData, params.orderBy()) :
+														orderedData;
+
+							$scope.tableDataEmployeeRequired = params;
+							$scope.tableDataEmployeeRequired = orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count());
+
+							params.total(orderedData.length); // set total for recalc pagination
+						}
+					};
+					var refillTables = function () {
+						
+						$scope.tableParamsEmployeeView.reload();
+						$scope.fillTableDataEmployeeView($scope.tableParamsEmployeeView);
+
+						$scope.tableParamsEmployeeRequired.reload();
+						$scope.fillTableDataEmployeeRequired($scope.tableParamsEmployeeRequired);
+
+					}
+					$scope.getDocumentUrl = function (document) {
+						if (!document)
+							return '';
+						return zionAPI.URL + 'Document/' + document.targetEntityId;
+					};
+					$scope.getEmployeeDocumentUrl = function (document) {
+						if ($scope.mainData.userEmployee && $scope.mainData.userEmployee === $scope.employeeId)
+							return zionAPI.URL + 'EmployeeDocument/' + document.document.targetEntityId + '/' + $scope.employeeId;
+						else {
+							return zionAPI.URL + 'Document/' + document.document.targetEntityId;
+						}
+					};
 					function _init() {
 						
 						//handleInteractiveChart();
@@ -397,7 +484,9 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 						
 							reportRepository.getCompanyDashboard($scope.mainData.selectedCompany.id).then(function (data) {
 								dataSvc.dashboard = data;
-
+								$scope.listEmployeeAccess = dataSvc.dashboard.employeeDocumentMetaData.employeeDocumentAccesses;
+								$scope.listEmployeeDocuments = dataSvc.dashboard.employeeDocumentMetaData.employeeDocumentRequirements;
+								refillTables();
 								$scope.tabChanged(2);
 								//
 							}, function (erorr) {

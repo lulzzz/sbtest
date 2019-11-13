@@ -342,5 +342,10 @@ namespace HrMaxx.Common.Services.Common
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+
+		public void ExecuteQuery<T>(string sql, object param)
+		{
+			_commonRepository.ExecuteQuery<T>(sql, param);
+		}
 	}
 }

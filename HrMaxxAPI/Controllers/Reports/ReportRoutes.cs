@@ -38,5 +38,6 @@
 		public const string ExtractDashboard = "Reports/ExtractDashboard/";
 		public const string EmployeeDashboard = "Reports/EmployeeDashboard/{companyId:guid}/{employeeId:guid}";
 		public const string StaffDashboard = "Reports/StaffDashboard/{hostId:guid?}";
+		public const string StaffDashboardDocuments = "Reports/StaffDashboardDocuments/{hostId:guid?}";
 	}
 }

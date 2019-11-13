@@ -371,6 +371,12 @@ namespace HrMaxxAPI.Controllers.Reports
 		{
 			return MakeServiceCall(() => _reportService.GetStaffDashboard(hostId), "staff dashboard  ", true);
 		}
+		[HttpGet]
+		[Route(ReportRoutes.StaffDashboardDocuments)]
+		public EmployeeDocumentMetaData StaffDashboardDocuments(Guid? hostId = null)
+		{
+			return MakeServiceCall(() => _reportService.GetStaffDashboardDocuments(hostId), "staff dashboard doicuments ", true);
+		}
 
 	}
 }
