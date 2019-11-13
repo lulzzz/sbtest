@@ -203,7 +203,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			argList.AddParam("enddate", string.Empty, DateTime.Today.ToString("yyyy-MM-dd"));
 
 			var transformed = Utilities.XmlTransform(xml, string.Format("{0}{1}", _templatePath, template), argList);
-
+			transformed = transformed.Replace("xmlns=\"\"", string.Empty);
 			return _fileRepository.SaveFile(_filePath, fileName, "xml", transformed);
 
 
