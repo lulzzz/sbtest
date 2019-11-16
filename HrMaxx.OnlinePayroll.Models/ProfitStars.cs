@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using HrMaxx.Infrastructure.Attributes;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Security;
 using HrMaxx.OnlinePayroll.Models.Enum;
-using Newtonsoft.Json.Serialization;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -37,8 +33,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string RoutingNumber { get; set; }
 		public string requestID { get; set; }
 		public string transactionID { get; set; }
-		public string TypeName { get { return Type.GetHrMaxxName(); } }
-		public ProfitStarsPayResponse PayResponse { get; set; }
+		public string TypeName => Type.GetHrMaxxName();
+        public ProfitStarsPayResponse PayResponse { get; set; }
 	}
 	public class ProfitStarsPayResponse
 	{
@@ -57,31 +53,23 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string responseMessage { get; set; }
 		public string originatedAs { get; set; }
 
-		public DateTime ActualDateTime { get { return Convert.ToDateTime(actualDate); } }
-		public bool IsSuccess { get { return string.Equals(success, "true"); } }
-		public bool HasError { get { return string.Equals(error, "true"); } }
+		public DateTime ActualDateTime => Convert.ToDateTime(actualDate);
+        public bool IsSuccess => string.Equals(success, "true");
+        public bool HasError => string.Equals(error, "true");
 
-		public ProfitStarsPaymentType Type { get
-		{
-			return requestID.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName())
-				? ProfitStarsPaymentType.Fund
-				: requestID.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName())
-					? ProfitStarsPaymentType.Pay
-					: ProfitStarsPaymentType.Refund;
-		} }
+        public ProfitStarsPaymentType Type =>
+            requestID.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName())
+                ? ProfitStarsPaymentType.Fund
+                : requestID.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName())
+                    ? ProfitStarsPaymentType.Pay
+                    : ProfitStarsPaymentType.Refund;
 
-		public bool IsPaxolTransaction{get { return requestID.StartsWith("Paxol"); }}
-		public int Id { get { return Convert.ToInt32(requestID.Replace(Type.GetHrMaxxName(), string.Empty)); } }
+        public bool IsPaxolTransaction => requestID.StartsWith("Paxol");
+        public int Id => Convert.ToInt32(requestID.Replace(Type.GetHrMaxxName(), string.Empty));
 
-		public string EmailEntry
-		{
-			get
-			{
-				return string.Format("<b>{0}</b>: Id: {1}, Result: {2}, RefNum: {3}<br/>", Type.GetDbName(), Id.ToString(), success,
-					refNum);
-			}
-		}
-	}
+        public string EmailEntry =>
+            $"<b>{Type.GetDbName()}</b>: Id: {Id.ToString()}, Result: {success}, RefNum: {refNum}<br/>";
+    }
 	[XmlRoot("responses")]
 	public class ProfitStarsPayResponses
 	{
@@ -94,10 +82,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		[XmlElement(ElementName = "response")]
 		public List<ProfitStarsPayResponse> Responses { get; set; }
 
-		public bool HasError { get { return string.Equals(error, "true"); } }
-		public bool IsSuccessful { get { return string.Equals("Success", resultCode); } }
+		public bool HasError => string.Equals(error, "true");
+        public bool IsSuccessful => string.Equals("Success", resultCode);
 
-		public string Email
+        public string Email
 		{
 			get
 			{
@@ -111,8 +99,8 @@ namespace HrMaxx.OnlinePayroll.Models
 			get
 			{
 				var str = new StringBuilder();
-				str.AppendLine(string.Format("ResultCode: {0}", resultCode));
-				str.AppendLine(string.Format("Error: {0}", responseMessage));
+				str.AppendLine($"ResultCode: {resultCode}");
+				str.AppendLine($"Error: {responseMessage}");
 				return str.ToString();
 			}
 		}
@@ -130,9 +118,10 @@ namespace HrMaxx.OnlinePayroll.Models
 		[XmlElement(ElementName = "event")]
 		public List<ProfitStarsReportEvent> Events { get; set; }
 
-		public bool HasError { get { return string.Equals(error, "true"); } }
-		public bool IsSuccessful { get { return string.Equals("Success", resultCode); } }
-		public string Email
+		public bool HasError => string.Equals(error, "true");
+        public bool IsSuccessful => string.Equals("Success", resultCode);
+
+        public string Email
 		{
 			get
 			{
@@ -158,10 +147,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		[XmlElement(ElementName = "transaction")]
 		public ProfitStarsReportTransaction Transaction { get; set; }
 
-		public DateTime EventTime { get { return Convert.ToDateTime(eventDateTime); } }
-
-		
-	}
+		public DateTime EventTime => Convert.ToDateTime(eventDateTime);
+    }
 	public class ProfitStarsReportTransaction
 	{
 		[XmlAttribute("transactionNumber")]
@@ -179,25 +166,22 @@ namespace HrMaxx.OnlinePayroll.Models
 		[XmlAttribute("transactionDateTime")]
 		public string transactionDateTime { get; set; }
 
-		public DateTime TransactionTime { get { return Convert.ToDateTime(transactionDateTime); }  }
+		public DateTime TransactionTime => Convert.ToDateTime(transactionDateTime);
 
-		public ProfitStarsPaymentType Type { get
-		{
-			return TransactionId.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName())
-				? ProfitStarsPaymentType.Fund
-				: TransactionId.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName())
-					? ProfitStarsPaymentType.Pay
-					: ProfitStarsPaymentType.Refund;
-		} }
+        public ProfitStarsPaymentType Type =>
+            TransactionId.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName())
+                ? ProfitStarsPaymentType.Fund
+                : TransactionId.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName())
+                    ? ProfitStarsPaymentType.Pay
+                    : ProfitStarsPaymentType.Refund;
 
-		public bool IsPaxolTransaction{get { return TransactionId.StartsWith("Paxol"); }}
-		public int Id { get { return Convert.ToInt32(TransactionId.Replace(Type.GetHrMaxxName(), string.Empty)); } }
-		public string TypeName { get { return Type.GetHrMaxxName(); } }
-		public string EmailEntry { get
-		{
-			return string.Format("<b>{0}</b>: Id: {1}, TransactionStatus: {2}, SettlementStatus: {3}, RefNum: {4}<br/>", Type.GetDbName(), Id.ToString(), TransactionStatus, SettlementStatus, RefNum );
-		} }
-	}
+        public bool IsPaxolTransaction => TransactionId.StartsWith("Paxol");
+        public int Id => Convert.ToInt32(TransactionId.Replace(Type.GetHrMaxxName(), string.Empty));
+        public string TypeName => Type.GetHrMaxxName();
+
+        public string EmailEntry =>
+            $"<b>{Type.GetDbName()}</b>: Id: {Id.ToString()}, TransactionStatus: {TransactionStatus}, SettlementStatus: {SettlementStatus}, RefNum: {RefNum}<br/>";
+    }
 
 	[XmlRoot("ProfitStarsPayrollList")]
     public class ProfitStarsPayroll
@@ -217,9 +201,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Status { get; set; }
 		public DateTime PayDate { get; set; }
 		public DateTime ConfirmedTime { get; set; }
-		public DateTime ProjectedFundingDate { get { return FundRequestDate.HasValue ? FundRequestDate.Value : PayDate.AddDays(-3); } }
-		public DateTime ProjectedPayDate { get { return PayRequestDate.HasValue ? PayRequestDate.Value : PayDate.AddDays(-1); } }
-		public decimal Amount { get; set; }
+		public DateTime ProjectedFundingDate => FundRequestDate.HasValue ? FundRequestDate.Value : PayDate.AddDays(-3);
+        public DateTime ProjectedPayDate => PayRequestDate.HasValue ? PayRequestDate.Value : PayDate.AddDays(-1);
+        public decimal Amount { get; set; }
 		public int? FundRequestId { get; set; }
 		public int? PayRequestId { get; set; }
 		public DateTime? FundRequestDate { get; set; }
@@ -229,7 +213,8 @@ namespace HrMaxx.OnlinePayroll.Models
         public string AccountNumber { get; set; }
         public string RoutingNumber { get; set; }
 
-		public string EmployeeName => string.Format("{0}{2}{1}", FirstName, LastName, string.Format(" {0}", !string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty));
+		public string EmployeeName => string.Format("{0}{2}{1}", FirstName, LastName,
+            $" {(!string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty)}");
         public string AccountTypeStr => ((BankAccountType) AccountType) == BankAccountType.Checking ? "Checking" : "Savings";
         public string AccountNumberStr => Crypto.Decrypt(AccountNumber);
 

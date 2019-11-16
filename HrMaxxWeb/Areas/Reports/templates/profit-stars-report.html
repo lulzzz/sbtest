@@ -75,7 +75,12 @@
 								{{item.payingCompanyName}}
 							</td>
                             <td data-title="'Employee'" class="col-sm-2" filter="{'employeeName':'text'}">
-                                <i class="fa" ng-class="{'fa-plus-square': !item.isOpen, 'fa-minus-square':item.isOpen}" ng-click="item.isOpen=!item.isOpen"></i>{{item.employeeName}}
+                                <i class="fa" ng-class="{'fa-plus-square': !item.isOpen, 'fa-minus-square':item.isOpen}" ng-click="item.isOpen=!item.isOpen"></i> {{item.employeeName}}
+                            <div class="row" ng-show="item.isOpen">
+                                <span>Account Type : {{item.accountTypeStr}}</span><br />
+                                <span>Account Number : {{item.accountNumberStr}}</span><br />
+                                <span>Routing Number : {{item.routingNumberStr}}</span><br />
+                            </div>
                             </td>
                             <td data-title="'Amount'" class="col-sm-1" filter="{'amount':'number'}">
                                 {{item.amount}}
