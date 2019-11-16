@@ -225,11 +225,16 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime? FundRequestDate { get; set; }
 		public DateTime? PayRequestDate { get; set; }
 
-		public string EmployeeName
-		{
-			get { return string.Format("{0}{2}{1}", FirstName, LastName, string.Format(" {0}", !string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty)); }
-		}
-	}
+        public int AccountType { get; set; }
+        public string AccountNumber { get; set; }
+        public string RoutingNumber { get; set; }
+
+		public string EmployeeName => string.Format("{0}{2}{1}", FirstName, LastName, string.Format(" {0}", !string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty));
+        public string AccountTypeStr => ((BankAccountType) AccountType) == BankAccountType.Checking ? "Checking" : "Savings";
+        public string AccountNumberStr => Crypto.Decrypt(AccountNumber);
+
+        public string RoutingNumberStr => Crypto.Decrypt(RoutingNumber);
+    }
 
 	
 	

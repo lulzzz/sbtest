@@ -108,7 +108,7 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 							addAlert('Error getting Profit Stars Payroll List: ' + erorr.statusText, 'danger');
 						});
 					}
-					$scope.run1pm = function () {
+					$scope.run1pm = function (event) {
 						dataSvc.show9am = false;
 						reportRepository.run1pm().then(function (data) {
 							if (data.length > 0) {
@@ -117,14 +117,15 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 							} else {
 								dataSvc.show1pm = false;
 								addAlert('No funding or payment requests found to be sent to ProfitStars', 'warning');
-							}
-							
-						}, function (erorr) {
+                            }
+                            $scope.getReport(event);
+
+                        }, function (erorr) {
 							dataSvc.extract = null;
 							addAlert('Error running 1 pm service: ' + erorr.statusText, 'danger');
 						});
 					}
-					$scope.run9am = function () {
+					$scope.run9am = function (event) {
 						dataSvc.show1pm = false;
 						reportRepository.run9am().then(function (data) {
 							if (data.resultCode!=='') {
@@ -133,7 +134,8 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 							} else {
 								dataSvc.show9am = false;
 								addAlert('No data found. please check email for any errors', 'warning');
-							}
+                            }
+                            $scope.getReport(event);
 						}, function (erorr) {
 							dataSvc.extract = null;
 							addAlert('Error running 9 am service: ' + erorr.statusText, 'danger');

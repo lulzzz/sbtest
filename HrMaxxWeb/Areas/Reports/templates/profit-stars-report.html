@@ -5,8 +5,8 @@
 		</div>
 		<div class="panel-body">
 			<div class="col-sm-12 text-center">
-				<button class="btn btn-sm btn-success" ng-click="run1pm()"><i class="fa fa-clock-o"></i> 1 PM</button>
-				<button class="btn btn-sm btn-success" ng-click="run9am()"><i class="fa fa-clock-o"></i> 9 AM</button>
+				<button class="btn btn-sm btn-success" ng-click="run1pm($event)"><i class="fa fa-clock-o"></i> 1 PM</button>
+				<button class="btn btn-sm btn-success" ng-click="run9am($event)"><i class="fa fa-clock-o"></i> 9 AM</button>
 
 			</div>
 			<div class="col-sm-6" ng-show="data.show1pm">
@@ -74,9 +74,12 @@
 							<td data-title="'Paying Company'" filter="{'payingCompanyName':'text'}" class="col-sm-2">
 								{{item.payingCompanyName}}
 							</td>
-							<td data-title="'Employee'" class="col-sm-2" filter="{'employeeName':'text'}">
-								{{item.employeeName}}
-							</td>
+                            <td data-title="'Employee'" class="col-sm-2" filter="{'employeeName':'text'}">
+                                <i class="fa" ng-class="{'fa-plus-square': !item.isOpen, 'fa-minus-square':item.isOpen}" ng-click="item.isOpen=!item.isOpen"></i>{{item.employeeName}}
+                            </td>
+                            <td data-title="'Amount'" class="col-sm-1" filter="{'amount':'number'}">
+                                {{item.amount}}
+                            </td>
 							<td data-title=" 'Pay Day' " sortable=" 'payDate' " class="col-sm-1">
 								{{item.payDate | date:'MM/dd/yyyy'}}
 							</td>

@@ -146,7 +146,7 @@ namespace HrMaxx.OnlinePayroll.Repository.ProfitStars
 			                   "PayingCompanyId,(select CompanyName from Company where Id=PayingCompanyId) PayingCompanyName,HostCheck IsHostCheck," +
 			                   "EmployeeId, e.FirstName, e.LastName, e.MiddleInitial," +
 			                   "dp.PayDate, TransactionDate ConfirmedTime, dp.EnteredDate, Status, netPayAmt Amount, dpfr.DDPayrollFundRequestId FundRequestId, dpfr.RequestDate FundRequestDate," +
-			                   "dppr.DDPayrollPayRequestId PayRequestId, dppr.enteredDate PayRequestDate " +
+			                   "dppr.DDPayrollPayRequestId PayRequestId, dppr.enteredDate PayRequestDate, case dp.AccountType when 'Checking' then 1 else 0 end AccountType, dp.AccountNumber, dp.RoutingNumber " +
 			                   "from ddpayroll dp inner join employee e on dp.employeeId=e.id " +
 			                   "left outer join ddpayrollfundrequest dpfr on dpfr.ddpayrollfundid=dp.payrollfundid " +
 			                   "left outer join ddpayrollpay dpp on dp.DDPayrollId = dpp.DDPayrollId " +
@@ -156,7 +156,7 @@ namespace HrMaxx.OnlinePayroll.Repository.ProfitStars
 			                   "select 0 as Id, p.Id PayCheckId, e.CompanyId, c.CompanyName, case when p.PEOASOCOCHECK=1 then (select CompanyId from host where id=c.hostId) else p.CompanyId end PayingCompanyId, " +
 			                   "(select CompanyName from Company where Id=case when p.PEOASOCOCHECK=1 then (select CompanyId from host where id=c.hostId) else p.CompanyId end) PayingCompanyName, p.PEOASOCOCheck IsHostCheck, " +
 			                   "p.EmployeeId, e.FirstName, e.LastName, e.MiddleInitial, p.PayDay, py.ConfirmedTime, null EnteredDate, 'Not Initiated'," +
-			                   "cast((p.NetWage*eba.Percentage/100) as decimal(18,2)) Amount, 0, null, 0, null " +
+			                   "cast((p.NetWage*eba.Percentage/100) as decimal(18,2)) Amount, 0, null, 0, null, ba.AccountType, ba.AccountNumber, ba.RoutingNumber " +
 			                   "from PayrollPayCheck p inner join employee e on p.employeeid=e.id inner join company c on e.companyid=c.id " +
 			                   "inner join EmployeeBankAccount eba on eba.EmployeeId=p.EmployeeId " +
 			                   "inner join BankAccount ba on eba.BankAccountId=ba.Id " +
