@@ -160,12 +160,22 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 					if (!result.StartsWith(OnlinePayrollStringResources.ERROR_FailedToRetrieveX))
 					{
 						var paymentResponse = Utilities.Deserialize<ProfitStarsPayResponses>(result);
-						paymentRequests.ForEach(
+						if (paymentResponse.HasError)
+						{
+							emailSubject = "Paxol: Error in ProfitStars 1 PM";
+							emailStr.AppendLine("<b><u>There was an error in sending fund/payment requests to ProfitStars</u></b></br><br/>");
+							emailStr.AppendLine(paymentResponse.ErrorEmail);
+							emailStr.AppendLine("<b><u>You may want to consider running the 1 PM service again manually.</u></b></br><br/>");
+						}
+						else
+						{
+							paymentRequests.ForEach(
 							pr => pr.PayResponse = paymentResponse.Responses.First(prr => prr.requestID.Equals(pr.requestID)));
-						_profitStarsRepository.SavePaymentRequests(paymentRequests, requestFile);
-						emailStr.AppendLine(
-						"Version 2: The following are the funding/payment/refund requests that have been sent today <br/><br/>");
-						emailStr.AppendLine(paymentResponse.Email);
+							_profitStarsRepository.SavePaymentRequests(paymentRequests, requestFile);
+							
+							emailStr.AppendLine(paymentResponse.Email);
+						}
+						
 					}
 					else
 					{

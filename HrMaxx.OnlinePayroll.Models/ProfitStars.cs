@@ -106,6 +106,16 @@ namespace HrMaxx.OnlinePayroll.Models
 				return str.ToString();
 			}
 		}
+		public string ErrorEmail
+		{
+			get
+			{
+				var str = new StringBuilder();
+				str.AppendLine(string.Format("ResultCode: {0}", resultCode));
+				str.AppendLine(string.Format("Error: {0}", responseMessage));
+				return str.ToString();
+			}
+		}
 	}
 
 	[XmlRoot("events")]

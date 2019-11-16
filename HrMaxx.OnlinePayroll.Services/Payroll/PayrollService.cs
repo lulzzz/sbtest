@@ -3340,7 +3340,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
 						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
 						{
-							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - ytdVal);
+							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - total);
 						}
 							
 					}
