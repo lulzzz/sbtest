@@ -51,3 +51,6 @@ Ankh.NoLoad
 
 /HrMaxxAPI/logs
 /HrMaxxWeb/logs
+/.vs/Zion/v16
+/HrMaxxWeb/Scripts/bootstrap/DataTable
+/HrMaxxWeb/Content/images

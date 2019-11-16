@@ -200,7 +200,7 @@ namespace HrMaxx.OnlinePayroll.Models
 	}
 
 	[XmlRoot("ProfitStarsPayrollList")]
-	public class ProfitStarsPayroll
+    public class ProfitStarsPayroll
 	{
 		public int Id { get; set; }
 		public int PayCheckId { get; set; }

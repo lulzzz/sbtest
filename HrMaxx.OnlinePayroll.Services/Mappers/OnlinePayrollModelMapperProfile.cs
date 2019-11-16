@@ -398,7 +398,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<HostHomePageDocument, DocumentDto>()
 				.ForMember(dest => dest.UserId, opt => opt.Ignore())
-				.ForMember(dest => dest.UserName, opt => opt.Ignore())
+                .ForMember(dest => dest.CompanyDocumentSubType, opt => opt.Ignore())
+                .ForMember(dest => dest.Type, opt => opt.Ignore())
+                .ForMember(dest => dest.UserName, opt => opt.Ignore())
 				.ForMember(dest => dest.LastModified, opt => opt.Ignore())
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => CombGuid.Generate()))
 				.ForMember(dest => dest.DocumentPath, opt => opt.Ignore())
