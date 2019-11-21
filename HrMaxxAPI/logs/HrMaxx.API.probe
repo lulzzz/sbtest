@@ -1,9 +1,9 @@
-host.machine_name: REMOTE-PC
+host.machine_name: DESKTOP-OJJVO4F
 mt.concurrent_receive_threads: 1
 mt.control_bus: loopback://localhost/HRMAXX-API
 mt.default_serializer: JsonMessageSerializer
-mt.max_consumer_threads: 16
-mt.network: remote-pc
+mt.max_consumer_threads: 1
+mt.network: desktop-ojjvo4f
 mt.receive_from: loopback://localhost/HRMAXX-API
 mt.receive_timeout: 00:00:03
 mt.service_count: 2
@@ -11,32 +11,45 @@ mt.transport: [loopback] LoopbackTransportFactory
 mt.version: 2.9.0.0
 net.version: 4.0.30319.42000
 os.bits: x64
-os.version: Microsoft Windows NT 10.0.14393.0
+os.version: Microsoft Windows NT 10.0.18362.0
 process.bits: x64
 process.fulltrust: True
-process.id: 11004
+process.id: 7036
 zz.mt.inbound_pipeline: Pipeline
 	Routed (MassTransit.IConsumeContext, MassTransit)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayCheck, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayCheck, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts)
+			Consumed by Component HrMaxx.Common.Services.CommandHandlers.MementoEventHandler (HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayCheck, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayrollInvoice, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayrollInvoice, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts)
+			Consumed by Component HrMaxx.Common.Services.CommandHandlers.MementoEventHandler (HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayrollInvoice, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts)
 		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts
 		Routed (HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts)
 			Consumed by Component HrMaxx.Common.Services.CommandHandlers.NotificationEventHandler (HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts)
 		Translated to HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts
 		Routed (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
 			Consumed by Component HrMaxx.Common.Services.CommandHandlers.UserEventLogHandler (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.ConfirmPayrollEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.ConfirmPayrollEvent, HrMaxx.OnlinePayroll.Contracts)
+			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.ConfirmPayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.ConfirmPayrollEvent, HrMaxx.OnlinePayroll.Contracts)
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts)
-			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.AccumulationCubesHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts)
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
-			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.AccumulationCubesHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
-		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts
-		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts)
-			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.AccumulationCubesHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts)
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts)
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceDepositUpdateEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceDepositUpdateEvent, HrMaxx.OnlinePayroll.Contracts)
+			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceDepositUpdateEvent, HrMaxx.OnlinePayroll.Contracts)
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanySalesRepChangeEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanySalesRepChangeEvent, HrMaxx.OnlinePayroll.Contracts)
+			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanySalesRepChangeEvent, HrMaxx.OnlinePayroll.Contracts)
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceRecurringChargesHandleEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceRecurringChargesHandleEvent, HrMaxx.OnlinePayroll.Contracts)
+			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.PayrollEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceRecurringChargesHandleEvent, HrMaxx.OnlinePayroll.Contracts)
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Consumed by Component HrMaxx.OnlinePayroll.Services.EventHandlers.CompanyEventHandler (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts)
@@ -46,24 +59,39 @@ zz.mt.inbound_pipeline: Pipeline
 
 zz.mt.outbound_pipeline: Pipeline
 	Routed (MassTransit.ISendContext, MassTransit)
+		Translated to HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayCheck, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayCheck, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts)
+			Send HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayCheck, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayrollInvoice, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts
+		Routed (HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayrollInvoice, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts)
+			Send HrMaxx.Common.Contracts.Messages.Events.CreateMementoEvent`1[[HrMaxx.OnlinePayroll.Models.PayrollInvoice, HrMaxx.OnlinePayroll.Models]], HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts
 		Routed (HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts)
 			Send HrMaxx.Common.Contracts.Messages.Events.Notification, HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts
 		Routed (HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts)
 			Send HrMaxx.Common.Contracts.Messages.Events.UserEventLogEntry, HrMaxx.Common.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.ConfirmPayrollEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.ConfirmPayrollEvent, HrMaxx.OnlinePayroll.Contracts)
+			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.ConfirmPayrollEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollSavedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayCheckVoidedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
-		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts
-		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts)
-			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.PayrollRedateEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceCreatedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceDepositUpdateEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceDepositUpdateEvent, HrMaxx.OnlinePayroll.Contracts)
+			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceDepositUpdateEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanySalesRepChangeEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanySalesRepChangeEvent, HrMaxx.OnlinePayroll.Contracts)
+			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanySalesRepChangeEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
+		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceRecurringChargesHandleEvent, HrMaxx.OnlinePayroll.Contracts
+		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceRecurringChargesHandleEvent, HrMaxx.OnlinePayroll.Contracts)
+			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.InvoiceRecurringChargesHandleEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API
 		Translated to HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts
 		Routed (HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts)
 			Send HrMaxx.OnlinePayroll.Contracts.Messages.Events.CompanyUpdatedEvent, HrMaxx.OnlinePayroll.Contracts to Endpoint loopback://localhost/HRMAXX-API

@@ -201,8 +201,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Status { get; set; }
 		public DateTime PayDate { get; set; }
 		public DateTime ConfirmedTime { get; set; }
-		public DateTime ProjectedFundingDate => FundRequestDate.HasValue ? FundRequestDate.Value : PayDate.AddDays(-3);
-        public DateTime ProjectedPayDate => PayRequestDate.HasValue ? PayRequestDate.Value : PayDate.AddDays(-1);
+		public DateTime ProjectedFundingDate => FundRequestDate ?? PayDate.AddDays(-3);
+        public DateTime ProjectedPayDate => PayRequestDate ?? PayDate.AddDays(-1);
         public decimal Amount { get; set; }
 		public int? FundRequestId { get; set; }
 		public int? PayRequestId { get; set; }

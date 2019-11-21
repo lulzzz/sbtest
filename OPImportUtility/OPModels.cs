@@ -214,7 +214,7 @@ namespace OPImportUtility
 		public int EmployeeID { get; set; }
 		public string PayType { get; set; }
 		public int CompanyID { get; set; }
-		public int PayRateAmount { get; set; }
+		public decimal PayRateAmount { get; set; }
 		public string FirstName { get; set; }
 		public string PayRateDuration { get; set; }
 		public string LastName { get; set; }
