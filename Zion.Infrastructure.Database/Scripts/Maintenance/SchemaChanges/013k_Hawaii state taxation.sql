@@ -213,6 +213,8 @@ IF NOT EXISTS(SELECT *
                  AND COLUMN_NAME = 'StateId')
 Alter table PayrollPayCheck Add StateId int not null default(1);
 Go
+if not exists(select * FROM sys.indexes 
+WHERE name='IX_PayrollPayCheckStateId' AND object_id = OBJECT_ID('dbo.PayrollPayCheck'))
 CREATE NONCLUSTERED INDEX [IX_PayrollPayCheckStateId] ON PayrollPayCheck
 (
 	StateId ASC
