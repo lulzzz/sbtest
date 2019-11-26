@@ -49,7 +49,7 @@
 	<xsl:variable name="SDITax" select="format-number(Taxes/PayCheckTax[Tax/Code='SDI']/YTD,'###0.00')"/>
 	<Report>
 		<TemplatePath>GovtForms\W2\</TemplatePath>
-		<Template>W2-<xsl:value-of select="$selectedYear"/>.pdf</Template>
+		<Template>W2.pdf</Template>
 		<Fields>
 			
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'year1'"/><xsl:with-param name="val1" select="$selectedYear"/></xsl:call-template>
