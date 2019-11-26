@@ -448,7 +448,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="templates\GovtForms\HIForms\" />
     <Folder Include="templates\Payroll\" />
     <Folder Include="Views\Company\" />
   </ItemGroup>
@@ -559,6 +558,9 @@
     <Content Include="templates\GovtForms\941\f941-2019-part2.pdf" />
     <Content Include="templates\GovtForms\941\f941sb-2015.pdf" />
     <Content Include="templates\GovtForms\941\f941sb-2019.pdf" />
+    <Content Include="templates\GovtForms\HIForms\HW-14.pdf" />
+    <Content Include="templates\GovtForms\HIForms\VP1.pdf" />
+    <Content Include="templates\GovtForms\HIForms\HW-3.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

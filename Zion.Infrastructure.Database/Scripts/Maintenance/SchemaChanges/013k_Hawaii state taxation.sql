@@ -202,17 +202,6 @@ IF NOT EXISTS(SELECT *
                  AND COLUMN_NAME = 'StateId')
 Alter table PayrollPayCheck Add StateId int not null default(1);
 Go
-CREATE NONCLUSTERED INDEX [IX_PayrollPayCheckStateId] ON PayrollPayCheck
-(
-	StateId ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-Go
-IF NOT EXISTS(SELECT *
-          FROM   INFORMATION_SCHEMA.COLUMNS
-          WHERE  TABLE_NAME = 'PayrollPayCheck'
-                 AND COLUMN_NAME = 'StateId')
-Alter table PayrollPayCheck Add StateId int not null default(1);
-Go
 if not exists(select * FROM sys.indexes 
 WHERE name='IX_PayrollPayCheckStateId' AND object_id = OBJECT_ID('dbo.PayrollPayCheck'))
 CREATE NONCLUSTERED INDEX [IX_PayrollPayCheckStateId] ON PayrollPayCheck
