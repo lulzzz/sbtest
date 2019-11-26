@@ -142,7 +142,7 @@ common.directive('userDashboard', ['zionAPI', '$timeout', '$window', 'version', 
 							drawARCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
 						}
 						else if (tab === 3) {
-							drawPerformanceCharts(m.reportFilter.filterStartDate, m.reportFilter.filterEndDate, m.reportFilter.filter.onlyActive);
+							drawPerformanceCharts(m.reportFilter.filterStartDate, null, m.reportFilter.filter.onlyActive);
 						}
 						else if (tab === 5) {
 							$scope.drawClearanceChart();

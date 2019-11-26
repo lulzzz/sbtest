@@ -1437,3 +1437,56 @@ BEGIN
 END
 GO
 
+/****** Object:  StoredProcedure [dbo].[GetCommissionPerformanceChart]    Script Date: 26/11/2019 8:51:42 PM ******/
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCommissionPerformanceChart]') AND type in (N'P', N'PC'))
+DROP PROCEDURE [dbo].[GetCommissionPerformanceChart]
+GO
+/****** Object:  StoredProcedure [dbo].[GetCommissionPerformanceChart]    Script Date: 26/11/2019 8:51:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[GetCommissionPerformanceChart]
+	@startdate datetime = null,
+	@enddate datetime = null,
+	@host varchar(max) = null,
+	@role varchar(max) = null,
+	@onlyActive bit = 0
+AS
+BEGIN
+	declare @startdate1 datetime = @startdate,
+	@enddate1 datetime = case when @enddate is null then DATEADD(MONTH, DATEDIFF(MONTH, -1, GETDATE())-1, -1) else @enddate end,
+	@host1 varchar(max) = @host,
+	@role1 varchar(max) = @role,
+	@onlyActive1 bit = @onlyActive
+
+	declare @users varchar(max)
+	declare @query varchar(max)	
+
+	select (u.FirstName + ' ' + u.LastName) [User], LEFT(datename(month,InvoiceDate),3) + ' ' + Right(cast(year(InvoiceDate) as varchar),2) Month, Commission
+	into #tmpInspectionData
+	from PayrollInvoice i, AspNetUsers u, Company c
+	where 
+		i.SalesRep=u.Id
+		and i.CompanyId = c.Id
+		and ((@onlyActive1=1 and c.StatusId=1) or (@onlyActive1=0))
+		and i.Balance<=0
+		and ((@startdate1 is not null and i.InvoiceDate>=@startdate1) or (@startdate1 is null))
+		and ((@enddate1 is not null and i.InvoiceDate<=@enddate1) or (@enddate1 is null))
+		
+	SELECT @users = COALESCE(@users + ',[' + cast([User] as varchar) + ']','[' + cast([User] as varchar)+ ']')
+	FROM (select distinct [User] from #tmpInspectionData)a
+	
+
+	set @query = 'select Month, ' +@users+ ' from (select Data.Month,'+@users+' from
+	(select Month, [User], Commission
+	from #tmpInspectionData
+	) o
+	PIVOT (sum(Commission) for [User] in ('+@users+'))Data)t order by convert(datetime, ''01 ''+Month, 6)'
+	
+	select 'GetCommissionPerformanceChart' Report;			
+	execute(@query)
+	drop table #tmpInspectionData
+END
+GO
+
