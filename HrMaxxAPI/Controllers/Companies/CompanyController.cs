@@ -30,15 +30,15 @@ namespace HrMaxxAPI.Controllers.Companies
 		private readonly ICompanyService _companyService;
 		private readonly IPayrollService _payrollService;
 		private readonly IExcelService _excelServce ;
-	  private readonly ITaxationService _taxationService;
+	  
 	  private readonly IReaderService _readerService;
 	  
-	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, ITaxationService taxationService, IPayrollService payrollService, IReaderService readerService)
+	  public CompanyController(IMetaDataService metaDataService, ICompanyService companyService, IExcelService excelService, IPayrollService payrollService, IReaderService readerService)
 	  {
 			_metaDataService = metaDataService;
 		  _companyService = companyService;
 		  _excelServce = excelService;
-		  _taxationService = taxationService;
+		 
 		  _payrollService = payrollService;
 		  _readerService = readerService;
 	  }
@@ -132,17 +132,21 @@ namespace HrMaxxAPI.Controllers.Companies
 			var returnString = new StringBuilder();
 			companies.ForEach(c => returnString.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6}", c.Id, c.CompanyNo, c.Name.Replace(",",""), c.FederalEIN,
 				c.FederalPin, c.States.First().StateEIN, c.States.First().StatePIN)));
-			var stream = new MemoryStream();
-			var writer = new StreamWriter(stream);
-			writer.Write(returnString.ToString());
-			writer.Flush();
-			stream.Position = 0;
-
-			var result = new HttpResponseMessage(HttpStatusCode.OK);
-			result.Content = new StreamContent(stream);
-			result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-			result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "CompaniesExport.csv" };
-			return result;
+            using(var stream = new MemoryStream())
+            {
+                using(var writer = new StreamWriter(stream))
+                {
+                    writer.Write(returnString.ToString());
+                    writer.Flush();
+                    stream.Position = 0;
+                    var result = new HttpResponseMessage(HttpStatusCode.OK) {Content = new StreamContent(stream)};
+                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+                    result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "CompaniesExport.csv" };
+                    return result;
+                }
+            }
+			
+			
 		}
 
 		[System.Web.Http.HttpGet]
@@ -161,17 +165,21 @@ namespace HrMaxxAPI.Controllers.Companies
 					company.Name.Replace(",", ""), string.Format("{0}-{1}", company.Id, e.SSN), e.Id,
 					e.CompanyEmployeeNo, e.EmployeeNo, e.FullName, e.SSN, e.CarryOver));
 			});
-			var stream = new MemoryStream();
-			var writer = new StreamWriter(stream);
-			writer.Write(returnString.ToString());
-			writer.Flush();
-			stream.Position = 0;
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.Write(returnString.ToString());
+                    writer.Flush();
+                    stream.Position = 0;
 
-			var result = new HttpResponseMessage(HttpStatusCode.OK);
-			result.Content = new StreamContent(stream);
-			result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-			result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "EmployeeExport.csv" };
-			return result;
+                    var result = new HttpResponseMessage(HttpStatusCode.OK) {Content = new StreamContent(stream)};
+                    result.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+                    result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "EmployeeExport.csv" };
+                    return result;
+                }
+            }
+                
 		}
 
 		[System.Web.Http.HttpGet]

@@ -75,27 +75,62 @@
 									</div>
 								</div>
 							</td>
-							<td colspan="4">
-								<div class="col-sm-12 panel panel-info  text-center" ng-if="data.response.companyAccumulations.hasCalifornia">
-									<div class="panel-heading">
-										<strong> State Deposits</strong>
-									</div>
-									<div class="panel-body">
-										<div class="col-sm-12">
-											<div class="col-sm-6 text-left"><strong>CA UI + ETT:</strong></div>
-											<div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.californiaEmployerTaxes | currency:'$'}}</strong></div>
-										</div>
-										<div class="col-sm-12">
-											<div class="col-sm-6 text-left"><strong> SDI + PIT:</strong></div>
-											<div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.californiaEmployeeTaxes | currency:'$'}}</strong></div>
-										</div>
-										<div class="col-sm-12">
-											<div class="col-sm-6 text-left"><strong> Total:</strong></div>
-											<div class="col-sm-6 text-right"><strong>{{(data.response.companyAccumulations.californiaTaxes) | currency:'$'}}</strong></div>
-										</div>
-									</div>
-								</div>
-							</td>
+                            <td colspan="4">
+                                <div class="col-sm-12 panel panel-info  text-center" ng-if="data.response.companyAccumulations.hasCalifornia">
+                                    <div class="panel-heading">
+                                        <strong>California State Deposits</strong>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong>CA UI + ETT:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.californiaEmployerTaxes | currency:'$'}}</strong></div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> SDI + PIT:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.californiaEmployeeTaxes | currency:'$'}}</strong></div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> Total:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{(data.response.companyAccumulations.californiaTaxes) | currency:'$'}}</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 panel panel-info  text-center" ng-if="data.response.companyAccumulations.hasHawaii">
+                                    <div class="panel-heading">
+                                        <strong>Hawaii State Deposits</strong>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> UI + ETT:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.hawaiiEmployerTaxes | currency:'$'}}</strong></div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> SDI + PIT:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.hawaiiEmployeeTaxes | currency:'$'}}</strong></div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> Total:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{(data.response.companyAccumulations.hawaiiTaxes) | currency:'$'}}</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 panel panel-info  text-center" ng-if="data.response.companyAccumulations.hasTexas">
+                                    <div class="panel-heading">
+                                        <strong>Texas State Deposits</strong>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> SUTA:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.texasTaxes | currency:'$'}}</strong></div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6 text-left"><strong> SDI + PIT:</strong></div>
+                                            <div class="col-sm-6 text-right"><strong>{{data.response.companyAccumulations.hawaiiEmployeeTaxes | currency:'$'}}</strong></div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </td>
 						</tr>
 					</tbody>
 				</table>

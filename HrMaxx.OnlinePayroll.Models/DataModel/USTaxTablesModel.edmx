@@ -48,6 +48,29 @@
           <Property Name="AmtForOneWithholdingAllow" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
+        <EntityType Name="HISITTaxTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayrollPeriodID" Type="int" />
+          <Property Name="FilingStatus" Type="varchar" MaxLength="50" />
+          <Property Name="StartRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="int" />
+        </EntityType>
+        <EntityType Name="HISITWithholdingAllowanceTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayrollPeriodID" Type="int" />
+          <Property Name="AmtForOneWithholdingAllow" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="int" />
+        </EntityType>
         <EntityType Name="SITLowIncomeTaxTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -85,7 +108,7 @@
           <Property Name="Year" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
             <PropertyRef Name="TaxCode" />
@@ -99,6 +122,8 @@ warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a 
           <EntitySet Name="ExemptionAllowanceTable" EntityType="Self.ExemptionAllowanceTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FITTaxTable" EntityType="Self.FITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FITWithholdingAllowanceTable" EntityType="Self.FITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HISITTaxTable" EntityType="Self.HISITTaxTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="HISITWithholdingAllowanceTable" EntityType="Self.HISITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITLowIncomeTaxTable" EntityType="Self.SITLowIncomeTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITTaxTable" EntityType="Self.SITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StandardDeductionTable" EntityType="Self.StandardDeductionTable" Schema="dbo" store:Type="Tables" />
@@ -122,6 +147,8 @@ warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a 
           <EntitySet Name="SITLowIncomeTaxTables" EntityType="USTaxTablesModel.SITLowIncomeTaxTable" />
           <EntitySet Name="SITTaxTables" EntityType="USTaxTablesModel.SITTaxTable" />
           <EntitySet Name="StandardDeductionTables" EntityType="USTaxTablesModel.StandardDeductionTable" />
+          <EntitySet Name="HISITTaxTables" EntityType="USTaxTablesModel.HISITTaxTable" />
+          <EntitySet Name="HISITWithholdingAllowanceTables" EntityType="USTaxTablesModel.HISITWithholdingAllowanceTable" />
         </EntityContainer>
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
@@ -192,10 +219,10 @@ warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a 
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayrollPeriodID" Type="Int32" />
           <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="StartRange" Type="Decimal" />
-          <Property Name="EndRange" Type="Decimal" />
+          <Property Name="StartRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="FlatRate" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="AdditionalPercentage" Type="Decimal" />
+          <Property Name="AdditionalPercentage" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ExcessOvrAmt" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
@@ -208,6 +235,29 @@ warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a 
           <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="AmtIfExmpGrtThan1" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="Int32" />
+        </EntityType>
+        <EntityType Name="HISITTaxTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollPeriodID" Type="Int32" />
+          <Property Name="FilingStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="StartRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="EndRange" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="FlatRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AdditionalPercentage" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ExcessOvrAmt" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Year" Type="Int32" />
+        </EntityType>
+        <EntityType Name="HISITWithholdingAllowanceTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollPeriodID" Type="Int32" />
+          <Property Name="AmtForOneWithholdingAllow" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
       </Schema>
@@ -305,6 +355,31 @@ warning 6002: The table/view 'PAXOL.dbo.TaxDeductionPrecedence' does not have a 
                 <ScalarProperty Name="AmtIfExmpGrtThan1" ColumnName="AmtIfExmpGrtThan1" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HISITTaxTables">
+            <EntityTypeMapping TypeName="USTaxTablesModel.HISITTaxTable">
+              <MappingFragment StoreEntitySet="HISITTaxTable">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
+                <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
+                <ScalarProperty Name="FlatRate" ColumnName="FlatRate" />
+                <ScalarProperty Name="EndRange" ColumnName="EndRange" />
+                <ScalarProperty Name="StartRange" ColumnName="StartRange" />
+                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="HISITWithholdingAllowanceTables">
+            <EntityTypeMapping TypeName="USTaxTablesModel.HISITWithholdingAllowanceTable">
+              <MappingFragment StoreEntitySet="HISITWithholdingAllowanceTable">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="AmtForOneWithholdingAllow" ColumnName="AmtForOneWithholdingAllow" />
                 <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

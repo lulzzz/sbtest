@@ -25,18 +25,16 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 		public IBus Bus { get; set; }
 		
 		private readonly IPayrollRepository _payrollRepository;
-		private readonly ICompanyRepository _companyRepository;
-		private readonly IPayrollService _payrollService;
+        private readonly IPayrollService _payrollService;
 		private readonly IUserService _userService;
 		private readonly IMementoDataService _mementoDataService;
 		private readonly IReaderService _readerService; 
 		
 
-		public PayrollEventHandler(IPayrollRepository payrollRepository, ICompanyRepository companyRepository, IPayrollService payrollService, IUserService userService, IMementoDataService mementoDataService, IReaderService readerService)
+		public PayrollEventHandler(IPayrollRepository payrollRepository, IPayrollService payrollService, IUserService userService, IMementoDataService mementoDataService, IReaderService readerService)
 		{
 			_payrollRepository = payrollRepository;
-			_companyRepository = companyRepository;
-			_payrollService = payrollService;
+            _payrollService = payrollService;
 			_userService = userService;
 			_mementoDataService = mementoDataService;
 			_readerService = readerService;
@@ -245,7 +243,7 @@ namespace HrMaxx.OnlinePayroll.Services.EventHandlers
 					
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				Log.Error(string.Format("Error in Updating Misc Charges for future Invoice for Company: {0} Invoice #:{1}", event1.Invoice.Company.Name, event1.Invoice.InvoiceNumber));
 			}

@@ -110,7 +110,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							quarter: null,
 							depositDate: moment().startOf('day').toDate(),
 							includeHistory: false
-						},
+                        },
+                        
 						filter1099: {
 							year: 0,
 							includeHistory: false
@@ -263,7 +264,9 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							}
 
 						}
-					}
+                    }
+
+                    
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = false;
@@ -278,7 +281,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						if (dataSvc.filter940Q.depositSchedule === 1) {
 							dataSvc.filter940Q.payPeriods = fillPayPeriods(dataSvc.filter940Q.year);
 						}
-					}
+                    }
+                    
 					$scope.fillCAPITPayPeriods = function () {
 						dataSvc.filterCAPIT.payPeriods = fillPayPeriods(dataSvc.filterCAPIT.year);
 					}
@@ -492,8 +496,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						else {
 							getReport('StateCAPITExcel', 'California PIT & DI Excel File', dataSvc.filterCAPIT.year, dataSvc.filterCAPIT.quarter, 3, dataSvc.filterCAPIT.depositDate, null, null, null, false, dataSvc.filterCAPIT.includeHistory);
 						}
-					}
-					$scope.getReportCAUIQ = function () {
+                    }
+                    $scope.getReportCAUIQ = function () {
 						if (dataSvc.filterCAUIQ.depositSchedule === 1)
 							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, true, dataSvc.filterCAUIQ.includeHistory);
 						else if (dataSvc.filterCAUIQ.depositSchedule === 2)
@@ -520,7 +524,8 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 					}
 					$scope.getReportDE9 = function () {
 						getReport('StateCADE9', 'California Quarterly DE9 Reporting File', dataSvc.filterDE9Q.year, dataSvc.filterDE9Q.quarter, null, null, null, null, null, true, dataSvc.filterDE9Q.includeHistory);
-					}
+                    }
+                    
 					var showReview = function (report, extract) {
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/extractView.html',

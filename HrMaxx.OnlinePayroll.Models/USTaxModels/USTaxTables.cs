@@ -19,6 +19,8 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 		public List<CAStandardDeductionTableRow> CAStandardDeductionTable { get; set; }
 		public List<EstimatedDeductionTableRow> EstimatedDeductionTable { get; set; }
 		public List<ExemptionAllowanceTableRow> ExemptionAllowanceTable { get; set; }
-		public List<TaxDeductionPrecendence> TaxDeductionPrecendences { get; set; } 
-	}
+		public List<TaxDeductionPrecendence> TaxDeductionPrecendences { get; set; }
+        public List<FITTaxTableRow> HISITTaxTable { get; set; }
+        public List<FITWithholdingAllowanceTableRow> HISitWithholdingAllowanceTable { get; set; }
+    }
 }

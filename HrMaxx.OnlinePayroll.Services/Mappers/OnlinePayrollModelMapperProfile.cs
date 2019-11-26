@@ -440,7 +440,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.DefaultRate, opt => opt.MapFrom(src => src.Rate))
 				.ForMember(dest => dest.IsEmployeeTax, opt => opt.MapFrom(src => src.Tax.PaidBy == "Employee"))
 				.ForMember(dest => dest.IsCompanySpecific, opt => opt.MapFrom(src => src.Tax.IsCompanySpecific))
-				.ForMember(dest => dest.AnnualMax, opt => opt.MapFrom(src => src.AnnualMaxPerEmployee));
+                .ForMember(dest => dest.AnnualMax, opt => opt.MapFrom(src => src.AnnualMaxPerEmployee));
 
 			CreateMap<Models.DataModel.PayrollPayCheck, PayCheck>()
 				.ForMember(dest => dest.Employee, opt => opt.MapFrom(src=>JsonConvert.DeserializeObject<Employee>(src.Employee)))
@@ -509,7 +509,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 					opt =>
 						opt.MapFrom(
 							src => src.WorkerCompensation != null ? JsonConvert.SerializeObject(src.WorkerCompensation) : string.Empty))
-				.ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Taxes)));
+				.ForMember(dest => dest.Taxes, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Taxes)))
+                .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.Employee.State.State.StateId));
 
 			CreateMap<Models.Journal, Models.DataModel.Journal>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src=>src.Id))

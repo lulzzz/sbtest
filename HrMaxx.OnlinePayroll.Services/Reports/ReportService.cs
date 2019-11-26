@@ -178,8 +178,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetCompanySickLeaveExport(request);
 				else if (request.ReportName.Equals("TXSuta"))
 					return GetTexasStateUnEmployment(request);
-				
-				return null;
+                else if (request.ReportName.Equals("StateHIPIT"))
+                    return StateHIPIT(request);
+                else if (request.ReportName.Equals("StateHIHW14"))
+                    return StateHIHW14(request);
+                else if (request.ReportName.Equals("HW3"))
+                    return GetHW3Report(request);
+                return null;
 			}
 			catch (Exception e)
 			{
@@ -250,7 +255,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return StateCAPIT(request);
 				else if (request.ReportName.Equals("StateCAPITExcel"))
 					return StateCAPITExcel(request);
-				else if (request.ReportName.Equals("StateCAUI"))
+                else if (request.ReportName.Equals("StateCAUI"))
 					return StateCAUI(request);
 				else if (request.ReportName.Equals("StateCAUIExcel"))
 					return StateCAUIExcel(request);
@@ -1324,7 +1329,51 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/CAPITEFTPSExcel.xslt", "xls", string.Format("California State {2} PIT & DI Excel File-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
 		}
 
-		private Extract StateCAUI(ReportRequest request)
+        private FileDto StateHIPIT(ReportRequest request)
+        {
+            var response = new ReportResponse();
+            response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,
+                type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients,
+                extractDepositName: request.ExtractDepositName, state: (int)States.Hawaii).First();
+            response.Company = GetCompany(request.CompanyId);
+            response.Host = GetHost(request.HostId);
+           
+            if (response.Company.FileUnderHost)
+            {
+                response.Company = response.Host.Company;
+            }
+            var argList = new XsltArgumentList();
+
+            argList.AddParam("selectedYear", "", request.Year);
+            argList.AddParam("enddate", "", request.EndDate.ToString("MMddyy"));
+           
+            return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/HIForms/VP1.xslt");
+        }
+
+        private FileDto StateHIHW14(ReportRequest request)
+        {
+            var response = new ReportResponse();
+            response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,
+                type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients,
+                extractDepositName: request.ExtractDepositName, state: (int)States.Hawaii).First();
+            response.Company = GetCompany(request.CompanyId);
+            response.Host = GetHost(request.HostId);
+            response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
+            response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
+            if (response.Company.FileUnderHost)
+            {
+                response.Company = response.Host.Company;
+            }
+            var argList = new XsltArgumentList();
+
+            argList.AddParam("selectedYear", "", request.Year);
+            argList.AddParam("enddate", "", request.EndDate.ToString("MMddyy"));
+            argList.AddParam("today", "", DateTime.Today.ToString("MM/dd/yyyy"));
+
+            return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/HIForms/HW14.xslt");
+        }
+
+        private Extract StateCAUI(ReportRequest request)
 		{
 			request.Description = string.Format("California State UI & ETT for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
 			request.AllowFiling = true;
@@ -2363,8 +2412,32 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/W3/W3.xslt");
 
 		}
+        private FileDto GetHW3Report(ReportRequest request)
+        {
+            var response = new ReportResponse();
 
-		private FileDto GetW4Report(ReportRequest request, bool isEmployeeFilled)
+            response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, state: (int)States.Hawaii).First();
+            if (response.CompanyAccumulations.PayCheckWages.EmployeeCount <= 0)
+                throw new Exception(NoPayrollData);
+            response.Company = GetCompany(request.CompanyId);
+            response.Host = GetHost(request.HostId);
+            response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
+            if (response.Company.FileUnderHost)
+            {
+                response.Host = GetHost(response.Company.HostId);
+                response.Company = response.Host.Company;
+            }
+
+            var argList = new XsltArgumentList();
+            argList.AddParam("selectedYear", "", request.Year);
+            argList.AddParam("today", "", DateTime.Today.ToString("MM/dd/yyyy"));
+
+
+            return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/HiForms/HW3.xslt");
+
+        }
+
+        private FileDto GetW4Report(ReportRequest request, bool isEmployeeFilled)
 		{
 			if (!isEmployeeFilled)
 				return _pdfService.GetTemplateFile("GovtForms\\EmployerForms\\fw4", DateTime.Now.Year, "W4");

@@ -29,7 +29,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			const string selectTaxes = @"select * from Tax";
 			const string selectFIT = @"select * from FITTaxTable  where Year=@Year order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
 			const string selectFITWithholding = @"select * from FITWithholdingAllowanceTable  where Year=@Year ;";
-			const string selectSIT = @"select * from SITTaxTable  where Year=@Year  order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
+            const string selectHISIT = @"select * from HISITTaxTable  where Year=@Year order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
+            const string selectHISITWithholding = @"select * from HISITWithholdingAllowanceTable  where Year=@Year ;";
+            const string selectSIT = @"select * from SITTaxTable  where Year=@Year  order by PayrollPeriodId, FilingStatus, StartRange, EndRange;";
 			const string selectSITLowIncome = @"select * from SITLowIncomeTaxTable  where Year=@Year ;";
 			const string selectStdDed = @"select * from StandardDeductionTable  where Year=@Year ;";
 			const string selectEstDed = @"select * from EstimatedDeductionsTable  where Year=@Year ;";
@@ -46,7 +48,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 				});
 				var fit = conn.Query<Models.DataModel.FITTaxTable>(selectFIT, new { Year = year }).ToList();
 				var fitwithholding = conn.Query<Models.DataModel.FITWithholdingAllowanceTable>(selectFITWithholding, new { Year = year }).ToList();
-				var sit = conn.Query<Models.DataModel.SITTaxTable>(selectSIT, new { Year = year }).ToList();
+                var hisit = conn.Query<Models.DataModel.FITTaxTable>(selectHISIT, new { Year = year }).ToList();
+                var hisitwithholding = conn.Query<Models.DataModel.FITWithholdingAllowanceTable>(selectHISITWithholding, new { Year = year }).ToList();
+                var sit = conn.Query<Models.DataModel.SITTaxTable>(selectSIT, new { Year = year }).ToList();
 				var sitlow = conn.Query<Models.DataModel.SITLowIncomeTaxTable>(selectSITLowIncome, new { Year = year }).ToList();
 				var stddeds = conn.Query<Models.DataModel.StandardDeductionTable>(selectStdDed, new { Year = year }).ToList();
 				var estded = conn.Query<Models.DataModel.EstimatedDeductionsTable>(selectEstDed, new { Year = year }).ToList();
@@ -57,7 +61,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 					Taxes = _mapper.Map<List<TaxYearRate>, List<TaxByYear>>(taxyearrates.ToList()),
 					FITTaxTable = _mapper.Map<List<FITTaxTable>, List<FITTaxTableRow>>(fit.ToList()),
 					FitWithholdingAllowanceTable = _mapper.Map<List<FITWithholdingAllowanceTable>, List<FITWithholdingAllowanceTableRow>>(fitwithholding.ToList()),
-					CASITTaxTable = _mapper.Map<List<SITTaxTable>, List<CASITTaxTableRow>>(sit.ToList()),
+                    HISITTaxTable = _mapper.Map<List<FITTaxTable>, List<FITTaxTableRow>>(hisit.ToList()),
+                    HISitWithholdingAllowanceTable = _mapper.Map<List<FITWithholdingAllowanceTable>, List<FITWithholdingAllowanceTableRow>>(hisitwithholding.ToList()),
+                    CASITTaxTable = _mapper.Map<List<SITTaxTable>, List<CASITTaxTableRow>>(sit.ToList()),
 					CASITLowIncomeTaxTable = _mapper.Map<List<SITLowIncomeTaxTable>, List<CASITLowIncomeTaxTableRow>>(sitlow.ToList()),
 					CAStandardDeductionTable = _mapper.Map<List<StandardDeductionTable>, List<CAStandardDeductionTableRow>>(stddeds.ToList()),
 					EstimatedDeductionTable = _mapper.Map<List<EstimatedDeductionsTable>, List<EstimatedDeductionTableRow>>(estded.ToList()),
@@ -75,7 +81,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 		{
 			var fit = _dbContext.FITTaxTables;
 			var fitwithholding = _dbContext.FITWithholdingAllowanceTables;
-			var stddeds = _dbContext.StandardDeductionTables;
+            var hisit = _dbContext.HISITTaxTables;
+            var hisitwithholding = _dbContext.HISITWithholdingAllowanceTables;
+            var stddeds = _dbContext.StandardDeductionTables;
 			var sit = _dbContext.SITTaxTables;
 			var sitlow = _dbContext.SITLowIncomeTaxTables;
 			var estded = _dbContext.EstimatedDeductionsTables;
@@ -86,7 +94,9 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			{
 				FITTaxTable = _mapper.Map<List<FITTaxTable>, List<FITTaxTableRow>>(fit.ToList()),
 				FitWithholdingAllowanceTable = _mapper.Map<List<FITWithholdingAllowanceTable>, List<FITWithholdingAllowanceTableRow>>(fitwithholding.ToList()),
-				CASITTaxTable = _mapper.Map<List<SITTaxTable>, List<CASITTaxTableRow>>(sit.ToList()),
+                HISITTaxTable = _mapper.Map<List<HISITTaxTable>, List<FITTaxTableRow>>(hisit.ToList()),
+                HISitWithholdingAllowanceTable = _mapper.Map<List<HISITWithholdingAllowanceTable>, List<FITWithholdingAllowanceTableRow>>(hisitwithholding.ToList()),
+                CASITTaxTable = _mapper.Map<List<SITTaxTable>, List<CASITTaxTableRow>>(sit.ToList()),
 				CASITLowIncomeTaxTable = _mapper.Map<List<SITLowIncomeTaxTable>, List<CASITLowIncomeTaxTableRow>>(sitlow.ToList()),
 				CAStandardDeductionTable = _mapper.Map<List<StandardDeductionTable>, List<CAStandardDeductionTableRow>>(stddeds.ToList()),
 				EstimatedDeductionTable = _mapper.Map<List<EstimatedDeductionsTable>, List<EstimatedDeductionTableRow>>(estded.ToList()),
@@ -99,21 +109,26 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 		{
 			const string insertTaxYearRate = @"update TaxYearRate set Rate=@Rate, AnnualMaxPerEmployee=@AnnualMaxPerEmployee, TaxRateLimit= @TaxRateLimit where Id=@Id;";
 			const string insertFit = @"if exists(select 'x' from FITTaxTable Where Id=@Id) update FITTaxTable set StartRange=@StartRange, EndRange=@EndRange, FlatRate=@FlatRate, AdditionalPercentage=@AdditionalPercentage, ExcessOvrAmt=@ExcessOvrAmt where Id=@Id; else insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) values(@PayrollPeriodId, @FilingStatus, @StartRange, @EndRange, @FlatRate, @AdditionalPercentage, @ExcessOvrAmt, @Year);";
-			const string insertFitWithholding = @"update FITWithholdingAllowanceTable set AmtForOneWithholdingAllow=@AmtForOneWithholdingAllow where Id=@Id;";
-			const string insertSit = @"if exists(select 'x' from SITTaxTable Where Id=@Id) update FITTaxTable set StartRange=@StartRange, EndRange=@EndRange, FlatRate=@FlatRate, AdditionalPercentage=@AdditionalPercentage, ExcessOvrAmt=@ExcessOvrAmt where Id=@Id; else insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) values(@PayrollPeriodId, @FilingStatus, @StartRange, @EndRange, @FlatRate, @AdditionalPercentage, @ExcessOvrAmt, @Year);";
+			const string insertHISitWithholding = @"update HISITWithholdingAllowanceTable set AmtForOneWithholdingAllow=@AmtForOneWithholdingAllow where Id=@Id;";
+            const string insertHISit = @"if exists(select 'x' from HISITTaxTable Where Id=@Id) update HISITTaxTable set StartRange=@StartRange, EndRange=@EndRange, FlatRate=@FlatRate, AdditionalPercentage=@AdditionalPercentage, ExcessOvrAmt=@ExcessOvrAmt where Id=@Id; else insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) values(@PayrollPeriodId, @FilingStatus, @StartRange, @EndRange, @FlatRate, @AdditionalPercentage, @ExcessOvrAmt, @Year);";
+            const string insertFitWithholding = @"update FITWithholdingAllowanceTable set AmtForOneWithholdingAllow=@AmtForOneWithholdingAllow where Id=@Id;";
+            const string insertSit = @"if exists(select 'x' from SITTaxTable Where Id=@Id) update FITTaxTable set StartRange=@StartRange, EndRange=@EndRange, FlatRate=@FlatRate, AdditionalPercentage=@AdditionalPercentage, ExcessOvrAmt=@ExcessOvrAmt where Id=@Id; else insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) values(@PayrollPeriodId, @FilingStatus, @StartRange, @EndRange, @FlatRate, @AdditionalPercentage, @ExcessOvrAmt, @Year);";
 			const string insertSitLow = @"update SITLowIncomeTaxTable set Amount=@Amount, AmtIfExmpGrtThan2=@AmtIfExmpGrtThan2 where Id=@Id;";
 			const string insertStdDed = @"update StandardDeductionTable set Amount=@Amount, AmtIfExmpGrtThan1=@AmtIfExmpGrtThan1 where Id=@Id;";
 			const string insertEstDed = @"update EstimatedDeductionsTable set Amount=@Amount where Id=@Id";
 			const string insertExmpAllow = @"update ExemptionAllowanceTable set Amount=@Amount where Id=@Id;";
 
 			const string deleteFIT = @"delete from FITTaxTable where Id=@Id;";
-			const string deleteSIT = @"delete from SITTaxTable where Id=@Id;";
+            const string deleteHISIT = @"delete from HISITTaxTable where Id=@Id;";
+            const string deleteSIT = @"delete from SITTaxTable where Id=@Id;";
 
 
 			var taxyearrate = _mapper.Map<List<TaxByYear>, List<TaxYearRate>>(taxTables.Taxes.Where(t=>t.TaxYear==year && t.HasChanged).ToList());
 			var fit = _mapper.Map<List<FITTaxTableRow>, List<FITTaxTable>>(taxTables.FITTaxTable.Where(t => t.Year == year && t.HasChanged).ToList());
 			var fitWithholding = _mapper.Map<List<FITWithholdingAllowanceTableRow>, List<FITWithholdingAllowanceTable>>(taxTables.FitWithholdingAllowanceTable.Where(t => t.Year == year && t.HasChanged).ToList());
-			var stddeds = _mapper.Map<List<CAStandardDeductionTableRow>, List<StandardDeductionTable>>(taxTables.CAStandardDeductionTable.Where(t => t.Year == year && t.HasChanged).ToList());
+            var hisit = _mapper.Map<List<FITTaxTableRow>, List<HISITTaxTable>>(taxTables.HISITTaxTable.Where(t => t.Year == year && t.HasChanged).ToList());
+            var hisitWithholding = _mapper.Map<List<FITWithholdingAllowanceTableRow>, List<HISITWithholdingAllowanceTable>>(taxTables.HISitWithholdingAllowanceTable.Where(t => t.Year == year && t.HasChanged).ToList());
+            var stddeds = _mapper.Map<List<CAStandardDeductionTableRow>, List<StandardDeductionTable>>(taxTables.CAStandardDeductionTable.Where(t => t.Year == year && t.HasChanged).ToList());
 			var sit = _mapper.Map<List<CASITTaxTableRow>, List<SITTaxTable>>(taxTables.CASITTaxTable.Where(t => t.Year == year && t.HasChanged).ToList());
 			var sitLow = _mapper.Map<List<CASITLowIncomeTaxTableRow>, List<SITLowIncomeTaxTable>>(taxTables.CASITLowIncomeTaxTable.Where(t => t.Year == year && t.HasChanged).ToList());
 			var estded = _mapper.Map<List<EstimatedDeductionTableRow>, List<EstimatedDeductionsTable>>(taxTables.EstimatedDeductionTable.Where(t => t.Year == year && t.HasChanged).ToList());
@@ -125,14 +140,23 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 					conn.Execute(insertTaxYearRate, taxyearrate);
 				if(fit.Any())
 					conn.Execute(insertFit, fit);
-				if (taxTables.FITTaxTable.Count < original.FITTaxTable.Count)
+                if (hisit.Any())
+                    conn.Execute(insertHISit, hisit);
+                if (taxTables.FITTaxTable.Count < original.FITTaxTable.Count)
 				{
 					var missing = original.FITTaxTable.Where(t => taxTables.FITTaxTable.All(t1 => t.Id != t1.Id)).ToList();
 					conn.Execute(deleteFIT, missing);
 				}
-				if (fitWithholding.Any())
+                if (taxTables.HISITTaxTable.Count < original.HISITTaxTable.Count)
+                {
+                    var missing = original.HISITTaxTable.Where(t => taxTables.HISITTaxTable.All(t1 => t.Id != t1.Id)).ToList();
+                    conn.Execute(deleteHISIT, missing);
+                }
+                if (fitWithholding.Any())
 					conn.Execute(insertFitWithholding, fitWithholding);
-				if (sit.Any())
+                if (hisitWithholding.Any())
+                    conn.Execute(insertHISitWithholding, hisitWithholding);
+                if (sit.Any())
 					conn.Execute(insertSit, sit);
 
 				if (taxTables.CASITTaxTable.Count < original.FITTaxTable.Count)
@@ -158,6 +182,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 																insert into TaxYearRate(TaxId, TaxYear, Rate, AnnualMaxPerEmployee, TaxRateLimit) select TaxId, @Year, Rate, AnnualMaxPerEmployee, TaxRateLimit from TaxYearRate Where TaxYear=@PYear;
 																insert into FITTaxTable(PayrollPeriodID, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) select PayrollPeriodID, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, @Year from FITTaxTable where year=@PYear;
 																insert into FITWithholdingAllowanceTable(PayrollPeriodID, AmtForOneWithholdingAllow, Year) select PayrollPeriodID, AmtForOneWithholdingAllow,@Year from FITWithholdingAllowanceTable where Year=@PYear;
+                                                                insert into HISITTaxTable(PayrollPeriodID, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) select PayrollPeriodID, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, @Year from HISITTaxTable where year=@PYear;
+																insert into HISITWithholdingAllowanceTable(PayrollPeriodID, AmtForOneWithholdingAllow, Year) select PayrollPeriodID, AmtForOneWithholdingAllow,@Year from HISITWithholdingAllowanceTable where Year=@PYear;
 																insert into SITTaxTable(PayrollPeriodID, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year) select PayrollPeriodID, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, @Year from SITTaxTable where year=@PYear;
 																insert into SITLowIncomeTaxTable(PayrollPeriodID, FilingStatus, Amount, AmtIfExmpGrtThan2, Year) select PayrollPeriodID, FilingStatus, Amount, AmtIfExmpGrtThan2, @Year from SITLowIncomeTaxTable where Year=@PYear;
 																insert into StandardDeductionTable( PayrollPeriodID, FilingStatus, Amount, AmtIfExmpGrtThan1, Year) select PayrollPeriodID, FilingStatus, Amount, AmtIfExmpGrtThan1, @Year from StandardDeductionTable where Year=@PYear;

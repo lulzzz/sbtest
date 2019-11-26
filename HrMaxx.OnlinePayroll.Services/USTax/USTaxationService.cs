@@ -297,7 +297,9 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				TaxTables.ExemptionAllowanceTable.AddRange(yearTaxTables.ExemptionAllowanceTable);
 				TaxTables.FITTaxTable.AddRange(yearTaxTables.FITTaxTable);
 				TaxTables.FitWithholdingAllowanceTable.AddRange(yearTaxTables.FitWithholdingAllowanceTable);
-				TaxTables.Taxes.AddRange(yearTaxTables.Taxes);
+                TaxTables.HISITTaxTable.AddRange(yearTaxTables.HISITTaxTable);
+                TaxTables.HISitWithholdingAllowanceTable.AddRange(yearTaxTables.HISitWithholdingAllowanceTable);
+                TaxTables.Taxes.AddRange(yearTaxTables.Taxes);
 				TaxTables.Years.Add(year);
 			}
 		}
@@ -328,7 +330,11 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			{
 				if (tax.Tax.Code.Equals("SIT"))
 					return GetCASIT(payCheck, grossWage, payDay, tax, employeeAccumulation);
-				else //if (tax.Tax.Code.Equals("SDI"))
+                else if (tax.Tax.Code.Equals("HI-SIT"))
+                    return GetHISIT(payCheck, grossWage, payDay, tax, employeeAccumulation);
+                else if (tax.Tax.Code.Equals("HI-SDI"))
+                    return GetHISDI(payCheck, grossWage, payDay, tax, employeeAccumulation);
+                else //if (tax.Tax.Code.Equals("SDI"))
 					return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
 				//else if (tax.Tax.Code.Equals("ETT"))
 				//	return SimpleTaxCalculator(company, payCheck, grossWage, payDay, tax, hostCompany, employeeAccumulation);
@@ -379,7 +385,48 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
-		private PayrollTax GetMDEE(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
+
+        private PayrollTax GetHISIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
+        {
+            if (!TaxTables.HISITTaxTable.Any(t => t.Year == payDay.Year))
+                throw new Exception("Taxes Not Available");
+            var withholdingAllowance = grossWage -
+                                       TaxTables.HISitWithholdingAllowanceTable.First(
+                                           i => i.Year == payDay.Year && i.PayrollSchedule == payCheck.Employee.PayrollSchedule)
+                                           .AmoutForOneWithholdingAllowance * payCheck.Employee.FederalExemptions;
+
+            var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
+            withholdingAllowance -= taxableWage;
+            var withholdingAllowanceTest = withholdingAllowance < 0 ? 0 : withholdingAllowance;
+            taxableWage = grossWage - taxableWage;
+            var sitTaxTableRow =
+                TaxTables.HISITTaxTable.First(
+                    r =>
+                        r.Year == payDay.Year && r.PayrollSchedule == payCheck.Employee.PayrollSchedule &&
+                        (int)r.FilingStatus == (int)payCheck.Employee.FederalStatus
+                        && r.RangeStart <= withholdingAllowanceTest
+                        && (r.RangeEnd >= withholdingAllowanceTest || r.RangeEnd == 0));
+
+            var taxAmount = (decimal)0;
+            if (payCheck.Employee.State.Exemptions == 10)
+            {
+                taxAmount = payCheck.Employee.State.AdditionalAmount;
+            }
+            else
+            {
+                taxAmount = sitTaxTableRow.FlatRate + payCheck.Employee.State.AdditionalAmount +
+                            ((withholdingAllowance - sitTaxTableRow.ExcessOverAmoutt) * sitTaxTableRow.AdditionalPercentage / 100);
+            }
+            return new PayrollTax
+            {
+                Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+                TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
+                Tax = Mapper.Map<TaxByYear, Tax>(tax),
+                YTDTax = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD) + taxAmount, 2, MidpointRounding.AwayFromZero),
+                YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
+            };
+        }
+        private PayrollTax GetMDEE(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
 		{
 			var ytdTax = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD);
 			var ytdWage = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage);
@@ -458,7 +505,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			var taxRate = (decimal)0;
 
 			if (!tax.Tax.IsCompanySpecific)
-				taxRate = tax.Rate.HasValue ? tax.Rate.Value : tax.Tax.DefaultRate;
+				taxRate = tax.Rate ?? tax.Tax.DefaultRate;
 			else
 			{
 				if (!company.FileUnderHost)
@@ -494,8 +541,68 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				YTDWage = Math.Round(ytdWage + taxableWage, 2, MidpointRounding.AwayFromZero)
 			};
 		}
+        private PayrollTax GetHISDI(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
+        {
+            var ytdTax = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD);
+            var ytdWage = employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage);
+            if (payCheck.Employee.TaxCategory != EmployeeTaxCategory.USWorkerNonVisa)
+            {
+                return new PayrollTax
+                {
+                    Amount = 0,
+                    TaxableWage = 0,
+                    Tax = Mapper.Map<TaxByYear, Tax>(tax),
+                    YTDTax = Math.Round(ytdTax, 2, MidpointRounding.AwayFromZero),
+                    YTDWage = Math.Round(ytdWage, 2, MidpointRounding.AwayFromZero)
+                };
+            }
 
-		private PayrollTax GetCASIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
+
+            var taxExemptedDeductions = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
+
+
+            var taxAmount = (decimal)0;
+            var taxableWage = grossWage - taxExemptedDeductions;
+            if (tax.WeeklyMaxWage.HasValue)
+            {
+                var proRateWeeklyMaxWage = payCheck.Employee.PayrollSchedule == PayrollSchedule.Weekly
+                    ?
+                    tax.WeeklyMaxWage.Value
+                    : payCheck.Employee.PayrollSchedule == PayrollSchedule.BiWeekly
+                        ? ((decimal)tax.WeeklyMaxWage.Value * 52 / 26)
+                        : payCheck.Employee.PayrollSchedule == PayrollSchedule.SemiMonthly
+                            ? ((decimal)tax.WeeklyMaxWage.Value * 52 / 24)
+                            : ((decimal)tax.WeeklyMaxWage.Value * 52 / 12);
+                taxableWage = taxableWage > proRateWeeklyMaxWage ? proRateWeeklyMaxWage : taxableWage;
+            }
+            if (tax.AnnualMaxPerEmployee.HasValue)
+            {
+                if (ytdWage >= tax.AnnualMaxPerEmployee)
+                    taxableWage = 0;
+                else
+                {
+                    if ((ytdWage + taxableWage) > tax.AnnualMaxPerEmployee.Value)
+                    {
+                        taxableWage = tax.AnnualMaxPerEmployee.Value - ytdWage;
+                    }
+                }
+            }
+            
+            var taxRate = tax.Rate ?? tax.Tax.DefaultRate;
+
+            taxAmount = taxableWage * taxRate / 100;
+            return new PayrollTax
+            {
+                Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+                TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
+                Tax = Mapper.Map<TaxByYear, Tax>(tax),
+                YTDTax = Math.Round(ytdTax + taxAmount, 2, MidpointRounding.AwayFromZero),
+                YTDWage = Math.Round(ytdWage + taxableWage, 2, MidpointRounding.AwayFromZero)
+            };
+        }
+
+
+        private PayrollTax GetCASIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
 		{
 
 			var taxExemptedDeductiosn = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);

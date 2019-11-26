@@ -70,7 +70,9 @@ namespace HrMaxx.OnlinePayroll.Models
 					return ExtractType.CADE9;
 				else if (ReportName.Equals("TXSuta"))
 					return ExtractType.TXSuta;
-				else
+                else if (ReportName.Equals("StateHIPIT"))
+                    return ExtractType.HISIT;
+                else
 					return ExtractType.NA;
 			}
 		}

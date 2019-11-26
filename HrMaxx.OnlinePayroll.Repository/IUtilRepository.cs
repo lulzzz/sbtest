@@ -10,6 +10,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 	public interface IUtilRepository
 	{
 		BankAccount SaveBankAccount(BankAccount bankAccount);
-		void FillCompanyAccounts(Guid id, string userName, int stateId);
+		void FillCompanyAccounts(Guid id, string userName, List<int> stateId);
 	}
 }

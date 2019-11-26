@@ -12,16 +12,16 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     using System;
     using System.Collections.Generic;
     
-    public partial class TaxYearRate
+    public partial class HISITTaxTable
     {
         public int Id { get; set; }
-        public int TaxId { get; set; }
-        public int TaxYear { get; set; }
-        public Nullable<decimal> Rate { get; set; }
-        public Nullable<decimal> AnnualMaxPerEmployee { get; set; }
-        public Nullable<decimal> TaxRateLimit { get; set; }
-        public Nullable<decimal> WeeklyMaxWage { get; set; }
-    
-        public virtual Tax Tax { get; set; }
+        public Nullable<int> PayrollPeriodID { get; set; }
+        public string FilingStatus { get; set; }
+        public Nullable<decimal> StartRange { get; set; }
+        public Nullable<decimal> EndRange { get; set; }
+        public Nullable<decimal> FlatRate { get; set; }
+        public Nullable<decimal> AdditionalPercentage { get; set; }
+        public Nullable<decimal> ExcessOvrAmt { get; set; }
+        public Nullable<int> Year { get; set; }
     }
 }

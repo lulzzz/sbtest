@@ -208,7 +208,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.StartDate, opt => opt.MapFrom(src=>src.StartDate.Value.Date))
 				.ForMember(dest => dest.EndDate, opt => opt.MapFrom(src=>src.EndDate.Value.Date))
 				.ForMember(dest => dest.PayDay, opt => opt.MapFrom(src=>src.PayDay.Value.Date))
-				.ForMember(dest => dest.CheckNumber, opt => opt.MapFrom(src => src.CheckNumber.HasValue ? src.CheckNumber : default(int)));
+                .ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.Employee.State.State.StateId))
+                .ForMember(dest => dest.CheckNumber, opt => opt.MapFrom(src => src.CheckNumber.HasValue ? src.CheckNumber : default(int)));
 			CreateMap<PayCheck, PayCheckResource>();
 
 			CreateMap<PayrollPayCodeResource, PayrollPayCode>();

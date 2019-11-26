@@ -17,12 +17,12 @@ namespace HrMaxxAPI.Controllers
 	public class HrMaxxController : BaseApiController
 	{
 		public readonly ICommonService _commonService;
-		public readonly ITaxationService _taxationService;
 		
-		public HrMaxxController(ICommonService commonService, ITaxationService taxationService)
+		
+		public HrMaxxController(ICommonService commonService)
 		{
 			_commonService = commonService;
-			_taxationService = taxationService;
+			
 		}
 		/// <summary>
 		///   Retrieve the current version of the deployed application

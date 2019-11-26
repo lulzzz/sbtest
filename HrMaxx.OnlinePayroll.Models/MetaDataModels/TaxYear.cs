@@ -13,7 +13,9 @@ namespace HrMaxx.OnlinePayroll.Models.MetaDataModels
 		public int TaxYear { get; set; }
 		public decimal? Rate { get; set; }
 		public decimal? AnnualMaxPerEmployee { get; set; }
-		public decimal? TaxRateLimit { get; set; }
+
+        public decimal? WeeklyMaxWage { get; set; }
+        public decimal? TaxRateLimit { get; set; }
 		public bool HasChanged { get; set; }
 
 		public bool IsFederal
@@ -29,7 +31,8 @@ namespace HrMaxx.OnlinePayroll.Models.MetaDataModels
 		{
 			if (this.Id == other.Id && this.TaxYear == other.TaxYear && this.Rate == other.Rate &&
 					this.AnnualMaxPerEmployee == other.AnnualMaxPerEmployee && this.TaxRateLimit == other.TaxRateLimit &&
-					this.IsFederal == other.IsFederal && this.IsState == other.IsState && this.Tax.Equals(other.Tax))
+                    this.WeeklyMaxWage == other.WeeklyMaxWage &&
+                    this.IsFederal == other.IsFederal && this.IsState == other.IsState && this.Tax.Equals(other.Tax))
 			{
 				return true;
 			}

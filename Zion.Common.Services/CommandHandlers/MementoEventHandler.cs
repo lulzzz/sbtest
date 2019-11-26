@@ -34,7 +34,7 @@ namespace HrMaxx.Common.Services.CommandHandlers
 			}
 			catch (Exception e)
 			{
-				Log.Error(string.Format("Erorr in Creating Mementos for PayChecks {0}", event1.LogNotes));
+				Log.Error(string.Format("Erorr in Creating Mementos for PayChecks {0} -- {1}", event1.LogNotes, e.Message));
 			}
 
 		}
@@ -49,7 +49,7 @@ namespace HrMaxx.Common.Services.CommandHandlers
 				});
 				Log.Info(event1.LogNotes);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				Log.Error(string.Format("Erorr in Creating Mementos for Invoice {0}", event1.LogNotes));
 			}

@@ -47,7 +47,6 @@ namespace SiteInspectionStatus_Utility
 	{
 		static void Main(string[] args)
 		{
-			var projectId = new Guid("D444F503-3354-40DF-8021-F4C9E99074B6");
 			var builder = new ContainerBuilder();
 			builder.RegisterModule<LoggingModule>();
 			builder.RegisterModule<MapperModule>();
@@ -79,10 +78,10 @@ namespace SiteInspectionStatus_Utility
 					FixPayrollTaxesAccumulations(container);
 					break;
 				case 9:
-					FixPayrollYTD(container);
+					FixPayrollYtd(container);
 					break;
 				case 10:
-					FixPayCheckYTD(container);
+					FixPayCheckYtd(container);
 					break;
 				case 11:
 					UpdateInvoiceDeliveryLists(container);
@@ -91,13 +90,13 @@ namespace SiteInspectionStatus_Utility
 					CompareTaxRates(container);
 					break;
 				case 13:
-					FixAccumulationCycleAndYTD(container);
+					FixAccumulationCycleAndYtd(container);
 					break;
 				case 14:
 					UpdateEmployeeCarryOver(container);
 					break;
 				case 15:
-					FixAccumulationCycleAndYTDForPEO(container);
+					FixAccumulationCycleAndYtdForPeo(container);
 					break;
 				case 16:
 					SeparateInvoiceTaxesDelayed(container);
@@ -139,10 +138,10 @@ namespace SiteInspectionStatus_Utility
 					FillCompanyCity(container);
 					break;
 				case 28:
-					UpdateCBCSUIManagementRate(container);
+					UpdateCbcsuiManagementRate(container);
 					break;
 				case 29:
-					UpdateCompanyACH(container);
+					UpdateCompanyAch(container);
 					break;
 				case 30:
 					MigrateDocuments(container);
@@ -154,7 +153,7 @@ namespace SiteInspectionStatus_Utility
 			Console.WriteLine("Utility run finished for ");
 		}
 
-		private static void UpdateCompanyACH(IContainer container)
+		private static void UpdateCompanyAch(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
@@ -199,7 +198,7 @@ namespace SiteInspectionStatus_Utility
 					d.DocumentType = types.First(t => t.Id.Equals((int)d.DocumentDto.DocumentType));
 					d.Uploaded = d.DocumentDto.LastModified;
 					d.UploadedBy = d.DocumentDto.UserName;
-					commonService.ExecuteQuery<Document>(updateSql, new {Type=d.DocumentType.Id, Id=d.Id, Uploaded=d.Uploaded, UploadedBy = d.UploadedBy});
+					commonService.ExecuteQuery<Document>(updateSql, new {Type=d.DocumentType.Id, d.Id, d.Uploaded, d.UploadedBy});
 				});
 
 
@@ -207,7 +206,7 @@ namespace SiteInspectionStatus_Utility
 			}
 		}
 
-		private static void UpdateCBCSUIManagementRate(IContainer container)
+		private static void UpdateCbcsuiManagementRate(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
@@ -455,7 +454,6 @@ namespace SiteInspectionStatus_Utility
 				//compList.Add(new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E"));
 				//compList.Add(new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B"));
 				var payChecks = new List<int>();
-				var counter = (int)0;
 				var company = readerservice.GetCompany(new Guid("307CFF5E-8BF6-47F7-AD03-A6ED014C1126"));
 				var employees = readerservice.GetEmployees(company: company.Id);
 				employees.ForEach(e =>
@@ -497,79 +495,361 @@ namespace SiteInspectionStatus_Utility
 				var readerservice = scope.Resolve<IReaderService>();
 				var companies = readerservice.GetCompanies();
 
-				var list = new List<InvoiceFix>();
-				list.Add(new InvoiceFix { Id = new Guid("5EFEE771-2392-485B-82E8-A6F20115EE75"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("1FF3CAEE-BD53-4E6B-9CEB-A6F600AC4752"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("73AC5B7F-973F-479A-B96E-A6F900E0E10F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("A8A6BDEF-94D9-45DA-97E7-A6FD00B22F11"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("FE14DB98-4204-4548-BB6B-A70000EFAFAF"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("8F0356A0-A180-49A3-91F5-A70000F7D01E"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("CF7CAC0B-C82E-419A-83C6-A70100C2D2DE"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("B7542640-403B-4BE7-B8EA-A70700DF2782"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("1C93A7AE-1BDA-463C-9BD7-A70700EB0080"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("3212D259-5AAE-46BF-977A-A70B00AB2F70"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("0D8EBF95-D7A5-46F5-AFBD-A70E00CFF67F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("ABF4DB33-4708-4324-882C-A71500CFAB3F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("D5461A73-849C-41C2-9C35-A71500D12DEA"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("84206134-2437-494D-A310-A71900A86B73"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("93CCF940-C738-43D1-97B9-A71C00FD36AB"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("6F2CE812-131F-4162-A617-A71C01020E18"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("B68DB5F4-2F86-4652-85E9-A721009B0DAA"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("D5BC6B90-8625-4F0C-BCB9-A72300E62217"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("71CF527C-31C3-4831-9A66-A72700C58AB5"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("E816C9BE-2B5F-4720-A76F-A72B00CDB9CB"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("9BD5E224-7484-42AF-AD0A-A72E009FCB61"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("D67DEFCD-2311-4CCE-B3D9-A73200D5CA24"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("2FB984C3-BC24-4B76-8BEE-A73500A6ACA5"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("77AA8D08-4665-4132-95B9-A73500C8E9DD"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("EB89EA52-888D-476A-9072-A73900D8951D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("AC755239-6138-401F-81BE-A73C00B6A5CF"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("B93D0A13-687B-4F39-BE37-A74000D32622"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("C2BCEE4F-AB9C-493A-A04D-A74300C60679"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("ACE0F807-25EC-4DF7-8A72-A74600B7E4AD"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("E344711C-F5B9-4543-9CF7-A74700977827"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("71854711-476C-4518-BD20-A74E00F0B37D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("CE8AB069-4C7A-4923-A13B-A74E00F45286"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("5F7EDAFC-B2D5-4AF6-BA4C-A75500B3494C"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("BDEAE96D-BBAC-423A-AD8D-A75C00D9C0A9"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("361E2220-C9AC-45BE-A452-A76300CD898A"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("192EA7D7-A03A-4670-B946-A76A00C3DBD1"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("22DE7C01-7C6D-4430-909C-A77100B45C4C"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("2E0B0988-BBD0-4EB1-9C22-A77800B5BE32"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("3E28A3C6-ADFF-4260-8078-A77B00AB35A8"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("47696CE7-EB7E-467B-803E-A77E00BFEB6E"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("0E818E0D-C694-429C-BCAA-A78600B50359"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("A4BDE2B3-D14A-465F-938C-A78B00AAF6F6"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("1BBF1D36-CB41-402E-A24B-A79400B59F5C"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("01809F18-D52C-437D-BEB2-A79B00BF8DA2"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("2239F4C5-D6E2-4E9C-AF34-A7A200B205FC"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("114784D3-FA47-430E-8154-A7A700975179"), SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B") });
-				list.Add(new InvoiceFix { Id = new Guid("D4115B6E-BF41-4D04-9E6F-A7A900B1096F"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("1A287465-FB83-48E6-8386-A7B000AFBDDD"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("B639F2F3-3A98-4B3A-B2BC-A7B700AFE391"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("3C390DE8-5557-478B-855C-A7BE00AE25D5"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("7AC3B65E-53C5-42C7-AD96-A7C500B89814"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("E7C9FB40-71DF-4E39-B194-A7CC00C2CD10"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("33EF301C-FD04-48BB-90ED-A7D3009267F4"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("65229EEC-A3E2-47FB-9FAA-A7DA00BBA6EA"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("B24EA969-688A-49E4-BF81-A7E100B1355B"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("B7A78412-028F-47FF-A739-A7E800C10AA7"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("1358128B-2994-4F51-BCDA-A7EF00C7B301"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("69D52E2F-FBF1-4025-90CB-A7EF00C82405"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("97B5ACA5-DC6B-4530-BCBC-A7F500A5C4BF"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("08217F25-0055-466B-9C23-A7F600BA94D6"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("C5BE47A9-722D-49DC-B6CC-A7FD00B58140"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("AD762749-82C9-4414-BF7B-A80000A1668D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("067600AD-3270-4A6A-BDE8-A80400B2FE0B"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("C3BC3961-4BBD-4D00-BCF6-A80B00A9BCCF"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("65F95D21-FA00-4C0D-B3F9-A81000AE3F82"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("8F089358-0848-4E7F-B770-A81900A21AB0"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("37DA3132-E722-4ED4-A008-A82700895F6D"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("A3CF89FA-D9F9-4591-A7E4-A82E00D15AA3"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("D2E88E25-1B71-4418-BDF8-A831009B7D52"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
-				list.Add(new InvoiceFix { Id = new Guid("DEC8C72A-E448-49D1-AC1C-A838009ED7E2"), SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89") });
+                var list = new List<InvoiceFix>
+                {
+                    new InvoiceFix
+                    {
+                        Id = new Guid("5EFEE771-2392-485B-82E8-A6F20115EE75"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("1FF3CAEE-BD53-4E6B-9CEB-A6F600AC4752"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("73AC5B7F-973F-479A-B96E-A6F900E0E10F"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("A8A6BDEF-94D9-45DA-97E7-A6FD00B22F11"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("FE14DB98-4204-4548-BB6B-A70000EFAFAF"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("8F0356A0-A180-49A3-91F5-A70000F7D01E"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("CF7CAC0B-C82E-419A-83C6-A70100C2D2DE"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("B7542640-403B-4BE7-B8EA-A70700DF2782"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("1C93A7AE-1BDA-463C-9BD7-A70700EB0080"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("3212D259-5AAE-46BF-977A-A70B00AB2F70"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("0D8EBF95-D7A5-46F5-AFBD-A70E00CFF67F"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("ABF4DB33-4708-4324-882C-A71500CFAB3F"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("D5461A73-849C-41C2-9C35-A71500D12DEA"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("84206134-2437-494D-A310-A71900A86B73"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("93CCF940-C738-43D1-97B9-A71C00FD36AB"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("6F2CE812-131F-4162-A617-A71C01020E18"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("B68DB5F4-2F86-4652-85E9-A721009B0DAA"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("D5BC6B90-8625-4F0C-BCB9-A72300E62217"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("71CF527C-31C3-4831-9A66-A72700C58AB5"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("E816C9BE-2B5F-4720-A76F-A72B00CDB9CB"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("9BD5E224-7484-42AF-AD0A-A72E009FCB61"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("D67DEFCD-2311-4CCE-B3D9-A73200D5CA24"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("2FB984C3-BC24-4B76-8BEE-A73500A6ACA5"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("77AA8D08-4665-4132-95B9-A73500C8E9DD"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("EB89EA52-888D-476A-9072-A73900D8951D"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("AC755239-6138-401F-81BE-A73C00B6A5CF"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("B93D0A13-687B-4F39-BE37-A74000D32622"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("C2BCEE4F-AB9C-493A-A04D-A74300C60679"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("ACE0F807-25EC-4DF7-8A72-A74600B7E4AD"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("E344711C-F5B9-4543-9CF7-A74700977827"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("71854711-476C-4518-BD20-A74E00F0B37D"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("CE8AB069-4C7A-4923-A13B-A74E00F45286"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("5F7EDAFC-B2D5-4AF6-BA4C-A75500B3494C"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("BDEAE96D-BBAC-423A-AD8D-A75C00D9C0A9"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("361E2220-C9AC-45BE-A452-A76300CD898A"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("192EA7D7-A03A-4670-B946-A76A00C3DBD1"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("22DE7C01-7C6D-4430-909C-A77100B45C4C"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("2E0B0988-BBD0-4EB1-9C22-A77800B5BE32"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("3E28A3C6-ADFF-4260-8078-A77B00AB35A8"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("47696CE7-EB7E-467B-803E-A77E00BFEB6E"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("0E818E0D-C694-429C-BCAA-A78600B50359"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("A4BDE2B3-D14A-465F-938C-A78B00AAF6F6"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("1BBF1D36-CB41-402E-A24B-A79400B59F5C"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("01809F18-D52C-437D-BEB2-A79B00BF8DA2"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("2239F4C5-D6E2-4E9C-AF34-A7A200B205FC"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("114784D3-FA47-430E-8154-A7A700975179"),
+                        SourceCompany = new Guid("3DC257CD-1179-472A-A190-A6ED01510C7B")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("D4115B6E-BF41-4D04-9E6F-A7A900B1096F"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("1A287465-FB83-48E6-8386-A7B000AFBDDD"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("B639F2F3-3A98-4B3A-B2BC-A7B700AFE391"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("3C390DE8-5557-478B-855C-A7BE00AE25D5"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("7AC3B65E-53C5-42C7-AD96-A7C500B89814"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("E7C9FB40-71DF-4E39-B194-A7CC00C2CD10"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("33EF301C-FD04-48BB-90ED-A7D3009267F4"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("65229EEC-A3E2-47FB-9FAA-A7DA00BBA6EA"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("B24EA969-688A-49E4-BF81-A7E100B1355B"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("B7A78412-028F-47FF-A739-A7E800C10AA7"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("1358128B-2994-4F51-BCDA-A7EF00C7B301"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("69D52E2F-FBF1-4025-90CB-A7EF00C82405"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("97B5ACA5-DC6B-4530-BCBC-A7F500A5C4BF"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("08217F25-0055-466B-9C23-A7F600BA94D6"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("C5BE47A9-722D-49DC-B6CC-A7FD00B58140"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("AD762749-82C9-4414-BF7B-A80000A1668D"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("067600AD-3270-4A6A-BDE8-A80400B2FE0B"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("C3BC3961-4BBD-4D00-BCF6-A80B00A9BCCF"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("65F95D21-FA00-4C0D-B3F9-A81000AE3F82"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("8F089358-0848-4E7F-B770-A81900A21AB0"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("37DA3132-E722-4ED4-A008-A82700895F6D"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("A3CF89FA-D9F9-4591-A7E4-A82E00D15AA3"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("D2E88E25-1B71-4418-BDF8-A831009B7D52"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    },
+                    new InvoiceFix
+                    {
+                        Id = new Guid("DEC8C72A-E448-49D1-AC1C-A838009ED7E2"),
+                        SourceCompany = new Guid("0974B66C-D453-4063-8D97-A6ED01597D89")
+                    }
+                };
 
-				list.ForEach(p =>
+                list.ForEach(p =>
 				{
 					var comp = companies.First(c => c.Id == p.SourceCompany);
 					var i = readerservice.GetPayrollInvoice(p.Id);
@@ -590,9 +870,8 @@ namespace SiteInspectionStatus_Utility
 				var payrollService = scope.Resolve<IPayrollService>();
 				var readerservice = scope.Resolve<IReaderService>();
 
-				var compList = new List<Guid>();
-				compList.Add(new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD"));
-				var counter = (int)0;
+                var compList = new List<Guid> {new Guid("9D18DA15-ACB4-4CE5-B6DF-A6ED015174DD")};
+                var counter = (int)0;
 				compList.ForEach(c =>
 				{
 					var company = readerservice.GetCompany(c);
@@ -689,191 +968,191 @@ namespace SiteInspectionStatus_Utility
 				var readerservice = scope.Resolve<IReaderService>();
 				var list = new List<EmpCarryOver>();
 				#region "list"
-				list.Add(new EmpCarryOver { empno = 1, carryover = (decimal) 34.48 });
-				list.Add(new EmpCarryOver { empno = 4, carryover = (decimal) 36.6 });
-				list.Add(new EmpCarryOver { empno = 7, carryover = (decimal) 34.41 });
-				list.Add(new EmpCarryOver { empno = 8, carryover = (decimal) 10.99 });
-				list.Add(new EmpCarryOver { empno = 10, carryover = (decimal) 18.46 });
-				list.Add(new EmpCarryOver { empno = 11, carryover = (decimal) 30.13 });
-				list.Add(new EmpCarryOver { empno = 12, carryover = (decimal) 36.9 });
-				list.Add(new EmpCarryOver { empno = 13, carryover = (decimal) 23.32 });
-				list.Add(new EmpCarryOver { empno = 14, carryover = (decimal) 34.7 });
-				list.Add(new EmpCarryOver { empno = 16, carryover = (decimal) 26.77 });
-				list.Add(new EmpCarryOver { empno = 17, carryover = (decimal) 33.59 });
-				list.Add(new EmpCarryOver { empno = 18, carryover = (decimal) 35.69 });
-				list.Add(new EmpCarryOver { empno = 20, carryover = (decimal) 36.14 });
-				list.Add(new EmpCarryOver { empno = 21, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 22, carryover = (decimal) 23.39 });
-				list.Add(new EmpCarryOver { empno = 23, carryover = (decimal) 17.5 });
-				list.Add(new EmpCarryOver { empno = 24, carryover = (decimal) 21.01 });
-				list.Add(new EmpCarryOver { empno = 25, carryover = (decimal) 35.81 });
-				list.Add(new EmpCarryOver { empno = 27, carryover = (decimal) 35.31 });
-				list.Add(new EmpCarryOver { empno = 28, carryover = (decimal) 31.48 });
-				list.Add(new EmpCarryOver { empno = 29, carryover = (decimal) 34.46 });
-				list.Add(new EmpCarryOver { empno = 30, carryover = (decimal) 31.85 });
-				list.Add(new EmpCarryOver { empno = 33, carryover = (decimal) 13.07 });
-				list.Add(new EmpCarryOver { empno = 34, carryover = (decimal) 38.39 });
-				list.Add(new EmpCarryOver { empno = 36, carryover = (decimal) 37.29 });
-				list.Add(new EmpCarryOver { empno = 38, carryover = (decimal) 9.15 });
-				list.Add(new EmpCarryOver { empno = 39, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 40, carryover = (decimal) 31.17 });
-				list.Add(new EmpCarryOver { empno = 41, carryover = (decimal) 37.43 });
-				list.Add(new EmpCarryOver { empno = 43, carryover = (decimal) 35.86 });
-				list.Add(new EmpCarryOver { empno = 44, carryover = (decimal) 33.73 });
-				list.Add(new EmpCarryOver { empno = 47, carryover = (decimal) 35.74 });
-				list.Add(new EmpCarryOver { empno = 48, carryover = (decimal) 31.84 });
-				list.Add(new EmpCarryOver { empno = 52, carryover = (decimal) 33.8 });
-				list.Add(new EmpCarryOver { empno = 53, carryover = (decimal) 34.96 });
-				list.Add(new EmpCarryOver { empno = 57, carryover = (decimal) 28.31 });
-				list.Add(new EmpCarryOver { empno = 58, carryover = (decimal) 38.01 });
-				list.Add(new EmpCarryOver { empno = 59, carryover = (decimal) 35.11 });
-				list.Add(new EmpCarryOver { empno = 62, carryover = (decimal) 38.11 });
-				list.Add(new EmpCarryOver { empno = 63, carryover = (decimal) 16.77 });
-				list.Add(new EmpCarryOver { empno = 66, carryover = (decimal) 38.27 });
-				list.Add(new EmpCarryOver { empno = 67, carryover = (decimal) 34.3 });
-				list.Add(new EmpCarryOver { empno = 68, carryover = (decimal) 31.8 });
-				list.Add(new EmpCarryOver { empno = 69, carryover = (decimal) 37.97 });
-				list.Add(new EmpCarryOver { empno = 72, carryover = (decimal) 36.12 });
-				list.Add(new EmpCarryOver { empno = 73, carryover = (decimal) 37.49 });
-				list.Add(new EmpCarryOver { empno = 74, carryover = (decimal) 35.63 });
-				list.Add(new EmpCarryOver { empno = 76, carryover = (decimal) 8.44 });
-				list.Add(new EmpCarryOver { empno = 77, carryover = (decimal) 32.76 });
-				list.Add(new EmpCarryOver { empno = 79, carryover = (decimal) 25.83 });
-				list.Add(new EmpCarryOver { empno = 81, carryover = (decimal) 32.21 });
-				list.Add(new EmpCarryOver { empno = 82, carryover = (decimal) 35.68 });
-				list.Add(new EmpCarryOver { empno = 84, carryover = (decimal) 32.12 });
-				list.Add(new EmpCarryOver { empno = 85, carryover = (decimal) 25.22 });
-				list.Add(new EmpCarryOver { empno = 86, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 87, carryover = (decimal) 35.42 });
-				list.Add(new EmpCarryOver { empno = 89, carryover = (decimal) 31.8 });
-				list.Add(new EmpCarryOver { empno = 90, carryover = (decimal) 27.99 });
-				list.Add(new EmpCarryOver { empno = 91, carryover = (decimal) 20.63 });
-				list.Add(new EmpCarryOver { empno = 92, carryover = (decimal) 29.02 });
-				list.Add(new EmpCarryOver { empno = 93, carryover = (decimal) 22.6 });
-				list.Add(new EmpCarryOver { empno = 94, carryover = (decimal) 27.84 });
-				list.Add(new EmpCarryOver { empno = 95, carryover = (decimal) 27.1 });
-				list.Add(new EmpCarryOver { empno = 97, carryover = (decimal) 20.9 });
-				list.Add(new EmpCarryOver { empno = 101, carryover = (decimal) 35.42 });
-				list.Add(new EmpCarryOver { empno = 103, carryover = (decimal) 32.5 });
-				list.Add(new EmpCarryOver { empno = 104, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 105, carryover = (decimal) 32.5 });
-				list.Add(new EmpCarryOver { empno = 107, carryover = (decimal) 21.68 });
-				list.Add(new EmpCarryOver { empno = 108, carryover = (decimal) 34.76 });
-				list.Add(new EmpCarryOver { empno = 109, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 110, carryover = (decimal) 19.82 });
-				list.Add(new EmpCarryOver { empno = 111, carryover = (decimal) 31.76 });
-				list.Add(new EmpCarryOver { empno = 113, carryover = (decimal) 12.19 });
-				list.Add(new EmpCarryOver { empno = 114, carryover = (decimal) 34.81 });
-				list.Add(new EmpCarryOver { empno = 115, carryover = (decimal) 35.07 });
-				list.Add(new EmpCarryOver { empno = 117, carryover = (decimal) 12 });
-				list.Add(new EmpCarryOver { empno = 119, carryover = (decimal) 35.04 });
-				list.Add(new EmpCarryOver { empno = 121, carryover = (decimal) 32.3 });
-				list.Add(new EmpCarryOver { empno = 122, carryover = (decimal) 35.28 });
-				list.Add(new EmpCarryOver { empno = 124, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 125, carryover = (decimal) 34.09 });
-				list.Add(new EmpCarryOver { empno = 126, carryover = (decimal) 35.95 });
-				list.Add(new EmpCarryOver { empno = 129, carryover = (decimal) 31.93 });
-				list.Add(new EmpCarryOver { empno = 131, carryover = (decimal) 36.54 });
-				list.Add(new EmpCarryOver { empno = 132, carryover = (decimal) 32.74 });
-				list.Add(new EmpCarryOver { empno = 133, carryover = (decimal) 35.08 });
-				list.Add(new EmpCarryOver { empno = 135, carryover = (decimal) 34.46 });
-				list.Add(new EmpCarryOver { empno = 137, carryover = (decimal) 37.55 });
-				list.Add(new EmpCarryOver { empno = 138, carryover = (decimal) 34 });
-				list.Add(new EmpCarryOver { empno = 139, carryover = (decimal) 36.4 });
-				list.Add(new EmpCarryOver { empno = 140, carryover = (decimal) 38.44 });
-				list.Add(new EmpCarryOver { empno = 141, carryover = (decimal) 33.34 });
-				list.Add(new EmpCarryOver { empno = 142, carryover = (decimal) 30.24 });
-				list.Add(new EmpCarryOver { empno = 143, carryover = (decimal) 34.98 });
-				list.Add(new EmpCarryOver { empno = 146, carryover = (decimal) 9.57 });
-				list.Add(new EmpCarryOver { empno = 147, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 151, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 152, carryover = (decimal) 24.8 });
-				list.Add(new EmpCarryOver { empno = 160, carryover = (decimal) 32.93 });
-				list.Add(new EmpCarryOver { empno = 161, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 163, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 165, carryover = (decimal) 8 });
-				list.Add(new EmpCarryOver { empno = 166, carryover = (decimal) 12.59 });
-				list.Add(new EmpCarryOver { empno = 168, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 171, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 172, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 177, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 180, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 181, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 183, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 184, carryover = (decimal) 10.53 });
-				list.Add(new EmpCarryOver { empno = 185, carryover = (decimal) 8 });
-				list.Add(new EmpCarryOver { empno = 186, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 187, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 191, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 194, carryover = (decimal) 8 });
-				list.Add(new EmpCarryOver { empno = 197, carryover = (decimal) 16 });
-				list.Add(new EmpCarryOver { empno = 198, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 199, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 201, carryover = (decimal) 16 });
-				list.Add(new EmpCarryOver { empno = 202, carryover = (decimal) 7.01 });
-				list.Add(new EmpCarryOver { empno = 204, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 206, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 209, carryover = (decimal) 14.59 });
-				list.Add(new EmpCarryOver { empno = 213, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 215, carryover = (decimal) 7.06 });
-				list.Add(new EmpCarryOver { empno = 217, carryover = (decimal) 16 });
-				list.Add(new EmpCarryOver { empno = 219, carryover = (decimal) 0 });
-				list.Add(new EmpCarryOver { empno = 220, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 222, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 225, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 227, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 231, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 232, carryover = (decimal) 14.73 });
-				list.Add(new EmpCarryOver { empno = 233, carryover = (decimal) 2.49 });
-				list.Add(new EmpCarryOver { empno = 234, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 235, carryover = (decimal) 21.2 });
-				list.Add(new EmpCarryOver { empno = 238, carryover = (decimal) 20.08 });
-				list.Add(new EmpCarryOver { empno = 239, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 240, carryover = (decimal) 24 });
-				list.Add(new EmpCarryOver { empno = 241, carryover = (decimal) 22.66 });
-				list.Add(new EmpCarryOver { empno = 242, carryover = (decimal) 17.23 });
-				list.Add(new EmpCarryOver { empno = 243, carryover = (decimal) 17.5 });
-				list.Add(new EmpCarryOver { empno = 245, carryover = (decimal) 15 });
-				list.Add(new EmpCarryOver { empno = 246, carryover = (decimal) 19.9 });
-				list.Add(new EmpCarryOver { empno = 247, carryover = (decimal) 15.17 });
-				list.Add(new EmpCarryOver { empno = 252, carryover = (decimal) 7.89 });
-				list.Add(new EmpCarryOver { empno = 254, carryover = (decimal) 7.43 });
-				list.Add(new EmpCarryOver { empno = 256, carryover = (decimal) 6.36 });
-				list.Add(new EmpCarryOver { empno = 258, carryover = (decimal) 5.35 });
-				list.Add(new EmpCarryOver { empno = 260, carryover = (decimal) 4.11 });
-				list.Add(new EmpCarryOver { empno = 262, carryover = (decimal) 3.1 });
-				list.Add(new EmpCarryOver { empno = 263, carryover = (decimal) 3.23 });
-				list.Add(new EmpCarryOver { empno = 265, carryover = (decimal) 3.21 });
-				list.Add(new EmpCarryOver { empno = 268, carryover = (decimal) 0.95 });
+				list.Add(new EmpCarryOver { Empno = 1, Carryover = (decimal) 34.48 });
+				list.Add(new EmpCarryOver { Empno = 4, Carryover = (decimal) 36.6 });
+				list.Add(new EmpCarryOver { Empno = 7, Carryover = (decimal) 34.41 });
+				list.Add(new EmpCarryOver { Empno = 8, Carryover = (decimal) 10.99 });
+				list.Add(new EmpCarryOver { Empno = 10, Carryover = (decimal) 18.46 });
+				list.Add(new EmpCarryOver { Empno = 11, Carryover = (decimal) 30.13 });
+				list.Add(new EmpCarryOver { Empno = 12, Carryover = (decimal) 36.9 });
+				list.Add(new EmpCarryOver { Empno = 13, Carryover = (decimal) 23.32 });
+				list.Add(new EmpCarryOver { Empno = 14, Carryover = (decimal) 34.7 });
+				list.Add(new EmpCarryOver { Empno = 16, Carryover = (decimal) 26.77 });
+				list.Add(new EmpCarryOver { Empno = 17, Carryover = (decimal) 33.59 });
+				list.Add(new EmpCarryOver { Empno = 18, Carryover = (decimal) 35.69 });
+				list.Add(new EmpCarryOver { Empno = 20, Carryover = (decimal) 36.14 });
+				list.Add(new EmpCarryOver { Empno = 21, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 22, Carryover = (decimal) 23.39 });
+				list.Add(new EmpCarryOver { Empno = 23, Carryover = (decimal) 17.5 });
+				list.Add(new EmpCarryOver { Empno = 24, Carryover = (decimal) 21.01 });
+				list.Add(new EmpCarryOver { Empno = 25, Carryover = (decimal) 35.81 });
+				list.Add(new EmpCarryOver { Empno = 27, Carryover = (decimal) 35.31 });
+				list.Add(new EmpCarryOver { Empno = 28, Carryover = (decimal) 31.48 });
+				list.Add(new EmpCarryOver { Empno = 29, Carryover = (decimal) 34.46 });
+				list.Add(new EmpCarryOver { Empno = 30, Carryover = (decimal) 31.85 });
+				list.Add(new EmpCarryOver { Empno = 33, Carryover = (decimal) 13.07 });
+				list.Add(new EmpCarryOver { Empno = 34, Carryover = (decimal) 38.39 });
+				list.Add(new EmpCarryOver { Empno = 36, Carryover = (decimal) 37.29 });
+				list.Add(new EmpCarryOver { Empno = 38, Carryover = (decimal) 9.15 });
+				list.Add(new EmpCarryOver { Empno = 39, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 40, Carryover = (decimal) 31.17 });
+				list.Add(new EmpCarryOver { Empno = 41, Carryover = (decimal) 37.43 });
+				list.Add(new EmpCarryOver { Empno = 43, Carryover = (decimal) 35.86 });
+				list.Add(new EmpCarryOver { Empno = 44, Carryover = (decimal) 33.73 });
+				list.Add(new EmpCarryOver { Empno = 47, Carryover = (decimal) 35.74 });
+				list.Add(new EmpCarryOver { Empno = 48, Carryover = (decimal) 31.84 });
+				list.Add(new EmpCarryOver { Empno = 52, Carryover = (decimal) 33.8 });
+				list.Add(new EmpCarryOver { Empno = 53, Carryover = (decimal) 34.96 });
+				list.Add(new EmpCarryOver { Empno = 57, Carryover = (decimal) 28.31 });
+				list.Add(new EmpCarryOver { Empno = 58, Carryover = (decimal) 38.01 });
+				list.Add(new EmpCarryOver { Empno = 59, Carryover = (decimal) 35.11 });
+				list.Add(new EmpCarryOver { Empno = 62, Carryover = (decimal) 38.11 });
+				list.Add(new EmpCarryOver { Empno = 63, Carryover = (decimal) 16.77 });
+				list.Add(new EmpCarryOver { Empno = 66, Carryover = (decimal) 38.27 });
+				list.Add(new EmpCarryOver { Empno = 67, Carryover = (decimal) 34.3 });
+				list.Add(new EmpCarryOver { Empno = 68, Carryover = (decimal) 31.8 });
+				list.Add(new EmpCarryOver { Empno = 69, Carryover = (decimal) 37.97 });
+				list.Add(new EmpCarryOver { Empno = 72, Carryover = (decimal) 36.12 });
+				list.Add(new EmpCarryOver { Empno = 73, Carryover = (decimal) 37.49 });
+				list.Add(new EmpCarryOver { Empno = 74, Carryover = (decimal) 35.63 });
+				list.Add(new EmpCarryOver { Empno = 76, Carryover = (decimal) 8.44 });
+				list.Add(new EmpCarryOver { Empno = 77, Carryover = (decimal) 32.76 });
+				list.Add(new EmpCarryOver { Empno = 79, Carryover = (decimal) 25.83 });
+				list.Add(new EmpCarryOver { Empno = 81, Carryover = (decimal) 32.21 });
+				list.Add(new EmpCarryOver { Empno = 82, Carryover = (decimal) 35.68 });
+				list.Add(new EmpCarryOver { Empno = 84, Carryover = (decimal) 32.12 });
+				list.Add(new EmpCarryOver { Empno = 85, Carryover = (decimal) 25.22 });
+				list.Add(new EmpCarryOver { Empno = 86, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 87, Carryover = (decimal) 35.42 });
+				list.Add(new EmpCarryOver { Empno = 89, Carryover = (decimal) 31.8 });
+				list.Add(new EmpCarryOver { Empno = 90, Carryover = (decimal) 27.99 });
+				list.Add(new EmpCarryOver { Empno = 91, Carryover = (decimal) 20.63 });
+				list.Add(new EmpCarryOver { Empno = 92, Carryover = (decimal) 29.02 });
+				list.Add(new EmpCarryOver { Empno = 93, Carryover = (decimal) 22.6 });
+				list.Add(new EmpCarryOver { Empno = 94, Carryover = (decimal) 27.84 });
+				list.Add(new EmpCarryOver { Empno = 95, Carryover = (decimal) 27.1 });
+				list.Add(new EmpCarryOver { Empno = 97, Carryover = (decimal) 20.9 });
+				list.Add(new EmpCarryOver { Empno = 101, Carryover = (decimal) 35.42 });
+				list.Add(new EmpCarryOver { Empno = 103, Carryover = (decimal) 32.5 });
+				list.Add(new EmpCarryOver { Empno = 104, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 105, Carryover = (decimal) 32.5 });
+				list.Add(new EmpCarryOver { Empno = 107, Carryover = (decimal) 21.68 });
+				list.Add(new EmpCarryOver { Empno = 108, Carryover = (decimal) 34.76 });
+				list.Add(new EmpCarryOver { Empno = 109, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 110, Carryover = (decimal) 19.82 });
+				list.Add(new EmpCarryOver { Empno = 111, Carryover = (decimal) 31.76 });
+				list.Add(new EmpCarryOver { Empno = 113, Carryover = (decimal) 12.19 });
+				list.Add(new EmpCarryOver { Empno = 114, Carryover = (decimal) 34.81 });
+				list.Add(new EmpCarryOver { Empno = 115, Carryover = (decimal) 35.07 });
+				list.Add(new EmpCarryOver { Empno = 117, Carryover = (decimal) 12 });
+				list.Add(new EmpCarryOver { Empno = 119, Carryover = (decimal) 35.04 });
+				list.Add(new EmpCarryOver { Empno = 121, Carryover = (decimal) 32.3 });
+				list.Add(new EmpCarryOver { Empno = 122, Carryover = (decimal) 35.28 });
+				list.Add(new EmpCarryOver { Empno = 124, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 125, Carryover = (decimal) 34.09 });
+				list.Add(new EmpCarryOver { Empno = 126, Carryover = (decimal) 35.95 });
+				list.Add(new EmpCarryOver { Empno = 129, Carryover = (decimal) 31.93 });
+				list.Add(new EmpCarryOver { Empno = 131, Carryover = (decimal) 36.54 });
+				list.Add(new EmpCarryOver { Empno = 132, Carryover = (decimal) 32.74 });
+				list.Add(new EmpCarryOver { Empno = 133, Carryover = (decimal) 35.08 });
+				list.Add(new EmpCarryOver { Empno = 135, Carryover = (decimal) 34.46 });
+				list.Add(new EmpCarryOver { Empno = 137, Carryover = (decimal) 37.55 });
+				list.Add(new EmpCarryOver { Empno = 138, Carryover = (decimal) 34 });
+				list.Add(new EmpCarryOver { Empno = 139, Carryover = (decimal) 36.4 });
+				list.Add(new EmpCarryOver { Empno = 140, Carryover = (decimal) 38.44 });
+				list.Add(new EmpCarryOver { Empno = 141, Carryover = (decimal) 33.34 });
+				list.Add(new EmpCarryOver { Empno = 142, Carryover = (decimal) 30.24 });
+				list.Add(new EmpCarryOver { Empno = 143, Carryover = (decimal) 34.98 });
+				list.Add(new EmpCarryOver { Empno = 146, Carryover = (decimal) 9.57 });
+				list.Add(new EmpCarryOver { Empno = 147, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 151, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 152, Carryover = (decimal) 24.8 });
+				list.Add(new EmpCarryOver { Empno = 160, Carryover = (decimal) 32.93 });
+				list.Add(new EmpCarryOver { Empno = 161, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 163, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 165, Carryover = (decimal) 8 });
+				list.Add(new EmpCarryOver { Empno = 166, Carryover = (decimal) 12.59 });
+				list.Add(new EmpCarryOver { Empno = 168, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 171, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 172, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 177, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 180, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 181, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 183, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 184, Carryover = (decimal) 10.53 });
+				list.Add(new EmpCarryOver { Empno = 185, Carryover = (decimal) 8 });
+				list.Add(new EmpCarryOver { Empno = 186, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 187, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 191, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 194, Carryover = (decimal) 8 });
+				list.Add(new EmpCarryOver { Empno = 197, Carryover = (decimal) 16 });
+				list.Add(new EmpCarryOver { Empno = 198, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 199, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 201, Carryover = (decimal) 16 });
+				list.Add(new EmpCarryOver { Empno = 202, Carryover = (decimal) 7.01 });
+				list.Add(new EmpCarryOver { Empno = 204, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 206, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 209, Carryover = (decimal) 14.59 });
+				list.Add(new EmpCarryOver { Empno = 213, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 215, Carryover = (decimal) 7.06 });
+				list.Add(new EmpCarryOver { Empno = 217, Carryover = (decimal) 16 });
+				list.Add(new EmpCarryOver { Empno = 219, Carryover = (decimal) 0 });
+				list.Add(new EmpCarryOver { Empno = 220, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 222, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 225, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 227, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 231, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 232, Carryover = (decimal) 14.73 });
+				list.Add(new EmpCarryOver { Empno = 233, Carryover = (decimal) 2.49 });
+				list.Add(new EmpCarryOver { Empno = 234, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 235, Carryover = (decimal) 21.2 });
+				list.Add(new EmpCarryOver { Empno = 238, Carryover = (decimal) 20.08 });
+				list.Add(new EmpCarryOver { Empno = 239, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 240, Carryover = (decimal) 24 });
+				list.Add(new EmpCarryOver { Empno = 241, Carryover = (decimal) 22.66 });
+				list.Add(new EmpCarryOver { Empno = 242, Carryover = (decimal) 17.23 });
+				list.Add(new EmpCarryOver { Empno = 243, Carryover = (decimal) 17.5 });
+				list.Add(new EmpCarryOver { Empno = 245, Carryover = (decimal) 15 });
+				list.Add(new EmpCarryOver { Empno = 246, Carryover = (decimal) 19.9 });
+				list.Add(new EmpCarryOver { Empno = 247, Carryover = (decimal) 15.17 });
+				list.Add(new EmpCarryOver { Empno = 252, Carryover = (decimal) 7.89 });
+				list.Add(new EmpCarryOver { Empno = 254, Carryover = (decimal) 7.43 });
+				list.Add(new EmpCarryOver { Empno = 256, Carryover = (decimal) 6.36 });
+				list.Add(new EmpCarryOver { Empno = 258, Carryover = (decimal) 5.35 });
+				list.Add(new EmpCarryOver { Empno = 260, Carryover = (decimal) 4.11 });
+				list.Add(new EmpCarryOver { Empno = 262, Carryover = (decimal) 3.1 });
+				list.Add(new EmpCarryOver { Empno = 263, Carryover = (decimal) 3.23 });
+				list.Add(new EmpCarryOver { Empno = 265, Carryover = (decimal) 3.21 });
+				list.Add(new EmpCarryOver { Empno = 268, Carryover = (decimal) 0.95 });
 				#endregion
 
 				var ud = new Guid("6B22F916-0E34-4DB0-BE20-A6ED01549D3E");
 				var ud2 = new Guid("87AE8C84-2CEC-49F3-881D-A6F20019290B");
 				var udemployees = readerservice.GetEmployees(company: ud);
-				var ud2employees = readerservice.GetEmployees(company: ud2);
-				udemployees = udemployees.Where(e => list.Any(e1 => e1.empno == e.CompanyEmployeeNo)).ToList();
+				var ud2Employees = readerservice.GetEmployees(company: ud2);
+				udemployees = udemployees.Where(e => list.Any(e1 => e1.Empno == e.CompanyEmployeeNo)).ToList();
 				var ssns = udemployees.Select(e => e.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ",");
 				var udaccumulations = readerservice.GetAccumulations(company: ud, startdate: new DateTime(2017, 1, 1).Date,
 					enddate: new DateTime(2017,8,27).Date, ssns: ssns);
-				var ud2accumulations = readerservice.GetAccumulations(company: ud2, startdate: new DateTime(2017, 1, 1).Date,
+				var ud2Accumulations = readerservice.GetAccumulations(company: ud2, startdate: new DateTime(2017, 1, 1).Date,
 					enddate: new DateTime(2017, 8, 27).Date, ssns: ssns);
 				var noupdate = (int)0;
 				var update = (int) 0;
-				var ud2match = (int)0;
-				var ud2update = (int)0;
-				var ud2noupdate = (int)0;
+				var ud2Match = (int)0;
+				var ud2Update = (int)0;
+				var ud2Noupdate = (int)0;
 				list.ForEach(e =>
 				{
-					var e1 = udemployees.First(e2 => e2.CompanyEmployeeNo == e.empno);
-					var ud2e = ud2employees.FirstOrDefault(e2 => e2.SSN == e1.SSN && e2.CompanyEmployeeNo == e1.CompanyEmployeeNo);
-					if (e1.CarryOver != e.carryover)
+					var e1 = udemployees.First(e2 => e2.CompanyEmployeeNo == e.Empno);
+					var ud2E = ud2Employees.FirstOrDefault(e2 => e2.SSN == e1.SSN && e2.CompanyEmployeeNo == e1.CompanyEmployeeNo);
+					if (e1.CarryOver != e.Carryover)
 					{
-						e1.CarryOver = e.carryover;
+						e1.CarryOver = e.Carryover;
 						var acc = udaccumulations.First(e2 => e2.EmployeeId == e1.Id);
 						if (acc.Accumulations.Count == 1)
 						{
 							var sl = acc.Accumulations.First();
-							sl.CarryOver = e.carryover;
+							sl.CarryOver = e.Carryover;
 							payrollService.UpdateEmployeeAccumulation(sl, sl.FiscalStart, sl.FiscalEnd, e1.Id);
 							update++;
 							
@@ -889,34 +1168,34 @@ namespace SiteInspectionStatus_Utility
 					{
 						noupdate++;
 					}
-					if(ud2e != null && ud2e.CarryOver!=e.carryover)
+					if(ud2E != null && ud2E.CarryOver!=e.Carryover)
 					{
-						ud2match++;
-						ud2e.CarryOver = e.carryover;
-						var acc = ud2accumulations.First(e2 => e2.EmployeeId == ud2e.Id);
+						ud2Match++;
+						ud2E.CarryOver = e.Carryover;
+						var acc = ud2Accumulations.First(e2 => e2.EmployeeId == ud2E.Id);
 						if (acc.Accumulations.Count == 1)
 						{
 							var sl = acc.Accumulations.First();
-							sl.CarryOver = e.carryover;
+							sl.CarryOver = e.Carryover;
 							payrollService.UpdateEmployeeAccumulation(sl, sl.FiscalStart, sl.FiscalEnd, e1.Id);
-							ud2update++;
+							ud2Update++;
 
 						}
 						else
 						{
-							ud2noupdate++;
+							ud2Noupdate++;
 						}
-						ud2e.UserName = "System";
-						companyservice.SaveEmployee(ud2e, false);
+						ud2E.UserName = "System";
+						companyservice.SaveEmployee(ud2E, false);
 					}
 					
 				});
 				Console.WriteLine("Total: {0}", list.Count);
 				Console.WriteLine("Update: {0}", update);
 				Console.WriteLine("No Update: {0}", noupdate);
-				Console.WriteLine("Total: {0}", ud2match);
-				Console.WriteLine("Update: {0}", ud2update);
-				Console.WriteLine("No Update: {0}", ud2noupdate);
+				Console.WriteLine("Total: {0}", ud2Match);
+				Console.WriteLine("Update: {0}", ud2Update);
+				Console.WriteLine("No Update: {0}", ud2Noupdate);
 
 			}
 		}
@@ -925,16 +1204,16 @@ namespace SiteInspectionStatus_Utility
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollService = scope.Resolve<IPayrollService>();
-				var _companyRepository = scope.Resolve<ICompanyRepository>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollService = scope.Resolve<IPayrollService>();
+				var companyRepository = scope.Resolve<ICompanyRepository>();
 
-				var invoices = _readerService.GetPayrollInvoices(status: new List<InvoiceStatus> { InvoiceStatus.OnHold }, paymentStatuses: new List<PaymentStatus>(), paymentMethods: new List<InvoicePaymentMethod>());	
+				var invoices = readerService.GetPayrollInvoices(status: new List<InvoiceStatus> { InvoiceStatus.OnHold }, paymentStatuses: new List<PaymentStatus>(), paymentMethods: new List<InvoicePaymentMethod>());	
 				invoices.ForEach(i =>
 				{
 					i.Status = InvoiceStatus.Delivered;
 					i.TaxesDelayed = true;
-					var i1 = _payrollService.SavePayrollInvoice(i);
+					var i1 = payrollService.SavePayrollInvoice(i);
 					Console.WriteLine("New Status {0}", i1.Status.GetDbName());
 				});
 			
@@ -942,268 +1221,1475 @@ namespace SiteInspectionStatus_Utility
 		}
 
 
-		private static void FixAccumulationCycleAndYTD(IContainer container)
+		private static void FixAccumulationCycleAndYtd(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollRepository = scope.Resolve<IPayrollRepository>();
-				var _companyRepository = scope.Resolve<ICompanyRepository>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
+				var companyRepository = scope.Resolve<ICompanyRepository>();
 
 				var payCheckList = new List<PayCheck>();
 				var empList = new List<HrMaxx.OnlinePayroll.Models.Employee>();
-				var leaveCycleEmployees = new List<LeaveCycleEmployee>();
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("979CF583-4796-496F-A414-A6ED0156EBFB"),OldFiscalStart = new DateTime(2017,1,2), NewFiscalStart = new DateTime(2017,1,1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("227DCBC0-2C8E-4116-9A4C-A6FA00B1688D"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("887F0FC6-B720-4AE2-A8CA-A6ED01536FC7"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C8225E66-9FB6-408E-AB75-A6ED01537062"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4B84B3A-536E-4C0F-B23A-A75B00A6310A"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B86121A9-C69A-4E0C-BDA6-A75B00A8403C"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4245E431-73EB-4A93-975C-A76F009B41A7"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F842C501-FE89-4EF4-9731-A76F009CF259"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("94C36C7B-8EF3-419C-AD04-A73100B59254"), OldFiscalStart = new DateTime(2017, 3, 10), NewFiscalStart = new DateTime(2017, 3, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CFA22B90-2206-4C32-A234-A777009C156C"), OldFiscalStart = new DateTime(2017, 5, 19), NewFiscalStart = new DateTime(2017, 5, 18) });
+                var leaveCycleEmployees = new List<LeaveCycleEmployee>
+                {
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("979CF583-4796-496F-A414-A6ED0156EBFB"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("227DCBC0-2C8E-4116-9A4C-A6FA00B1688D"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("887F0FC6-B720-4AE2-A8CA-A6ED01536FC7"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C8225E66-9FB6-408E-AB75-A6ED01537062"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F4B84B3A-536E-4C0F-B23A-A75B00A6310A"),
+                        OldFiscalStart = new DateTime(2017, 4, 21),
+                        NewFiscalStart = new DateTime(2017, 4, 20)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B86121A9-C69A-4E0C-BDA6-A75B00A8403C"),
+                        OldFiscalStart = new DateTime(2017, 4, 21),
+                        NewFiscalStart = new DateTime(2017, 4, 20)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4245E431-73EB-4A93-975C-A76F009B41A7"),
+                        OldFiscalStart = new DateTime(2017, 5, 11),
+                        NewFiscalStart = new DateTime(2017, 5, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F842C501-FE89-4EF4-9731-A76F009CF259"),
+                        OldFiscalStart = new DateTime(2017, 5, 11),
+                        NewFiscalStart = new DateTime(2017, 5, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("94C36C7B-8EF3-419C-AD04-A73100B59254"),
+                        OldFiscalStart = new DateTime(2017, 3, 10),
+                        NewFiscalStart = new DateTime(2017, 3, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CFA22B90-2206-4C32-A234-A777009C156C"),
+                        OldFiscalStart = new DateTime(2017, 5, 19),
+                        NewFiscalStart = new DateTime(2017, 5, 18)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("D0855437-8643-4E50-AA93-A784009A597B"),
+                        OldFiscalStart = new DateTime(2017, 6, 1),
+                        NewFiscalStart = new DateTime(2017, 5, 31)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("89762729-1560-4A73-8A27-A6ED01579909"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("66D0F241-FFD0-487D-8AC1-A70700E42FA5"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("9105FD21-4EF7-4877-A3B7-A72300879337"),
+                        OldFiscalStart = new DateTime(2017, 2, 24),
+                        NewFiscalStart = new DateTime(2017, 2, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("415ED0BF-8BFF-4C1A-8732-A72300890B3B"),
+                        OldFiscalStart = new DateTime(2017, 2, 24),
+                        NewFiscalStart = new DateTime(2017, 2, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CD16FF42-2439-49E4-817C-A73700FB1B9D"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("717E808E-E60D-4FED-A95E-A73700FCB2FF"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C7AA35AA-5549-40F2-A34A-A73700FE71C9"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("BAEE375C-F54E-4B09-877C-A73E0105EC72"),
+                        OldFiscalStart = new DateTime(2017, 3, 23),
+                        NewFiscalStart = new DateTime(2017, 3, 22)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4B303004-3B13-4C3B-AAFE-A74D00E74319"),
+                        OldFiscalStart = new DateTime(2017, 4, 7),
+                        NewFiscalStart = new DateTime(2017, 4, 6)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C65C5E51-B298-4AE9-A04A-A6ED0152A55E"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("EBA50AEA-511A-4439-8BB4-A6ED0152A5E1"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E06C5FED-E33F-42A0-B863-A70800C79529"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("95EF384F-3863-4096-8868-A75500C1ABAD"),
+                        OldFiscalStart = new DateTime(2017, 4, 15),
+                        NewFiscalStart = new DateTime(2017, 4, 14)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F0CA2BA2-0230-41B0-9F9D-A76300C009A9"),
+                        OldFiscalStart = new DateTime(2017, 4, 29),
+                        NewFiscalStart = new DateTime(2017, 4, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("855D176A-A6A2-4F02-A8C7-A76A00C45630"),
+                        OldFiscalStart = new DateTime(2017, 5, 6),
+                        NewFiscalStart = new DateTime(2017, 5, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("052A360E-3926-439A-9C5E-A76D00CAC32C"),
+                        OldFiscalStart = new DateTime(2017, 5, 9),
+                        NewFiscalStart = new DateTime(2017, 5, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("FF127E53-CD60-4A8C-9370-A77500BDFD37"),
+                        OldFiscalStart = new DateTime(2017, 5, 17),
+                        NewFiscalStart = new DateTime(2017, 5, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F7B77F52-7C04-4563-9CCC-A77500BE97E3"),
+                        OldFiscalStart = new DateTime(2017, 5, 17),
+                        NewFiscalStart = new DateTime(2017, 5, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DFCFBD0E-5BB2-444A-B19F-A77500BF54A6"),
+                        OldFiscalStart = new DateTime(2017, 5, 17),
+                        NewFiscalStart = new DateTime(2017, 5, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0E80A5B5-9F6A-4FA0-A691-A77E00FCF11D"),
+                        OldFiscalStart = new DateTime(2017, 5, 26),
+                        NewFiscalStart = new DateTime(2017, 5, 25)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0504755A-4246-4D44-8206-A70F00A09A2B"),
+                        OldFiscalStart = new DateTime(2017, 2, 24),
+                        NewFiscalStart = new DateTime(2017, 2, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("170C8802-BCC8-4675-99F1-A70F00A5B303"),
+                        OldFiscalStart = new DateTime(2017, 2, 24),
+                        NewFiscalStart = new DateTime(2017, 2, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("9E927320-ACCD-41AE-85BA-A71300D76550"),
+                        OldFiscalStart = new DateTime(2017, 2, 8),
+                        NewFiscalStart = new DateTime(2017, 2, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("153C9CD4-CA57-4F8E-9BF8-A71600C61B84"),
+                        OldFiscalStart = new DateTime(2017, 2, 11),
+                        NewFiscalStart = new DateTime(2017, 2, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("97665A9E-8EFE-4F13-A3E8-A73700D4B525"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CAA5D056-B313-4DAC-8F98-A73F00C22A3A"),
+                        OldFiscalStart = new DateTime(2017, 3, 24),
+                        NewFiscalStart = new DateTime(2017, 3, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3A9031F8-8223-4384-A5E2-A73F00CC784F"),
+                        OldFiscalStart = new DateTime(2017, 3, 24),
+                        NewFiscalStart = new DateTime(2017, 3, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("7908685D-606D-49D1-B952-A75B00A57BAC"),
+                        OldFiscalStart = new DateTime(2017, 4, 21),
+                        NewFiscalStart = new DateTime(2017, 4, 20)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("91A09021-11D2-4568-A8F9-A76800AD9D02"),
+                        OldFiscalStart = new DateTime(2017, 5, 4),
+                        NewFiscalStart = new DateTime(2017, 5, 3)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0504755A-4246-4D44-8206-A70F00A09A2B"),
+                        OldFiscalStart = new DateTime(2017, 2, 4),
+                        NewFiscalStart = new DateTime(2017, 2, 3)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("170C8802-BCC8-4675-99F1-A70F00A5B303"),
+                        OldFiscalStart = new DateTime(2017, 2, 4),
+                        NewFiscalStart = new DateTime(2017, 2, 3)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B02EF90E-F8EB-4C19-B4CE-A77D00B4357C"),
+                        OldFiscalStart = new DateTime(2017, 5, 25),
+                        NewFiscalStart = new DateTime(2017, 5, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C91414C0-302F-4B4D-B14B-6AD98BE4AA0C"),
+                        OldFiscalStart = new DateTime(2017, 3, 30),
+                        NewFiscalStart = new DateTime(2017, 3, 29)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("370D3D17-0101-4D37-A523-AD91FCB4D605"),
+                        OldFiscalStart = new DateTime(2017, 2, 16),
+                        NewFiscalStart = new DateTime(2017, 2, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B569C675-3ABA-4B98-A9BC-A6F300A2B232"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("EF37F268-36D0-450E-A01B-A75300BE35FB"),
+                        OldFiscalStart = new DateTime(2017, 4, 13),
+                        NewFiscalStart = new DateTime(2017, 4, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("FACB2B60-D3B9-47B6-BFEE-A73900B728DB"),
+                        OldFiscalStart = new DateTime(2017, 3, 18),
+                        NewFiscalStart = new DateTime(2017, 3, 17)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B596133B-5527-4FFC-B9C3-A70F00B41811"),
+                        OldFiscalStart = new DateTime(2017, 2, 4),
+                        NewFiscalStart = new DateTime(2017, 2, 3)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C090DB1C-8006-4F9A-B8BB-A73900B777FB"),
+                        OldFiscalStart = new DateTime(2017, 3, 18),
+                        NewFiscalStart = new DateTime(2017, 3, 17)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F463F9AC-E9C2-4075-81D3-A73700BEAA6A"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C3C12366-63F0-4C00-83E6-A70F00AC7051"),
+                        OldFiscalStart = new DateTime(2017, 2, 4),
+                        NewFiscalStart = new DateTime(2017, 2, 3)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6493EE1E-DA0E-4DE1-B1B4-A72200A07E28"),
+                        OldFiscalStart = new DateTime(2017, 2, 23),
+                        NewFiscalStart = new DateTime(2017, 2, 22)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4564AC4D-53CF-4F08-AB11-A72200A10F69"),
+                        OldFiscalStart = new DateTime(2017, 2, 23),
+                        NewFiscalStart = new DateTime(2017, 2, 22)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DF20DC67-F205-4BFE-B127-A74400B2F2DC"),
+                        OldFiscalStart = new DateTime(2017, 3, 29),
+                        NewFiscalStart = new DateTime(2017, 3, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("902786B7-04CD-4635-A83A-A77C00BFF83B"),
+                        OldFiscalStart = new DateTime(2017, 5, 24),
+                        NewFiscalStart = new DateTime(2017, 5, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("96CCE43E-1581-4DFC-A404-A6ED014ECE97"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0ABFC7EF-468D-44CF-8B44-A6ED014ED45B"),
+                        OldFiscalStart = new DateTime(2017, 1, 3),
+                        NewFiscalStart = new DateTime(2017, 1, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0ABFC7EF-468D-44CF-8B44-A6ED014ED45B"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("7A9C47C6-A53F-4526-BA3A-A72300CDFA74"),
+                        OldFiscalStart = new DateTime(2017, 2, 24),
+                        NewFiscalStart = new DateTime(2017, 2, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A76BF856-4568-4204-A639-A72800BA47FE"),
+                        OldFiscalStart = new DateTime(2017, 3, 1),
+                        NewFiscalStart = new DateTime(2017, 2, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E19F3385-27A4-46EA-975E-A72800BADD34"),
+                        OldFiscalStart = new DateTime(2017, 3, 1),
+                        NewFiscalStart = new DateTime(2017, 2, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C9764B07-E85A-4E95-9C27-A72800BBBB92"),
+                        OldFiscalStart = new DateTime(2017, 3, 1),
+                        NewFiscalStart = new DateTime(2017, 2, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E2AAAF0B-0154-4B54-BCD9-A77B00B6FE18"),
+                        OldFiscalStart = new DateTime(2017, 5, 23),
+                        NewFiscalStart = new DateTime(2017, 5, 22)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F4212E23-14CE-40FD-A910-A6ED01596803"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("60E6F47B-6383-4803-9A1F-A6ED0159688B"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3A0AD396-868A-49D5-9BEE-A73700CA0876"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("73017F37-6E1F-4FA0-B85E-A76D00B218E8"),
+                        OldFiscalStart = new DateTime(2017, 5, 9),
+                        NewFiscalStart = new DateTime(2017, 5, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("D7961F8F-1B45-49F2-AD0B-A6ED0158C337"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("9CCCBB53-5264-4832-942F-A70D00BC67C9"),
+                        OldFiscalStart = new DateTime(2017, 2, 2),
+                        NewFiscalStart = new DateTime(2017, 2, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("FB976F09-085F-4C07-B425-A74B00B00B95"),
+                        OldFiscalStart = new DateTime(2017, 4, 5),
+                        NewFiscalStart = new DateTime(2017, 4, 4)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("19CAC5C4-6961-439C-925A-A77500A52117"),
+                        OldFiscalStart = new DateTime(2017, 5, 17),
+                        NewFiscalStart = new DateTime(2017, 5, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("2FD88FDC-3CAA-48D8-8708-A73500B38578"),
+                        OldFiscalStart = new DateTime(2017, 3, 14),
+                        NewFiscalStart = new DateTime(2017, 3, 13)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A757BD06-4B4D-4253-9AEF-A70F00C55707"),
+                        OldFiscalStart = new DateTime(2017, 2, 5),
+                        NewFiscalStart = new DateTime(2017, 2, 4)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("09A7BB5A-4480-4907-9D54-A77400B68DE3"),
+                        OldFiscalStart = new DateTime(2017, 5, 16),
+                        NewFiscalStart = new DateTime(2017, 5, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F3FE723E-6FB2-41AE-8685-A75800A61E9B"),
+                        OldFiscalStart = new DateTime(2017, 4, 18),
+                        NewFiscalStart = new DateTime(2017, 4, 17)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("77056273-94E3-45BE-96EA-A76E009D7FC2"),
+                        OldFiscalStart = new DateTime(2017, 5, 10),
+                        NewFiscalStart = new DateTime(2017, 5, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("59015FD0-B437-4FD1-82C9-A72A00F53D2E"),
+                        OldFiscalStart = new DateTime(2017, 3, 3),
+                        NewFiscalStart = new DateTime(2017, 3, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("841C34DA-3059-40B7-B2B5-A74400B7DDF1"),
+                        OldFiscalStart = new DateTime(2017, 3, 29),
+                        NewFiscalStart = new DateTime(2017, 3, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("8A8E4A5A-3F5A-4C7A-AB69-A74400B96A85"),
+                        OldFiscalStart = new DateTime(2017, 3, 29),
+                        NewFiscalStart = new DateTime(2017, 3, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("D4D9FA54-3990-4884-8AF2-A74400BBBA81"),
+                        OldFiscalStart = new DateTime(2017, 3, 29),
+                        NewFiscalStart = new DateTime(2017, 3, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("2703B5B0-9EE0-47F9-9ADA-A74E00A29D05"),
+                        OldFiscalStart = new DateTime(2017, 4, 8),
+                        NewFiscalStart = new DateTime(2017, 4, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("72760DA1-EF67-48BD-8B47-A74E00A3CFA1"),
+                        OldFiscalStart = new DateTime(2017, 4, 8),
+                        NewFiscalStart = new DateTime(2017, 4, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("093A37DE-BB81-4B96-8E0D-A74E00A50ED0"),
+                        OldFiscalStart = new DateTime(2017, 4, 8),
+                        NewFiscalStart = new DateTime(2017, 4, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F42A232B-42E4-498D-B876-A75300AA7175"),
+                        OldFiscalStart = new DateTime(2017, 4, 13),
+                        NewFiscalStart = new DateTime(2017, 4, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E9CB7D56-E2D7-4152-B6CF-C10838928999"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A49B5E5D-D8A9-481E-887C-8B0AFC0CEE6B"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6E3F724B-4DD2-43A0-BC95-A71C00BE32C8"),
+                        OldFiscalStart = new DateTime(2017, 2, 17),
+                        NewFiscalStart = new DateTime(2017, 2, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("5134A09A-AA3A-4E57-B3A1-A71C00BF1833"),
+                        OldFiscalStart = new DateTime(2017, 2, 17),
+                        NewFiscalStart = new DateTime(2017, 2, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("20C78637-7495-4C04-B0AC-A6ED014DB432"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0675E56F-D18F-483C-8BEF-A6ED014F1E20"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4A5E1F6F-6194-467C-8B24-A73100D80D8B"),
+                        OldFiscalStart = new DateTime(2017, 3, 10),
+                        NewFiscalStart = new DateTime(2017, 3, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0273CCF5-8DE0-4836-9FBE-A77700B2B7FE"),
+                        OldFiscalStart = new DateTime(2017, 5, 19),
+                        NewFiscalStart = new DateTime(2017, 5, 18)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("64F5E859-591A-417B-9A0D-A77D00CCF102"),
+                        OldFiscalStart = new DateTime(2017, 5, 25),
+                        NewFiscalStart = new DateTime(2017, 5, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("08E7DE3E-C496-4FAC-A557-A6ED015635C6"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3CBE1010-3837-46B7-B6A6-A77E00AD75B4"),
+                        OldFiscalStart = new DateTime(2017, 5, 26),
+                        NewFiscalStart = new DateTime(2017, 5, 25)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F1FA9B13-4B02-417F-9077-A74C00A3BFC9"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("9AC07F4B-7184-4E3C-AA09-A71300C10A71"),
+                        OldFiscalStart = new DateTime(2017, 2, 8),
+                        NewFiscalStart = new DateTime(2017, 2, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("728EC1A4-2277-4669-ADAF-A74300BF52CC"),
+                        OldFiscalStart = new DateTime(2017, 3, 28),
+                        NewFiscalStart = new DateTime(2017, 3, 27)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("90794DF7-56E7-4C4C-A782-A72900B0004F"),
+                        OldFiscalStart = new DateTime(2017, 3, 2),
+                        NewFiscalStart = new DateTime(2017, 3, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("28E9AA5F-84F5-4C73-9471-A72900B099CC"),
+                        OldFiscalStart = new DateTime(2017, 3, 3),
+                        NewFiscalStart = new DateTime(2017, 3, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("807E3E79-5691-441F-9C54-A72900B1906A"),
+                        OldFiscalStart = new DateTime(2017, 3, 2),
+                        NewFiscalStart = new DateTime(2017, 3, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A1D5CDA1-5B5F-4FDD-9D68-A6FA00BB854E"),
+                        OldFiscalStart = new DateTime(2017, 2, 9),
+                        NewFiscalStart = new DateTime(2017, 2, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B1028404-E822-4925-A865-A6ED01524532"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CE258729-392D-48A2-8110-A72400B29037"),
+                        OldFiscalStart = new DateTime(2017, 2, 25),
+                        NewFiscalStart = new DateTime(2017, 2, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("AAF9DDD5-DF66-4DFF-BD04-A72400B33650"),
+                        OldFiscalStart = new DateTime(2017, 2, 25),
+                        NewFiscalStart = new DateTime(2017, 2, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("5160D8D7-E506-4160-9A9B-A72400B389EF"),
+                        OldFiscalStart = new DateTime(2017, 2, 25),
+                        NewFiscalStart = new DateTime(2017, 2, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("05D86BC8-193C-496E-8CC0-A747009FE4DE"),
+                        OldFiscalStart = new DateTime(2017, 4, 1),
+                        NewFiscalStart = new DateTime(2017, 3, 31)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("50CC6F76-0C4F-444C-814E-A74700A05533"),
+                        OldFiscalStart = new DateTime(2017, 4, 1),
+                        NewFiscalStart = new DateTime(2017, 3, 31)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3273C719-D9A1-4A44-A0B3-A6ED01561671"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("AC4A3AFE-0032-4D32-BEF1-A78C00AD9C18"),
+                        OldFiscalStart = new DateTime(2017, 6, 9),
+                        NewFiscalStart = new DateTime(2017, 6, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6C446D0D-990F-444F-9189-A73600C2C223"),
+                        OldFiscalStart = new DateTime(2017, 3, 15),
+                        NewFiscalStart = new DateTime(2017, 3, 14)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A118DE32-D1B8-40E4-B898-A73800AA2E11"),
+                        OldFiscalStart = new DateTime(2017, 3, 17),
+                        NewFiscalStart = new DateTime(2017, 3, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("8A7D3E12-DE70-4CF1-803D-A6ED014E6F56"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("604F8D61-D5DC-4CCE-AE76-A77C00A73854"),
+                        OldFiscalStart = new DateTime(2017, 5, 24),
+                        NewFiscalStart = new DateTime(2017, 5, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("90661B59-5FF9-4AB2-9CDC-A78300BC6EAD"),
+                        OldFiscalStart = new DateTime(2017, 5, 31),
+                        NewFiscalStart = new DateTime(2017, 5, 30)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3EC6A9CE-BCF8-48AF-B793-A70100D15BFF"),
+                        OldFiscalStart = new DateTime(2017, 1, 21),
+                        NewFiscalStart = new DateTime(2017, 1, 20)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("EA782E25-EB42-4EFB-98D3-A740009AAE57"),
+                        OldFiscalStart = new DateTime(2017, 3, 25),
+                        NewFiscalStart = new DateTime(2017, 3, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("EA782E25-EB42-4EFB-98D3-A740009AAE57"),
+                        OldFiscalStart = new DateTime(2017, 3, 26),
+                        NewFiscalStart = new DateTime(2017, 3, 25)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E0BD5273-49BF-43D9-B8D2-A740009B05A6"),
+                        OldFiscalStart = new DateTime(2017, 3, 25),
+                        NewFiscalStart = new DateTime(2017, 3, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E0BD5273-49BF-43D9-B8D2-A740009B05A6"),
+                        OldFiscalStart = new DateTime(2017, 3, 26),
+                        NewFiscalStart = new DateTime(2017, 3, 25)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("EC11947E-C1C8-4298-BD28-A6F900AC51F9"),
+                        OldFiscalStart = new DateTime(2016, 7, 8),
+                        NewFiscalStart = new DateTime(2016, 7, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4018353B-99BE-47BE-B12F-A74C00F77FCB"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6B81C4C4-1497-4FB2-9DE4-A74500A75BBE"),
+                        OldFiscalStart = new DateTime(2017, 3, 30),
+                        NewFiscalStart = new DateTime(2017, 3, 29)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("651C753F-8472-4E77-BE5D-A74500A7FD14"),
+                        OldFiscalStart = new DateTime(2017, 3, 30),
+                        NewFiscalStart = new DateTime(2017, 3, 29)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("676E335C-BE39-4B3B-98EA-A74500A9AB58"),
+                        OldFiscalStart = new DateTime(2017, 3, 30),
+                        NewFiscalStart = new DateTime(2017, 3, 29)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CDBAD246-53CE-40F1-B494-A74500AA4766"),
+                        OldFiscalStart = new DateTime(2017, 3, 30),
+                        NewFiscalStart = new DateTime(2017, 3, 29)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("BCA5CC20-DC37-4857-932C-A72800F8329F"),
+                        OldFiscalStart = new DateTime(2017, 3, 2),
+                        NewFiscalStart = new DateTime(2017, 3, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("9CD6606E-E9D7-428C-9CB4-A76200B5DFF9"),
+                        OldFiscalStart = new DateTime(2017, 4, 28),
+                        NewFiscalStart = new DateTime(2017, 4, 27)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A34CD49B-2BBE-4437-A82D-A75C00AA5AFE"),
+                        OldFiscalStart = new DateTime(2017, 4, 22),
+                        NewFiscalStart = new DateTime(2017, 4, 21)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0085887D-F732-4021-8D84-A75C00BF76CC"),
+                        OldFiscalStart = new DateTime(2017, 4, 22),
+                        NewFiscalStart = new DateTime(2017, 4, 21)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("11D08777-A636-42D6-BB57-A74C00C31D25"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A71740E1-96A0-4251-BA64-A74C00C3EB38"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6EA89209-BBBA-48B1-A9E4-A74C00C43F7C"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("8DC86F1D-D1E9-4C12-8A52-A74C00C49123"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A2786CC0-2C77-4184-A865-A74C00C50EAF"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("33F9CB38-925E-4857-9256-A74C01032EEF"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("FB070A3A-3076-4B48-BBB7-A74C01074925"),
+                        OldFiscalStart = new DateTime(2017, 4, 6),
+                        NewFiscalStart = new DateTime(2017, 4, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E9D93ACD-6FD7-4B49-B3A5-A716009A27A8"),
+                        OldFiscalStart = new DateTime(2017, 2, 11),
+                        NewFiscalStart = new DateTime(2017, 2, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("5D756EBD-6CC2-47BB-96B8-A71600A53F10"),
+                        OldFiscalStart = new DateTime(2017, 2, 11),
+                        NewFiscalStart = new DateTime(2017, 2, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("126DF2B1-CB38-4939-84FC-A6ED014CC3B6"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("49ED700F-1A28-42FD-85DA-A76600C43492"),
+                        OldFiscalStart = new DateTime(2017, 5, 2),
+                        NewFiscalStart = new DateTime(2017, 5, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("52BAB27B-6750-44A7-9ADF-A72300A93953"),
+                        OldFiscalStart = new DateTime(2017, 2, 24),
+                        NewFiscalStart = new DateTime(2017, 2, 23)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A41498C8-DC64-4884-AEA9-A6ED0159F928"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C9979ADA-4A30-40A8-8816-4038855DFAE9"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("833BF5C6-0C1C-451B-B3E4-6380CB6EE638"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("2488907E-927E-45FF-97F0-B87321512700"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("95B5FFD1-2232-466E-BDC0-A73600BFD5FE"),
+                        OldFiscalStart = new DateTime(2017, 2, 13),
+                        NewFiscalStart = new DateTime(2017, 2, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("829514DB-37C5-420B-B018-A75A01011A95"),
+                        OldFiscalStart = new DateTime(2017, 4, 20),
+                        NewFiscalStart = new DateTime(2017, 4, 19)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F4C2507B-DAC4-4E8E-9D91-A75A010177A9"),
+                        OldFiscalStart = new DateTime(2017, 4, 20),
+                        NewFiscalStart = new DateTime(2017, 4, 19)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F48FB93A-9377-497E-A8CE-A75A0102FBE2"),
+                        OldFiscalStart = new DateTime(2017, 4, 20),
+                        NewFiscalStart = new DateTime(2017, 4, 19)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DC83F028-F9E9-4D15-89C7-A73100B496BC"),
+                        OldFiscalStart = new DateTime(2017, 3, 11),
+                        NewFiscalStart = new DateTime(2017, 3, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B0E74CF6-D73B-4E91-88FE-A73100B78FFD"),
+                        OldFiscalStart = new DateTime(2017, 3, 11),
+                        NewFiscalStart = new DateTime(2017, 3, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C4EEAEC3-7F81-42A8-895A-A73200ABCE0E"),
+                        OldFiscalStart = new DateTime(2017, 3, 12),
+                        NewFiscalStart = new DateTime(2017, 3, 11)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3F52F21D-3984-4AC0-8077-A73200AF05F3"),
+                        OldFiscalStart = new DateTime(2017, 3, 13),
+                        NewFiscalStart = new DateTime(2017, 3, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("1D5B6E85-2F00-4745-8CCB-A70E00829592"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3660DB19-F1FF-4EB2-9D02-A76300A389D4"),
+                        OldFiscalStart = new DateTime(2017, 4, 29),
+                        NewFiscalStart = new DateTime(2017, 4, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F4BFD81A-056E-4814-8B99-A7710115B072"),
+                        OldFiscalStart = new DateTime(2017, 5, 13),
+                        NewFiscalStart = new DateTime(2017, 5, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("90E963BA-2694-4FC6-9C2E-A7710116D45D"),
+                        OldFiscalStart = new DateTime(2017, 5, 13),
+                        NewFiscalStart = new DateTime(2017, 5, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("BBF05FF3-F43D-4DB1-A973-A771011720FD"),
+                        OldFiscalStart = new DateTime(2017, 5, 13),
+                        NewFiscalStart = new DateTime(2017, 5, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("BCEA660A-ABD9-4A04-BEF3-CCD37BB0EF0F"),
+                        OldFiscalStart = new DateTime(2017, 5, 10),
+                        NewFiscalStart = new DateTime(2017, 5, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("308DE758-0C08-455F-846A-A70E00F3D705"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("2F67003E-B02E-491E-885C-A71200D175B9"),
+                        OldFiscalStart = new DateTime(2017, 2, 7),
+                        NewFiscalStart = new DateTime(2017, 2, 6)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CF0E7F8D-5D58-41C5-9C0E-A6ED0154416F"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("718DCC70-CE87-4C89-B630-A78600A28F4D"),
+                        OldFiscalStart = new DateTime(2017, 6, 3),
+                        NewFiscalStart = new DateTime(2017, 6, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("073B408D-5155-4E25-AC61-A78600A380BE"),
+                        OldFiscalStart = new DateTime(2017, 6, 3),
+                        NewFiscalStart = new DateTime(2017, 6, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("99948087-C5AA-4EFE-867F-A78600A44C62"),
+                        OldFiscalStart = new DateTime(2017, 6, 3),
+                        NewFiscalStart = new DateTime(2017, 6, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("5D550BFB-4507-409A-B500-A74300C32F79"),
+                        OldFiscalStart = new DateTime(2017, 3, 28),
+                        NewFiscalStart = new DateTime(2017, 3, 27)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("005B053D-97FE-4484-A51E-A74300C386D5"),
+                        OldFiscalStart = new DateTime(2017, 3, 28),
+                        NewFiscalStart = new DateTime(2017, 3, 27)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0460CDA0-1EE3-4296-A1C2-A72E00AFCA3E"),
+                        OldFiscalStart = new DateTime(2017, 3, 7),
+                        NewFiscalStart = new DateTime(2017, 3, 6)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3AED00FD-4874-4C65-98D0-A71C00D080D2"),
+                        OldFiscalStart = new DateTime(2017, 2, 17),
+                        NewFiscalStart = new DateTime(2017, 2, 16)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B016D29F-6953-4C06-A58A-A73700C6DB3C"),
+                        OldFiscalStart = new DateTime(2017, 3, 16),
+                        NewFiscalStart = new DateTime(2017, 3, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("510731E9-E547-40DF-9D46-A6ED014C9546"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("D8B6C3F9-0290-444B-BF35-A6ED014C9664"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DBA2F0EF-0FBC-4C3D-8909-A6ED014C9761"),
+                        OldFiscalStart = new DateTime(2017, 1, 3),
+                        NewFiscalStart = new DateTime(2017, 1, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DBA2F0EF-0FBC-4C3D-8909-A6ED014C9761"),
+                        OldFiscalStart = new DateTime(2017, 1, 3),
+                        NewFiscalStart = new DateTime(2017, 1, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("244F6BF9-1F51-4861-96A4-A6ED014C9B84"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("89DA998C-8A6A-490A-AACA-A77801024A31"),
+                        OldFiscalStart = new DateTime(2017, 5, 20),
+                        NewFiscalStart = new DateTime(2017, 5, 19)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B23D4696-78EC-4419-8C43-A77801029D64"),
+                        OldFiscalStart = new DateTime(2017, 5, 20),
+                        NewFiscalStart = new DateTime(2017, 5, 19)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("182097DF-6288-4AC6-B89E-A75500C0A909"),
+                        OldFiscalStart = new DateTime(2017, 4, 15),
+                        NewFiscalStart = new DateTime(2017, 4, 14)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("EFC342F7-9DDF-490C-A71F-A6ED01598365"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("7CC1C593-2B23-4936-BEFD-A6ED0159866F"),
+                        OldFiscalStart = new DateTime(2017, 1, 3),
+                        NewFiscalStart = new DateTime(2017, 1, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("7CC1C593-2B23-4936-BEFD-A6ED0159866F"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F91D5945-1CBF-48E6-9868-A6F200C0421C"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("3CC78AD6-F7FA-428B-B204-A6F200C92118"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E66D12DD-B8A1-4936-8375-A70E00BE656D"),
+                        OldFiscalStart = new DateTime(2017, 2, 3),
+                        NewFiscalStart = new DateTime(2017, 2, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4D947614-C846-4C7B-815C-A73200BE9293"),
+                        OldFiscalStart = new DateTime(2017, 3, 11),
+                        NewFiscalStart = new DateTime(2017, 3, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C4BDF1DA-BCD5-4F47-BEE8-A74E00A386C6"),
+                        OldFiscalStart = new DateTime(2017, 4, 8),
+                        NewFiscalStart = new DateTime(2017, 4, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("5C4E9145-82BD-4BFB-AD81-A76A00BC2C77"),
+                        OldFiscalStart = new DateTime(2017, 5, 6),
+                        NewFiscalStart = new DateTime(2017, 5, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("CEF9D8C7-0B95-4EDB-9315-A77800ACF9B5"),
+                        OldFiscalStart = new DateTime(2017, 5, 20),
+                        NewFiscalStart = new DateTime(2017, 5, 19)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6EAFD111-6E48-4D73-9813-A75F00CD86D9"),
+                        OldFiscalStart = new DateTime(2017, 4, 25),
+                        NewFiscalStart = new DateTime(2017, 4, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("94A6E8C3-E6D9-43D9-8866-A77E00C2A951"),
+                        OldFiscalStart = new DateTime(2017, 5, 26),
+                        NewFiscalStart = new DateTime(2017, 5, 25)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("F70C14D0-69A2-4A7D-B5CB-A6ED014DC961"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("68C6CA96-EF5C-4903-B289-A6ED014DC9BB"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("09909B25-B817-48BE-AA06-A76D00A1D7E3"),
+                        OldFiscalStart = new DateTime(2017, 5, 9),
+                        NewFiscalStart = new DateTime(2017, 5, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("242FA9A1-0828-4757-B172-A76F00EB89BF"),
+                        OldFiscalStart = new DateTime(2017, 5, 11),
+                        NewFiscalStart = new DateTime(2017, 5, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("94E255BD-69A8-4C47-8632-A6F900D83BE0"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C9E85E0E-8857-4230-B5BD-A72A00BC955D"),
+                        OldFiscalStart = new DateTime(2017, 3, 3),
+                        NewFiscalStart = new DateTime(2017, 3, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DF494F55-40A4-4C33-841C-A72A00BDBCA6"),
+                        OldFiscalStart = new DateTime(2017, 3, 3),
+                        NewFiscalStart = new DateTime(2017, 3, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("80BE45AC-741F-4AAA-87DD-A74E00A17397"),
+                        OldFiscalStart = new DateTime(2017, 4, 8),
+                        NewFiscalStart = new DateTime(2017, 4, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("81FC9388-E34B-46B0-9C7F-A77D00BC4B04"),
+                        OldFiscalStart = new DateTime(2017, 5, 25),
+                        NewFiscalStart = new DateTime(2017, 5, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B4B728DC-4705-446A-ABFD-A77D00BD0CD0"),
+                        OldFiscalStart = new DateTime(2017, 5, 25),
+                        NewFiscalStart = new DateTime(2017, 5, 24)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("BA27A17B-B453-46E0-8C14-A6ED014F0B8D"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("0B69C05E-ADCE-4001-B2E5-A77600A61C87"),
+                        OldFiscalStart = new DateTime(2017, 5, 18),
+                        NewFiscalStart = new DateTime(2017, 5, 17)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4FE78800-0E9F-4E40-ACDF-A75C00B7167F"),
+                        OldFiscalStart = new DateTime(2017, 4, 22),
+                        NewFiscalStart = new DateTime(2017, 4, 21)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("C6AA3FB3-3469-4E05-B638-A6ED014B797E"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("06480A85-707F-45E1-87CC-A74700AE0D88"),
+                        OldFiscalStart = new DateTime(2017, 4, 1),
+                        NewFiscalStart = new DateTime(2017, 3, 31)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("AF71039C-ABF8-4A6D-9607-A73100ABCB45"),
+                        OldFiscalStart = new DateTime(2017, 3, 10),
+                        NewFiscalStart = new DateTime(2017, 3, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("68CE5847-5B51-47B1-94B9-A75B00C0D14C"),
+                        OldFiscalStart = new DateTime(2017, 4, 21),
+                        NewFiscalStart = new DateTime(2017, 4, 20)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("39A3597B-774B-44E7-9133-A78C00A87D72"),
+                        OldFiscalStart = new DateTime(2017, 6, 9),
+                        NewFiscalStart = new DateTime(2017, 6, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("387197AA-D033-4DB0-8A6E-A6ED0154DB92"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("888FD876-FB34-4009-95B0-A6ED0154DFE4"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("7104C20A-F3E8-4220-8DC7-A6ED0154EAE5"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("BB53FDE8-D4AB-4346-89BD-A6ED0154FB56"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("9A01F0EE-1E96-412F-A087-A76100D5C609"),
+                        OldFiscalStart = new DateTime(2017, 4, 27),
+                        NewFiscalStart = new DateTime(2017, 4, 26)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("2C11A9D9-1002-4956-9164-A71B00BFF5F4"),
+                        OldFiscalStart = new DateTime(2017, 2, 16),
+                        NewFiscalStart = new DateTime(2017, 2, 15)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("135C108F-E9D8-4881-B199-A72900B69FEA"),
+                        OldFiscalStart = new DateTime(2017, 3, 2),
+                        NewFiscalStart = new DateTime(2017, 3, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("8A4796ED-8E5B-4637-A64D-A76E01135AD5"),
+                        OldFiscalStart = new DateTime(2017, 5, 10),
+                        NewFiscalStart = new DateTime(2017, 5, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("017C6698-A871-4C36-BCD4-A76E0113CEA3"),
+                        OldFiscalStart = new DateTime(2017, 5, 10),
+                        NewFiscalStart = new DateTime(2017, 5, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4E4D3FC2-6654-4D34-96C9-A76E0114D228"),
+                        OldFiscalStart = new DateTime(2017, 5, 10),
+                        NewFiscalStart = new DateTime(2017, 5, 9)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("8C15BA59-808A-4E38-B245-A78400AACD2E"),
+                        OldFiscalStart = new DateTime(2017, 6, 1),
+                        NewFiscalStart = new DateTime(2017, 5, 31)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("5D310AD5-4B66-423D-AD54-A6ED015674B5"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("AA0C65AF-BE0C-41C8-B41B-A7470110F2E9"),
+                        OldFiscalStart = new DateTime(2017, 4, 1),
+                        NewFiscalStart = new DateTime(2017, 3, 31)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("7858A641-4951-4B85-A06B-A76A00C4B3ED"),
+                        OldFiscalStart = new DateTime(2017, 5, 6),
+                        NewFiscalStart = new DateTime(2017, 5, 5)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("E5FA3F38-DC81-4F92-80A1-A78500BAE69B"),
+                        OldFiscalStart = new DateTime(2017, 6, 2),
+                        NewFiscalStart = new DateTime(2017, 6, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("4284C0D5-8B7B-4C8E-886F-A79000B55299"),
+                        OldFiscalStart = new DateTime(2017, 6, 13),
+                        NewFiscalStart = new DateTime(2017, 6, 12)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("B98DA369-48D5-4007-92FB-A79E009E59F1"),
+                        OldFiscalStart = new DateTime(2017, 6, 27),
+                        NewFiscalStart = new DateTime(2017, 6, 26)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("808A594E-3870-4C87-AD84-A73200A9CE67"),
+                        OldFiscalStart = new DateTime(2017, 3, 11),
+                        NewFiscalStart = new DateTime(2017, 3, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DDC3ED4F-6AEF-474C-80D4-A77000FBA473"),
+                        OldFiscalStart = new DateTime(2017, 5, 12),
+                        NewFiscalStart = new DateTime(2017, 5, 11)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("A5E69A6F-0C16-42D9-9D13-A76600ED0AC0"),
+                        OldFiscalStart = new DateTime(2017, 5, 2),
+                        NewFiscalStart = new DateTime(2017, 5, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("1B16E501-6383-48B3-81F8-A6ED014B54F4"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6BB52FD2-C741-4E9F-B253-A6ED01596A57"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("6EA3EA15-86C0-45EB-A7BA-11C3835F98CE"),
+                        OldFiscalStart = new DateTime(2017, 4, 11),
+                        NewFiscalStart = new DateTime(2017, 4, 10)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("89A73068-3FD9-431E-8B10-A78600B5B946"),
+                        OldFiscalStart = new DateTime(2017, 6, 3),
+                        NewFiscalStart = new DateTime(2017, 6, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("549DB64D-FA13-4FAF-B6FD-A7A000A9AC10"),
+                        OldFiscalStart = new DateTime(2017, 6, 29),
+                        NewFiscalStart = new DateTime(2017, 6, 28)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("DE7EE3B3-E85A-4056-A90A-A71300C17EE9"),
+                        OldFiscalStart = new DateTime(2017, 2, 9),
+                        NewFiscalStart = new DateTime(2017, 2, 8)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("44C7F7FE-66CE-417B-BE42-A73200ADA46E"),
+                        OldFiscalStart = new DateTime(2017, 3, 12),
+                        NewFiscalStart = new DateTime(2017, 3, 11)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("2036F061-FBD1-48B2-A748-A78B0098CC40"),
+                        OldFiscalStart = new DateTime(2017, 6, 8),
+                        NewFiscalStart = new DateTime(2017, 6, 7)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("D5B793B2-2F7E-4F94-9409-A70C00B234EE"),
+                        OldFiscalStart = new DateTime(2017, 1, 3),
+                        NewFiscalStart = new DateTime(2017, 1, 2)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("AFAB215C-19FD-4B01-BF4B-A6F200D6A706"),
+                        OldFiscalStart = new DateTime(2017, 1, 2),
+                        NewFiscalStart = new DateTime(2017, 1, 1)
+                    },
+                    new LeaveCycleEmployee
+                    {
+                        EmployeeId = new Guid("38DEC00D-0DDF-44AC-A5CD-A76F00EC7B74"),
+                        OldFiscalStart = new DateTime(2017, 5, 11),
+                        NewFiscalStart = new DateTime(2017, 5, 10)
+                    }
+                };
 
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D0855437-8643-4E50-AA93-A784009A597B"), OldFiscalStart = new DateTime(2017, 6, 1), NewFiscalStart = new DateTime(2017, 5, 31) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("89762729-1560-4A73-8A27-A6ED01579909"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("66D0F241-FFD0-487D-8AC1-A70700E42FA5"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9105FD21-4EF7-4877-A3B7-A72300879337"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("415ED0BF-8BFF-4C1A-8732-A72300890B3B"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CD16FF42-2439-49E4-817C-A73700FB1B9D"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("717E808E-E60D-4FED-A95E-A73700FCB2FF"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C7AA35AA-5549-40F2-A34A-A73700FE71C9"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BAEE375C-F54E-4B09-877C-A73E0105EC72"), OldFiscalStart = new DateTime(2017, 3, 23), NewFiscalStart = new DateTime(2017, 3, 22) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4B303004-3B13-4C3B-AAFE-A74D00E74319"), OldFiscalStart = new DateTime(2017, 4, 7), NewFiscalStart = new DateTime(2017, 4, 6) });
 
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C65C5E51-B298-4AE9-A04A-A6ED0152A55E"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EBA50AEA-511A-4439-8BB4-A6ED0152A5E1"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E06C5FED-E33F-42A0-B863-A70800C79529"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("95EF384F-3863-4096-8868-A75500C1ABAD"), OldFiscalStart = new DateTime(2017, 4, 15), NewFiscalStart = new DateTime(2017, 4, 14) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F0CA2BA2-0230-41B0-9F9D-A76300C009A9"), OldFiscalStart = new DateTime(2017, 4, 29), NewFiscalStart = new DateTime(2017, 4, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("855D176A-A6A2-4F02-A8C7-A76A00C45630"), OldFiscalStart = new DateTime(2017, 5, 6), NewFiscalStart = new DateTime(2017, 5, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("052A360E-3926-439A-9C5E-A76D00CAC32C"), OldFiscalStart = new DateTime(2017, 5, 9), NewFiscalStart = new DateTime(2017, 5, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FF127E53-CD60-4A8C-9370-A77500BDFD37"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F7B77F52-7C04-4563-9CCC-A77500BE97E3"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DFCFBD0E-5BB2-444A-B19F-A77500BF54A6"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
 
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0E80A5B5-9F6A-4FA0-A691-A77E00FCF11D"), OldFiscalStart = new DateTime(2017, 5, 26), NewFiscalStart = new DateTime(2017, 5, 25) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0504755A-4246-4D44-8206-A70F00A09A2B"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("170C8802-BCC8-4675-99F1-A70F00A5B303"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9E927320-ACCD-41AE-85BA-A71300D76550"), OldFiscalStart = new DateTime(2017, 2, 8), NewFiscalStart = new DateTime(2017, 2, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("153C9CD4-CA57-4F8E-9BF8-A71600C61B84"), OldFiscalStart = new DateTime(2017, 2, 11), NewFiscalStart = new DateTime(2017, 2, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("97665A9E-8EFE-4F13-A3E8-A73700D4B525"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CAA5D056-B313-4DAC-8F98-A73F00C22A3A"), OldFiscalStart = new DateTime(2017, 3, 24), NewFiscalStart = new DateTime(2017, 3, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3A9031F8-8223-4384-A5E2-A73F00CC784F"), OldFiscalStart = new DateTime(2017, 3, 24), NewFiscalStart = new DateTime(2017, 3, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7908685D-606D-49D1-B952-A75B00A57BAC"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("91A09021-11D2-4568-A8F9-A76800AD9D02"), OldFiscalStart = new DateTime(2017, 5, 4), NewFiscalStart = new DateTime(2017, 5, 3) });
 
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0504755A-4246-4D44-8206-A70F00A09A2B"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("170C8802-BCC8-4675-99F1-A70F00A5B303"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B02EF90E-F8EB-4C19-B4CE-A77D00B4357C"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C91414C0-302F-4B4D-B14B-6AD98BE4AA0C"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("370D3D17-0101-4D37-A523-AD91FCB4D605"), OldFiscalStart = new DateTime(2017, 2, 16), NewFiscalStart = new DateTime(2017, 2, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B569C675-3ABA-4B98-A9BC-A6F300A2B232"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EF37F268-36D0-450E-A01B-A75300BE35FB"), OldFiscalStart = new DateTime(2017, 4, 13), NewFiscalStart = new DateTime(2017, 4, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FACB2B60-D3B9-47B6-BFEE-A73900B728DB"), OldFiscalStart = new DateTime(2017, 3, 18), NewFiscalStart = new DateTime(2017, 3, 17) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B596133B-5527-4FFC-B9C3-A70F00B41811"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C090DB1C-8006-4F9A-B8BB-A73900B777FB"), OldFiscalStart = new DateTime(2017, 3, 18), NewFiscalStart = new DateTime(2017, 3, 17) });
 
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F463F9AC-E9C2-4075-81D3-A73700BEAA6A"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C3C12366-63F0-4C00-83E6-A70F00AC7051"), OldFiscalStart = new DateTime(2017, 2, 4), NewFiscalStart = new DateTime(2017, 2, 3) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6493EE1E-DA0E-4DE1-B1B4-A72200A07E28"), OldFiscalStart = new DateTime(2017, 2, 23), NewFiscalStart = new DateTime(2017, 2, 22) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4564AC4D-53CF-4F08-AB11-A72200A10F69"), OldFiscalStart = new DateTime(2017, 2, 23), NewFiscalStart = new DateTime(2017, 2, 22) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DF20DC67-F205-4BFE-B127-A74400B2F2DC"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("902786B7-04CD-4635-A83A-A77C00BFF83B"), OldFiscalStart = new DateTime(2017, 5, 24), NewFiscalStart = new DateTime(2017, 5, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("96CCE43E-1581-4DFC-A404-A6ED014ECE97"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0ABFC7EF-468D-44CF-8B44-A6ED014ED45B"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0ABFC7EF-468D-44CF-8B44-A6ED014ED45B"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7A9C47C6-A53F-4526-BA3A-A72300CDFA74"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A76BF856-4568-4204-A639-A72800BA47FE"), OldFiscalStart = new DateTime(2017, 3, 1), NewFiscalStart = new DateTime(2017, 2, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E19F3385-27A4-46EA-975E-A72800BADD34"), OldFiscalStart = new DateTime(2017, 3, 1), NewFiscalStart = new DateTime(2017, 2, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C9764B07-E85A-4E95-9C27-A72800BBBB92"), OldFiscalStart = new DateTime(2017, 3, 1), NewFiscalStart = new DateTime(2017, 2, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E2AAAF0B-0154-4B54-BCD9-A77B00B6FE18"), OldFiscalStart = new DateTime(2017, 5, 23), NewFiscalStart = new DateTime(2017, 5, 22) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4212E23-14CE-40FD-A910-A6ED01596803"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("60E6F47B-6383-4803-9A1F-A6ED0159688B"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3A0AD396-868A-49D5-9BEE-A73700CA0876"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("73017F37-6E1F-4FA0-B85E-A76D00B218E8"), OldFiscalStart = new DateTime(2017, 5, 9), NewFiscalStart = new DateTime(2017, 5, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D7961F8F-1B45-49F2-AD0B-A6ED0158C337"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9CCCBB53-5264-4832-942F-A70D00BC67C9"), OldFiscalStart = new DateTime(2017, 2, 2), NewFiscalStart = new DateTime(2017, 2, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FB976F09-085F-4C07-B425-A74B00B00B95"), OldFiscalStart = new DateTime(2017, 4, 5), NewFiscalStart = new DateTime(2017, 4, 4) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("19CAC5C4-6961-439C-925A-A77500A52117"), OldFiscalStart = new DateTime(2017, 5, 17), NewFiscalStart = new DateTime(2017, 5, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2FD88FDC-3CAA-48D8-8708-A73500B38578"), OldFiscalStart = new DateTime(2017, 3, 14), NewFiscalStart = new DateTime(2017, 3, 13) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A757BD06-4B4D-4253-9AEF-A70F00C55707"), OldFiscalStart = new DateTime(2017, 2, 5), NewFiscalStart = new DateTime(2017, 2, 4) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("09A7BB5A-4480-4907-9D54-A77400B68DE3"), OldFiscalStart = new DateTime(2017, 5, 16), NewFiscalStart = new DateTime(2017, 5, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F3FE723E-6FB2-41AE-8685-A75800A61E9B"), OldFiscalStart = new DateTime(2017, 4, 18), NewFiscalStart = new DateTime(2017, 4, 17) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("77056273-94E3-45BE-96EA-A76E009D7FC2"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("59015FD0-B437-4FD1-82C9-A72A00F53D2E"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("841C34DA-3059-40B7-B2B5-A74400B7DDF1"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8A8E4A5A-3F5A-4C7A-AB69-A74400B96A85"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D4D9FA54-3990-4884-8AF2-A74400BBBA81"), OldFiscalStart = new DateTime(2017, 3, 29), NewFiscalStart = new DateTime(2017, 3, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2703B5B0-9EE0-47F9-9ADA-A74E00A29D05"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("72760DA1-EF67-48BD-8B47-A74E00A3CFA1"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("093A37DE-BB81-4B96-8E0D-A74E00A50ED0"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F42A232B-42E4-498D-B876-A75300AA7175"), OldFiscalStart = new DateTime(2017, 4, 13), NewFiscalStart = new DateTime(2017, 4, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E9CB7D56-E2D7-4152-B6CF-C10838928999"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A49B5E5D-D8A9-481E-887C-8B0AFC0CEE6B"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
 
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6E3F724B-4DD2-43A0-BC95-A71C00BE32C8"), OldFiscalStart = new DateTime(2017, 2, 17), NewFiscalStart = new DateTime(2017, 2, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5134A09A-AA3A-4E57-B3A1-A71C00BF1833"), OldFiscalStart = new DateTime(2017, 2, 17), NewFiscalStart = new DateTime(2017, 2, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("20C78637-7495-4C04-B0AC-A6ED014DB432"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0675E56F-D18F-483C-8BEF-A6ED014F1E20"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4A5E1F6F-6194-467C-8B24-A73100D80D8B"), OldFiscalStart = new DateTime(2017, 3, 10), NewFiscalStart = new DateTime(2017, 3, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0273CCF5-8DE0-4836-9FBE-A77700B2B7FE"), OldFiscalStart = new DateTime(2017, 5, 19), NewFiscalStart = new DateTime(2017, 5, 18) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("64F5E859-591A-417B-9A0D-A77D00CCF102"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("08E7DE3E-C496-4FAC-A557-A6ED015635C6"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3CBE1010-3837-46B7-B6A6-A77E00AD75B4"), OldFiscalStart = new DateTime(2017, 5, 26), NewFiscalStart = new DateTime(2017, 5, 25) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F1FA9B13-4B02-417F-9077-A74C00A3BFC9"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9AC07F4B-7184-4E3C-AA09-A71300C10A71"), OldFiscalStart = new DateTime(2017, 2, 8), NewFiscalStart = new DateTime(2017, 2, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("728EC1A4-2277-4669-ADAF-A74300BF52CC"), OldFiscalStart = new DateTime(2017, 3, 28), NewFiscalStart = new DateTime(2017, 3, 27) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("90794DF7-56E7-4C4C-A782-A72900B0004F"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("28E9AA5F-84F5-4C73-9471-A72900B099CC"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("807E3E79-5691-441F-9C54-A72900B1906A"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A1D5CDA1-5B5F-4FDD-9D68-A6FA00BB854E"), OldFiscalStart = new DateTime(2017, 2, 9), NewFiscalStart = new DateTime(2017, 2, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B1028404-E822-4925-A865-A6ED01524532"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CE258729-392D-48A2-8110-A72400B29037"), OldFiscalStart = new DateTime(2017, 2, 25), NewFiscalStart = new DateTime(2017, 2, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AAF9DDD5-DF66-4DFF-BD04-A72400B33650"), OldFiscalStart = new DateTime(2017, 2, 25), NewFiscalStart = new DateTime(2017, 2, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5160D8D7-E506-4160-9A9B-A72400B389EF"), OldFiscalStart = new DateTime(2017, 2, 25), NewFiscalStart = new DateTime(2017, 2, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("05D86BC8-193C-496E-8CC0-A747009FE4DE"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("50CC6F76-0C4F-444C-814E-A74700A05533"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3273C719-D9A1-4A44-A0B3-A6ED01561671"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AC4A3AFE-0032-4D32-BEF1-A78C00AD9C18"), OldFiscalStart = new DateTime(2017, 6, 9), NewFiscalStart = new DateTime(2017, 6, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6C446D0D-990F-444F-9189-A73600C2C223"), OldFiscalStart = new DateTime(2017, 3, 15), NewFiscalStart = new DateTime(2017, 3, 14) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A118DE32-D1B8-40E4-B898-A73800AA2E11"), OldFiscalStart = new DateTime(2017, 3, 17), NewFiscalStart = new DateTime(2017, 3, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8A7D3E12-DE70-4CF1-803D-A6ED014E6F56"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("604F8D61-D5DC-4CCE-AE76-A77C00A73854"), OldFiscalStart = new DateTime(2017, 5, 24), NewFiscalStart = new DateTime(2017, 5, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("90661B59-5FF9-4AB2-9CDC-A78300BC6EAD"), OldFiscalStart = new DateTime(2017, 5, 31), NewFiscalStart = new DateTime(2017, 5, 30) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3EC6A9CE-BCF8-48AF-B793-A70100D15BFF"), OldFiscalStart = new DateTime(2017, 1, 21), NewFiscalStart = new DateTime(2017, 1, 20) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EA782E25-EB42-4EFB-98D3-A740009AAE57"), OldFiscalStart = new DateTime(2017, 3, 25), NewFiscalStart = new DateTime(2017, 3, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EA782E25-EB42-4EFB-98D3-A740009AAE57"), OldFiscalStart = new DateTime(2017, 3, 26), NewFiscalStart = new DateTime(2017, 3, 25) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E0BD5273-49BF-43D9-B8D2-A740009B05A6"), OldFiscalStart = new DateTime(2017, 3, 25), NewFiscalStart = new DateTime(2017, 3, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E0BD5273-49BF-43D9-B8D2-A740009B05A6"), OldFiscalStart = new DateTime(2017, 3, 26), NewFiscalStart = new DateTime(2017, 3, 25) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EC11947E-C1C8-4298-BD28-A6F900AC51F9"), OldFiscalStart = new DateTime(2016, 7, 8), NewFiscalStart = new DateTime(2016, 7, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4018353B-99BE-47BE-B12F-A74C00F77FCB"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6B81C4C4-1497-4FB2-9DE4-A74500A75BBE"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("651C753F-8472-4E77-BE5D-A74500A7FD14"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("676E335C-BE39-4B3B-98EA-A74500A9AB58"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CDBAD246-53CE-40F1-B494-A74500AA4766"), OldFiscalStart = new DateTime(2017, 3, 30), NewFiscalStart = new DateTime(2017, 3, 29) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BCA5CC20-DC37-4857-932C-A72800F8329F"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9CD6606E-E9D7-428C-9CB4-A76200B5DFF9"), OldFiscalStart = new DateTime(2017, 4, 28), NewFiscalStart = new DateTime(2017, 4, 27) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A34CD49B-2BBE-4437-A82D-A75C00AA5AFE"), OldFiscalStart = new DateTime(2017, 4, 22), NewFiscalStart = new DateTime(2017, 4, 21) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0085887D-F732-4021-8D84-A75C00BF76CC"), OldFiscalStart = new DateTime(2017, 4, 22), NewFiscalStart = new DateTime(2017, 4, 21) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("11D08777-A636-42D6-BB57-A74C00C31D25"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A71740E1-96A0-4251-BA64-A74C00C3EB38"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6EA89209-BBBA-48B1-A9E4-A74C00C43F7C"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8DC86F1D-D1E9-4C12-8A52-A74C00C49123"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A2786CC0-2C77-4184-A865-A74C00C50EAF"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("33F9CB38-925E-4857-9256-A74C01032EEF"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("FB070A3A-3076-4B48-BBB7-A74C01074925"), OldFiscalStart = new DateTime(2017, 4, 6), NewFiscalStart = new DateTime(2017, 4, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E9D93ACD-6FD7-4B49-B3A5-A716009A27A8"), OldFiscalStart = new DateTime(2017, 2, 11), NewFiscalStart = new DateTime(2017, 2, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5D756EBD-6CC2-47BB-96B8-A71600A53F10"), OldFiscalStart = new DateTime(2017, 2, 11), NewFiscalStart = new DateTime(2017, 2, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("126DF2B1-CB38-4939-84FC-A6ED014CC3B6"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("49ED700F-1A28-42FD-85DA-A76600C43492"), OldFiscalStart = new DateTime(2017, 5, 2), NewFiscalStart = new DateTime(2017, 5, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("52BAB27B-6750-44A7-9ADF-A72300A93953"), OldFiscalStart = new DateTime(2017, 2, 24), NewFiscalStart = new DateTime(2017, 2, 23) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A41498C8-DC64-4884-AEA9-A6ED0159F928"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C9979ADA-4A30-40A8-8816-4038855DFAE9"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("833BF5C6-0C1C-451B-B3E4-6380CB6EE638"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2488907E-927E-45FF-97F0-B87321512700"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("95B5FFD1-2232-466E-BDC0-A73600BFD5FE"), OldFiscalStart = new DateTime(2017, 2, 13), NewFiscalStart = new DateTime(2017, 2, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("829514DB-37C5-420B-B018-A75A01011A95"), OldFiscalStart = new DateTime(2017, 4, 20), NewFiscalStart = new DateTime(2017, 4, 19) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4C2507B-DAC4-4E8E-9D91-A75A010177A9"), OldFiscalStart = new DateTime(2017, 4, 20), NewFiscalStart = new DateTime(2017, 4, 19) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F48FB93A-9377-497E-A8CE-A75A0102FBE2"), OldFiscalStart = new DateTime(2017, 4, 20), NewFiscalStart = new DateTime(2017, 4, 19) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DC83F028-F9E9-4D15-89C7-A73100B496BC"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B0E74CF6-D73B-4E91-88FE-A73100B78FFD"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C4EEAEC3-7F81-42A8-895A-A73200ABCE0E"), OldFiscalStart = new DateTime(2017, 3, 12), NewFiscalStart = new DateTime(2017, 3, 11) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3F52F21D-3984-4AC0-8077-A73200AF05F3"), OldFiscalStart = new DateTime(2017, 3, 13), NewFiscalStart = new DateTime(2017, 3, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("1D5B6E85-2F00-4745-8CCB-A70E00829592"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3660DB19-F1FF-4EB2-9D02-A76300A389D4"), OldFiscalStart = new DateTime(2017, 4, 29), NewFiscalStart = new DateTime(2017, 4, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F4BFD81A-056E-4814-8B99-A7710115B072"), OldFiscalStart = new DateTime(2017, 5, 13), NewFiscalStart = new DateTime(2017, 5, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("90E963BA-2694-4FC6-9C2E-A7710116D45D"), OldFiscalStart = new DateTime(2017, 5, 13), NewFiscalStart = new DateTime(2017, 5, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BBF05FF3-F43D-4DB1-A973-A771011720FD"), OldFiscalStart = new DateTime(2017, 5, 13), NewFiscalStart = new DateTime(2017, 5, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BCEA660A-ABD9-4A04-BEF3-CCD37BB0EF0F"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("308DE758-0C08-455F-846A-A70E00F3D705"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2F67003E-B02E-491E-885C-A71200D175B9"), OldFiscalStart = new DateTime(2017, 2, 7), NewFiscalStart = new DateTime(2017, 2, 6) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CF0E7F8D-5D58-41C5-9C0E-A6ED0154416F"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("718DCC70-CE87-4C89-B630-A78600A28F4D"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("073B408D-5155-4E25-AC61-A78600A380BE"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("99948087-C5AA-4EFE-867F-A78600A44C62"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5D550BFB-4507-409A-B500-A74300C32F79"), OldFiscalStart = new DateTime(2017, 3, 28), NewFiscalStart = new DateTime(2017, 3, 27) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("005B053D-97FE-4484-A51E-A74300C386D5"), OldFiscalStart = new DateTime(2017, 3, 28), NewFiscalStart = new DateTime(2017, 3, 27) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0460CDA0-1EE3-4296-A1C2-A72E00AFCA3E"), OldFiscalStart = new DateTime(2017, 3, 7), NewFiscalStart = new DateTime(2017, 3, 6) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3AED00FD-4874-4C65-98D0-A71C00D080D2"), OldFiscalStart = new DateTime(2017, 2, 17), NewFiscalStart = new DateTime(2017, 2, 16) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B016D29F-6953-4C06-A58A-A73700C6DB3C"), OldFiscalStart = new DateTime(2017, 3, 16), NewFiscalStart = new DateTime(2017, 3, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("510731E9-E547-40DF-9D46-A6ED014C9546"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D8B6C3F9-0290-444B-BF35-A6ED014C9664"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DBA2F0EF-0FBC-4C3D-8909-A6ED014C9761"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DBA2F0EF-0FBC-4C3D-8909-A6ED014C9761"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("244F6BF9-1F51-4861-96A4-A6ED014C9B84"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("89DA998C-8A6A-490A-AACA-A77801024A31"), OldFiscalStart = new DateTime(2017, 5, 20), NewFiscalStart = new DateTime(2017, 5, 19) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B23D4696-78EC-4419-8C43-A77801029D64"), OldFiscalStart = new DateTime(2017, 5, 20), NewFiscalStart = new DateTime(2017, 5, 19) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("182097DF-6288-4AC6-B89E-A75500C0A909"), OldFiscalStart = new DateTime(2017, 4, 15), NewFiscalStart = new DateTime(2017, 4, 14) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("EFC342F7-9DDF-490C-A71F-A6ED01598365"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7CC1C593-2B23-4936-BEFD-A6ED0159866F"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7CC1C593-2B23-4936-BEFD-A6ED0159866F"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F91D5945-1CBF-48E6-9868-A6F200C0421C"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("3CC78AD6-F7FA-428B-B204-A6F200C92118"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E66D12DD-B8A1-4936-8375-A70E00BE656D"), OldFiscalStart = new DateTime(2017, 2, 3), NewFiscalStart = new DateTime(2017, 2, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4D947614-C846-4C7B-815C-A73200BE9293"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C4BDF1DA-BCD5-4F47-BEE8-A74E00A386C6"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5C4E9145-82BD-4BFB-AD81-A76A00BC2C77"), OldFiscalStart = new DateTime(2017, 5, 6), NewFiscalStart = new DateTime(2017, 5, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("CEF9D8C7-0B95-4EDB-9315-A77800ACF9B5"), OldFiscalStart = new DateTime(2017, 5, 20), NewFiscalStart = new DateTime(2017, 5, 19) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6EAFD111-6E48-4D73-9813-A75F00CD86D9"), OldFiscalStart = new DateTime(2017, 4, 25), NewFiscalStart = new DateTime(2017, 4, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("94A6E8C3-E6D9-43D9-8866-A77E00C2A951"), OldFiscalStart = new DateTime(2017, 5, 26), NewFiscalStart = new DateTime(2017, 5, 25) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("F70C14D0-69A2-4A7D-B5CB-A6ED014DC961"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("68C6CA96-EF5C-4903-B289-A6ED014DC9BB"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("09909B25-B817-48BE-AA06-A76D00A1D7E3"), OldFiscalStart = new DateTime(2017, 5, 9), NewFiscalStart = new DateTime(2017, 5, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("242FA9A1-0828-4757-B172-A76F00EB89BF"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("94E255BD-69A8-4C47-8632-A6F900D83BE0"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C9E85E0E-8857-4230-B5BD-A72A00BC955D"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DF494F55-40A4-4C33-841C-A72A00BDBCA6"), OldFiscalStart = new DateTime(2017, 3, 3), NewFiscalStart = new DateTime(2017, 3, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("80BE45AC-741F-4AAA-87DD-A74E00A17397"), OldFiscalStart = new DateTime(2017, 4, 8), NewFiscalStart = new DateTime(2017, 4, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("81FC9388-E34B-46B0-9C7F-A77D00BC4B04"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B4B728DC-4705-446A-ABFD-A77D00BD0CD0"), OldFiscalStart = new DateTime(2017, 5, 25), NewFiscalStart = new DateTime(2017, 5, 24) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BA27A17B-B453-46E0-8C14-A6ED014F0B8D"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("0B69C05E-ADCE-4001-B2E5-A77600A61C87"), OldFiscalStart = new DateTime(2017, 5, 18), NewFiscalStart = new DateTime(2017, 5, 17) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4FE78800-0E9F-4E40-ACDF-A75C00B7167F"), OldFiscalStart = new DateTime(2017, 4, 22), NewFiscalStart = new DateTime(2017, 4, 21) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("C6AA3FB3-3469-4E05-B638-A6ED014B797E"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("06480A85-707F-45E1-87CC-A74700AE0D88"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AF71039C-ABF8-4A6D-9607-A73100ABCB45"), OldFiscalStart = new DateTime(2017, 3, 10), NewFiscalStart = new DateTime(2017, 3, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("68CE5847-5B51-47B1-94B9-A75B00C0D14C"), OldFiscalStart = new DateTime(2017, 4, 21), NewFiscalStart = new DateTime(2017, 4, 20) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("39A3597B-774B-44E7-9133-A78C00A87D72"), OldFiscalStart = new DateTime(2017, 6, 9), NewFiscalStart = new DateTime(2017, 6, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("387197AA-D033-4DB0-8A6E-A6ED0154DB92"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("888FD876-FB34-4009-95B0-A6ED0154DFE4"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7104C20A-F3E8-4220-8DC7-A6ED0154EAE5"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("BB53FDE8-D4AB-4346-89BD-A6ED0154FB56"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("9A01F0EE-1E96-412F-A087-A76100D5C609"), OldFiscalStart = new DateTime(2017, 4, 27), NewFiscalStart = new DateTime(2017, 4, 26) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2C11A9D9-1002-4956-9164-A71B00BFF5F4"), OldFiscalStart = new DateTime(2017, 2, 16), NewFiscalStart = new DateTime(2017, 2, 15) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("135C108F-E9D8-4881-B199-A72900B69FEA"), OldFiscalStart = new DateTime(2017, 3, 2), NewFiscalStart = new DateTime(2017, 3, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8A4796ED-8E5B-4637-A64D-A76E01135AD5"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("017C6698-A871-4C36-BCD4-A76E0113CEA3"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4E4D3FC2-6654-4D34-96C9-A76E0114D228"), OldFiscalStart = new DateTime(2017, 5, 10), NewFiscalStart = new DateTime(2017, 5, 9) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("8C15BA59-808A-4E38-B245-A78400AACD2E"), OldFiscalStart = new DateTime(2017, 6, 1), NewFiscalStart = new DateTime(2017, 5, 31) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("5D310AD5-4B66-423D-AD54-A6ED015674B5"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AA0C65AF-BE0C-41C8-B41B-A7470110F2E9"), OldFiscalStart = new DateTime(2017, 4, 1), NewFiscalStart = new DateTime(2017, 3, 31) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("7858A641-4951-4B85-A06B-A76A00C4B3ED"), OldFiscalStart = new DateTime(2017, 5, 6), NewFiscalStart = new DateTime(2017, 5, 5) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("E5FA3F38-DC81-4F92-80A1-A78500BAE69B"), OldFiscalStart = new DateTime(2017, 6, 2), NewFiscalStart = new DateTime(2017, 6, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("4284C0D5-8B7B-4C8E-886F-A79000B55299"), OldFiscalStart = new DateTime(2017, 6, 13), NewFiscalStart = new DateTime(2017, 6, 12) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("B98DA369-48D5-4007-92FB-A79E009E59F1"), OldFiscalStart = new DateTime(2017, 6, 27), NewFiscalStart = new DateTime(2017, 6, 26) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("808A594E-3870-4C87-AD84-A73200A9CE67"), OldFiscalStart = new DateTime(2017, 3, 11), NewFiscalStart = new DateTime(2017, 3, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DDC3ED4F-6AEF-474C-80D4-A77000FBA473"), OldFiscalStart = new DateTime(2017, 5, 12), NewFiscalStart = new DateTime(2017, 5, 11) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("A5E69A6F-0C16-42D9-9D13-A76600ED0AC0"), OldFiscalStart = new DateTime(2017, 5, 2), NewFiscalStart = new DateTime(2017, 5, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("1B16E501-6383-48B3-81F8-A6ED014B54F4"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6BB52FD2-C741-4E9F-B253-A6ED01596A57"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("6EA3EA15-86C0-45EB-A7BA-11C3835F98CE"), OldFiscalStart = new DateTime(2017, 4, 11), NewFiscalStart = new DateTime(2017, 4, 10) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("89A73068-3FD9-431E-8B10-A78600B5B946"), OldFiscalStart = new DateTime(2017, 6, 3), NewFiscalStart = new DateTime(2017, 6, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("549DB64D-FA13-4FAF-B6FD-A7A000A9AC10"), OldFiscalStart = new DateTime(2017, 6, 29), NewFiscalStart = new DateTime(2017, 6, 28) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("DE7EE3B3-E85A-4056-A90A-A71300C17EE9"), OldFiscalStart = new DateTime(2017, 2, 9), NewFiscalStart = new DateTime(2017, 2, 8) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("44C7F7FE-66CE-417B-BE42-A73200ADA46E"), OldFiscalStart = new DateTime(2017, 3, 12), NewFiscalStart = new DateTime(2017, 3, 11) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("2036F061-FBD1-48B2-A748-A78B0098CC40"), OldFiscalStart = new DateTime(2017, 6, 8), NewFiscalStart = new DateTime(2017, 6, 7) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("D5B793B2-2F7E-4F94-9409-A70C00B234EE"), OldFiscalStart = new DateTime(2017, 1, 3), NewFiscalStart = new DateTime(2017, 1, 2) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("AFAB215C-19FD-4B01-BF4B-A6F200D6A706"), OldFiscalStart = new DateTime(2017, 1, 2), NewFiscalStart = new DateTime(2017, 1, 1) });
-				leaveCycleEmployees.Add(new LeaveCycleEmployee { EmployeeId = new Guid("38DEC00D-0DDF-44AC-A5CD-A76F00EC7B74"), OldFiscalStart = new DateTime(2017, 5, 11), NewFiscalStart = new DateTime(2017, 5, 10) });
 
-				leaveCycleEmployees.ForEach(e =>
+                leaveCycleEmployees.ForEach(e =>
 				{
-					var employee = _companyRepository.GetEmployeeById(e.EmployeeId);
+					var employee = companyRepository.GetEmployeeById(e.EmployeeId);
 					
 					if (employee.SickLeaveHireDate.Date != e.NewFiscalStart.Date)
 					{
@@ -1215,7 +2701,7 @@ namespace SiteInspectionStatus_Utility
 														employee.CompanyId == new Guid("9471FF28-FEAF-4F67-9A9B-A6ED0158DB28")
 						? (decimal)48
 						: (decimal)24;
-					var checks = _readerService.GetPayChecks(employeeId: e.EmployeeId);
+					var checks = readerService.GetPayChecks(employeeId: e.EmployeeId);
 					var firstcarryover = (decimal) checks.OrderBy(p => p.Id).First(p=>p.Accumulations.Any()).Accumulations.First().CarryOver;
 					checks.Where(p=>p.Accumulations.Any(a=>a.FiscalStart.Date==e.OldFiscalStart.Date)).OrderBy(p=>p.Id).ToList().ForEach(
 						p =>
@@ -1242,10 +2728,10 @@ namespace SiteInspectionStatus_Utility
 				Console.WriteLine("Employees " + empList.Count);
 				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
-					payCheckList.ForEach(_payrollRepository.UpdatePayCheckSickLeaveAccumulation);
+					payCheckList.ForEach(payrollRepository.UpdatePayCheckSickLeaveAccumulation);
 					empList.ForEach(e =>
 					{
-						_companyRepository.SaveEmployee(e);
+						companyRepository.SaveEmployee(e);
 						Console.WriteLine("E {0}, {1}, {2}",e.CompanyEmployeeNo, e.FullName, e.Id);
 					});
 					txn.Complete();
@@ -1254,13 +2740,13 @@ namespace SiteInspectionStatus_Utility
 		}
 
 
-		private static void FixAccumulationCycleAndYTDForPEO(IContainer container)
+		private static void FixAccumulationCycleAndYtdForPeo(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollRepository = scope.Resolve<IPayrollRepository>();
-				var _companyRepository = scope.Resolve<ICompanyRepository>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
+				var companyRepository = scope.Resolve<ICompanyRepository>();
 
 				var payCheckList = new List<PayCheck>();
 				var empList = new List<HrMaxx.OnlinePayroll.Models.Employee>();
@@ -1319,14 +2805,14 @@ namespace SiteInspectionStatus_Utility
 				#endregion
 				leaveCycleEmployees.ForEach(e =>
 				{
-					var employee = _companyRepository.GetEmployeeById(e.EmployeeId);
-					var company = _readerService.GetCompany(employee.CompanyId);
+					var employee = companyRepository.GetEmployeeById(e.EmployeeId);
+					var company = readerService.GetCompany(employee.CompanyId);
 					employee.SickLeaveHireDate = e.NewFiscalStart.Date;
 					employee.CarryOver = e.CarryOver;
 					empList.Add(employee);
 
 					var newFiscalEndDate = e.NewFiscalStart.AddYears(1).AddDays(-1).Date;
-					var checks = _readerService.GetEmployeePayChecks(e.EmployeeId);
+					var checks = readerService.GetEmployeePayChecks(e.EmployeeId);
 					
 					checks.Where(p => !p.IsHistory).OrderBy(p => p.PayDay).ThenBy(p=>p.Id).ToList().ForEach(
 						p =>
@@ -1374,10 +2860,10 @@ namespace SiteInspectionStatus_Utility
 				Console.WriteLine("Employees " + empList.Count);
 				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
-					payCheckList.ForEach(_payrollRepository.UpdatePayCheckSickLeaveAccumulation);
+					payCheckList.ForEach(payrollRepository.UpdatePayCheckSickLeaveAccumulation);
 					empList.ForEach(e =>
 					{
-						_companyRepository.SaveEmployeeSickLeaveAndCarryOver(e);
+						companyRepository.SaveEmployeeSickLeaveAndCarryOver(e);
 						Console.WriteLine("E {0}, {1}, {2}", e.CompanyEmployeeNo, e.FullName, e.Id);
 					});
 					txn.Complete();
@@ -1389,14 +2875,14 @@ namespace SiteInspectionStatus_Utility
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _taxationService = scope.Resolve<ITaxationService>();
-				var taxTables = _taxationService.GetTaxTables(2019);
-				var taxTablesContext = _taxationService.GetTaxTablesByContext();
+				var taxationService = scope.Resolve<ITaxationService>();
+				var taxTables = taxationService.GetTaxTables(2019);
+				var taxTablesContext = taxationService.GetTaxTablesByContext();
 				var differentTaxYearRates = taxTables.Taxes.Where(t => taxTablesContext.Taxes.All(t1 => !t.Equals(t1))).ToList();
-				var differentFIT = taxTables.FITTaxTable.Where(t => taxTablesContext.FITTaxTable.All(t1 => !t.Equals(t1))).ToList();
-				var differentSIT = taxTables.CASITTaxTable.Where(t => taxTablesContext.CASITTaxTable.All(t1 => !t.Equals(t1))).ToList();
-				var differentSITLow = taxTables.CASITLowIncomeTaxTable.Where(t => taxTablesContext.CASITLowIncomeTaxTable.All(t1 => !t.Equals(t1))).ToList();
-				var differentFITW = taxTables.FitWithholdingAllowanceTable.Where(t => taxTablesContext.FitWithholdingAllowanceTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentFit = taxTables.FITTaxTable.Where(t => taxTablesContext.FITTaxTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentSit = taxTables.CASITTaxTable.Where(t => taxTablesContext.CASITTaxTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentSitLow = taxTables.CASITLowIncomeTaxTable.Where(t => taxTablesContext.CASITLowIncomeTaxTable.All(t1 => !t.Equals(t1))).ToList();
+				var differentFitw = taxTables.FitWithholdingAllowanceTable.Where(t => taxTablesContext.FitWithholdingAllowanceTable.All(t1 => !t.Equals(t1))).ToList();
 				var differentStdDed = taxTables.CAStandardDeductionTable.Where(t => taxTablesContext.CAStandardDeductionTable.All(t1 => !t.Equals(t1))).ToList();
 				var differentEStdDed = taxTables.EstimatedDeductionTable.Where(t => taxTablesContext.EstimatedDeductionTable.All(t1 => !t.Equals(t1))).ToList();
 				var differentExempAllow = taxTables.ExemptionAllowanceTable.Where(t => taxTablesContext.ExemptionAllowanceTable.All(t1 => !t.Equals(t1))).ToList();
@@ -1409,37 +2895,37 @@ namespace SiteInspectionStatus_Utility
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
 				var mapper = scope.Resolve<IMapper>();
 				using (var txn = TransactionScopeHelper.TransactionNoTimeout())
 				{
-					var claims = _payrollRepository.GetInvoiceDeliveryClaims(null, null);
+					var claims = payrollRepository.GetInvoiceDeliveryClaims(null, null);
 					claims.ForEach(id =>
 					{
 						id.InvoiceSummaries = mapper.Map<List<PayrollInvoice>, List<InvoiceSummaryForDelivery>>(id.Invoices);
 						id.Invoices = null;
 					});
-					_payrollRepository.UpdateInvoiceDeliveryData(claims);
+					payrollRepository.UpdateInvoiceDeliveryData(claims);
 					txn.Complete();
 				}
 			}
 		}
 
-		private static void FixPayCheckYTD(IContainer container)
+		private static void FixPayCheckYtd(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
 				var counter = (int) 0;
 				var eacounter = (int) 0;
 				var taxcounter = (int) 0;
 				var year = Convert.ToInt32(Console.ReadLine());
-				var payrolls = _readerService.GetPayrolls(null, excludeVoids:1, startDate: new DateTime(year,1,1), endDate:new DateTime(year, 12,31));
+				var payrolls = readerService.GetPayrolls(null, excludeVoids:1, startDate: new DateTime(year,1,1), endDate:new DateTime(year, 12,31));
 				payrolls.OrderBy(p=>p.PayDay).ToList().ForEach(payroll =>
 				{
-					var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
+					var employeeAccumulations = readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, 
 						ssns: payroll.PayChecks.Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
 					payroll.PayChecks.ForEach(pc =>
@@ -1496,10 +2982,10 @@ namespace SiteInspectionStatus_Utility
 			Console.WriteLine("Checks YTD Fix---Updating Checks");
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollRepository = scope.Resolve<IPayrollRepository>();
-				var _taxationService = scope.Resolve<ITaxationService>();
-				var _hostService = scope.Resolve<IHostService>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
+				var taxationService = scope.Resolve<ITaxationService>();
+				var hostService = scope.Resolve<IHostService>();
 				var pList = new List<Guid>();
 				#region "payroll List"
 				pList.Add(new Guid("A039EFCF-5875-45F6-96AE-A74300963330"));
@@ -1672,7 +3158,7 @@ namespace SiteInspectionStatus_Utility
 
 				
 
-				var checksWithFUTAWageIssue = 0;
+				var checksWithFutaWageIssue = 0;
 				var checksProcessed = 0;
 				
 				var payrollsWithIssue = 0;
@@ -1686,8 +3172,8 @@ namespace SiteInspectionStatus_Utility
 				{
 					pList.ForEach(p1 =>
 					{
-						var payroll = _readerService.GetPayroll(p1);
-						var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
+						var payroll = readerService.GetPayroll(p1);
+						var employeeAccumulations = readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
 						var thispayrollchecks = 0;
 						payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(pc =>
@@ -1699,8 +3185,8 @@ namespace SiteInspectionStatus_Utility
 								t.YTD -= t2.Amount;
 								t.YTDWage -=t2.TaxableWage;
 							});
-							var host = _hostService.GetHost(payroll.Company.HostId);
-							var taxes = _taxationService.ProcessTaxes(payroll.Company, pc, pc.PayDay, pc.GrossWage, host.Company, ea);
+							var host = hostService.GetHost(payroll.Company.HostId);
+							var taxes = taxationService.ProcessTaxes(payroll.Company, pc, pc.PayDay, pc.GrossWage, host.Company, ea);
 							var futatax = taxes.First(t => t.Tax.Code.Equals("FUTA"));
 							var etttax = taxes.First(t => t.Tax.Code.Equals("ETT"));
 							var suitax = taxes.First(t => t.Tax.Code.Equals("SUI"));
@@ -1729,7 +3215,7 @@ namespace SiteInspectionStatus_Utility
 								pc.Taxes.First(t => t.Tax.Code.Equals("FUTA")).Amount = futatax.Amount;
 								Console.WriteLine("{0},{1},{2},{3},{4}", payroll.Company.Id, payroll.Company.Name.Replace(",", string.Empty), payroll.Id, pc.Id, pc.Employee.FullName);
 								taxupdate.Add(pc);
-								checksWithFUTAWageIssue++;
+								checksWithFutaWageIssue++;
 								thispayrollchecks++;
 							}
 							
@@ -1767,7 +3253,7 @@ namespace SiteInspectionStatus_Utility
 					});
 
 					
-					Console.WriteLine("Checks with futa wage issues: " + checksWithFUTAWageIssue);
+					Console.WriteLine("Checks with futa wage issues: " + checksWithFutaWageIssue);
 					Console.WriteLine("Checks with ytd issues: " + ytdIssueChecks);
 					Console.WriteLine("Employees Processed: " + checksProcessed);
 					Console.WriteLine("Total Payrolls: " + pList.Count);
@@ -1780,9 +3266,9 @@ namespace SiteInspectionStatus_Utility
 					if (taxupdate.Any() || accupdate.Any())
 					{
 						if (taxupdate.Any())
-							_payrollRepository.FixPayCheckTaxes(taxupdate);
+							payrollRepository.FixPayCheckTaxes(taxupdate);
 						if (accupdate.Any())
-							_payrollRepository.FixPayCheckAccumulations(accupdate);
+							payrollRepository.FixPayCheckAccumulations(accupdate);
 						Console.Write("Commit? ");
 						var commit = Convert.ToInt32(Console.ReadLine());
 						if (commit == 1)
@@ -1800,7 +3286,7 @@ namespace SiteInspectionStatus_Utility
 			}
 		}
 
-		private static void FixPayrollYTD(IContainer container)
+		private static void FixPayrollYtd(IContainer container)
 		{
 			FileStream ostrm;
 			StreamWriter writer;
@@ -1822,8 +3308,8 @@ namespace SiteInspectionStatus_Utility
 			Console.WriteLine("Checks YTD Fix---Updating Checks");
 			using (var scope = container.BeginLifetimeScope())
 			{
-				var _readerService = scope.Resolve<IReaderService>();
-				var _payrollRepository = scope.Resolve<IPayrollRepository>();
+				var readerService = scope.Resolve<IReaderService>();
+				var payrollRepository = scope.Resolve<IPayrollRepository>();
 				var mementoService = scope.Resolve<IMementoDataService>();
 				var pList = new List<Guid>();
 				#region "payroll List"
@@ -2007,8 +3493,8 @@ namespace SiteInspectionStatus_Utility
 				{
 					pList.ForEach(p1 =>
 					{
-						var payroll = _readerService.GetPayroll(p1);
-						var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
+						var payroll = readerService.GetPayroll(p1);
+						var employeeAccumulations = readerService.GetAccumulations(company: payroll.Company.Id,
 						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay);
 						
 						payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
@@ -2074,7 +3560,7 @@ namespace SiteInspectionStatus_Utility
 						updateList.ForEach(pc=>{
 							var memento1 = Memento<PayCheck>.Create(originalList.First(pc1=>pc1.Id==pc.Id), EntityTypeEnum.PayCheck, "System", "Pay Check Before Fix", Guid.Empty);
 							mementoService.AddMementoData(memento1);
-							_payrollRepository.UpdatePayCheckYTD(pc);
+							payrollRepository.UpdatePayCheckYTD(pc);
 							var memento = Memento<PayCheck>.Create(pc, EntityTypeEnum.PayCheck, "System", "Pay Check Fixed", Guid.Empty);
 							mementoService.AddMementoData(memento);
 							
@@ -2278,14 +3764,14 @@ namespace SiteInspectionStatus_Utility
 			return result;
 		}
 
-		public class MissingSL
+		public class MissingSl
 		{
-			public Guid companyId { get; set; }
-			public Guid employeeId { get; set; }
-			public int companyEmployeeNo { get; set; }
-			public decimal missingVal { get; set; }
-			public decimal missingUsed { get; set; }
-			public decimal carryover { get; set; }
+			public Guid CompanyId { get; set; }
+			public Guid EmployeeId { get; set; }
+			public int CompanyEmployeeNo { get; set; }
+			public decimal MissingVal { get; set; }
+			public decimal MissingUsed { get; set; }
+			public decimal Carryover { get; set; }
 		}
 
 		public class SalesPersonCompany
@@ -2305,8 +3791,8 @@ namespace SiteInspectionStatus_Utility
 
 		public class EmpCarryOver
 		{
-			public int empno { get; set; }
-			public decimal carryover { get; set; }
+			public int Empno { get; set; }
+			public decimal Carryover { get; set; }
 		}
 
 		public class InvoiceFix 

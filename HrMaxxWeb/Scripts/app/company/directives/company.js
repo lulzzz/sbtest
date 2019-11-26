@@ -344,27 +344,29 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						if ($scope.selectedCompany.isAddressSame) {
 							$scope.selectedCompany.businessAddress = $scope.selectedCompany.companyAddress;
-						}
-						if (!$scope.selectedCompany.id) {
-							$.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
-								if ((taxyearrate.tax.stateId && taxyearrate.tax.stateId === $scope.selectedCompany.states[0].state.stateId) || !taxyearrate.tax.stateId) {
+                        }
+                        $.each($scope.selectedCompany.states,
+                            function (ind, cstate) {
+                                $.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
+                                    if ((taxyearrate.tax.stateId && taxyearrate.tax.stateId === cstate.state.stateId) || !taxyearrate.tax.stateId) {
 
-									var exists = $filter('filter')($scope.selectedCompany.companyTaxRates, { taxYear: taxyearrate.taxYear, taxId: taxyearrate.tax.id });
-									if (exists.length === 0) {
-										$scope.selectedCompany.companyTaxRates.push({
-											id: 0,
-											taxId: taxyearrate.tax.id,
-											companyId: null,
-											taxCode: taxyearrate.tax.code,
-											taxYear: taxyearrate.taxYear,
-											rate: taxyearrate.rate
-										});
-									}
-									
-								}
+                                        var exists = $filter('filter')($scope.selectedCompany.companyTaxRates, { taxYear: taxyearrate.taxYear, taxId: taxyearrate.tax.id });
+                                        if (exists.length === 0) {
+                                            $scope.selectedCompany.companyTaxRates.push({
+                                                id: 0,
+                                                taxId: taxyearrate.tax.id,
+                                                companyId: $scope.selectedCompany.id,
+                                                taxCode: taxyearrate.tax.code,
+                                                taxYear: taxyearrate.taxYear,
+                                                rate: taxyearrate.rate
+                                            });
+                                        }
 
-							});
-						}
+                                    }
+
+                                });
+                            });
+                       
 						var confirmMessage = "";
 						if ($scope.mainData.selectedHost.isPeoHost && ($scope.original.contract.invoiceSetup && !angular.equals($scope.original.contract.invoiceSetup, $scope.selectedCompany.contract.invoiceSetup))) {
 							confirmMessage = "This company is under a PEO Host. Are you sure you want to change the invoice setup?";

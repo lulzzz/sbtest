@@ -31,6 +31,49 @@
 			</Value>
 		</Field>
 	</xsl:template>
+  <xsl:template name="eachLetter">
+    <xsl:param name="startIndex"/>
+    <xsl:param name="prefix"/>
+    <xsl:param name="data"/>
+    <xsl:if test="string-length($data) &gt; 0">
+      <Field>
+        <Name>
+          <xsl:value-of select="concat($prefix, $startIndex)"/>
+        </Name>
+        <Type>Text</Type>
+        <Value>
+          <xsl:value-of select="substring($data,1,1)"/>
+        </Value>
+      </Field>
+      <xsl:call-template name="eachLetter">
+        <xsl:with-param name="prefix" select="$prefix"/>
+        <xsl:with-param name="startIndex" select="$startIndex + 1"/>
+        <xsl:with-param name="data" select="substring($data,2)"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+  <xsl:template name="eachLetterReverse">
+    <xsl:param name="startIndex"/>
+    <xsl:param name="prefix"/>
+    <xsl:param name="data"/>
+    <xsl:if test="string-length($data) &gt; 0">
+      <Field>
+        <Name>
+          <xsl:value-of select="concat($prefix, $startIndex)"/>
+        </Name>
+        <Type>Text</Type>
+        <Value>
+          <xsl:value-of select="substring($data,string-length($data),1)"/>
+        </Value>
+      </Field>
+      <xsl:call-template name="eachLetterReverse">
+        <xsl:with-param name="prefix" select="$prefix"/>
+        <xsl:with-param name="startIndex" select="$startIndex - 1"/>
+        <xsl:with-param name="data" select="substring($data,1, string-length($data)-1)"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+  
 	<xsl:template name="CheckTemplate">                 
 		<xsl:param name="name1"/> 
 		<xsl:param name="val1"/>

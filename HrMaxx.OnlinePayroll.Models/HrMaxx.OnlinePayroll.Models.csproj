@@ -152,6 +152,12 @@
     <Compile Include="DataModel\FITWithholdingAllowanceTable.cs">
       <DependentUpon>USTaxTablesModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\HISITTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\HISITWithholdingAllowanceTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\Host.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>

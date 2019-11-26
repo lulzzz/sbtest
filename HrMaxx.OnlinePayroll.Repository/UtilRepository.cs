@@ -51,10 +51,10 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		}
 
-		public void FillCompanyAccounts(Guid companyId, string userName, int stateId)
+		public void FillCompanyAccounts(Guid companyId, string userName, List<int> states)
 		{
 			var companyAccount = _dbContext.CompanyAccounts.Where(c => c.CompanyId == companyId && c.TemplateId.HasValue).Select(ca=>ca.TemplateId).ToList();
-			var accountTemplates = _dbContext.AccountTemplates.Where(at=>!companyAccount.Contains(at.Id) && (!at.StateId.HasValue || at.StateId==stateId)).ToList();
+			var accountTemplates = _dbContext.AccountTemplates.Where(at=>!companyAccount.Contains(at.Id) && (!at.StateId.HasValue || states.Any(s=>s==at.StateId))).ToList();
 
 			if (accountTemplates.Any())
 			{

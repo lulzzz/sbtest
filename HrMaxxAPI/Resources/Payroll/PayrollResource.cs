@@ -207,8 +207,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public bool IsReIssued { get; set; }
 		public int? OriginalCheckNumber { get; set; }
 		public DateTime? ReIssuedDate { get; set; }
-
-		public string PaymentMethodText
+        public int StateId { get; set; }
+        public string PaymentMethodText
 		{
 			get { return PaymentMethod.GetDbName(); }
 		}

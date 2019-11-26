@@ -97,7 +97,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			}
 			_dbContext.SaveChanges();
 			if (!ignoreEinCheck)
-				_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName, company.States.First().State.StateId);
+				_utilRepository.FillCompanyAccounts(dbMappedCompany.Id, company.UserName, company.States.Select(s=>s.State.StateId).ToList());
 			var dbcomp = _dbContext.Companies.First(c => c.Id == dbMappedCompany.Id);
 			return _mapper.Map<Models.DataModel.Company, Models.Company>(dbcomp);
 		}

@@ -529,6 +529,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Garnishment=5,
 		CADE9=6,
 		TXSuta=7,
+        HISIT=8,
 		NA=0
 	}
 

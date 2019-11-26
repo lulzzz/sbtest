@@ -33,5 +33,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<SITLowIncomeTaxTable> SITLowIncomeTaxTables { get; set; }
         public virtual DbSet<SITTaxTable> SITTaxTables { get; set; }
         public virtual DbSet<StandardDeductionTable> StandardDeductionTables { get; set; }
+        public virtual DbSet<HISITTaxTable> HISITTaxTables { get; set; }
+        public virtual DbSet<HISITWithholdingAllowanceTable> HISITWithholdingAllowanceTables { get; set; }
     }
 }

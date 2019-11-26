@@ -611,6 +611,7 @@
           <Property Name="ReIssuedDate" Type="datetime" />
           <Property Name="CompanyIntId" Type="int" />
           <Property Name="VoidedBy" Type="varchar(max)" />
+          <Property Name="StateId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PayType">
           <Key>
@@ -672,6 +673,7 @@
           <Property Name="Rate" Type="decimal" Precision="18" Scale="2" />
           <Property Name="AnnualMaxPerEmployee" Type="decimal" Precision="18" Scale="2" />
           <Property Name="TaxRateLimit" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="WeeklyMaxWage" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="VendorCustomer">
           <Key>
@@ -1915,6 +1917,7 @@
           <Property Name="AnnualMaxPerEmployee" Type="Decimal" Precision="18" Scale="2" />
           <NavigationProperty Name="Tax" Relationship="HrMaxxModel.FK_TaxYearRate_Tax" FromRole="TaxYearRate" ToRole="Tax" />
           <Property Name="TaxRateLimit" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="WeeklyMaxWage" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_Company_Host">
           <End Type="HrMaxxModel.Host" Role="Host" Multiplicity="1" />
@@ -2848,6 +2851,7 @@
           <Property Name="ReIssuedDate" Type="DateTime" Precision="3" />
           <Property Name="CompanyIntId" Type="Int32" />
           <Property Name="VoidedBy" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StateId" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_Journal_PayrollPayCheck">
           <End Type="HrMaxxModel.PayrollPayCheck" Role="PayrollPayCheck" Multiplicity="0..1" />
@@ -3253,6 +3257,7 @@
           <EntitySetMapping Name="TaxYearRates">
             <EntityTypeMapping TypeName="HrMaxxModel.TaxYearRate">
               <MappingFragment StoreEntitySet="TaxYearRate">
+                <ScalarProperty Name="WeeklyMaxWage" ColumnName="WeeklyMaxWage" />
                 <ScalarProperty Name="TaxRateLimit" ColumnName="TaxRateLimit" />
                 <ScalarProperty Name="AnnualMaxPerEmployee" ColumnName="AnnualMaxPerEmployee" />
                 <ScalarProperty Name="Rate" ColumnName="Rate" />
@@ -3712,6 +3717,7 @@
           <EntitySetMapping Name="PayrollPayChecks">
             <EntityTypeMapping TypeName="HrMaxxModel.PayrollPayCheck">
               <MappingFragment StoreEntitySet="PayrollPayCheck">
+                <ScalarProperty Name="StateId" ColumnName="StateId" />
                 <ScalarProperty Name="VoidedBy" ColumnName="VoidedBy" />
                 <ScalarProperty Name="CompanyIntId" ColumnName="CompanyIntId" />
                 <ScalarProperty Name="ReIssuedDate" ColumnName="ReIssuedDate" />

@@ -82,12 +82,13 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						dataSvc.selectedTab = null;
 					}
 					$scope.addNewYear = function () {
-						var maxYear = $filter('orderBy')(dataSvc.taxTables.years, '', true)[0];
+						var maxYear = $filter('orderBy')(dataSvc.taxTableYears, 'identity', true)[0];
 
 						$scope.$parent.$parent.confirmDialog('This will copy the tax tables for ' + maxYear + ' into ' + (maxYear+1) + '. Do you want to proceed?', 'warning', function () {
 							commonRepository.createTaxTables(maxYear + 1).then(function (data) {
 								dataSvc.originalTaxTables = data;
-								dataSvc.taxTables = angular.copy(data);
+                                dataSvc.taxTables = angular.copy(data);
+                                dataSvc.taxTableYears.push(maxYear + 1);
 								addAlert('successfully created entries in tax tables for ' + (maxYear+1), 'success');
 							}, function (error) {
 								$scope.list = [];
@@ -156,7 +157,48 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						};
 						dataSvc.taxTables.fitTaxTable.push(newfit);
 						
-					}
+                    }
+                    $scope.setSelectedHISIT = function (tr) {
+                        $scope.selectedHISIT = tr;
+                        $scope.originalSelectedHISIT = angular.copy(tr);
+                    }
+                    $scope.cancelHISIT = function (tr) {
+                        var ind = dataSvc.taxTables.hisitTaxTable.indexOf(tr);
+                        dataSvc.taxTables.fitTaxTable[ind] = angular.copy($scope.originalSelectedHISIT);
+                        $scope.originalSelectedHISIT = null;
+                        $scope.selectedHISIT = null;
+
+                    }
+                    $scope.saveHISIT = function (tr) {
+                        if (!angular.equals(tr, $scope.originalSelectedHISIT)) {
+                            tr.hasChanged = true;
+                        }
+                        $scope.originalSelectedHISIT = null;
+                        $scope.selectedHISIT = null;
+                        return tr;
+                    }
+                    $scope.removeHISIT = function (tr) {
+                        dataSvc.taxTables.hisitTaxTable.splice(dataSvc.taxTables.hisitTaxTable.indexOf(tr), 1);
+
+                    }
+                    $scope.addHISIT = function () {
+                        var max = $filter('orderBy')(dataSvc.taxTables.hisitTaxTable, 'id', true)[0];
+                        var newfit = {
+                            isNew: true,
+                            hasChanged: true,
+                            id: max ? max.id + 1 : 1,
+                            year: dataSvc.selectedYear,
+                            payrollSchedule: null,
+                            filingStatus: null,
+                            rangeStart: null,
+                            rangeEnd: null,
+                            flatRate: null,
+                            additionalPercentage: null,
+                            excessOverAmount: null
+                        };
+                        dataSvc.taxTables.hisitTaxTable.push(newfit);
+
+                    }
 
 					$scope.setSelectedSIT = function (tr) {
 						$scope.selectedSIT = tr;
@@ -218,7 +260,26 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						$scope.originalSelectedFITW = null;
 						$scope.selectedFITW = null;
 						return tr;
-					}
+                    }
+                    $scope.setSelectedHISITW = function (tr) {
+                        $scope.selectedHISITW = tr;
+                        $scope.originalSelectedHISITW = angular.copy(tr);
+                    }
+                    $scope.cancelHISITW = function (tr) {
+                        var ind = dataSvc.taxTables.hiSitWithholdingAllowanceTable.indexOf(tr);
+                        dataSvc.taxTables.hiSitWithholdingAllowanceTable[ind] = angular.copy($scope.originalSelectedHISITW);
+                        $scope.originalSelectedHISITW = null;
+                        $scope.selectedHISITW = null;
+
+                    }
+                    $scope.saveHISITW = function (tr) {
+                        if (!angular.equals(tr, $scope.originalSelectedHISITW)) {
+                            tr.hasChanged = true;
+                        }
+                        $scope.originalSelectedHISITW = null;
+                        $scope.selectedHISITW = null;
+                        return tr;
+                    }
 
 					$scope.setSelectedSITLow = function (tr) {
 						$scope.selectedSITLow = tr;

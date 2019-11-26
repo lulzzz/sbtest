@@ -335,6 +335,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsReIssued { get; set; }
 		public int? OriginalCheckNumber { get; set; }
 		public DateTime? ReIssuedDate { get; set; }
+        public int StateId { get; set; }
 	}
 
 	public class ExtractInvoicePayment

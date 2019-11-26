@@ -82,11 +82,11 @@ namespace OPImportUtility
 
 			var container = builder.Build();
 			log4net.Config.BasicConfigurator.Configure();
-			Logger = log4net.LogManager.GetLogger(typeof(Program));  
-			var companyId = (int) 0;
-			try
+			Logger = log4net.LogManager.GetLogger(typeof(Program));
+            try
 			{
-				Logger.Info("starting :)");
+                int companyId;
+                Logger.Info("starting :)");
 				Console.WriteLine("Staring Migration " + DateTime.Now.ToShortTimeString());
 				Console.WriteLine("Enter 1 for Base Data, 2 for Hosts 3 for Company ");
 				var command = Convert.ToInt32(Console.ReadLine());
@@ -306,8 +306,7 @@ namespace OPImportUtility
 			var journals = mapper.Map<List<Journal>, List<HrMaxx.OnlinePayroll.Models.Journal>>(opjournals);
 
 			var groups = journals.GroupBy(j => j.CompanyIntId).ToList();
-			var counter = (int)0; 
-			var company = companies.First(c => c.Key == companyId);
+            var company = companies.First(c => c.Key == companyId);
 			var employees = read.GetQueryData<EmployeeMin>("select Id, EmployeeIntId, FirstName, LastName, MiddleInitial from PaxolOP.dbo.Employee where CompanyId='" + companies.First().Value + "'");
 			var accounts = read.GetQueryData<KeyValuePair<int, string>>("select Id as [Key], Name as [Value] from paxolop.dbo.CompanyAccount where CompanyId='" + companies.First().Value + "'");
 			var payrolls =
@@ -400,8 +399,9 @@ namespace OPImportUtility
 						j.PayeeName = string.Empty;
 						j.EntityType = (EntityTypeEnum)j.EntityType1;
 					}
-					
-					opjd.ForEach(ojd =>
+
+                    int checknumber = 0;
+                    opjd.ForEach(ojd =>
 					{
 						var a2 = accounts.First(ac => ac.Key == ojd.COAID);
 						var jd = new HrMaxx.OnlinePayroll.Models.JournalDetail()
@@ -414,8 +414,7 @@ namespace OPImportUtility
 							LastModfied = j.LastModified,
 							Memo = ojd.Memo
 						};
-						int checknumber = 0;
-						if (Int32.TryParse(ojd.Number, out checknumber))
+                        if (int.TryParse(ojd.Number, out checknumber))
 							jd.CheckNumber = checknumber;
 						if (j.TransactionType == TransactionType.Deposit && ojd.VendorCustomerID > 0)
 						{
@@ -453,7 +452,7 @@ namespace OPImportUtility
 					
 					Logger.Info(string.Format("Counter: CompanyIntId:{0} Total:{1}", cid.Key, list.Count));
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					
 					throw;
@@ -503,7 +502,7 @@ namespace OPImportUtility
 
 		}
 
-		private static int Extract(IContainer scope, string memo, DepositSchedule941 schedule, List<int> taxes,
+		private static int Extract(IContainer scope, string memo, DepositSchedule941 schedule,
 			string extractName, int counter, bool matchschedule, int year)
 		{
 			var read = scope.Resolve<IOPReadRepository>();
@@ -963,17 +962,17 @@ namespace OPImportUtility
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='3/15/2017', memo='Taxes Payable--SS, MD and FED Tax Amounts' where Id=190938;" +
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='3/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190939;" +
 			                   "update paxolop.dbo.CheckbookJournal set TransactionDate='2/15/2017', memo='Taxes Payable--SDI and CA Income Tax Amounts' where Id=190937;", new {});
-			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, new List<int> { 6 }, "Federal940", 1, false, 2014);
+			var counter = Extract(scope, "Taxes Payable--FUTA Amount", DepositSchedule941.Quarterly, "Federal940", 1, false, 2014);
 			Console.WriteLine("FUTA finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 9, 10 }, "StateCAUI", counter, false, 2014);
+			counter = Extract(scope, "Taxes Payable--UI and ETT Tax Amounts", DepositSchedule941.Quarterly, "StateCAUI", counter, false, 2014);
 			Console.WriteLine("UI ETT finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 6, 7 }, "StateCAPIT", counter, true, 2014);
+			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Quarterly, "StateCAPIT", counter, true, 2014);
 			Console.WriteLine("PIT quarterly finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Monthly, new List<int> { 6, 7 }, "StateCAPIT", counter, true, 2014);
+			counter = Extract(scope, "Taxes Payable--SDI and CA Income Tax Amounts", DepositSchedule941.Monthly, "StateCAPIT", counter, true, 2014);
 			Console.WriteLine("PIT Monthly finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Quarterly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, 2014);
+			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Quarterly, "Federal941", counter, true, 2014);
 			Console.WriteLine("941 quarterly finished {0} ", counter);
-			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Monthly, new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, 2014);
+			counter = Extract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.Monthly, "Federal941", counter, true, 2014);
 			Console.WriteLine("941 monthly finished {0} ", counter);
 			counter = SemiWeeklyExtract(scope, "Taxes Payable--SS, MD and FED Tax Amounts", DepositSchedule941.SemiWeekly,
 						new List<int> { 1, 2, 3, 4, 5 }, "Federal941", counter, true, "2015");
@@ -1018,7 +1017,6 @@ namespace OPImportUtility
 
 		private static void ImportProfitStarsData(IContainer scope)
 		{
-			var read = scope.Resolve<IOPReadRepository>();
 			var write = scope.Resolve<IWriteRepository>();
 
 			write.ExecuteQuery("set identity_insert DDPayroll On; " +
@@ -1286,7 +1284,11 @@ namespace OPImportUtility
 					}));
 					deds.ForEach(d =>
 					{
-						var compded = company.Deductions.First(cd => cd.Id == d.DeductionID);
+						var compded = company.Deductions.FirstOrDefault(cd => cd.Id == d.DeductionID);
+                        if (compded == null)
+                        {
+                            Logger.Info(string.Format("{0} {1}", d.DeductionID, paycheck.Id));
+                        }
 						var empded = employee.Deductions.FirstOrDefault(ed => ed.Deduction.Id == d.DeductionID);
 						if (empded == null)
 						{
@@ -1480,7 +1482,7 @@ namespace OPImportUtility
 				
 
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				
 			}
@@ -1543,8 +1545,7 @@ namespace OPImportUtility
 				var bd = Crypto.Decrypt(e.BirthDate);
 				if (!string.IsNullOrWhiteSpace(bd))
 				{
-					DateTime bd1;
-					if (DateTime.TryParse(bd, out bd1))
+                    if (DateTime.TryParse(bd, out var bd1))
 					{
 						mapped.BirthDate = bd1;
 					}
@@ -2379,8 +2380,7 @@ namespace OPImportUtility
 				var bd = Crypto.Decrypt(e.BirthDate);
 				if (!string.IsNullOrWhiteSpace(bd))
 				{
-					DateTime bd1;
-					if (DateTime.TryParse(bd, out bd1))
+                    if (DateTime.TryParse(bd, out var bd1))
 					{
 						mapped.BirthDate = bd1;
 					}

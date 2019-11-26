@@ -24,6 +24,8 @@
     <RestorePackages>true</RestorePackages>
     <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -426,6 +428,9 @@
     </Content>
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
+    <Content Include="templates\transformers\reports\HIForms\HW14.xslt" />
+    <Content Include="templates\transformers\reports\HIForms\HW3.xslt" />
+    <Content Include="templates\transformers\reports\HIForms\VP1.xslt" />
     <Content Include="templates\transformers\reports\TXForms\SUTA.xslt" />
     <Content Include="templates\transformers\reports\Utils.xslt" />
     <Content Include="templates\transformers\reports\W2\W2.xslt" />
@@ -443,6 +448,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="templates\GovtForms\HIForms\" />
     <Folder Include="templates\Payroll\" />
     <Folder Include="Views\Company\" />
   </ItemGroup>

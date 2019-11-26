@@ -34,16 +34,15 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		private readonly IPayrollService _payrollService;
 		private readonly IDocumentService _documentService;
 		private readonly IFileRepository _fileRepository;
-		private readonly ITaxationService _taxationService;
+		
 		private readonly ICompanyService _companyService;
 		private readonly IExcelService _excelService;
 		private readonly IReaderService _readerService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ITaxationService taxationService, ICompanyService companyService, IExcelService excelService, IReaderService readerService, IFileRepository fileRepository)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ICompanyService companyService, IExcelService excelService, IReaderService readerService, IFileRepository fileRepository)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
-			_taxationService = taxationService;
 			_companyService = companyService;
 			_excelService = excelService;
 			_readerService = readerService;
