@@ -1,31 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
-using System.Data.Entity.Core.Metadata.Edm;
-using System.Diagnostics.Eventing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Results;
 using Autofac;
-using AutoMapper.QueryableExtensions.Impl;
 using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
-using HrMaxx.Common.Models.Mementos;
 using HrMaxx.Common.Repository.Files;
-using HrMaxx.Common.Repository.Security;
-using HrMaxx.Infrastructure.Attributes;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Infrastructure.Security;
@@ -36,14 +22,11 @@ using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using HrMaxx.OnlinePayroll.Repository;
 using HrMaxx.OnlinePayroll.Repository.Companies;
-using HrMaxx.OnlinePayroll.Services.Mappers;
 using HrMaxxAPI.Code.IOC;
 using HrMaxxAPI.Resources.Common;
 using log4net;
 using log4net.Config;
 using Magnum;
-using Magnum.Reflection;
-using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -1545,7 +1528,8 @@ namespace OPImportUtility
 				var bd = Crypto.Decrypt(e.BirthDate);
 				if (!string.IsNullOrWhiteSpace(bd))
 				{
-                    if (DateTime.TryParse(bd, out var bd1))
+                    DateTime bd1;
+                    if (DateTime.TryParse(bd, out bd1))
 					{
 						mapped.BirthDate = bd1;
 					}
@@ -2380,7 +2364,8 @@ namespace OPImportUtility
 				var bd = Crypto.Decrypt(e.BirthDate);
 				if (!string.IsNullOrWhiteSpace(bd))
 				{
-                    if (DateTime.TryParse(bd, out var bd1))
+                    DateTime bd1;
+                    if (DateTime.TryParse(bd, out bd1))
 					{
 						mapped.BirthDate = bd1;
 					}
