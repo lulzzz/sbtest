@@ -277,7 +277,19 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 
 							});
 						});
-					}
+                    }
+                    $scope.deleteEmployeeDocument = function (doc) {
+                        $scope.mainData.confirmDialog('Are you sure you want to delete this employee compliance document?', 'danger', function () {
+                            commonRepository.deleteEmployeeDocument(doc.document.targetEntityId, doc.employeeId).then(function () {
+                                $scope.listEmployeeDocuments.splice($scope.listEmployeeDocuments.indexOf(doc), 1);
+                                refillTables();
+                                $scope.addAlert('successfully removed employee document', 'success');
+                            }, function () {
+                                $scope.addAlert('error deleting employee document', 'danger');
+
+                            });
+                        });
+                    }
 					$scope.removeFile = function(index) {
 
 						$scope.files.splice(index, 1);

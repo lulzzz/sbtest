@@ -347,5 +347,19 @@ namespace HrMaxx.Common.Services.Common
 		{
 			_commonRepository.ExecuteQuery<T>(sql, param);
 		}
-	}
+
+        public void DeleteEmployeeDocument(Guid employeeId, Guid documentId)
+        {
+            try
+            {
+                _commonRepository.DeleteEmployeeDocument(employeeId, documentId);
+            }
+            catch (Exception e)
+            {
+                var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" delete employee document  {0}, {1}", employeeId, documentId));
+                Log.Error(message, e);
+                throw new HrMaxxApplicationException(message, e);
+            }
+        }
+    }
 }

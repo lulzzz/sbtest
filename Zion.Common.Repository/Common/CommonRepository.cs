@@ -305,5 +305,19 @@ namespace HrMaxx.Common.Repository.Common
 				conn.Execute(sql, param);
 			}
 		}
-	}
+
+        public void DeleteEmployeeDocument(Guid employeeId, Guid documentId)
+        {
+            const string sql = "delete from EmployeeDocument where EmployeeId=@EmployeeId and DocumentId=@DocumentId;";
+            using (var conn = GetConnection())
+            {
+                conn.Execute(sql,
+                    new
+                    {
+                        EmployeeId = employeeId,
+                        DocumentId = documentId
+                    });
+            }
+        }
+    }
 }

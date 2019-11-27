@@ -66,7 +66,17 @@ common.factory('commonRepository', [
 					deferred.reject(error);
 				});
 				return deferred.promise;
-			},
+            },
+            deleteEmployeeDocument: function (documentId, employeeId) {
+                var deferred = $q.defer();
+
+                commonServer.one('Document/DeleteEmployeeDocument/' + employeeId + '/' + documentId).get().then(function () {
+                    deferred.resolve();
+                }, function (error) {
+                    deferred.reject(error);
+                });
+                return deferred.promise;
+            },
 			getCountries: function() {
 				var deferred = $q.defer();
 
@@ -357,7 +367,17 @@ common.factory('commonRepository', [
 				});
 
 				return deferred.promise;
-			},
+            },
+            getPayTypes: function () {
+                var deferred = $q.defer();
+                commonServer.one('PayTypes').getList().then(function (data) {
+                    deferred.resolve(data);
+                }, function (error) {
+                    deferred.reject(error);
+                });
+
+                return deferred.promise;
+            },
 			getBankHolidays: function () {
 				var deferred = $q.defer();
 				commonServer.one('BankHolidays').getList().then(function (data) {
@@ -387,7 +407,17 @@ common.factory('commonRepository', [
 				});
 
 				return deferred.promise;
-			},
+            },
+            savePayType: function (payType) {
+                var deferred = $q.defer();
+                commonServer.all('PayTypes').post(payType).then(function (data) {
+                    deferred.resolve(data);
+                }, function (error) {
+                    deferred.reject(error);
+                });
+
+                return deferred.promise;
+            },
 			getHostsAndCompanies: function (status, company) {
 				var deferred = $q.defer();
 				var url = 'HostsAndCompanies/' + status;

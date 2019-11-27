@@ -35,5 +35,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		object SaveBankHoliday(DateTime holiday, bool action);
 		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType subType);
 		void SetEmployeeAccess(Guid employeeId, Guid documentId);
-	}
+        IList<PayType> GetAllPayTypes();
+        PayType SavePayType(PayType payType);
+    }
 }

@@ -269,6 +269,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				{
 					wc.RatePerHour = mappedwc.RatePerHour;
 					wc.AnnualLimit = mappedwc.AnnualLimit;
+                    wc.GlobalLimit = mappedwc.GlobalLimit;
 					wc.CompanyManaged = mappedwc.CompanyManaged;
 					wc.IsLumpSum = mappedwc.IsLumpSum;
 					wc.IsEmployeeSpecific = mappedwc.IsEmployeeSpecific;

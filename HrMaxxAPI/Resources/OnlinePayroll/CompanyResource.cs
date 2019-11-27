@@ -178,6 +178,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal RatePerHour { get; set; }
 		[Required]
 		public decimal AnnualLimit { get; set; }
+        public decimal? GlobalLimit { get; set; }
 		public bool CompanyManaged { get; set; }
 		public bool IsLumpSum { get; set; }
 		public bool IsEmployeeSpecific { get; set; }

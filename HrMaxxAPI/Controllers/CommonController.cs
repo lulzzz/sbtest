@@ -262,5 +262,18 @@ namespace HrMaxxAPI.Controllers
 		{
 			return MakeServiceCall(() => _metaDataService.GetAccessMetaData(), "get access meta data", true);
 		}
-	}
+
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route(HrMaxxRoutes.PayTypes)]
+        public IList<PayType> PayTypes()
+        {
+            return MakeServiceCall(() => _metaDataService.GetAllPayTypes(), "get pay types ", true);
+        }
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route(HrMaxxRoutes.PayTypes)]
+        public PayType SavePayTypes(PayType payType)
+        {
+            return MakeServiceCall(() => _metaDataService.SavePayType(payType), "save pay types ", true);
+        }
+    }
 }

@@ -11,15 +11,18 @@
 		public const string Countries = "Countries";
 		public const string DeductionTypes = "DeductionTypes";
 		public const string SaveDeductionType = "SaveDeductionType";
-	
-		
-		public const string GetUserFullName = "GetUserFullName";
+        public const string PayTypes = "PayTypes";
+        
+
+
+        public const string GetUserFullName = "GetUserFullName";
 	
 		public const string GetNotifications = "GetNotifications";
 		public const string NotificationRead = "NotificationRead/{NotificationID:guid}";
 
 		public const string DeleteDocument = "Document/DeleteEntityDocument/{entityTypeId:int}/{entityId:guid}/{documentId:guid}";
-		public const string SaveDocumentType = "SaveDocumentType";
+        public const string DeleteEmployeeDocument = "Document/DeleteEmployeeDocument/{employeeId:guid}/{documentId:guid}";
+        public const string SaveDocumentType = "SaveDocumentType";
 
 		public const string Addresses = "Common/Addresses/{sourceTypeId:int}/{sourceId:guid}";
 		public const string FirstAddress = "Common/FirstAddress/{sourceTypeId:int}/{sourceId:guid}";

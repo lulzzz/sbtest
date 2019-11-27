@@ -29,5 +29,6 @@ namespace HrMaxx.Common.Contracts.Services
 		bool DocumentExists(Guid documentId);
 
 		DocumentDto SaveEntityDocument(EntityTypeEnum sourceType, FileDto file);
-	}
+        void DeleteEmployeeDocument(Guid employeeId, Guid documentId);
+    }
 }

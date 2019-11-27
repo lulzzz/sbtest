@@ -132,7 +132,38 @@
 			hasClaim : function (type1, value) {
 				var match = $filter('filter')(this.userClaims, { Type: type1 }, true);
 				return match.length > 0;
-			}
+            },
+            confirmDialog : function (message, type, callback, nocallback) {
+                var modalInstance = $modal.open({
+                    templateUrl: 'popover/confirm.html',
+                    controller: 'confirmDialogCtrl',
+                    backdrop: true,
+                    keyboard: true,
+                    backdropClick: true,
+                    size: 'lg',
+                    resolve: {
+                        message: function () {
+                            return message;
+                        },
+                        type: function () {
+                            return type;
+                        }
+                    }
+                });
+                modalInstance.result.then(function (result) {
+                    if (result)
+                        callback();
+                    else {
+                        if (nocallback)
+                            nocallback();
+
+                    }
+                }, function () {
+                    if (nocallback)
+                        nocallback();
+                    return false;
+                });
+            }
 		};
 		$scope.data = dataSvc;
 		$scope.addMissingCompany = function(host, company, url) {

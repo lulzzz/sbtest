@@ -448,6 +448,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						ytdAccumulation = payType.AnnualLimit;
 
 					var thisCheckValue = CalculatePayTypeAccumulation(paycheck, payType, ytdAccumulation);
+
 					var thisCheckUsed = paycheck.Compensations.Any(p => p.PayType.Id == payType.PayType.Id)
 						? CalculatePayTypeUsage(paycheck,
 							paycheck.Compensations.First(p => p.PayType.Id == payType.PayType.Id).Amount)
@@ -460,6 +461,23 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						accumulationValue = thisCheckValue;
 					}
 
+                    if (payType.GlobalLimit.HasValue && payType.GlobalLimit.Value > 0)
+                    {
+                        if (employeeAccumulation.Accumulations != null)
+                        {
+                            var globalValue = employeeAccumulation.Accumulations
+                                .Where(ac => ac.PayTypeId == payType.PayType.Id).Sum(ac => ac.YTDFiscal);
+                            if ((globalValue + accumulationValue) >= payType.GlobalLimit.Value)
+                            {
+                                accumulationValue = Math.Max(payType.GlobalLimit.Value - globalValue, 0);
+                            }
+                        }
+                        else
+                        {
+                            if (accumulationValue > payType.GlobalLimit.Value)
+                                accumulationValue = payType.GlobalLimit.Value;
+                        }
+                    }
 
 					var acc = new PayTypeAccumulation
 					{

@@ -1481,3 +1481,10 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'CompanyAccumlatedPayType'
+                 AND COLUMN_NAME = 'GlobalLimit')
+Alter table CompanyAccumlatedPayType Add GlobalLimit decimal(18,2);
+Go
+

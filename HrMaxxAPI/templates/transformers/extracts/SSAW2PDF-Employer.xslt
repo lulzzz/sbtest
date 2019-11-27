@@ -86,7 +86,7 @@
 	
 	<Report>
 		<TemplatePath>GovtForms\W2\</TemplatePath>
-		<Template>W2-<xsl:value-of select="$selectedYear"/>-Employer.pdf</Template>
+		<Template>W2-Employer.pdf</Template>
 		<Fields>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'year1'"/><xsl:with-param name="val1" select="$selectedYear"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'year11'"/><xsl:with-param name="val1" select="$selectedYear"/></xsl:call-template>

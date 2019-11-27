@@ -5,16 +5,16 @@
 			<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
 		</h3>
 	</div>
-	<div class="panel-body">
-		<div class="table-responsive col-sm-8 col-sm-offset-2">
+	<div class="panel-body"  ng-show="data.isBodyOpen">
+		<div class="table-responsive col-sm-12">
 			
 			<table class="table table-header table-bordered table-condensed form-controls input-sm">
 				<thead>
 					<tr>
-						<td class="col-sm-3">Id</td>
-						<td class="col-sm-3">Insurance Group No</td>
-						<td class="col-sm-3">Insurance Group</td>
-						<td class="col-sm-3"></td>
+						<th class="col-sm-3">Id</th>
+						<th class="col-sm-3">Insurance Group No</th>
+						<th class="col-sm-3">Insurance Group</th>
+						<th class="col-sm-3"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -35,14 +35,14 @@
 						<td style="white-space: nowrap">
 							<!-- form -->
 							<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-								<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-									<i class="fa fa-edit m-r-5"></i> edit
+								<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+									<i class="fa fa-edit m-r-5"></i> 
 								</button>
-								<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-success">
-									<i class="fa fa-save m-r-5"></i> save
+								<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+									<i class="fa fa-save m-r-5"></i> 
 								</button>
-								<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
-									<i class="fa fa-remove m-r-5"></i> cancel
+								<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">>
+									<i class="fa fa-remove m-r-5"></i> 
 								</button>
 							</form>
 						</td>
@@ -54,8 +54,8 @@
 						</td>
 
 						<td>
-							<button type="button" ng-click="add()" class="btn btn-primary">
-								Add
+							<button type="button" ng-click="add()" class="btn btn-lg  btn-icon btn-circle btn-success">
+                                <i class="fa fa-plus"></i>
 							</button>
 						</td>
 					</tr>

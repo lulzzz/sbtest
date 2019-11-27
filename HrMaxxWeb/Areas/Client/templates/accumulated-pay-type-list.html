@@ -4,16 +4,17 @@
 	</div>
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
-			<tr>
-				<td class="col-sm-2">Pay Type</td>
-				<td class="col-sm-1">Option</td>
-				<td class="col-sm-1">Rate (upto 4 decimal)</td>
-				<td class="col-sm-1">Annual Limit</td>
-				<td class="col-sm-1">Is Company Managed?</td>
-				<td class="col-sm-1">Is LumpSum?</td>
-				<td class="col-sm-1">Is Employee Specific?</td>
-				<td class="col-sm-2" ng-show="showControls"></td>
-			</tr>
+            <tr>
+                <td class="col-sm-2">Pay Type</td>
+                <td class="col-sm-1">Option</td>
+                <td class="col-sm-1">Rate (upto 4 decimal)</td>
+                <td class="col-sm-1">Annual Limit</td>
+                <td class="col-sm-1">Global Limit</td>
+                <td class="col-sm-1">Is Company Managed?</td>
+                <td class="col-sm-1">Is LumpSum?</td>
+                <td class="col-sm-1">Is Employee Specific?</td>
+                <td class="col-sm-2" ng-show="showControls"></td>
+            </tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="item in list track by $index">
@@ -32,12 +33,18 @@
 						{{ item.ratePerHour }} 
 					</span>
 				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.annualLimit" e-name="limit" e-form="rowform" e-ng-change="item.annualLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.annualLimit }}
-					</span>
-				</td>
+                <td>
+                    <!-- editable comment (text with validation) -->
+                    <span editable-number="item.annualLimit" e-name="limit" e-form="rowform" e-ng-change="item.annualLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                        {{ item.annualLimit }}
+                    </span>
+                </td>
+                <td>
+                    <!-- editable comment (text with validation) -->
+                    <span editable-number="item.globalLimit" e-name="limit" e-form="rowform" e-ng-change="item.globalLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-ng-min="item.annualLimit">
+                        {{ item.globalLimit }}
+                    </span>
+                </td>
 				<td>
 					<!-- editable comment (text with validation) -->
 					<div>

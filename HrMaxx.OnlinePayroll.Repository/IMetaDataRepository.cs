@@ -37,5 +37,6 @@ namespace HrMaxx.OnlinePayroll.Repository
 		
 		CompanyDocumentSubType SaveDocumentSubType(CompanyDocumentSubType dt);
 		void SetEmployeeDocumentAccess(Guid employeeId, Guid documentId);
-	}
+        PayType SavePayType(PayType payType);
+    }
 }

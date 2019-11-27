@@ -373,7 +373,37 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 		}
 
-		public List<KeyValuePair<int, DateTime>> GetBankHolidays()
+        public IList<PayType> GetAllPayTypes()
+        {
+            try
+            {
+               var list = _metaDataRepository.GetAllPayTypes();
+               return list;
+            }
+            catch (Exception e)
+            {
+                var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Pay types ");
+                Log.Error(message, e);
+                throw new HrMaxxApplicationException(message, e);
+            }
+        }
+
+        public PayType SavePayType(PayType payType)
+        {
+            try
+            {
+                var saved = _metaDataRepository.SavePayType(payType);
+                return saved;
+            }
+            catch (Exception e)
+            {
+                var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Pay type ");
+                Log.Error(message, e);
+                throw new HrMaxxApplicationException(message, e);
+            }
+        }
+
+        public List<KeyValuePair<int, DateTime>> GetBankHolidays()
 		{
 			try
 			{

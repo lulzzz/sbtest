@@ -436,5 +436,21 @@ namespace HrMaxx.OnlinePayroll.Repository
 				conn.Execute(sql, new { EmployeeId = employeeId, DocumentId = documentId});
 			}
 		}
-	}
+
+        public PayType SavePayType(PayType payType)
+        {
+            const string sql = "if exists(select 'x' from PayType where Id=@Id) " +
+                               "begin " +
+                               "update PayType set Name=@Name, Description=@Description, IsTaxable=@IsTaxable, IsAccumulable=@IsAccumulable where Id=@Id;" +
+                               "select @Id; end " +
+                               "else " +
+                               "begin " +
+                               "insert into PayType(Name, Description, IsTaxable, IsAccumulable) values(@Name, @Description, @IsTaxable, @IsAccumulable); select cast(scope_identity() as int) end";
+            using (var conn = GetConnection())
+            {
+                payType.Id = conn.Query<int>(sql, payType).Single();
+            }
+            return payType;
+        }
+    }
 }

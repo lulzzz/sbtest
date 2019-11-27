@@ -300,5 +300,22 @@ namespace HrMaxx.Common.Services.Document
 				throw;
 			}
 		}
-	}
+
+        public void DeleteEmployeeDocument(Guid employeeId, Guid documentId)
+        {
+            try
+            {
+                var doc = _commonService.GetDocument(documentId);
+                _commonService.DeleteEmployeeDocument(employeeId, documentId);
+                _commonService.DeleteDocument(employeeId, documentId);
+                _fileRepository.DeleteDestinationFile(doc.DocumentDto.Id + "." + doc.DocumentDto.DocumentExtension);
+            }
+            catch (Exception e)
+            {
+                string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" save document for entity {0}-{1}-{2}", EntityTypeEnum.Employee, employeeId, documentId));
+                Log.Error(message, e);
+                throw new HrMaxxApplicationException(message, e);
+            }
+        }
+    }
 }
