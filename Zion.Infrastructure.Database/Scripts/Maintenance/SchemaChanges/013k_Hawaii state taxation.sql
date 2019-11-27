@@ -1488,3 +1488,5 @@ IF NOT EXISTS(SELECT *
 Alter table CompanyAccumlatedPayType Add GlobalLimit decimal(18,2);
 Go
 
+update tax set Name=('CA ' + Name) where StateId=1;
+
