@@ -152,6 +152,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				var dbState = dbStates.First(s => s.Id == existingState.Id);
 				dbState.EIN = existingState.EIN;
 				dbState.Pin = existingState.Pin;
+                dbState.UIAccountNumber = existingState.UIAccountNumber;
 			}
 
 			_dbContext.SaveChanges();

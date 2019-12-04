@@ -297,14 +297,16 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<HrMaxx.OnlinePayroll.Models.JsonDataModel.CompanyTaxState, HrMaxx.OnlinePayroll.Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))
-				.ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.EIN)))
+                .ForMember(dest => dest.StateUIAccount, opt => opt.MapFrom(src => src.UIAccountNumber))
+                .ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.EIN)))
 				.ForMember(dest => dest.StatePIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.Pin)));
 
 			CreateMap<HrMaxx.OnlinePayroll.Models.JsonDataModel.CompanyTaxState, State>()
 				.ForMember(dest => dest.Abbreviation, opt => opt.MapFrom(src => src.StateCode))
 				.ForMember(dest => dest.TaxesEnabled, opt => opt.Ignore())
 				.ForMember(dest => dest.HasCounties, opt => opt.Ignore())
-				.ForMember(dest => dest.EinFormat, opt => opt.Ignore())
+                .ForMember(dest => dest.UiFormat, opt => opt.Ignore())
+                .ForMember(dest => dest.EinFormat, opt => opt.Ignore())
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 			CreateMap<HrMaxx.OnlinePayroll.Models.JsonDataModel.InsuranceGroup, HrMaxx.Common.Models.InsuranceGroupDto>();

@@ -137,6 +137,8 @@ namespace HrMaxx.OnlinePayroll.Models
 					return Taxes.Where(t => t.Tax.Code.Equals("TX-SUTA")).ToList();
                 if (ExtractType == ExtractType.HISIT)
                     return Taxes.Where(t => t.Tax.Code.Equals("HI-SIT")).ToList();
+                if (ExtractType == ExtractType.HIUI)
+                    return Taxes.Where(t => t.Tax.Code.Equals("HI-SUI")).ToList();
                 return Taxes;
 
 			}
@@ -147,7 +149,13 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return ApplicableTaxes.Sum(t => t.YTDWage); }
 			set { }
 		}
-		public decimal ApplicableAmounts
+        public decimal OutOfStateUIWages
+        {
+            get { return Taxes.Where(t => t.Tax.Code.Equals("HI-SUI") || t.Tax.Code.Equals("SUI") || t.Tax.Code.Equals("TX-SUTA")).Sum(t=>t.YTDWage) - ApplicableWages; }
+            set { }
+        }
+        
+        public decimal ApplicableAmounts
 		{
 			get { return ApplicableTaxes.Sum(t => t.YTD); }
 			set { }

@@ -187,6 +187,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public State State { get; set; }
 		public string StateEIN { get; set; }
 		public string StatePIN { get; set; }
+        public string StateUIAccount { get; set; }
 	}
 
 	public class CompanyTaxRate

@@ -262,6 +262,7 @@
           <Property Name="StateName" Type="varchar(max)" Nullable="false" />
           <Property Name="EIN" Type="varchar(max)" Nullable="false" />
           <Property Name="Pin" Type="varchar(max)" Nullable="false" />
+          <Property Name="UIAccountNumber" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyTSImportMap">
           <Key>
@@ -1891,6 +1892,7 @@
           <Property Name="EIN" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Pin" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyTaxState_Company" FromRole="CompanyTaxState" ToRole="Company" />
+          <Property Name="UIAccountNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Tax">
           <Key>
@@ -3231,6 +3233,7 @@
           <EntitySetMapping Name="CompanyTaxStates">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyTaxState">
               <MappingFragment StoreEntitySet="CompanyTaxState">
+                <ScalarProperty Name="UIAccountNumber" ColumnName="UIAccountNumber" />
                 <ScalarProperty Name="Pin" ColumnName="Pin" />
                 <ScalarProperty Name="EIN" ColumnName="EIN" />
                 <ScalarProperty Name="StateName" ColumnName="StateName" />

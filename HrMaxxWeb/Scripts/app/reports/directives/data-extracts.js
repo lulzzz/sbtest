@@ -138,7 +138,15 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							endDate: null,
 							includeHistory: false,
 							includeInactive: true
-						}
+                        },
+                        filterHIUIQ: {
+                            year: 0,
+                            depositSchedule: 0,
+                            month: null,
+                            quarter: null,
+                            depositDate: moment().startOf('day').toDate(),
+                            includeHistory: false
+                        }
 					}
 					$scope.is941Valid = function() {
 						if (!dataSvc.filter941.year || !dataSvc.filter941.depositSchedule || !dataSvc.filter941.depositDate)
@@ -265,7 +273,13 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 						}
                     }
-
+                    $scope.isHIUIValid = function () {
+                        if (dataSvc.filterHIUIQ.year && dataSvc.filterHIUIQ.depositDate && dataSvc.filterHIUIQ.quarter)
+                            return true;
+                        else
+                            return false;
+                        
+                    }
                     
 
 					$scope.data = dataSvc;
@@ -505,7 +519,11 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						else {
 							getReport('StateCAUI', 'California UI & ETT GovOne File', dataSvc.filterCAUIQ.year, dataSvc.filterCAUIQ.quarter, 3, dataSvc.filterCAUIQ.depositDate, null, null, null, true, dataSvc.filterCAUIQ.includeHistory);
 						}
-					}
+                    }
+                    $scope.getReportHIUIQ = function () {
+                        getReport('StateHIUI', 'Hawaii UI Electronic File', dataSvc.filterHIUIQ.year, dataSvc.filterHIUIQ.quarter, null, dataSvc.filterHIUIQ.depositDate, null, null, null, true, dataSvc.filterHIUIQ.includeHistory);
+                        
+                    }
 					$scope.getReportCAUIQExcel = function () {
 						if (dataSvc.filterCAUIQ.depositSchedule === 1)
 							getReport('StateCAUIExcel', 'California UI & ETT Excel File', dataSvc.filterCAUIQ.year, null, 1, dataSvc.filterCAUIQ.depositDate, null, dataSvc.filterCAUIQ.payPeriod.startDate, dataSvc.filterCAUIQ.payPeriod.endDate, false, dataSvc.filterCAUIQ.includeHistory);

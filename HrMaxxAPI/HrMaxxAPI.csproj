@@ -343,6 +343,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\extracts\C1095PDF-2018.xslt" />
+    <Content Include="templates\transformers\extracts\HIUIEFTPS.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\extracts\HostCADE34.xslt" />
     <Content Include="templates\transformers\extracts\CAUIETTEFTPSExcel.xslt" />
     <Content Include="templates\transformers\extracts\CAPITEFTPSExcel.xslt" />
@@ -428,6 +431,7 @@
     </Content>
     <Content Include="templates\transformers\reports\CAForms\DE9.xslt" />
     <Content Include="templates\transformers\reports\CAForms\DE9C.xslt" />
+    <Content Include="templates\transformers\reports\HIForms\HWUI.xslt" />
     <Content Include="templates\transformers\reports\HIForms\HW14.xslt" />
     <Content Include="templates\transformers\reports\HIForms\HW3.xslt" />
     <Content Include="templates\transformers\reports\HIForms\VP1.xslt" />

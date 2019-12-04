@@ -530,6 +530,7 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		CADE9=6,
 		TXSuta=7,
         HISIT=8,
+        HIUI = 9,
 		NA=0
 	}
 

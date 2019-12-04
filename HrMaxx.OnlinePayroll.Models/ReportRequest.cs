@@ -72,6 +72,8 @@ namespace HrMaxx.OnlinePayroll.Models
 					return ExtractType.TXSuta;
                 else if (ReportName.Equals("StateHIPIT"))
                     return ExtractType.HISIT;
+                else if (ReportName.Equals("StateHIUI") || ReportName.Equals("StateHIUIForm"))
+                    return ExtractType.HIUI;
                 else
 					return ExtractType.NA;
 			}

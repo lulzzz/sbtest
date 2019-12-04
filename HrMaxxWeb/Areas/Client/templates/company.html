@@ -397,16 +397,26 @@
 													</div>
 
 												</div>
-												<div class="col-sm-2">
-													<div class="form-group">
-														<label>State Tax PIN</label>
-														<div>
-															<input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
+                                                <div class="col-sm-2">
+                                                    <div class="form-group">
+                                                        <label>State Tax PIN</label>
+                                                        <div>
+                                                            <input type="text" ng-model="state.statePin" class="form-control" ng-required="selectedCompany.allowEFileFormFiling" data-parsley-group="wizard-step-3" ui-mask="9999" ng-disabled="selectedCompany.isLocation" />
 
-														</div>
-													</div>
+                                                        </div>
+                                                    </div>
 
-												</div>
+                                                </div>
+                                                <div class="col-sm-2" ng-if="getStateUiFormat(state)!==''">
+                                                    <div class="form-group">
+                                                        <label>UI Account #</label>
+                                                        <div>
+                                                            <input type="text" ng-model="state.stateUIAccount" class="form-control" required="required" data-parsley-group="wizard-step-3" ui-mask="{{getStateUiFormat(state)}}" ng-disabled="selectedCompany.isLocation" />({{getStateUiFormat(state)}})
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
 												<div class="col-sm-2" ng-if="state.isNew">
 													<div class="form-group">
 														<label>&nbsp;</label>

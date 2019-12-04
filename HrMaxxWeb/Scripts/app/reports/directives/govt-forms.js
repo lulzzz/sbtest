@@ -73,6 +73,12 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
                             includeHistory: true,
                             includeClients: false
                         },
+                        filterhiui: {
+                            year: 0,
+                            quarter: 0,
+                            includeHistory: true,
+                            includeClients: false
+                        },
                         filterHIPIT: {
                             year: 0,
                             payPeriods: [],
@@ -262,7 +268,9 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
                             getReport('StateHIPIT', 'Hawaii PIT GovOne File', dataSvc.filterHIPIT.year, dataSvc.filterHIPIT.quarter, dataSvc.filterHIPIT.includeClients, dataSvc.filterHIPIT.includeHistory);
                         }
                     }
-
+                    $scope.getReportHWUI = function () {
+                        getReport('StateHIUIForm', 'Hawaii State Unemployment Insurance', dataSvc.filterhiui.year, dataSvc.filterhiui.quarter, dataSvc.filterhiui.includeHistory, dataSvc.filterhiui.includeClients);
+                    }
 					$scope.getReport940 = function() {
 						getReport('Federal940', 'Federal 940', dataSvc.filter940.year, null, dataSvc.filter940.includeHistory, dataSvc.filter940.includeClients);
 					}

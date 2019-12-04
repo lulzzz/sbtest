@@ -49,7 +49,9 @@ namespace HrMaxx.Common.Models.Dtos
 		}
 		public bool HasCounties { get; set; }
 		public string EinFormat { get; set; }
-	}
+
+        public string UiFormat { get; set; }
+    }
 
 	public class Country
 	{

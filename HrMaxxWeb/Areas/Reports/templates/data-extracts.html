@@ -630,7 +630,62 @@
 
 
                 </div>
-                
+
+                <div class="row">
+                    <div class="row">
+                        <h4><u>Hawaii State Tax Payment Extracts</u></h4>
+                    </div>
+                    
+                    <div class="col-sm-12">
+                        <div class="col-sm-12">
+                            <h5><i class=" fa fa-file-pdf-o fa-lg" /><span class="m-l-10"><em>Hawaii State Unemployment Insurance Electronic - UC-B6 </em></span></h5>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="col-sm-2 form-group">
+                                <label>Year</label>
+                                <select ng-model="data.filterHIUIQ.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years | orderBy:'year':true track by year">
+                                    <option value=""> select year</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-2 form-group">
+                                <label>Quarter</label>
+                                <select ng-model="data.filterHIUIQ.quarter" class="form-control" convert-to-number>
+                                    <option value=""> select quarter</option>
+                                    <option value="1"> First Quarter</option>
+                                    <option value="2"> Second Quarter</option>
+                                    <option value="3"> Third Quarter</option>
+                                    <option value="4"> Fourth Quarter</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-2 form-group">
+                                <label>Deposit Date</label>
+                                <date-ctrl model="data.filterHIUIQ.depositDate" min="minDepositDate" disabled="false" />
+                            </div>
+                            <div class="col-sm-2 form-group">
+                                <label></label>
+                                <div>
+                                    <label for="hiuihistory" class="switch">
+                                        Include History?
+                                        <input id="hiuihistory" type="checkbox" ng-model="data.filterHIUIQ.includeHistory" /><i></i>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 form-group">
+                                <br />
+                                <button class="btn btn-sm btn-primary" ng-click="getReportHIUIQ()" ng-disabled="!isHIUIValid()">Review</button>
+                                
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
             </div>
 
 		</div>

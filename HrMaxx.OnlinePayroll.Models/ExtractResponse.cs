@@ -140,6 +140,8 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public string StateEIN { get { return Crypto.Decrypt(EIN); } }
 		public string StatePIN { get { return Crypto.Decrypt(Pin); } }
+
+        public string UIAccountNumber { get; set; }
 	}
 	public class ExtractCompany
 	{

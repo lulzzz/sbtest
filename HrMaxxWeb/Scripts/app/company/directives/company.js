@@ -128,7 +128,13 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
 							return (cst && cst.einFormat) ? cst.einFormat : "999-9999-9";
 						}
-					}
+                    }
+                    $scope.getStateUiFormat = function (st) {
+                        if (dataSvc.companyMetaData) {
+                            var cst = $filter('filter')(dataSvc.companyMetaData.countries[0].states, { stateId: st.state.stateId })[0];
+                            return (cst && cst.uiFormat) ? cst.uiFormat : "";
+                        }
+                    }
 					$scope.validateRoutingNumber = function (rtn) {
 						if (!rtn) {
 							return true;

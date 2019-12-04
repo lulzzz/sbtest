@@ -220,7 +220,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 			CreateMap<Models.DataModel.CompanyTaxState, Models.CompanyTaxState>()
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => src))
 				.ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.EIN)))
-				.ForMember(dest => dest.StatePIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.Pin)));
+                .ForMember(dest => dest.StateUIAccount, opt => opt.MapFrom(src => src.UIAccountNumber))
+                .ForMember(dest => dest.StatePIN, opt => opt.MapFrom(src => Crypto.Decrypt(src.Pin)));
 
 			CreateMap<Models.CompanyTaxState, Models.DataModel.CompanyTaxState>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -231,13 +232,15 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.StateCode, opt => opt.MapFrom(src => src.State.Abbreviation))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.State.StateName))
 				.ForMember(dest => dest.EIN, opt => opt.MapFrom(src => Crypto.Encrypt(src.StateEIN)))
-				.ForMember(dest => dest.Pin, opt => opt.MapFrom(src => Crypto.Encrypt(src.StatePIN)));
+                .ForMember(dest => dest.UIAccountNumber, opt => opt.MapFrom(src => src.StateUIAccount))
+                .ForMember(dest => dest.Pin, opt => opt.MapFrom(src => Crypto.Encrypt(src.StatePIN)));
 
 			CreateMap<Models.DataModel.CompanyTaxState, State>()
 				.ForMember(dest => dest.Abbreviation, opt => opt.MapFrom(src => src.StateCode))
 				.ForMember(dest => dest.TaxesEnabled, opt => opt.Ignore())
 				.ForMember(dest => dest.HasCounties, opt => opt.Ignore())
-				.ForMember(dest => dest.EinFormat, opt => opt.Ignore())
+                .ForMember(dest => dest.UiFormat, opt => opt.Ignore())
+                .ForMember(dest => dest.EinFormat, opt => opt.Ignore())
 				.ForMember(dest => dest.StateId, opt => opt.MapFrom(src => src.StateId))
 				.ForMember(dest => dest.StateName, opt => opt.MapFrom(src => src.StateName));
 
@@ -623,7 +626,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
 				.ForMember(dest => dest.CountryId, opt => opt.MapFrom(src => src.CountryId))
 				.ForMember(dest => dest.State, opt => opt.MapFrom(src => new State{StateId=src.StateId, StateName = src.StateName, Abbreviation=src.StateCode}))
-				.ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src=>Crypto.Decrypt(src.EIN)))
+                .ForMember(dest => dest.StateUIAccount, opt => opt.MapFrom(src => src.UIAccountNumber))
+                .ForMember(dest => dest.StateEIN, opt => opt.MapFrom(src=>Crypto.Decrypt(src.EIN)))
 				.ForMember(dest => dest.StatePIN, opt => opt.MapFrom(src=>Crypto.Decrypt(src.Pin)));
 
 			

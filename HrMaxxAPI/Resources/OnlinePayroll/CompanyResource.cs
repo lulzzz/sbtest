@@ -194,6 +194,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string StateEIN { get; set; }
 		[Required]
 		public string StatePin { get; set; }
+        public string StateUIAccount { get; set; }
 	}
 
 	public class CompanyTaxRateResource

@@ -180,6 +180,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetTexasStateUnEmployment(request);
                 else if (request.ReportName.Equals("StateHIPIT"))
                     return StateHIPIT(request);
+                else if (request.ReportName.Equals("StateHIUIForm"))
+                    return StateHIUIForm(request);
                 else if (request.ReportName.Equals("StateHIHW14"))
                     return StateHIHW14(request);
                 else if (request.ReportName.Equals("HW3"))
@@ -257,7 +259,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return StateCAPITExcel(request);
                 else if (request.ReportName.Equals("StateCAUI"))
 					return StateCAUI(request);
-				else if (request.ReportName.Equals("StateCAUIExcel"))
+                else if (request.ReportName.Equals("StateHIUI"))
+                    return StateHIUI(request);
+                else if (request.ReportName.Equals("StateCAUIExcel"))
 					return StateCAUIExcel(request);
 				else if (request.ReportName.Equals("StateCADE6"))
 					return StateCADE6(request);
@@ -1372,6 +1376,94 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
             return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/HIForms/HW14.xslt");
         }
+        private FileDto StateHIUIForm(ReportRequest request)
+        {
+            var response = new ReportResponse();
+            response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate,
+                type: AccumulationType.Company, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients,
+                extractDepositName: request.ExtractDepositName, state: (int)States.Hawaii).First();
+            response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, report: "CaliforniaDE9C", state: (int)States.Hawaii).Where(e => e.PayCheckWages.GrossWage > 0).ToList();
+            response.CompanyAccumulations.ExtractType = request.ExtractType;
+            response.EmployeeAccumulationList.ForEach(ea => ea.ExtractType = request.ExtractType);
+
+            response.Company = GetCompany(request.CompanyId);
+            response.Host = GetHost(request.HostId);
+            response.Contact = getContactForEntity(EntityTypeEnum.Host, request.HostId, response.Host.CompanyId);
+            response.CompanyContact = getContactForEntity(EntityTypeEnum.Company, request.CompanyId);
+            if (response.Company.FileUnderHost)
+            {
+                response.Company = response.Host.Company;
+            }
+            var quarterEndDate = new DateTime(request.Year, request.Quarter * 3,
+                DateTime.DaysInMonth(request.Year, request.Quarter * 3));
+            var argList = new XsltArgumentList();
+
+            argList.AddParam("selectedYear", "", request.Year);
+            argList.AddParam("enddate", "", request.EndDate.ToString("MMddyy"));
+            argList.AddParam("quarter", "", request.Quarter.ToString());
+            argList.AddParam("today", "", DateTime.Today.ToString("MM/dd/yyyy"));
+            argList.AddParam("quarterEndDate", "", quarterEndDate.ToString("MM/dd/yyyy"));
+
+            return GetReportTransformedAndPrinted(request, response, argList, "transformers/reports/HIForms/HWUI.xslt");
+
+        }
+
+        private Extract StateHIUI(ReportRequest request)
+        {
+            request.Description = string.Format("Hawaii UI UC-B6 {0} - {1}", request.Year, request.Quarter);
+            request.AllowFiling = true;
+            request.AllowExclude = false;
+            request.State = (int)States.Hawaii;
+            var tempDepositSchedule = request.DepositSchedule;
+            request.DepositSchedule = null;
+            var data = GetExtractResponse(request, includeTaxes: true);
+            data.Hosts.ForEach(h =>
+            {
+                
+                    h.Companies = h.Companies.Where(c => c.PayCheckAccumulation != null && c.PayCheckAccumulation.PayCheckWages != null && c.PayCheckAccumulation.PayCheckWages.GrossWage > 0).ToList();
+                    h.PayCheckAccumulation = new Accumulation() { ExtractType = request.ExtractType, Year = request.Year, Quarter = request.Quarter, PayCheckWages = new PayCheckWages(), PayCheckList = new List<PayCheckSummary>(), VoidedPayCheckList = new List<PayCheckSummary>(), Taxes = new List<PayCheckTax>(), Deductions = new List<PayCheckDeduction>(), Compensations = new List<PayCheckCompensation>(), WorkerCompensations = new List<PayCheckWorkerCompensation>(), PayCodes = new List<PayCheckPayCode>(), DailyAccumulations = new List<DailyAccumulation>(), MonthlyAccumulations = new List<MonthlyAccumulation>() };
+                    h.EmployeeAccumulationList = new List<Accumulation>();
+                    var ea = _readerService.GetTaxAccumulations(company: h.HostCompany.Id, startdate: request.StartDate,
+                            enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true,
+                            report: request.ReportName, includeHistory: request.IncludeHistory, includeClients: true);
+
+                    h.EmployeeAccumulationList = ea.Where(ea1 => ea1.PayCheckWages != null && ea1.PayCheckWages.GrossWage > 0).ToList();
+                    h.EmployeeAccumulationList.ForEach(ea1 => ea1.ExtractType = request.ExtractType);
+                   
+                    
+                    h.Companies.ForEach(c =>
+                    {
+                        c.PayCheckAccumulation.ExtractType = request.ExtractType;
+                        c.PayCheckAccumulation.Year = request.Year;
+                        c.PayCheckAccumulation.Quarter = request.Quarter;
+                        h.PayCheckAccumulation.AddAccumulation(c.PayCheckAccumulation);
+
+                        if (c.VoidedAccumulation != null)
+                        {
+                            c.PayCheckAccumulation.SubtractAccumulation(c.VoidedAccumulation);
+                            h.PayCheckAccumulation.SubtractAccumulation(c.VoidedAccumulation);
+                        }
+
+                        c.PayCheckAccumulation.PayCheckList = new List<PayCheckSummary>();
+
+
+                    });
+
+            });
+            request.DepositSchedule = tempDepositSchedule;
+
+            var endQuarterMonth = (int)((request.EndDate.Month + 2) / 3) * 3;
+
+            var argList = new List<KeyValuePair<string, string>>();
+
+            argList.Add(new KeyValuePair<string, string>("reportConst", "01300"));
+            argList.Add(new KeyValuePair<string, string>("quarter", request.Quarter.ToString()));
+            argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("MM/dd/yy")));
+            argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+
+
+            return GetExtractTransformed(request, data, argList, "transformers/extracts/HIUIEFTPS.xslt", "csv", string.Format("{0}-{1}-{2}.csv", request.Description, request.Year, request.Quarter));
+        }
 
         private Extract StateCAUI(ReportRequest request)
 		{
@@ -1755,7 +1847,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			else
 			{
 				var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
-				if (extract.Extension.Equals("txt"))
+				if (extract.Extension.Equals("txt") || extract.Extension.Equals("csv"))
 					transformed = Transform(transformed);
 
 				extract.File = new FileDto
