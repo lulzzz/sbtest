@@ -83,7 +83,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 					$scope.$parent.$parent.refreshHostAndCompanies();
 				}
 				$scope.setSelectedHost = function (item) {
-					if (!item.hostIntId && !item.firmName) {
+					if (!item.id && !item.firmName) {
 						$scope.selectedHost = item;
 						$scope.isBodyOpen = false;
 

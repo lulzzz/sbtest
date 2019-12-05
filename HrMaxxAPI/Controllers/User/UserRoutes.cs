@@ -12,5 +12,6 @@
 		public const string ResetPassword = "UserPasswordReset";
 		public const string UserMetaData = "MetaDataForUsers";
 		public const string MigrateUsers = "MigrateUsers";
-	}
+        public const string SetDefaultPassword = "SetDefaultPassword";
+    }
 }

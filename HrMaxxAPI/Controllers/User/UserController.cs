@@ -173,7 +173,49 @@ namespace HrMaxxAPI.Controllers.User
 
 		}
 
-		[HttpPost]
+        [HttpPost]
+        [Route(UserRoutes.SetDefaultPassword)]
+        public async Task ChangePasswordToDefault(UserResource resource)
+        {
+            var userExists = await UserManager.FindByNameAsync(resource.SubjectUserName);
+            if (userExists == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = "this user does not exist"
+                });
+            }
+            try
+            {
+                var token = await UserManager.GeneratePasswordResetTokenAsync(userExists.Id);
+                var result = await UserManager.ResetPasswordAsync(userExists.Id, token, "Paxol1234!");
+                if (!result.Succeeded)
+                {
+                    Logger.Error("Error resetting user password to default - ", new Exception(result.Errors.First()));
+                    throw new HttpResponseException(new HttpResponseMessage
+                    {
+                        StatusCode = HttpStatusCode.InternalServerError,
+                        ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Change User Password"
+                    });
+
+                }
+                else
+                {
+                    userExists.EmailConfirmed = true;
+                    userExists.Active = true;
+                    await UserManager.UpdateAsync(userExists);
+                }
+            }
+            catch (Exception e)
+            {
+                
+                
+            }
+
+        }
+
+        [HttpPost]
 		[Route(UserRoutes.SaveUser)]
 		public async Task<UserResource> SaveUser(UserResource model)
 		{

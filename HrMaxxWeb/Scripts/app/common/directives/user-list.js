@@ -338,7 +338,14 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					}, function (error) {
 						addAlert('Error: ' + error.statusText, 'danger');
 					});
-				}
+                }
+                $scope.resetPasswordDefault = function () {
+                    commonRepository.resetPasswordDefault($scope.selectedUser).then(function (result) {
+                        addAlert('successfully reset the password to default password', 'success');
+                    }, function (error) {
+                        addAlert('Error: ' + error.statusText, 'danger');
+                    });
+                }
 				var init = function () {
 					setRoleList();
 					commonRepository.getUsersMetaData().then(function (result) {

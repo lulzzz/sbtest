@@ -567,6 +567,8 @@
     <Content Include="templates\GovtForms\HIForms\HW-3.pdf" />
     <Content Include="templates\GovtForms\W2\W2-Employer.pdf" />
     <Content Include="templates\GovtForms\W2\W2.pdf" />
+    <Content Include="templates\GovtForms\HIForms\HIUCB.pdf" />
+    <Content Include="templates\GovtForms\HIForms\HIUCBPage.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

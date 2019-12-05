@@ -75,27 +75,27 @@ namespace HrMaxx.Common.Services.Security
                 AllowOnlyAlphanumericUserNames = true,
                 RequireUniqueEmail = false
             };
-					
+
 
             // Configure validation logic for passwords
-						//manager.PasswordValidator = new PasswordValidator
-						//{
-						//	RequiredLength = 6,
-						//	RequireNonLetterOrDigit = true,
-						//	RequireDigit = true,
-						//	RequireLowercase = true,
-						//	RequireUppercase = true,
-						//};
+            manager.PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 6,
+                RequireNonLetterOrDigit = true,
+                RequireDigit = true,
+                RequireLowercase = true,
+                RequireUppercase = true,
+            };
 
-						manager.PasswordValidator = new PasswordValidator
-						{
-							RequiredLength = 1,
-							RequireNonLetterOrDigit = false,
-							RequireDigit = false,
-							RequireLowercase = false,
-							RequireUppercase = false,
-						};
-						
+            //manager.PasswordValidator = new PasswordValidator
+            //{
+            //	RequiredLength = 1,
+            //	RequireNonLetterOrDigit = false,
+            //	RequireDigit = false,
+            //	RequireLowercase = false,
+            //	RequireUppercase = false,
+            //};
+
             // Configure user lockout defaults
             manager.UserLockoutEnabledByDefault = true;
             manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);

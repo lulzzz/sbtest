@@ -133,12 +133,14 @@
 							</div>
 						</fieldset>
 
-						<div class="row pull-right">
-							<button type="button" class="btn btn-sm btn-primary" ng-click="save()" ng-disabled="!validateUser()">Save</button>
-							<button type="button" class="btn btn-sm btn-default" ng-click="cancel()">Cancel</button>
-							<button type="button" class="btn btn-sm btn-danger" ng-click="resetPassword()" ng-show="showResetPassword && selectedUser.userId">Reset Password</button>
+                        <div class="col-sm-8 pull-right">
+                            <button type="button" class="btn btn-sm btn-primary pull-left" ng-click="save()" ng-disabled="!validateUser()">Save</button>
+                            <button type="button" class="btn btn-sm btn-default pull-left" ng-click="cancel()">Cancel</button>
+                            <button type="button" class="btn btn-sm btn-warning pull-right" ng-click="resetPasswordDefault()" ng-show="mainData.userRole==='SuperUser'">Default Password</button>
+                            <button type="button" class="btn btn-sm btn-danger pull-right" ng-click="resetPassword()" ng-show="showResetPassword && selectedUser.userId">Reset Password</button>
 
-						</div>
+
+                        </div>
 					</form>
 					<table class="table table-bordered table-condensed" ng-show="selectedUser.role">
 						<thead>

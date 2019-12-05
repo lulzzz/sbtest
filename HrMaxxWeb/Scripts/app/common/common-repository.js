@@ -317,7 +317,17 @@ common.factory('commonRepository', [
 				});
 
 				return deferred.promise;
-			},
+            },
+            resetPasswordDefault: function (user) {
+                var deferred = $q.defer();
+                commonServer.all('SetDefaultPassword').post(user).then(function (data) {
+                    deferred.resolve(data);
+                }, function (error) {
+                    deferred.reject(error);
+                });
+
+                return deferred.promise;
+            },
 			getAccountsMetaData: function () {
 				var deferred = $q.defer();
 				commonServer.one('AccountsMetaData').get().then(function (data) {
