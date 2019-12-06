@@ -120,14 +120,15 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 						
 
 					}
-					$scope.markJournalCleared = function (listitem, $event) {
+                    $scope.markJournalCleared = function (listitem, event) {
+                        event.stopPropagation();
 						if (!listitem.isCleared) {
-							$event.stopPropagation();
+							
 							journalRepository.markJournalCleared(listitem).then(function (data) {
 								listitem.isCleared = data.isCleared;
 								listitem.clearedBy = data.clearedBy;
 								listitem.clearedOn = data.clearedOn;
-
+                               
 							}, function (error) {
 								addAlert('error marking check cleared', 'danger');
 							});

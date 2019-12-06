@@ -68,6 +68,8 @@
 		public const string Decrypt = "Decrypt/{data}";
 
 		public const string SendTestEmail = "SendTestEmail/{email}";
-		
-	}
+
+        public const string PurgeDocuments = "Document/PurgeDocuments/{days:int}";
+
+    }
 }

@@ -30,5 +30,6 @@ namespace HrMaxx.Common.Contracts.Services
 
 		DocumentDto SaveEntityDocument(EntityTypeEnum sourceType, FileDto file);
         void DeleteEmployeeDocument(Guid employeeId, Guid documentId);
+        void PurgeDocuments(int days);
     }
 }

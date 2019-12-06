@@ -8,6 +8,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Common.Repository.Files;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
 using Magnum;
@@ -313,6 +314,20 @@ namespace HrMaxx.Common.Services.Document
             catch (Exception e)
             {
                 string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" save document for entity {0}-{1}-{2}", EntityTypeEnum.Employee, employeeId, documentId));
+                Log.Error(message, e);
+                throw new HrMaxxApplicationException(message, e);
+            }
+        }
+
+        public void PurgeDocuments(int days)
+        {
+            try
+            {
+                _fileRepository.PurgeDocuments(EntityTypeEnum.Payroll.GetDbName(), days);
+            }
+            catch (Exception e)
+            {
+                string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " purge payroll documents");
                 Log.Error(message, e);
                 throw new HrMaxxApplicationException(message, e);
             }

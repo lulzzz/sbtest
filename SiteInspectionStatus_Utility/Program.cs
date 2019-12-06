@@ -146,7 +146,10 @@ namespace SiteInspectionStatus_Utility
 				case 30:
 					MigrateDocuments(container);
 					break;
-				default:
+                case 31:
+                    MovePayrollDocuments(container);
+                    break;
+                default:
 					break;
 			}
 
@@ -205,8 +208,31 @@ namespace SiteInspectionStatus_Utility
 			
 			}
 		}
+        private static void MovePayrollDocuments(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                
+                var _fileRepo = scope.Resolve<IFileRepository>();
+                var reader = scope.Resolve<IReadRepository>();
+                const string readSql = "select Id from Payroll";
+                
+                var payrolls = reader.GetQueryData<Guid>(readSql);
 
-		private static void UpdateCbcsuiManagementRate(IContainer container)
+                payrolls.ForEach(p =>
+                {
+                   if(_fileRepo.FileExists(string.Empty, p.ToString(), "pdf"))
+                   {
+                       _fileRepo.MoveDestinationFile($"{p}.pdf", $"{EntityTypeEnum.Payroll.GetDbName()}\\{p}.pdf");
+                   }
+                });
+
+
+
+            }
+        }
+
+        private static void UpdateCbcsuiManagementRate(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())
 			{

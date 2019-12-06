@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
+using HrMaxx.Common.Contracts.Services;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Resources;
 
@@ -14,10 +15,12 @@ namespace HrMaxxAPI.Controllers
 	public class TestController : BaseApiController
 	{
 		private readonly IScheduledJobService _scheduledJobService;
-		
-		public TestController(IScheduledJobService scheduledJobService)
+        private readonly IDocumentService _documentService;
+
+        public TestController(IScheduledJobService scheduledJobService, IDocumentService documentService)
 		{
 			_scheduledJobService = scheduledJobService;
+            _documentService = documentService;
 			
 		}
 		[System.Web.Http.HttpGet]
@@ -71,8 +74,19 @@ namespace HrMaxxAPI.Controllers
 			}
 
 		}
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.AllowAnonymous]
+        [System.Web.Http.Route("Scheduled/PurgePayrollDocuments")]
+        public void PurgePayrollDocuments()
+        {
+            //if (DateTime.Now.ToString("tt") == "AM")
+            {
+                MakeServiceCall(() => _documentService.PurgeDocuments(7), "Purge documents");
+            }
 
-		[HttpPost]
+        }
+
+        [HttpPost]
 		[AllowAnonymous]
 		[Route("PSReportRequest")]
 		public async Task<string> ProfitStarReportRequest(FormDataCollection request)

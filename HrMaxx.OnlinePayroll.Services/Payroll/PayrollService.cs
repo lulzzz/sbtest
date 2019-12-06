@@ -175,13 +175,13 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var pc = paycheck.PayCodes.First(pcode=>pcode.PayCode.Id==-1);
 							if (paycheck.Notes.Contains("Piece-work:"))
 							{
-								paycheck.Notes = paycheck.Notes.Substring(0, paycheck.Notes.IndexOf("Piece-work:")) + string.Format("Piece-work: {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
-								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
+								paycheck.Notes = paycheck.Notes.Substring(0, paycheck.Notes.IndexOf("Piece-work:")) +
+                                                 $"Piece-work: {pc.PWAmount.ToString("c")} piece @ {pc.Hours.ToString("##.00")} Reg Hr {pc.OvertimeHours.ToString("##.00")} OT Hr";
 							}
 							else
 							{
-								paycheck.Notes += string.Format(" Piece-work: {0} piece @ {1} Reg Hr {2} OT Hr", pc.PWAmount.ToString("c"),
-								pc.Hours.ToString("##.00"), pc.OvertimeHours.ToString("##.00"));
+								paycheck.Notes +=
+                                    $" Piece-work: {pc.PWAmount.ToString("c")} piece @ {pc.Hours.ToString("##.00")} Reg Hr {pc.OvertimeHours.ToString("##.00")} OT Hr";
 							}
 
 							var dividend = (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime));
@@ -415,7 +415,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							    ac.PayTypeId == payType.PayType.Id && ac.FiscalStart == fiscalStartDate &&
 							    ac.FiscalEnd == fiscalEndDate) > 1)
 					{
-						payroll.Warnings += string.Format("Employee #{0}, {1} has multiple leave cycles for this Pay Day<br/>", paycheck.Employee.CompanyEmployeeNo, paycheck.Employee.FullName);
+						payroll.Warnings +=
+                            $"Employee #{paycheck.Employee.CompanyEmployeeNo}, {paycheck.Employee.FullName} has multiple leave cycles for this Pay Day<br/>";
 					}
 
 					var carryOver = payType.PayType.Id==6 ? paycheck.Employee.CarryOver : 0;
@@ -492,7 +493,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					};
 					if (acc.PayType.PayType.Id==6 && acc.Available < 0)
 					{
-						payroll.Warnings += string.Format("Employee #{0}, {1} available Sick Leave is negative<br/>", paycheck.Employee.CompanyEmployeeNo, paycheck.Employee.FullName);
+						payroll.Warnings +=
+                            $"Employee #{paycheck.Employee.CompanyEmployeeNo}, {paycheck.Employee.FullName} available Sick Leave is negative<br/>";
 					}
 					result.Add(acc);
 				}
@@ -945,7 +947,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			var affectedChecks = new List<PayCheck>();
 			try
 			{
-				Log.Info(string.Format("Started Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+				Log.Info(
+                    $"Started Confirm Payroll {payroll.Company.Id} - {payroll.PayDay.ToString("MM/dd/yyyy")} - {DateTime.Now.ToString("hh:mm:ss:fff")}");
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
 
 				var companyIdForPayrollAccount = payroll.Company.Id;
@@ -1139,7 +1142,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					}
 					
 					txn.Complete();
-					Log.Info(string.Format("Finished Confirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+					Log.Info(
+                        $"Finished Confirm Payroll {payroll.Company.Id} - {payroll.PayDay.ToString("MM/dd/yyyy")} - {DateTime.Now.ToString("hh:mm:ss:fff")}");
 				}
 			}
 			catch (Exception e)
@@ -1175,7 +1179,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			try
 			{
 				payroll = ProcessPayroll(payroll);
-				Log.Info(string.Format("Started ReConfirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+				Log.Info(
+                    $"Started ReConfirm Payroll {payroll.Company.Id} - {payroll.PayDay.ToString("MM/dd/yyyy")} - {DateTime.Now.ToString("hh:mm:ss:fff")}");
 				var companyPayChecks = _readerService.GetPayChecks(companyId: payroll.Company.Id, startDate: payroll.PayDay, year: payroll.PayDay.Year, isvoid: 0);
 
 				var companyIdForPayrollAccount = payroll.Company.Id;
@@ -1407,7 +1412,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					
 					txn.Complete();
-					Log.Info(string.Format("Finished ReConfirm Payroll {0} - {1} - {2}", payroll.Company.Id, payroll.PayDay.ToString("MM/dd/yyyy"), DateTime.Now.ToString("hh:mm:ss:fff")));
+					Log.Info(
+                        $"Finished ReConfirm Payroll {payroll.Company.Id} - {payroll.PayDay.ToString("MM/dd/yyyy")} - {DateTime.Now.ToString("hh:mm:ss:fff")}");
 				}
 			}
 			catch (Exception e)
@@ -1552,7 +1558,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					if (payroll.InvoiceId.HasValue && invoice != null && (forceDelete || invoice.Status == InvoiceStatus.Draft || invoice.Status == InvoiceStatus.Submitted))
-						DeletePayrollInvoice(payroll.InvoiceId.Value, new Guid(userId), userName, comment: string.Format("Invoice Deleted for Void Payroll {0}", forceDelete ? " - Move Payroll" : string.Empty), invoice: invoice);
+						DeletePayrollInvoice(payroll.InvoiceId.Value, new Guid(userId), userName, comment:
+                            $"Invoice Deleted for Void Payroll {(forceDelete ? " - Move Payroll" : string.Empty)}", invoice: invoice);
 
 					//_payrollRepository.VoidPayChecks(payroll.PayChecks, userName);
 					payroll.PayChecks.Where(pc=>!pc.IsVoid).ToList().ForEach(paycheck =>
@@ -1757,7 +1764,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 				}
 				
-					//txn.Complete();
+                //txn.Complete();
 				
 				return returnFile;
 				
@@ -1785,7 +1792,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var returnFile = PrintPayCheck(payroll, payChecks.ToList(), journals);
 				if (returnFile != null)
 				{
-					_fileRepository.SaveFile(payroll.Id, "pdf", returnFile.Data);
+					_fileRepository.SaveFile(EntityTypeEnum.Payroll.GetDbName(), payroll.Id.ToString(), "pdf", returnFile.Data);
 				}
 				return returnFile;
 			}
@@ -1807,13 +1814,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					payChecks = payChecks.OrderBy(pc => pc.Employee.FullNameSpecial);
 				}
 				var models = PrintPayrollPackPayChecks(payroll, payChecks.ToList(), journals);
-				var dir = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy"));
+				var dir = $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}";
 				dir = _documentService.CreateDirectory(dir);
 				_pdfService.PrintPayrollPack(dir, models);
-				_reportService.PrintPayrollSummary(payroll, true, string.Format("{0}//PayrollSummary.pdf", dir));
-				var returnFile = _documentService.ZipDirectory(dir, string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")));
+				_reportService.PrintPayrollSummary(payroll, true, $"{dir}//PayrollSummary.pdf");
+				var returnFile = _documentService.ZipDirectory(dir,
+                    $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}.zip");
 				_documentService.DeleteDirectory(dir);
-				return new FileDto() { Data = returnFile, DocumentExtension = ".zip", Filename = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")), MimeType = "application/octet-stream" };
+				return new FileDto() { Data = returnFile, DocumentExtension = ".zip", Filename =
+                    $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}", MimeType = "application/octet-stream" };
 			}
 			return null;
 
@@ -1823,7 +1832,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			const string employeeEmailBody =
 				"Dear {1}, <br/><br/> Please find attached the ACH Pay Check copy for the Pay Date <i>{0}</i> <br/><br/> <i><u>Do Not reply to this message</u></i>";
 			const string companyEmailBody = "Dear {1}, <br/><br/> Please find attached the Payroll Pack for the Pay Date <i>{0}</i> <br/><br/> <i><u>Do Not reply to this message</u></i>";
-			var dir = string.Format("{0}_Payroll_{1}", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy"));
+			var dir = $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}";
 			try
 			{
 				var returnList = new List<string>();
@@ -1844,14 +1853,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					
 					dir = _documentService.CreateDirectory(dir);
 					_pdfService.PrintPayrollPack(dir, models);
-					_reportService.PrintPayrollSummary(payroll, true, string.Format("{0}//PayrollSummary.pdf", dir));
+					_reportService.PrintPayrollSummary(payroll, true, $"{dir}//PayrollSummary.pdf");
 					var returnFile = _documentService.ZipDirectory(dir,
-						string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")), false);
+                        $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}.zip", false);
 					payChecks.Where(pc => pc.PaymentMethod == EmployeePaymentMethod.DirectDebit).ToList().ForEach(async pc =>
 					{
 						var employee = employees.First(e => e.Id == pc.EmployeeId);
 						if (string.IsNullOrWhiteSpace(employee.Contact.Email))
-							returnList.Add(string.Format("No Email Sent. Invalid email found for Employee {0}", employee.FullName));
+							returnList.Add($"No Email Sent. Invalid email found for Employee {employee.FullName}");
 						else
 						{
 
@@ -1859,9 +1868,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeSubject, employee.FullName),
 								string.Format(employeeEmailBody, pc.PayDay.ToString("MM/dd/yyyy"), employee.FullName),
 								cc: _emailService.GetACHPackCC(),
-								fileName: string.Format("{0}/{1}.pdf", dir, pc.Employee.FullName));
-							returnList.Add(string.Format("Email Sent to {0} at {1} with ACH Pay Check", employee.FullName,
-								employee.Contact.Email));
+								fileName: $"{dir}/{pc.Employee.FullName}.pdf");
+							returnList.Add(
+                                $"Email Sent to {employee.FullName} at {employee.Contact.Email} with ACH Pay Check");
 						}
 
 					});
@@ -1869,13 +1878,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								OnlinePayrollStringResources.EMAIL_Company_PayrollSubject,
 								string.Format(companyEmailBody, payroll.PayDay.ToString("MM/dd/yyyy"), company.Contact.FullName),
 								cc: _emailService.GetACHPackCC(),
-								fileName: string.Format("{0}.zip", dir));
+								fileName: $"{dir}.zip");
 					
-					returnList.Add(string.Format("Email Sent to {0} at {1} with Payroll Pack", company.Contact.FullName,
-								company.Contact.Email));
+					returnList.Add(
+                        $"Email Sent to {company.Contact.FullName} at {company.Contact.Email} with Payroll Pack");
 
 
-					_fileRepository.DeleteDestinationFile(string.Format("{0}_Payroll_{1}.zip", payroll.Company.Name, payroll.PayDay.ToString("MMddyyyy")));
+					_fileRepository.DeleteDestinationFile(
+                        $"{payroll.Company.Name}_Payroll_{payroll.PayDay.ToString("MMddyyyy")}.zip");
 					_documentService.DeleteDirectory(dir);
 					
 				}
@@ -1966,7 +1976,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 				if (!string.IsNullOrWhiteSpace(payroll.Notes))
 				{
-					_commonService.AddToList<Comment>(EntityTypeEnum.Company, EntityTypeEnum.Comment, company.Id, new Comment { Content = string.Format("Invoice #{0}: {1}", payrollInvoice.InvoiceNumber, payroll.Notes), TimeStamp = savedInvoice.LastModified });
+					_commonService.AddToList<Comment>(EntityTypeEnum.Company, EntityTypeEnum.Comment, company.Id, new Comment { Content =
+                        $"Invoice #{payrollInvoice.InvoiceNumber}: {payroll.Notes}", TimeStamp = savedInvoice.LastModified });
 				}
 				var memento = Memento<PayrollInvoice>.Create(savedInvoice, EntityTypeEnum.Invoice, savedInvoice.UserName, string.Format("Invoice created"), payrollInvoice.UserId);
 				_mementoDataService.AddMementoData(memento);
@@ -2059,7 +2070,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.PaymentBounced))
 							{
 								invoice.Status = InvoiceStatus.PaymentBounced;
-								_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment { Content = string.Format("Invoice #{0} - Payment Bounced", invoice.InvoiceNumber), LastModified = DateTime.Now, UserName = invoice.UserName });
+								_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment { Content =
+                                    $"Invoice #{invoice.InvoiceNumber} - Payment Bounced", LastModified = DateTime.Now, UserName = invoice.UserName });
 							}
 							else if (invoice.InvoicePayments.Any(p => p.Status == PaymentStatus.Submitted))
 							{
@@ -2114,8 +2126,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						Notes = "Invoice Updated",
 						UserId = invoice.UserId,
 						UserName = invoice.UserName,
-						LogNotes = string.Format("Mementos (Invoice) for payroll {0} - {1}", savedInvoice.Id, savedInvoice.Company.Name)
-					});
+						LogNotes = $"Mementos (Invoice) for payroll {savedInvoice.Id} - {savedInvoice.Company.Name}"
+                    });
 
 					return savedInvoice;
 				}
@@ -2144,8 +2156,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					Notes = comment,
 					UserId = userId,
 					UserName = invoice.UserName,
-					LogNotes = string.Format("Mementos (Invoice) deleted {0} - {1}", invoice.Id, invoice.Company.Name)
-				});
+					LogNotes = $"Mementos (Invoice) deleted {invoice.Id} - {invoice.Company.Name}"
+                });
 				
 			}
 			catch (Exception e)
@@ -2294,9 +2306,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Date2", payCheck.PayDay.ToString("MM/dd/yyyy")));
 
 			
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
-			var caption8 = string.Format("****-**-{0}                                                {1} {2}",
-				payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4), "Employee No:", (payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo",
+                $"Pay Period {payCheck.StartDate.ToString("d")}-{payCheck.EndDate.ToString("d")}"));
+			var caption8 =
+                $"****-**-{payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4)}                                                {"Employee No:"} {(payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty)}";
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", caption8));
 			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", company.Name));
 
@@ -2305,18 +2318,12 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", company.CompanyAddress.AddressLine1));
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", company.CompanyAddress.AddressLine2));
 
-			var sum2 = string.Format("Federal Status: {0}{1}Federal Exemptions: {2}{3}Additional Fed Withholding: {4}",
-				payCheck.Employee.FederalStatus.GetDbName(), "".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length),
-				payCheck.Employee.FederalExemptions,
-				"".PadRight(66 - payCheck.Employee.FederalAdditionalAmount.ToString("C").Length),
-				payCheck.Employee.FederalAdditionalAmount.ToString("C"));
+			var sum2 =
+                $"Federal Status: {payCheck.Employee.FederalStatus.GetDbName()}{"".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length)}Federal Exemptions: {payCheck.Employee.FederalExemptions}{"".PadRight(66 - payCheck.Employee.FederalAdditionalAmount.ToString("C").Length)}Additional Fed Withholding: {payCheck.Employee.FederalAdditionalAmount.ToString("C")}";
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2", sum2));
 
-			var text8 = string.Format("State Status:    {0}{1}State Exemptions:    {2}{3}Additional State Withholding: {4}",
-				payCheck.Employee.State.TaxStatus.GetDbName(),
-				"".PadRight(57 - payCheck.Employee.State.TaxStatus.GetDbName().Length), payCheck.Employee.State.Exemptions,
-				"".PadRight(66 - payCheck.Employee.State.AdditionalAmount.ToString("C").Length),
-				payCheck.Employee.State.AdditionalAmount.ToString("C"));
+			var text8 =
+                $"State Status:    {payCheck.Employee.State.TaxStatus.GetDbName()}{"".PadRight(57 - payCheck.Employee.State.TaxStatus.GetDbName().Length)}State Exemptions:    {payCheck.Employee.State.Exemptions}{"".PadRight(66 - payCheck.Employee.State.AdditionalAmount.ToString("C").Length)}Additional State Withholding: {payCheck.Employee.State.AdditionalAmount.ToString("C")}";
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8", text8));
 
 			
@@ -2395,13 +2402,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
 			}
 
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1",
+                $"Pay Period {payCheck.StartDate.ToString("d")} - {payCheck.EndDate.ToString("d")}"));
 			var compCounter = 1;
 			foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
 			{
 				if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, string.Format("{0}{1}", compensation.PayType.Description, compensation.Hours > 0 ? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter,
+                        $"{compensation.PayType.Description}{(compensation.Hours > 0 ? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)}"));
 				}
 				else
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, compensation.PayType.Description));
@@ -2468,7 +2477,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var accumulationCounter = 1;
 				payCheck.Accumulations.ForEach(scl =>
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype-"+accumulationCounter, string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype-"+accumulationCounter,
+                        $"{scl.PayType.PayType.Description} ({scl.FiscalStart.ToString("d")} - {scl.FiscalEnd.ToString("d")})"));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-"+accumulationCounter, scl.Used.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-"+accumulationCounter, scl.AccumulatedValue.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-"+accumulationCounter, scl.YTDFiscal.ToString()));
@@ -2556,12 +2566,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					payroll.Company.PayCheckStock == PayCheckStock.MICRQb)
 			{
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", "****" + payCheck.NetWage.ToString("F")));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, "****")));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords",
+                    $"{words} {decPlaces}/100 {"****"}"));
 			}
 			else
 			{
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString("F")));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, string.Empty)));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords",
+                    $"{words} {decPlaces}/100 {string.Empty}"));
 
 				if (payCheck.PaymentMethod == EmployeePaymentMethod.Check)
 				{
@@ -2570,16 +2582,17 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						micr.Substring(0,
 							(8 - payCheck.CheckNumber.ToString().Length) < 0 ? 0 : 8 - payCheck.CheckNumber.ToString().Length) +
 						payCheck.CheckNumber.ToString();
-					var micrVal = string.Format("C{0}C A{1}A {2}C", micr, bankcoa.BankAccount.RoutingNumber,
-						bankcoa.BankAccount.AccountNumber);
+					var micrVal =
+                        $"C{micr}C A{bankcoa.BankAccount.RoutingNumber}A {bankcoa.BankAccount.AccountNumber}C";
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("MICR", micrVal));
 				}
 
 			}
 
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
-			var caption8 = string.Format("****-**-{0}                                                {1} {2}",
-				payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4), "Employee No:", (payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo",
+                $"Pay Period {payCheck.StartDate.ToString("d")}-{payCheck.EndDate.ToString("d")}"));
+			var caption8 =
+                $"****-**-{payCheck.Employee.SSN.Substring(payCheck.Employee.SSN.Length - 4)}                                                {"Employee No:"} {(payCheck.Employee.CompanyEmployeeNo.HasValue ? payCheck.Employee.CompanyEmployeeNo.Value.ToString() : string.Empty)}";
 			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Caption8", caption8));
 			pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", nameCompany.Name));
 
@@ -2590,32 +2603,22 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compAddress", nameCompany.CompanyAddress.AddressLine1));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("compCity", nameCompany.CompanyAddress.AddressLine2));
 
-				var sum2 = string.Format("Federal Status: {0}{1}Federal Exemptions: {2}{3}Additional Fed Withholding: {4}",
-					payCheck.Employee.FederalStatus.GetDbName(), "".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length),
-					payCheck.Employee.FederalExemptions,
-					"".PadRight(66 - payCheck.Employee.FederalAdditionalAmount.ToString("C").Length),
-					payCheck.Employee.FederalAdditionalAmount.ToString("C"));
+				var sum2 =
+                    $"Federal Status: {payCheck.Employee.FederalStatus.GetDbName()}{"".PadRight(57 - payCheck.Employee.FederalStatus.GetDbName().Length)}Federal Exemptions: {payCheck.Employee.FederalExemptions}{"".PadRight(66 - payCheck.Employee.FederalAdditionalAmount.ToString("C").Length)}Additional Fed Withholding: {payCheck.Employee.FederalAdditionalAmount.ToString("C")}";
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2", sum2));
 
-				var text8 = string.Format("State Status:    {0}{1}State Exemptions:    {2}{3}Additional State Withholding: {4}",
-					payCheck.Employee.State.TaxStatus.GetDbName(),
-					"".PadRight(57 - payCheck.Employee.State.TaxStatus.GetDbName().Length), payCheck.Employee.State.Exemptions,
-					"".PadRight(66 - payCheck.Employee.State.AdditionalAmount.ToString("C").Length),
-					payCheck.Employee.State.AdditionalAmount.ToString("C"));
+				var text8 =
+                    $"State Status:    {payCheck.Employee.State.TaxStatus.GetDbName()}{"".PadRight(57 - payCheck.Employee.State.TaxStatus.GetDbName().Length)}State Exemptions:    {payCheck.Employee.State.Exemptions}{"".PadRight(66 - payCheck.Employee.State.AdditionalAmount.ToString("C").Length)}Additional State Withholding: {payCheck.Employee.State.AdditionalAmount.ToString("C")}";
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8", text8));
 			}
 			else
 			{
-				var sum2 = string.Format("Federal Status: {0}      Federal Exemptions: {1}      Additional Fed Withholding: {2}",
-					payCheck.Employee.FederalStatus.GetDbName(),
-					payCheck.Employee.FederalExemptions,
-					payCheck.Employee.FederalAdditionalAmount.ToString("C"));
+				var sum2 =
+                    $"Federal Status: {payCheck.Employee.FederalStatus.GetDbName()}      Federal Exemptions: {payCheck.Employee.FederalExemptions}      Additional Fed Withholding: {payCheck.Employee.FederalAdditionalAmount.ToString("C")}";
 
 
-				var text8 = string.Format("State Status: {0}      State Exemptions: {1}      Additional State Withholding: {2}",
-					payCheck.Employee.State.TaxStatus.GetDbName(),
-					payCheck.Employee.State.Exemptions,
-					payCheck.Employee.State.AdditionalAmount.ToString("C"));
+				var text8 =
+                    $"State Status: {payCheck.Employee.State.TaxStatus.GetDbName()}      State Exemptions: {payCheck.Employee.State.Exemptions}      Additional State Withholding: {payCheck.Employee.State.AdditionalAmount.ToString("C")}";
 
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum2", sum2));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Text8", text8));
@@ -2624,7 +2627,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("EmpName2-1", payCheck.Employee.FullName));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1-1",
+                    $"Pay Period {payCheck.StartDate.ToString("d")} - {payCheck.EndDate.ToString("d")}"));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("CompanyMemo-1", payroll.Company.Memo));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName-1", company.Name));
 				if (payCheck.Employee.PayType == EmployeeType.Salary || payCheck.Employee.PayType == EmployeeType.JobCost)
@@ -2695,7 +2699,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 					{
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", string.Format("{0}{1}", compensation.PayType.Description, compensation.Hours>0? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1",
+                            $"{compensation.PayType.Description}{(compensation.Hours > 0 ? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)}"));
 					}
 					else
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter1 + "-1", compensation.PayType.Description));
@@ -2790,13 +2795,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3-1", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum3", !string.IsNullOrWhiteSpace(payCheck.Notes) ? payCheck.Notes : string.Empty));
 			}
-			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1", string.Format("Pay Period {0} - {1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
+			pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Sum1",
+                $"Pay Period {payCheck.StartDate.ToString("d")} - {payCheck.EndDate.ToString("d")}"));
 			var compCounter = 1;
 			foreach (var compensation in payCheck.Compensations.Where(compensation => compensation.Amount > 0 || compensation.YTD > 0))
 			{
 				if (payCheck.Employee.PayType == EmployeeType.PieceWork && (compensation.PayType.Id == 6 || compensation.PayType.Id == 13))
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, string.Format("{0}{1}", compensation.PayType.Description, compensation.Hours>0? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter,
+                        $"{compensation.PayType.Description}{(compensation.Hours > 0 ? " - " + compensation.Hours.ToString() + " hrs" : string.Empty)}"));
 				}
 				else
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pcomp" + compCounter, compensation.PayType.Description));
@@ -2862,7 +2869,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var accumulationCounter = 1;
 				payCheck.Accumulations.ForEach(scl =>
 				{
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype-" + accumulationCounter, string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype-" + accumulationCounter,
+                        $"{scl.PayType.PayType.Description} ({scl.FiscalStart.ToString("d")} - {scl.FiscalEnd.ToString("d")})"));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-" + accumulationCounter, scl.Used.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-" + accumulationCounter, scl.AccumulatedValue.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-" + accumulationCounter, scl.YTDFiscal.ToString()));
@@ -2928,7 +2936,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				var words = Utilities.NumberToWords(Math.Floor(payCheck.NetWage));
 				var decPlaces = (int)(((decimal)payCheck.NetWage % 1) * 100);
 				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Amount", payCheck.NetWage.ToString("F")));
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords", string.Format("{0} {1}/100 {2}", words, decPlaces, string.Empty)));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("AmtInWords",
+                    $"{words} {decPlaces}/100 {string.Empty}"));
 				if (payCheck.PaymentMethod == EmployeePaymentMethod.Check)
 				{
 					var micr = "00000000";
@@ -2936,8 +2945,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						micr.Substring(0,
 							(8 - payCheck.CheckNumber.ToString().Length) < 0 ? 0 : 8 - payCheck.CheckNumber.ToString().Length) +
 						payCheck.CheckNumber.ToString();
-					var micrVal = string.Format("C{0}C A{1}A {2}C", micr, bankcoa.BankAccount.RoutingNumber,
-						bankcoa.BankAccount.AccountNumber);
+					var micrVal =
+                        $"C{micr}C A{bankcoa.BankAccount.RoutingNumber}A {bankcoa.BankAccount.AccountNumber}C";
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("MICR", micrVal));
 
 
@@ -2957,7 +2966,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 
 					}
 				}
-				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo", string.Format("Pay Period {0}-{1}", payCheck.StartDate.ToString("d"), payCheck.EndDate.ToString("d"))));
+				pdf.NormalFontFields.Add(new KeyValuePair<string, string>("Memo",
+                    $"Pay Period {payCheck.StartDate.ToString("d")}-{payCheck.EndDate.ToString("d")}"));
 
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CompName", nameCompany.Name));
 				pdf.BoldFontFields.Add(new KeyValuePair<string, string>("CheckNo-2", payCheck.PaymentMethod != EmployeePaymentMethod.Check ? "EFT" : payCheck.CheckNumber.ToString()));
@@ -3010,7 +3020,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					if (hrcounter < 4 && (payCode.Amount > 0 || payCode.YTD > 0))
 					{
-						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", string.Format("Regular @ {0}", payCode.PayCode.HourlyRate.ToString("c"))));
+						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s",
+                            $"Regular @ {payCode.PayCode.HourlyRate.ToString("c")}"));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter,
 							payCode.PayCode.HourlyRate.ToString("C")));
@@ -3022,7 +3033,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					if (otcounter < 4 && (payCode.OvertimeAmount > 0 || payCode.YTDOvertime > 0))
 					{
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + otcounter + "-ot",
-							string.Format("0.5 OT @ {0}", (payCode.PayCode.HourlyRate * (decimal)0.5).ToString("c"))));
+                            $"0.5 OT @ {(payCode.PayCode.HourlyRate * (decimal) 0.5).ToString("c")}"));
 						
 
 
@@ -3047,7 +3058,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				if (payCheck.Accumulations.Any())
 				{
 					var scl = payCheck.Accumulations.First();
-					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype", string.Format("{0} ({1} - {2})", scl.PayType.PayType.Description, scl.FiscalStart.ToString("d"), scl.FiscalEnd.ToString("d"))));
+					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("scltype",
+                        $"{scl.PayType.PayType.Description} ({scl.FiscalStart.ToString("d")} - {scl.FiscalEnd.ToString("d")})"));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclhours-1", scl.YTDUsed.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclcurrent-1", scl.AccumulatedValue.ToString()));
 					pdf.NormalFontFields.Add(new KeyValuePair<string, string>("sclytd-1", scl.YTDFiscal.ToString()));
@@ -3104,9 +3116,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				}
 				//Log.Info(string.Format("Finished Modeling {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
 				var fileName = payChecks.Count == 1
-					? string.Format("Pay Check {0}", payChecks.First().CheckNumber)
-					: string.Format("Payroll_{0}_{1}_{2}", payroll.StartDate.ToString("MMddyyyy"), payroll.EndDate.ToString("MMddyyyy"),
-						payroll.Id);
+					? $"Pay Check {payChecks.First().CheckNumber}"
+                    : $"Payroll_{payroll.StartDate:MMddyyyy}_{payroll.EndDate:MMddyyyy}_{payroll.Id}";
 				
 				var file = _pdfService.Print(fileName, pdfs);
 				//Log.Info(string.Format("File Ready {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
@@ -3176,9 +3187,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				var pdfs = payChecks.OrderBy(pc => pc.CheckNumber).Select(payCheck => GetPdfModelPaySlip(payroll, payCheck, company)).ToList();
 				var fileName = payChecks.Count == 1
-					? string.Format("Pay Slip {0}", payChecks.First().CheckNumber)
-					: string.Format("Payslips_{0}_{1}_{2}", payroll.StartDate.ToString("MMddyyyy"), payroll.EndDate.ToString("MMddyyyy"),
-						payroll.Id);
+					? $"Pay Slip {payChecks.First().CheckNumber}"
+                    : $"Payslips_{payroll.StartDate.ToString("MMddyyyy")}_{payroll.EndDate.ToString("MMddyyyy")}_{payroll.Id}";
 
 				return _pdfService.Print(fileName, pdfs);
 			}
@@ -3207,7 +3217,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				IsVoid = false,
 				LastModified = DateTime.Now,
 				LastModifiedBy = payroll.UserName,
-				Memo = string.Format("Pay Period {0} - {1}", pc.StartDate.ToString("d"), pc.EndDate.ToString("d")),
+				Memo = $"Pay Period {pc.StartDate.ToString("d")} - {pc.EndDate.ToString("d")}",
 				PaymentMethod = pc.PaymentMethod,
 				PayrollPayCheckId = pc.Id,
 				TransactionDate = pc.PayDay,
@@ -3396,7 +3406,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, invoice.CompanyId, new Comment
 				{
-					Content = string.Format("Invoice #{0} has been marked as Taxes Delayed", invoice.InvoiceNumber), LastModified = invoice.LastModified, UserName = fullName, TimeStamp = DateTime.Now
+					Content = $"Invoice #{invoice.InvoiceNumber} has been marked as Taxes Delayed", LastModified = invoice.LastModified, UserName = fullName, TimeStamp = DateTime.Now
 				});
 				return invoice;
 			}
@@ -3472,16 +3482,14 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
 					{
 						Content =
-							string.Format("Company {0} copied from another host with Copy Employees={1}, Copy Payrolls={2}", saved.Name,
-								copyEmployees ? "Yes" : "No", copyPayrolls ? "Yes" : "No"),
+                            $"Company {saved.Name} copied from another host with Copy Employees={(copyEmployees ? "Yes" : "No")}, Copy Payrolls={(copyPayrolls ? "Yes" : "No")}",
 						LastModified = DateTime.Now,
 						UserName = fullName
 					});
 					_commonService.AddToList(EntityTypeEnum.Company, EntityTypeEnum.Comment, saved.Id, new Comment
 					{
 						Content =
-							string.Format("Company {0} copied to another host with Copy Employees={1}, Copy Payrolls={2}", company.Name,
-								copyEmployees ? "Yes" : "No", copyPayrolls ? "Yes" : "No"),
+                            $"Company {company.Name} copied to another host with Copy Employees={(copyEmployees ? "Yes" : "No")}, Copy Payrolls={(copyPayrolls ? "Yes" : "No")}",
 						LastModified = DateTime.Now,
 						UserName = fullName
 					});
@@ -3491,7 +3499,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						SavedObject = saved,
 						UserId = userId,
 						TimeStamp = DateTime.Now,
-						NotificationText = string.Format("{0} by {1}", string.Format("Company {0} has been copied", saved.Name), fullName),
+						NotificationText = $"{$"Company {saved.Name} has been copied"} by {fullName}",
 						EventType = NotificationTypeEnum.Created
 					});
 				}
@@ -3759,7 +3767,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format("Error in fixing YTD for Payroll {0}.", employeeId);
+				var message = $"Error in fixing YTD for Payroll {employeeId}.";
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -4287,8 +4295,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 					_payrollRepository.DeletePayroll(payroll);
 					payroll.PayChecks.ForEach(pc =>
 					{
-						_fileRepository.DeleteArchiveDirectory(ArchiveTypes.Mementos.GetDbName(), EntityTypeEnum.PayCheck.GetDbName(), string.Format("{0}-0000-0000-0000-{1}", ((int)EntityTypeEnum.PayCheck).ToString().PadLeft(8, '0'),
-					pc.Id.ToString().PadLeft(12, '0')));
+						_fileRepository.DeleteArchiveDirectory(ArchiveTypes.Mementos.GetDbName(), EntityTypeEnum.PayCheck.GetDbName(),
+                            $"{((int) EntityTypeEnum.PayCheck).ToString().PadLeft(8, '0')}-0000-0000-0000-{pc.Id.ToString().PadLeft(12, '0')}");
 					});
 					Log.Info("delete ended" + DateTime.Now.ToString("hh:mm:ss:fff"));
 					_taxationService.RefreshPEOMaxCheckNumber();
@@ -4417,7 +4425,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			}
 			catch (Exception e)
 			{
-				var message = string.Format("Error in fixing YTD for Payroll {0}.", payrollId);
+				var message = $"Error in fixing YTD for Payroll {payrollId}.";
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

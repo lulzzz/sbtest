@@ -39,5 +39,6 @@ namespace HrMaxx.Common.Repository.Files
 		void DeleteArchiveDirectory(string rootDirectory, string directory, string name);
 		bool FileExists(string dir, string name, string ext);
 		string GetFileText(string file);
-	}
+        void PurgeDocuments(string directory, int days);
+    }
 }

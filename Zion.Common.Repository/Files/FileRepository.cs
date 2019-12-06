@@ -79,12 +79,14 @@ namespace HrMaxx.Common.Repository.Files
 
 		public string GetArchiveJson(string rootdirectory, string directory, string fileName)
 		{
-			var filename = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", fileName);
+			var filename =
+                $"{_archivePath}{rootdirectory}\\{(string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\")}{fileName}.json";
 			return File.ReadAllText(filename);
 		}
 		public bool ArchiveFileExists(string rootdirectory, string directory, string fileName)
 		{
-			var filename = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", fileName);
+			var filename =
+                $"{_archivePath}{rootdirectory}\\{(string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\")}{fileName}.json";
 			return File.Exists(filename);
 		}
 
@@ -95,7 +97,8 @@ namespace HrMaxx.Common.Repository.Files
 			name = new string(name
 			.Where(x => !invalidChars.Contains(x))
 			.ToArray());
-			var fileName = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootdirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", name);
+			var fileName =
+                $"{_archivePath}{rootdirectory}\\{(string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\")}{name}.json";
 			if (File.Exists(fileName))
 			{
 				File.Delete(fileName);
@@ -196,7 +199,7 @@ namespace HrMaxx.Common.Repository.Files
 
 		public void SaveFile(Guid id, string documentExtension, byte[] file)
 		{
-			var filePath = string.Format("{2}{0}.{1}", id, documentExtension, _destinationPath);
+			var filePath = $"{_destinationPath}{id}.{documentExtension}";
 			if (File.Exists(filePath))
 			{
 				File.Delete(filePath);
@@ -212,7 +215,10 @@ namespace HrMaxx.Common.Repository.Files
 			name = new string(name
 			.Where(x => !invalidChars.Contains(x))
 			.ToArray());
-			var fileName = string.Format("{0}\\{1}.{2}", directory, name, extension);
+            directory = directory.Contains(_destinationPath)
+                ? directory
+                : $"{_destinationPath}{directory}";
+            var fileName = $"{directory}\\{name}.{extension}";
 			if (File.Exists(fileName))
 			{
 				File.Delete(fileName);
@@ -228,7 +234,10 @@ namespace HrMaxx.Common.Repository.Files
 			name = new string(name
 			.Where(x => !invalidChars.Contains(x))
 			.ToArray());
-			var fileName = string.Format("{0}\\{1}.{2}", directory, name, extension);
+            directory = directory.Contains(_destinationPath)
+                ? directory
+                : $"{_destinationPath}{directory}";
+			var fileName = $"{directory}\\{name}.{extension}";
 			if (File.Exists(fileName))
 			{
 				File.Delete(fileName);
@@ -238,17 +247,20 @@ namespace HrMaxx.Common.Repository.Files
 
 		public void DeleteArchiveDirectory(string rootDirectory, string directory, string name)
 		{
-			DeleteDirectory(string.Format("{0}{1}\\{2}\\{3}", _archivePath, rootDirectory, directory, name));
+			DeleteDirectory($"{_archivePath}{rootDirectory}\\{directory}\\{name}");
 		}
 
-		public bool FileExists(string dir, string name, string ext)
+		public bool FileExists(string directory, string name, string ext)
 		{
 			var invalidChars = Path.GetInvalidFileNameChars();
 
 			name = new string(name
 			.Where(x => !invalidChars.Contains(x))
 			.ToArray());
-			var fileName = string.Format("{0}\\{1}.{2}", dir, name, ext);
+            directory = directory.Contains(_destinationPath)
+                ? directory
+                : $"{_destinationPath}{directory}";
+            var fileName = $"{directory}\\{name}.{ext}";
 			return File.Exists(fileName);
 
 		}
@@ -258,9 +270,24 @@ namespace HrMaxx.Common.Repository.Files
 			return File.ReadAllText(file);
 		}
 
-		public void DeleteArchiveFile(string rootDirectory, string directory, string name)
+        public void PurgeDocuments(string directory, int days)
+        {
+            directory = directory.Contains(_destinationPath)
+                ? directory
+                : $"{_destinationPath}{directory}";
+
+            var files = Directory.GetFiles(directory)
+                .Select(f => new FileInfo(f))
+                .Where(f=>f.LastWriteTime < DateTime.Today.AddDays(-1*days))
+                .ToList();
+                //.ForEach(f=>f.Delete()));
+            files.ForEach(f => f.Delete());
+        }
+
+        public void DeleteArchiveFile(string rootDirectory, string directory, string name)
 		{
-			var fileName = string.Format("{0}{1}\\{2}{3}.json", _archivePath, rootDirectory, string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\", name);
+			var fileName =
+                $"{_archivePath}{rootDirectory}\\{(string.IsNullOrWhiteSpace(directory) ? string.Empty : directory + "\\")}{name}.json";
 			if (File.Exists(fileName))
 			{
 				File.Delete(fileName);

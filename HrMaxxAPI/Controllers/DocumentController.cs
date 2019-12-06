@@ -163,7 +163,13 @@ namespace HrMaxxAPI.Controllers
             MakeServiceCall(() => _documentService.DeleteEmployeeDocument(employeeId, documentId), "delete employee Document");
             return this.Request.CreateResponse(HttpStatusCode.OK);
         }
-
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route(HrMaxxRoutes.PurgeDocuments)]
+        public HttpResponseMessage PurgeDocuments(int days)
+        {
+            MakeServiceCall(() => _documentService.PurgeDocuments(days), "purge documents");
+            return this.Request.CreateResponse(HttpStatusCode.OK);
+        }
 
     }
 
