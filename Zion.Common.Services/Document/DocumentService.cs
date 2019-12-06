@@ -26,21 +26,6 @@ namespace HrMaxx.Common.Services.Document
 			_fileRepository = fileRepository;
 			_commonService = commonService;
 		}
-
-		public IList<DocumentDto> GetAllDocuments()
-		{
-			try
-			{
-				return _commonService.GetAllTargets<DocumentDto>(EntityTypeEnum.Document);
-			}
-			catch (Exception e)
-			{
-				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, " all documents");
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
 	
 
 		public void MoveDocument(MoveDocumentDto document, bool addWatermark = false)
@@ -58,7 +43,7 @@ namespace HrMaxx.Common.Services.Document
 				var document = _commonService.GetDocument(documentId);
 				if (document == null)
 					return null;
-				byte[] fileData = _fileRepository.GetFile(documentId + "." + document.DocumentDto.DocumentExtension);
+				byte[] fileData = _fileRepository.GetFile(document.Path);
 				return new FileDto
 				{
 					DocumentId = documentId,
@@ -172,15 +157,15 @@ namespace HrMaxx.Common.Services.Document
 				
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
-					MoveDocument(new MoveDocumentDto
-					{
-						SourceFileName = doc.SourceFileName,
-						DestinationFileName = document.Id + "." + doc.FileExtension
-					});
-					_commonService.AddDocument((EntityTypeEnum)doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
+					var savedDoc = _commonService.AddDocument((EntityTypeEnum)doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
 					//_commonService.AddEntityRelation<DocumentDto>((EntityTypeEnum) doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
 						document);
-					if (doc.EntityTypeId == (int) EntityTypeEnum.Employee && doc.CompanyId.HasValue &&
+                    MoveDocument(new MoveDocumentDto
+                    {
+                        SourceFileName = doc.SourceFileName,
+                        DestinationFileName = savedDoc.Path
+                    });
+                    if (doc.EntityTypeId == (int) EntityTypeEnum.Employee && doc.CompanyId.HasValue &&
 					    doc.CompanyDocumentSubType.IsEmployeeRequired)
 					{
 						_commonService.AddEmployeeDocument(doc.CompanyId, doc.EntityId, document);
@@ -198,39 +183,6 @@ namespace HrMaxx.Common.Services.Document
 			}
 		}
 
-		public DocumentDto AddEntityPDF(EntityDocumentAttachment doc, Guid documentId)
-		{
-			try
-			{
-				DocumentDto document = Mapper.Map<EntityDocumentAttachment, DocumentDto>(doc);
-				document.Id = documentId;
-				using (var txn = TransactionScopeHelper.Transaction())
-				{
-					MovePDF(new MoveDocumentDto
-					{
-						SourceFileName = doc.SourceFileName,
-						DestinationFileName = document.Id + "." + doc.FileExtension
-					});
-					_commonService.SaveEntityRelation<DocumentDto>((EntityTypeEnum)doc.EntityTypeId, EntityTypeEnum.Document, doc.EntityId,
-						document);
-					txn.Complete();
-				}
-				return document;
-
-			}
-			catch (Exception e)
-			{
-				string message = string.Format(CommonStringResources.ERROR_FailedToSaveX, string.Format(" save document for entity {0}-{1}", doc.EntityTypeId, doc.EntityId));
-				Log.Error(message, e);
-				throw new HrMaxxApplicationException(message, e);
-			}
-		}
-
-		private void MovePDF(MoveDocumentDto document)
-		{
-			_fileRepository.MovePDFFile(document.SourceFileName, document.DestinationFileName);
-		}
-
 		public void DeleteEntityDocument(int entityTypeId, Guid entityId, Guid documentId)
 		{
 			try
@@ -239,7 +191,7 @@ namespace HrMaxx.Common.Services.Document
 				//_commonService.DeleteEntityRelation((EntityTypeEnum)entityTypeId, EntityTypeEnum.Document, entityId, documentId);
 				var doc = _commonService.GetDocument(documentId);
 				_commonService.DeleteDocument(entityId, documentId);
-				_fileRepository.DeleteDestinationFile(doc.DocumentDto.Id + "." + doc.DocumentDto.DocumentExtension);
+				_fileRepository.DeleteDestinationFile(doc.Path);
 			}
 			catch (Exception e)
 			{
@@ -252,8 +204,8 @@ namespace HrMaxx.Common.Services.Document
 		public FileDto GetDocumentById(Guid documentId, string extension, string fileName)
 		{
 			try
-			{
-				byte[] fileData = _fileRepository.GetFile(documentId + "." + extension);
+            {
+                byte[] fileData = _fileRepository.GetFile(documentId + "." + extension);
 				return new FileDto
 				{
 					DocumentId = documentId,
@@ -271,45 +223,14 @@ namespace HrMaxx.Common.Services.Document
 			}
 		}
 
-		public bool DocumentExists(Guid documentId)
-		{
-			return _fileRepository.FileExists(documentId);
-		}
-
-		public DocumentDto SaveEntityDocument(EntityTypeEnum sourceType, FileDto file)
-		{
-			try
-			{
-				var document = new DocumentDto()
-					{
-						DocumentExtension = file.DocumentExtension,
-						DocumentName = file.Filename,
-						MimeType = file.MimeType,
-						DocumentType = OldDocumentType.Misc,
-						Id = file.DocumentId
-
-					};
-					_commonService.SaveEntityRelation<DocumentDto>(sourceType, EntityTypeEnum.Document, document.Id, document);
-					_fileRepository.SaveFile(document.Id, document.DocumentExtension, file.Data);
-					return document;
-				
-				
-			}
-			catch (Exception )
-			{
-				
-				throw;
-			}
-		}
-
-        public void DeleteEmployeeDocument(Guid employeeId, Guid documentId)
+		public void DeleteEmployeeDocument(Guid employeeId, Guid documentId)
         {
             try
             {
                 var doc = _commonService.GetDocument(documentId);
                 _commonService.DeleteEmployeeDocument(employeeId, documentId);
                 _commonService.DeleteDocument(employeeId, documentId);
-                _fileRepository.DeleteDestinationFile(doc.DocumentDto.Id + "." + doc.DocumentDto.DocumentExtension);
+                _fileRepository.DeleteDestinationFile(doc.Path);
             }
             catch (Exception e)
             {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
+using HrMaxx.Infrastructure.Helpers;
 using Newtonsoft.Json;
 
 namespace HrMaxx.Common.Models
@@ -108,6 +109,13 @@ namespace HrMaxx.Common.Models
 			}
 		}
 		public string DocumentName { get { return DocumentDto.DocumentName; } }
+
+        public string Path {
+            get
+            {
+                return $"{((EntityTypeEnum) SourceEntityTypeId).GetDbName()}\\{((DocType)Type).GetDbName()}\\{DocumentDto.Doc}";
+            }
+        }
 	}
 
 }

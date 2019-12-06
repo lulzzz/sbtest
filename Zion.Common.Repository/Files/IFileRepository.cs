@@ -32,8 +32,7 @@ namespace HrMaxx.Common.Repository.Files
 		void SaveUserImage(string user, string image);
 		bool FileExists(Guid documentId);
 		void DeleteTargetFile(string file);
-		void SaveFile(Guid id, string documentExtension, byte[] file);
-		string SaveFile(string directory, string name, string extension, string content);
+        string SaveFile(string directory, string name, string extension, string content);
 		void SaveFile(string directory, string name, string extension, byte[] file);
 
 		void DeleteArchiveDirectory(string rootDirectory, string directory, string name);

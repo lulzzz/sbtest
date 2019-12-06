@@ -558,7 +558,7 @@ namespace HrMaxx.OnlinePayroll.Services.Journals
 						companyDocs.Where(d => d.DocumentDto.DocumentType == OldDocumentType.Signature).OrderByDescending(d => d.DocumentDto.LastModified).First();
 					pdf.Signature = new PDFSignature
 					{
-						Path = _fileRepository.GetDocumentLocation(signature.DocumentDto.Doc),
+						Path = _fileRepository.GetDocumentLocation(signature.Path),
 						X = 375,
 						Y = company.PayCheckStock == PayCheckStock.LaserTop || company.PayCheckStock == PayCheckStock.MICREncodedTop || company.PayCheckStock == PayCheckStock.MICRQb ? 587 : 330,
 						ScaleX = (float)0.7,

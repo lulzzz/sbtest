@@ -147,7 +147,7 @@ namespace SiteInspectionStatus_Utility
 					MigrateDocuments(container);
 					break;
                 case 31:
-                    MovePayrollDocuments(container);
+                    MoveDocuments(container);
                     break;
                 default:
 					break;
@@ -208,27 +208,41 @@ namespace SiteInspectionStatus_Utility
 			
 			}
 		}
-        private static void MovePayrollDocuments(IContainer container)
+        private static void MoveDocuments(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())
             {
                 
                 var _fileRepo = scope.Resolve<IFileRepository>();
                 var reader = scope.Resolve<IReadRepository>();
+                
                 const string readSql = "select Id from Payroll";
+                const string docsquery = "select * from Document";
                 
                 var payrolls = reader.GetQueryData<Guid>(readSql);
-
+                var docs = reader.GetQueryData<Document>(docsquery);
+               
+                var payrollCounter = (int) 0;
+                var docCounter = (int)0;
                 payrolls.ForEach(p =>
                 {
                    if(_fileRepo.FileExists(string.Empty, p.ToString(), "pdf"))
                    {
                        _fileRepo.MoveDestinationFile($"{p}.pdf", $"{EntityTypeEnum.Payroll.GetDbName()}\\{p}.pdf");
+                       payrollCounter++;
                    }
                 });
+                docs.ForEach(d =>
+                {
+                    
+                    if (_fileRepo.FileExists(string.Empty, d.DocumentDto.Id.ToString(), d.DocumentDto.DocumentExtension))
+                    {
+                        _fileRepo.MoveDestinationFile($"{d.DocumentDto.Id}.{d.DocumentDto.DocumentExtension}", $"{d.Path}");
+                        docCounter++;
+                    }
+                });
 
-
-
+                Console.WriteLine($"Payroll files moved {payrollCounter}: Docs Moved: {docCounter}");
             }
         }
 

@@ -32,7 +32,21 @@ namespace HrMaxx.Common.Models.Enum
 		Signature=1
 	}
 
-	public enum DocumentCategory
+    public enum DocType
+    {
+        [HrMaxxSecurity(DbId = 0, DbName = "Misc")]
+        Misc = 0,
+        [HrMaxxSecurity(DbId = 1, DbName = "Signature")]
+        Signature = 1,
+        [HrMaxxSecurity(DbId = 3, DbName = "Company Compliance")]
+        CompanyCompliance = 3,
+        [HrMaxxSecurity(DbId = 4, DbName = "Employee On-Boarding")]
+        EmployeeOnBoarding = 4,
+        [HrMaxxSecurity(DbId = 5, DbName = "Employee Compliance")]
+        EmployeeCompliance = 5
+    }
+
+    public enum DocumentCategory
 	{
 		[HrMaxxSecurity(DbId = 1, DbName = "Company Document")]
 		Company = 1,

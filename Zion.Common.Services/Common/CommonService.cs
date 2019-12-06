@@ -264,11 +264,12 @@ namespace HrMaxx.Common.Services.Common
 			}
 		}
 
-		public void AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, DocumentDto targetObject)
+		public Models.Document AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId,
+            DocumentDto targetObject)
 		{
 			try
 			{
-				_commonRepository.AddDocument(source, target, sourceId, targetObject);
+				return _commonRepository.AddDocument(source, target, sourceId, targetObject);
 			}
 			catch (Exception e)
 			{
@@ -361,5 +362,7 @@ namespace HrMaxx.Common.Services.Common
                 throw new HrMaxxApplicationException(message, e);
             }
         }
+
+        
     }
 }

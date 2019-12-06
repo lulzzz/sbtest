@@ -197,16 +197,6 @@ namespace HrMaxx.Common.Repository.Files
 			File.Delete(file);
 		}
 
-		public void SaveFile(Guid id, string documentExtension, byte[] file)
-		{
-			var filePath = $"{_destinationPath}{id}.{documentExtension}";
-			if (File.Exists(filePath))
-			{
-				File.Delete(filePath);
-			}
-			File.WriteAllBytes(filePath, file);
-		}
-
 		public string SaveFile(string directory, string name, string extension, string content)
 		{
 

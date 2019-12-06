@@ -2513,7 +2513,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				{
 					pdf.Signature = new PDFSignature
 					{
-						Path = _fileRepository.GetDocumentLocation(signature.DocumentDto.Doc),
+						Path = _fileRepository.GetDocumentLocation(signature.Path),
 						X = 375,
 						Y =
 							company1.PayCheckStock == PayCheckStock.LaserTop || company1.PayCheckStock == PayCheckStock.MICREncodedTop ||
@@ -2956,7 +2956,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						
 						pdf.Signature = new PDFSignature
 						{
-							Path = _fileRepository.GetDocumentLocation(signature.DocumentDto.Doc),
+							Path = _fileRepository.GetDocumentLocation(signature.Path),
 							X = 375,
 							Y = 325,
 							ScaleX = (float)0.7,

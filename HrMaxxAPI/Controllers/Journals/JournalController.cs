@@ -39,12 +39,6 @@ namespace HrMaxxAPI.Controllers.Journals
 		{
 			
 			var mapped = Mapper.Map<JournalResource, Journal>(journal);
-			if (_documentService.DocumentExists(mapped.DocumentId))
-			{
-				var document = MakeServiceCall(() => _documentService.GetDocument(mapped.DocumentId), "Get Document By ID",
-						true);
-				return Printed(document);
-			}
 			var printed = MakeServiceCall(() => _journalService.Print(mapped), "print journal with id " + mapped.Id, true);
 			return Printed(printed);
 		}

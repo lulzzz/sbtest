@@ -26,7 +26,7 @@ namespace HrMaxx.Common.Repository.Common
 		List<InsuranceGroupDto> GetInsuranceGroups();
 		InsuranceGroupDto SaveInsuranceGroup(InsuranceGroupDto insuranceGroup);
 		void UpdateDBStats();
-		void AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, DocumentDto targetObject);
+		Document AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, DocumentDto targetObject);
 		Document GetDocument(Guid documentId);
 		void DeleteDocument(Guid entityId, Guid documentId);
 		IList<Document> GetDocuments(EntityTypeEnum entityType, Guid entityId);

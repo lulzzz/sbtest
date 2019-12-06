@@ -234,7 +234,8 @@ namespace HrMaxx.Common.Repository.Common
 			}
 		}
 
-		public void AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, DocumentDto targetObject)
+		public Document AddDocument(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId,
+            DocumentDto targetObject)
 		{
 			const string sql = "insert into Document (SourceEntityTypeId, SourceEntityId, TargetEntityId, Type, CompanyDocumentSubType, TargetObject, Uploaded, UploadedBy) " +
 												 "values (@SourceEntityTypeId, @SourceEntityId, @TargetEntityId, @Type, @CompanyDocumentSubType, @TargetObject, @Uploaded, @UploadedBy); select cast(scope_identity() as int) as Id;";
@@ -250,7 +251,8 @@ namespace HrMaxx.Common.Repository.Common
 						targetObject.CompanyDocumentSubType == null ? default(int?) : targetObject.CompanyDocumentSubType.Id,
 						TargetObject = JsonConvert.SerializeObject(targetObject), Uploaded = DateTime.Now, UploadedBy = targetObject.UserName
 				});
-			}
+                return GetDocument(targetObject.Id);
+            }
 		}
 
 		public Document GetDocument(Guid documentId)
@@ -276,8 +278,9 @@ namespace HrMaxx.Common.Repository.Common
 			const string sql = "select * from Document where SourceEntityTypeId=@SourceType and SourceEntityId=@Id";
 			using (var conn = GetConnection())
 			{
-				return conn.Query<Document>(sql, new { Id = entityId, SourceType=entityType.GetDbId() }).ToList();
-			}
+                return conn.Query<Document>(sql, new { Id = entityId, SourceType=entityType.GetDbId() }).ToList();
+                
+            }
 		}
 
 		public void AddEmployeeDocument(Guid? companyId, Guid entityId, DocumentDto document)
