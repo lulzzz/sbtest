@@ -400,7 +400,8 @@
 			}
 			else if (result.sourceTypeId === 3) {
 				dataSvc.fromSearch = true;
-				dataSvc.showemployee = result.sourceId;
+                dataSvc.showemployee = result.sourceId;
+                dataSvc.terminatedSearch = result.searchText.indexOf('Terminated') > 0 || result.searchText.indexOf('InActive');
 				var currentLocation = $window.location.href;
 				$scope.setHostandCompany(result.hostId, result.companyId, (currentLocation.indexOf( "#!/Client/Employees/")===-1 ?"#!/Client/Employees/" + +(new Date().getTime()) : null));
 			}

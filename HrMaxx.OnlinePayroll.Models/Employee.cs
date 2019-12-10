@@ -111,13 +111,17 @@ namespace HrMaxx.OnlinePayroll.Models
 		public CompanyDeduction Deduction { get; set; }
 		public DeductionMethod Method { get; set; }
 		public decimal Rate { get; set; }
-		public decimal? AnnualMax { get; set; }
-		public int CeilingMethod { get; set; }
+
+        public decimal? EmployerRate { get; set; }
+        public decimal? AnnualMax { get; set; }
+		public DeductionMethod? CeilingMethod { get; set; }
 		public decimal? CeilingPerCheck { get; set; }
 		public decimal? Limit { get; set; }
 		public int? Priority { get; set; }
 		public string AccountNo { get; set; }
 		public Guid? AgencyId { get; set; }
+        public decimal EmployeeWithheld { get; set; }
+        public decimal EmployerWithheld { get; set; }
 	}
 
 	public class EmployeeBankAccount

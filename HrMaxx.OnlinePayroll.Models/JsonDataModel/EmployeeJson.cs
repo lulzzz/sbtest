@@ -83,6 +83,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
         public Guid EmployeeId { get; set; }
         public int Method { get; set; }
         public decimal Rate { get; set; }
+        public decimal? EmployerRate { get; set; }
         public decimal? AnnualMax { get; set; }
         public int CompanyDeductionId { get; set; }
         public decimal? CeilingPerCheck { get; set; }
@@ -93,7 +94,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
         public int CeilingMethod { get; set; }
     
         public CompanyDeduction CompanyDeduction { get; set; }
-       
+        public decimal EmployeeWithheld { get; set; }
+        public decimal EmployerWithheld { get; set; }
+
     }
 	 public class EmployeeBankAccount
     {

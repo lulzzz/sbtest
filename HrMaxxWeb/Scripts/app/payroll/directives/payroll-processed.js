@@ -350,7 +350,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/reviewpaycheck.html',
 							controller: 'paycheckPopupCtrl',
-							size: 'lg',
+							size: 'md',
 							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {

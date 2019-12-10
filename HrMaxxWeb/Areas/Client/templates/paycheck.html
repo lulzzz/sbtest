@@ -201,12 +201,18 @@
 				<td class="text-right">{{tax.amount | currency:'$'}}</td>
 				<td class="text-right">{{tax.ytdTax | currency: '$'}}</td>
 			</tr>
-			<tr ng-repeat="ded in check.deductions | orderBy:'wage':true">
-				<td>{{ded.deduction.description}}<span ng-show="ded.deduction.type.id===3">({{ded.employeeDeduction.accountNo}})</span></td>
-				<td class="text-right">{{ded.wage | currency:'$'}}</td>
-				<td class="text-right">{{ded.amount | currency:'$'}}</td>
-				<td class="text-right">{{ded.ytd | currency: '$'}}</td>
-			</tr>
+            <tr ng-repeat-start="ded in check.deductions | orderBy:'wage':true">
+                <td>{{ded.deduction.description}}<span ng-show="ded.deduction.type.id===3">({{ded.employeeDeduction.accountNo}})</span></td>
+                <td class="text-right">{{ded.wage | currency:'$'}}</td>
+                <td class="text-right">{{ded.amount | currency:'$'}}</td>
+                <td class="text-right">{{ded.ytd | currency: '$'}}</td>
+            </tr>
+            <tr ng-repeat-end ng-show="ded.employerAmount>0">
+                <td>--{{ded.deduction.description}} - Employer<span ng-show="ded.deduction.type.id===3">({{ded.employeeDeduction.accountNo}})</span></td>
+                <td class="text-right">{{ded.wage | currency:'$'}}</td>
+                <td class="text-right">{{ded.employerAmount | currency:'$'}}</td>
+                <td class="text-right">{{ded.ytdEmployer | currency: '$'}}</td>
+            </tr>
 			<tr>
 				<td>Total</td>
 				<td></td>

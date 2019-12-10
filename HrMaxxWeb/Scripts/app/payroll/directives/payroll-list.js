@@ -135,7 +135,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								paycheck.deductions.push({
 									deduction: ded.deduction,
 									employeeDeduction: ded,
-									rate: ded.rate,
+                                    rate: ded.rate,
+                                    employerRate: ded.employerRate,
 									annualMax: ded.annualMax,
 									method: ded.method,
 									amount: 0,
@@ -145,7 +146,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									accountNo: ded.accountNo,
 									agencyId: ded.agencyId,
 									limit: ded.limit,
-									priority: ded.priority
+                                    priority: ded.priority,
+                                    employeeWithheld: ded.employeeWithheld,
+                                    employerWithheld: ded.employerWithheld
 								});
 							});
 							selected.payChecks.push(paycheck);
@@ -374,7 +377,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 											paycheck.compensations = angular.copy(matching.compensations);
 											paycheck.deductions = angular.copy(matching.deductions);
 											$.each(paycheck.deductions, function(id, d) {
-												var compDed = $filter('filter')($scope.mainData.selectedCompany.deductions, { id: d.deduction.id })[0];
+                                                var compDed = $filter('filter')($scope.mainData.selectedCompany.deductions, { id: d.deduction.id })[0];
+                                                var empDed = $filter('filter')(employee.deductions, { id: d.employeeDeduction.id })[0];
 												if (compDed) {
 													d.deduction = compDed;
 													d.employeeDeduction.deduction = compDed;
@@ -384,8 +388,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 												d.ceilingPerCheck = d.employeeDeduction.ceilingPerCheck;
 												d.ceilingMethod = d.employeeDeduction.ceilingMethod;
 												d.priority = d.employeeDeduction.priority;
-												d.limit = d.employeeDeduction.limit;
-											});
+                                                d.limit = d.employeeDeduction.limit;
+                                                d.employerRate = d.employeeDeduction.employerRate;
+                                                d.employeeWithheld = empDed.employeeWithheld;
+                                                d.employerWithheld = empDed.employerWithheld;
+                                            });
 										} else {
 											$.each(employee.compensations, function(index2, comp) {
 												var pt = {
@@ -400,7 +407,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 												paycheck.deductions.push({
 													deduction: ded.deduction,
 													employeeDeduction: ded,
-													rate: ded.rate,
+                                                    rate: ded.rate,
+                                                    employerRate: ded.employerRate,
 													annualMax: ded.annualMax,
 													method: ded.method,
 													amount: 0,
@@ -410,7 +418,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 													accountNo: ded.accountNo,
 													agencyId: ded.agencyId,
 													limit: ded.limit,
-													priority: ded.priority
+                                                    priority: ded.priority,
+                                                    employeeWithheld : ded.employeeWithheld,
+                                                    employerWithheld : ded.employerWithheld
 												});
 											});
 										}

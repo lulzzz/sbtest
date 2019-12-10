@@ -1,8 +1,121 @@
 ﻿<div class="table-responsive col-sm-12">
-	<div class="row">
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-	</div>
-	<table class="table table-header table-bordered table-condensed form-controls input-sm">
+    <div class="row">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+<div class="row">
+    <div class="col-sm-3" ng-repeat="item in list track by $index" ng-form >
+        <form name="dedform{{$index}}" data-parsley-validate="true">
+
+       
+        <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
+            <div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-down fa-fw"></i></div>
+            <div class="stats-title" ng-if="((!item.employeeDeduction && item.id>0) || (item.employeeDeduction))">{{item.deduction? item.deduction.description : ''}}</div>
+            <div class="stats-title" ng-if="item.id===0">
+                <div class="form-group">
+
+                    <select class="form-control" id="ded" ng-model="item.deduction" ng-options="ded.description for ded in availableCompanyDeductions($index) track by ded.id" required>
+                        <option value="">Please select...</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="stats-desc">{{item.deduction? item.deduction.type.name : ''}}</div>
+            <div class="stats-number">{{item.employeeWithheld | currency}} (@ {{ item.method==1? (item.rate | currency:'') + '%' : (item.rate | currency)}} p.c)</div>
+            <div class="stats-number" ng-show="item.employerWithheld">Employer: {{item.employerWithheld | currency}} (@ {{ (item.employerRate | currency:'') + '%'}})</div>
+            <div class="stats-progress progress">
+                <div class="progress-bar" style="width: 100%;"></div>
+            </div>
+            <div class="stats-desc" ng-show="showControls">
+                <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected(item)"></i>
+                <i class="fa fa-remove fa-lg pull-right" ng-show="!selected && (item.id>0 || !saveToServer) && item.employeeWithheld===0 && item.employerWithheld===0" ng-click="delete($index)"></i>
+                <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
+                <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && selected!==original" ng-click="isValid($index) && save($index)"></i>
+
+
+            </div>
+        </div>
+        <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && ((selected.id && selected.id===item.id) || (!selected.id && selected.employeeDeduction.id===item.employeeDeduction.id))">
+            <div class="stats-desc">
+                <div class="form-group  col-md-12 col-sm-12" ng-show="showWarning()">
+                    <label class="control-label label-warning">* This Deduction will not be applied</label>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-4" for="rate">Rate :</label>
+                    <div class="col-md-4 col-sm-4">
+                        <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.rate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required/>
+
+                    </div>
+                    <div class="col-md-4 col-sm-4 m-l-0">
+
+                        <select class="form-control" ng-model="selected.method" ng-options="m.value for m in data.types track by m.key" required>
+                            <option value="">Please select...</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-4" for="ec">Employer %:</label>
+                    <div class="col-md-6 col-sm-6">
+                        <input class="form-control" type="number" id="ec" name="ec" ng-model="selected.employerRate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" max="100" min="0"/>
+                        <label class="label label-danger" ng-show="dedform.ec.$error.max">value can only be between 0 and 100</label>
+                    </div>
+                </div>fs
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-4" for="amax">Annual Max :</label>
+                    <div class="col-md-6 col-sm-6">
+                        <input class="form-control" type="number" id="amax" name="amax" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-4" for="limit">Absolute Limit :</label>
+                    <div class="col-md-6 col-sm-6">
+                        <input class="form-control" type="number" id="limit" name="limit" ng-model="selected.limit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4 col-sm-4" for="ceiling">Ceiling p.c :</label>
+                    <div class="col-md-4 col-sm-4">
+                        <input class="form-control" type="number" id="ceiling" name="ceiling" ng-model="selected.ceilingPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0"/>
+                    </div>
+                    <div class="col-md-4 col-sm-4 m-l-0">
+                        <select class="form-control" ng-model="selected.ceilingMethod" ng-options="m.value for m in data.types track by m.key" ng-required="selected.ceilingPerCheck">
+                            <option value="">Please select...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="selected.deduction.type.id===3">
+                    <label class="control-label col-md-4 col-sm-4" for="priority">Priority :</label>
+                    <div class="col-md-4 col-sm-4">
+                        <input class="form-control" type="number" id="priority" name="priority" ng-model="selected.priority" ng-pattern="/^[0-9]?$/"/>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="selected.deduction.type.id===3">
+                    <label class="control-label col-md-4 col-sm-4" for="account">Account No :</label>
+                    <div class="col-md-8 col-sm-8">
+                        <input class="form-control" type="text" id="account" name="account" ng-model="selected.accountNo" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"/>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="selected.deduction.type.id===3">
+                    <label class="control-label col-md-4 col-sm-4" for="agency">Agency :</label>
+                    <div class="col-md-8 col-sm-8">
+                        <select class="form-control" id="agency" ng-model="item.agencyId" ng-options="a.id as a.name + '(' + a.contact.firstName + ' ' + a.contact.lastName + ')' for a in data.agencies">
+                            <option value="">Please select...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+</div>
+<div class="row" ng-show="!selected && showControls">
+    <span ng-show="list.length===0">No Deductions found</span>
+    <button type="button" ng-show="availableCompanyDeductions(-1).length>0" ng-click="add()" class="btn btn-lg btn-icon btn-circle btn-success">
+        <i class="fa fa-plus"></i>
+    </button>
+</div>
+	<table class="table table-header table-bordered table-condensed form-controls input-sm" ng-show="false">
 		<thead>
 			<tr>
 				<td class="col-sm-4">Description</td>

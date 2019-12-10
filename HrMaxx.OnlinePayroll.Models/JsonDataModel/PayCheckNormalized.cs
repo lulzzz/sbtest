@@ -63,12 +63,16 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
 		public decimal YTD { get; set; }
-		public decimal YTDWage { get; set; }
-		public Models.CompanyDeduction CompanyDeduction { get; set; }
+        public decimal YTDEmployer { get; set; }
+        public decimal YTDWage { get; set; }
+       public decimal? EmployerRate { get; set; }
+        public decimal? EmployerAmount { get; set; }
+        public Models.CompanyDeduction CompanyDeduction { get; set; }
 		public Models.EmployeeDeduction EmployeeDeduction
 		{
 			get { return !string.IsNullOrWhiteSpace(EmployeeDeductionFlat) ? JsonConvert.DeserializeObject<Models.EmployeeDeduction>(EmployeeDeductionFlat) : default(Models.EmployeeDeduction); }
 		}
+        public List<PayCheckSummaryDeduction> PayChecks { get; set; }
 	}
 	
 	public class PayCheckPayCode
@@ -166,4 +170,14 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		} }
 		public List<PayCheckDeduction> Deductions { get; set; }
 	}
+
+    public class PayCheckSummaryDeduction
+    {
+        public int Id { get; set; }
+        public DateTime PayDay { get; set; }
+        public Guid EmployeeId { get; set; }
+        public int EmployeeDeductionId { get; set; }
+        public decimal EmployeeWithheld { get; set; }
+        public decimal EmployerWithheld { get; set; }
+    }
 }

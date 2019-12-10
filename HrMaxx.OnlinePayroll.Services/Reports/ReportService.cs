@@ -2266,7 +2266,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).Where(e => e.PayCheckWages.GrossWage > 0 && e.EmployeeDeductions > 0).ToList();
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includedDeductions: true, includeHistory: request.IncludeHistory, 
-				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).First();
+				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, report:"DeductionsReport").First();
+            
 			return response;
 		}
 

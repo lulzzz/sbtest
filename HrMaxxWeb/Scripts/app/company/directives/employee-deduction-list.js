@@ -56,18 +56,23 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						id: 0,
 						employeeId: $scope.employeeId,
 						deduction: null,
-						method: null,
+						method: dataSvc.types[1],
 						rate: 0,
 						annualMax: null,
 						limit: null,
 						ceilingPerCheck: null,
-						ceilingMethod: 1
+                        ceilingMethod: null,
+                        employerRate: null,
+                        employeeWithheld: 0,
+                        employerWithheld:0
 
 					};
 					$scope.list.push($scope.selected);
 				},
 				
-				$scope.save = function (item) {
+                    $scope.save = function (index) {
+                    
+                        var item = $scope.selected;
 					if ($scope.saveToServer) {
 						item.employeeId = $scope.employeeId;
 						item.ceilingPerCheck1 = item.ceilingPerCheck;
@@ -83,9 +88,17 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						$scope.selected = null;
 					}
 					
-				}
-				$scope.delete = function (index) {
-					var item = $scope.list[index];
+                        }
+                    $scope.showWarning = function() {
+                        if ($scope.selected) {
+                            if ($scope.selected.limit === "0" || $scope.selected.ceilingPerCheck === "0")
+                                return true;
+                            else
+                                return false;
+                        }
+                    }
+                    $scope.delete = function (index) {
+                        var item = $scope.list[index];
 					if ($scope.saveToServer) {
 						companyRepository.deleteEmployeeDeduction(item.id).then(function(deduction) {
 							$scope.list.splice(index, 1);
@@ -97,7 +110,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						$scope.list.splice(index, 1);
 					}
 				}
-				$scope.cancel = function (index) {
+                    $scope.cancel = function () {
+                        var index = $scope.list.indexOf($scope.selected);
 					if ($scope.selected.id === 0) {
 						$scope.list.splice(index, 1);
 					}
@@ -106,28 +120,34 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					}
 					$scope.selected = null;
 				}
-				$scope.setSelected = function(index) {
-					$scope.selected = $scope.list[index];
+				$scope.setSelected = function(item) {
+					$scope.selected = item;
 					$scope.original = angular.copy($scope.selected);
 				}
+                    $scope.isValid = function(index) {
+                        var form = $('form[name="dedform' + index + '"]');
+                        return form.parsley().validate();
+                    }
+                    $scope.isItemValid = function (item) {
+                        var returnVal = true;
+                        if (item) {
+                            if (!item.deduction || !item.method || item.rate<0)
+                                returnVal =  false;
+                            if (item.ceilingPerCheck < 0 || (item.ceilingMethod.key === 1 && item.ceilingPerCheck > 100))
+                                returnVal =  false;
+                            if (item.employerRate>100)
+                                returnVal =  false;
+                            if (item.deduction.type.id === 3) {
+                                if (!item.accountNo || !item.agencyId)
+                                    returnVal = false;
+                                
 
-				$scope.isItemValid = function(item) {
-					if (!item.deduction || !item.method)
-						return false;
-					else if (item.deduction.type.id === 3) {
-						if (!item.accountNo || !item.agencyId)
-							return false;
-						else {
-							if (item.limit===undefined || item.ceilingPerCheck===undefined || (item.ceilingMethod === 1 && ( item.ceilingPerCheck < 0 || item.ceilingPerCheck > 100)))
-								return false;
-							else 
-								return true;
-						}
+                            }
+                            
+                        }
+                        return returnVal;
 
-					}
-					else
-						return true;
-				}
+                    }
 				$scope.availableCompanyDeductions = function(index) {
 					var returnList = [];
 					if ($scope.companyDeductions) {
@@ -140,7 +160,37 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					}
 					
 					return returnList;
-				}
+                    }
+                    $scope.getWidgetClass = function (item) {
+                        if (item.deduction && item.deduction.type) {
+                            if (item.deduction.type.category === 1)
+                                return 'bg-green';
+                            else if (item.deduction.type.category === 2)
+                                return 'bg-blue';
+                            else if (item.deduction.type.category === 3)
+                                return 'bg-purple';
+                            else if (item.deduction.type.category === 4)
+                                return 'bg-black';
+                        }
+                        
+                        else
+                            return 'bg-red-darker';
+                    }
+                    $scope.getWidgetSubClass = function (item) {
+                        if (item.deduction && item.deduction.type) {
+                            if (item.deduction.type.category === 1)
+                                return 'border-green';
+                            else if (item.deduction.type.category === 2)
+                                return 'border-blue';
+                            else if (item.deduction.type.category === 3)
+                                return 'border-purple';
+                            else if (item.deduction.type.category === 4)
+                                return 'border-black';
+                        }
+
+                        else
+                            return 'border-red';
+                    }
 				
 				
 

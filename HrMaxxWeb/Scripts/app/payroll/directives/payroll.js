@@ -293,7 +293,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
-							size: 'lg',
+							size: 'md',
 							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
@@ -309,7 +309,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatejobcost.html',
 							controller: 'updateJobCostCtrl',
-							size: 'md',
+							size: 'sm',
 							resolve: {
 								paycheck: function () {
 									return listitem;
@@ -712,17 +712,12 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 		return returnVal;
 	}
 	var isDeductionValid = function (item) {
-		if (!item.deduction || !item.method || !item.rate)
+        if (!item.deduction || !item.method || !item.rate || (item.ceilingMethod === 1 && (item.ceilingPerCheck < 0 || item.ceilingPerCheck > 100)))
 			return false;
 		else if (item.deduction.type.id === 3) {
 			if (!item.accountNo || !item.agencyId)
 				return false;
-			else {
-				if (item.limit === undefined || item.ceilingPerCheck === undefined || (item.ceilingMethod === 1 && (item.ceilingPerCheck < 0 || item.ceilingPerCheck > 100)))
-					return false;
-				else
-					return true;
-			}
+			
 
 		}
 		else
@@ -749,12 +744,21 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			dd.employeeDeduction.method = dd.method;
 			dd.employeeDeduction.rate = dd.rate;
 			dd.employeeDeduction.annualMax = dd.annualMax;
-			dd.employeeDeduction.ceilingPerCheck = dd.ceilingPerCheck;
+            dd.employeeDeduction.ceilingPerCheck = dd.ceilingPerCheck;
+            dd.employeeDeduction.ceilingPerCheck1 = dd.employeeDeduction.ceilingPerCheck;
+            dd.employeeDeduction.ceilingMethod = dd.ceilingMethod;
+            dd.employeeDeduction.employerRate = dd.employerRate;
 			dd.employeeDeduction.limit = dd.limit;
 			dd.employeeDeduction.accountNo = dd.accountNo;
 			dd.employeeDeduction.agencyId = dd.agencyId;
-			dd.employeeDeduction.priority = dd.priority;
-			companyRepository.saveEmployeeDeduction(dd);
+            dd.employeeDeduction.priority = dd.priority;
+            companyRepository.saveEmployeeDeduction(dd.employeeDeduction).then(function (deduction) {
+                dd.employeeDeduction.id = deduction.id;
+                
+            }, function (error) {
+                
+            });
+			
 			$scope.original.deductions.push(dd);
 		});
 		
@@ -774,7 +778,10 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 			dd.employeeDeduction.method = dd.method;
 			dd.employeeDeduction.rate = dd.rate;
 			dd.employeeDeduction.annualMax = dd.annualMax;
-			dd.employeeDeduction.ceilingPerCheck = dd.ceilingPerCheck;
+            dd.employeeDeduction.ceilingPerCheck = dd.ceilingPerCheck;
+            dd.employeeDeduction.ceilingPerCheck1 = dd.employeeDeduction.ceilingPerCheck;
+            dd.employeeDeduction.ceilingMethod = dd.ceilingMethod;
+            dd.employeeDeduction.employerRate = dd.employerRate;
 			dd.employeeDeduction.limit = dd.limit;
 			dd.employeeDeduction.accountNo = dd.accountNo;
 			dd.employeeDeduction.agencyId = dd.agencyId;

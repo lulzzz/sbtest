@@ -298,6 +298,7 @@
     <Content Include="Areas\Reports\templates\user-dashboard.html" />
     <Content Include="Areas\Client\templates\test-invoice.html" />
     <Content Include="Content\32px.png" />
+    <Content Include="Content\bootstrap-theme\google.css" />
     <Content Include="Content\morris.css" />
     <Content Include="Content\jstree.min.css" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />

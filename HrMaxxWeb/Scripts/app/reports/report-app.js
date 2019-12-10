@@ -40,8 +40,17 @@ common.filter('deduction', function ($filter) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var exists = $filter('filter')(item.deductions, { companyDeductionId: input });
-			if(exists.length>0)
-				filtered.push(item);
+            if (exists.length > 0) {
+                item.employeeDeductions = 0;
+                item.employerDeductions = 0;
+                for (var j = 0; j < exists.length; j++) {
+                    item.employeeDeductions += exists[j].ytd;
+                    item.employerDeductions += exists[j].ytdEmployer;
+                }
+                
+                filtered.push(item);
+            }
+				
 		}
 		return filtered;
 	};

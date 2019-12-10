@@ -844,7 +844,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								Rate = t.Rate,
 								AnnualMax = t.AnnualMax,
 								Amount = t.Amount,
-								Wage = t.Wage
+								Wage = t.Wage,
+                                EmployerAmount = t.EmployerAmount,
+                                EmployerRate = t.EmployerRate
 							};
 							ptdeds.Add(pt);
 						});
@@ -3346,7 +3348,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				d.Amount = 0;
 				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
 				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
-				if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
+                var ytdEmployer = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDEmployer);
+                if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
 				    !d.Deduction.FloorPerCheck.HasValue)
 				{
 					if (d.Method == DeductionMethod.Amount)
@@ -3355,7 +3358,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						d.Amount = localGrossWage*d.Rate/100;
 					d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
 
-					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > (d.EmployeeDeduction.CeilingMethod==2 ? d.EmployeeDeduction.CeilingPerCheck.Value : (d.EmployeeDeduction.CeilingPerCheck*localGrossWage/100) ) )
+					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > (d.EmployeeDeduction.CeilingMethod==DeductionMethod.Amount ? d.EmployeeDeduction.CeilingPerCheck.Value : (d.EmployeeDeduction.CeilingPerCheck*localGrossWage/100) ) )
 					{
 						d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
 					}
@@ -3383,12 +3386,16 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				
 				if (d.Amount < 0)
 					d.Amount = 0;
+                if (d.EmployerRate.HasValue && d.EmployerRate > 0)
+                {
+                    d.EmployerAmount = d.Amount * d.EmployerRate / 100;
+                }
 				d.Wage = Math.Round(localGrossWage, 2, MidpointRounding.AwayFromZero);
 				d.Amount = Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
 				d.YTD = Math.Round(ytdVal + d.Amount, 2, MidpointRounding.AwayFromZero);
 				d.YTDWage = Math.Round(ytdWage + d.Wage, 2, MidpointRounding.AwayFromZero);
-				
-				localGrossWage -= d.Amount;
+				d.YTDEmployer = Math.Round(ytdEmployer + (d.EmployerAmount ?? 0), 2, MidpointRounding.AwayFromZero);
+                localGrossWage -= d.Amount;
 			});
 			
 			return payCheck.Deductions;
@@ -3732,7 +3739,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							var d2 = ea.Deductions.First(d3 => d3.CompanyDeductionId == d.Deduction.Id);
 							d.YTD = d2.YTD;
 							d.YTDWage = d2.YTDWage;
-						});
+                            d.YTDEmployer = d2.YTDEmployer;
+                        });
 						pc.Compensations.ForEach(c =>
 						{
 							var c2 = ea.Compensations.First(c3 => c3.PayTypeId == c.PayType.Id);
@@ -4377,7 +4385,8 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								var d2 = ea.Deductions.First(d3 => d3.CompanyDeductionId == d.Deduction.Id);
 								d.YTD = d2.YTD;
 								d.YTDWage = d2.YTDWage;
-							});
+                                d.YTDEmployer = d2.YTDEmployer;
+                            });
 							pc.Compensations.ForEach(c =>
 							{
 								var c2 = ea.Compensations.First(c3 => c3.PayTypeId == c.PayType.Id);

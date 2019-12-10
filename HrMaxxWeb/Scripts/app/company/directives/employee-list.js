@@ -17,10 +17,10 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						sourceTypeId: EntityTypes.Employee,
 						isBodyOpen: true,
 						employeesLoadedFor: null,
-						includeAll: false
+						includeAll: $scope.mainData.terminatedSearch
 						
 					}
-					
+                    $scope.mainData.terminatedSearch = false;
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
@@ -353,7 +353,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						});
 					}
 					$scope.getEmployees = function (companyId) {
-						if (!dataSvc.employeesLoadedFor || dataSvc.employeesLoadedFor != companyId || dataSvc.employeesLoadedForStatus !== dataSvc.includeAll) {
+						if (!dataSvc.employeesLoadedFor || dataSvc.employeesLoadedFor !== companyId || dataSvc.employeesLoadedForStatus !== dataSvc.includeAll) {
 							dataSvc.employeesLoadedFor = companyId;
 							dataSvc.employeesLoadedForStatus = dataSvc.includeAll;
 							companyRepository.getEmployees(companyId, dataSvc.includeAll ? 0 : 1).then(function (data) {

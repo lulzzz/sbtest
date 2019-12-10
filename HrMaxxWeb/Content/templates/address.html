@@ -15,7 +15,7 @@
 		<div class="col-sm-6 row">
 			<div class="form-group  col-sm-4">
 				<label for="country">Country</label>
-				<select id="country" class="form-control" name="country" placeholder="country" ng-change="countrySelected()" ng-disabled="(data && countries.length===1) || showDisabled" ng-model="data.selectedCountry" ng-options="country.countryName for country in countries track by country.countryId" required data-parsley-group="{{valGroup}}">
+				<select id="country" class="form-control" name="country" placeholder="country" ng-disabled="true" ng-model="data.selectedCountry" ng-options="country.countryName for country in countries track by country.countryId" required data-parsley-group="{{valGroup}}">
 					<option value="">Please select...</option>
 				</select>
 			</div>

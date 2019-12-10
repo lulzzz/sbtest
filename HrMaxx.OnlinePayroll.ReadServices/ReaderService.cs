@@ -44,7 +44,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  }
 		  catch (Exception e)
 		  {
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Proc:{0} Params:{1}", proc, paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Proc:{proc} Params:{(paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty)}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 		  }
@@ -57,7 +58,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Proc:{0} Params:{1}", proc, paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Proc:{proc} Params:{(paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty)}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -71,7 +73,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Proc:{0} Params:{1}", proc, paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Proc:{proc} Params:{(paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty)}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -85,7 +88,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Proc:{0} Params:{1}", proc, paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Proc:{proc} Params:{(paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty)}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -99,13 +103,28 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  }
 		  catch (Exception e)
 		  {
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Json Proc:{0} Params:{1}", proc, paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Json Proc:{proc} Params:{(paramList.Any() ? paramList.Aggregate(string.Empty, (current, m) => current + m.Key + ":" + m.Value + ", ") : string.Empty)}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 		  }
 	  }
 
-		public List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null,  bool includeTaxesDelayed = false)
+      public List<T> GetQueryData<T>(string query)
+      {
+          try
+          {
+              return _reader.GetQueryData<T>(query);
+          }
+          catch (Exception e)
+          {
+              var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, $"Json Proc:{query} ");
+              Log.Error(message, e);
+              throw new HrMaxxApplicationException(message, e);
+          }
+        }
+
+      public List<PayrollInvoiceListItem> GetPayrollInvoiceList(Guid? host = null, Guid? companyId = null, List<InvoiceStatus> status = null, DateTime? startDate = null, DateTime? endDate = null, List<PaymentStatus> paymentStatuses = null, List<InvoicePaymentMethod> paymentMethods = null,  bool includeTaxesDelayed = false)
 		{
 			try
 			{
@@ -832,7 +851,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 		  }
 		  catch (Exception e)
 		  {
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data {0}-{1}-{2}-{3}-{4}", request.ReportName, request.StartDate, request.EndDate, request.DepositDate, request.DepositSchedule));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Extract Data {request.ReportName}-{request.StartDate}-{request.EndDate}-{request.DepositDate}-{request.DepositSchedule}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 		  }
@@ -897,7 +917,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data {0}-{1}-{2}-{3}-{4}", request.ReportName, request.StartDate, request.EndDate, request.DepositDate, request.DepositSchedule));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Extract Data {request.ReportName}-{request.StartDate}-{request.EndDate}-{request.DepositDate}-{request.DepositSchedule}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1013,7 +1034,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data {0}-{1}-{2}-{3}", report, startDate, endDate, depositSchedule941));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Extract Data {report}-{startDate}-{endDate}-{depositSchedule941}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1130,7 +1152,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data {0}-{1}-{2}-{3}", report, startDate, endDate, depositSchedule941));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Extract Data {report}-{startDate}-{endDate}-{depositSchedule941}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -1246,7 +1269,8 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format("Extract Data Reverse {0}-{1}-{2}", report, masterExtractId, depositSchedule941));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $"Extract Data Reverse {report}-{masterExtractId}-{depositSchedule941}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

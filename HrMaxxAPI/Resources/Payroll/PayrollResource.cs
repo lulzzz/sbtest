@@ -282,11 +282,15 @@ namespace HrMaxxAPI.Resources.Payroll
 		public KeyValuePair<int, string> Method { get; set; }
 		[Required]
 		public decimal Rate { get; set; }
-		public decimal? AnnualMax { get; set; }
+        
+        public decimal? EmployerRate { get; set; }
+        public decimal? AnnualMax { get; set; }
 		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
-		public decimal YTD { get; set; }
-		public decimal YTDWage { get; set; }
+        public decimal? EmployerAmount { get; set; }
+        public decimal YTD { get; set; }
+        public decimal YTDEmployer { get; set; }
+        public decimal YTDWage { get; set; }
 
 		public string Name
 		{

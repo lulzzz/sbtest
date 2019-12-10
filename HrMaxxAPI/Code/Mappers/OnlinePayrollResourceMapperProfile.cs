@@ -177,12 +177,13 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<EmployeeDeductionResource, EmployeeDeduction>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method.Key))
-				.ForMember(dest => dest.CeilingMethod, opt => opt.MapFrom(src => src.CeilingMethod.HasValue ? src.CeilingMethod.Value : 1))
+				.ForMember(dest => dest.CeilingMethod, opt => opt.MapFrom(src => src.CeilingMethod.HasValue ? (DeductionMethod)src.CeilingMethod.Value.Key : default(DeductionMethod?)))
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue? src.Id : 0))
 				.ForMember(dest => dest.CeilingPerCheck, opt => opt.MapFrom(src => src.CeilingPerCheck1));
 			CreateMap<EmployeeDeduction, EmployeeDeductionResource>()
 				.ForMember(dest => dest.Method, opt => opt.MapFrom(src => src.Method==DeductionMethod.Percentage? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount")))
-				.ForMember(dest => dest.CeilingPerCheck1, opt => opt.MapFrom(src => src.CeilingPerCheck));
+                .ForMember(dest => dest.CeilingMethod, opt => opt.MapFrom(src => src.CeilingMethod.HasValue ? src.CeilingMethod.Value == DeductionMethod.Percentage ? new KeyValuePair<int, string>(1, "Percentage") : new KeyValuePair<int, string>(2, "Amount") : default(KeyValuePair<int, string>?)))
+                .ForMember(dest => dest.CeilingPerCheck1, opt => opt.MapFrom(src => src.CeilingPerCheck));
 
 			CreateMap<PayCheckPayTypeAccumulation, PayCheckPayTypeAccumulationResource>()
 				.ForMember(dest => dest.EmployeeId, opt => opt.Ignore())

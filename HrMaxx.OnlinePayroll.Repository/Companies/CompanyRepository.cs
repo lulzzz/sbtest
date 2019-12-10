@@ -525,7 +525,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				{
 					dbdeduction.Method = mappeddeduction.Method;
 					dbdeduction.Rate = mappeddeduction.Rate;
-					dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
+                    dbdeduction.EmployerRate = mappeddeduction.EmployerRate;
+                    dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
 					dbdeduction.CompanyDeductionId = mappeddeduction.CompanyDeductionId;
 					dbdeduction.AccountNo = mappeddeduction.AccountNo;
 					dbdeduction.AgencyId = mappeddeduction.AgencyId;

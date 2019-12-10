@@ -19,6 +19,8 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList);
 		T GetDataFromStoredProc<T, T1>(string proc, List<FilterParam> paramList, XmlRootAttribute rootAttribute);
 		T GetDataFromJsonStoredProc<T, T1>(string proc, List<FilterParam> paramList);
+
+        List<T> GetQueryData<T>(string query);
 		
 
 		//Invoices

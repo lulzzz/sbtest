@@ -543,12 +543,15 @@ namespace HrMaxx.OnlinePayroll.Models
 		public CompanyDeduction Deduction { get; set; }
 		public EmployeeDeduction EmployeeDeduction { get; set; }
 		public DeductionMethod Method { get; set; }
-		public decimal Rate { get; set; }
-		public decimal? AnnualMax { get; set; }
+        public decimal Rate { get; set; }
+        public decimal? EmployerRate { get; set; }
+        public decimal? AnnualMax { get; set; }
 		public decimal Wage { get; set; }
 		public decimal Amount { get; set; }
-		public decimal YTD { get; set; }
-		public decimal YTDWage { get; set; }
+        public decimal? EmployerAmount { get; set; }
+        public decimal YTD { get; set; }
+        public decimal YTDEmployer { get; set; }
+        public decimal YTDWage { get; set; }
 		public string Name
 		{
 			get { return string.Format("{0} - {1}",Deduction.Type.Name, Deduction.DeductionName); }

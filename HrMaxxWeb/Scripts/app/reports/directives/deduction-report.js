@@ -63,30 +63,22 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
 						 }, true
 				 );
 					$scope.set = function (ded) {
-						$scope.selectedemployee = null;
-						$scope.employeepaychecks = [];
+						$scope.selectedEmployee = null;
+						$scope.employeePayChecks = [];
 						$scope.selected = ded;
 						$scope.list = $filter('deduction')(dataSvc.response.employeeAccumulationList, ded.companyDeductionId);
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 					}
-					$scope.viewDetails = function (wc) {
-						$scope.selectedemployee = wc;
-						$scope.employeepaychecks = [];
-						$.each(wc.payChecks, function(index, pc) {
-							var exists = $filter('filter')(pc.deductions, { deduction: { id: $scope.selected.deduction.id } });
-							if (exists.length > 0) {
-								var pc1 = angular.copy(pc);
-								pc1.deductions = [];
-								pc1.deductions.push(exists[0]);
-								$scope.employeepaychecks.push(pc1);
-							}
-						});
+					$scope.viewDetails = function (empAccumulation) {
+                        $scope.selectedEmployee = empAccumulation;
+                        $scope.employeePayChecks = $filter('filter')($scope.selected.payChecks, { employeeId: empAccumulation.employeeId });
+						
 						
 					}
 					$scope.selected = null;
-					$scope.selectedemployee = null;
-					$scope.employeepaychecks = [];
+					$scope.selectedEmployee = null;
+					$scope.employeePayChecks = [];
 					$scope.list = [];
 					$scope.tableData = [];
 

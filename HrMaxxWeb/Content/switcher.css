@@ -45,5 +45,9 @@
     border-color: #49b6d6;
 }
 @media (min-width: 1400px) {
-  .my-modal-popup .modal-lg { width: 1300px!important; }
+  .my-modal-popup .modal-lg { width: 90%!important; }
+    .my-modal-popup .modal-md { width: 65%!important; }
+    .my-modal-popup .modal-sm {
+        width: 40% !important;
+    }
 }

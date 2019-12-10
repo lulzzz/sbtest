@@ -385,7 +385,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
 
 			CreateMap<Models.DataModel.EmployeeDeduction, Models.EmployeeDeduction>()
-				.ForMember(dest => dest.Deduction, opt => opt.MapFrom(src => src.CompanyDeduction));
+                .ForMember(dest => dest.Deduction, opt => opt.MapFrom(src => src.CompanyDeduction))
+                .ForMember(dest => dest.EmployeeWithheld, opt => opt.Ignore())
+                .ForMember(dest => dest.EmployerWithheld, opt => opt.Ignore());
 
 			CreateMap<Models.DataModel.EmployeeBankAccount, Models.EmployeeBankAccount>()
 				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src=>src.BankAccount));
@@ -394,8 +396,10 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Employee, opt => opt.Ignore());
 
 			CreateMap<Models.EmployeeDeduction, Models.DataModel.EmployeeDeduction>()
-				.ForMember(dest => dest.Employee, opt => opt.Ignore())
-				.ForMember(dest => dest.CompanyDeduction, opt => opt.Ignore())
+                .ForMember(dest => dest.CeilingMethod, opt => opt.MapFrom(src=>src.CeilingMethod.HasValue ? (int)src.CeilingMethod.Value : 0))
+                .ForMember(dest => dest.Employee, opt => opt.Ignore())
+                
+                .ForMember(dest => dest.CompanyDeduction, opt => opt.Ignore())
 				.ForMember(dest => dest.CompanyDeductionId, opt => opt.MapFrom(src => src.Deduction.Id));
 
 
