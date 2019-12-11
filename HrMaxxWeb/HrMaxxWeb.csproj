@@ -1708,6 +1708,10 @@
       <Project>{4ba8b656-2741-4474-ab09-537a93e879d2}</Project>
       <Name>HrMaxx.Infrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Zion.TestSupport\HrMaxx.TestSupport.csproj">
+      <Project>{A155BF97-112C-40F7-96D2-F2FAFB19538E}</Project>
+      <Name>HrMaxx.TestSupport</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

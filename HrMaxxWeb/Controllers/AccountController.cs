@@ -212,6 +212,7 @@ namespace HrMaxxWeb.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
+            Logger.Info($"{userId}-{code}");
             if (userId == null || code == null)
             {
                 return View("Error");

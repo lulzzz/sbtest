@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Web;
+using System.Web.Mvc;
 using Autofac;
+using Autofac.Integration.Mvc;
 using HrMaxx.Bus;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxxWeb.Code.IOC.Common;
@@ -15,7 +17,7 @@ namespace HrMaxxWeb.Code.IOC
 		{
 			XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.xml"));
 
-			var builder = new ContainerBuilder();
+            var builder = new ContainerBuilder();
 
 			builder.RegisterModule<LoggingModule>();
 			builder.RegisterModule<MapperModule>();
@@ -28,8 +30,8 @@ namespace HrMaxxWeb.Code.IOC
 			
 
 			IContainer container = builder.Build();
-
-			return container;
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            return container;
 		}
 
 	}
