@@ -92,7 +92,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
         public int? Priority { get; set; }
         public decimal? Limit { get; set; }
         public int CeilingMethod { get; set; }
-    
+        public string Note { get; set; }
         public CompanyDeduction CompanyDeduction { get; set; }
         public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }

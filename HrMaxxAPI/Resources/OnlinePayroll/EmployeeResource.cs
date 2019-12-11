@@ -416,6 +416,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public Guid? AgencyId { get; set; }
         public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
+
+        public string Note { get; set; }
     }
 
 	public class EmployeeBankAccountResource

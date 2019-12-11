@@ -64,7 +64,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
                         ceilingMethod: null,
                         employerRate: null,
                         employeeWithheld: 0,
-                        employerWithheld:0
+                        employerWithheld: 0,
+                        note: ''
 
 					};
 					$scope.list.push($scope.selected);

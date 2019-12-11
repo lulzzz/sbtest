@@ -120,6 +120,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int? Priority { get; set; }
 		public string AccountNo { get; set; }
 		public Guid? AgencyId { get; set; }
+        public string Note { get; set; }
         public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
 	}

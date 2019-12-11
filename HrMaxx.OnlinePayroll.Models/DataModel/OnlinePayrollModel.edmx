@@ -360,6 +360,7 @@
           <Property Name="Priority" Type="int" />
           <Property Name="CeilingMethod" Type="int" Nullable="false" />
           <Property Name="EmployerRate" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Note" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -2377,6 +2378,7 @@
           <Property Name="Limit" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CeilingMethod" Type="Int32" Nullable="false" />
           <Property Name="EmployerRate" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_EmployeeDeduction_CompanyDeduction">
           <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="1" />
@@ -3468,6 +3470,7 @@
           <EntitySetMapping Name="EmployeeDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.EmployeeDeduction">
               <MappingFragment StoreEntitySet="EmployeeDeduction">
+                <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="EmployerRate" ColumnName="EmployerRate" />
                 <ScalarProperty Name="CeilingMethod" ColumnName="CeilingMethod" />
                 <ScalarProperty Name="Limit" ColumnName="Limit" />

@@ -1,3 +1,8 @@
 ﻿<div>
-	<document-list main-data="data" source-type-id="2" heading="'Company and Employee Documents'" mode="1" company-id="data.selectedCompany.id" />
+    <div ng-if="data.userRole && data.userRole!=='Employee'">
+        <document-list main-data="data" source-type-id="2" heading="'Company and Employee Documents'" mode="1" company-id="data.selectedCompany.id"/>
+    </div>
+    <div ng-if="data.userRole && data.userRole==='Employee' ">
+        <document-list main-data="data" source-type-id="3" heading="'Employee Documents'" mode="2" company-id="data.userCompany" employee-id="data.userEmployee" />
+    </div>
 </div>

@@ -6,7 +6,9 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 			restrict: 'E',
 			replace: true,
 			scope: {
-				mainData: "=mainData"
+                mainData: "=mainData",
+                companyId: "=companyId",
+                employeeId: "=employeeId"
 			},
 			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/employee-dashboard.html?v=' + version),
 
@@ -125,7 +127,7 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 						//handleDonutChart();
 						
 						
-						reportRepository.getEmployeeDashboard($scope.mainData.userCompany, $scope.mainData.userEmployee).then(function (data) {
+						reportRepository.getEmployeeDashboard($scope.companyId, $scope.employeeId).then(function (data) {
 								dataSvc.dashboard = data;
 								$timeout(function () {
 									var payrolls = $filter('orderBy')(dataSvc.dashboard.payrollHistory, 'dRank', true);

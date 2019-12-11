@@ -534,6 +534,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.Limit = mappeddeduction.Limit;
 					dbdeduction.Priority = mappeddeduction.Priority;
 					dbdeduction.CeilingMethod = mappeddeduction.CeilingMethod;
+                    dbdeduction.Note = mappeddeduction.Note;
 				}
 			}
 			_dbContext.SaveChanges();

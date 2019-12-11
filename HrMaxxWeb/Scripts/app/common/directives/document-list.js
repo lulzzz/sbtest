@@ -371,7 +371,22 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						$scope.tableParamsEmployeeRequired.reload();
 						$scope.fillTableDataEmployeeRequired($scope.tableParamsEmployeeRequired);
 						
-					}
+                    }
+                    $scope.$watch('companyId',
+                        function (newValue, oldValue) {
+                            if (newValue !== oldValue && $scope.mainData.selectedCompany) {
+                                commonRepository.getDocumentsMetaData($scope.companyId).then(function (data) {
+                                    $scope.list = data.documents;
+                                    $scope.documentTypes = data.types;
+                                    $scope.companyDocumentSubTypes = data.companyDocumentSubTypes;
+                                    refillTables();
+                                }, function (erorr) {
+
+                                });
+                            }
+
+                        }, true
+                    );
 					var init = function() {
 						//commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, c$scope.sourceId).then(function(data) {
 						//	$scope.list = data;
