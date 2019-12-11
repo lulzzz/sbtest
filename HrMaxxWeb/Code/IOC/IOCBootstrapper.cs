@@ -21,16 +21,16 @@ namespace HrMaxxWeb.Code.IOC
 
 			builder.RegisterModule<LoggingModule>();
 			builder.RegisterModule<MapperModule>();
-			builder.RegisterModule<ControllerModule>();
+			//builder.RegisterModule<ControllerModule>();
 			
 
-			builder.RegisterModule<RepositoriesModule>();
-			builder.RegisterModule<MappingModule>();
-			builder.RegisterModule<ServicesModule>();
+			//builder.RegisterModule<RepositoriesModule>();
+			//builder.RegisterModule<MappingModule>();
+			//builder.RegisterModule<ServicesModule>();
 			
 
 			IContainer container = builder.Build();
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            //DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
             return container;
 		}
 

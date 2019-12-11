@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
+using log4net.Config;
 using Newtonsoft.Json;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 
@@ -14,7 +15,8 @@ namespace HrMaxx.Infrastructure.Helpers
 {
 	public static class Utilities
 	{
-		public static string NumberToWords(decimal number)
+        public static log4net.ILog Logger;
+        public static string NumberToWords(decimal number)
 		{
 			if (number == 0)
 				return "Zero";
@@ -158,5 +160,21 @@ namespace HrMaxx.Infrastructure.Helpers
 			strOutput = sb.ToString();
 			return strOutput;
 		}
-	}
+
+        public static void LogInfo(string message)
+        {
+            XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.xml"));
+            log4net.Config.XmlConfigurator.Configure();
+            Logger = log4net.LogManager.GetLogger("Utilities");
+            Logger.Info(message);
+        }
+        public static void LogError(string message, Exception ex)
+        {
+            XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.xml"));
+            log4net.Config.XmlConfigurator.Configure();
+            Logger = log4net.LogManager.GetLogger("Utilities");
+            Logger.Error(message, ex);
+        }
+        
+    }
 }

@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxxWeb.Code.ActionResult;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -112,6 +113,7 @@ namespace HrMaxxWeb.Controllers
             // Require that the user has already logged in via username/password or external login
             if (!await SignInManager.HasBeenVerifiedAsync())
             {
+                ViewBag.errorMessage = "Already verified";
                 return View("Error");
             }
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
@@ -212,15 +214,27 @@ namespace HrMaxxWeb.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
-            Logger.Info($"{userId}-{code}");
-            if (userId == null || code == null)
+            try
             {
+                Utilities.LogInfo($"{userId}-{code}");
+                if (userId == null || code == null || !UserManager.VerifyUserToken(userId, "ConfirmEmail", code))
+                {
+                    ViewBag.errorMessage = "This request is invalid";
+                    return View("Error");
+                }
+
+                var result = await UserManager.ConfirmEmailAsync(userId, code);
+                Logger.Info($"{userId}-{code}-{result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ")}");
+                ViewBag.errorMessage = result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ");
+                return View(result.Succeeded ? "ConfirmEmail" : "Error", "_BlankLayout");
+            }
+            catch(Exception e)
+            {
+                Utilities.LogError("Error in confirming email ", e);
+                ViewBag.errorMessage = e.Message;
                 return View("Error");
             }
-
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
-            Logger.Info($"{userId}-{code}-{result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ")}");
-            return View(result.Succeeded ? "ConfirmEmail" : "Error", "_BlankLayout");
+            
         }
 
         //
@@ -279,9 +293,15 @@ namespace HrMaxxWeb.Controllers
         //
         // GET: /Account/ResetPassword
         [AllowAnonymous]
-        public ActionResult ResetPassword(string code)
+        public ActionResult ResetPassword(string userId, string code)
         {
-            return code == null ? View("Error", "_BlankLayout") : View("ResetPassword", "_BlankLayout");
+            
+            if (code == null || !UserManager.VerifyUserToken(userId, "ResetPassword", code))
+            {
+                ViewBag.errorMessage = "This request is not valid";
+                return View("Error");
+            }
+            return  View("ResetPassword", "_BlankLayout");
         }
 
         //
@@ -295,12 +315,15 @@ namespace HrMaxxWeb.Controllers
             {
                 return View(model);
             }
+            
             var user = await UserManager.FindByNameAsync(model.UserName);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
+            
+
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
@@ -359,6 +382,7 @@ namespace HrMaxxWeb.Controllers
             // Generate the token and send it
             if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
             {
+                ViewBag.errorMessage = "Error in sending two factor code";
                 return View("Error");
             }
             return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
