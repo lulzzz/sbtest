@@ -139,7 +139,7 @@ namespace HrMaxxAPI.Controllers.User
 		[Route(UserRoutes.UserPasswordChange)]
 		public async Task ChangePassword(UserPasswordChangeRequest resource)
 		{
-			var userExists = await UserManager.FindByEmailAsync(CurrentUser.eMail);
+			var userExists = await UserManager.FindByIdAsync(CurrentUser.UserId);
 			if (userExists == null)
 			{
 				throw new HttpResponseException(new HttpResponseMessage
@@ -149,25 +149,26 @@ namespace HrMaxxAPI.Controllers.User
 				});
 			}
 			try
-			{
+            {
+                Logger.Info($"{resource.OldPassword} - {resource.NewPassword} - {userExists.UserName}");
 				var result = await UserManager.ChangePasswordAsync(CurrentUser.UserId, resource.OldPassword, resource.NewPassword);
 				if (!result.Succeeded)
 				{
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.InternalServerError,
-						ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Change User Password"
+						ReasonPhrase = result.Errors.Any() ? result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ") : " Failed to Change User Password"
 					});
 
 				}
 			}
 			catch (Exception e)
 			{
-				Logger.Error("Error creating user", e);
+				Logger.Error(e.GetType() == typeof(HttpResponseException) ? ((HttpResponseException)e).Response.ReasonPhrase : e.Message, e);
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = "Failed to complete change user password"
+					ReasonPhrase = e.GetType()==typeof(HttpResponseException) ? ((HttpResponseException)e).Response.ReasonPhrase : e.Message
 				});
 			}
 

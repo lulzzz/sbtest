@@ -1,179 +1,180 @@
 ﻿<div>
-	<h1 class="page-header">Profile Page </h1>
-	<!-- end page-header -->
-	<div>
+    <h1 class="page-header">Profile Page </h1>
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    <!-- end page-header -->
+    <div>
 
 
-		<!-- begin profile-container -->
-		<div class="row">
-			<div class="profile-container col-sm-8">
-				<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-				<!-- begin profile-section -->
-				<div class="profile-section" ng-if="user">
-					<!-- begin profile-left -->
-					<div class="profile-left">
-						<!-- begin profile-image -->
-						<div class="profile-image">
-							<img ng-src="{{zionAPI.Web}}/Content/images/BlankUser.jpg" />
-							<i class="fa fa-user hide"></i>
-						</div>
-						<!-- end profile-image -->
-						<div class="m-b-10">
-							<a href="#" class="btn btn-warning btn-block btn-sm">Change Picture</a>
-						</div>
+        <!-- begin profile-container -->
+        <div class="row">
+            <div class="profile-container col-sm-8">
 
-						<!-- end profile-highlight -->
-					</div>
-					<!-- end profile-left -->
-					<!-- begin profile-right -->
-					<div class="profile-right">
-						<!-- begin profile-info -->
-						<div class="profile-info">
-							<!-- begin table -->
-							<div class="table-responsive">
+                <!-- begin profile-section -->
+                <div class="profile-section" ng-if="user">
+                    <!-- begin profile-left -->
+                    <div class="profile-left">
+                        <!-- begin profile-image -->
+                        <div class="profile-image">
+                            <img ng-src="{{zionAPI.Web}}/Content/images/BlankUser.jpg" />
+                            <i class="fa fa-user hide"></i>
+                        </div>
+                        <!-- end profile-image -->
+                        <div class="m-b-10">
+                            <a href="#" class="btn btn-warning btn-block btn-sm">Change Picture</a>
+                        </div>
 
-
-
-								<table class="table table-profile">
-									<thead>
-										<tr>
-											<th></th>
-											<th>
-												<h4>{{ FullName()}} <small>{{user.email}}</small></h4>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr class="divider">
-											<td colspan="2"></td>
-										</tr>
-										<tr>
-											<td class="field">Phone</td>
-											<td><i class="fa fa-mobile fa-lg m-r-5"></i> <a href="#" editable-text="user.phone">{{ user.phone || 'empty' }}</a></td>
-										</tr>
-
-										<tr>
-											<td class="field">Role</td>
-											<td>
-												<div class="col-sm-2">
-													<select id="roles" class="form-control" ng-model="user.role" ng-options="role.roleName for role in user.availableRoles track by role.roleId">
-														<option value="">Please select...</option>
-													</select>
-												</div>
-											</td>
-										</tr>
-										<tr ng-if="user">
-											<td class="field">Address</td>
-											<td>
-												<form name="profileform" data-parsley-validate="true">
-													<div>
-														<address-paxol type="1" data="{}" source-type-id="12" source-id="user.userId"></address-paxol>
-													</div>
-
-													<div class="divider">
-
-													</div>
-													<div>
-														<button class="btn btn-sm btn-primary m-r-5" ng-click="save()">Save</button>
-														<button class="btn btn-sm btn-default m-r-5" ng-click="cancel()">Cancel</button>
-													</div>
-												</form>
-
-
-											</td>
-										</tr>
+                        <!-- end profile-highlight -->
+                    </div>
+                    <!-- end profile-left -->
+                    <!-- begin profile-right -->
+                    <div class="profile-right">
+                        <!-- begin profile-info -->
+                        <div class="profile-info">
+                            <!-- begin table -->
+                            <div class="table-responsive">
 
 
 
+                                <table class="table table-profile">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>
+                                                <h4>{{ FullName()}} <small>{{user.email}}</small></h4>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="divider">
+                                            <td colspan="2"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="field">Phone</td>
+                                            <td><i class="fa fa-mobile fa-lg m-r-5"></i> <a href="#" editable-text="user.phone">{{ user.phone || 'empty' }}</a></td>
+                                        </tr>
 
-									</tbody>
-								</table>
+                                        <tr>
+                                            <td class="field">Role</td>
+                                            <td>
+                                                <div class="col-sm-2">
+                                                    <select id="roles" class="form-control" ng-model="user.role" ng-options="role.roleName for role in user.availableRoles track by role.roleId">
+                                                        <option value="">Please select...</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-if="user">
+                                            <td class="field">Address</td>
+                                            <td>
+                                                <form name="profileform" data-parsley-validate="true">
+                                                    <div>
+                                                        <address-paxol type="1" data="{}" source-type-id="12" source-id="user.userId"></address-paxol>
+                                                    </div>
 
-							</div>
-							<!-- end table -->
+                                                    <div class="divider">
+
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-primary m-r-5" ng-click="save()">Save</button>
+                                                        <button class="btn btn-sm btn-default m-r-5" ng-click="cancel()">Cancel</button>
+                                                    </div>
+                                                </form>
 
 
-						</div>
-						<!-- end profile-info -->
-					</div>
-					<!-- end profile-right -->
-				</div>
-				<!-- end profile-section -->
+                                            </td>
+                                        </tr>
 
-			</div>
-			<div class="col-sm-4" ng-if="user">
-				<div class="col-sm-12 m-l-20">
-					<comment-list source-type-id="12" source-id="user.userId" list="user.comments" heading="'Comments'" />
-				</div>
 
-			</div>
-		</div>
 
-		<div class="row" ng-if="user">
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="\#documents" data-toggle="tab">Documents</a></li>
-				<li><a href="\#contacts" data-toggle="tab">Contact</a></li>
-				<li><a href="\#password" data-toggle="tab">Reset Password</a></li>
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane fade active in" id="documents">
-					<document-list source-type-id="12" source-id="user.userId" heading="'Documents'" />
-				</div>
-				<div class="tab-pane fade in" id="contacts">
-					<contact-list source-type-id="12" source-id="user.userId" heading="'Contacts'" />
-				</div>
-				<div class="tab-pane fade in" id="password">
-					<!-- begin col-6 -->
-					<div class="row">
-						<!-- begin panel -->
-						<div class="panel panel-inverse" data-sortable-id="form-stuff-4">
-							<div class="panel-heading">
-								<div class="panel-heading-btn">
-									<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
-									<a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" ng-click="isChangePassword = !isChangePassword"><i class="fa fa-times"></i></a>
-								</div>
-								<h4 class="panel-title">Change Password</h4>
-							</div>
-							<div class="panel-body">
-								<div class="col-sm-4">
-									<form name="changepasswordform" novalidate>
-										<fieldset>
-											<div class="row form-group">
 
-												<label>Old Password</label>
-												<input type="password" ng-model="data.oldPassword" name="odlpassword" class="form-control" required />
+                                    </tbody>
+                                </table>
 
-											</div>
-											<div class="row form-group">
-												<label>New Password</label>
+                            </div>
+                            <!-- end table -->
 
-												<input type="password" ng-model="data.newPassword" name="newpassword" class="form-control" required />
 
-											</div>
-											<div class="row form-group">
-												<label>Confirm New Password</label>
+                        </div>
+                        <!-- end profile-info -->
+                    </div>
+                    <!-- end profile-right -->
+                </div>
+                <!-- end profile-section -->
 
-												<input type="password" ng-model="data.confirmPassword" name="confirmpassword" class="form-control" required />
+            </div>
+            <div class="col-sm-4" ng-if="user">
+                <div class="col-sm-12 m-l-20">
+                    <comment-list source-type-id="12" source-id="user.userId" list="user.comments" heading="'Comments'" />
+                </div>
 
-											</div>
+            </div>
+        </div>
 
-											<div class="row form-group">
+        <div class="row" ng-if="user">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="\#documents" data-toggle="tab">Documents</a></li>
+                <li><a href="\#contacts" data-toggle="tab">Contact</a></li>
+                <li><a href="\#password" data-toggle="tab">Reset Password</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade active in" id="documents">
+                    <document-list source-type-id="12" source-id="user.userId" heading="'Documents'" />
+                </div>
+                <div class="tab-pane fade in" id="contacts">
+                    <contact-list source-type-id="12" source-id="user.userId" heading="'Contacts'" />
+                </div>
+                <div class="tab-pane fade in" id="password">
+                    <!-- begin col-6 -->
+                    <div class="row">
+                        <!-- begin panel -->
+                        <div class="panel panel-inverse" data-sortable-id="form-stuff-4">
+                            <div class="panel-heading">
+                                <div class="panel-heading-btn">
+                                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-warning" data-click="panel-collapse"><i class="fa fa-minus"></i></a>
+                                    <a href="javascript:;" class="btn btn-xs btn-icon btn-circle btn-danger" ng-click="isChangePassword = !isChangePassword"><i class="fa fa-times"></i></a>
+                                </div>
+                                <h4 class="panel-title">Change Password</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-4">
+                                    <form name="changepasswordform" novalidate>
+                                        <fieldset>
+                                            <div class="row form-group">
 
-												<button type="button" class="btn btn-sm btn-primary m-r-5" ng-click="changePassword()" ng-disabled="changepasswordform.$invalid || data.newPassword!==data.confirmPassword">Change password</button>
+                                                <label>Old Password</label>
+                                                <input type="password" ng-model="data.oldPassword" name="odlpassword" class="form-control" required />
 
-											</div>
-										</fieldset>
-									</form>
-								</div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <label>New Password</label>
 
-							</div>
-						</div>
-						<!-- end panel -->
-					</div>
-					<!-- end col-6 -->
-				</div>
-			</div>
-		</div>
-	</div>
+                                                <input type="password" ng-model="data.newPassword" name="newpassword" class="form-control" required />
+
+                                            </div>
+                                            <div class="row form-group">
+                                                <label>Confirm New Password</label>
+
+                                                <input type="password" ng-model="data.confirmPassword" name="confirmpassword" class="form-control" required />
+
+                                            </div>
+
+                                            <div class="row form-group">
+
+                                                <button type="button" class="btn btn-sm btn-primary m-r-5" ng-click="changePassword()" ng-disabled="changepasswordform.$invalid || data.newPassword!==data.confirmPassword">Change password</button>
+
+                                            </div>
+                                        </fieldset>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- end panel -->
+                    </div>
+                    <!-- end col-6 -->
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 

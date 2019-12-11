@@ -69,12 +69,13 @@ common.directive('userProfile', ['zionAPI','version',
 				$scope.alerts = [];
 
 				$scope.addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
-				};
+					//$scope.alerts = [];
+					//$scope.alerts.push({
+					//	msg: error,
+					//	type: type
+					//});
+                    $scope.$parent.$parent.addAlert(error, type);
+                };
 
 				$scope.closeAlert = function (index) {
 					$scope.alerts.splice(index, 1);

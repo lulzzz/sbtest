@@ -217,14 +217,14 @@ namespace HrMaxxWeb.Controllers
             try
             {
                 Utilities.LogInfo($"{userId}-{code}");
-                if (userId == null || code == null || !UserManager.VerifyUserToken(userId, "ConfirmEmail", code))
+                if (userId == null || code == null)
                 {
                     ViewBag.errorMessage = "This request is invalid";
                     return View("Error");
                 }
 
                 var result = await UserManager.ConfirmEmailAsync(userId, code);
-                Logger.Info($"{userId}-{code}-{result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ")}");
+                Utilities.LogInfo($"{userId}-{code}-{result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ")}");
                 ViewBag.errorMessage = result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ");
                 return View(result.Succeeded ? "ConfirmEmail" : "Error", "_BlankLayout");
             }
