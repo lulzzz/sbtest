@@ -120,13 +120,20 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 						
 					};
 					if ($scope.employeeId) {
-						$scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 0 })[0];
+                        $scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 0 })[0];
+                        $scope.selectedUser.host = $scope.hostId;
+                        $scope.selectedUser.company = $scope.companyId;
+                        $scope.selectedUser.employee = $scope.employeeId;
 					}
 					else if ($scope.companyId) {
-						$scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 30 })[0];
-					}
+                        $scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 30 })[0];
+                        $scope.selectedUser.host = $scope.hostId;
+                        $scope.selectedUser.company = $scope.companyId;
+                    }
 					else if ($scope.hostId) {
-						$scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 50 })[0];
+                        $scope.selectedUser.role = $filter('filter')(dataSvc.roles, { roleId: 50 })[0];
+                        $scope.selectedUser.host = $scope.hostId;
+                        
 					}
 					if ($scope.selectedUser.role)
 						$scope.roleChanged();
@@ -237,8 +244,14 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 				}
 				
 				$scope.hostSelected = function () {
-					if($scope.selectedUser)
-						$scope.selectedUser.host = dataSvc.selectedHost.id;
+                    if ($scope.selectedUser) {
+                        $scope.selectedUser.host = dataSvc.selectedHost.id;
+                        $scope.selectedUser.company = null;
+                        $scope.selectedUser.companyId = null;
+                        $scope.selectedUser.employee = null;
+                        $scope.selectedUser.employeeId = null;
+                    }
+						
 					dataSvc.filteredCompanies = angular.copy($filter('filter')(dataSvc.companies, { host: dataSvc.selectedHost.id }));
 					if ($scope.companyId) {
 						dataSvc.selectedCompany = $filter('filter')(dataSvc.filteredCompanies, { id: $scope.companyId })[0];
@@ -246,8 +259,12 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					}
 				}
 				$scope.companySelected = function () {
-					if ($scope.selectedUser)
-						$scope.selectedUser.company = dataSvc.selectedCompany.id;
+                    if ($scope.selectedUser) {
+                        $scope.selectedUser.company = dataSvc.selectedCompany.id;
+                        $scope.selectedUser.employee = null;
+                        $scope.selectedUser.employeeId = null;
+                    }
+						
 					dataSvc.filteredEmployees = angular.copy($filter('filter')(dataSvc.employees, { company: dataSvc.selectedCompany.id }));
 					if ($scope.employeeId) {
 						dataSvc.selectedEmployee = $filter('filter')(dataSvc.filteredEmployees, { id: $scope.employeeId })[0];

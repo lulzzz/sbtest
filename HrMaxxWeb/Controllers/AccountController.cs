@@ -25,7 +25,7 @@ namespace HrMaxxWeb.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -37,9 +37,9 @@ namespace HrMaxxWeb.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -75,16 +75,16 @@ namespace HrMaxxWeb.Controllers
             {
                 return View(model);
             }
-						// Require the user to have a confirmed email before they can log on.
-						var user = await UserManager.FindByNameAsync(model.UserName);
-						if (user != null)
-						{
-							if (!await UserManager.IsEmailConfirmedAsync(user.Id))
-							{
-								ViewBag.errorMessage = "You must have a confirmed email to log on.";
-								return View("Error", "_BlankLayout");
-							}
-						}
+            // Require the user to have a confirmed email before they can log on.
+            var user = await UserManager.FindByNameAsync(model.UserName);
+            if (user != null)
+            {
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
+                    ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                    return View("Error", "_BlankLayout");
+                }
+            }
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
@@ -133,7 +133,7 @@ namespace HrMaxxWeb.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -164,19 +164,19 @@ namespace HrMaxxWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName};
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-									string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
-										ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
-													 + "before you can log in.";
-	                return View("Info");
-	                //return RedirectToAction("Index", "Home");
+                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+                    ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
+                                 + "before you can log in.";
+                    return View("Info");
+                    //return RedirectToAction("Index", "Home");
                 }
                 AddErrors(result);
             }
@@ -185,28 +185,28 @@ namespace HrMaxxWeb.Controllers
             return View(model);
         }
 
-				[HttpGet]
-				[AllowAnonymous]
-				[Route("token")]
-				public async Task<string> Token(string userId, bool confirmEmail)
-				{
-					try
-					{
-						if (confirmEmail)
-						{
-							return await UserManager.GenerateEmailConfirmationTokenAsync(userId);
-						}
-						else
-						{
-							return await UserManager.GeneratePasswordResetTokenAsync(userId);
-						}
-					}
-					catch (Exception e)
-					{
-						
-						return e.Message;
-					}
-				}
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("token")]
+        public async Task<string> Token(string userId, bool confirmEmail)
+        {
+            try
+            {
+                if (confirmEmail)
+                {
+                    return await UserManager.GenerateEmailConfirmationTokenAsync(userId);
+                }
+                else
+                {
+                    return await UserManager.GeneratePasswordResetTokenAsync(userId);
+                }
+            }
+            catch (Exception e)
+            {
+
+                return e.Message;
+            }
+        }
         //
         // GET: /Account/conail
         [AllowAnonymous]
@@ -216,9 +216,10 @@ namespace HrMaxxWeb.Controllers
             {
                 return View("Error");
             }
-	       
+
             var result = await UserManager.ConfirmEmailAsync(userId, code);
-						return View(result.Succeeded ? "ConfirmEmail" : "Error", "_BlankLayout");
+            Logger.Info($"{userId}-{code}-{result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ")}");
+            return View(result.Succeeded ? "ConfirmEmail" : "Error", "_BlankLayout");
         }
 
         //
@@ -228,16 +229,16 @@ namespace HrMaxxWeb.Controllers
         {
             return View("ForgotPassword", "_BlankLayout");
         }
-				private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
-				{
-					string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
-					var callbackUrl = Url.Action("ConfirmEmail", "Account",
-						 new { userId = userID, code = code }, protocol: Request.Url.Scheme);
-					await UserManager.SendEmailAsync(userID, subject,
-						 "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+        private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
+        {
+            string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                 new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+            await UserManager.SendEmailAsync(userID, subject,
+                 "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-					return callbackUrl;
-				}
+            return callbackUrl;
+        }
         //
         // POST: /Account/ForgotPassword
         [HttpPost]
@@ -248,7 +249,7 @@ namespace HrMaxxWeb.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindByNameAsync(model.UserName);
-                if (user == null || user.Email!=model.Email || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                if (user == null || user.Email != model.Email || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
@@ -256,10 +257,10 @@ namespace HrMaxxWeb.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-								string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-								var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-								await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-								return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form
@@ -436,7 +437,7 @@ namespace HrMaxxWeb.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-	        return Redirect("~");// RedirectToAction("Index", "Home");
+            return Redirect("~");// RedirectToAction("Index", "Home");
         }
 
         //

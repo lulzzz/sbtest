@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="stats-desc">{{item.deduction? item.deduction.type.name : ''}}</div>
-            <div class="stats-number">{{item.employeeWithheld | currency}} (@ {{ item.method==1? (item.rate | currency:'') + '%' : (item.rate | currency)}} p.c)</div>
+            <div class="stats-number">{{item.employeeWithheld | currency}} (@ {{ item.method.key===1? (item.rate | currency:'') + '%' : (item.rate | currency)}} p.c)</div>
             <div class="stats-number" ng-show="item.employerWithheld">Employer: {{item.employerWithheld | currency}} (@ {{ (item.employerRate | currency:'') + '%'}})</div>
             <div class="stats-progress progress">
                 <div class="progress-bar" style="width: 100%;"></div>
