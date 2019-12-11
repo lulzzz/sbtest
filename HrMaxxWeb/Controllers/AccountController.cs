@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using HrMaxx.Common.Repository.Security;
 using HrMaxx.Common.Services.Security;
 using HrMaxx.Infrastructure.Helpers;
@@ -273,7 +275,11 @@ namespace HrMaxxWeb.Controllers
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                var rvs = new RouteValueDictionary();
+                    rvs.Add(user.Id, code);
+                //var callbackUrl = Url.Action("ResetPassword", "Account", rvs, protocol: Request.Url.Scheme, ConfigurationManager.AppSettings["WebURL"]);
+                var callbackUrl = string.Format("{0}/{1}/{2}?userId={3}&code={4}", ConfigurationManager.AppSettings["WebURL"],
+                    "Account", "ResetPassword", user.Id, HttpUtility.UrlEncode(code));
                 await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }

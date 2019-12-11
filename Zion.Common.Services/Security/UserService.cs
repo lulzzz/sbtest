@@ -30,7 +30,7 @@ namespace HrMaxx.Common.Services.Security
 			{
 
 				var user = _repository.GetUserProfile(userId);
-				user.AvailableRoles = _repository.GetRoles();
+				user.AvailableRoles = _repository.GetRoles().Where(ur=>ur.RoleId<=user.RoleId).ToList();
 				user.Role = user.AvailableRoles.FirstOrDefault(r => r.RoleId.Equals(user.RoleId));
 				
 				return user;
