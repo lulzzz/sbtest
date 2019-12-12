@@ -13,7 +13,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public List<TaxExtractJson> PendingExtracts { get; set; }
 		public List<PayrollMetricJson> PayrollHistory { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
-	}
+        public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
+    }
 
 	public class TaxExtractJson
 	{

@@ -385,7 +385,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var result = new List<EmployeeSickLeave>();
 			employees.ForEach(e =>
 			{
-				var payChecks = _readerService.GetEmployeePayChecks(e.Id);
+				var payChecks = _readerService.GetEmployeePayChecks(e.Id).Where(pc=>!pc.IsVoid);
 				var empSL = new EmployeeSickLeave()
 				{
 					Id = e.Id,
@@ -396,21 +396,21 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					SickLeaveHireDate = e.SickLeaveHireDate.ToString("MM/dd/yyyy")
 				};
 				empSL.Accumulations =
-					payChecks.OrderBy(pc=>pc.PayDay).Select(
+					payChecks.Where(pc=>pc.Accumulations!=null && pc.Accumulations.Any(ac=>ac.PayType.PayType.Id==6)).OrderBy(pc=>pc.PayDay).Select(
 						pc =>
 							new SickLeaveAccumulation
 							{
 								CheckNumber = pc.CheckNumber.Value,
 								Id = pc.Id,
 								PayDay = pc.PayDay.ToString("MM/dd/yyyy"),
-								FiscalEnd = pc.Accumulations.First().FiscalEnd.ToString("MM/dd/yyyy"),
-								FiscalStart = pc.Accumulations.First().FiscalStart.ToString("MM/dd/yyyy"),
-								AccumulatedValue = pc.Accumulations.First().AccumulatedValue,
-								Used = pc.Accumulations.First().Used,
-								CarryOver = pc.Accumulations.First().CarryOver,
-								YTDFiscal = pc.Accumulations.First().YTDFiscal,
-								YTDUsed = pc.Accumulations.First().YTDUsed,
-								Available = pc.Accumulations.First().YTDFiscal+pc.Accumulations.First().CarryOver-pc.Accumulations.First().YTDUsed
+								FiscalEnd = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).FiscalEnd.ToString("MM/dd/yyyy"),
+								FiscalStart = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).FiscalStart.ToString("MM/dd/yyyy"),
+								AccumulatedValue = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).AccumulatedValue,
+								Used = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).Used,
+								CarryOver = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).CarryOver,
+								YTDFiscal = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDFiscal,
+								YTDUsed = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDUsed,
+								Available = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDFiscal+pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).CarryOver-pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDUsed
 							}).ToList();
 				result.Add(empSL);
 			});
@@ -2252,7 +2252,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).Where(e => e.PayCheckWages.GrossWage > 0 && e.WorkerCompensationAmount>0).ToList();
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includeWorkerCompensations: true, includeHistory: request.IncludeHistory, 
-				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).First();
+				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, report: request.ReportName).First();
 			
 			return response;
 		}
@@ -2266,7 +2266,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed).Where(e => e.PayCheckWages.GrossWage > 0 && e.EmployeeDeductions > 0).ToList();
 			response.CompanyAccumulations = _readerService.GetTaxAccumulations(company: request.CompanyId,
 				startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Company, includedDeductions: true, includeHistory: request.IncludeHistory, 
-				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, report:"DeductionsReport").First();
+				includeClients: request.IncludeClients, includeTaxDelayed: request.IncludeTaxDelayed, report:request.ReportName).First();
             
 			return response;
 		}

@@ -520,7 +520,7 @@
 			<div id="collapseThree" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="row">
-						<button class="btn btn-xs btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport">Sick Leave Export</button>
+						<button class="btn btn-xs btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport || mainData.userRole==='Employee'">Sick Leave Export</button>
 						<button class="btn btn-xs btn-success" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate">Re-Calculate Accumulations</button>
 					</div>
 					<div class="row" ng-if="selected.accumulations.length===0">

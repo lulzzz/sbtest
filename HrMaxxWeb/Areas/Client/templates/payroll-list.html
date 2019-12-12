@@ -54,41 +54,38 @@
 				<label class="label-warning" ng-if="data && mainData.selectedCompany.contract.invoiceSetup.invoiceType!==3 && mainData.selectedCompany.workerCompensations.length===0">*No Workers Compensations set up for this company</label>
 			</div>
 			<div class="row" ng-show="list.length>0">
-				<table ng-table="tableParams" class="table table-condensed table-striped" show-filter="true" template-pagination="custom/pager">
+				<table ng-table="tableParams" class="table table-responsive" template-pagination="custom/pager">
 					<tr ng-repeat="item in tableData | orderBy:['-payDay','-maxCheckId'] track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
-						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1 text-center">
+						<td data-title=" 'Pay Date' " sortable=" 'payDay' " class="col-sm-1">
 							{{item.payDay | date:'MM/dd/yyyy'}} ({{item.taxPayDay | date:'MM/dd/yyyy'}})
 						</td>
-						<td data-title=" 'Start Date' " sortable=" 'startDate' " class="col-sm-1 text-center">
+						<td data-title=" 'Start Date' " sortable=" 'startDate' " class="col-sm-1">
 							{{item.startDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" 'End Date' " sortable=" 'endDate' " class="col-sm-1 text-center">
+						<td data-title=" 'End Date' " sortable=" 'endDate' " class="col-sm-1">
 							{{item.endDate | date:'MM/dd/yyyy'}}
 						</td>
-						<td data-title=" '# of Checks' " sortable=" 'payChecks.length' " class="col-sm-1 text-center">
+						<td data-title=" '# of Checks' " sortable=" 'payChecks.length' " class="col-sm-1">
 							{{item.payChecks.length }}
 						</td>
 
-						<td data-title=" 'Gross Wage' " sortable=" 'totalGrossWage' " class="col-sm-1 text-center show-red">
+						<td data-title=" 'Gross Wage' " sortable=" 'totalGrossWage' " class="col-sm-1 text-right show-red">
 							{{item.totalGrossWage | currency:'$'}}
 						</td>
-						<td data-title=" 'Net Wage' " sortable=" 'totalNetWage' " class="col-sm-1 text-center show-red">
+						<td data-title=" 'Net Wage' " sortable=" 'totalNetWage' " class="col-sm-1 text-right show-red">
 							{{item.totalNetWage | currency:'$'}}
 						</td>
 
-						<td data-title=" 'Invoice #' " sortable=" 'invoiceNumber' " class="col-sm-1 text-center" ng-if="showInvoices()">
+						<td data-title=" 'Invoice #' " sortable=" 'invoiceNumber' " class="col-sm-1 text-right" ng-if="showInvoices()">
 							{{item.invoiceNumber}}
 						</td>
-						<td data-title=" 'Invoice Status' " sortable=" 'invoiceStatusText' " class="col-sm-1 text-center" ng-if="showInvoices()">
-							{{item.invoiceStatusText}} <i class="fa fa-pause" style="color:red" ng-if="item.taxesDelayed"></i>
+						<td data-title=" 'Invoice' " sortable=" 'invoiceStatusText' " class="col-sm-1" ng-if="showInvoices()">
+                            {{item.total | currency:'$'}} - {{item.invoiceStatusText}} <i class="fa fa-pause" style="color:red" ng-if="item.taxesDelayed"></i>
 						</td>
-						<td data-title=" 'Invoice Total' " sortable=" 'total' " class="col-sm-1 text-center" ng-if="showInvoices()">
-							{{item.total | currency:'$'}}
-						</td>
-						<td data-title=" 'Processed By' " sortable=" 'userName' " class="col-sm-1 text-center">
+						<td data-title=" 'Processed By' " sortable=" 'userName' " class="col-sm-1">
 							{{item.userName}} ({{item.lastModified | date:'MM/dd/yyyy hh:mm a'}})
 						</td>
-						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1 text-center">
+						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1">
 							{{item.isQueued ? "Queued ( #" + item.queuePosition + " )" : item.statusText}} <i class="fa fa-dollar" style="color:green" ng-if="item.hasACH"></i>&nbsp;<i class="fa fa-upload" style="color:green" ng-if="item.hasExtracts"></i>
 						</td>
 						<td class="col-sm-1 text-right dt-buttons button-group">

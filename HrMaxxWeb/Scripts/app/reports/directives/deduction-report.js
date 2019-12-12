@@ -23,9 +23,10 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
-					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
-					$scope.showIncludeTaxDelayed = $scope.mainData.selectedCompany.contract.contractOption === 2 && $scope.mainData.selectedCompany.contract.billingOption === 3;
-
+                    if ($scope.mainData.selectedCompany) {
+                        $scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
+                        $scope.showIncludeTaxDelayed = $scope.mainData.selectedCompany.contract.contractOption === 2 && $scope.mainData.selectedCompany.contract.billingOption === 3;
+                    }
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
 					};
@@ -75,7 +76,10 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
                         $scope.employeePayChecks = $filter('filter')($scope.selected.payChecks, { employeeId: empAccumulation.employeeId });
 						
 						
-					}
+                    }
+                    $scope.print = function () {
+                        $window.print();
+                    }
 					$scope.selected = null;
 					$scope.selectedEmployee = null;
 					$scope.employeePayChecks = [];

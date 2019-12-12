@@ -202,7 +202,8 @@ namespace HrMaxx.OnlinePayroll.Repository
 			                                                 !company.HasValue)
 			                                                &&
 			                                                ((host.HasValue && e.Company.HostId == host.Value) || !host.HasValue)
-				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName, Company=e.CompanyId}).ToList();
+                                                            && e.StatusId==1
+				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName, Company=e.CompanyId}).OrderBy(e=>e.Name).ToList();
 			return new {Hosts = hosts, Companies = companies, Employees = employees};
 		}
 

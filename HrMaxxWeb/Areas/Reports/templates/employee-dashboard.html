@@ -5,117 +5,70 @@
 	</div>
 	<div class="panel-body">
 		
-		<div class="row">
-			<!-- begin col-3 -->
-			<div class="col-md-2 col-sm-4">
-				<div class="widget widget-stats bg-primary">
-					<div class="stats-icon"></div>
-					<div class="stats-info">
-						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
-						<p>{{data.dashboard.lastPayroll.noOfChecks}}</p>
-					</div>
-					<div class="stats-info">
-						<h4>YTD</h4>
-						<p>{{data.dashboard.ytdPayroll.noOfChecks}}</p>
-					</div>
-					<div class="stats-link">
-						<a href="javascript:;">No. of Checks</a>
-					</div>
-				</div>
+        <div class="row">
+            <!-- begin col-3 -->
 
-			</div>
-			<div class="col-md-2 col-sm-4">
-				<div class="widget widget-stats bg-green">
-					<div class="stats-icon"></div>
-					<div class="stats-info">
-						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
-						<p>{{data.dashboard.lastPayroll.grossWage | currency}}</p>
-					</div>
-					<div class="stats-info">
-						<h4>YTD</h4>
-						<p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
-					</div>
-					<div class="stats-link">
-						<a href="javascript:;">Gross Wage</a>
-					</div>
-				</div>
-				
-			</div>
-			<div class="col-md-2 col-sm-4">
-				<div class="widget widget-stats bg-blue">
-					<div class="stats-icon"></div>
-					<div class="stats-info">
-						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
-						<p>{{data.dashboard.lastPayroll.netWage | currency}}</p>
-					</div>
-					<div class="stats-info">
-						<h4>YTD</h4>
-						<p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
-					</div>
-					<div class="stats-link">
-						<a href="javascript:;">Net Wage</a>
-					</div>
-				</div>
+            <div class="col-md-2 col-sm-4">
+                <div class="widget widget-stats bg-green">
+                    <div class="stats-icon"></div>
+                    <div class="stats-info">
+                        <h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+                        <p>{{data.dashboard.lastPayroll.grossWage | currency}}</p>
+                    </div>
+                    <div class="stats-info">
+                        <h4>YTD</h4>
+                        <p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
+                    </div>
+                    <div class="stats-link">
+                        <a href="javascript:;">Gross Wage</a>
+                    </div>
+                </div>
 
-				
-			</div>
-			<div class="col-md-2 col-sm-4">
-				<div class="widget widget-stats bg-purple">
-					<div class="stats-icon"></div>
-					<div class="stats-info">
-						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
-						<p>{{data.dashboard.lastPayroll.employeeTaxes | currency}}</p>
-					</div>
-					<div class="stats-info">
-						<h4>YTD</h4>
-						<p>{{data.dashboard.ytdPayroll.employeeTaxes | currency}}</p>
-					</div>
-					<div class="stats-link">
-						<a href="javascript:;">Employee Taxes</a>
-					</div>
+            </div>
+            <div class="col-md-2 col-sm-4">
+                <div class="widget widget-stats bg-blue">
+                    <div class="stats-icon"></div>
+                    <div class="stats-info">
+                        <h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+                        <p>{{data.dashboard.lastPayroll.netWage | currency}}</p>
+                    </div>
+                    <div class="stats-info">
+                        <h4>YTD</h4>
+                        <p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
+                    </div>
+                    <div class="stats-link">
+                        <a href="javascript:;">Net Wage</a>
+                    </div>
+                </div>
 
-				</div>
-			</div>
-			<div class="col-md-2 col-sm-4">
-				<div class="widget widget-stats bg-red">
-					<div class="stats-icon"></div>
-					<div class="stats-info">
-						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
-						<p>{{data.dashboard.lastPayroll.deductions | currency}}</p>
-					</div>
-					<div class="stats-info">
-						<h4>YTD</h4>
-						<p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
-					</div>
-					<div class="stats-link">
-						<a href="javascript:;">Deductions</a>
-					</div>
 
-				</div>
-			</div>
-			<div class="col-md-2 col-sm-4">
-				<div class="widget widget-stats bg-black">
-					<div class="stats-icon"></div>
-					<div class="stats-info">
-						<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
-						<p>{{data.dashboard.lastPayroll.employerTaxes | currency}}</p>
-					</div>
-					<div class="stats-info">
-						<h4>YTD</h4>
-						<p>{{data.dashboard.ytdPayroll.employerTaxes | currency}}</p>
-					</div>
-					<div class="stats-link">
-						<a href="javascript:;">Employer Taxes</a>
-					</div>
+            </div>
 
-				</div>
-			</div>
-			
+            <div class="col-md-2 col-sm-4">
+                <div class="widget widget-stats bg-red">
+                    <div class="stats-icon"></div>
+                    <div class="stats-info">
+                        <h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
+                        <p>{{data.dashboard.lastPayroll.deductions | currency}}</p>
+                    </div>
+                    <div class="stats-info">
+                        <h4>YTD</h4>
+                        <p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
+                    </div>
+                    <div class="stats-link">
+                        <a href="javascript:;">Deductions</a>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="col-md-2 col-sm-4" ng-include="'dashboardaccumulation.html'" ng-repeat="acc in data.dashboard.accumulations track by acc.payTypeId" ></div>
 
 
 
 
-		</div>
+
+        </div>
 		
 		<div class="row">
 			<!-- begin col-8 -->
@@ -134,7 +87,6 @@
 						<div id="payroll-donut" style="height: 260px"></div>
 						<ul class="chart-legend">
 							<li><i class="fa fa-circle-o fa-fw text-primary m-r-5"></i> {{(data.dashboard.ytdPayroll.netWage/data.dashboard.ytdPayroll.grossWage)*100 | currency:''}}% <span>Net Wage</span></li>
-							<li><i class="fa fa-circle-o fa-fw m-r-5" style="color: #727cb6"></i> {{(data.dashboard.ytdPayroll.employeeTaxes/data.dashboard.ytdPayroll.grossWage)*100 | currency:''}}% <span>Taxes</span></li>
 							<li><i class="fa fa-circle-o fa-fw text-danger m-r-5"></i> {{(data.dashboard.ytdPayroll.deductions/data.dashboard.ytdPayroll.grossWage)*100 | currency:''}}% <span>Deductions</span></li>
 						</ul>
 					</div>
@@ -153,8 +105,6 @@
 								<th>Checks</th>
 								<th>Gross Wage</th>
 								<th>Net Wage</th>
-								<th>Employee Taxes</th>
-								<th>Employer Taxes</th>
 								<th>Deductions</th>
 							</tr>
 							<tr ng-repeat="item in data.dashboard.payrollHistory">
@@ -163,8 +113,6 @@
 									<td>{{item.noOfChecks}}</td>
 									<td>{{item.grossWage | currency}}</td>
 									<td>{{item.netWage | currency}}</td>
-									<td>{{item.employeeTaxes | currency}}</td>
-									<td>{{item.employerTaxes | currency}}</td>
 									<td>{{item.deductions | currency}}</td>
 								
 							</tr>

@@ -1,124 +1,140 @@
 ﻿<div class="row">
 	<!-- begin panel -->
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
-		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Payroll Register<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Workers Compensation Report</h4>
 			<div class="alert alert-danger" ng-if="mainData.selectedCompany.fileUnderHost && !mainData.selectedCompany.isHostCompany">
 				This is a Leasing Company. This data is just a subset under the company.
 			</div>
 		</div>
-		<div class="panel-body">
-			<div class="row">
-				<report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
-			</div>
-			<div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.workerCompensations.length===0" class="table table-bordered">
-				No worker compensations found
-			</div>
-			<div ng-show="data.response.companyAccumulations && data.response.companyAccumulations.workerCompensations.length>0" class="row text-center p-5">
-				<strong><em>Worker Compensation Report <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
-			</div>
-			<div class="col-sm-10 col-sm-offset-1" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.workerCompensations.length>0">
-				<table class="table table-condensed">
-					<thead>
-						<tr>
-							<th>Code</th>
-							<th>Description</th>
-							<th>Current Rate</th>
-							<th>WC Amount</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="wc in data.response.companyAccumulations.workerCompensations" ng-class="{'success' : (selected && wc.workerCompensationId===selected.workerCompensationId)}">
-							<td>{{wc.companyWorkerCompensation.code}}</td>
-							<td>{{wc.companyWorkerCompensation.description}}</td>
-							<td>{{wc.companyWorkerCompensation.rate}}%</td>
-							<td><a href="" ng-click="set(wc)" class="text-warning text-bold">{{wc.ytd | currency:'$'}}</a></td>
-						</tr>
-					</tbody>
-				</table>
-				<div class="row" ng-show="selected">
-					<div  class="row text-center p-5">
-						<strong><em>Details By Empployee for {{selected.companyWorkerCompensation.code}}</em></strong>
-					</div>
-					<div class="col-sm-12">
+        <div class="panel-body">
+            <div class="row hidden-print">
+                <report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
+            </div>
+            <div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.workerCompensations.length===0" class="table table-bordered">
+                No worker compensations found
+            </div>
+            <div ng-show="data.response.companyAccumulations && data.response.companyAccumulations.workerCompensations.length>0" class="row text-center p-5">
+                <strong><em>Worker Compensation Report <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
+            </div>
+            <div class="col-sm-8 col-sm-offset-2 hidden-print" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.workerCompensations.length>0">
+                <table class="table table-condensed">
+                    
+                        <tr>
+                            <th>Code</th>
+                            <th>Description</th>
+                            <th class="text-right">Current Rate</th>
+                            <th class="text-right">WC Wage</th>
+                            <th class="text-right">WC Amount</th>
+                        </tr>
+                    
+                    <tbody>
+                        <tr ng-repeat="wc in data.response.companyAccumulations.workerCompensations" ng-class="{'success' : (selected && wc.workerCompensationId===selected.workerCompensationId)}">
+                            <td>{{wc.companyWorkerCompensation.code}}</td>
+                            <td>{{wc.companyWorkerCompensation.description}}</td>
+                            <td class="text-right">{{wc.companyWorkerCompensation.rate}}%</td>
+                            <td class="text-right">{{wc.ytdWage | currency:'$'}}</td>
+                            <td class="text-right"><a href="" ng-click="set(wc)" class="text-warning text-bold">{{wc.ytd | currency:'$'}}</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-12" ng-show="selected">
+                <div class="col-sm-6 col-sm-offset-3 text-center p-5">
+                    <strong><em>Details By Employee for {{selected.companyWorkerCompensation.code + ' - ' + selected.companyWorkerCompensation.description}}</em></strong>
+                    <i class="pull-right fa fa-lg fa-print hidden-print" ng-click="print()"></i>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row p-5 visible-print">
+                        <table class="table  table-responsive">
 
-						<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
-							<tr ng-repeat="item in tableData track by $index" ng-class="{'success':(selectedemployee && item.employee.id===selectedemployee.employee.id)}">
-								<td data-title="' Name'" filter="{ 'fullName': 'text' }" sortable="'fullName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="print(item)">
-									{{item.fullName}}
-								</td>
-								<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-1 text-center">
-									{{item.department}}
-								</td>
-								<td data-title=" 'SSN' " class="col-sm-1 text-center">
-									{{item.ssnVal.substr(0,3) +'-'+ item.ssnVal.substr(3,2) + '-' + item.ssnVal.substr(item.ssnVal.length-4)}}
-								</td>
-								<td data-title=" 'Hire Date' " class="col-sm-1 text-center">
-									{{item.hireDate | date:'MM/dd/yyyy'}}
-								</td>
-								<td data-title=" 'Gross Pay' " class="col-sm-1 text-center">
-									{{item.payCheckWages.grossWage | currency:'$'}}
-								</td>
-								<td data-title=" 'Net Pay' " class="col-sm-1 text-center">
-									{{item.payCheckWages.netWage | currency:'$'}}
-								</td>
-								<td data-title=" 'WC Amount' " sortable=" 'workerCompensationAmount' " class="col-sm-1 text-center">
-									{{item.workerCompensationAmount | currency:'$'}}
-								</td>
-							</tr>
+                            <tr>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th class="text-right">Current Rate</th>
+                                <th class="text-right">WC Wage</th>
+                                <th class="text-right">WC Amount</th>
+                            </tr>
 
-						</table>
-						<script type="text/ng-template" id="ng-table/filters/name.html">
-							<input type="text" id="name" class="form-control" ng-model="params.filter()[name]" name="filter-name">
+                            <tbody>
+                            <tr >
+                                <td>{{selected.companyWorkerCompensation.code}}</td>
+                                <td>{{selected.companyWorkerCompensation.description}}</td>
+                                <td class="text-right">{{selected.companyWorkerCompensation.rate}}%</td>
+                                <td class="text-right">{{selected.ytdWage | currency:'$'}}</td>
+                                <td class="text-right">{{selected.ytd | currency:'$'}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager" ng-show="list.length>0">
+                        <tr ng-repeat="item in tableData track by $index" ng-class="{'success':(selectedEmployee && item.employeeId===selectedEmployee.employeeId)}">
+                            <td data-title="' Name'" filter="{ 'fullName': 'text' }" sortable="'fullName'" class="col-sm-2 text-bold text-warning cursor-pointer" ng-click="viewDetails(item)">
+                                {{item.fullName}}
+                            </td>
+                            <td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-1">
+                                {{item.department}}
+                            </td>
+                            <td data-title=" 'SSN' " class="col-sm-1">
+                                {{item.ssnVal.substr(0,3) +'-'+ item.ssnVal.substr(3,2) + '-' + item.ssnVal.substr(item.ssnVal.length-4)}}
+                            </td>
+                            <td data-title=" 'Hire Date' " class="col-sm-1">
+                                {{item.hireDate | date:'MM/dd/yyyy'}}
+                            </td>
+                            <td data-title=" 'WC Wage' " class="col-sm-1 text-right">
+                                {{item.workerCompensationWage | currency:'$'}}
+                            </td>
+                            <td data-title=" 'WC Amount' " sortable=" 'workerCompensationAmount' " class="col-sm-1 text-right">
+                                {{item.workerCompensationAmount | currency:'$'}}
+                            </td>
+                        </tr>
 
-						</script>
-						<script type="text/ng-template" id="ng-table/filters/department.html">
-							<input type="text" id="department" class="form-control" ng-model="params.filter()[department]" name="filter-department">
+                    </table>
+                    <div ng-if="list.length===0">
+                        No results found
+                    </div>
+                    <script type="text/ng-template" id="ng-table/filters/name.html">
+                        <input type="text" id="name" class="form-control" ng-model="params.filter()[name]" name="filter-name">
 
-						</script>
-						<script type="text/ng-template" id="custom/nopager">
+                    </script>
+                    <script type="text/ng-template" id="ng-table/filters/department.html">
+                        <input type="text" id="department" class="form-control" ng-model="params.filter()[department]" name="filter-department">
 
-						</script>
-					</div>
-					<div class="col-sm-12" ng-show="selectedemployee && employeepaychecks.length>0">
+                    </script>
+                    <script type="text/ng-template" id="custom/nopager">
 
-						<table class="table table-condensed">
-							<thead>
-								<tr>
-									<th colspan="7" class="text-center text-bold">
-										Pay Checks Details for {{selectedemployee.employee.fullName}} with {{selected.workerCompensation.code}}
-									</th>
-								</tr>
-								<tr>
-									<th>Pay Day</th>
-									<th>Code</th>
-									<th>Description</th>
-									<th>Rate</th>
-									<th>Gross Pay</th>
-									<th>Net Pay</th>
-									<th>WC Amount</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr ng-repeat="wc in employeepaychecks">
-									<td>{{wc.payDay | date:'MM/dd/yyyy'}}</td>
-									<td>{{wc.workerCompensation.workerCompensation.code}}</td>
-									<td>{{wc.workerCompensation.workerCompensation.description}}</td>
-									<td>{{wc.workerCompensation.workerCompensation.rate}}%</td>
-									<td>{{wc.grossWage | currency:'$'}}</td>
-									<td>{{wc.netWage | currency:'$'}}</td>
-									<td>{{wc.wcAmount | currency:'$'}}</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+                    </script>
+                </div>
+                <div class="col-sm-6" ng-show="selectedEmployee && employeePayChecks.length>0">
 
-				</div>
+                    <table class="table">
+                        
+                        <tr>
+                            <th colspan="3" class="text-center text-bold">
+                                Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyWorkerCompensation.code + ' - ' + selected.companyWorkerCompensation.description}}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Pay Day</th>
+                            <th class="text-right">Employee Wage</th>
+                            <th class="text-right">Employer Withheld</th>
+                        </tr>
+                        
+                        <tbody>
+                        <tr ng-repeat="pc in employeePayChecks">
+                            <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+                            <td class="text-right">{{pc.employeeWage | currency:'$'}}</td>
+                            <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
 
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-			</div>
+            </div>
 
-		</div>
+        </div>
 
 		<!-- end panel -->
 	</div>

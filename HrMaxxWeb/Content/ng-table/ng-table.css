@@ -6,12 +6,12 @@
 	-ms-user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
-	text-align: center;
+	text-align: left;
 	user-select: none
 }
 
 .ng-table th.sortable { cursor: pointer }
-
+    
 .ng-table th.sortable div {
 	padding-right: 18px;
 	position: relative

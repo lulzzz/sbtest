@@ -1,14 +1,16 @@
 ﻿<div class="row">
-	<!-- begin panel -->
+    <!-- begin panel -->
+
 	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany">
-		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Payroll Register<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
-			<div class="alert alert-danger" ng-if="mainData.selectedCompany.fileUnderHost && !mainData.selectedCompany.isHostCompany">
-				This is a Leasing Company. This data is just a subset under the company.
-			</div>
-		</div>
+        <div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+            <h4 class="panel-title">Deductions Report</h4>
+            <div class="alert alert-danger" ng-if="mainData.selectedCompany.fileUnderHost && !mainData.selectedCompany.isHostCompany">
+                This is a Leasing Company. This data is just a subset under the company.
+            </div>
+        </div>
+        
         <div class="panel-body">
-            <div class="row">
+            <div class="row hidden-print">
                 <report-filter filter="mainData.reportFilter" callback="getReport()" show-history="true" show-include-clients="showincludeclients" show-include-tax-delayed="showIncludeTaxDelayed" />
             </div>
             <div ng-show="!data.response.companyAccumulations || data.response.companyAccumulations.deductions.length===0" class="table table-bordered">
@@ -17,51 +19,72 @@
             <div ng-show="data.response.companyAccumulation && data.response.companyAccumulations.deductions.length>0" class="row text-center p-5">
                 <strong><em>Deductions Report <span ng-show="mainData.reportFilter.filterStartDate || mainData.reportFilter.filterEndDate"> ({{mainData.reportFilter.filterEndDate ? '' : 'From'}} {{mainData.reportFilter.filterStartDate? (mainData.reportFilter.filterStartDate | date:'MM/dd/yyyy') : 'Till'}}{{mainData.reportFilter.filterEndDate? ' - ' + (mainData.reportFilter.filterEndDate | date:'MM/dd/yyyy') : ''}} )</span></em></strong>
             </div>
-            <div class="col-sm-8 col-sm-offset-2" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.deductions.length>0">
-                <table class="table table-condensed">
-                    <thead>
-                        <tr>
-                            <th>Description</th>
-                            <th>Definition</th>
-                            <th>Employee Withheld</th>
-                            <th>Employer Withheld</th>
-                        </tr>
-                    </thead>
+            <div class="col-sm-8 col-sm-offset-2 hidden-print" ng-show="data.response.companyAccumulations && data.response.companyAccumulations.deductions.length>0">
+                <table class="table table-responsive">
+                    
+                    <tr>
+                        <th>Description</th>
+                        <th>Definition</th>
+                        <th class="text-right">Employee Withheld</th>
+                        <th class="text-right">Employer Withheld</th>
+                    </tr>
+                    
                     <tbody>
                         <tr ng-repeat="ded in data.response.companyAccumulations.deductions | orderBy:'companyDeduction.description'" ng-class="{'success' : (selected && ded.companyDeductionId===selected.companyDeductionId)}">
                             <td>{{ded.companyDeduction.description}}</td>
                             <td>{{ded.companyDeduction.deductionType.name}}</td>
-                            <td><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.ytd | currency:'$'}}</a></td>
-                            <td><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.ytdEmployer | currency:'$'}}</a></td>
+                            <td class="text-right"><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.ytd | currency:'$'}}</a></td>
+                            <td class="text-right"><a href="" ng-click="set(ded)" class="text-warning text-bold">{{ded.ytdEmployer | currency:'$'}}</a></td>
                         </tr>
                     </tbody>
                 </table>
 
 
             </div>
-            <div class="row" ng-show="selected">
+            <div class="col-sm-12" ng-show="selected">
+                <div class="col-sm-6 col-sm-offset-3 text-center p-5">
+                    <strong><em>Details By Employee for {{selected.companyDeduction.description + ' - ' + selected.companyDeduction.deductionType.name }}</em></strong>
+                    <i class="pull-right fa fa-lg fa-print hidden-print" ng-click="print()"></i>
+                </div>
                 <div class="col-sm-6">
-                    <div class="row text-center p-5">
-                        <strong><em>Details By Empployee for {{selected.companyDeduction.description + ' - ' + selected.companyDeduction.deductionType.name }}</em></strong>
+                    <div class="row p-5 visible-print">
+                        <table class="table  table-responsive">
+
+                            <tr>
+                                <th>Description</th>
+                                <th>Definition</th>
+                                <th class="text-right">Employee Withheld</th>
+                                <th class="text-right">Employer Withheld</th>
+                            </tr>
+
+                            <tbody>
+                            <tr >
+                                <td>{{selected.companyDeduction.description}}</td>
+                                <td>{{selected.companyDeduction.deductionType.name}}</td>
+                                <td class="text-right">{{selected.ytd | currency:'$'}}</td>
+                                <td class="text-right">{{selected.ytdEmployer | currency:'$'}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/nopager">
+                    <table ng-table="tableParams" class="table  table-responsive" show-filter="true" template-pagination="custom/nopager">
                         <tr ng-repeat="item in tableData track by $index" ng-class="{'success': (selectedEmployee && item.employeeId===selectedEmployee.employeeId)}">
-                            <td data-title="' Name'" filter="{ 'fullName': 'text' }" sortable="'fullName'" class="col-sm-2 text-center text-bold text-warning cursor-pointer" ng-click="viewDetails(item)">
+                            <td data-title="' Name'" filter="{ 'fullName': 'text' }" sortable="'fullName'" class="col-sm-2 text-bold text-warning cursor-pointer" ng-click="viewDetails(item)">
                                 {{item.fullName}}
                             </td>
                             <td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-1 text-center">
                                 {{item.department}}
                             </td>
-                            <td data-title=" 'SSN' " class="col-sm-1 text-center">
+                            <td data-title=" 'SSN' " class="col-sm-1">
                                 {{item.ssnVal.substr(0,3) +'-'+ item.ssnVal.substr(3,2) + '-' + item.ssnVal.substr(item.employee.ssn.length-4)}}
                             </td>
-                            <td data-title=" 'Hire Date' " class="col-sm-1 text-center">
+                            <td data-title=" 'Hire Date' " class="col-sm-1">
                                 {{item.hireDate | date:'MM/dd/yyyy'}}
                             </td>
-                            <td data-title=" 'Employee Withheld' " sortable=" 'employeeDeductions' " class="col-sm-1 text-center">
+                            <td data-title=" 'Employee Withheld' " sortable=" 'employeeDeductions' " class="col-sm-1 text-right">
                                 {{item.employeeDeductions | currency:'$'}}
                             </td>
-                            <td data-title=" 'Employer Withheld' " sortable=" 'employerDeductions' " class="col-sm-1 text-center">
+                            <td data-title=" 'Employer Withheld' " sortable=" 'employerDeductions' " class="col-sm-1 text-right">
                                 {{item.employerDeductions | currency:'$'}}
                             </td>
                         </tr>
@@ -79,28 +102,28 @@
 
                     </script>
                 </div>
-                <div class="col-sm-6" ng-show="selectedEmployee && employeePayChecks.length>0">
+                <div class="col-sm-4 m-l-5 m-r-5 col-sm-offset-1" ng-show="selectedEmployee && employeePayChecks.length>0">
 
-                    <table class="table">
+                    <table class="table  table-responsive">
                         <thead>
-                            <tr>
-                                <th colspan="7" class="text-center text-bold">
-                                    Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyDeduction.description + ' - ' + selected.companyDeduction.type.name}}
-                                </th>
-                            </tr>
-                            <tr>
-                                <th>Pay Day</th>
-                                <th>Employee Withheld</th>
-                                <th>Employer Withheld</th>
-                            </tr>
+                        <tr>
+                            <th colspan="7" class="text-center text-bold">
+                                Pay Checks Details for {{selectedEmployee.fullName}} with {{selected.companyDeduction.description + ' - ' + selected.companyDeduction.type.name}}
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Pay Day</th>
+                            <th class="text-right">Employee Withheld</th>
+                            <th class="text-right">Employer Withheld</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="pc in employeePayChecks">
-                                <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
-                                <td>{{pc.employeeWithheld | currency:'$'}}</td>
-                                <td>{{pc.employerWithheld | currency:'$'}}</td>
+                        <tr ng-repeat="pc in employeePayChecks">
+                            <td>{{pc.payDay | date:'MM/dd/yyyy'}}</td>
+                            <td class="text-right">{{pc.employeeWithheld | currency:'$'}}</td>
+                            <td class="text-right">{{pc.employerWithheld | currency:'$'}}</td>
 
-                            </tr>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

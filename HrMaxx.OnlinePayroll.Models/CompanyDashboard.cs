@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Models
 {
@@ -15,7 +16,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<TaxExtract> PendingExtractsByCompany { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 		public List<PayrollMetric> PayrollHistory { get; set; }
-		public TaxExtract Last941Extract 
+        public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
+        public TaxExtract Last941Extract 
 		{ 
 			get
 			{

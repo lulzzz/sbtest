@@ -61,8 +61,16 @@ common.filter('workercompensation', function ($filter) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var exists = $filter('filter')(item.workerCompensations, { workerCompensationId: input });
-			if (exists.length > 0)
-				filtered.push(item);
+            if (exists.length > 0) {
+                item.workerCompensationAmount = 0;
+                item.workerCompensationWage = 0;
+                for (var j = 0; j < exists.length; j++) {
+                    item.workerCompensationAmount += exists[j].ytd;
+                    item.workerCompensationWage += exists[j].ytdWage;
+                }
+
+                filtered.push(item);
+            }
 		}
 		return filtered;
 	};

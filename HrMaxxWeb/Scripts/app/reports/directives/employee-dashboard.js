@@ -81,14 +81,14 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 							element: element,
 							data: data,
 							xkey: 'payDay',
-							ykeys: ['grossWage', 'netWage', 'employeeTaxes', 'employerTaxes', 'deductions'],
+							ykeys: ['grossWage', 'netWage', 'deductions'],
 							xLabelFormat: function (x) {
 								x = getMonthName(x);
 								return x.toString();
 							},
-							labels: ['Gross Wage', 'Net Wage', 'Employee Taxes', 'Employer Taxes', 'Deductions'],
-							lineColors: [green, blue, purple, red, black],
-							pointFillColors: [greenLight, blueLight, purpleLight, redLight, blackLight],
+							labels: ['Gross Wage', 'Net Wage', 'Deductions'],
+							lineColors: [green, blue, red],
+							pointFillColors: [greenLight, blueLight, redLight],
 							lineWidth: '2px',
 							pointStrokeColors: [whiteTransparent, blackTransparent],
 							resize: true,
@@ -108,10 +108,9 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 							element: 'payroll-donut',
 							data: [
 									{ label: "Net Wage", value: dataSvc.dashboard.ytdPayroll.netWage },
-									{ label: "Taxes", value: dataSvc.dashboard.ytdPayroll.employeeTaxes },
 									{ label: "Deductions", value: dataSvc.dashboard.ytdPayroll.deductions }
 							],
-							colors: [blue, purple, red],
+							colors: [blue, red],
 							labelFamily: 'Open Sans',
 							labelColor: 'rgba(255,255,255,0.4)',
 							labelTextSize: '12px',

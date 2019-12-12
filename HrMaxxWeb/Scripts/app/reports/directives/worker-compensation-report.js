@@ -22,9 +22,12 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
-					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
-					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
-					$scope.showIncludeTaxDelayed = $scope.mainData.selectedCompany.contract.contractOption === 2 && $scope.mainData.selectedCompany.contract.billingOption === 3;
+                    $scope.mainData.showCompanies = !$scope.mainData.userCompany;
+                    if ($scope.mainData.selectedCompany) {
+                        $scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
+                        $scope.showIncludeTaxDelayed = $scope.mainData.selectedCompany.contract.contractOption === 2 && $scope.mainData.selectedCompany.contract.billingOption === 3;
+                    }
+					
 
 					var addAlert = function (error, type) {
 						$scope.$parent.$parent.addAlert(error, type);
@@ -64,19 +67,24 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 				 );
 					$scope.set  = function(wc) {
 						$scope.selected = wc;
-						$scope.selectedemployee = null;
-						$scope.employeepaychecks = [];
+						$scope.selectedEmployee = null;
+						$scope.employeePayChecks = [];
 						$scope.list = $filter('workercompensation')(dataSvc.response.employeeAccumulationList, wc.workerCompensationId);
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
-					}
-					$scope.viewDetails = function(wc) {
-						$scope.selectedemployee = wc;
-						$scope.employeepaychecks = $filter('filter')(wc.payChecks, { workerCompensation: { workerCompensation: { id: $scope.selected.workerCompensation.id } } });
-					}
+                    }
+                    $scope.viewDetails = function (empAccumulation) {
+                        $scope.selectedEmployee = empAccumulation;
+                        $scope.employeePayChecks = $filter('filter')($scope.selected.payChecks, { employeeId: empAccumulation.employeeId });
+
+
+                    }
+                    $scope.print = function () {
+                        $window.print();
+                    }
 					$scope.selected = null;
-					$scope.selectedemployee = null;
-					$scope.employeepaychecks = [];
+					$scope.selectedEmployee = null;
+					$scope.employeePayChecks = [];
 					$scope.list = [];
 					$scope.tableData = [];
 
