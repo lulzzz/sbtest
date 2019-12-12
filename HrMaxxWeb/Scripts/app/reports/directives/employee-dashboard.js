@@ -30,7 +30,11 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 				}
 					
 					$scope.zionAPI = zionAPI; 
-					$scope.data = dataSvc;
+                    $scope.data = dataSvc;
+                    if ($scope.mainData.userRole === 'Employee') {
+                        $scope.companyId = $scope.mainData.userCompany;
+                        $scope.employeeId = $scope.mainData.userEmployee;
+                    }
 					var blue = '#348fe2',
     blueLight = '#5da5e8',
     blueDark = '#1993E4',
