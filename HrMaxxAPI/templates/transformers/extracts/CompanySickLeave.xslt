@@ -60,7 +60,8 @@
     <Cell><Data ss:Type="String">PayDay</Data></Cell>
     <Cell><Data ss:Type="String">PayCheckId</Data></Cell>
     <Cell><Data ss:Type="String">CheckNumber</Data></Cell>
-    <Cell><Data ss:Type="String">FiscalStart</Data></Cell>
+    <Cell><Data ss:Type="String">Leave Type</Data></Cell>
+     <Cell><Data ss:Type="String">FiscalStart</Data></Cell>
     <Cell><Data ss:Type="String">FiscalEnd</Data></Cell>
     <Cell><Data ss:Type="String">AccumulatedValue</Data></Cell>
     <Cell><Data ss:Type="String">Used</Data></Cell>
@@ -105,6 +106,7 @@
 			<Cell><Data ss:Type="String"><xsl:value-of select="PayDay"/></Data></Cell>
 			<Cell><Data ss:Type="Number"><xsl:value-of select="Id"/></Data></Cell>
 			<Cell><Data ss:Type="Number"><xsl:value-of select="CheckNumber"/></Data></Cell>
+      <Cell><Data ss:Type="String"><xsl:value-of select="PayTypeName"/></Data></Cell>
 			<Cell><Data ss:Type="String"><xsl:value-of select="FiscalStart"/></Data></Cell>
 			<Cell><Data ss:Type="String"><xsl:value-of select="FiscalEnd"/></Data></Cell>
 			<Cell><Data ss:Type="Number"><xsl:value-of select="AccumulatedValue"/></Data></Cell>

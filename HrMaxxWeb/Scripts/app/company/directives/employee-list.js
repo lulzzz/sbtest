@@ -330,11 +330,13 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							}
 						});
 					}
-					$scope.getCompanySickLeaveExport = function(mode) {
+					$scope.getCompanyLeaveExport = function(mode, payTypeId, payTypeName) {
 						var request = {
-							reportName: 'CompanySickLeaveExport',
+							reportName: 'CompanyLeaveExport',
 							hostId: $scope.mainData.selectedHost.id,
-							companyId: $scope.mainData.selectedCompany.id
+                            companyId: $scope.mainData.selectedCompany.id,
+                            state: payTypeId,
+                            description: payTypeName
 							
 						}
 						if (mode === 1) {
@@ -349,7 +351,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							a.click();
 
 						}, function (error) {
-							addAlert('Error getting Company Sick Leave Export. ' + error, 'danger');
+							addAlert('Error getting Company Leave Export for ' + payTypeName + '. ' + error, 'danger');
 						});
 					}
 					$scope.getEmployees = function (companyId) {

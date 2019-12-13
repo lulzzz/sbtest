@@ -62,7 +62,10 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					$scope.data = dataSvc;
 					$scope.getCompanySickLeaveExport = function(mode) {
 						$scope.$parent.$parent.getCompanySickLeaveExport(mode);
-					}
+                    }
+                    $scope.getCompanyLeaveExport = function (mode, payType) {
+                        $scope.$parent.$parent.getCompanyLeaveExport(mode, payType.payTypeId, payType.payTypeName);
+                    }
 					$scope.recalculateEmployeePayTypeAccumulations = function (mode) {
 						payrollRepository.recalculateEmployeePayTypeAccumulations($scope.selected.id).then(function (result) {
 							$scope.$parent.$parent.save(result);
@@ -268,12 +271,43 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						pt.oldCarryOver = angular.copy(pt.carryOver);
 						$scope.selectedAccumulation = pt;
 						$scope.selectedAccumulationIndex = index;
-					}
+                    }
+                    $scope.setSelAcc = function (pt, index) {
+                        if ($scope.selAccIndex === index) {
+                            $scope.cancelSelAcc(pt);
+                        } else {
+                            pt.employeeId = $scope.selected.id;
+                            pt.newFiscalStart = moment(pt.newFiscalStart).toDate();
+                            pt.newFiscalEnd = moment(pt.newFiscalEnd).toDate();
+                            pt.oldCarryOver = angular.copy(pt.carryOver);
+                            $scope.selAcc = pt;
+                            $scope.originalAcc = angular.copy(pt);
+                            $scope.selAccIndex = index;
+                        }
+                       
+                    }
+                    $scope.cancelSelAcc = function (pt) {
+                        pt.carryOver = angular.copy(pt.oldCarryOver);
+                        pt = angular.copy($scope.originalAcc);
+                        $scope.selAcc = null;
+                        $scope.selAccIndex = null;
+                    }
 					$scope.cancelAccumulation = function(pt) {
 						pt.carryOver = angular.copy(pt.oldCarryOver);
 						$scope.selectedAccumulation = null;
 						$scope.selectedAccumulationIndex = null;
-					}
+                    }
+                    $scope.showSaveAcc = function (pt) {
+                        if ($scope.originalAcc) {
+                            if (pt.carryOver !== $scope.originalAcc.carryOver || !moment(pt.newFiscalEnd).isSame($scope.originalAcc.newFiscalEnd) || !moment(pt.newFiscalStart).isSame($scope.originalAcc.newFiscalStart))
+                                return true;
+                            else
+                                return false;
+                        }
+                        else
+                            return false;
+                        
+                    }
 					$scope.saveEmployeeAccumulation = function (pt) {
 						pt.fiscalStart = moment(pt.fiscalStart).format("MM/DD/YYYY");
 						pt.fiscalEnd = moment(pt.fiscalEnd).format("MM/DD/YYYY");
@@ -283,10 +317,10 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							pt.fiscalStart = result.fiscalStart;
 							pt.fiscalEnd = result.fiscalEnd;
 							pt.available = result.available;
-							$scope.selectedAccumulation = null;
-							$scope.selectedAccumulationIndex = null;
+							$scope.selAcc = null;
+							$scope.selAccIndex = null;
 						}, function (error) {
-							$scope.addAlert('error saving employee accumultion', 'danger');
+							$scope.addAlert('error saving employee accumulation', 'danger');
 						});
 					}
 					$scope.save = function () {

@@ -354,29 +354,49 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public string SLDates { 
 			get{
-			return Accumulations.Any()
-				? string.Format("{0} ({1} - {2})", Accumulations.OrderByDescending(ac=>ac.FiscalStart).First().PayTypeName, Accumulations.First().FiscalStart.ToString("MM/dd/yyyy"),
-					Accumulations.OrderByDescending(ac => ac.FiscalStart).First().FiscalEnd.ToString("MM/dd/yyyy"))
+			return Accumulations!=null && Accumulations.Any(ac=>ac.PayTypeId==6)
+				? string.Format("{0} ({1} - {2})", Accumulations.OrderByDescending(ac=>ac.FiscalStart).First(ac => ac.PayTypeId == 6).PayTypeName, Accumulations.First(ac => ac.PayTypeId == 6).FiscalStart.ToString("MM/dd/yyyy"),
+					Accumulations.OrderByDescending(ac => ac.FiscalStart).First(ac => ac.PayTypeId == 6).FiscalEnd.ToString("MM/dd/yyyy"))
 				: string.Empty;
 			} 
 		}
 
 		public decimal SLUsed
 		{
-			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().YTDUsed : 0; }
+			get { return Accumulations != null && Accumulations.Any(ac => ac.PayTypeId == 6) ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First(ac => ac.PayTypeId == 6).YTDUsed : 0; }
 		}
 		public decimal SLAccumulated
 		{
-			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().YTDFiscal : 0; }
+			get { return Accumulations != null && Accumulations.Any(ac => ac.PayTypeId == 6) ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First(ac => ac.PayTypeId == 6).YTDFiscal : 0; }
 		}
 		public decimal SLCarryOver
 		{
-			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().CarryOver : 0; }
+			get { return Accumulations != null && Accumulations.Any(ac => ac.PayTypeId == 6) ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First(ac => ac.PayTypeId == 6).CarryOver : 0; }
 		}
 		public decimal SLAvailable
 		{
-			get { return Accumulations.Any() ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First().Available : 0; }
+			get { return Accumulations != null && Accumulations.Any(ac => ac.PayTypeId == 6) ? Accumulations.OrderByDescending(ac => ac.FiscalStart).First(ac => ac.PayTypeId == 6).Available : 0; }
 		}
+
+        public List<KeyValuePair<PayCheckPayTypeAccumulation, List<PayCheckPayTypeAccumulationResource>>> AccumulationGroups
+        {
+            get
+            {
+                return Accumulations != null && Accumulations.Any()
+                    ? Accumulations.GroupBy(ac => new KeyValuePair<int, string>(ac.PayTypeId, ac.PayTypeName))
+                        .Select(g => new KeyValuePair<PayCheckPayTypeAccumulation, List<PayCheckPayTypeAccumulationResource>>
+                        (new PayCheckPayTypeAccumulation
+                        {
+                            PayTypeId = g.Key.Key,
+                            PayTypeName = g.Key.Value,
+                            YTDFiscal = g.ToList().Sum(ac1 => ac1.YTDFiscal),
+                            YTDUsed = g.ToList().Sum(ac1 => ac1.YTDUsed),
+                            CarryOver = g.ToList().OrderBy(ac1 => ac1.FiscalStart).First().CarryOver
+                        }, g.OrderByDescending(g1=>g1.FiscalStart).ToList())).ToList()
+                    : default(List<KeyValuePair<PayCheckPayTypeAccumulation, List<PayCheckPayTypeAccumulationResource>>>);
+                
+            }
+        }
 	}
 	public class EmployeePayTypeResource
 	{

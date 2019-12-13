@@ -24,6 +24,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		
 		public int CheckNumber { get; set; }
 		public string PayDay { get; set; }
+        public string PayTypeName { get; set; }
 		public string FiscalStart { get; set; }
 		public string FiscalEnd { get; set; }
 		public decimal AccumulatedValue { get; set; }

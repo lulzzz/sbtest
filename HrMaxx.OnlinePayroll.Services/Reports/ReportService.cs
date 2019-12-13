@@ -111,7 +111,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                        $" Get report data for report={request.ReportName} {request.StartDate.ToString()}-{request.EndDate.ToString()}");
 				}
 
 				Log.Error(message, e);
@@ -174,8 +175,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					return GetCaliforniaDE88(request);
 				else if (request.ReportName.StartsWith("Blank_"))
 					return GetBlankForms(request);
-				else if (request.ReportName.Equals("CompanySickLeaveExport"))
-					return GetCompanySickLeaveExport(request);
+				else if (request.ReportName.Equals("CompanyLeaveExport"))
+					return GetCompanyLeaveExport(request);
 				else if (request.ReportName.Equals("TXSuta"))
 					return GetTexasStateUnEmployment(request);
                 else if (request.ReportName.Equals("StateHIPIT"))
@@ -207,7 +208,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                        $" Get report data for report={request.ReportName} {request.StartDate.ToString()}-{request.EndDate.ToString()}");
 					Log.Error(message, e);
 				}
 				
@@ -306,7 +308,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get report data for report={0} {1}-{2}", request.ReportName, request.StartDate.ToString(), request.EndDate.ToString()));
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                        $" Get report data for report={request.ReportName} {request.StartDate.ToString()}-{request.EndDate.ToString()}");
 					Log.Error(message, e);
 				}
 
@@ -317,7 +320,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		private Extract GetHostClientSummary(ReportRequest request)
 		{
-			request.Description = string.Format("Host Client Summary for {0} ", request.Year);
+			request.Description = $"Host Client Summary for {request.Year} ";
 			request.AllowFiling = false;
 			var data = GetExtractResponse(request);
 			
@@ -345,13 +348,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostClientSummary.xslt", "xls", string.Format("Host Client Summary Report-{0}.xls", request.Year));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/HostClientSummary.xslt", "xls",
+                $"Host Client Summary Report-{request.Year}.xls");
 			
 		}
 
 		private Extract GetTaxReport(ReportRequest request)
 		{
-			request.Description = string.Format("Tax Report for {0} {1} {2}", request.Year, request.Quarter>0 ? request.Quarter.ToString() : string.Empty, request.Month > 0 ?request.Month.ToString():string.Empty);
+			request.Description =
+                $"Tax Report for {request.Year} {(request.Quarter > 0 ? request.Quarter.ToString() : string.Empty)} {(request.Month > 0 ? request.Month.ToString() : string.Empty)}";
 			request.AllowFiling = false;
 			var data = GetExtractResponse(request, includeTaxes: true);
 
@@ -359,7 +364,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/TaxReport.xslt", "xls", string.Format("Tax Report-{0}-{1}-{2}.xls", request.Year, request.Quarter>0 ? request.Quarter.ToString() : string.Empty, request.Month > 0 ?request.Month.ToString():string.Empty));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/TaxReport.xslt", "xls",
+                $"Tax Report-{request.Year}-{(request.Quarter > 0 ? request.Quarter.ToString() : string.Empty)}-{(request.Month > 0 ? request.Month.ToString() : string.Empty)}.xls");
 
 		}
 
@@ -367,17 +373,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var data = GetExtractResponseSemiWeeklyEligibility(request);
 			
-			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
+			request.Description =
+                $"{data.Hosts.First().Host.FirmName} Internal Positive Pay Report {request.StartDate.ToString("MMddyyyy")}";
 			request.AllowExclude = true;
 
 			var argList = new List<KeyValuePair<string, string>>();
 
 			return GetExtractTransformed(request, data, argList, string.Empty, string.Empty, request.Description);
 		}
-		private FileDto GetCompanySickLeaveExport(ReportRequest request)
+		private FileDto GetCompanyLeaveExport(ReportRequest request)
 		{
 			var company = _readerService.GetCompany(request.CompanyId);
-			if(company.AccumulatedPayTypes.First(ac=>ac.PayType.Id==6).CompanyManaged)
+			if(company.AccumulatedPayTypes.First(ac=>ac.PayType.Id==request.State.Value).CompanyManaged)
 				throw new Exception(NoData + ". This Company Manages their own Sick Leave");
 			var employees = _readerService.GetEmployees(company: request.CompanyId).Where(e=>(request.EmployeeId==Guid.Empty || (request.EmployeeId!=Guid.Empty && e.Id==request.EmployeeId)) && (e.StatusId==StatusOption.Active || e.StatusId==StatusOption.InActive)).ToList();
 			if (!employees.Any())
@@ -396,34 +403,35 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					SickLeaveHireDate = e.SickLeaveHireDate.ToString("MM/dd/yyyy")
 				};
 				empSL.Accumulations =
-					payChecks.Where(pc=>pc.Accumulations!=null && pc.Accumulations.Any(ac=>ac.PayType.PayType.Id==6)).OrderBy(pc=>pc.PayDay).Select(
+					payChecks.Where(pc=>pc.Accumulations!=null && pc.Accumulations.Any(ac=>ac.PayType.PayType.Id==request.State.Value)).OrderBy(pc=>pc.PayDay).Select(
 						pc =>
 							new SickLeaveAccumulation
 							{
 								CheckNumber = pc.CheckNumber.Value,
 								Id = pc.Id,
-								PayDay = pc.PayDay.ToString("MM/dd/yyyy"),
-								FiscalEnd = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).FiscalEnd.ToString("MM/dd/yyyy"),
-								FiscalStart = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).FiscalStart.ToString("MM/dd/yyyy"),
-								AccumulatedValue = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).AccumulatedValue,
-								Used = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).Used,
-								CarryOver = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).CarryOver,
-								YTDFiscal = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDFiscal,
-								YTDUsed = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDUsed,
-								Available = pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDFiscal+pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).CarryOver-pc.Accumulations.First(ac => ac.PayType.PayType.Id == 6).YTDUsed
+								PayDay = pc.PayDay.ToString("MM/dd/yyyy"), PayTypeName = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).PayType.PayType.Name,
+
+                                FiscalEnd = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).FiscalEnd.ToString("MM/dd/yyyy"),
+								FiscalStart = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).FiscalStart.ToString("MM/dd/yyyy"),
+								AccumulatedValue = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).AccumulatedValue,
+								Used = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).Used,
+								CarryOver = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).CarryOver,
+								YTDFiscal = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).YTDFiscal,
+								YTDUsed = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).YTDUsed,
+								Available = pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).YTDFiscal+pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).CarryOver-pc.Accumulations.First(ac => ac.PayType.PayType.Id == request.State.Value).YTDUsed
 							}).ToList();
 				result.Add(empSL);
 			});
 			result = result.Where(e => e.Accumulations.Any()).OrderBy(e=>e.CompanyEmployeeNo).ToList();
 			if (!result.Any())
 				throw new Exception(NoData);
-			request.Description = string.Format("{0} Sick Leave by Employee", company.Name);
+			request.Description = $"{company.Name}{request.Description} Leave by Employee";
 
 
 			var xml = GetXml(result);
 
 
-			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, "transformers/extracts/CompanySickLeave.xslt"), new XsltArgumentList());
+			var transformed = XmlTransform(xml, $"{_templatePath}{"transformers/extracts/CompanySickLeave.xslt"}", new XsltArgumentList());
 			return new FileDto
 				{
 					Data = Encoding.UTF8.GetBytes(transformed),
@@ -438,7 +446,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var data = GetExtractResponseHostWC(request, buildCompanyEmployeeAccumulation: true);
 
-			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
+			request.Description =
+                $"{data.Hosts.First().Host.FirmName} WC Report {request.StartDate.ToString("MM/dd/yyyy")}-{request.EndDate.ToString("MM/dd/yyyy")}";
 			request.AllowFiling = true;
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -449,7 +458,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var data = GetExtractResponseHostWCRedated(request, buildCompanyEmployeeAccumulation: true);
 			request.ReportName = "HostWCReport";
-			request.Description = string.Format("{0} WC Report {1}-{2}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
+			request.Description =
+                $"{data.Hosts.First().Host.FirmName} WC Report {request.StartDate.ToString("MM/dd/yyyy")}-{request.EndDate.ToString("MM/dd/yyyy")}";
 			request.AllowFiling = true;
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -505,7 +515,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				History = new List<MasterExtract>()
 			};
 
-			request.Description = string.Format("Daily Deposit Report {0}-{1}", request.StartDate.ToString("MM/dd/yyyy"), request.EndDate.ToString("MM/dd/yyyy"));
+			request.Description =
+                $"Daily Deposit Report {request.StartDate.ToString("MM/dd/yyyy")}-{request.EndDate.ToString("MM/dd/yyyy")}";
 			request.AllowFiling = false;
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -518,7 +529,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			request.IncludeVoids = true;
 			var data = GetExtractResponse(request);
 
-			request.Description = string.Format("{0} Internal Positive Pay Report {1}", data.Hosts.First().Host.FirmName, request.StartDate.ToString("MMddyyyy"));
+			request.Description =
+                $"{data.Hosts.First().Host.FirmName} Internal Positive Pay Report {request.StartDate.ToString("MMddyyyy")}";
 			request.AllowFiling = false;
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -533,7 +545,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				throw new Exception(NoData);
 			}
 			data.Hosts = data.Hosts.Where(h => h.Accumulation.GarnishmentAgencies.Any()).ToList();
-			request.Description = string.Format("Garnishment Report {0} - {1}", request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"));
+			request.Description =
+                $"Garnishment Report {request.StartDate.ToString("MMddyyyy")} - {request.EndDate.ToString("MMddyyyy")}";
 			request.AllowFiling = true;
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -548,7 +561,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				throw new Exception(NoData);
 			}
 			data.SalesReps = data.SalesReps.Where(h => h.Commissions.Any()).ToList();
-			request.Description = string.Format("Commissions Report {0} - {1}", request.StartDate.HasValue ? request.StartDate.Value.ToString("MMddyyyy") : string.Empty, request.EndDate.HasValue ? request.EndDate.Value.ToString("MMddyyyy") : string.Empty);
+			request.Description =
+                $"Commissions Report {(request.StartDate.HasValue ? request.StartDate.Value.ToString("MMddyyyy") : string.Empty)} - {(request.EndDate.HasValue ? request.EndDate.Value.ToString("MMddyyyy") : string.Empty)}";
 			request.AllowFiling = true;
 			return new CommissionsExtract{Report = request, Data = data};
 		}
@@ -568,7 +582,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" Pay Commissions for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX,
+                    $" Pay Commissions for {extract.Report.StartDate.ToString()} {extract.Report.EndDate.ToString()}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -593,7 +608,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" delete extract id {0}", extractId));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX,
+                    $" delete extract id {extractId}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -613,7 +629,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, string.Format(" confirm extract id {0}", extract.Id));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX,
+                    $" confirm extract id {extract.Id}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -655,7 +672,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" cpa report for company id {0}", request.CompanyId));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $" cpa report for company id {request.CompanyId}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -685,8 +703,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		public FileDto GetExtractTransformedAndPrintedZip(Extract extract)
 		{
 			var dir =
-				_documentService.CreateDirectory(string.Format("{0}-{1}", extract.Report.ReportName,
-					DateTime.Now.ToString("MM-dd-yyyy")));
+				_documentService.CreateDirectory($"{extract.Report.ReportName}-{DateTime.Now.ToString("MM-dd-yyyy")}");
 			var companies = Utilities.GetCopy( extract.Data.Companies );
 			extract.Data.Companies = new List<ExtractCompany>();
 			var completedCompanies = new List<Guid>();
@@ -728,7 +745,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Company Dashboard for {0}", id.ToString()));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $" Company Dashboard for {id.ToString()}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -746,7 +764,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Employee Dashboard for {0} {1}", companyId.ToString(), employeeId.ToString()));
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                    $" Employee Dashboard for {companyId.ToString()} {employeeId.ToString()}");
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -871,7 +890,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				History = new List<MasterExtract>()
 			};
 			
-			request.Description = string.Format("{0} Positive Pay Report {1}", data.Hosts.First().Host.FirmName,  request.StartDate.ToString("MMddyyyy"));
+			request.Description =
+                $"{data.Hosts.First().Host.FirmName} Positive Pay Report {request.StartDate.ToString("MMddyyyy")}";
 			request.AllowFiling = false;
 
 			var argList = new List<KeyValuePair<string, string>>();
@@ -1213,7 +1233,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract Federal940(ReportRequest request)
 		{
-			request.Description = string.Format("Federal 940 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.Description = $"Federal 940 EFTPS for {request.Year} (Schedule={request.DepositSchedule})";
 			request.AllowFiling = true;
 			request.AllowExclude = true;
 			var tempDepositSchedule = request.DepositSchedule;
@@ -1236,7 +1256,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract Federal940Excel(ReportRequest request)
 		{
 			request.ReportName = "Federal940";
-			request.Description = string.Format("Federal 940 EFTPS Excel for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.Description = $"Federal 940 EFTPS Excel for {request.Year} (Schedule={request.DepositSchedule})";
 			request.AllowFiling = false;
 			var tempDepositSchedule = request.DepositSchedule;
 			request.DepositSchedule = null;
@@ -1258,7 +1278,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract Federal941(ReportRequest request)
 		{
-			request.Description = string.Format("Federal 941 EFTPS for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.Description = $"Federal 941 EFTPS for {request.Year} (Schedule={request.DepositSchedule})";
 			request.AllowFiling = true;
 			var data = GetExtractResponse(request, includeCompensaitons: true, includeTaxes: true);
 			
@@ -1279,7 +1299,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract Federal941Excel(ReportRequest request)
 		{
 			request.ReportName = "Federal941";
-			request.Description = string.Format("Federal 941 EFTPS Excel for {0} (Schedule={1})", request.Year, request.DepositSchedule);
+			request.Description = $"Federal 941 EFTPS Excel for {request.Year} (Schedule={request.DepositSchedule})";
 			request.AllowFiling = false;
 
 			var data = GetExtractResponse(request, includeTaxes: true);
@@ -1299,7 +1319,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract StateCAPIT(ReportRequest request)
 		{
-			request.Description = string.Format("California State PIT & SDI for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = $"California State PIT & SDI for {request.Year} (Quarter={request.Quarter})";
 			request.AllowFiling = true;
 			request.State = (int) States.California;
 			var data = GetExtractResponse(request, includeTaxes: true);
@@ -1317,7 +1337,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract StateCAPITExcel(ReportRequest request)
 		{
 			request.ReportName = "StateCAPIT";
-			request.Description = string.Format("California State PIT & SDI Excel for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = $"California State PIT & SDI Excel for {request.Year} (Quarter={request.Quarter})";
 			request.AllowFiling = true;
 			request.State = (int)States.California;
 			var data = GetExtractResponse(request, includeTaxes: true);
@@ -1410,7 +1430,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
         private Extract StateHIUI(ReportRequest request)
         {
-            request.Description = string.Format("Hawaii UI UC-B6 {0} - {1}", request.Year, request.Quarter);
+            request.Description = $"Hawaii UI UC-B6 {request.Year} - {request.Quarter}";
             request.AllowFiling = true;
             request.AllowExclude = false;
             request.State = (int)States.Hawaii;
@@ -1462,12 +1482,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
             argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
 
-            return GetExtractTransformed(request, data, argList, "transformers/extracts/HIUIEFTPS.xslt", "csv", string.Format("{0}-{1}-{2}.csv", request.Description, request.Year, request.Quarter));
+            return GetExtractTransformed(request, data, argList, "transformers/extracts/HIUIEFTPS.xslt", "csv",
+                $"{request.Description}-{request.Year}-{request.Quarter}.csv");
         }
 
         private Extract StateCAUI(ReportRequest request)
 		{
-			request.Description = string.Format("California State UI & ETT for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
+			request.Description = $"California State UI & ETT for {request.Year} (Sechedule={request.DepositSchedule})";
 			request.AllowFiling = true;
 			request.AllowExclude = true;
 			request.State = (int)States.California;
@@ -1491,7 +1512,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		private Extract StateCAUIExcel(ReportRequest request)
 		{
 			request.ReportName = "StateCAUI";
-			request.Description = string.Format("California State UI & ETT Excel for {0} (Sechedule={1})", request.Year, request.DepositSchedule);
+			request.Description =
+                $"California State UI & ETT Excel for {request.Year} (Sechedule={request.DepositSchedule})";
 			request.AllowFiling = true;
 			request.State = (int)States.California;
 			var tempDepositSchedule = request.DepositSchedule;
@@ -1512,7 +1534,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract StateCADE6(ReportRequest request)
 		{
-			request.Description = string.Format("California State DE6 for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = $"California State DE6 for {request.Year} (Quarter={request.Quarter})";
 			request.AllowFiling = false;
 			request.CheckEFileFormsFlag = true;
 			request.CheckTaxPaymentFlag = false;
@@ -1525,11 +1547,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE6Transformer.xslt", "txt", string.Format("California State Quarterly DE 6 Reporting File-{0}-{1}.txt", request.Year, request.Quarter));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE6Transformer.xslt", "txt",
+                $"California State Quarterly DE 6 Reporting File-{request.Year}-{request.Quarter}.txt");
 		}
 		private Extract StateCADE9(ReportRequest request)
 		{
-			request.Description = string.Format("California State DE9 for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = $"California State DE9 for {request.Year} (Quarter={request.Quarter})";
 			request.AllowFiling = true;
 			request.AllowExclude = true;
 			request.CheckEFileFormsFlag = true;
@@ -1543,7 +1566,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("endQuarterMonth", ((int)((request.EndDate.Month + 2) / 3) * 3).ToString()));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			argList.Add(new KeyValuePair<string, string>("quarter", request.Quarter.ToString()));
-			argList.Add(new KeyValuePair<string, string>("identifier", string.Format("GIIGPaxolCaliforniaDE9-{0}-{1}-{2}",request.StartDate.ToString("MMddyyyy"), request.EndDate.ToString("MMddyyyy"), DateTime.Now.ToString("MMddyyyyhhmmss"))));
+			argList.Add(new KeyValuePair<string, string>("identifier",
+                $"GIIGPaxolCaliforniaDE9-{request.StartDate.ToString("MMddyyyy")}-{request.EndDate.ToString("MMddyyyy")}-{DateTime.Now.ToString("MMddyyyyhhmmss")}"));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/DE9XmlTransformer.xslt", "zip", request.Description);
 
@@ -1561,14 +1585,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			var argList = new XsltArgumentList();
 			args.ForEach(a => argList.AddParam(a.Key, string.Empty, a.Value));
-			var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, template), argList);
+			var transformed = XmlTransform(xml, $"{_templatePath}{template}", argList);
 			
 			_fileRepository.SaveFile(directory, host.HostCompany.Name.Replace(".", string.Empty).Replace(",",string.Empty), extension, transformed);
 		}
 
 		private Extract Get1099Extract(ReportRequest request)
 		{
-			request.Description = string.Format("Megnatic 1099 for {0}", request.Year);
+			request.Description = $"Megnatic 1099 for {request.Year}";
 			request.AllowFiling = false;
 			request.CheckEFileFormsFlag = true;
 			request.CheckTaxPaymentFlag = false;
@@ -1580,13 +1604,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.SsaBsoW2MagneticFileId));
 			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/F1099-" + request.Year + ".xslt", "txt", string.Format("Federal/State Form 1099 Magnetic File -{0}.txt", request.Year));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/F1099-" + request.Year + ".xslt", "txt",
+                $"Federal/State Form 1099 Magnetic File -{request.Year}.txt");
 
 		}
 
 		private Extract GetPaperless940(ReportRequest request)
 		{
-			request.Description = string.Format("Paperless 940 for {0}", request.Year);
+			request.Description = $"Paperless 940 for {request.Year}";
 			request.AllowFiling = false;
 			request.CheckEFileFormsFlag = true;
 			request.CheckTaxPaymentFlag = false;
@@ -1599,13 +1624,14 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("startdate",  request.StartDate.ToString("MM/dd/yyyy")));
 			argList.Add(new KeyValuePair<string, string>("enddate", request.EndDate.ToString("MM/dd/yyyy")));
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/Paperless940-" + request.Year + ".xslt", "xls", string.Format("Paperless Extract 940-{0}.xls", request.Year));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/Paperless940-" + request.Year + ".xslt", "xls",
+                $"Paperless Extract 940-{request.Year}.xls");
 			
 		}
 
 		private Extract GetPaperless941(ReportRequest request)
 		{
-			request.Description = string.Format("Paperless 941 for {0} (Quarter={1})", request.Year, request.Quarter);
+			request.Description = $"Paperless 941 for {request.Year} (Quarter={request.Quarter})";
 			request.AllowFiling = false;
 			request.CheckEFileFormsFlag = true;
 			request.CheckTaxPaymentFlag = false;
@@ -1621,11 +1647,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			return
 					GetExtractTransformed(request, data, argList, "transformers/extracts/Paperless941-" + request.Year + ".xslt", "xls",
-						string.Format("Paperless Extract 941-{0}-{1}.xls", request.Year, request.Quarter));
+                        $"Paperless Extract 941-{request.Year}-{request.Quarter}.xls");
 		}
 		private Extract GetSSAMagnetic(ReportRequest request)
 		{
-			request.Description = string.Format("SSA W2 Megnatic for {0} ", request.Year);
+			request.Description = $"SSA W2 Megnatic for {request.Year} ";
 			request.AllowFiling = false;
 			request.CheckEFileFormsFlag = true;
 			request.CheckTaxPaymentFlag = false;
@@ -1636,12 +1662,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("MagFileUserId",  config.SsaBsoW2MagneticFileId));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2.xslt", "txt", string.Format("Federal SSA W2 Magentic-{0}.txt", request.Year));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/SSAW2.xslt", "txt",
+                $"Federal SSA W2 Magentic-{request.Year}.txt");
 			
 		}
 		private Extract GetTxSutaExtract(ReportRequest request)
 		{
-			request.Description = string.Format("Texas UmEmployment for {0}-{1} ", request.Year, request.Quarter);
+			request.Description = $"Texas UmEmployment for {request.Year}-{request.Quarter} ";
 			request.AllowFiling = false;
 			request.CheckEFileFormsFlag = true;
 			request.CheckTaxPaymentFlag = false;
@@ -1654,12 +1681,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 			argList.Add(new KeyValuePair<string, string>("lastmonth", request.EndDate.ToString("MM")));
 
-			return GetExtractTransformed(request, data, argList, "transformers/extracts/TXSuta.xslt", "txt", string.Format("Texas UmEmployment Report-{0}-{1}.txt", request.Year, request.Quarter));
+			return GetExtractTransformed(request, data, argList, "transformers/extracts/TXSuta.xslt", "txt",
+                $"Texas UmEmployment Report-{request.Year}-{request.Quarter}.txt");
 
 		}
 		private Extract GetSSAMagneticReport(ReportRequest request)
 		{
-			request.Description = string.Format("SSA W2 Employee Report for {0} ", request.Year);
+			request.Description = $"SSA W2 Employee Report for {request.Year} ";
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request);
@@ -1684,7 +1712,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetSSAMagneticEmployerReport(ReportRequest request)
 		{
-			request.Description = string.Format("SSA W2 Employer Report for {0} ", request.Year);
+			request.Description = $"SSA W2 Employer Report for {request.Year} ";
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request);
@@ -1709,7 +1737,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetC1095Extract(ReportRequest request)
 		{
-			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
+			request.Description = $"C1095 Extract for {request.Year} ";
 			request.AllowFiling = false;
 			
 			var data = GetExtractResponseC1095(request);
@@ -1721,14 +1749,13 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				Report = request,
 				Data = data,
-				Template = string.Format("{0}{1}", _templatePath, "transformers/extracts/C1095-" + request.Year + ".xslt"),
+				Template = $"{_templatePath}{"transformers/extracts/C1095-" + request.Year + ".xslt"}",
 				ArgumentList = JsonConvert.SerializeObject(argList),
-				FileName = string.Format("Federal C1095 Extract-{0}.xls", request.Year),
+				FileName = $"Federal C1095 Extract-{request.Year}.xls",
 				Extension = "zip"
 			};
 			var dir =
-				_documentService.CreateDirectory(string.Format("{0}-{1}", request.Description,
-					DateTime.Now.ToString("MM-dd-yyyy")));
+				_documentService.CreateDirectory($"{request.Description}-{DateTime.Now.ToString("MM-dd-yyyy")}");
 			var hosts = Utilities.GetCopy(extract.Data.Hosts);
 			extract.Data.Hosts = new List<ExtractHost>();
 			
@@ -1769,12 +1796,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		}
 		private Extract GetC1095ExtractReport(ReportRequest request)
 		{
-			Log.Info(string.Format("started C1095 PDF {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
-			request.Description = string.Format("C1095 Extract for {0} ", request.Year);
+			Log.Info($"started C1095 PDF {DateTime.Now.ToString("hh:mm:ss:fff")}");
+			request.Description = $"C1095 Extract for {request.Year} ";
 			request.AllowFiling = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponseC1095(request);
-			Log.Info(string.Format("extracted C1095 PDF {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			Log.Info($"extracted C1095 PDF {DateTime.Now.ToString("hh:mm:ss:fff")}");
 			data.Hosts.ForEach(h => h.Companies.ForEach(c => c.HostCompanyId = h.HostCompany.Id));
 			data.Companies = data.Hosts.SelectMany(h => h.Companies).OrderBy(c => c.Company.Name).ToList();
 			data.Hosts.ForEach(h=>h.Companies=new List<ExtractCompany>());
@@ -1791,7 +1818,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				FileName = request.Description,
 				Extension = ".pdf"
 			};
-			Log.Info(string.Format("returned C1095 PDF {0}", DateTime.Now.ToString("hh:mm:ss:fff")));
+			Log.Info($"returned C1095 PDF {DateTime.Now.ToString("hh:mm:ss:fff")}");
 			return extract;
 		}
 		private Extract GetExtractTransformed(ReportRequest request, ExtractResponse data, List<KeyValuePair<string,string>> argList, string template, string extension, string filename)
@@ -1800,7 +1827,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			{
 				Report = request,
 				Data = data,
-				Template = string.Format("{0}{1}", _templatePath, template),
+				Template = $"{_templatePath}{template}",
 				ArgumentList =  JsonConvert.SerializeObject(argList),
 				FileName = filename,
 				Extension = extension
@@ -1846,7 +1873,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			}
 			else
 			{
-				var transformed = XmlTransform(xml, string.Format("{0}{1}", _templatePath, templateName), argList);
+				var transformed = XmlTransform(xml, $"{_templatePath}{templateName}", argList);
 				if (extract.Extension.Equals("txt") || extract.Extension.Equals("csv"))
 					transformed = Transform(transformed);
 
@@ -1866,16 +1893,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public FileDto PrintPayrollSummary(Models.Payroll payroll, bool saveToDisk =false, string path = "")
 		{
-			var fileName = string.Format("Payroll_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+			var fileName = $"Payroll_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.pdf";
 			var xml = GetXml<Models.Payroll>(payroll);
 		
 			var args = new XsltArgumentList();
 				
 			var transformed = TransformXml(xml,
-				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrollsummary.xslt"), args);
+                $"{_templatePath}{"transformers/payroll/payrollsummary.xslt"}", args);
 
 			var transformedtimesheet = TransformXml(xml,
-				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrolltimesheet.xslt"), args);
+                $"{_templatePath}{"transformers/payroll/payrolltimesheet.xslt"}", args);
 
 			//return _pdfService.PrintHtml(transformed.Reports.First());
 			return _pdfService.PrintHtmls(new List<Report>(){transformed.Reports.First(), transformedtimesheet.Reports.First()}, saveToDisk, path);
@@ -2031,7 +2058,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH report data for {0} {1}", request.StartDate.ToString(), request.EndDate.ToString()));
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                        $" Get ACH report data for {request.StartDate.ToString()} {request.EndDate.ToString()}");
 					Log.Error(message, e);
 				}
 
@@ -2060,7 +2088,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					args.AddParam("today", "", DateTime.Today.ToString("yyMMdd"));
 					args.AddParam("postingDate", "", extract.Report.DepositDate.Value.ToString("yyMMdd"));
 					var transformed = XmlTransform(xml,
-						string.Format("{0}{1}", _templatePath, "transformers/extracts/CBT-ACHTransformer.xslt"), args);
+                        $"{_templatePath}{"transformers/extracts/CBT-ACHTransformer.xslt"}", args);
 
 					transformed = Transform(transformed);
 
@@ -2068,7 +2096,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 					{
 						Data = Encoding.UTF8.GetBytes(transformed),
 						DocumentExtension = ".txt",
-						Filename = string.Format("CBT-ACH-Extract-{0}.txt", DateTime.Now.ToString("MM/dd/yyyy")),
+						Filename = $"CBT-ACH-Extract-{DateTime.Now.ToString("MM/dd/yyyy")}.txt",
 						MimeType = "application/octet-stream"
 					};
 					var me = _reportRepository.SaveACHExtract(extract, fullName);
@@ -2095,7 +2123,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				}
 				else
 				{
-					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, string.Format(" Get ACH extract data for {0} {1}", extract.Report.StartDate.ToString(), extract.Report.EndDate.ToString()));
+					message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX,
+                        $" Get ACH extract data for {extract.Report.StartDate.ToString()} {extract.Report.EndDate.ToString()}");
 					Log.Error(message, e);
 				}
 
@@ -2109,25 +2138,25 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 		public FileDto PrintPayrollWithoutSummary(Models.Payroll payroll, List<Guid> documents)
 		{
-			var fileName = string.Format("Payroll_Checks_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+			var fileName = $"Payroll_Checks_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.pdf";
 			
 			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents, new byte[0]);
 		}
 		public FileDto PrintPayrollWithoutSummary(Models.Payroll payroll, List<FileDto> documents)
 		{
-			var fileName = string.Format("Payroll_Checks_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+			var fileName = $"Payroll_Checks_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.pdf";
 
 			return _pdfService.AppendAllDocuments(payroll.Id, fileName, documents);
 		}
 		public FileDto PrintPayrollTimesheet(Models.Payroll payroll)
 		{
-			var fileName = string.Format("Payroll_Timesheets_{0}_{1}.pdf", payroll.Id, payroll.PayDay.ToString("MMddyyyy"));
+			var fileName = $"Payroll_Timesheets_{payroll.Id}_{payroll.PayDay.ToString("MMddyyyy")}.pdf";
 			var xml = GetXml<Models.Payroll>(payroll);
 
 			var args = new XsltArgumentList();
 
 			var transformed = TransformXml(xml,
-				string.Format("{0}{1}", _templatePath, "transformers/payroll/payrolltimesheet.xslt"), args);
+                $"{_templatePath}{"transformers/payroll/payrolltimesheet.xslt"}", args);
 
 			return _pdfService.PrintHtml(transformed.Reports.First());
 		}
@@ -2759,11 +2788,12 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 
 			argList.AddParam("county","", response.EmployeeAccumulationList.GroupBy(e=>e.Contact.Address.County).OrderBy(g=>g.ToList().Count()).Last().Key);
 
-			var data = XmlTransform(GetXml(response), string.Format("{0}{1}", _templatePath, "transformers/reports/TXForms/SUTA.xslt"), argList);
+			var data = XmlTransform(GetXml(response), $"{_templatePath}{"transformers/reports/TXForms/SUTA.xslt"}", argList);
 			data = Transform(data);
 			return new FileDto()
 			{
-				Data = Encoding.UTF8.GetBytes(data), DocumentExtension = ".txt", Filename = string.Format("{0} -Texas SUTA-{1}-{2}.csv", response.Company.Name, request.Year, request.Quarter), MimeType = "text/plain"
+				Data = Encoding.UTF8.GetBytes(data), DocumentExtension = ".txt", Filename =
+                    $"{response.Company.Name} -Texas SUTA-{request.Year}-{request.Quarter}.csv", MimeType = "text/plain"
 			};
 		}
 
@@ -2871,7 +2901,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 
 			var transformed = TransformXml(xml,
-				string.Format("{0}{1}", _templatePath, template), argList);
+                $"{_templatePath}{template}", argList);
 
 			return _pdfService.PrintReport(transformed);
 		}

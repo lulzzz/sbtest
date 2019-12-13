@@ -268,7 +268,6 @@ namespace HrMaxxAPI.Code.Mappers
 			CreateMap<Invoice, InvoiceResource>();
 
 			CreateMap<ReportRequestResource, ReportRequest>()
-				.ForMember(dest => dest.Description, opt => opt.Ignore())
 				.ForMember(dest => dest.AllowFiling, opt => opt.Ignore())
 				.ForMember(dest => dest.AllowExclude, opt => opt.Ignore())
 				.ForMember(dest => dest.IncludeVoids, opt => opt.Ignore())
