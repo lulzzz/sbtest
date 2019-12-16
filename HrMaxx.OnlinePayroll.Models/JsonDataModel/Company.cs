@@ -140,8 +140,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal? FloorPerCheck { get; set; }
 		public bool ApplyInvoiceCredit { get; set; }
 		public DeductionType DeductionType { get; set; }
-		
-	}
+        public decimal EmployeeWithheld { get; set; }
+        public decimal EmployerWithheld { get; set; }
+    }
 	
 	public class DeductionType
 	{

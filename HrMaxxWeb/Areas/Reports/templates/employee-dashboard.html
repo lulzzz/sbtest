@@ -1,6 +1,6 @@
 ﻿<div class="row">
 <div class="panel panel-inverse">
-	<div class="panel-heading hidden-print">
+	<div class="panel-heading hidden-print" ng-show="showPanelTitle">
 		<h2 class="panel-title">Dashboard</h2>
 	</div>
 	<div class="panel-body">
@@ -20,7 +20,7 @@
                         <p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
                     </div>
                     <div class="stats-link">
-                        <a href="javascript:;">Gross Wage</a>
+                        <a href="javascript:;" ng-click="scrollToSummary()">Gross Wage</a>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
                         <p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
                     </div>
                     <div class="stats-link">
-                        <a href="javascript:;">Net Wage</a>
+                        <a href="javascript:;"  ng-click="scrollToSummary()">Net Wage</a>
                     </div>
                 </div>
 
@@ -56,7 +56,7 @@
                         <p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
                     </div>
                     <div class="stats-link">
-                        <a href="javascript:;">Deductions</a>
+                        <a href="javascript:;" ng-click="scrollToSummary()">Deductions</a>
                     </div>
 
                 </div>
@@ -91,34 +91,80 @@
 						</ul>
 					</div>
 				</div>
-				<div class="panel panel-inverse" data-sortable-id="index-8">
+				<div class="panel panel-inverse" data-sortable-id="index-8"  id="payrollsummaryhead">
 					<div class="panel-heading">
 						<div class="panel-heading-btn">
 
 						</div>
 						<h4 class="panel-title">Payrolls Summary </h4>
 					</div>
-					<div class="panel-body p-0">
-						<table class="table table-bordered table-condensed">
-							<tr >
-								<th>Pay Day</th>
-								<th>Checks</th>
-								<th>Gross Wage</th>
-								<th>Net Wage</th>
-								<th>Deductions</th>
-							</tr>
-							<tr ng-repeat="item in data.dashboard.payrollHistory">
-								
-									<td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
-									<td>{{item.noOfChecks}}</td>
-									<td>{{item.grossWage | currency}}</td>
-									<td>{{item.netWage | currency}}</td>
-									<td>{{item.deductions | currency}}</td>
-								
-							</tr>
+                    <div class="panel-body p-0">
+                        <table class="table table-bordered table-condensed">
+                            <tr>
+                                <th class="col-sm-1">Gross Wage</th>
+                                <th class="col-sm-1">Net Wage</th>
+                                <th class="col-sm-3">Taxes</th>
+                                <th class="col-sm-3">Deductions</th>
+                                <th class="col-sm-3">Workers Compensation</th>
+                            </tr>
+                            <tr>
+                                <td>{{data.dashboard.ytdPayroll.grossWage | currency:'$'}}</td>
+                                <td>{{data.dashboard.ytdPayroll.netWage | currency:'$'}}</td>
+                                <td>
+                                    <div class="col-sm-12"><strong>Employee:</strong></div>
+                                    <div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in data.dashboard.accumulation.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'"></div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-sm-offset-4">
+                                            <strong><em>Total: {{data.dashboard.accumulation.employeeTaxes | currency:'$'}}</em></strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12"><strong>Employer:</strong></div>
+                                    <div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in data.dashboard.accumulation.taxes | filter:{isEmployeeTax:false} | orderBy:'tax.id'"></div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-sm-offset-4">
+                                            <strong><em>Total: {{data.dashboard.accumulation.employerTaxes | currency:'$'}}</em></strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><div ng-repeat="ded in data.dashboard.accumulation.deductions" ng-include="'ded.html'" class="row"></div></td>
+                                <td>
+                                    <div ng-repeat="wc in data.dashboard.accumulation.workerCompensations" ng-include="'wcs.html'" class="row"></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table table-bordered table-condensed">
+                            <tr>
+                                <th class="col-sm-2">Pay Day</th>
+                                <th class="col-sm-2">Gross Wage</th>
+                                <th class="col-sm-2">Net Wage</th>
+                                <th class="col-sm-3">Deductions</th>
+                                <th class="col-sm-3">Accumulations</th>
+                            </tr>
+                            <tr ng-repeat="item in data.dashboard.payrollHistory">
 
-						</table>
-					</div>
+                                <td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
+                                <td class="text-right">{{item.grossWage | currency}}</td>
+                                <td class="text-right">{{item.netWage | currency}}</td>
+                                <td>
+                                    <i class="fa" ng-show="item.deductions>0" ng-class="{'fa-plus-circle': !item.expanded, 'fa-minus-circle': item.expanded}" ng-click="item.expanded=!item.expanded"></i>{{item.deductions | currency}}
+                                    <div ng-show="item.expanded && ded.amount>0" class="col-sm-12" ng-repeat="ded in item.deductionList">
+                                        <div class="col-sm-8">--{{ded.name}}:</div>
+                                        <div class="col-sm-4 pull-right">{{ded.amount | currency:'$'}}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="col-sm-12" ng-repeat="acc in item.accumulations" ng-show="acc.used>0 || acc.accumulatedValue>0">
+                                        <div class="col-sm-4">-{{acc.payType.payType.name}}:</div>
+                                        <div class="col-sm-4 text-right"><i class="fa fa-arrow-circle-up" ng-show="acc.accumulatedValue>0"> {{acc.accumulatedValue | currency:''}} hrs.</i> </div>
+                                        <div class="col-sm-4 text-right"><i class="fa fa-arrow-circle-down" ng-show="acc.used>0"> {{acc.used | currency:''}} hrs.</i> </div>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                        </table>
+                    </div>
 				</div>
 			</div>
 			

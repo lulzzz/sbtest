@@ -26,21 +26,21 @@
             }
     </style>
     <title>@ViewBag.Title</title>
+    
+    @if (IsSectionDefined("Styles"))
+    {
+        @RenderSection("Styles", false)
+    }
+    @Styles.Render("~/bundles/site-less")
 
-	@if (IsSectionDefined("Styles"))
-	{
-		@RenderSection("Styles", false)
-	}
-	@Styles.Render("~/bundles/site-less")
 
+    <!--[if lt IE 9]>
+        @Scripts.Render("~/bundles/html5")
+    <![endif]-->
+    @*@Styles.Render("~/bundles/site-less")*@
+    @Scripts.Render("~/bundles/bootstrapjquery")
 
-	<!--[if lt IE 9]>
-		@Scripts.Render("~/bundles/html5")
-	<![endif]-->
-	@*@Styles.Render("~/bundles/site-less")*@
-	@Scripts.Render("~/bundles/bootstrapjquery")
-
-	@Scripts.Render("~/bundles/angular")
+    @Scripts.Render("~/bundles/angular")
     <link rel="shortcut icon" href="~/Content/images/icon.png">
 </head>
 <body>
@@ -165,11 +165,20 @@
             <script type="text/ng-template" id="ded.html">
 
                 <div class="col-sm-6 text-left"><strong>{{ded.companyDeduction.deductionType.name}}:</strong></div>
-                <div class="col-sm-6 text-right">{{ded.ytd | currency:'$'}}</div>
+                <div class="col-sm-3 text-right">{{ded.ytdWage | currency:'$'}}</div>
+                <div class="col-sm-3 text-right">{{ded.ytd | currency:'$'}}</div>
 
 
             </script>
-            
+            <script type="text/ng-template" id="wcs.html">
+
+                <div class="col-sm-6 text-left"><strong>{{wc.companyWorkerCompensation.code}} - {{wc.companyWorkerCompensation.description}}:</strong></div>
+                <div class="col-sm-3 text-right">{{wc.ytdWage | currency:'$'}}</div>
+                <div class="col-sm-3 text-right">{{wc.ytd | currency:'$'}}</div>
+
+
+            </script>
+
             <script type="text/ng-template" id="popover/memento.html">
 
                 <div class="modal-header">
@@ -257,7 +266,7 @@
                         <p>{{acc.ytdFiscal | currency:''}} : {{acc.ytdUsed | currency:''}}</p>
                     </div>
                     <div class="stats-link">
-                        <a href="javascript:;">{{acc.payTypeName}}</a>
+                        <a href="javascript:;" ng-click="scrollToSummary()">{{acc.payTypeName}}</a>
                     </div>
 
                 </div>
@@ -361,10 +370,11 @@ else
 		@RenderSection("scripts", false)
 		<script>
 			$(document).ready(function () {
-				App.init();
-				//angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
+                App.init();
+                //angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
 				var min = $('a[data-click=sidebar-minify]:first');
-				min.click();
+                min.click();
+
 			});
 		</script>
 

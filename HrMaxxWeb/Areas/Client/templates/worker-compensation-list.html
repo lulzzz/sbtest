@@ -1,68 +1,130 @@
-﻿<div class="table-responsive col-sm-8 col-sm-offset-2">
-	<div class="row">
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-	</div>
-	<table class="table table-header table-bordered table-condensed form-controls input-sm">
-		<thead>
-			<tr>
-				<td class="col-sm-2">Code</td>
-				<td class="col-sm-3">Description</td>
-				<td class="col-sm-2">Rate %</td>
-				<td class="col-sm-2">Min Gross Wage</td>
-				<td class="col-sm-3" ng-show="showControls"></td>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="item in list track by $index">
-				<td>
-					<span e-ng-change="item.code = $data" editable-text="item.code" e-name="code" e-form="rowform" e-ng-pattern="/^\d{1,4}$/">
-						{{ !item.code? '0000' : item.code }}
-					</span>
-				</td>
-				<td>
-					<span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
-						{{ item.description }}
-					</span>
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.rate" e-name="rate" e-form="rowform" e-ng-change="item.rate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.rate }} %
-					</span>
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.minGrossWage" e-name="mingrosswage" e-form="rowform" e-ng-change="item.minGrossWage = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.minGrossWage }}
-					</span>
-				</td>
-				<td style="white-space: nowrap" ng-show="showControls">
-					<!-- form -->
-					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-icon btn-circle btn-success" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit"></i>
-						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-icon btn-circle btn-success">
-							<i class="fa fa-save"></i>
-						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-lg btn-icon btn-circle btn-default">
-							<i class="fa fa-remove"></i>
-						</button>
-					</form>
-				</td>
-				
-			</tr>
-			<tr ng-show="!selected">
-				<td colspan="5">
-					<span ng-show="list.length===0">No items found</span>
-					<button type="button" ng-click="add()" class="btn btn-lg btn-success btn-icon btn-circle" ng-show="showControls" title="Add">
-						<i class="fa fa-plus"></i>
-					</button>
-				</td>
+﻿<div class="table-responsive col-sm-12">
+    <div class="row">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+    <div class="row">
+        <div class="col-sm-3 m-t-5" ng-repeat="item in list track by $index" ng-form>
+            <form name="dedform{{$index}}" data-parsley-validate="true">
+                <div class="clearfix" ng-if="$index % 4 === 0"></div>
+                <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
+                    <div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-up fa-fw"></i></div>
+                    <div class="stats-title" ng-if="item.id>0">{{item.code}}</div>
+                    <div class="stats-title" ng-if="item.id===0">
+                        <div class="form-group">
+                            <input class="form-control" type="text" id="code" name="code" ng-model="item.code" required ng-pattern="/^\d{1,4}$/" maxlength="4" placeholder="WC Code" />
 
-				
-			</tr>
-			
-		</tbody>
-	</table>
+                        </div>
+                    </div>
+                    <div class="stats-title" ng-if="item.id>0">{{item.description}}</div>
+                    <div class="stats-title" ng-if="item.id===0">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <input class="form-control" type="text" id="desc" name="desc" ng-model="item.description" required placeholder="Description" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="stats-desc">Rate: {{item.rate | currency}}, Min Gross Wage: {{item.minGrossWage | currency}}</div>
+                    <div class="stats-progress progress">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="stats-desc" ng-show="showControls">
+                        <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
+                        <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
+                        <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
+
+
+                    </div>
+                </div>
+                <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
+                    <div class="stats-desc">
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-sm-4" for="rate">Rate :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.rate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" required />
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-sm-4" for="fpc">Min Gross Wage:</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input class="form-control" type="number" id="mgw" name="mgw" ng-model="selected.minGrossWage" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="row" ng-show="!selected && showControls">
+        <span ng-show="list.length===0">No Workers Compensations found</span>
+        <button type="button" ng-click="add()" title="Add Workers Compensation" class="btn btn-lg btn-icon btn-circle btn-success">
+            <i class="fa fa-plus"></i>
+        </button>
+    </div>
+    <!--<table class="table table-header table-bordered table-condensed form-controls input-sm">
+        <thead>
+            <tr>
+                <td class="col-sm-2">Code</td>
+                <td class="col-sm-3">Description</td>
+                <td class="col-sm-2">Rate %</td>
+                <td class="col-sm-2">Min Gross Wage</td>
+                <td class="col-sm-3" ng-show="showControls"></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in list track by $index">
+                <td>
+                    <span e-ng-change="item.code = $data" editable-text="item.code" e-name="code" e-form="rowform" e-ng-pattern="/^\d{1,4}$/">
+                        {{ !item.code? '0000' : item.code }}
+                    </span>
+                </td>
+                <td>
+                    <span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
+                        {{ item.description }}
+                    </span>
+                </td>
+                <td>
+                     editable comment (text with validation) 
+                    <span editable-number="item.rate" e-name="rate" e-form="rowform" e-ng-change="item.rate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                        {{ item.rate }} %
+                    </span>
+                </td>
+                <td>
+                     editable comment (text with validation) 
+                    <span editable-number="item.minGrossWage" e-name="mingrosswage" e-form="rowform" e-ng-change="item.minGrossWage = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                        {{ item.minGrossWage }}
+                    </span>
+                </td>
+                <td style="white-space: nowrap" ng-show="showControls">
+                     form 
+                    <form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
+                        <button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-icon btn-circle btn-success" ng-click="rowform.$show();setSelected($index)">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-icon btn-circle btn-success">
+                            <i class="fa fa-save"></i>
+                        </button>
+                        <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-lg btn-icon btn-circle btn-default">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </form>
+                </td>
+
+            </tr>
+            <tr ng-show="!selected">
+                <td colspan="5">
+                    <span ng-show="list.length===0">No items found</span>
+                    <button type="button" ng-click="add()" class="btn btn-lg btn-success btn-icon btn-circle" ng-show="showControls" title="Add">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </td>
+
+
+            </tr>
+
+        </tbody>
+    </table>-->
 </div>

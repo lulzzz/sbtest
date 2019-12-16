@@ -741,7 +741,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				var filters = new List<FilterParam>();
 				filters.Add(new FilterParam{ Key = "company", Value = id.ToString()});
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetCompanyDashboard", filters);
-				return data;
+                data.Accumulation = _readerService.GetTaxAccumulations(company: id,
+                    startdate: new DateTime(DateTime.Today.Year, 1, 1),
+                    enddate: new DateTime(DateTime.Today.Year, 12, 31), type: AccumulationType.Company,
+                    includePayCodes: false,
+                    includeTaxes: true, includePayTypeAccumulation: false,
+                    includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
+                    includeHistory: true,
+                    includeClients: false, includeTaxDelayed: true).First();
+
+                return data;
 			}
 			catch (Exception e)
 			{
@@ -760,7 +769,15 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				filters.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
 				filters.Add(new FilterParam { Key = "employee", Value = employeeId.ToString() });
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetEmployeeDashboard", filters);
-				return data;
+                data.Accumulation = _readerService.GetTaxAccumulations(company: companyId, employee: employeeId,
+                    startdate: new DateTime(DateTime.Today.Year, 1, 1),
+                    enddate: new DateTime(DateTime.Today.Year, 12, 31), type: AccumulationType.Employee,
+                    includePayCodes: false,
+                    includeTaxes: true, includePayTypeAccumulation: false,
+                    includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
+                    includeHistory: true,
+                    includeClients: false, includeTaxDelayed: true).First();
+                return data;
 			}
 			catch (Exception e)
 			{

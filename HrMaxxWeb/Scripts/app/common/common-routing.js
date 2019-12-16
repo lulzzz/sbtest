@@ -136,6 +136,7 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	
 	// Specify HTML5 mode (using the History APIs) or HashBang syntax.
 	$locationProvider.hashPrefix('!');
+    //$locationProvider.html5Mode(true);
 }]);
 
 common.config([

@@ -257,7 +257,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.DeductionType))
 				.ForMember(dest => dest.W2_12, opt => opt.MapFrom(src => src.DeductionType.W2_12))
 				.ForMember(dest => dest.W2_13R, opt => opt.MapFrom(src => src.DeductionType.W2_13R))
-				.ForMember(dest => dest.R940_R, opt => opt.MapFrom(src => src.DeductionType.R940_R));
+				.ForMember(dest => dest.R940_R, opt => opt.MapFrom(src => src.DeductionType.R940_R))
+                .ForMember(dest => dest.EmployeeWithheld, opt => opt.Ignore())
+                .ForMember(dest => dest.EmployerWithheld, opt => opt.Ignore());
 
 			CreateMap<Models.CompanyDeduction, Models.DataModel.CompanyDeduction>()
 				.ForMember(dest => dest.AnnualMax, opt => opt.MapFrom(src => src.AnnualMax))

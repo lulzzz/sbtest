@@ -1409,7 +1409,7 @@
 		<xsl:variable name="mdConst" select="(PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/Tax/Rate + PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employer']/Tax/Rate) div 100"/>
 		<xsl:variable name="totalTips" select="sum(PayCheckAccumulation/Compensations/PayCheckCompensation[PayTypeId=3]/YTD)"/>
 		<xsl:variable name="totalFITWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTDWage"/>
-		<xsl:variable name="totalSSWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage"/>
+    <xsl:variable name="totalSSWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='SS_Employee']/YTDWage - $totalTips"/>
 
 		<xsl:variable name="totalMDWages" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='MD_Employee']/YTDWage"/>
 		<xsl:variable name="totalFITTax" select="PayCheckAccumulation/Taxes/PayCheckTax[Tax/Code='FIT']/YTD"/>

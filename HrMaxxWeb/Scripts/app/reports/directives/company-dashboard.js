@@ -10,8 +10,8 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 			},
 			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/company-dashboard.html?v=' + version),
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository', '$anchorScroll', 'ClaimTypes', 'NgTableParams',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes, ngTableParams) {
+            controller: ['$scope', '$element', '$location', '$filter', 'reportRepository', '$anchorScroll', 'ClaimTypes', 'NgTableParams', 'anchorSmoothScroll',
+                function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes, ngTableParams, anchorSmoothScroll) {
 					var dataSvc = {
 						dashboard: null,
 						showChart: false,
@@ -388,12 +388,18 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 							dataSvc.filteredPendingExtracts = $filter('orderBy')(dataSvc.filteredPendingExtracts, 'depositDate', true);
 							handleExtractChart(dataSvc.filteredExtracts, 'extract-paid');
 							handleExtractChart(dataSvc.filteredPendingExtracts, 'extract-pending');
-							handleExtractDonutChart();
+                            handleExtractDonutChart();
+                            
 						});
 						
 						
 					}
-
+                    $scope.scrollToSummary = function() {
+                        $timeout(function () {
+                            var e = document.getElementById('payrollsummary');
+                            anchorSmoothScroll.scrollToElement(e);
+                        }, 0);
+                    }
 					$scope.listEmployeeAccess = [];
 					$scope.listEmployeeDocuments = [];
 					$scope.tableDataEmployeeView = [];

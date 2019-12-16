@@ -874,8 +874,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						$scope.selectedInvoice = null;
 						payrollRepository.getInvoiceById(payroll.invoiceId).then(function (invoice) {
 							$scope.selectedInvoice = invoice;
-							$location.hash("invoice");
-							anchorSmoothScroll.scrollTo('invoice');
+							//$location.hash("invoice");
+							anchorSmoothScroll.scrollToElement(document.getElementById('invoice'));
 						}, function (error) {
 							$scope.addAlert('error getting invoices', 'danger');
 

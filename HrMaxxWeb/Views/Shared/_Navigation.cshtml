@@ -48,7 +48,7 @@
 						}
 						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.InvoiceList))
 						{
-							<li><a href="#!/Admin/Invoices#invoice">Invoices</a></li>
+							<li><a href="#!/Admin/Invoices">Invoices</a></li>
 						}
 						@if (CurrentUser.HasClaim(HrMaxxClaimTypes.DataExtracts) || CurrentUser.HasClaim(HrMaxxClaimTypes.MiscExtracts))
 						{
@@ -91,7 +91,7 @@
 				}
 				if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollProcess))
 				{
-					<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime()) + '#invoice' "><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
+					<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime())"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
 				}
 				if (CurrentUser.HasClaim(HrMaxxClaimTypes.CheckbookManage))
 				{

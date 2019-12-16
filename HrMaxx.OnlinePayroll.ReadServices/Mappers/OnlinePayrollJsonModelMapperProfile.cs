@@ -267,13 +267,16 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Pending940, opt => opt.Ignore())
 				.ForMember(dest => dest.Pending941, opt => opt.Ignore())
 				.ForMember(dest => dest.PendingPit, opt => opt.Ignore())
-				.ForMember(dest => dest.PendingExtractsByCompany, opt => opt.Ignore())
+                .ForMember(dest => dest.Accumulation, opt => opt.Ignore())
+                .ForMember(dest => dest.PendingExtractsByCompany, opt => opt.Ignore())
 				.ForMember(dest => dest.PendingExtractsByDates, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.TaxExtractJson, Models.TaxExtract>()
 				.ForMember(dest => dest.Details, opt => opt.Ignore());
-			CreateMap<Models.JsonDataModel.PayrollMetricJson, Models.PayrollMetric>();
+			CreateMap<Models.JsonDataModel.PayrollMetricJson, Models.PayrollMetric>()
+                .ForMember(dest => dest.DeductionList, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.DeductionJson) ? JsonConvert.DeserializeObject<List<PayrollDeduction>>(src.DeductionJson) : default(List<PayrollDeduction>)))
+                .ForMember(dest => dest.Accumulations, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.Accumulations) ? JsonConvert.DeserializeObject<List<PayTypeAccumulation>>(src.Accumulations) : default(List<PayTypeAccumulation>)));
 
-			CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>()
+            CreateMap<Models.JsonDataModel.StaffDashboardJson, Models.StaffDashboard>()
 				.ForMember(dest => dest.MissedPayrollsYesterday, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.StaffDashboardCubeJson, Models.StaffDashboardCube>();
 

@@ -2664,6 +2664,8 @@ a.text-white:focus {
 .border-green { border:1px solid #008a8a !important; }
 .border-blue { border:1px solid #2a72b5 !important; }
 .border-purple { border:1px solid #5b6392 !important; }
+.border-aqua { border:1px solid  #49b6d6 !important; }
+.border-black-lighter { border:1px solid #575d63 !important; }
 
 .bg-white { background: #ffffff !important; }
 .bg-silver-lighter { background: #f4f6f7 !important; }

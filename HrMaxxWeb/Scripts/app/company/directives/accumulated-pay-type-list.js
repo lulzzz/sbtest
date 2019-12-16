@@ -47,14 +47,16 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 						companyManaged: false,
 						isLumpSum: false,
 						isEmployeeSpecific: false
-					};
+                    };
+                    $scope.original = angular.copy($scope.selected);
 					$scope.list.push($scope.selected);
 				},
 				
 				$scope.save = function(item) {
 					companyRepository.saveAccumulatedPayType(item).then(function(data) {
 						item.id = data.id;
-						$scope.selected = null;
+                        $scope.selected = null;
+                        $scope.original = null;
 						$rootScope.$broadcast('companyPayTypeUpdated', { pt: data });
 						addAlert('successfully saved accumulated pay type', 'success');
 					}, function(error) {
@@ -63,13 +65,16 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 				}
 				$scope.cancel = function (index) {
 					if ($scope.selected.id === 0) {
-						$scope.list.splice(index, 1);
+						$scope.list.splice($scope.list.indexOf($scope.selected), 1);
 					}
-					$scope.selected = null;
+                    $scope.selected = null;
+                    $scope.original = null;
 				}
 				$scope.setSelected = function(index) {
-					$scope.selected = $scope.list[index];
-				}
+                    $scope.selected = $scope.list[index];
+                    $scope.original = angular.copy($scope.selected);
+                    
+                }
 				$scope.availablePayTypes = function() {
 					var _available = [];
 					if ($scope.metaData) {
@@ -89,7 +94,30 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 					else
 						return true;
 				}
-				
+                $scope.getWidgetClass = function (item) {
+                    if (item && item.id) {
+                        return 'bg-black';
+                    }
+                    else
+                        return 'bg-red-darker';
+                }
+                $scope.getWidgetSubClass = function (item) {
+                    if (item && item.id) {
+                       return 'border-black';
+                    }
+                    else
+                        return 'border-red';
+                }
+                $scope.hasItemChanged = function () {
+                    if (!$scope.selected)
+                        return false;
+                    else {
+                        if (angular.equals($scope.selected, $scope.original))
+                            return false;
+                        else
+                            return true;
+                    }
+                }
 				
 				var init = function() {
 					if ($scope.metaData) {
@@ -98,7 +126,8 @@ common.directive('accumulatedPayTypeList', ['zionAPI', 'version',
 							if (!exists)
 								type.available = true;
 						});
-					}
+                    }
+                    
 				}
 					init();
 

@@ -338,6 +338,7 @@
     <Content Include="templates\transformers\employer\CADE34.xslt" />
     <Content Include="templates\transformers\employer\FedI9.xslt" />
     <Content Include="templates\transformers\employer\FedW4.xslt" />
+    <Content Include="templates\transformers\extracts\C1095-2019.xslt" />
     <Content Include="templates\transformers\extracts\C1095-2018.xslt" />
     <Content Include="templates\transformers\extracts\C1095PDF-2017.xslt">
       <SubType>Designer</SubType>
@@ -423,6 +424,9 @@
     </Content>
     <Content Include="templates\transformers\reports\941\Fed941-2017.xslt" />
     <Content Include="templates\transformers\reports\944\Fed944.xslt" />
+    <Content Include="templates\transformers\reports\C1095\C1095-2019.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\C1095\C1095-2018.xslt">
       <SubType>Designer</SubType>
     </Content>

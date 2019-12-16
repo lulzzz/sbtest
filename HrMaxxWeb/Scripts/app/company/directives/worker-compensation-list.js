@@ -28,7 +28,8 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 						code: 0,
 						rate:0,
 						isNew:true
-					};
+                    };
+                    $scope.original = angular.copy($scope.selected);
 					$scope.list.push($scope.selected);
 				},
 				
@@ -44,22 +45,50 @@ common.directive('workerCompensationList', ['zionAPI', 'version',
 				}
 				$scope.cancel = function (index) {
 					if ($scope.selected.id === 0) {
-						$scope.list.splice(index, 1);
+                        $scope.list.splice($scope.list.indexOf($scope.selected), 1);
 					} 
-					$scope.selected = null;
+                    $scope.selected = null;
+                    $scope.original = null;
 				}
 				$scope.setSelected = function(index) {
 					$scope.selected = $scope.list[index];
 					if (!$scope.selected.code)
-						$scope.selected.code = '0000';
-				}
+                        $scope.selected.code = '0000';
+                    $scope.original = angular.copy($scope.selected);
+                }
 
 				$scope.isItemValid = function(item) {
 					if (!item.code || !item.description || item.rate<0)
 						return false;
 					else
 						return true;
-				}
+                    }
+                $scope.getWidgetClass = function (item) {
+                    if (item && item.code && item.rate) {
+                       return 'bg-black-lighter';
+                    }
+
+                    else
+                        return 'bg-red-darker';
+                }
+                $scope.getWidgetSubClass = function (item) {
+                    if (item && item.code && item.rate) {
+                            return 'border-black-lighter';
+                    }
+
+                    else
+                        return 'border-red';
+                }
+                $scope.hasItemChanged = function () {
+                    if (!$scope.selected)
+                        return false;
+                    else {
+                        if (angular.equals($scope.selected, $scope.original))
+                            return false;
+                        else
+                            return true;
+                    }
+                }
 				
 				
 				

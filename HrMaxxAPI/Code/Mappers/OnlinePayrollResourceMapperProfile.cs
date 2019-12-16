@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using AutoMapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Dtos;
@@ -76,7 +77,8 @@ namespace HrMaxxAPI.Code.Mappers
 
 			CreateMap<Company, CompanyResource>()
 				.ForMember(dest => dest.CompanyAddress, opt => opt.MapFrom(src => src.CompanyAddress))
-				.ForMember(dest => dest.UpdateEmployeeSchedules, opt => opt.Ignore()); ;
+                .ForMember(dest => dest.Deductions, opt => opt.MapFrom(src => src.Deductions.OrderBy(d=>(int)d.Type.Category)))
+                .ForMember(dest => dest.UpdateEmployeeSchedules, opt => opt.Ignore());
 				
 			CreateMap<CompanyResource, Company>()
 				.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.HasValue ? src.Id.Value : CombGuid.Generate()))
@@ -162,7 +164,8 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.LastModified, opt => opt.MapFrom(src => DateTime.Now));
 
 
-			CreateMap<Employee, EmployeeResource>();
+			CreateMap<Employee, EmployeeResource>()
+                .ForMember(dest => dest.AccumulationGroups, opt => opt.Ignore());
 
 			CreateMap<EmployeePayTypeResource, EmployeePayType>();
 			CreateMap<EmployeePayType, EmployeePayTypeResource>();

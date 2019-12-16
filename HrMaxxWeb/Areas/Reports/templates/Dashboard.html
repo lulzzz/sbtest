@@ -6,7 +6,7 @@
 		<company-dashboard main-data="data" />
 	</div>
 	<div ng-if="data.userRole && data.userRole!=='Company' && data.userRole==='Employee' ">
-		<employee-dashboard main-data="data" company-id="mainData.userCompany" employee-id="mainData.userEmployee"/>
+		<employee-dashboard main-data="data" company-id="mainData.userCompany" employee-id="mainData.userEmployee" show-panel-titl="true"/>
 	</div>
 	<!--<div ng-if="!data.userRole || data.userRole==='Company' || data.userRole==='Employee'">
 		<welcome main-data="data" />

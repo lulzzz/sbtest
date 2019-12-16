@@ -46,10 +46,10 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap/bootstrap-theme/coloradmin.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/metisMenu/metisMenu.js",
 				"~/Scripts/Toastr/toastr.min.js",
-				"~/Scripts/bootstrap-switch.min.js",
+				//"~/Scripts/bootstrap-switch.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/wysiwyg/wysihtml5-0.3.0.min.js",
 				"~/Scripts/bootstrap/bootstrap-theme/plugins/wysiwyg/bootstrap-wysihtml5-0.0.2.js",
-				"~/Scripts/bootstrap/parsley.js",
+                "~/Scripts/bootstrap/parsley.js",
 				"~/Scripts/bootstrap/wizard/bwizard.js"
 
 				

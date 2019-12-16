@@ -393,7 +393,7 @@
 			if (result.sourceTypeId === 2) {
 				dataSvc.fromSearch = true;
 				if(dataSvc.hasClaim(ClaimTypes.PayrollProcess,1))
-					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Payrolls/" + +(new Date().getTime()) + '#invoice');
+					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Payrolls/" + +(new Date().getTime()));
 				else {
 					$scope.setHostandCompany(result.hostId, result.companyId, "#!/Client/Company/" + +(new Date().getTime()));
 				}

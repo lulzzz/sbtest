@@ -35,5 +35,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal EmployerTaxes { get; set; }
 		public decimal Deductions { get; set; }
 		public int DRank { get; set; }
-	}
+        public string DeductionJson { get; set; }
+        public string Accumulations { get; set; }
+    }
 }

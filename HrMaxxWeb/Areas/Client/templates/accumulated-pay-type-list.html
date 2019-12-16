@@ -1,9 +1,113 @@
-﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
-	<div class="row">
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-	</div>
-	<table class="table table-header table-bordered table-condensed form-controls input-sm">
-		<thead>
+﻿<div class="table-responsive col-sm-12">
+    <div class="row">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+<div class="row">
+    <div class="col-sm-3 m-t-5" ng-repeat="item in list track by $index" ng-form>
+        <form name="dedform{{$index}}" data-parsley-validate="true">
+            <div class="clearfix" ng-if="$index % 4 === 0"></div>
+            <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
+                <div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
+                <div class="stats-title" ng-if="item.id>0">{{item.payType.description}}</div>
+                <div class="stats-title" ng-if="item.id===0">
+                    <div class="form-group">
+                        <select class="form-control" id="pt" ng-model="item.payType" ng-options="paytype.description for paytype in metaData track by paytype.id" required>
+                            <option value="">Please select Pay Type...</option>
+                        </select>
+
+                    </div>
+                </div>
+
+                <div class="stats-info" ng-if="item.id>0">{{item.option? leaveOptions[1].text : leaveOptions[0].text}}</div>
+                <div class="stats-info" ng-if="item.id===0">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <select class="form-control" id="opt" ng-model="item.payType" ng-options="option.id as option.text for option in leaveOptions track by option.id" required>
+                                <option value="">Please select Option...</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="stats-title">Rate: {{item.ratePerHour | currency}}, Annual Limit: {{item.annualLimit | currency}}, Global Limit: {{item.global | currency}}</div>
+                <div class="stats-title">Company Managed: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isCompanyManaged, 'fa-times-circle': !item.isCompanyManaged}" />, Lump Sum: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isLumpSum, 'fa-times-circle': !item.isLumpSum}" />, Employee Specific: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isEmployeeSpecific, 'fa-times-circle': !item.isEmployeeSpecific}" /></div>
+                <div class="stats-progress progress">
+                    <div class="progress-bar" style="width: 100%;"></div>
+                </div>
+                <div class="stats-desc" ng-show="showControls">
+                    <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
+                    <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
+                    <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
+
+
+                </div>
+            </div>
+            <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
+                <div class="stats-desc">
+                    <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-6" for="rate">Rate :</label>
+                        <div class="col-md-6 col-sm-6">
+                            <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.ratePerHour" ng-pattern="/^[0-9]+(\.[0-9]{1,4})?$/" min="0" required />
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-6" for="al">Annual Limit:</label>
+                        <div class="col-md-6 col-sm-6">
+                            <input class="form-control" type="number" id="al" name="al" ng-model="selected.annualLimit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-6" for="gl">Global Limit:</label>
+                        <div class="col-md-6 col-sm-6">
+                            <input class="form-control" type="number" id="gl" name="gl" ng-model="selected.globalLimit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-6">Company Managed? :</label>
+                        <div class="col-md-6 col-sm-6">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="item.isCompanyManaged"/><i></i>
+                            </label>
+                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-6">Lump Sum? :</label>
+                        <div class="col-md-6 col-sm-6">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="item.isLumpSum" /><i></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-6 col-sm-6">Employee Specific? :</label>
+                        <div class="col-md-6 col-sm-6">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="item.isEmployeeSpecific" /><i></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row" ng-show="!selected && showControls">
+
+    <button type="button" ng-click="add()" title="Add Pay Type Accumulation" class="btn btn-lg btn-icon btn-circle btn-success">
+        <i class="fa fa-plus"></i>
+    </button>
+    <button class="btn btn-xs btn-success pull-right" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate && mainData.userRole!=='Employee'">Re-Calculate Accumulations</button>
+</div>
+
+    <div class="row" ng-if="selected.accumulationGroups.length===0">
+        no records found
+    </div>
+    <!--<table class="table table-header table-bordered table-condensed form-controls input-sm">
+        <thead>
             <tr>
                 <td class="col-sm-2">Pay Type</td>
                 <td class="col-sm-1">Option</td>
@@ -15,89 +119,89 @@
                 <td class="col-sm-1">Is Employee Specific?</td>
                 <td class="col-sm-2" ng-show="showControls"></td>
             </tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="item in list track by $index">
-				<td>
-					<span e-ng-change="item.payType = $data;" editable-select="item.payType" e-name="type" e-form="rowform" e-ng-options="paytype.description for paytype in metaData track by paytype.id">
-						{{ item.payType? item.payType.description : '' }}
-					</span>
-				</td>
-				<td>
-					<span e-ng-change="item.option = $data.id;" editable-select="item.option" e-name="opt" e-form="rowform" e-ng-options="option.id as option.text for option in leaveOptions track by option.id">
-						{{ item.option? leaveOptions[1].text : leaveOptions[0].text }}
-					</span>
-				</td>
-				<td>
-					<span e-ng-change="item.ratePerHour = $data" editable-number="item.ratePerHour" e-name="rate" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,4})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.ratePerHour }} 
-					</span>
-				</td>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in list track by $index">
                 <td>
-                    <!-- editable comment (text with validation) -->
+                    <span e-ng-change="item.payType = $data;" editable-select="item.payType" e-name="type" e-form="rowform" e-ng-options="paytype.description for paytype in metaData track by paytype.id">
+                        {{ item.payType? item.payType.description : '' }}
+                    </span>
+                </td>
+                <td>
+                    <span e-ng-change="item.option = $data.id;" editable-select="item.option" e-name="opt" e-form="rowform" e-ng-options="option.id as option.text for option in leaveOptions track by option.id">
+                        {{ item.option? leaveOptions[1].text : leaveOptions[0].text }}
+                    </span>
+                </td>
+                <td>
+                    <span e-ng-change="item.ratePerHour = $data" editable-number="item.ratePerHour" e-name="rate" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,4})?$/" e-step="0.01" e-style="width:10em;">
+                        {{ item.ratePerHour }}
+                    </span>
+                </td>
+                <td>
+                     editable comment (text with validation) 
                     <span editable-number="item.annualLimit" e-name="limit" e-form="rowform" e-ng-change="item.annualLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
                         {{ item.annualLimit }}
                     </span>
                 </td>
                 <td>
-                    <!-- editable comment (text with validation) -->
+                     editable comment (text with validation) 
                     <span editable-number="item.globalLimit" e-name="limit" e-form="rowform" e-ng-change="item.globalLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-ng-min="item.annualLimit">
                         {{ item.globalLimit }}
                     </span>
                 </td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<div>
-						<label for="compmanaged{{$index}}" class="switch">
-							<input id="compmanaged{{$index}}" type="checkbox" ng-model="item.companyManaged" ng-disabled="!selected || !enableIsCompanyManaged" /><i></i>
-						</label>
-					</div>
-					
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<div>
-						<label for="lumpsumd{{$index}}" class="switch">
-							<input id="lumpsumd{{$index}}" type="checkbox" ng-model="item.isLumpSum" ng-disabled="!selected || !enableIsLumpSum" /><i></i>
-						</label>
-					</div>
+                <td>
+                     editable comment (text with validation) 
+                    <div>
+                        <label for="compmanaged{{$index}}" class="switch">
+                            <input id="compmanaged{{$index}}" type="checkbox" ng-model="item.companyManaged" ng-disabled="!selected || !enableIsCompanyManaged" /><i></i>
+                        </label>
+                    </div>
 
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<div>
-						<label for="empspecd{{$index}}" class="switch">
-							<input id="empspecd{{$index}}" type="checkbox" ng-model="item.isEmployeeSpecific" ng-disabled="!selected || !enableIsCompanyManaged" /><i></i>
-						</label>
-					</div>
+                </td>
+                <td>
+                     editable comment (text with validation) 
+                    <div>
+                        <label for="lumpsumd{{$index}}" class="switch">
+                            <input id="lumpsumd{{$index}}" type="checkbox" ng-model="item.isLumpSum" ng-disabled="!selected || !enableIsLumpSum" /><i></i>
+                        </label>
+                    </div>
 
-				</td>
-				<td style="white-space: nowrap" ng-show="showControls">
-					<!-- form -->
-					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit"></i>
-						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-							<i class="fa fa-save"></i>
-						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
-							<i class="fa fa-remove"></i>
-						</button>
-					</form>
-				</td>
-				
-			</tr>
-			<tr ng-show="!selected && showControls">
-				<td colspan="8">
-					<span ng-show="list.length===0">No items found</span>
-					<button type="button" ng-click="add()" ng-show="availablePayTypes().length>0" class="btn btn-lg  btn-icon btn-circle btn-success">
-						<i class="fa fa-plus"></i>
-					</button>
-				</td>
+                </td>
+                <td>
+                     editable comment (text with validation) 
+                    <div>
+                        <label for="empspecd{{$index}}" class="switch">
+                            <input id="empspecd{{$index}}" type="checkbox" ng-model="item.isEmployeeSpecific" ng-disabled="!selected || !enableIsCompanyManaged" /><i></i>
+                        </label>
+                    </div>
 
-			</tr>
-			
-		</tbody>
-	</table>
+                </td>
+                <td style="white-space: nowrap" ng-show="showControls">
+                     form 
+                    <form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
+                        <button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+                            <i class="fa fa-save"></i>
+                        </button>
+                        <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </form>
+                </td>
+
+            </tr>
+            <tr ng-show="!selected && showControls">
+                <td colspan="8">
+                    <span ng-show="list.length===0">No items found</span>
+                    <button type="button" ng-click="add()" ng-show="availablePayTypes().length>0" class="btn btn-lg  btn-icon btn-circle btn-success">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </td>
+
+            </tr>
+
+        </tbody>
+    </table>-->
 </div>

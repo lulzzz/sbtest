@@ -8,12 +8,13 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 			scope: {
                 mainData: "=mainData",
                 companyId: "=companyId",
-                employeeId: "=employeeId"
+                employeeId: "=employeeId",
+                showPanelTitle: "=showPanelTitle"
 			},
 			templateUrl: $sce.trustAsResourceUrl(zionAPI.Web + 'Areas/Reports/templates/employee-dashboard.html?v=' + version),
 
-			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository','$anchorScroll', 'ClaimTypes',
-				function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes) {
+            controller: ['$scope', '$element', '$location', '$filter', 'reportRepository', '$anchorScroll', 'ClaimTypes', 'anchorSmoothScroll',
+                function ($scope, $element, $location, $filter, reportRepository, $anchorScroll, ClaimTypes, anchorSmoothScroll) {
 					var dataSvc = {
 						dashboard: null,
 						showChart: false,
@@ -73,7 +74,13 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 						return month[x.getMonth()] + '-' + x.getYear();
 					};
 
-					
+                    $scope.scrollToSummary = function () {
+                        $timeout(function () {
+                            var e = document.getElementById('payrollsummaryhead');
+                            anchorSmoothScroll.scrollToElement(e);
+                        }, 0);
+                       
+                    }
 				
 					var handlePayrollChart = function (data, element) {
 						$("#" + element).empty();

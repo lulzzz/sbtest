@@ -1,78 +1,152 @@
-﻿<div class="table-responsive col-sm-10 col-sm-offset-1">
-	<div class="row">
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-	</div>
-	<table class="table table-header table-bordered table-condensed form-controls input-sm">
-		<thead>
-			<tr>
-				<td class="col-sm-2">Type</td>
-				<td class="col-sm-2">Name</td>
-				<td class="col-sm-2">Description</td>
-				<td class="col-sm-2">Floor Per Check</td>
-				<td class="col-sm-1">Invoice Credit?</td>
-				<td class="col-sm-1">Annual Max</td>
-				<td class="col-sm-2" ng-show="showControls"></td>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="item in list track by $index">
-				<td>
-					<!-- editable tesltra worktype (select-local) -->
-					<span e-ng-change="item.type = $data;" editable-select="item.type" e-name="type" e-form="rowform" e-ng-options="ded.categoryText + ' - ' + ded.name for ded in types | orderBy:'category' track by ded.id">
-						{{ showDeductionType(item) }}
-					</span>
-				</td>
-				<td>
-					<span e-ng-change="item.deductionName = $data" editable-text="item.deductionName" e-name="deductionname" e-form="rowform">
-						{{ item.deductionName }}
-					</span>
-				</td>
-				<td>
-					<span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
-						{{ item.description }}
-					</span>
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.applyInvocie" e-name="floor" e-form="rowform" e-ng-change="item.floorValue = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.floorPerCheck }}
-					</span>
+﻿<div class="col-sm-12">
+    <div class="row">
+        <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+    <div class="row">
+        <div class="col-sm-3 m-t-5"  ng-repeat="item in list track by $index"  ng-form>
+            <form name="dedform{{$index}}" data-parsley-validate="true">
+                <div class="clearfix" ng-if="$index % 4 === 0"></div>
+                <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
+                    <div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-down fa-fw"></i></div>
+                    <div class="stats-title" ng-if="item.id>0">{{item.deductionName}}</div>
+                    <div class="stats-title" ng-if="item.id===0">
+                        <div class="form-group">
+                            <input class="form-control" type="text" id="name" name="name" ng-model="item.deductionName" required />
 
-				</td>
-				<td>
-					<label class="switch">
-						<input type="checkbox" ng-model="item.applyInvoiceCredit" ng-disabled="!rowform.$visible" /><i></i>
-					</label>
-					
-				</td>
-				
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.annualMax }}
-					</span>
-				</td>
-				<td style="white-space: nowrap" ng-show="showControls">
-					<!-- form -->
-					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
-						<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!rowform.$visible" ng-click="rowform.$show();setSelected($index)" title="Edit"><i class="fa fa-edit"></i></a>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-circle btn-icon btn-success btn-lg">
-							<i class="fa fa-save m-r-5"></i> </button>
-						<a class="btn btn-default btn-icon btn-circle btn-lg" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" title="cancel"><i class="fa fa-remove"></i></a>
-						
-						
-					</form>
-				</td>
-				
-			</tr>
-			<tr ng-show="!selected">
-				<td colspan="7">
-					<span ng-show="list.length===0">No items found</span>
-					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selected && showControls" ng-click="add()" title="Add"><i class="fa fa-plus"></i></a>
-				</td>
+                        </div>
+                    </div>
+                    <div class="stats-title" ng-if="item.id>0">{{showDeductionType(item)}}</div>
+                    <div class="stats-title" ng-if="item.id===0">
+                        <div class="form-group">
+                            <select class="form-control" id="ded" ng-model="item.type" ng-options="ded.categoryText + ' - ' + ded.name for ded in types | orderBy:'category' track by ded.id" required>
+                                <option value="">Please select...</option>
+                            </select>
 
-			</tr>
-			
-		</tbody>
-	</table>
+                        </div>
+                    </div>
+                    <div class="stats-desc" ng-show="item.type">{{item.type? item.type.name : ''}}</div>
+                    <div class="stats-number" ng-show="item.id>0">{{item.employeeWithheld | currency}}, Employer: {{item.employerWithheld | currency}}</div>
+                    <div class="stats-desc" ng-show="item.id>0 && (!selected || selected.id!==item.id)">Annual Max: {{item.annualMax ? item.annualMax : 'n.a'}}, Floor per check: {{item.floorPerCheck ? item.floorPerCheck : 'n.a'}}, InvoiceCredit?: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.applyInvoiceCredit, 'fa-times-circle': !item.applyInvoiceCredit}" /></div>
+                    <div class="stats-progress progress">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="stats-desc" ng-show="showControls">
+                        <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
+                        <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
+                        <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
+
+
+                    </div>
+                </div>
+                <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
+                    <div class="stats-desc">
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-sm-4" for="rate">Annual Max :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required />
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-sm-4" for="fpc">Floor Per Check:</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input class="form-control" type="number" id="fpc" name="fpc" ng-model="selected.floorPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required />
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-sm-4">Invoice Credit? :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <label class="switch">
+                                    <input type="checkbox" ng-model="item.applyInvoiceCredit" /><i></i>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="row" ng-show="!selected && showControls">
+        <span ng-show="list.length===0">No Deductions found</span>
+        <button type="button" ng-click="add()" title="Add Deduction" class="btn btn-lg btn-icon btn-circle btn-success">
+            <i class="fa fa-plus"></i>
+        </button>
+    </div>
+    <!--<table class="table table-header table-bordered table-condensed form-controls input-sm">
+        <thead>
+            <tr>
+                <td class="col-sm-2">Type</td>
+                <td class="col-sm-2">Name</td>
+                <td class="col-sm-2">Description</td>
+                <td class="col-sm-2">Floor Per Check</td>
+                <td class="col-sm-1">Invoice Credit?</td>
+                <td class="col-sm-1">Annual Max</td>
+                <td class="col-sm-2" ng-show="showControls"></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in list track by $index">
+                <td>
+                     editable tesltra worktype (select-local) 
+                    <span e-ng-change="item.type = $data;" editable-select="item.type" e-name="type" e-form="rowform" e-ng-options="ded.categoryText + ' - ' + ded.name for ded in types | orderBy:'category' track by ded.id">
+                        {{ showDeductionType(item) }}
+                    </span>
+                </td>
+                <td>
+                    <span e-ng-change="item.deductionName = $data" editable-text="item.deductionName" e-name="deductionname" e-form="rowform">
+                        {{ item.deductionName }}
+                    </span>
+                </td>
+                <td>
+                    <span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
+                        {{ item.description }}
+                    </span>
+                </td>
+                <td>
+                     editable comment (text with validation) 
+                    <span editable-number="item.applyInvocie" e-name="floor" e-form="rowform" e-ng-change="item.floorValue = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                        {{ item.floorPerCheck }}
+                    </span>
+
+                </td>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox" ng-model="item.applyInvoiceCredit" ng-disabled="!rowform.$visible" /><i></i>
+                    </label>
+
+                </td>
+
+                <td>
+                     editable comment (text with validation) 
+                    <span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                        {{ item.annualMax }}
+                    </span>
+                </td>
+                <td style="white-space: nowrap" ng-show="showControls">
+                     form 
+                    <form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
+                        <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!rowform.$visible" ng-click="rowform.$show();setSelected($index)" title="Edit"><i class="fa fa-edit"></i></a>
+                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-circle btn-icon btn-success btn-lg">
+                            <i class="fa fa-save m-r-5"></i>
+                        </button>
+                        <a class="btn btn-default btn-icon btn-circle btn-lg" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" title="cancel"><i class="fa fa-remove"></i></a>
+
+
+                    </form>
+                </td>
+
+            </tr>
+            <tr ng-show="!selected">
+                <td colspan="7">
+                    <span ng-show="list.length===0">No items found</span>
+                    <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selected && showControls" ng-click="add()" title="Add"><i class="fa fa-plus"></i></a>
+                </td>
+
+            </tr>
+
+        </tbody>
+    </table>-->
 </div>

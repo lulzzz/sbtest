@@ -190,7 +190,7 @@
 						<p>{{data.dashboard.ytdPayroll.noOfChecks}}</p>
 					</div>
 					<div class="stats-link">
-						<a href="javascript:;">No. of Checks</a>
+						<a href="javascript:;" ng-click="scrollToSummary()">No. of Checks</a>
 					</div>
 				</div>
 
@@ -207,7 +207,7 @@
 						<p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
 					</div>
 					<div class="stats-link">
-						<a href="javascript:;">Gross Wage</a>
+						<a href="javascript:;" ng-click="scrollToSummary()">Gross Wage</a>
 					</div>
 				</div>
 				
@@ -224,7 +224,7 @@
 						<p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
 					</div>
 					<div class="stats-link">
-						<a href="javascript:;">Net Wage</a>
+						<a href="javascript:;" ng-click="scrollToSummary()">Net Wage</a>
 					</div>
 				</div>
 
@@ -242,7 +242,7 @@
 						<p>{{data.dashboard.ytdPayroll.employeeTaxes | currency}}</p>
 					</div>
 					<div class="stats-link">
-						<a href="javascript:;">Employee Taxes</a>
+						<a href="javascript:;" ng-click="scrollToSummary()">Employee Taxes</a>
 					</div>
 
 				</div>
@@ -259,7 +259,7 @@
 						<p>{{data.dashboard.ytdPayroll.employerTaxes | currency}}</p>
 					</div>
 					<div class="stats-link">
-						<a href="javascript:;">Employer Taxes</a>
+						<a href="javascript:;" ng-click="scrollToSummary()">Employer Taxes</a>
 					</div>
 
 				</div>
@@ -276,7 +276,7 @@
 						<p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
 					</div>
 					<div class="stats-link">
-						<a href="javascript:;">Deductions</a>
+						<a href="javascript:;" ng-click="scrollToSummary()">Deductions</a>
 					</div>
 
 				</div>
@@ -299,38 +299,71 @@
 					</div>
 					
 				</div>
-				<div class="panel panel-inverse" data-sortable-id="index-8">
+				<div class="panel panel-inverse" data-sortable-id="index-8" id="payrollsummary">
 					<div class="panel-heading">
 						<div class="panel-heading-btn">
 
 						</div>
 						<h4 class="panel-title">Payrolls Summary </h4>
 					</div>
-					<div class="panel-body p-0">
-						<table class="table table-bordered table-condensed">
-							<tr >
-								<th>Pay Day</th>
-								<th>Checks</th>
-								<th>Gross Wage</th>
-								<th>Net Wage</th>
-								<th>Employee Taxes</th>
-								<th>Employer Taxes</th>
-								<th>Deductions</th>
-							</tr>
-							<tr ng-repeat="item in data.dashboard.payrollHistory">
-								
-								<td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
-								<td>{{item.noOfChecks}}</td>
-								<td>{{item.grossWage | currency}}</td>
-								<td>{{item.netWage | currency}}</td>
-								<td>{{item.employeeTaxes | currency}}</td>
-								<td>{{item.employerTaxes | currency}}</td>
-								<td>{{item.deductions | currency}}</td>
-								
-							</tr>
+                    <div class="panel-body p-0">
+                        <table class="table table-bordered table-condensed">
+                            <tr>
+                                <th class="col-sm-1">Gross Wage</th>
+                                <th class="col-sm-1">Net Wage</th>
+                                <th class="col-sm-3">Taxes</th>
+                                <th class="col-sm-3">Deductions</th>
+                                <th class="col-sm-3">Workers Compensation</th>
+                            </tr>
+                            <tr>
+                                <td>{{data.dashboard.ytdPayroll.grossWage | currency:'$'}}</td>
+                                <td>{{data.dashboard.ytdPayroll.netWage | currency:'$'}}</td>
+                                <td>
+                                    <div class="col-sm-12"><strong>Employee:</strong></div>
+                                    <div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in data.dashboard.accumulation.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'"></div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-sm-offset-4">
+                                            <strong><em>Total: {{data.dashboard.accumulation.employeeTaxes | currency:'$'}}</em></strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12"><strong>Employer:</strong></div>
+                                    <div class="col-sm-12" ng-include="'tax.html'" ng-repeat="tax in data.dashboard.accumulation.taxes | filter:{isEmployeeTax:false} | orderBy:'tax.id'"></div>
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-4 col-sm-offset-4">
+                                            <strong><em>Total: {{data.dashboard.accumulation.employerTaxes | currency:'$'}}</em></strong>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><div ng-repeat="ded in data.dashboard.accumulation.deductions" ng-include="'ded.html'" class="row"></div></td>
+                                <td>
+                                    <div ng-repeat="wc in data.dashboard.accumulation.workerCompensations" ng-include="'wcs.html'" class="row"></div>
+                                    </td>
+                            </tr>
+                        </table>
+                        <table class="table table-bordered table-condensed">
+                            <tr >
+                                <th>Pay Day</th>
+                                <th>Checks</th>
+                                <th>Gross Wage</th>
+                                <th>Net Wage</th>
+                                <th>Employee Taxes</th>
+                                <th>Employer Taxes</th>
+                                <th>Deductions</th>
+                            </tr>
+                            <tr ng-repeat="item in data.dashboard.payrollHistory">
 
-						</table>
-					</div>
+                                <td>{{item.payDay | date:'MM/dd/yyyy'}}</td>
+                                <td>{{item.noOfChecks}}</td>
+                                <td>{{item.grossWage | currency}}</td>
+                                <td>{{item.netWage | currency}}</td>
+                                <td>{{item.employeeTaxes | currency}}</td>
+                                <td>{{item.employerTaxes | currency}}</td>
+                                <td>{{item.deductions | currency}}</td>
+
+                            </tr>
+
+                        </table>
+                    </div>
 				</div>
 			</div>
 			

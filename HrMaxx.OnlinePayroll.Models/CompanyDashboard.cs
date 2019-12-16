@@ -10,12 +10,14 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public class CompanyDashboard
 	{
-		public List<TaxExtract> ExtractHistory { get; set; }
+        public Accumulation Accumulation { get; set; }
+        public List<TaxExtract> ExtractHistory { get; set; }
 		public List<TaxExtract> PendingExtracts { get; set; }
 		public List<TaxExtract> PendingExtractsByDates { get; set; }
 		public List<TaxExtract> PendingExtractsByCompany { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 		public List<PayrollMetric> PayrollHistory { get; set; }
+        
         public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
         public TaxExtract Last941Extract 
 		{ 
@@ -119,11 +121,13 @@ namespace HrMaxx.OnlinePayroll.Models
 				EmployerTaxes = PayrollHistory.Sum(p => p.EmployerTaxes),
 				Deductions = PayrollHistory.Sum(p => p.Deductions),
 				NoOfChecks = PayrollHistory.Sum(p=>p.NoOfChecks)
-			};
+                
+            };
 		} 
 		}
-		
-	}
+
+        
+    }
 
 	public class TaxExtract
 	{
@@ -145,5 +149,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal EmployerTaxes { get; set; }
 		public decimal Deductions { get; set; }
 		public int DRank { get; set; }
-	}
+        public List<PayrollDeduction> DeductionList { get; set; }
+        public List<PayTypeAccumulation> Accumulations { get; set; }
+        
+    }
 }

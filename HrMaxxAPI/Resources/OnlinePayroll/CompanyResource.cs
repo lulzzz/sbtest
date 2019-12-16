@@ -164,8 +164,9 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
-
-	}
+        public decimal EmployeeWithheld { get; set; }
+        public decimal EmployerWithheld { get; set; }
+    }
 
 	public class AccumulatedPayTypeResource
 	{

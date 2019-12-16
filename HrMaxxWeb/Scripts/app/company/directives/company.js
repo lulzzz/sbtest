@@ -479,9 +479,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						}, function (error) {
 							addAlert('error getting company meta data', 'danger');
 						});
-
-
-
+                        
 					}
 					init();
 
