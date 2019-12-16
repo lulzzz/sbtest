@@ -320,7 +320,7 @@ BEGIN
 		(
 			select * from 
 			(
-			  select pc.PayDay, count(pc.Id) NoOfChecks, sum(pc.grosswage) GrossWage, 
+			  select pc.PayDay, pc.Deductions DeductionJson, pc.Accumulations, count(pc.Id) NoOfChecks, sum(pc.grosswage) GrossWage, 
 			  sum(pc.netwage) NetWage, sum(pc.employeetaxes) EmployeeTaxes, sum(pc.employertaxes) EmployerTaxes, sum(pc.deductionamount) Deductions,
 			  rank() over (Partition by pc.CompanyId order by pc.payday desc) DRank
 			  from 
@@ -332,7 +332,7 @@ BEGIN
 			  and p.IsHistory=0
 			  and p.IsVoid=0
 			  and year(pc.TaxPayDay)=year(getdate())
-			  group by pc.PayDay, pc.CompanyId
+			  group by pc.PayDay, pc.CompanyId, pc.Deductions, pc.Accumulations
 			)
 			a
 			for xml path('PayrollMetricJson'), elements, type
