@@ -141,6 +141,12 @@ insert into FITAlienAdjustmentTable (PayrollPeriodId, Amount, Pre2020, Year) val
 insert into FITAlienAdjustmentTable (PayrollPeriodId, Amount, Pre2020, Year) values(4, 1016.70, 0, 2020);
 
 END
+IF NOT EXISTS(SELECT *
+          FROM   INFORMATION_SCHEMA.COLUMNS
+          WHERE  TABLE_NAME = 'FITTaxTable'
+                 AND COLUMN_NAME = 'ForMultiJobs')
+Alter table FITTaxTable Add ForMultiJobs bit not null default(0);
+Go
 IF Exists(select 'x' from FITTaxTable where Year=2020)
 	DELETE from FITTaxTable where Year=2020;
 IF NOT Exists(select 'x' from FITTaxTable where Year=2020)
@@ -201,12 +207,6 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 
 END
 
-IF NOT EXISTS(SELECT *
-          FROM   INFORMATION_SCHEMA.COLUMNS
-          WHERE  TABLE_NAME = 'FITTaxTable'
-                 AND COLUMN_NAME = 'ForMultiJobs')
-Alter table FITTaxTable Add ForMultiJobs bit(1) not null default(0);
-Go
 IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'Employee'
