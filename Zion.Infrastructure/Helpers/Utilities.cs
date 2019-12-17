@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
+using HrMaxx.Infrastructure.Enums;
 using log4net.Config;
 using Newtonsoft.Json;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
@@ -175,6 +176,32 @@ namespace HrMaxx.Infrastructure.Helpers
             Logger = log4net.LogManager.GetLogger("Utilities");
             Logger.Error(message, ex);
         }
-        
-    }
+		public static decimal Annualize(decimal value, PaySchedule schedule)
+		{
+			if (schedule == PaySchedule.Weekly)
+				value *= 52;
+			else if (schedule == PaySchedule.BiWeekly)
+				value *= 26;
+			else if (schedule == PaySchedule.SemiMonthly)
+				value *= 24;
+			else if (schedule == PaySchedule.Monthly)
+				value *= 12;
+
+			return Math.Round(value, 2, MidpointRounding.AwayFromZero);
+		}
+		public static decimal DeAnnualize(decimal value, PaySchedule schedule)
+		{
+			if (schedule == PaySchedule.Weekly)
+				value /= 52;
+			else if (schedule == PaySchedule.BiWeekly)
+				value /= 26;
+			else if (schedule == PaySchedule.SemiMonthly)
+				value /= 24;
+			else if (schedule == PaySchedule.Monthly)
+				value /= 12;
+			
+			return Math.Round(value, 2, MidpointRounding.AwayFromZero);
+		}
+
+	}
 }

@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 		public decimal AdditionalPercentage { get; set; }
 		public decimal ExcessOverAmoutt { get; set; }
 		public int Year { get; set; }
+		public bool ForMultiJobs { get; set; }
 		public bool HasChanged { get; set; }
 
 		public string PayrollScheduleText { get { return PayrollSchedule.GetHrMaxxName(); } }

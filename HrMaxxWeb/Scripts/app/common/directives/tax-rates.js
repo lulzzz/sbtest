@@ -25,7 +25,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						originalTaxTables: null,
 						selectedYear: null,
 						selectedTab: null,
-						payrollSchedules: [{ key: 1, value: 'Weekly' }, { key: 2, value: 'Bi-Weekly' }, { key: 3, value: 'Semi-Monthly' }, { key: 4, value: 'Monthly' }],
+						payrollSchedules: [{ key: 1, value: 'Weekly' }, { key: 2, value: 'Bi-Weekly' }, { key: 3, value: 'Semi-Monthly' }, { key: 4, value: 'Monthly' }, , { key: 5, value: 'Annually' }],
 						federalFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'HeadofHousehold' }],
 						californiaFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'Headofhousehold' }],
 						californiaLowIncomeFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'DualIncomeMarried' }, { key: 3, value: 'MarriedWithMultipleEmployers' }, { key: 4, value: 'Married' }, { key: 5, value: 'Headofhousehold' }]
@@ -156,8 +156,80 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 							excessOverAmount: null
 						};
 						dataSvc.taxTables.fitTaxTable.push(newfit);
-						
-                    }
+						$scope.setSelectedFIT(newfit);
+					}
+					$scope.setSelectedFITW4 = function (tr) {
+						$scope.selectedFITW4 = tr;
+						$scope.originalSelectedFITW4 = angular.copy(tr);
+					}
+					$scope.cancelFITW4 = function (tr) {
+						var ind = dataSvc.taxTables.fitW4Table.indexOf(tr);
+						dataSvc.taxTables.fitW4Table[ind] = angular.copy($scope.originalSelectedFITW4);
+						$scope.originalSelectedFITW4 = null;
+						$scope.selectedFITW4 = null;
+
+					}
+					$scope.saveFITW4 = function (tr) {
+						if (!angular.equals(tr, $scope.originalSelectedFITW4)) {
+							tr.hasChanged = true;
+						}
+						$scope.originalSelectedFITW4 = null;
+						$scope.selectedFITW4 = null;
+						return tr;
+					}
+					
+					$scope.addFITW4 = function () {
+						var max = $filter('orderBy')(dataSvc.taxTables.fitW4Table, 'id', true)[0];
+						var newfit = {
+							isNew: true,
+							hasChanged: true,
+							id: max ? max.id + 1 : 1,
+							year: dataSvc.selectedYear,
+							filingStatus: null,
+							dependentWageLimit: null,
+							dependentAllowance1: null,
+							dependentAllowance2: null,
+							additionalDeductionW4: null,
+							deductionForExemption: null
+						};
+						dataSvc.taxTables.fitW4Table.push(newfit);
+						$scope.setSelectedFITW4(newfit);
+					}
+					$scope.setSelectedFITAlien = function (tr) {
+						$scope.selectedFITAlien = tr;
+						$scope.originalSelectedFITAlien = angular.copy(tr);
+					}
+					$scope.cancelFITAlien = function (tr) {
+						var ind = dataSvc.taxTables.fitAlienAdjustmentTable.indexOf(tr);
+						dataSvc.taxTables.fitW4Table[ind] = angular.copy($scope.originalSelectedAlien);
+						$scope.originalSelectedFITAlien = null;
+						$scope.selectedFITAlien = null;
+
+					}
+					$scope.saveFITAlien = function (tr) {
+						if (!angular.equals(tr, $scope.originalSelectedFITAlien)) {
+							tr.hasChanged = true;
+						}
+						$scope.originalSelectedFITAlien = null;
+						$scope.selectedFITAlien = null;
+						return tr;
+					}
+					$scope.addFITAlien = function () {
+						var max = $filter('orderBy')(dataSvc.taxTables.fitW4Table, 'id', true)[0];
+						var newfit = {
+							isNew: true,
+							hasChanged: true,
+							id: max ? max.id + 1 : 1,
+							year: dataSvc.selectedYear,
+							payrollPeriodId: null,
+							amount: null,
+							pre2020: null
+						};
+						dataSvc.taxTables.fitAlienAdjustmentTable.push(newfit);
+						$scope.setSelectedFITAlien(newfit);
+					}
+
+					
                     $scope.setSelectedHISIT = function (tr) {
                         $scope.selectedHISIT = tr;
                         $scope.originalSelectedHISIT = angular.copy(tr);
@@ -197,7 +269,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
                             excessOverAmount: null
                         };
                         dataSvc.taxTables.hisitTaxTable.push(newfit);
-
+						$scope.setSelectedHISIT(newfit);
                     }
 
 					$scope.setSelectedSIT = function (tr) {
@@ -239,7 +311,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 							excessOverAmount: null
 						};
 						dataSvc.taxTables.casitTaxTable.push(newfit);
-
+						$scope.setSelectedSIT(newfit);
 					}
 
 					$scope.setSelectedFITW = function (tr) {

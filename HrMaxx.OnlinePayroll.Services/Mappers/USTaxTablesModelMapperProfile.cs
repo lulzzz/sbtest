@@ -29,7 +29,8 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
             CreateMap<Models.DataModel.HISITTaxTable, FITTaxTableRow>()
                 .ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
-                .ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
+				.ForMember(dest => dest.ForMultiJobs, opt => opt.Ignore())
+				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
                 .ForMember(dest => dest.RangeStart, opt => opt.MapFrom(src => src.StartRange))
                 .ForMember(dest => dest.RangeEnd, opt => opt.MapFrom(src => src.EndRange))
                 .ForMember(dest => dest.ExcessOverAmoutt, opt => opt.MapFrom(src => src.ExcessOvrAmt))
@@ -56,7 +57,25 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
 				.ForMember(dest => dest.AmoutForOneWithholdingAllowance, opt => opt.MapFrom(src => src.AmtForOneWithholdingAllow));
 
-            CreateMap<Models.DataModel.HISITWithholdingAllowanceTable, FITWithholdingAllowanceTableRow>()
+			CreateMap<FITWithholdingAllowanceTableRow, Models.DataModel.FITWithholdingAllowanceTable>()
+				.ForMember(dest => dest.PayrollPeriodID, opt => opt.MapFrom(src => src.PayrollSchedule))
+				.ForMember(dest => dest.AmtForOneWithholdingAllow, opt => opt.MapFrom(src => src.AmoutForOneWithholdingAllowance));
+
+			CreateMap<Models.DataModel.FITAlienAdjustmentTable, FITAlienAdjustmentTableRow>()
+				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
+				.ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodId));
+
+			CreateMap<FITAlienAdjustmentTableRow, Models.DataModel.FITAlienAdjustmentTable>()
+				.ForMember(dest => dest.PayrollPeriodId, opt => opt.MapFrom(src => src.PayrollSchedule))
+				.ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount));
+
+			CreateMap<Models.DataModel.FITW4Table, FITW4TaxTableRow>()
+				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
+				.ForMember(dest => dest.FilingStatus, opt => opt.MapFrom(src => HrMaaxxSecurity.GetEnumFromDbName<USFederalFilingStatus>(src.FilingStatus.Trim())));
+			CreateMap<FITW4TaxTableRow, Models.DataModel.FITW4Table>()
+				.ForMember(dest => dest.FilingStatus, opt => opt.MapFrom(src => src.FilingStatus.GetDbName()));
+
+			CreateMap<Models.DataModel.HISITWithholdingAllowanceTable, FITWithholdingAllowanceTableRow>()
                 .ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false))
                 .ForMember(dest => dest.PayrollSchedule, opt => opt.MapFrom(src => src.PayrollPeriodID))
                 .ForMember(dest => dest.AmoutForOneWithholdingAllowance, opt => opt.MapFrom(src => src.AmtForOneWithholdingAllow));

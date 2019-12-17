@@ -333,6 +333,13 @@
           <Property Name="CarryOver" Type="decimal" Precision="18" Scale="2" />
           <Property Name="EmployeeIntId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="PayTypeAccruals" Type="varchar(max)" />
+          <Property Name="UseW4Fields" Type="bit" />
+          <Property Name="DependentChildren" Type="int" />
+          <Property Name="OtherDependent" Type="int" />
+          <Property Name="MultipleJobs" Type="bit" />
+          <Property Name="OtherIncome" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FederalDeductions" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="FederalAdditionalWithholding" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -2334,6 +2341,13 @@
           <Property Name="CarryOver" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="EmployeeIntId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PayTypeAccruals" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="UseW4Fields" Type="Boolean" />
+          <Property Name="DependentChildren" Type="Int32" />
+          <Property Name="OtherDependent" Type="Int32" />
+          <Property Name="MultipleJobs" Type="Boolean" />
+          <Property Name="OtherIncome" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="FederalDeductions" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="FederalAdditionalWithholding" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -3428,6 +3442,13 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="FederalAdditionalWithholding" ColumnName="FederalAdditionalWithholding" />
+                <ScalarProperty Name="FederalDeductions" ColumnName="FederalDeductions" />
+                <ScalarProperty Name="OtherIncome" ColumnName="OtherIncome" />
+                <ScalarProperty Name="MultipleJobs" ColumnName="MultipleJobs" />
+                <ScalarProperty Name="OtherDependent" ColumnName="OtherDependent" />
+                <ScalarProperty Name="DependentChildren" ColumnName="DependentChildren" />
+                <ScalarProperty Name="UseW4Fields" ColumnName="UseW4Fields" />
                 <ScalarProperty Name="PayTypeAccruals" ColumnName="PayTypeAccruals" />
                 <ScalarProperty Name="EmployeeIntId" ColumnName="EmployeeIntId" />
                 <ScalarProperty Name="CarryOver" ColumnName="CarryOver" />

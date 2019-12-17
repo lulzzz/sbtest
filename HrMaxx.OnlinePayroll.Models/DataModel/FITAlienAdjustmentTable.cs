@@ -12,17 +12,12 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     using System;
     using System.Collections.Generic;
     
-    public partial class FITTaxTable
+    public partial class FITAlienAdjustmentTable
     {
         public int Id { get; set; }
-        public Nullable<int> PayrollPeriodID { get; set; }
-        public string FilingStatus { get; set; }
-        public Nullable<decimal> StartRange { get; set; }
-        public Nullable<decimal> EndRange { get; set; }
-        public Nullable<decimal> FlatRate { get; set; }
-        public Nullable<decimal> AdditionalPercentage { get; set; }
-        public Nullable<decimal> ExcessOvrAmt { get; set; }
-        public Nullable<int> Year { get; set; }
-        public bool ForMultiJobs { get; set; }
+        public int PayrollPeriodId { get; set; }
+        public decimal Amount { get; set; }
+        public int Year { get; set; }
+        public bool Pre2020 { get; set; }
     }
 }

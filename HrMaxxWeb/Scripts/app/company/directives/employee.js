@@ -343,8 +343,8 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						if ($scope.selected.paymentMethod === 1) {
 							$scope.selected.bankAccounts = [];
 						}
-						if ($scope.selected.sickLeaveHireDate !== $scope.original.sickLeaveHireDate) {
-							$scope.$parent.$parent.$parent.$parent.confirmDialog('Changing sick leave hire date would require you to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
+						if (!moment($scope.selected.sickLeaveHireDate).isSame(moment( $scope.original.sickLeaveHireDate))) {
+							$scope.mainData.confirmDialog('Changing sick leave hire date would require you to update the Sick Leave accumulations for existing Pay Checks manually.\n' +
 								'do you want to proceed?', 'danger', function () {
 									saveEmpployee();
 								}

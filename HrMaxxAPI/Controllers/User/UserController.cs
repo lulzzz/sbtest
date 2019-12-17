@@ -208,7 +208,7 @@ namespace HrMaxxAPI.Controllers.User
                     await UserManager.UpdateAsync(userExists);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 
                 

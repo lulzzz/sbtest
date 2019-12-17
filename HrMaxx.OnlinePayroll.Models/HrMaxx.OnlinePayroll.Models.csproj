@@ -146,7 +146,13 @@
     <Compile Include="DataModel\ExemptionAllowanceTable.cs">
       <DependentUpon>USTaxTablesModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\FITAlienAdjustmentTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\FITTaxTable.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DataModel\FITW4Table.cs">
       <DependentUpon>USTaxTablesModel.tt</DependentUpon>
     </Compile>
     <Compile Include="DataModel\FITWithholdingAllowanceTable.cs">
@@ -286,6 +292,8 @@
     <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ProfitStars.cs" />
     <Compile Include="StaffDashboard.cs" />
+    <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
+    <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="InvoiceDeliveryClaim.cs" />

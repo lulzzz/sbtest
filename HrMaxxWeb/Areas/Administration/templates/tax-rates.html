@@ -27,7 +27,9 @@
                 <ul class="nav nav-tabs nav-tabs-inverse" ng-show="data.selectedYear">
                     <li ng-class="{'active':data.selectedTab===0}" ng-click="data.selectedTab=0"><a data-toggle="tab">Tax Rates</a></li>
                     <li ng-class="{'active':data.selectedTab===1}" ng-click="data.selectedTab=1"><a data-toggle="tab">FIT</a></li>
-                    <li ng-class="{'active':data.selectedTab===2}" ng-click="data.selectedTab=2"><a data-toggle="tab">FIT Withholding</a></li>
+                    <li ng-class="{'active':data.selectedTab===2}" ng-click="data.selectedTab=2" ng-show="data.selectedYear<2020"><a data-toggle="tab">FIT Withholding</a></li>
+                    <li ng-class="{'active':data.selectedTab===10}" ng-click="data.selectedTab=10" ng-show="data.selectedYear>=2020"><a data-toggle="tab">FIT W4</a></li>
+                    <li ng-class="{'active':data.selectedTab===11}" ng-click="data.selectedTab=11" ng-show="data.selectedYear>=2020"><a data-toggle="tab">FIT Alient Adjustment</a></li>
                     <li ng-class="{'active':data.selectedTab===3}" ng-click="data.selectedTab=3"><a data-toggle="tab">SIT</a></li>
                     <li ng-class="{'active':data.selectedTab===4}" ng-click="data.selectedTab=4"><a data-toggle="tab">SIT Low Income</a></li>
                     <li ng-class="{'active':data.selectedTab===5}" ng-click="data.selectedTab=5"><a data-toggle="tab">Standard Deduction</a></li>
@@ -134,6 +136,7 @@
                             <th class="col-sm-1">Flat Rate</th>
                             <th class="col-sm-1">Additional Percentage</th>
                             <th class="col-sm-1">Excess Over Amount</th>
+                            <th class="col-sm-1" ng-show="data.selectedYear>=2020">Multi Jobs ?</th>
                             <th class="col-sm-1" ng-show="data.selectedYear>=data.currentYear"></th>
                         </tr>
                     </thead>
@@ -190,6 +193,13 @@
                                     {{ item.excessOverAmoutt }}
                                 </span>
                             </td>
+                            <td ng-show="data.selectedYear>=2020">
+                                <div>
+                                    <label for="mj{{item.id}}" class="switch">
+                                        <input id="mj{{item.id}}" type="checkbox" ng-model="item.forMultiJobs" ng-disabled="!selectedFIT" /><i></i>
+                                    </label>
+                                </div>
+                            </td>
                             <td style="white-space: nowrap" ng-show="data.selectedYear>=data.currentYear">
                                 <!-- form -->
                                 <form editable-form id="rowform" name="rowform" onbeforesave="item = saveFIT(item)" class="form-buttons form-inline" shown="selectedFIT.payrollSchedule===item.payrollSchedule && selectedFIT.filingStatus===item.filingStatus && selectedFIT.rangeStart===item.rangeStart && selectedFIT.rangeEnd===item.rangeEnd">
@@ -213,6 +223,99 @@
                             <td colspan="9">
                                 <span ng-show="data.taxTables.fitTaxTable.length===0">No items found </span>
                                 <button class="btn btn-sm btn-primary" ng-click="addFIT()"><i class="fa fa-plus-square"></i> add</button>
+                            </td>
+
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row m-5 tab-content" ng-if="data.selectedTab===10 && data.selectedYear">
+                <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-1">Year</th>
+                            <th class="col-sm-2">Filing Status</th>
+                            <th class="col-sm-2">Dependent Wage Limit</th>
+                            <th class="col-sm-1">Allowance (3a)</th>
+                            <th class="col-sm-1">Allowance (3b)</th>
+                            <th class="col-sm-2">Additional Deduction W4</th>
+                            <th class="col-sm-2">Exemption Const (<=2019)</th>
+                            <th class="col-sm-1" ng-show="data.selectedYear>=data.currentYear"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in data.taxTables.fitW4Table | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+                            <td>
+                                {{item.year}}
+                            </td>
+                            <td>
+                                <select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.filingStatusText = item.filingStatus1.value; item.filingStatus=item.filingStatus1.key" ng-model="item.filingStatus1" ng-options="ps.value for ps in data.federalFilingStatuses track by ps.key">
+                                    <option value="">Filing Status</option>
+                                </select>
+                                <span ng-show="!item.isNew || !rowform.$visible">{{item.filingStatusText}}</span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.dependentWageLimit" e-name="dependentWageLimit" e-form="rowform" e-ng-change="item.dependentWageLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.dependentWageLimit }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.dependentAllowance1" e-name="dependentAllowance1" e-form="rowform" e-ng-change="item.dependentAllowance1 = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.dependentAllowance1 }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.dependentAllowance2" e-name="dependentAllowance2" e-form="rowform" e-ng-change="item.dependentAllowance2 = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.dependentAllowance2 }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.additionalDeductionW4" e-name="additionalDeductionW4" e-form="rowform" e-ng-change="item.additionalDeductionW4 = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.additionalDeductionW4 }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.deductionForExemption" e-name="deductionForExemption" e-form="rowform" e-ng-change="item.deductionForExemption = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.deductionForExemption }}
+                                </span>
+
+                            </td>
+
+
+                            <td style="white-space: nowrap" ng-show="data.selectedYear>=data.currentYear">
+                                <!-- form -->
+                                <form editable-form id="rowform" name="rowform" onbeforesave="saveFITW4(item)" class="form-buttons form-inline" shown="selectedFITW4.filingStatus===item.filingStatus">
+                                    <button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedFITW4(item)">
+                                        <i class="fa fa-edit m-r-5"></i> edit
+                                    </button>
+
+                                    <button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+                                        <i class="fa fa-save m-r-5"></i> save
+                                    </button>
+                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();item = cancelFITW4(item)" class="btn btn-sm btn-default">
+                                        <i class="fa fa-remove m-r-5"></i> cancel
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                        <tr ng-show="!selectedFITW4">
+                            <td colspan="8">
+                                <span ng-show="data.taxTables.fitW4Table.length===0">No items found</span>
+                                <button class="btn btn-sm btn-primary" ng-click="addFITW4()"><i class="fa fa-plus-square"></i> add</button>
                             </td>
 
 
@@ -272,6 +375,74 @@
                         <tr ng-show="!selectedTR && data.taxTables.fitWithholdingAllowanceTable.length===0">
                             <td colspan="4">
                                 <span>No items found</span>
+                            </td>
+
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row m-5 tab-content" ng-if="data.selectedTab===11 && data.selectedYear">
+                <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-1">Year</th>
+                            <th class="col-sm-2">Pay Period</th>
+                            <th class="col-sm-3">Amount</th>
+                            <th class="col-sm-3">Before 2020?</th>
+                            <th class="col-sm-1" ng-show="data.selectedYear>=data.currentYear"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in data.taxTables.fitAlienAdjustmentTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+                            <td>
+                                {{item.year}}
+                            </td>
+                            <td>
+                                <select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.payrollScheduleText = item.payrollSchedule1.value; item.payrollSchedule = item.payrollSchedule1.key" ng-model="item.payrollSchedule1" ng-options="ps.value for ps in data.payrollSchedules track by ps.key">
+                                    <option value="">Pay Period</option>
+                                </select>
+                                <span ng-show="!item.isNew || !rowform.$visible">{{item.payrollScheduleText}}</span>
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.amount" e-name="amount" e-form="rowform" e-ng-change="item.amount = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.amount }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <div>
+                                    <label for="pre2020{{item.id}}" class="switch">
+                                        <input id="pre2020{{item.id}}" type="checkbox" ng-model="item.pre2020" ng-disabled="!selectedFITAlien" /><i></i>
+                                    </label>
+                                </div>
+                            </td>
+                            
+
+                            <td style="white-space: nowrap" ng-show="data.selectedYear>=data.currentYear">
+                                <!-- form -->
+                                <form editable-form id="rowform" name="rowform" onbeforesave="saveFITAlien(item)" class="form-buttons form-inline" shown="selectedFITAlien.id===item.id">
+                                    <button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedFITAlien(item)">
+                                        <i class="fa fa-edit m-r-5"></i> edit
+                                    </button>
+
+                                    <button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+                                        <i class="fa fa-save m-r-5"></i> save
+                                    </button>
+                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();item = cancelFITAlien(item)" class="btn btn-sm btn-default">
+                                        <i class="fa fa-remove m-r-5"></i> cancel
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                        <tr  ng-show="!selectedFITAlien">
+                            <td colspan="4">
+                                <span ng-show="data.taxTables.fitAlienAdjustmentTable.length===0">No items found</span>
+                                <button class="btn btn-sm btn-primary" ng-click="addFITAlien()"><i class="fa fa-plus-square"></i> add</button>
                             </td>
 
 

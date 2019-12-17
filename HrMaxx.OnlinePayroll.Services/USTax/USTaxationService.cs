@@ -5,7 +5,9 @@ using HrMaxx.Common.Contracts.Services;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Repository.Security;
+using HrMaxx.Infrastructure.Enums;
 using HrMaxx.Infrastructure.Exceptions;
+using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.Infrastructure.Transactions;
 using HrMaxx.OnlinePayroll.Contracts.Resources;
@@ -297,7 +299,9 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				TaxTables.ExemptionAllowanceTable.AddRange(yearTaxTables.ExemptionAllowanceTable);
 				TaxTables.FITTaxTable.AddRange(yearTaxTables.FITTaxTable);
 				TaxTables.FitWithholdingAllowanceTable.AddRange(yearTaxTables.FitWithholdingAllowanceTable);
-                TaxTables.HISITTaxTable.AddRange(yearTaxTables.HISITTaxTable);
+				TaxTables.FITAlienAdjustmentTable.AddRange(yearTaxTables.FITAlienAdjustmentTable);
+				TaxTables.FITW4Table.AddRange(yearTaxTables.FITW4Table);
+				TaxTables.HISITTaxTable.AddRange(yearTaxTables.HISITTaxTable);
                 TaxTables.HISitWithholdingAllowanceTable.AddRange(yearTaxTables.HISitWithholdingAllowanceTable);
                 TaxTables.Taxes.AddRange(yearTaxTables.Taxes);
 				TaxTables.Years.Add(year);
@@ -347,6 +351,8 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 
 		private PayrollTax GetFIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
 		{
+			if (payDay.Year >= 2020)
+				return GetNewFIT(payCheck, grossWage, payDay, tax, employeeAccumulation);
 			if(!TaxTables.FITTaxTable.Any(t=>t.Year==payDay.Year))
 				throw new Exception("Taxes Not Available");
 			var withholdingAllowance = grossWage -
@@ -386,7 +392,75 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			};
 		}
 
-        private PayrollTax GetHISIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
+		private PayrollTax GetNewFIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
+		{
+			if (!TaxTables.FITTaxTable.Any(t => t.Year == payDay.Year))
+				throw new Exception("Taxes Not Available");
+			
+			var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
+			//taxableWage = grossWage - taxableWage;
+			//var withholdingAllowanceTest = taxableWage < 0 ? 0 : taxableWage;
+			taxableWage = grossWage - taxableWage;
+			//Step 1 annualize
+			var aftw = Utilities.Annualize(taxableWage, (PaySchedule)payCheck.Employee.PayrollSchedule);
+			//alien adjustment
+			if (payCheck.Employee.TaxCategory == EmployeeTaxCategory.NonImmigrantAlien)
+			{
+				var isPre2020 = payCheck.Employee.HireDate.Year < 2020 && !payCheck.Employee.UseW4Fields.Value;
+				taxableWage += TaxTables.FITAlienAdjustmentTable.First(f => f.Year==payDay.Year && f.PayrollSchedule == payCheck.Employee.PayrollSchedule && f.Pre2020 == isPre2020).Amount;
+			}
+			aftw += payCheck.Employee.OtherIncome ?? 0;
+			//step 2 - figuring out deductions
+			var fitw4row = TaxTables.FITW4Table.First(f => f.Year == payDay.Year && (int)f.FilingStatus == (int)payCheck.Employee.FederalStatus);
+			var deductions = (decimal)0;
+			if (payCheck.Employee.UseW4Fields.HasValue && payCheck.Employee.UseW4Fields.Value)
+			{
+				deductions = payCheck.Employee.FederalDeductions ?? 0;
+				if(!payCheck.Employee.MultipleJobs.HasValue || !payCheck.Employee.MultipleJobs.Value)
+				{
+					deductions += fitw4row.AdditionalDeductionW4;
+				}
+			}
+			else
+			{
+				deductions += fitw4row.DeductionForExemption * payCheck.Employee.FederalExemptions;
+			}
+			//step 3 - figuring out FIT Tax
+			aftw -= deductions;
+			var fitTaxTableRow =
+				TaxTables.FITTaxTable.First(
+					r =>
+						r.Year == payDay.Year &&
+						(int)r.FilingStatus == (int)payCheck.Employee.FederalStatus
+						&& r.RangeStart <= aftw
+						&& (r.RangeEnd >= aftw || r.RangeEnd == 0)
+						&& r.ForMultiJobs==(payCheck.Employee.MultipleJobs??false));
+
+			var taxAmount = fitTaxTableRow.FlatRate + payCheck.Employee.FederalAdditionalAmount +
+							((aftw - fitTaxTableRow.ExcessOverAmoutt) * fitTaxTableRow.AdditionalPercentage / 100);
+			//step 4 - dependent claim
+			var dependantClaim = aftw < fitw4row.DependentWageLimit ? ((payCheck.Employee.DependentChildren??0)*fitw4row.DependentAllowance1 + (payCheck.Employee.OtherDependent??0)*fitw4row.DependentAllowance2) : 0;
+			
+			//DeAnnualizing
+			dependantClaim = Utilities.DeAnnualize(dependantClaim, (PaySchedule)payCheck.Employee.PayrollSchedule);
+			taxableWage = Utilities.DeAnnualize(aftw, (PaySchedule)payCheck.Employee.PayrollSchedule);
+			taxAmount = Utilities.DeAnnualize(taxAmount, (PaySchedule)payCheck.Employee.PayrollSchedule);
+			taxAmount -= dependantClaim;
+
+			taxAmount = taxAmount < 0 ? 0 : taxAmount;
+
+			return new PayrollTax
+			{
+				Amount = Math.Round(taxAmount, 2, MidpointRounding.AwayFromZero),
+				TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero),
+				Tax = Mapper.Map<TaxByYear, Tax>(tax),
+				YTDTax = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTD) + taxAmount, 2, MidpointRounding.AwayFromZero),
+				YTDWage = Math.Round(employeeAccumulation.Taxes.Where(t => t.Tax.Code == tax.Tax.Code).Sum(t => t.YTDWage) + taxableWage, 2, MidpointRounding.AwayFromZero)
+			};
+		}
+		
+
+		private PayrollTax GetHISIT(PayCheck payCheck, decimal grossWage, DateTime payDay, TaxByYear tax, Accumulation employeeAccumulation)
         {
             if (!TaxTables.HISITTaxTable.Any(t => t.Year == payDay.Year))
                 throw new Exception("Taxes Not Available");

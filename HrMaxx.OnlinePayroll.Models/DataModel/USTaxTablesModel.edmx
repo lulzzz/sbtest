@@ -25,6 +25,16 @@
           <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
+        <EntityType Name="FITAlienAdjustmentTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PayrollPeriodId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Pre2020" Type="bit" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="FITTaxTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -38,6 +48,20 @@
           <Property Name="AdditionalPercentage" Type="decimal" Precision="18" Scale="2" />
           <Property Name="ExcessOvrAmt" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
+          <Property Name="ForMultiJobs" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FITW4Table">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FilingStatus" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DependentWageLimit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DependentAllowance1" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DependentAllowance2" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="AdditionalDeductionW4" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="DeductionForExemption" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="FITWithholdingAllowanceTable">
           <Key>
@@ -107,32 +131,27 @@
           <Property Name="AmtIfExmpGrtThan1" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
             <PropertyRef Name="TaxCode" />
             <PropertyRef Name="DeductionTypeId" />
           </Key>
-          <Property Name="TaxCode" Type="varchar(max)" Nullable="false" />
+          <Property Name="TaxCode" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="DeductionTypeId" Type="int" Nullable="false" />
         </EntityType>
         <EntityContainer Name="USTaxTablesModelStoreContainer">
           <EntitySet Name="EstimatedDeductionsTable" EntityType="Self.EstimatedDeductionsTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ExemptionAllowanceTable" EntityType="Self.ExemptionAllowanceTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FITAlienAdjustmentTable" EntityType="Self.FITAlienAdjustmentTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FITTaxTable" EntityType="Self.FITTaxTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FITW4Table" EntityType="Self.FITW4Table" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FITWithholdingAllowanceTable" EntityType="Self.FITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HISITTaxTable" EntityType="Self.HISITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HISITWithholdingAllowanceTable" EntityType="Self.HISITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITLowIncomeTaxTable" EntityType="Self.SITLowIncomeTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITTaxTable" EntityType="Self.SITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StandardDeductionTable" EntityType="Self.StandardDeductionTable" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="TaxDeductionPrecedence" EntityType="Self.TaxDeductionPrecedence" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [TaxDeductionPrecedence].[TaxCode] AS [TaxCode], 
-    [TaxDeductionPrecedence].[DeductionTypeId] AS [DeductionTypeId]
-    FROM [dbo].[TaxDeductionPrecedence] AS [TaxDeductionPrecedence]</DefiningQuery>
-          </EntitySet>
+          <EntitySet Name="TaxDeductionPrecedence" EntityType="Self.TaxDeductionPrecedence" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -149,13 +168,15 @@ warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a 
           <EntitySet Name="StandardDeductionTables" EntityType="USTaxTablesModel.StandardDeductionTable" />
           <EntitySet Name="HISITTaxTables" EntityType="USTaxTablesModel.HISITTaxTable" />
           <EntitySet Name="HISITWithholdingAllowanceTables" EntityType="USTaxTablesModel.HISITWithholdingAllowanceTable" />
+          <EntitySet Name="FITW4Table" EntityType="USTaxTablesModel.FITW4Table" />
+          <EntitySet Name="FITAlienAdjustmentTables" EntityType="USTaxTablesModel.FITAlienAdjustmentTable" />
         </EntityContainer>
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
             <PropertyRef Name="TaxCode" />
             <PropertyRef Name="DeductionTypeId" />
           </Key>
-          <Property Name="TaxCode" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TaxCode" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="DeductionTypeId" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="EstimatedDeductionsTable">
@@ -191,6 +212,7 @@ warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a 
           <Property Name="AdditionalPercentage" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ExcessOvrAmt" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
+          <Property Name="ForMultiJobs" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="FITWithholdingAllowanceTable">
           <Key>
@@ -260,6 +282,29 @@ warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a 
           <Property Name="AmtForOneWithholdingAllow" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" />
         </EntityType>
+        <EntityType Name="FITW4Table">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FilingStatus" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DependentWageLimit" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="DependentAllowance1" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="DependentAllowance2" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="AdditionalDeductionW4" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="DeductionForExemption" Type="Decimal" Nullable="false" Precision="18" Scale="0" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FITAlienAdjustmentTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PayrollPeriodId" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="Pre2020" Type="Boolean" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -299,6 +344,7 @@ warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a 
           <EntitySetMapping Name="FITTaxTables">
             <EntityTypeMapping TypeName="USTaxTablesModel.FITTaxTable">
               <MappingFragment StoreEntitySet="FITTaxTable">
+                <ScalarProperty Name="ForMultiJobs" ColumnName="ForMultiJobs" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="ExcessOvrAmt" ColumnName="ExcessOvrAmt" />
                 <ScalarProperty Name="AdditionalPercentage" ColumnName="AdditionalPercentage" />
@@ -381,6 +427,31 @@ warning 6002: The table/view 'Paxol.dbo.TaxDeductionPrecedence' does not have a 
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="AmtForOneWithholdingAllow" ColumnName="AmtForOneWithholdingAllow" />
                 <ScalarProperty Name="PayrollPeriodID" ColumnName="PayrollPeriodID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FITW4Table">
+            <EntityTypeMapping TypeName="USTaxTablesModel.FITW4Table">
+              <MappingFragment StoreEntitySet="FITW4Table">
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="DeductionForExemption" ColumnName="DeductionForExemption" />
+                <ScalarProperty Name="AdditionalDeductionW4" ColumnName="AdditionalDeductionW4" />
+                <ScalarProperty Name="DependentAllowance2" ColumnName="DependentAllowance2" />
+                <ScalarProperty Name="DependentAllowance1" ColumnName="DependentAllowance1" />
+                <ScalarProperty Name="DependentWageLimit" ColumnName="DependentWageLimit" />
+                <ScalarProperty Name="FilingStatus" ColumnName="FilingStatus" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FITAlienAdjustmentTables">
+            <EntityTypeMapping TypeName="USTaxTablesModel.FITAlienAdjustmentTable">
+              <MappingFragment StoreEntitySet="FITAlienAdjustmentTable">
+                <ScalarProperty Name="Pre2020" ColumnName="Pre2020" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="PayrollPeriodId" ColumnName="PayrollPeriodId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

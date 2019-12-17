@@ -14,6 +14,7 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 		public List<TaxByYear> Taxes { get; set; }
 		public List<FITTaxTableRow> FITTaxTable { get; set; }
 		public List<FITWithholdingAllowanceTableRow> FitWithholdingAllowanceTable { get; set; }
+		public List<FITW4TaxTableRow> FITW4Table { get; set; }
 		public List<CASITTaxTableRow> CASITTaxTable { get; set; }
 		public List<CASITLowIncomeTaxTableRow> CASITLowIncomeTaxTable { get; set; }
 		public List<CAStandardDeductionTableRow> CAStandardDeductionTable { get; set; }
@@ -22,5 +23,6 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
 		public List<TaxDeductionPrecendence> TaxDeductionPrecendences { get; set; }
         public List<FITTaxTableRow> HISITTaxTable { get; set; }
         public List<FITWithholdingAllowanceTableRow> HISitWithholdingAllowanceTable { get; set; }
+        public List<FITAlienAdjustmentTableRow> FITAlienAdjustmentTable { get; set; }
     }
 }

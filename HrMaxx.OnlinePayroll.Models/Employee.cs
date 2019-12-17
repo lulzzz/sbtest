@@ -51,6 +51,13 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeeTaxStatus FederalStatus { get; set; }
 		public int FederalExemptions { get; set; }
 		public decimal FederalAdditionalAmount { get; set; }
+		public bool? UseW4Fields { get; set; }
+		public bool? MultipleJobs { get; set; }
+		public int? DependentChildren { get; set; }
+		public int? OtherDependent { get; set; }
+		public decimal? OtherIncome { get; set; }
+		public decimal? FederalDeductions { get; set; }
+		public decimal? FederalAdditionalWithholding { get; set; }
 		public EmployeeState State { get; set; }
 		public List<EmployeeDeduction> Deductions { get; set; }
 		public CompanyWorkerCompensation WorkerCompensation { get; set; }

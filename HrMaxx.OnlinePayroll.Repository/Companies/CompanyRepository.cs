@@ -470,6 +470,13 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.FederalAdditionalAmount = me.FederalAdditionalAmount;
 				dbEmployee.FederalExemptions = me.FederalExemptions;
 				dbEmployee.FederalStatus = me.FederalStatus;
+				dbEmployee.UseW4Fields = me.UseW4Fields;
+				dbEmployee.DependentChildren = me.DependentChildren;
+				dbEmployee.OtherDependent = me.OtherDependent;
+				dbEmployee.MultipleJobs = me.MultipleJobs;
+				dbEmployee.OtherIncome = me.OtherIncome;
+				dbEmployee.FederalDeductions = me.FederalDeductions;
+				dbEmployee.FederalAdditionalWithholding = me.FederalAdditionalWithholding;
 				dbEmployee.State = me.State;
 				dbEmployee.WorkerCompensationId = me.WorkerCompensationId;
 				dbEmployee.Rate = me.Rate;

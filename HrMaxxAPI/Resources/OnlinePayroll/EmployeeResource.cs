@@ -72,6 +72,13 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int FederalExemptions { get; set; }
 		[Required]
 		public decimal FederalAdditionalAmount { get; set; }
+		public bool? UseW4Fields { get; set; }
+		public bool? MultipleJobs { get; set; }
+		public int? DependentChildren { get; set; }
+		public int? OtherDependent { get; set; }
+		public decimal? OtherIncome { get; set; }
+		public decimal? FederalDeductions { get; set; }
+		public decimal? FederalAdditionalWithholding { get; set; }
 		[Required]
 		public EmployeeStateResource State { get; set; }
 		public List<EmployeeDeductionResource> Deductions { get; set; }

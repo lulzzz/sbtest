@@ -42,6 +42,15 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int FederalStatus { get; set; }
 		public int FederalExemptions { get; set; }
 		public decimal FederalAdditionalAmount { get; set; }
+
+		public bool? UseW4Fields { get; set; }
+		public bool? MultipleJobs { get; set; }
+		public int? DependentChildren { get; set; }
+		public int? OtherDependent { get; set; }
+		public decimal? OtherIncome { get; set; }
+		public decimal? FederalDeductions { get; set; }
+		public decimal? FederalAdditionalWithholding { get; set; }
+
 		public string State { get; set; }
 		public DateTime LastModified { get; set; }
 		public string LastModifiedBy { get; set; }

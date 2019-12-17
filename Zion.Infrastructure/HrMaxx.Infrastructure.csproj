@@ -116,6 +116,7 @@
     <Compile Include="Attributes\ServiceBusMessageAttribute.cs" />
     <Compile Include="Attributes\HrMaxxSecurityAttribute.cs" />
     <Compile Include="Enums\Enumerations.cs" />
+    <Compile Include="Enums\InfraEnums.cs" />
     <Compile Include="Helpers\Utilities.cs" />
     <Compile Include="Security\Crypto.cs" />
     <Compile Include="Services\BaseService.cs" />

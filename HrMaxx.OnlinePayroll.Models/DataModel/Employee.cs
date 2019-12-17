@@ -57,6 +57,13 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<decimal> CarryOver { get; set; }
         public int EmployeeIntId { get; set; }
         public string PayTypeAccruals { get; set; }
+        public Nullable<bool> UseW4Fields { get; set; }
+        public Nullable<int> DependentChildren { get; set; }
+        public Nullable<int> OtherDependent { get; set; }
+        public Nullable<bool> MultipleJobs { get; set; }
+        public Nullable<decimal> OtherIncome { get; set; }
+        public Nullable<decimal> FederalDeductions { get; set; }
+        public Nullable<decimal> FederalAdditionalWithholding { get; set; }
     
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }

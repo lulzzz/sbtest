@@ -86,15 +86,15 @@ namespace HrMaxxAPI.Controllers
 
         }
 
-        [HttpPost]
+		[HttpPost]
 		[AllowAnonymous]
 		[Route("PSReportRequest")]
-		public async Task<string> ProfitStarReportRequest(FormDataCollection request)
+		public string ProfitStarReportRequest(FormDataCollection request)
 		{
 			try
 			{
-				var ps = new ProfitStarsRequest {Url = request["Url"], Data = request["Data"]};
-				var webReq = (HttpWebRequest) WebRequest.Create(ps.Url);
+				var ps = new ProfitStarsRequest { Url = request["Url"], Data = request["Data"] };
+				var webReq = (HttpWebRequest)WebRequest.Create(ps.Url);
 				webReq.Method = "POST";
 				webReq.ContentType = "application/x-www-form-urlencoded";
 				webReq.ContentLength = ps.DataBytes.Length;
@@ -110,12 +110,12 @@ namespace HrMaxxAPI.Controllers
 			}
 			catch (Exception e)
 			{
-				Logger.Error("Error in Profit Stars Report Request " , e);
+				Logger.Error("Error in Profit Stars Report Request ", e);
 				throw;
 			}
 
 
 		}
-		
+
 	}
 }
