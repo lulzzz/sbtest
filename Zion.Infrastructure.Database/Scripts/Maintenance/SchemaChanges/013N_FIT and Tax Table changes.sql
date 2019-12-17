@@ -152,7 +152,7 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 182950, 338500, 29211, 0.24, 182950, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 338500, 426600, 66543, 0.32, 338500, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 426600, 633950, 94735, 0.35, 426600, 2020, 0);
-insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 633950, , 167307.5, 0.37, 633950, 2020, 0);
+insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 633950, null, 167307.5, 0.37, 633950, 2020, 0);
 
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 0, 3800, 0, 0, 0, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 3800, 13675, 0, 0.1, 3800, 2020, 0);
@@ -161,7 +161,7 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 89325, 167100, 14605.5, 0.24, 89325, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 167100, 211150, 33271.5, 0.32, 167100, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 211150, 522200, 47367.5, 0.35, 211150, 2020, 0);
-insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 522200, , 156235, 0.37, 522200, 2020, 0);
+insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 522200, null, 156235, 0.37, 522200, 2020, 0);
 
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 0, 10050, 0, 0, 0, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 10050, 24150, 0, 0.1, 10050, 2020, 0);
@@ -170,7 +170,7 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 95550, 173350, 13158, 0.24, 95550, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 173350, 217400, 31830, 0.32, 173350, 2020, 0);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 217400, 528450, 45926, 0.35, 217400, 2020, 0);
-insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 528450, , 154793.5, 0.37, 528450, 2020, 0);
+insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 528450, null, 154793.5, 0.37, 528450, 2020, 0);
 
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 0, 12400, 0, 0, 0, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 12400, 22275, 0, 0.1, 12400, 2020, 1);
@@ -179,7 +179,7 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 97925, 175700, 14605.5, 0.24, 97925, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 175700, 219750, 33271.5, 0.32, 175700, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 219750, 323425, 47367.5, 0.35, 219750, 2020, 1);
-insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 323425, , 83653.75, 0.37, 323425, 2020, 1);
+insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Married', 323425, null, 83653.75, 0.37, 323425, 2020, 1);
 
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 0, 6200, 0, 0, 0, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 6200, 11137.5, 0, 0.1, 6200, 2020, 1);
@@ -188,7 +188,7 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 48962.5, 87850, 7302.75, 0.24, 48962.5, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 87850, 109875, 16635.75, 0.32, 87850, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 109875, 265400, 23683.75, 0.35, 109875, 2020, 1);
-insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 265400, , 78117.5, 0.37, 265400, 2020, 1);
+insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'Single', 265400, null, 78117.5, 0.37, 265400, 2020, 1);
 
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 0, 9325, 0, 0, 0, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 9325, 16375, 0, 0.1, 9325, 2020, 1);
@@ -197,7 +197,7 @@ insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, Fla
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 52075, 90975, 6579, 0.24, 52075, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 90975, 113000, 15915, 0.32, 90975, 2020, 1);
 insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 113000, 268525, 22963, 0.35, 113000, 2020, 1);
-insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 268525, , 77396.75, 0.37, 268525, 2020, 1);
+insert into FITTaxTable(PayrollPeriodId, FilingStatus, StartRange, EndRange, FlatRate, AdditionalPercentage, ExcessOvrAmt, Year, ForMultiJobs) values(5, 'HeadofHousehold', 268525, null, 77396.75, 0.37, 268525, 2020, 1);
 
 END
 
