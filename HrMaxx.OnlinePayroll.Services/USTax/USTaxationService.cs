@@ -363,7 +363,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			withholdingAllowance -= taxableWage;
 			var withholdingAllowanceTest = withholdingAllowance < 0 ? 0 : withholdingAllowance;
-			taxableWage = Math.Max( grossWage - taxableWage, 0);
+			
 			var fitTaxTableRow =
 				TaxTables.FITTaxTable.First(
 					r =>
@@ -427,6 +427,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			}
 			//step 3 - figuring out FIT Tax
 			aftw -= deductions;
+			aftw = Math.Max(0, aftw);
 			var fitTaxTableRow =
 				TaxTables.FITTaxTable.First(
 					r =>
