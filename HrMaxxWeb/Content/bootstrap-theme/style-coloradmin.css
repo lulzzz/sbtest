@@ -190,7 +190,7 @@ html {
     height: 100%;
 }
 body {
-    background: #d9e0e7;
+    background: #f4f6f7;
     font-size: 12px;
     font-family: 'Open Sans', "Helvetica Neue",Helvetica,Arial,sans-serif;
     color: #707478;
@@ -4401,7 +4401,7 @@ body .fc button:active {
     z-index: 1020;
 }
 .coming-soon .coming-soon-header {
-    background: url(../img/coming-soon.jpg);
+    background: url(../images/coming-soon.jpg);
     padding: 100px 0 50px;
     position: relative;
 }
@@ -4463,6 +4463,7 @@ body .fc button:active {
     color: #333;
     text-align: center;
     padding: 25px 0;
+    background-color: white!important;
 }
 .coming-soon .coming-soon-content .desc {
     margin-bottom: 25px;

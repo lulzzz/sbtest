@@ -363,7 +363,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			withholdingAllowance -= taxableWage;
 			var withholdingAllowanceTest = withholdingAllowance < 0 ? 0 : withholdingAllowance;
-			taxableWage = grossWage - taxableWage;
+			taxableWage = Math.Max( grossWage - taxableWage, 0);
 			var fitTaxTableRow =
 				TaxTables.FITTaxTable.First(
 					r =>

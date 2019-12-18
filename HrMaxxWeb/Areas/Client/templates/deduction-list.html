@@ -8,10 +8,17 @@
                 <div class="clearfix" ng-if="$index % 4 === 0"></div>
                 <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
                     <div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-down fa-fw"></i></div>
+                    <div class="stats-title" ng-if="item.id>0">{{item.description}}</div>
+                    <div class="stats-title" ng-if="item.id===0">
+                        <div class="form-group">
+                            <input class="form-control" type="text" id="description" name="description" placeholder="Description" ng-model="item.description" required />
+
+                        </div>
+                    </div>
                     <div class="stats-title" ng-if="item.id>0">{{item.deductionName}}</div>
                     <div class="stats-title" ng-if="item.id===0">
                         <div class="form-group">
-                            <input class="form-control" type="text" id="name" name="name" ng-model="item.deductionName" required />
+                            <input class="form-control" type="text" id="name" name="name" placeholder="Name" ng-model="item.deductionName" required />
 
                         </div>
                     </div>
@@ -24,7 +31,7 @@
 
                         </div>
                     </div>
-                    <div class="stats-desc" ng-show="item.type">{{item.type? item.type.name : ''}}</div>
+                    
                     <div class="stats-number" ng-show="item.id>0">{{item.employeeWithheld | currency}}, Employer: {{item.employerWithheld | currency}}</div>
                     <div class="stats-desc" ng-show="item.id>0 && (!selected || selected.id!==item.id)">Annual Max: {{item.annualMax ? item.annualMax : 'n.a'}}, Floor per check: {{item.floorPerCheck ? item.floorPerCheck : 'n.a'}}, InvoiceCredit?: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.applyInvoiceCredit, 'fa-times-circle': !item.applyInvoiceCredit}" /></div>
                     <div class="stats-progress progress">
