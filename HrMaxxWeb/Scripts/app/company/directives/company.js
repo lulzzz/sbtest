@@ -261,44 +261,92 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						return true;
 
 					}
-					$scope.billingOptionChanged = function () {
-						if ($scope.selectedCompany.contract.billingOption === 1 && !$scope.selectedCompany.contract.creditCardDetails) {
-							$scope.selectedCompany.contract.creditCardDetails = {
-								cardType: 1,
-								cardName: '',
-								expiryMonth: '',
-								expiryYear: new Date().getFullYear(),
-								securityCode: '',
-								billingAddress: {
-
+					$scope.contractOptionChanged = function () {
+						if ($scope.selectedCompany.contract.contractOption === 1) {
+							$scope.selectedCompany.contract.prePaidSubscriptionOption = 0;
+							$scope.selectedCompany.contract.billingOption = 0;
+						}
+						else {
+							$scope.selectedCompany.contract.prePaidSubscriptionOption = null;
+							$scope.selectedCompany.contract.billingOption = 3;
+							if (!$scope.selectedCompany.contract.invoiceSetup) {
+								$scope.selectedCompany.contract.invoiceSetup = {
+									invoiceType: 1,
+									invoiceStyle: 1,
+									adminFeeMethod: 1,
+									adminFee: 0,
+									adminFeeThreshold: 35,
+									suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
+									applyWCCharge: true,
+									applyStatuaryLimits: !$scope.mainData.selectedHost.isPeoHost,
+									applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
+									printClientName: false,
+									recurringCharges: []
 								}
 							}
 						}
-						if ($scope.selectedCompany.contract.billingOption === 2 && !$scope.selectedCompany.contract.bankDetails) {
-							$scope.selectedCompany.contract.bankDetails = {
-								bankName: '',
-								accountName: '',
-								accountNumber: '',
-								routingNumber: '',
-								accountType: 1,
-								sourceTypeId: $scope.sourceTypeId,
-								sourceId: $scope.selectedCompany.id
+					}
+					$scope.prePaidOptionChanged = function () {
+						$scope.selectedCompany.contract.billingOption = 0;
+					}
+					$scope.billingOptionChanged = function () {
+						if ($scope.selectedCompany.contract.billingOption === 1) {
+							if (!$scope.selectedCompany.contract.creditCardDetails) {
+								$scope.selectedCompany.contract.creditCardDetails = {
+									cardType: 1,
+									cardName: '',
+									expiryMonth: '',
+									expiryYear: new Date().getFullYear(),
+									securityCode: '',
+									billingAddress: {
+
+									}
+								}
 							}
+							$scope.selectedCompany.contract.bankDetails = null;
+							$scope.selectedCompany.contract.invoiceSetup = null;
+
 						}
-						if ($scope.selectedCompany.contract.billingOption === 3 && !$scope.selectedCompany.contract.invoiceSetup) {
-							$scope.selectedCompany.contract.invoiceSetup = {
-								invoiceType: 1,
-								invoiceStyle: 1,
-								adminFeeMethod: 1,
-								adminFee: 0,
-								adminFeeThreshold: 35,
-								suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
-								applyWCCharge: true,
-								applyStatuaryLimits: !$scope.mainData.selectedHost.isPeoHost,
-								applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
-								printClientName: false,
-								recurringCharges: []
+						else if ($scope.selectedCompany.contract.billingOption === 2) {
+							if (!$scope.selectedCompany.contract.bankDetails) {
+								$scope.selectedCompany.contract.bankDetails = {
+									bankName: '',
+									accountName: '',
+									accountNumber: '',
+									routingNumber: '',
+									accountType: 1,
+									sourceTypeId: $scope.sourceTypeId,
+									sourceId: $scope.selectedCompany.id
+								}
 							}
+
+							$scope.selectedCompany.contract.invoiceSetup = null;
+							$scope.selectedCompany.contract.creditCardDetails = null;
+						}
+						else if ($scope.selectedCompany.contract.billingOption === 3) {
+							if (!$scope.selectedCompany.contract.invoiceSetup) {
+								$scope.selectedCompany.contract.invoiceSetup = {
+									invoiceType: 1,
+									invoiceStyle: 1,
+									adminFeeMethod: 1,
+									adminFee: 0,
+									adminFeeThreshold: 35,
+									suiManagement: $scope.mainData.selectedHost.isPeoHost ? 1 : 0,
+									applyWCCharge: true,
+									applyStatuaryLimits: !$scope.mainData.selectedHost.isPeoHost,
+									applyEnvironmentalFee: $scope.mainData.selectedHost.isPeoHost,
+									printClientName: false,
+									recurringCharges: []
+								}
+							}
+
+							$scope.selectedCompany.contract.creditCardDetails = null;
+							$scope.selectedCompany.contract.bankDetails = null;
+						}
+						else {
+							$scope.selectedCompany.contract.creditCardDetails = null;
+							$scope.selectedCompany.contract.invoiceSetup = null;
+							$scope.selectedCompany.contract.bankDetails = null;
 						}
 					}
 					$scope.addRecurringCharge = function () {
@@ -354,7 +402,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
                         $.each($scope.selectedCompany.states,
                             function (ind, cstate) {
                                 $.each(dataSvc.companyMetaData.taxes, function (index, taxyearrate) {
-                                    if ((taxyearrate.tax.stateId && taxyearrate.tax.stateId === cstate.state.stateId) || !taxyearrate.tax.stateId) {
+                                    if (taxyearrate.taxYear>=(new Date()).getFullYear()-1 && ((taxyearrate.tax.stateId && taxyearrate.tax.stateId === cstate.state.stateId) || !taxyearrate.tax.stateId)) {
 
                                         var exists = $filter('filter')($scope.selectedCompany.companyTaxRates, { taxYear: taxyearrate.taxYear, taxId: taxyearrate.tax.id });
                                         if (exists.length === 0) {
@@ -475,6 +523,11 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 						$scope.original = angular.copy($scope.selectedCompany);
 						companyRepository.getCompanyMetaData().then(function (data) {
 							dataSvc.companyMetaData = data;
+							if (!$scope.selectedCompany.id) {
+								$scope.selectedCompany.insuranceGroup = dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0] : null;
+								$scope.selectedCompany.insuranceGroupNo= dataSvc.companyMetaData.insuranceGroups.length > 0 ? dataSvc.companyMetaData.insuranceGroups[0].id : null;
+								$scope.selectedCompany.insuranceClientNo = '0';
+							}
 							ready();
 						}, function (error) {
 							addAlert('error getting company meta data', 'danger');

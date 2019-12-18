@@ -89,7 +89,7 @@ namespace HrMaxx.OnlinePayroll.Services
 					});
 					
 					var savedcompany = _companyRepository.SaveCompany(company, ignoreEinCheck);
-                    company.CompanyTaxRates.Where(ctr=>ctr.Id==0).ToList().ForEach(ctr => _companyRepository.SaveCompanyTaxRate(ctr));
+					savedcompany.CompanyTaxRates.Where(ctr=>ctr.Id==0).ToList().ForEach(ctr => _companyRepository.SaveCompanyTaxRate(ctr));
 					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, company.Contract);
 					if(company.RecurringCharges!=null && company.RecurringCharges.Any())
 						savedcompany.RecurringCharges = _companyRepository.SaveRecurringCharges(savedcompany, company.RecurringCharges);

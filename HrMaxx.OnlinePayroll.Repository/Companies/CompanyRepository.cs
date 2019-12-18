@@ -569,7 +569,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public CompanyTaxRate SaveCompanyTaxRate(CompanyTaxRate taxrate)
 		{
 			var taxyearrate = _mapper.Map<CompanyTaxRate, Models.DataModel.CompanyTaxRate>(taxrate);
-			if (taxyearrate.Id == 0)
+			if (taxyearrate.Id == 0 && !_dbContext.CompanyTaxRates.Any(ctr=>ctr.CompanyId==taxyearrate.CompanyId && ctr.TaxId==taxyearrate.TaxId && ctr.TaxYear==taxyearrate.TaxYear))
 			{
 				_dbContext.CompanyTaxRates.Add(taxyearrate);
 			}
