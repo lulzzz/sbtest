@@ -437,8 +437,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 						&& (r.RangeEnd >= aftw || r.RangeEnd == 0)
 						&& r.ForMultiJobs==(payCheck.Employee.MultipleJobs??false));
 
-			var taxAmount = fitTaxTableRow.FlatRate + payCheck.Employee.FederalAdditionalAmount +
-							((aftw - fitTaxTableRow.ExcessOverAmoutt) * fitTaxTableRow.AdditionalPercentage / 100);
+			var taxAmount = fitTaxTableRow.FlatRate + ((aftw - fitTaxTableRow.ExcessOverAmoutt) * fitTaxTableRow.AdditionalPercentage / 100);
 			//step 4 - dependent claim
 			var dependantClaim = aftw < fitw4row.DependentWageLimit ? ((payCheck.Employee.DependentChildren??0)*fitw4row.DependentAllowance1 + (payCheck.Employee.OtherDependent??0)*fitw4row.DependentAllowance2) : 0;
 			
