@@ -173,7 +173,7 @@ namespace OPImportUtility
 			var read = scope.Resolve<IOPReadRepository>();
 			var companies =
 				read.GetQueryData<int>(
-					string.Format("select CompanyId from Company where Status='{0}' and CompanyId not in (select CompanyIntId from paxolop.dbo.Company);", status));
+					string.Format("select c.CompanyId from Company c where Status='{0}' and exists(select 'x' from CompanyPayroll where CompanyId = c.CompanyId) and exists(select 'x' from CompanyJournal where CompanyId = c.CompanyId) and c.CompanyId not in (select CompanyIntId from paxolop.dbo.Company);", status));
 			Logger.Info(string.Format("Companies matching status {0} : {1}", status, companies.Count));
 			var counter = (int) 0;
 			companies.ForEach(c =>

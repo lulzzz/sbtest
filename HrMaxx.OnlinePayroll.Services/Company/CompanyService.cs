@@ -89,23 +89,11 @@ namespace HrMaxx.OnlinePayroll.Services
 					});
 					
 					var savedcompany = _companyRepository.SaveCompany(company, ignoreEinCheck);
-					savedcompany.CompanyTaxRates.Where(ctr=>ctr.Id==0).ToList().ForEach(ctr => _companyRepository.SaveCompanyTaxRate(ctr));
+					company.CompanyTaxRates.Where(ctr=>ctr.Id==0).ToList().ForEach(ctr => _companyRepository.SaveCompanyTaxRate(ctr));
 					var savedcontract = _companyRepository.SaveCompanyContract(savedcompany, company.Contract);
 					if(company.RecurringCharges!=null && company.RecurringCharges.Any())
 						savedcompany.RecurringCharges = _companyRepository.SaveRecurringCharges(savedcompany, company.RecurringCharges);
-					//if (savedcontract.InvoiceSetup.RecurringCharges.Any())
-					//{
-					//	var map = Mapper.Map<List<RecurringCharge>, List<Models.CompanyRecurringCharge>>(savedcontract.InvoiceSetup.RecurringCharges);
-					//	var rcs = _companyRepository.SaveRecurringCharges(savedcompany, map);
-					//	savedcontract.InvoiceSetup.RecurringCharges.ForEach(rc =>
-					//	{
-					//		rc.TableId = rcs.First(r => r.OldId == rc.Id).Id;
-					//	});
-					//	_companyRepository.SaveCompanyInvoiceSetup(savedcompany.Id, JsonConvert.SerializeObject(savedcontract.InvoiceSetup));
-					//	savedcompany.RecurringCharges = rcs;
-					//}
-
-
+					
 					var savedstates = _companyRepository.SaveTaxStates(savedcompany, company.States);
 					savedcompany.Contract = savedcontract;
 					savedcompany.States = savedstates;

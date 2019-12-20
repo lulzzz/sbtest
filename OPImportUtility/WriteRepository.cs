@@ -71,7 +71,7 @@ namespace OPImportUtility
 			const string userstuff =
 				"insert into aspnetusers select * from Paxol.dbo.AspNetUsers where username='sherjeel';insert into AspNetUserRoles select * from Paxol.dbo.AspNetUserRoles where USERID=(select Id from Paxol.dbo.AspNetUsers where username='sherjeel');insert into AspNetUserClaims(userid, claimtype, claimvalue) select userid, claimtype, claimvalue from paxol.dbo.AspNetUserClaims where userid=(select Id from paxol.dbo.AspNetUsers where username='sherjeel')";
 
-			const string config = "delete from ApplicationConfiguration;set identity_insert ApplicationConfiguration On;insert into ApplicationConfiguration (Id, config, RootHostId) select * from paxol.dbo.ApplicationConfiguration; set identity_insert ApplicationConfiguration Off;";
+			const string config = "delete from ApplicationConfiguration;set identity_insert ApplicationConfiguration On;insert into ApplicationConfiguration (Id, config, RootHostId) select * from paxol.dbo.ApplicationConfiguration; set identity_insert ApplicationConfiguration Off;insert into DeductionType(Name, Category, W2_12, W2_13R) values('ROTH 401(k)', 2,'AA', 0);";
 			using (var con = GetConnection())
 			{
 				con.Execute(userstuff);
@@ -86,7 +86,7 @@ namespace OPImportUtility
 				con.Execute(estded);
 				con.Execute(exmpallow);
 				con.Execute(fixdata);
-				con.Execute("insert into Holidays(YearNo, Holiday) select * from OnlinePayroll.dbo.Holidays");
+				con.Execute("insert into Holidays(Year, Holiday) select * from OnlinePayroll.dbo.Holidays");
 			}
 		}
 
