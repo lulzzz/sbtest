@@ -1163,7 +1163,7 @@ namespace OPImportUtility
 					var deds = opdeds.Where(d => d.PayrollID == pc.PayrollID).ToList();
 					var acc = opacc.Where(a => a.PayrollId == pc.PayrollID).ToList();
 					var journal = journals.First(j => j.PayrollID == pc.PayrollID);
-					var isvoid = journal.Status.Equals("void");
+					var isvoid = journal.Status.Equals("void", StringComparison.OrdinalIgnoreCase);
 					var employee = employees.First(e => e.EmployeeIntId == pc.EmployeeID);
 					var prevchecks =
 						paychecks.Where(
@@ -1319,6 +1319,7 @@ namespace OPImportUtility
 
 
 					});
+					
 					acc.ForEach(a =>
 					{
 						var accumulationBaseDate = new DateTime(2015, 7, 1);
@@ -1333,21 +1334,26 @@ namespace OPImportUtility
 						}
 						else
 						{
-							if(paycheck.PayDay.Month<employee.HireDate.Month)
+							if(paycheck.PayDay.Month<employee.HireDate.Month || (paycheck.PayDay.Month==employee.HireDate.Month && paycheck.PayDay.Day<employee.HireDate.Day))
 								result = new DateTime(paycheck.PayDay.Year-1, employee.HireDate.Month, employee.HireDate.Day);
 							else
 							{
 								result = new DateTime(paycheck.PayDay.Year, employee.HireDate.Month, employee.HireDate.Day);
 							}
 						}
+						//var oppaycheckaccumulation = read.GetQueryData<PayrollEmployeeAccumulation>(string.Format("exec dbo.usp_GetYTDEmployeePayTypes @EmployeeID={0}, @PayDay='{1}', @payrollId={2}", paycheck.Employee.EmployeeIntId, paycheck.PayDay.ToString("MM/dd/yyyy"), paycheck.Id));
+						var prev = paychecks.Where(pc1 => pc1.EmployeeId == paycheck.Employee.Id && !pc1.IsVoid && pc1.Id < paycheck.Id).ToList();
+						var carryover = prev.SelectMany(pc1 => pc1.Accumulations).Where(ac => ac.FiscalStart < result).Sum(ac => (ac.AccumulatedValue - ac.Used));
+						
 						paycheck.Accumulations.Add(new PayTypeAccumulation()
 						{
 							AccumulatedValue = a.Accumulation, Used = a.HoursUsed, PayType = company.AccumulatedPayTypes.First(),
+							CarryOver = carryover,
 							FiscalStart = result,
-							FiscalEnd = result.AddYears(1).AddDays(-1), 
-							YTDFiscal = paychecks.Where(pc1=>pc1.EmployeeId==employee.Id && !pc1.IsVoid && pc1.Accumulations.Any(acc1=>acc1.FiscalStart==result) && (pc1.PayDay<paycheck.PayDay || (pc1.PayDay==paycheck.PayDay && pc1.Id<paycheck.Id))).SelectMany(pc1=>pc1.Accumulations).Sum(acc1=>acc1.AccumulatedValue),
+							FiscalEnd = result.AddYears(1).AddDays(-1),
+							YTDFiscal = paychecks.Where(pc1 => pc1.EmployeeId == employee.Id && !pc1.IsVoid && pc1.Accumulations.Any(acc1 => acc1.FiscalStart == result) && (pc1.PayDay < paycheck.PayDay || (pc1.PayDay == paycheck.PayDay && pc1.Id < paycheck.Id))).SelectMany(pc1 => pc1.Accumulations).Sum(acc1 => acc1.AccumulatedValue),
 							YTDUsed = paychecks.Where(pc1 => pc1.EmployeeId == employee.Id && !pc1.IsVoid && pc1.Accumulations.Any(acc1 => acc1.FiscalStart == result) && (pc1.PayDay < paycheck.PayDay || (pc1.PayDay == paycheck.PayDay && pc1.Id < paycheck.Id))).SelectMany(pc1 => pc1.Accumulations).Sum(acc1 => acc1.Used)
-						});
+						}); ;
 					});
 					payroll.PayChecks.Add(paycheck);
 					paychecks.Add(paycheck);

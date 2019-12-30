@@ -401,14 +401,15 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			//taxableWage = grossWage - taxableWage;
 			//var withholdingAllowanceTest = taxableWage < 0 ? 0 : taxableWage;
 			taxableWage = grossWage - taxableWage;
-			//Step 1 annualize
-			var aftw = Utilities.Annualize(taxableWage, (PaySchedule)payCheck.Employee.PayrollSchedule);
+			
 			//alien adjustment
 			if (payCheck.Employee.TaxCategory == EmployeeTaxCategory.NonImmigrantAlien)
 			{
 				var isPre2020 = payCheck.Employee.HireDate.Year < 2020 && !payCheck.Employee.UseW4Fields.Value;
 				taxableWage += TaxTables.FITAlienAdjustmentTable.First(f => f.Year==payDay.Year && f.PayrollSchedule == payCheck.Employee.PayrollSchedule && f.Pre2020 == isPre2020).Amount;
 			}
+			//Step 1 annualize
+			var aftw = Utilities.Annualize(taxableWage, (PaySchedule)payCheck.Employee.PayrollSchedule);
 			aftw += payCheck.Employee.OtherIncome ?? 0;
 			//step 2 - figuring out deductions
 			var fitw4row = TaxTables.FITW4Table.First(f => f.Year == payDay.Year && (int)f.FilingStatus == (int)payCheck.Employee.FederalStatus);

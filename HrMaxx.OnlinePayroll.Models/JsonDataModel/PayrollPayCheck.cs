@@ -58,5 +58,6 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public int? OriginalCheckNumber { get; set; }
 		public DateTime? ReIssuedDate { get; set; }
         public int StateId { get; set; }
+		public bool ForcePayCheck { get; set; }
 	}
 }

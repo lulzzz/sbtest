@@ -573,6 +573,7 @@
     <Content Include="templates\GovtForms\W2\W2.pdf" />
     <Content Include="templates\GovtForms\HIForms\HIUCB.pdf" />
     <Content Include="templates\GovtForms\HIForms\HIUCBPage.pdf" />
+    <Content Include="templates\GovtForms\C1095\C1095-2019.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

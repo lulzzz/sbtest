@@ -178,6 +178,16 @@ namespace HrMaxxAPI.Controllers.Payrolls
 
 		}
 		[HttpPost]
+		[Route(PayrollRoutes.ReCalculateAccumulations)]
+		[DeflateCompression]
+		public PayrollResource ReCalculateAccumulations(PayrollResource payroll)
+		{
+			var result = MakeServiceCall(() => _payrollService.RecalculatePayrollAccumulations(payroll.Id.Value),
+				$"email payroll report {payroll.Id} - {payroll.Company.Name}", true);
+			return Mapper.Map<Payroll, PayrollResource>(result);
+
+		}
+		[HttpPost]
 		[Route(PayrollRoutes.PrintPayrollPack)]
 		[DeflateCompression]
 		public HttpResponseMessage PrintPayrollPack(PayrollResource payroll)

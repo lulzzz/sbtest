@@ -438,4 +438,28 @@ namespace OPImportUtility
 		public DateTime StartDate { get; set; }
 		public DateTime EndDate { get; set; }
 	}
+	public class PayrollEmployeeAccumulation
+	{
+		public int mEmployeePayTypeID { get; set; }
+		public int mPayTypeID { get; set; }
+		public string mPayTypeName { get; set; }
+
+		public decimal mYTDAmount { get; set; }
+
+		public decimal mHoursUsed { get; set; }
+
+		public decimal mYTDHoursUsed { get; set; }
+
+		public decimal mPayTypeRate { get; set; }
+
+		public decimal mThisCheck { get; set; }
+
+		public decimal mCarryOver { get; set; }
+
+		public decimal mPayTypeLimit { get; set; }
+
+		public string mFiscalStartDate { get; set; }
+
+		public string mFiscalEndDate { get; set; }
+	}
 }

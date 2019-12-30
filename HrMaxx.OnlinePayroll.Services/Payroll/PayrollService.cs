@@ -347,7 +347,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						}
 						paycheck.Status = PaycheckStatus.Processed;
 						paycheck.IsVoid = false;
-						paycheck.PaymentMethod = paycheck.Employee.PaymentMethod;
+						paycheck.PaymentMethod = paycheck.ForcePayCheck ? EmployeePaymentMethod.Check : paycheck.Employee.PaymentMethod;
 						paycheck.CheckNumber = paycheck.PaymentMethod == EmployeePaymentMethod.Check ? payroll.StartingCheckNumber + payCheckCount++ : -1;
 
 						paycheck.YTDGrossWage = Math.Round(employeeAccumulation.PayCheckWages.GrossWage + paycheck.GrossWage, 2, MidpointRounding.AwayFromZero);
@@ -1774,6 +1774,36 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			catch (Exception e)
 			{
 				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToRetrieveX, " Print Payrolls for id=" + payrollId);
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+		public Models.Payroll RecalculatePayrollAccumulations(Guid payrollId)
+		{
+			try
+			{
+
+				var payroll = _readerService.GetPayroll(payrollId);
+				var company = _readerService.GetCompany(payroll.Company.Id);
+				payroll.Company.AccumulatedPayTypes = company.AccumulatedPayTypes;
+				var employeeAccumulations = _readerService.GetAccumulations(company: payroll.Company.Id,
+						startdate: new DateTime(payroll.PayDay.Year, 1, 1), enddate: payroll.PayDay, ssns: payroll.PayChecks.Where(pc => pc.Included).Select(pc => pc.Employee.SSN).Aggregate(string.Empty, (current, m) => current + Crypto.Encrypt(m) + ","));
+				using(var txn = TransactionScopeHelper.Transaction())
+				{
+					payroll.PayChecks.Where(pc=>!pc.Accumulations.Any()).ToList().ForEach(pc =>
+					{
+						pc.Accumulations = ProcessAccumulations(pc, payroll, employeeAccumulations.First(ea => ea.EmployeeId == pc.EmployeeId));
+						_payrollRepository.UpdatePayCheckSickLeaveAccumulation(pc);
+					});
+					txn.Complete();
+				}			
+				
+				return _readerService.GetPayroll(payrollId);
+
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " ReCalculating Accumulations for id=" + payrollId);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

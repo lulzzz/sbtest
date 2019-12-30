@@ -163,8 +163,30 @@
                         nocallback();
                     return false;
                 });
-            }
+			},
+			addAlert: function (message, type) {
+				var alerts = [];
+				alerts.push({
+					msg: message,
+					type: type
+				});
+				
+				var modalInstance = $modal.open({
+					templateUrl: 'popover/messages.html',
+					controller: 'messageCtrl',
+					backdrop: true,
+					keyboard: true,
+					backdropClick: true,
+					size: 'lg',
+					resolve: {
+						alerts: function () {
+							return alerts;
+						}
+					}
+				});
+			}
 		};
+
 		$scope.data = dataSvc;
 		$scope.addMissingCompany = function(host, company, url) {
 			commonRepository.getHostsAndCompanies(0, company).then(function (data) {

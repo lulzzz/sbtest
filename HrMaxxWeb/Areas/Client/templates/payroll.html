@@ -86,7 +86,7 @@
 								<button type="button" class="btn btn-link" data-ng-click="showemployee(listitem)" tabindex="-1">{{listitem.name}}<span ng-show="listitem.companyEmployeeNo"> ({{listitem.employeeNo}})</span></button>
 
 							</td>
-							<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-2">
+							<td data-title=" 'Department' " filter="{ 'department': 'text' }" sortable=" 'department' " class="col-sm-1">
 								{{listitem.department ? listitem.department : '&nbsp;'}}
 							</td>
 							<td data-title=" 'Wages' " class="col-sm-3" filter="{payType:'select'}" filter-data="paytypes">
@@ -145,7 +145,15 @@
 
 								</div>
 							</td>
-
+							<td data-title=" 'EFT' " class="col-sm-1">
+								<label></label>
+								<div ng-show="listitem.employee.paymentMethod>1">
+									<label for="eft{{listitem.employee.employeeIntId}}" class="switch">
+										Force Check?
+										<input id="eft{{listitem.employee.employeeIntId}}" type="checkbox" ng-model="listitem.forcePayCheck" /><i></i>
+									</label>
+								</div>
+							</td>
 							<td data-title=" 'Notes' " class="col-sm-2">
 								<input type="text" class="form-control" ng-model="listitem.notes" tabindex="-1" />
 							</td>

@@ -107,7 +107,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								hasWarning: false,
 								inLastPayroll: inLastPayroll(employee.id),
 								hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
-								paymentMethod: employee.paymentMethod
+								paymentMethod: employee.paymentMethod,
+								forcePayCheck: false
 							};
 							$.each(employee.payCodes, function(index1, paycode) {
 								var pc = {
@@ -323,7 +324,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 											hasWarning: false,
 											inLastPayroll: inLastPayroll(employee.id),
 											hasWCWarning: $scope.mainData.selectedCompany.contract.invoiceSetup.invoiceType !== 3 && $scope.mainData.selectedCompany.workerCompensations.length > 0 && !employee.workerCompensation,
-											paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod
+											paymentMethod: matching ? matching.paymentMethod : employee.paymentMethod,
+											forcePayCheck: matching ? matching.forcePayCheck : false
 										};
 										if (employee.payType < 4) {
 											$.each(employee.payCodes, function(index1, paycode) {

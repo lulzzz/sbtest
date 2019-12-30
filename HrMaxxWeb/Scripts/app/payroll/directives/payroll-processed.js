@@ -220,6 +220,24 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 
 						
 					}
+					$scope.recalculateAccumulations = function (payroll) {
+						var confirmMessage = "Are you sure you want to re-calculate accumulations? please confirm";
+						
+						$scope.mainData.confirmDialog(confirmMessage, 'warning', function () {
+							payrollRepository.recalculateAccumulations(payroll).then(function (data) {
+								$scope.item = data;
+								
+								$scope.mainData.addAlert('successfully re-calculated accumulations', 'success');
+								init();
+							}, function (error) {
+								addAlert('Error: ' + error, 'danger');
+							});
+						}
+						);
+
+
+
+					}
 					
 					$scope.printPayrollReport = function (payroll) {
 						payroll.company.companyCheckPrintOrder = $scope.company.companyCheckPrintOrder;

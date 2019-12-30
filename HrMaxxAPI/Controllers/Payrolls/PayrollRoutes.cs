@@ -19,6 +19,7 @@
 		public const string ReIssuePayCheck = "Payroll/ReIssueCheck/{payCheckId:int}";
 		public const string PrintPayrollReport = "Payroll/PrintPayrollReport";
 		public const string EmailPayrollReport = "Payroll/EmailPayrollPack";
+		public const string ReCalculateAccumulations = "Payroll/ReCalculateAccumulations";
 		public const string PrintPayrollPack = "Payroll/PrintPayrollPack";
 		public const string PrintPayrollTimesheet = "Payroll/PrintPayrollTimesheet";
 		public const string PrintPayrollChecks = "Payroll/PrintPayrollChecks/{payrollId:guid}/{reprint}/{companyCheckPrintOrder:int}";

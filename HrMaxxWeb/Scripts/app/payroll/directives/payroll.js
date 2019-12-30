@@ -1039,7 +1039,10 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 									annualMax: null,
 									limit: null,
 									ceilingPerCheck: null,
-									ceilingMethod: 1
+									ceilingMethod: {
+										key: 1,
+										value: 'Percentage'
+									}
 
 								};
 								dd.employeeDeduction = selectedded;

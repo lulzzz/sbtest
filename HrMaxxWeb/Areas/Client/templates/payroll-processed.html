@@ -148,28 +148,27 @@
 					{{listitem.netWage | currency:"$"}}
 				</td>
 
-                <td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-2">
-                    <span class="pull-left">{{listitem.paymentMethodText}}</span>
-                    <a class="btn btn-info btn-icon btn-circle btn-sm pull-right" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></a>
-                    <a class="btn btn-success btn-icon btn-circle btn-sm pull-right" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></a>
-                    <a class="btn btn-success btn-icon btn-circle btn-sm pull-right" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></a>
-                    <a class="btn btn-danger btn-icon btn-circle btn-sm pull-right" ng-show="datasvc.showVoidPaycheck && item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></a>
-                    <a class="btn btn-warning btn-icon btn-circle btn-sm pull-right" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></a>
+				<td data-title=" 'Payment Method' " sortable=" 'paymentMethodText' " class="col-sm-1">
+					<span class="pull-left">{{listitem.paymentMethodText}}</span><i class="fa fa-bolt" style="color:green" ng-show="listitem.forcePayCheck">
+				</td>
+				<td class="col-sm-1">
+					<a class="btn btn-info btn-icon btn-circle btn-sm pull-right" ng-show="false && item.status>2 && item.status!==6 && !listitem.isVoid && !listitem.isReIssued && listitem.paymentMethod===1" ng-click="reIssueCheck(listitem)" title="Re-Issue"><i class="fa fa-lg fa-share-square-o m-r-5"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-sm pull-right" ng-show="item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="markPrinted(listitem)" title="Print Check" ng-if="!item.isHistory"><i class="fa fa-lg fa-print m-r-5"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-sm pull-right" ng-show="datasvc.showUnVoidPaycheck && item.status>2 && listitem.isVoid && mainData.userRole==='SuperUser'" ng-click="unvoidcheck(listitem)" title="Un-Void"><i class="fa fa-lg fa-check"></i></a>
+					<a class="btn btn-danger btn-icon btn-circle btn-sm pull-right" ng-show="datasvc.showVoidPaycheck && item.status>2 && item.status!==6 && !listitem.isVoid" ng-click="voidcheck(listitem)" title="Void"><i class="fa fa-lg fa-fire"></i></a>
+					<a class="btn btn-warning btn-icon btn-circle btn-sm pull-right" ng-click="viewcheck(listitem)" title="View"><i class="fa fa-lg fa-eye"></i></a>
+				</td>
 
-
-
-
-
-                </td>
 			</tr>
 
 			<tr class="danger">
 				<td class="text-right" colspan="3"><strong><em><u># Checks = {{totalChecks}}</u></em></strong></td>
 				<td class="text-right"><strong><em><u>{{item.totalGrossWage | currency:'$'}}</u></em></strong></td>
 				<td class="text-right"><strong><em><u>{{item.deductionAmount | currency:'$'}}</u></em></strong></td>
-				<td >&nbsp;</td>
+				<td>&nbsp;</td>
 				<td class="text-right"><strong><em><u>{{item.totalNetWage | currency:'$'}}</u></em></strong></td>
-				<td ></td>
+				<td></td>
+				<td></td>
 
 			</tr>
 		</table>
@@ -194,6 +193,7 @@
 			<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 			<button class="btn btn-sm btn-warning  pull-right" ng-click="printPayrollPack(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> pack</button>
 			<button class="btn btn-sm btn-danger  pull-right" ng-click="emailPayrollPack(item)" ng-show="datasvc.canACHEmail && item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-envelope m-r-5"></i> ACH & Pack</button>
+			<button class="btn btn-sm btn-warning  pull-right" ng-click="recalculateAccumulations(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && mainData.userRole==='SuperUser'" ng-if="!item.isHistory"><i class="fa fa-recycle m-r-5"></i> Accumulations</button>
 		</div>
 	</div>
 	

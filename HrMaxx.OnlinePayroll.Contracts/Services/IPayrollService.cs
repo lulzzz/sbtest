@@ -29,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		FileDto PrintPayrollChecks(Guid payrollId, int companyCheckPrintOrder);
 		FileDto PrintAndSavePayroll(Payroll payroll, List<Journal> journals );
 		FileDto PrintPayrollPayslips(Guid payrollId);
+		Payroll RecalculatePayrollAccumulations(Guid payrollId);
 		FileDto PrintPayrollTimesheet(Payroll mapped);
 		FileDto PrintPayrollPack(Payroll payroll);
 		Task<List<string>> EmailPayrollPack(Payroll payroll);

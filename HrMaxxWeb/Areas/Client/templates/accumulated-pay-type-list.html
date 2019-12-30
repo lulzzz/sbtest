@@ -22,7 +22,7 @@
                 <div class="stats-info" ng-if="item.id===0">
                     <div class="form-group">
                         <div class="form-group">
-                            <select class="form-control" id="opt" ng-model="item.payType" ng-options="option.id as option.text for option in leaveOptions track by option.id" required>
+                            <select class="form-control" id="opt" ng-model="item.option" ng-options="option.id as option.text for option in leaveOptions track by option.id" required>
                                 <option value="">Please select Option...</option>
                             </select>
                         </div>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="stats-title">Rate: {{item.ratePerHour | currency}}, Annual Limit: {{item.annualLimit | currency}}, Global Limit: {{item.global | currency}}</div>
-                <div class="stats-title">Company Managed: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isCompanyManaged, 'fa-times-circle': !item.isCompanyManaged}" />, Lump Sum: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isLumpSum, 'fa-times-circle': !item.isLumpSum}" />, Employee Specific: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isEmployeeSpecific, 'fa-times-circle': !item.isEmployeeSpecific}" /></div>
+                <div class="stats-title">Company Managed: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.companyManaged, 'fa-times-circle': !item.companyManaged}" />, Lump Sum: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isLumpSum, 'fa-times-circle': !item.isLumpSum}" />, Employee Specific: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isEmployeeSpecific, 'fa-times-circle': !item.isEmployeeSpecific}" /></div>
                 <div class="stats-progress progress">
                     <div class="progress-bar" style="width: 100%;"></div>
                 </div>
@@ -69,7 +69,7 @@
                         <label class="control-label col-md-6 col-sm-6">Company Managed? :</label>
                         <div class="col-md-6 col-sm-6">
                             <label class="switch">
-                                <input type="checkbox" ng-model="item.isCompanyManaged"/><i></i>
+                                <input type="checkbox" ng-model="item.companyManaged"/><i></i>
                             </label>
                             
                         </div>

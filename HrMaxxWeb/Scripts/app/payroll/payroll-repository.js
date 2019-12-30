@@ -464,6 +464,16 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			recalculateAccumulations: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('ReCalculateAccumulations').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			printPayCheck: function (documentId, payCheckId) {
 				var deferred = $q.defer();
 				$http.post(zionAPI.URL + "Payroll/Print", {
