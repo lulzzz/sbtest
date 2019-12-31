@@ -19,7 +19,7 @@
   
   <xsl:template match="/">
 <xsl:apply-templates select="/ExtractResponse/Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" >
-	<xsl:sort select="HostCompany/TaxFilingName"/>
+  <xsl:sort select="format-number(HostCompany/CompanyIntId,'0000')"/>
 </xsl:apply-templates>
     
   </xsl:template>

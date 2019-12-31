@@ -23,7 +23,7 @@ E$$spaces20$$$$spaces2$$<xsl:value-of select="substring(concat(translate(HostCom
 <xsl:value-of disable-output-escaping="no" select="substring(concat(translate(HostCompany/BusinessAddress/AddressLine1,$smallcase,$uppercase),'                                                  '),1,40)"/>
 <xsl:value-of select="substring(concat(translate(HostCompany/BusinessAddress/City,$smallcase,$uppercase),'                                                  '),1,25)"/>06$$spaces5$$$$spaces2$$$$spaces1$$
 <xsl:choose>
-<xsl:when test="HostCompany/BusinessAddress/ZipExtension">
+<xsl:when test="not(HostCompany/BusinessAddress/ZipExtension) or HostCompany/BusinessAddress/ZipExtension != ''">
 <xsl:text>-</xsl:text><xsl:value-of select="substring(concat(HostCompany/BusinessAddress/ZipExtension,'                                                  '),1,4)"/>
 </xsl:when>
 <xsl:otherwise>
@@ -33,7 +33,7 @@ E$$spaces20$$$$spaces2$$<xsl:value-of select="substring(concat(translate(HostCom
 <xsl:value-of select="substring(concat(HostCompany/BusinessAddress/Zip,'                                                  '),1,5)"/>$$spaces100$$$$spaces10$$$$spaces5$$$$spaces2$$
 <xsl:text>$$n</xsl:text>
 <xsl:apply-templates select="EmployeeAccumulationList/Accumulation">
-<xsl:sort select="SSNVal" data-type="number"/>
+<xsl:sort select="FirstName" data-type="text"/>
 </xsl:apply-templates>
 T<xsl:value-of select="format-number(count(EmployeeAccumulationList/Accumulation),'0000000')"/>$$spaces10$$$$spaces5$$$$spaces2$$$$spaces1$$
 <xsl:variable name="WagesSum" select="PayCheckAccumulation/PayCheckWages/GrossWage" />

@@ -644,7 +644,7 @@
 							</Row>
             
    <Row></Row>
-							<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" mode="CompanyInfo">
+							<xsl:apply-templates select="Hosts/ExtractHost" mode="CompanyInfo">
 								<xsl:sort select="HostCompany/TaxFilingName"/>
 							</xsl:apply-templates>
   </Table>
@@ -1327,7 +1327,7 @@
 								<Cell ss:StyleID="s91"/>
 							</Row>
    <Row></Row>
-							<xsl:apply-templates select="Hosts/ExtractHost[count(PayCheckAccumulation/PayCheckList/PayCheckSummary)>0]" mode="i941">
+							<xsl:apply-templates select="Hosts/ExtractHost" mode="i941">
 								<xsl:sort select="HostCompany/TaxFilingName"/>
 							</xsl:apply-templates>
 		 

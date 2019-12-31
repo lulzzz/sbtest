@@ -344,6 +344,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="templates\transformers\extracts\C1095PDF-2018.xslt" />
+    <Content Include="templates\transformers\extracts\F1099-2019.xslt" />
     <Content Include="templates\transformers\extracts\HIUIEFTPS.xslt">
       <SubType>Designer</SubType>
     </Content>
