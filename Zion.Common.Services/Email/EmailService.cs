@@ -36,22 +36,22 @@ namespace HrMaxx.Common.Services.Email
 			return _webUrl;
 		}
 
-		public async Task<bool> SendEmail(string to, string subject, string body, string from = "Paxol@hrmaxx.com", string cc = "", string fileName = "")
+		public async Task<bool> SendEmail(string to, string subject, string body, string from = "cs.paxol@gmail.com", string cc = "", string fileName = "")
 		{
 			try
 			{
 
 				using (var mail = new MailMessage(from, to))
 				{
-					mail.From = new MailAddress(from, "PAXol");
+					mail.From = new MailAddress(from, "PAXol Support");
 					mail.IsBodyHtml = true;
 					var client = new SmtpClient
 					{
-						Port = 25,
+						Port = 587, EnableSsl=true,
 						DeliveryMethod = SmtpDeliveryMethod.Network,
 						UseDefaultCredentials = false,
 						Host = _smptServer,
-						Credentials = new NetworkCredential("payrollApp@hrmaxx.com", "hrMaxx123")
+						Credentials = new NetworkCredential("cs.paxol@gmail.com", "Paxol1234!")
 					};
 					mail.Subject = subject;
 					mail.Body = body;

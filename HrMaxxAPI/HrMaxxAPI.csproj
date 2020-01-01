@@ -405,6 +405,9 @@
     </Content>
     <Content Include="templates\transformers\ProfitStars\ReportRequest.xslt" />
     <Content Include="templates\transformers\reports\1099\F1099.xslt" />
+    <Content Include="templates\transformers\reports\940\Fed940-2019.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\transformers\reports\940\Fed940-2018.xslt">
       <SubType>Designer</SubType>
     </Content>
@@ -575,6 +578,8 @@
     <Content Include="templates\GovtForms\HIForms\HIUCB.pdf" />
     <Content Include="templates\GovtForms\HIForms\HIUCBPage.pdf" />
     <Content Include="templates\GovtForms\C1095\C1095-2019.pdf" />
+    <Content Include="templates\GovtForms\940\f940-2019.pdf" />
+    <Content Include="templates\GovtForms\940\f940sa-2019.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HrMaxx.OnlinePayroll.Contracts\HrMaxx.OnlinePayroll.Contracts.csproj">

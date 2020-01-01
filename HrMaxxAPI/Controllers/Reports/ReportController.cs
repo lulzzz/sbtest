@@ -334,6 +334,14 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		}
 		[HttpGet]
+		[Route(ReportRoutes.MarkFundingSuccessful)]
+		public List<ProfitStarsPayroll> MarkFundingSuccessful(int fundRequestId)
+		{
+			var data = MakeServiceCall(() => _achService.MarkFundingSuccessful(fundRequestId), "Profit Stars funding manual settle ", true);
+			return data;
+
+		}
+		[HttpGet]
 		[Route(ReportRoutes.ProfitStars1pm)]
 		public List<ProfitStarsPayment> ProfitStars1pm()
 		{

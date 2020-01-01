@@ -14,5 +14,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		ProfitStarsReportResponse ProfitStarsStatusUpdate();
 
 		List<ProfitStarsPayroll> GetProfitStarsPayrollList();
+		List<ProfitStarsPayroll> MarkFundingSuccessful(int fundRequestId);
 	}
 }

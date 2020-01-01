@@ -12,11 +12,11 @@ namespace HrMaxx.OnlinePayroll.Models
 {
 	public enum ProfitStarsPaymentType
 	{
-		[HrMaxxSecurity(HrMaxxName = "PaxolFund", DbName = "Funding")]
+		[HrMaxxSecurity(HrMaxxName = "PaxolFund", DbName = "ddPayrollFundRequestProduction")]
 		Fund=1,
-		[HrMaxxSecurity(HrMaxxName = "PaxolPay", DbName = "Payment")]
+		[HrMaxxSecurity(HrMaxxName = "PaxolPay", DbName = "ddPayrollPayRequestProduction")]
 		Pay=2,
-		[HrMaxxSecurity(HrMaxxName = "PaxolReFund", DbName = "Refund")]
+		[HrMaxxSecurity(HrMaxxName = "PaxolReFund", DbName = "ddPayrollReFundRequestProduction")]
 		Refund=3
 	}
 
@@ -58,14 +58,14 @@ namespace HrMaxx.OnlinePayroll.Models
         public bool HasError => string.Equals(error, "true");
 
         public ProfitStarsPaymentType Type =>
-            requestID.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName())
-                ? ProfitStarsPaymentType.Fund
-                : requestID.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName())
-                    ? ProfitStarsPaymentType.Pay
+            requestID.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName()) || requestID.StartsWith(ProfitStarsPaymentType.Fund.GetDbName())
+				? ProfitStarsPaymentType.Fund
+                : requestID.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName()) || requestID.StartsWith(ProfitStarsPaymentType.Pay.GetDbName())
+					? ProfitStarsPaymentType.Pay
                     : ProfitStarsPaymentType.Refund;
 
-        public bool IsPaxolTransaction => requestID.StartsWith("Paxol");
-        public int Id => Convert.ToInt32(requestID.Replace(Type.GetHrMaxxName(), string.Empty));
+        public bool IsPaxolTransaction => requestID.StartsWith("Paxol") || requestID.StartsWith("ddPayroll");
+        public int Id => Convert.ToInt32(requestID.Replace(Type.GetHrMaxxName(), string.Empty).Replace(Type.GetDbName(), string.Empty));
 
         public string EmailEntry =>
             $"<b>{Type.GetDbName()}</b>: Id: {Id.ToString()}, Result: {success}, RefNum: {refNum}<br/>";
@@ -169,14 +169,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DateTime TransactionTime => Convert.ToDateTime(transactionDateTime);
 
         public ProfitStarsPaymentType Type =>
-            TransactionId.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName())
-                ? ProfitStarsPaymentType.Fund
-                : TransactionId.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName())
-                    ? ProfitStarsPaymentType.Pay
+            TransactionId.StartsWith(ProfitStarsPaymentType.Fund.GetHrMaxxName()) || TransactionId.StartsWith(ProfitStarsPaymentType.Fund.GetDbName())
+				? ProfitStarsPaymentType.Fund
+                : TransactionId.StartsWith(ProfitStarsPaymentType.Pay.GetHrMaxxName()) || TransactionId.StartsWith(ProfitStarsPaymentType.Pay.GetDbName())
+					? ProfitStarsPaymentType.Pay
                     : ProfitStarsPaymentType.Refund;
 
-        public bool IsPaxolTransaction => TransactionId.StartsWith("Paxol");
-        public int Id => Convert.ToInt32(TransactionId.Replace(Type.GetHrMaxxName(), string.Empty));
+        public bool IsPaxolTransaction => TransactionId.StartsWith("Paxol") || TransactionId.StartsWith("ddPayroll");
+        public int Id => Convert.ToInt32(TransactionId.Replace(Type.GetHrMaxxName(), string.Empty).Replace(Type.GetDbName(), string.Empty));
         public string TypeName => Type.GetHrMaxxName();
 
         public string EmailEntry =>

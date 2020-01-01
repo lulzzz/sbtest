@@ -44,8 +44,6 @@ common.directive('userProfile', ['zionAPI','version',
 				};
 
 				$scope.save = function () {
-					if (false === $('form[name="profileform"]').parsley().validate('address'))
-						return false;
 					userRepository.saveUserProfile($scope.user).then(function (data) {
 						$scope.addAlert('successfully saved user profile', 'success');
 					}, function (error) {

@@ -38,7 +38,7 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 						count: 10,
 
 						sorting: {
-							lastModified: 'desc'     // initial sortingf.
+							payDate: 'desc'     // initial sortingf.
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -139,6 +139,18 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 						}, function (erorr) {
 							dataSvc.extract = null;
 							addAlert('Error running 9 am service: ' + erorr.statusText, 'danger');
+						});
+					}
+					$scope.markSettled = function (item, event) {
+						reportRepository.markSettled(item.fundRequestId).then(function (data) {
+							addAlert('manually marked funding successful: ', 'success');
+							$scope.list = data;
+							$scope.tableParams.reload();
+
+							$scope.fillTableData($scope.tableParams);
+							dataSvc.showPayrolls = true;
+						}, function (erorr) {
+							addAlert('Error updating fund request to settled: ' + erorr.statusText, 'danger');
 						});
 					}
 					

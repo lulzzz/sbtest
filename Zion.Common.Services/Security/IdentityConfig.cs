@@ -27,11 +27,12 @@ namespace HrMaxx.Common.Services.Security
 			// Use NuGet to install SendGrid (Basic C# client lib) 
 			private async Task SendEmailasync(IdentityMessage message)
 			{
-				var credentials = new NetworkCredential("payrollApp@hrmaxx.com", "hrMaxx123");
-				var mail = new MailMessage("PayrollTaxDepartment@hrmaxx.com", message.Destination);
-				var client = new SmtpClient
+				var credentials = new NetworkCredential("cs.paxol@gmail.com", "Paxol1234!");
+				var mail = new MailMessage("cs.paxol@gmail.com", message.Destination);
+                mail.From = new MailAddress("cs.paxol@gmail.com", "PAXol Support");
+            var client = new SmtpClient
 				{
-					Port = 25,
+					Port = 587, EnableSsl=true,
 					DeliveryMethod = SmtpDeliveryMethod.Network,
 					UseDefaultCredentials = false,
 					Host = ConfigurationManager.AppSettings["SMTPServer"],
@@ -89,11 +90,11 @@ namespace HrMaxx.Common.Services.Security
 
             //manager.PasswordValidator = new PasswordValidator
             //{
-            //	RequiredLength = 1,
-            //	RequireNonLetterOrDigit = false,
-            //	RequireDigit = false,
-            //	RequireLowercase = false,
-            //	RequireUppercase = false,
+            //    RequiredLength = 1,
+            //    RequireNonLetterOrDigit = false,
+            //    RequireDigit = false,
+            //    RequireLowercase = false,
+            //    RequireUppercase = false,
             //};
 
             // Configure user lockout defaults

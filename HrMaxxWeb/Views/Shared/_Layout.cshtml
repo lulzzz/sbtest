@@ -306,7 +306,7 @@
                             <input type="text" class="form-control" placeholder="Type Company Name" ng-show="data.showCompanies" ng-disabled="data.hostCompanies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null;$viewValue=null" ng-mouseleave="data.selectedCompany1=null;$viewValue=null" typeahead-show-hint="true" typeahead-on-select="companySelected()" uib-typeahead="company as company.name for company in data.hostCompanies | filter:{name:$viewValue}">
                         </div>
                         <div class="col-sm-3 pull-right">
-                            <select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
+                            <select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts | orderBy:'firmName' track by host1.id">
                                 <option value="">Select Host</option>
                             </select>
                         </div>

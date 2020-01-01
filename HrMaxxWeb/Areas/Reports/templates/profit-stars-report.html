@@ -95,11 +95,9 @@
 								{{item.projectedPayDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':item.payRequestId, 'fa-film':!item.payRequestId}" ng-style="(item.payRequestId && {'color':'green'}) || (!item.payRequestId && {'color':'orange'})"></i>
 							</td>
 							<td data-title=" 'Status' " class="col-sm-1">
-								{{item.status}}
+								{{item.status}} - {{item.fundRequestId}} <button class="btn btn-xs btn-success btn-circle" ng-show="item.status==='Funding Requested'" ng-click="markSettled(item, $event)"><i class="fa fa-check" style="color:green"></i></button>
 							</td>
-
 						</tr>
-
 					</table>
 					<script type="text/ng-template" id="custom/pager">
 								<ul class="pager ng-cloak">
@@ -120,13 +118,7 @@
 								</ul>
 							</script>
 				</div>
-
 			</div>
-
-
-
-
 		</div>
 	</div>
-
 </div>

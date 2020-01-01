@@ -176,12 +176,16 @@ namespace OPImportUtility
 					string.Format("select c.CompanyID from Company c left outer join dbo.CompanyPayroll cp on c.CompanyID=cp.CompanyID left outer join dbo.Companyjournal cj on c.CompanyID=cj.CompanyID where Status='{0}' and c.CompanyId not in (select CompanyIntId from paxolop.dbo.Company) and (cp.payrolls is not null or cj.journals is not null);", status));
 			Logger.Info(string.Format("Companies matching status {0} : {1}", status, companies.Count));
 			var counter = (int) 0;
-			var excluded = new List<int> { 141, 145, 30, 31, 522, 318, 427, 428, 303, 623, 350, 48, 586, 562, 589, 545, 525, 608, 242, 613, 558, 413, 630, 128, 676, 425, 305, 124, 609, 290, 332, 654, 386, 340, 497, 383, 565, 571, 374, 250, 517, 92, 523, 657, 614, 280, 291, 339, 296, 659, 382, 302, 256, 257, 334, 253, 568, 301, 553, 445, 574, 551, 325, 499, 63, 259, 647, 311, 312, 309, 420, 326, 422, 419, 293, 475, 477, 629, 496, 600, 284, 652, 371, 52, 548, 244, 231, 566, 232, 211, 264, 637, 322, 642, 560, 262, 561, 684, 135, 516, 310, 273, 275, 277, 439, 272, 341, 254, 139, 685, 500, 134, 247, 336, 237, 229, 230, 547, 233, 518, 633, 375, 662, 604, 554, 266, 393, 270, 209, 282, 258, 392, 319, 355, 632, 279, 274, 656, 263, 283, 556, 557, 46, 540, 429, 45, 153, 174, 146, 669, 42, 38, 61, 66, 41, 380, 467, 461, 71, 108, 106, 379, 129, 126, 381, 532, 132 };
-			companies.Where(c1=>!excluded.Any(c2=>c2==c1)).ToList().ForEach(c =>
+			//var excluded = new List<int> { 145,  31, 522, 318, 427, 428, 303, 623, 350, 48, 586, 562, 589, 545, 525, 608, 242, 613, 558, 413, 630, 128, 676, 425, 305, 124, 609, 290, 332, 654, 386, 340, 497, 383, 565, 571, 374, 250, 517, 523, 657, 614, 280, 291, 339, 296, 659, 382, 302, 256, 257, 334, 253, 568, 301, 553, 445, 574, 551, 325, 499, 63, 259, 647, 311, 312, 309, 420, 326, 422, 419, 293, 475, 477, 629, 496, 600, 284, 652, 371, 52, 548, 244, 231, 566, 232, 211, 264, 637, 322, 642, 560, 262, 561, 684, 135, 516, 310, 273, 275, 277, 439, 272, 341, 254, 139, 685, 500, 134, 247, 336, 237, 229, 230, 547, 233, 518, 633, 375, 662, 604, 554, 266, 393, 270, 209, 282, 258, 392, 319, 355, 632, 279, 274, 656, 263, 283, 556, 557, 46, 540, 429, 45, 153, 174, 146, 669, 42, 38, 61, 66, 41, 380, 467, 461, 71, 108, 106, 379, 129, 126, 381, 532, 132 };
+			companies.ForEach(c =>
 			{
 				Console.WriteLine("Starting company {0}", c);
-				
-					ImportCompanies(scope, c);	
+				using(var txn = TransactionScopeHelper.TransactionNoTimeout())
+				{
+					ImportCompanies(scope, c);
+					txn.Complete();
+				}
+					
 				
 				
 				Console.WriteLine("{1} -- Finished company {0}", c, counter++);
@@ -1009,7 +1013,7 @@ namespace OPImportUtility
 			                   "(select Id from Company where CompanyIntId=companyId) companyId, " +
 			                   "netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, 0 hostcheck, " +
 			                   "(select Id from Company where CompanyIntId=companyId) payingcompanyId " +
-			                   "from OnlinePayroll.dbo.DDPayroll) s " +
+			                   "from OnlinePayroll.dbo.DDPayroll where companyid in (select companyintid from company)) s " +
 			                   "on (t.DDPayrollId=s.DDPayrollId) " +
 			                   "when matched and (t.Status<>s.Status collate Latin1_General_CI_AS or t.Voided<>s.Voided) then update set t.Status=s.Status, t.Voided=s.Voided " +
 			                   "when not matched by target then insert (DDPayrollId, payrollId, payrollFundId, employeeId, companyId, netPayAmt, AccountType, AccountNumber, RoutingNumber, payDate, TransactionDate, enteredDate, Voided, status, HostCheck, PayingCompanyId) " +
@@ -1017,7 +1021,7 @@ namespace OPImportUtility
 			                   "when not matched by source then delete;set identity_insert DDPayroll Off; ", new { });
 			write.ExecuteQuery("set identity_insert DDPayrollFund On;" +
 			                   "merge DDPayrollFund t using (select DDPayrollFundId, " +
-			                   "(select Id from Company where CompanyIntId=companyId) CompanyId, netSum, entereddate from OnlinePayroll.dbo.DDPayrollFund) s " +
+							   "(select Id from Company where CompanyIntId=companyId) CompanyId, netSum, entereddate from OnlinePayroll.dbo.DDPayrollFund  where companyid in (select companyintid from company)) s " +
 			                   "on (t.DDPayrollFundId=s.DDPayrollFundId) " +
 			                   "when not matched then insert (DDPayrollFundId, companyId, netsum, entereddate) values (s.DDPayrollFundId, s.companyId, s.netsum, s.entereddate) " +
 			                   "when not matched by source then delete;set identity_insert DDPayrollFund Off;" , new { });
@@ -1384,6 +1388,7 @@ namespace OPImportUtility
 			var read = scope.Resolve<IOPReadRepository>();
 			var write = scope.Resolve<IWriteRepository>();
 			var readservice = scope.Resolve<IReaderService>();
+			var userservice = scope.Resolve<IUserService>();
 			var hostservice = scope.Resolve<IHostService>();
 			//var write = scope.Resolve<IWriteRepository>();
 			if (!users.Any())
@@ -1393,6 +1398,7 @@ namespace OPImportUtility
 			}
 			var companies = readservice.GetCompanies(null, null, null);
 			var hosts = hostservice.GetHostList(Guid.Empty);
+			var userList = userservice.GetUsers(null,null);
 			 var appUsers = new List<UserResource>();
 			if (level == 0)
 			{
@@ -1433,7 +1439,8 @@ namespace OPImportUtility
 					appUser.Role = new UserRole() { RoleId = (int)RoleTypeEnum.HostStaff, RoleName = RoleTypeEnum.HostStaff.GetDbName() };
 				else if (u.LevelID == 1)
 					appUser.Role = new UserRole() { RoleId = (int)RoleTypeEnum.Host, RoleName = RoleTypeEnum.Host.GetDbName() };
-				appUsers.Add(appUser);
+				if(!userList.Any(u1=>u1.Email.Equals(appUser.Email) || u1.UserName.Equals(appUser.UserName)))
+					appUsers.Add(appUser);
 			});
 			Logger.Info(string.Format("Starting import of users " + appUsers.Count));
 			var success = new List<UserResource>();
@@ -1453,11 +1460,12 @@ namespace OPImportUtility
 						var response1 = client.Execute(request);
 						if (response1.StatusCode == HttpStatusCode.OK)
 						{
+							Logger.Info(string.Format("User Created: {0}: {1} -- {2}", appUser.UserName, appUser.Password, appUser.Email));
 							success.Add(appUser);
 						}
 						else
 						{
-							Logger.Info(string.Format("User: {0}, Message: {1} {2}", appUser.UserName, response1.StatusCode, response1.StatusDescription));
+							Logger.Info(string.Format("User: {0} Password: {3}, Message: {1} {2}", appUser.UserName, response1.StatusCode, response1.StatusDescription, appUser.Password));
 							failed.Add(appUser);
 						}
 					}

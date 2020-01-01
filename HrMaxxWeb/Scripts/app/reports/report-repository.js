@@ -32,6 +32,16 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
+			markSettled: function (fundRequestId) {
+				var deferred = $q.defer();
+				reportServer.one('MarkFundingSuccessful/' + fundRequestId).getList().then(function (response) {
+					deferred.resolve(response);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			run1pm: function () {
 				var deferred = $q.defer();
 				reportServer.one('ProfitStars1pm').get().then(function (response) {

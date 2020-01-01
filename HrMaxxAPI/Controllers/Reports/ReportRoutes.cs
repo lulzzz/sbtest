@@ -5,6 +5,7 @@
 		public const string ACHExtract = "Reports/ACHExtract/{id:int}";
 		public const string ACHReport = "Reports/ACHReport";
 		public const string ProfitStarsPayrollList = "Reports/ProfitStarsPayrollList";
+		public const string MarkFundingSuccessful = "Reports/MarkFundingSuccessful/{fundRequestId:int}";
 		public const string ProfitStars1pm = "Reports/ProfitStars1pm";
 		public const string ProfitStars9am = "Reports/ProfitStars9am";
 		public const string ACHFileAndExtract = "Reports/ACHFileAndExtract";

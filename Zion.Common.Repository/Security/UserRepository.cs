@@ -44,6 +44,11 @@ namespace HrMaxx.Common.Repository.Security
 			if (dbUser!=null)
 			{
 				dbUser.PhoneNumber = user.Phone;
+				dbUser.Email = user.Email;
+				dbUser.FirstName = user.FirstName;
+				dbUser.LastName = user.LastName;
+				dbUser.LastModified = DateTime.Now;
+				dbUser.LastModifiedBy = dbUser.UserName;
 				dbUser.PhoneNumberConfirmed = dbUser.PhoneNumberConfirmed || !string.IsNullOrWhiteSpace(user.Phone);
 				if (user.Role != null)
 				{

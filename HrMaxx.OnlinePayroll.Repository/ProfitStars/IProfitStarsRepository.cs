@@ -16,5 +16,6 @@ namespace HrMaxx.OnlinePayroll.Repository.ProfitStars
 		void SavePaymentRequests(List<ProfitStarsPayment> paymentRequests, string requestFile);
 		void UpdatePaymentRequests(ProfitStarsReportResponse reportResponse, string responseFile);
 		List<ProfitStarsPayroll> GetProfitStarsPayrollList();
+		void MarkFundingSuccessful(int fundRequestId);
 	}
 }

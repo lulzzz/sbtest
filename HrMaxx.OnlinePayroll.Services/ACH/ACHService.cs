@@ -79,9 +79,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 				var emailSubject = "Paxol: ACH Service-9AM: Summary";
 				var emailStr = new StringBuilder();
 				var startdateStr = _profitStarsRepository.MoveRequestsToReports();
-				var startdate = string.IsNullOrWhiteSpace(startdateStr)
-					? DateTime.Today.AddDays(-1)
-					: Convert.ToDateTime(startdateStr);
+				var startdate = GetPreviousBankingDay();
 				var fileName = string.Format("ReportRequest-{0}-{1}", DateTime.Today.ToString("yyyy-MM-dd"), DateTime.Now.Millisecond);
 				var requestFile = CreateRequestRTG(new List<ProfitStarsPayment>(), "transformers/ProfitStars/ReportRequest.xslt", fileName, startdate);
 				var responseFile = string.Format("ReportResponse-{0}-{1}", DateTime.Today.ToString("yyyy-MM-dd"), DateTime.Now.Millisecond);
@@ -128,6 +126,24 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 				var result =  _profitStarsRepository.GetProfitStarsPayrollList();
 				if (result==null)
 					result =  new List<ProfitStarsPayroll>();
+				return result;
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Fill ACH table");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		public List<ProfitStarsPayroll> MarkFundingSuccessful(int fundRequestId)
+		{
+			try
+			{
+				_profitStarsRepository.MarkFundingSuccessful(fundRequestId);
+				var result = _profitStarsRepository.GetProfitStarsPayrollList();
+				if (result == null)
+					result = new List<ProfitStarsPayroll>();
 				return result;
 			}
 			catch (Exception e)
@@ -264,10 +280,10 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
 					_profitStarsRepository.RefreshProfitStarsData(payDay);
-					returnList = _profitStarsRepository.GetProfitStarsData();
+					
 					txn.Complete();
 				}
-
+				returnList = _profitStarsRepository.GetProfitStarsData();
 				return returnList;
 			}
 			catch (Exception e)
@@ -289,8 +305,18 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			}
 			return threedaysafter.Date;
 		}
+		private DateTime GetPreviousBankingDay()
+		{
+			var previousDay = DateTime.Today.AddDays(-1);
+			var bankHolidays = _metaDataService.GetBankHolidays();
+			while (previousDay.DayOfWeek == DayOfWeek.Saturday || previousDay.DayOfWeek == DayOfWeek.Sunday || bankHolidays.Any(b => b.Value.Equals(previousDay)))
+			{
+				previousDay = previousDay.AddDays(-1);
+			}
+			return previousDay.Date;
+		}
 
-		
+
 
 		private void FillACHPayChecks()
 		{

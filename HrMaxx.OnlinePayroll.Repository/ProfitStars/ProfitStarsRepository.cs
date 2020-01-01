@@ -29,15 +29,16 @@ namespace HrMaxx.OnlinePayroll.Repository.ProfitStars
 
 		public void RefreshProfitStarsData(DateTime payDay)
 		{
-			string sql = "exec usp_RefreshProfitStarsData @payDate='" + payDay + "'";
+			string sql = "usp_RefreshProfitStarsData";
 
 			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(sql))
 				{
 					cmd.CommandTimeout = 0;
-					cmd.CommandType = CommandType.Text;
+					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Connection = con;
+					cmd.Parameters.AddWithValue("payDate", payDay.ToString("MM/dd/yyyy"));
 					con.Open();
 					cmd.ExecuteNonQuery();
 					con.Close();
@@ -47,14 +48,14 @@ namespace HrMaxx.OnlinePayroll.Repository.ProfitStars
 
 		public string MoveRequestsToReports()
 		{
-			string sql = "exec usp_MoveProfitStarsRequestsToReports";
+			string sql = "usp_MoveProfitStarsRequestsToReports";
 
 			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(sql))
 				{
 					cmd.CommandTimeout = 0;
-					cmd.CommandType = CommandType.Text;
+					cmd.CommandType = CommandType.StoredProcedure;
 					cmd.Connection = con;
 					con.Open();
 					
@@ -139,13 +140,20 @@ namespace HrMaxx.OnlinePayroll.Repository.ProfitStars
 				
 			}
 		}
-
+		public void MarkFundingSuccessful(int fundRequestId)
+		{
+			const string sql = "update ddpayrollfundreport set manualUpdate=1, transactionstatus='Processed', settlementstatus='Settled'  where ddpayrollfundrequestid=@FundRequestId; update ddpayroll set Status='Funding Succeeded' where payrollfundid=@FundRequestId";
+			using (var con = GetConnection())
+			{
+				var counts = con.Execute(sql, new { FundRequestId = fundRequestId });
+			}
+		}
 		public List<ProfitStarsPayroll> GetProfitStarsPayrollList()
 		{
 			const string sql = "select dp.DDPayrollId as Id, PayrollId as PayCheckId, dp.CompanyId, (select CompanyName from Company where Id=dp.CompanyId) CompanyName," +
 			                   "PayingCompanyId,(select CompanyName from Company where Id=PayingCompanyId) PayingCompanyName,HostCheck IsHostCheck," +
 			                   "EmployeeId, e.FirstName, e.LastName, e.MiddleInitial," +
-			                   "dp.PayDate, TransactionDate ConfirmedTime, dp.EnteredDate, Status, netPayAmt Amount, dpfr.DDPayrollFundRequestId FundRequestId, dpfr.RequestDate FundRequestDate," +
+			                   "dp.PayDate, TransactionDate ConfirmedTime, dp.EnteredDate, Status, netPayAmt Amount, dpfr.DDPayrollFundId FundRequestId, dpfr.RequestDate FundRequestDate," +
 			                   "dppr.DDPayrollPayRequestId PayRequestId, dppr.enteredDate PayRequestDate, case dp.AccountType when 'Checking' then 1 else 0 end AccountType, dp.AccountNumber, dp.RoutingNumber " +
 			                   "from ddpayroll dp inner join employee e on dp.employeeId=e.id " +
 			                   "left outer join ddpayrollfundrequest dpfr on dpfr.ddpayrollfundid=dp.payrollfundid " +

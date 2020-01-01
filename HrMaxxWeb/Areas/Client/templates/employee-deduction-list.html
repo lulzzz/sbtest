@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <label class="control-label col-md-4 col-sm-4" for="rate">Rate :</label>
                     <div class="col-md-4 col-sm-4">
-                        <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.rate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required />
+                        <input class="form-control"  id="rate" name="rate" ng-model="selected.rate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" step="0.01" required />
 
                     </div>
                     <div class="col-md-4 col-sm-4 m-l-0">
@@ -56,26 +56,26 @@
                 <div class="form-group">
                     <label class="control-label col-md-4 col-sm-4" for="ec">Employer %:</label>
                     <div class="col-md-6 col-sm-6">
-                        <input class="form-control" type="number" id="ec" name="ec" ng-model="selected.employerRate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" max="100" min="0" />
+                        <input class="form-control" step="0.01" id="ec" name="ec" ng-model="selected.employerRate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" max="100" min="0" />
                         <label class="label label-danger" ng-show="dedform.ec.$error.max">value can only be between 0 and 100</label>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-md-4 col-sm-4" for="amax">Annual Max :</label>
                     <div class="col-md-6 col-sm-6">
-                        <input class="form-control" type="number" id="amax" name="amax" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
+                        <input class="form-control" step="0.01" id="amax" name="amax" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-md-4 col-sm-4" for="limit">Absolute Limit :</label>
                     <div class="col-md-6 col-sm-6">
-                        <input class="form-control" type="number" id="limit" name="limit" ng-model="selected.limit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
+                        <input class="form-control" step="0.01" id="limit" name="limit" ng-model="selected.limit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-md-4 col-sm-4" for="ceiling">Ceiling p.c :</label>
                     <div class="col-md-4 col-sm-4">
-                        <input class="form-control" type="number" id="ceiling" name="ceiling" ng-model="selected.ceilingPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
+                        <input class="form-control" step="0.01" id="ceiling" name="ceiling" ng-model="selected.ceilingPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
                     </div>
                     <div class="col-md-4 col-sm-4 m-l-0">
                         <select class="form-control" ng-model="selected.ceilingMethod" ng-options="m.value for m in data.types track by m.key" ng-required="selected.ceilingPerCheck">
@@ -86,7 +86,7 @@
                 <div class="form-group" ng-show="selected.deduction.type.id===3">
                     <label class="control-label col-md-4 col-sm-4" for="priority">Priority :</label>
                     <div class="col-md-4 col-sm-4">
-                        <input class="form-control" type="number" id="priority" name="priority" ng-model="selected.priority" ng-pattern="/^[0-9]?$/" />
+                        <input class="form-control"  id="priority" name="priority" ng-model="selected.priority" ng-pattern="/^[0-9]?$/" />
                     </div>
                 </div>
                 <div class="form-group" ng-show="selected.deduction.type.id===3">
