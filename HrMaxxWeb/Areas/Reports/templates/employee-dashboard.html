@@ -3,7 +3,7 @@
 	<div class="panel-heading hidden-print" ng-show="showPanelTitle">
 		<h2 class="panel-title">Dashboard</h2>
 	</div>
-	<div class="panel-body">
+	<div class="panel-body" ng-show="data.loaded">
 		
         <div class="row">
             <!-- begin col-3 -->
@@ -16,7 +16,7 @@
                         <p>{{data.dashboard.lastPayroll.grossWage | currency}}</p>
                     </div>
                     <div class="stats-info">
-                        <h4>YTD</h4>
+                        <h4>YTD - {{data.dashboard.ytdYear}}</h4>
                         <p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
                     </div>
                     <div class="stats-link">
@@ -33,7 +33,7 @@
                         <p>{{data.dashboard.lastPayroll.netWage | currency}}</p>
                     </div>
                     <div class="stats-info">
-                        <h4>YTD</h4>
+                        <h4>YTD - {{data.dashboard.ytdYear}}</h4>
                         <p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
                     </div>
                     <div class="stats-link">
@@ -52,7 +52,7 @@
                         <p>{{data.dashboard.lastPayroll.deductions | currency}}</p>
                     </div>
                     <div class="stats-info">
-                        <h4>YTD</h4>
+                        <h4>YTD - {{data.dashboard.ytdYear}}</h4>
                         <p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
                     </div>
                     <div class="stats-link">

@@ -43,6 +43,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void SavePayCheckPayCodes(List<PayCheckPayCode> ptcodes);
 		void SavePayCheckWorkerCompensations(List<PayCheckWorkerCompensation> ptwcs);
 		void FixPayCheckTaxes(List<PayCheck> taxupdate);
+
+		void FixPayCheckTaxWages(List<PayCheck> taxupdate, string taxCode);
 		void FixPayCheckAccumulations(List<PayCheck> accupdate);
 		void ReIssueCheck(int payCheckId);
 		void MovePayrolls(List<Models.Payroll> payrolls, List<Models.Journal> affectedJournals, List<PayrollInvoice> invoices, Guid guid, Guid source);

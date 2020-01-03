@@ -24,9 +24,12 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 					var dataSvc = $scope.filter;
 					var currentYear = new Date().getFullYear();
 					dataSvc.filter.year = currentYear;
-					for (var i = currentYear - 4; i <= currentYear + 4; i++) {
-						dataSvc.filter.years.push(i);
+					if (dataSvc.filter.years.length === 0) {
+						for (var i = currentYear; i >= currentYear - 4; i--) {
+							dataSvc.filter.years.push(i);
+						}
 					}
+					
 					
 					$scope.dt = new Date();
 

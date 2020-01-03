@@ -1,12 +1,12 @@
-﻿/****** Object:  StoredProcedure [dbo].[GetExtractAccumulation]    Script Date: 31/12/2019 1:59:27 PM ******/
+﻿/****** Object:  StoredProcedure [dbo].[GetExtractAccumulation]    Script Date: 3/01/2020 6:50:54 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetExtractAccumulation]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetExtractAccumulation]
 GO
-/****** Object:  StoredProcedure [dbo].[GetCompanyTaxAccumulation]    Script Date: 31/12/2019 1:59:27 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetCompanyTaxAccumulation]    Script Date: 3/01/2020 6:50:54 PM ******/
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[GetCompanyTaxAccumulation]') AND type in (N'P', N'PC'))
 DROP PROCEDURE [dbo].[GetCompanyTaxAccumulation]
 GO
-/****** Object:  StoredProcedure [dbo].[GetCompanyTaxAccumulation]    Script Date: 31/12/2019 1:59:27 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetCompanyTaxAccumulation]    Script Date: 3/01/2020 6:50:54 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -141,12 +141,14 @@ insert into #tmp(Id, CompanyId)
 	declare @quarter4ed smalldatetime='12/31/'+@year
 
 	declare @month int = month(@enddateL)
-
-	declare @twelve1d smalldatetime= cast(@month-2 as varchar(max)) + '/12/' + @year 
-	declare @twelve2d smalldatetime= cast(@month-1 as varchar(max)) + '/12/' + @year 
+	declare @twelve1date smalldatetime = dateadd(month,-2, @endDateL)
+	declare @twelve2date smalldatetime = dateadd(month,-1, @endDateL)
+	
+	declare @twelve1d smalldatetime= cast(month(@twelve1date) as varchar(max)) + '/12/' + cast(year(@twelve1date) as varchar(max)) 
+	declare @twelve2d smalldatetime= cast(month(@twelve2date) as varchar(max)) + '/12/' + cast(year(@twelve2date) as varchar(max)) 
 	declare @twelve3d smalldatetime= cast(@month as varchar(max)) + '/12/' + @year 
 	
-	
+	print 'hellp'
 	select 
 		Company.Id CompanyId, Company.CompanyName, Company.FederalEIN FEIN, Company.FederalPin FPIN,
 		(
@@ -306,7 +308,7 @@ insert into #tmp(Id, CompanyId)
 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GetExtractAccumulation]    Script Date: 31/12/2019 1:59:27 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetExtractAccumulation]    Script Date: 3/01/2020 6:50:54 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -430,8 +432,11 @@ declare @year as varchar(max)=cast(year(@startdateL) as varchar(max))
 	declare @quarter4ed smalldatetime='12/31/'+@year
 
 	declare @month int = month(@enddateL)
-	declare @twelve1d smalldatetime= cast(@month-2 as varchar(max)) + '/12/' + @year 
-	declare @twelve2d smalldatetime= cast(@month-1 as varchar(max)) + '/12/' + @year 
+	declare @twelve1date smalldatetime = dateadd(month,-2, @endDateL)
+	declare @twelve2date smalldatetime = dateadd(month,-1, @endDateL)
+	
+	declare @twelve1d smalldatetime= cast(month(@twelve1date) as varchar(max)) + '/12/' + cast(year(@twelve1date) as varchar(max)) 
+	declare @twelve2d smalldatetime= cast(month(@twelve2date) as varchar(max)) + '/12/' + cast(year(@twelve2date) as varchar(max)) 
 	declare @twelve3d smalldatetime= cast(@month as varchar(max)) + '/12/' + @year 
 
 select * into #tmpComp
@@ -814,396 +819,3 @@ select * into #tmpComp
 
 END
 GO
-ALTER TABLE DDPayroll ADD PRIMARY KEY (DDPayrollId);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayroll]') AND name = N'IX_ddpayrollStatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollStatus] ON [dbo].[ddpayroll]
-(
-	[status] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayroll]') AND name = N'IX_ddpayrollpayrollid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayrollid] ON [dbo].[ddpayroll]
-(
-	[payrollId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayroll]') AND name = N'IX_ddpayrollpayrollFundId')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayrollFundId] ON [dbo].[ddpayroll]
-(
-	[payrollFundId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayroll]') AND name = N'IX_ddpayrollemployeeid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollemployeeid] ON [dbo].[ddpayroll]
-(
-	[employeeId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayroll]') AND name = N'IX_ddpayrollcompanyid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollcompanyid] ON [dbo].[ddpayroll]
-(
-	[companyId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-ALTER TABLE DDPayrollFund ADD PRIMARY KEY (DDPayrollFundId);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfund]') AND name = N'IX_ddpayrollfundcompanyid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundcompanyid] ON [dbo].[ddpayrollfund]
-(
-	[companyId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfund]') AND name = N'IX_ddpayrollfunddate')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfunddate] ON [dbo].[ddpayrollfund]
-(
-	[enteredDate] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-ALTER TABLE DDPayrollPay ADD PRIMARY KEY (DDPayrollPayId);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpay]') AND name = N'IX_ddpayrollpayddpayrollid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayddpayrollid] ON [dbo].[ddpayrollpay]
-(
-	[ddpayrollid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-alter table DDPayrollPay alter column PayStatus varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpay]') AND name = N'IX_ddpayrollpaystatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundpaystatus] ON [dbo].[ddpayrollpay]
-(
-	[paystatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpay]') AND name = N'IX_ddpayrollpaydate')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpaydate] ON [dbo].[ddpayrollpay]
-(
-	[enteredDate] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-ALTER TABLE DDPayrollFundRequest ADD PRIMARY KEY (DDPayrollFundRequestId);
-Go
-alter table ddpayrollfundrequest alter column resultCode varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundrequest]') AND name = N'IX_ddpayrollfundrequestResult')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundrequestResult] ON [dbo].[ddpayrollfundrequest]
-(
-	[resultCode] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundrequest]') AND name = N'IX_ddpayrollfundrequestfundid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundrequestfundid] ON [dbo].[ddpayrollfundrequest]
-(
-	[ddpayrollfundid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-
-ALTER TABLE DDPayrollPayRequest ADD PRIMARY KEY (DDPayrollPayRequestId);
-Go
-Alter table DDpayrollpayrequest alter column resultCode varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpayrequest]') AND name = N'IX_ddpayrollpayrequestResult')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayrequestResult] ON [dbo].[ddpayrollpayrequest]
-(
-	[resultCode] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpayrequest]') AND name = N'IX_ddpayrollpayrequestpayid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayrequestpayid] ON [dbo].[ddpayrollpayrequest]
-(
-	[ddpayrollpayid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-ALTER TABLE [ddpayrollrefundrequest] ADD PRIMARY KEY (DDPayrollRefundId);
-Go
-alter table ddpayrollrefundrequest alter column resultCode varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollrefundrequest]') AND name = N'IX_ddpayrollrefundrequestresultcode')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollrefundrequestresultcode] ON [dbo].[ddpayrollrefundrequest]
-(
-	[resultCode] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollrefundrequest]') AND name = N'IX_ddpayrollrefundrequestpayid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollrefundrequestpayid] ON [dbo].[ddpayrollrefundrequest]
-(
-	[ddpayrollpayid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-Alter table DDPayrollFundReport Alter column TransactionStatus varchar(100);
-Alter table DDPayrollFundReport Alter column SettlementStatus varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundreport]') AND name = N'IX_ddpayrollfundreportrequestid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundreportrequestid] ON [dbo].[ddpayrollfundreport]
-(
-	[ddpayrollfundrequestid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundreport]') AND name = N'IX_ddpayrollfundreporttransactionstatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundreporttransactionstatus] ON [dbo].[ddpayrollfundreport]
-(
-	[transactionstatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundreport]') AND name = N'IX_ddpayrollfundreportsettlementstatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundreportsettlementstatus] ON [dbo].[ddpayrollfundreport]
-(
-	[settlementstatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundrequest]') AND name = N'IX_ddpayrollfundrequestdate')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundrequestdate] ON [dbo].[ddpayrollfundrequest]
-(
-	[requestdate] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-
-Alter table DDPayrollPayReport Alter column TransactionStatus varchar(100);
-Alter table DDPayrollPayReport Alter column SettlementStatus varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpayreport]') AND name = N'IX_ddpayrollpayreporttransactionstatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayreporttransactionstatus] ON [dbo].[ddpayrollpayreport]
-(
-	[transactionstatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpayreport]') AND name = N'IX_ddpayrollpayreportsettlementstatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayreportsettlementstatus] ON [dbo].[ddpayrollpayreport]
-(
-	[settlementstatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpayrequest]') AND name = N'IX_ddpayrollpayrequestdate')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayrequestdate] ON [dbo].[ddpayrollpayrequest]
-(
-	[enteredDate] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-
-Alter table ddpayrollrefundreport Alter column TransactionStatus varchar(100);
-Alter table ddpayrollrefundreport Alter column SettlementStatus varchar(100);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollrefundreport]') AND name = N'IX_ddpayrollrefundreporttransactionstatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollrefundreporttransactionstatus] ON [dbo].[ddpayrollrefundreport]
-(
-	[transactionstatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollrefundreport]') AND name = N'IX_ddpayrollrefundreportsettlementstatus')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollrefundreportsettlementstatus] ON [dbo].[ddpayrollrefundreport]
-(
-	[settlementstatus] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollrefundrequest]') AND name = N'IX_ddpayrollrefundrequestdate')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollrefundrequestdate] ON [dbo].[ddpayrollrefundrequest]
-(
-	[requestDate] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-Alter table DDPayrollFundReport Add Primary Key (DDPayrollFundReportId);
-Alter table DDPayrollPayReport Add Primary Key (DDPayrollPayReportId);
-Alter table DDPayrollRefundReport Add Primary Key (DDPayrollRefundReportId);
-Go
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollfundreport]') AND name = N'IX_ddpayrollfundreportrequestid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollfundreportrequestid] ON [dbo].[ddpayrollfundreport]
-(
-	[ddpayrollfundrequestid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[ddpayrollpayreport]') AND name = N'IX_ddpayrollpayreportrequestid')
-CREATE NONCLUSTERED INDEX [IX_ddpayrollpayreportrequestid] ON [dbo].[ddpayrollpayreport]
-(
-	[ddpayrollpayrequestid] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-GO
-
-/****** Object:  StoredProcedure [dbo].[usp_MoveProfitStarsRequestsToReports]    Script Date: 1/01/2020 4:37:52 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_MoveProfitStarsRequestsToReports]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[usp_MoveProfitStarsRequestsToReports]
-GO
-/****** Object:  StoredProcedure [dbo].[usp_MoveProfitStarsRequestsToReports]    Script Date: 1/01/2020 4:37:52 PM ******/
-SET ANSI_NULLS OFF
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-/****** Object:  Stored Procedure dbo.usp_CheckBankCOA    Script Date: 3/21/2006 4:24:45 PM ******/
-
-CREATE PROCEDURE [dbo].[usp_MoveProfitStarsRequestsToReports]
-AS
-
-insert into ddpayrollfundreport (ddpayrollfundrequestid, entereddate)
-select distinct dpfr.ddpayrollfundid as ddpayrollrequestid, getdate()
-from ddpayrollfundrequest dpfr inner join ddpayroll dp on dpfr.ddpayrollfundid=dp.payrollfundid
-where dpfr.resultCode='Success' 
-and dp.status='Funding Requested' and dpfr.ddpayrollfundid not in (select ddpayrollfundrequestid from ddpayrollfundreport)
-
-insert into ddpayrollpayreport (ddpayrollpayrequestid, entereddate)
-select distinct dppr.ddpayrollpayid as ddpayrollrequestid, getdate()
-from ddpayrollpayrequest dppr inner join ddpayrollpay dpp on dppr.ddpayrollpayid=dpp.ddpayrollpayid
-inner join ddpayroll dp on dpp.ddpayrollid=dp.ddpayrollid
-where dppr.resultCode='Success' and dpp.paystatus='Payment Requested'
-and dppr.ddpayrollpayid not in (select ddpayrollpayrequestid from ddpayrollpayreport)
-
-
-insert into ddpayrollrefundreport(ddpayrollrefundrequestid, entereddate)
-select ddpayrollrefundid, getdate()
-from ddpayrollrefundrequest 
-where 
-requestdate is not null 
-and resultcode='Success' and ddpayrollrefundid not in (select ddpayrollrefundrequestid from ddpayrollrefundreport)
-
-
-
-create table #temp23 (entereddate smalldatetime)
-
-insert into #temp23 select min(requestdate) from ddpayrollfundreport d1, ddpayrollfundrequest d2 where d1.ddpayrollfundrequestid=d2.ddpayrollfundid and (d1.transactionstatus not in ('Processed') or d1.settlementstatus not in ('Settled'))
-insert into #temp23 select min(d2.entereddate) from ddpayrollpayreport d1, ddpayrollpayrequest d2 where d1.ddpayrollpayrequestid=d2.ddpayrollpayid and (d1.transactionstatus not in ('Processed') or d1.settlementstatus not in ('Settled'))
-insert into #temp23 select min(requestdate) from ddpayrollrefundreport d1, ddpayrollrefundrequest d2 where d1.ddpayrollrefundrequestid=d2.ddpayrollpayid and (d1.transactionstatus not in ('Processed') or d1.settlementstatus not in ('Settled'))
-
-select min(entereddate) as entereddate from #temp23
-
-drop table #temp23
-GO
-/****** Object:  StoredProcedure [dbo].[usp_RefreshProfitStarsData]    Script Date: 1/01/2020 5:53:52 PM ******/
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[usp_RefreshProfitStarsData]') AND type in (N'P', N'PC'))
-DROP PROCEDURE [dbo].[usp_RefreshProfitStarsData]
-GO
-/****** Object:  StoredProcedure [dbo].[usp_RefreshProfitStarsData]    Script Date: 1/01/2020 5:53:52 PM ******/
-SET ANSI_NULLS OFF
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-/****** Object:  Stored Procedure dbo.usp_CheckBankCOA    Script Date: 3/21/2006 4:24:45 PM ******/
-
-CREATE PROCEDURE [dbo].[usp_RefreshProfitStarsData]
-	@payDate smalldatetime
-AS
-
-declare @currentDate varchar(10)
-
-set @currentDate=convert(varchar,month(getDate()))+'/'+convert(varchar,day(getDate()))+'/'+convert(varchar,year(getDate()))
-
-
-
-
-insert into ddpayrollfund (companyid, netSum, entereddate) 
-select a.companyid, a.netSum1, @currentDate from
-(
-	select companyid, sum(round(NetWage,2)) as netSum1
-	from
-	(
-		select  case when p.peoasococheck=1 then h.CompanyId else p.CompanyId end CompanyId, p.NetWage
-		from PayrollPayCheck p 
-		inner join employee e on p.employeeid=e.id
-		inner join company c on e.companyid=c.id
-		inner join host h on c.HostId=h.Id
-
-		where p.IsVoid=0   and 
-		p.paymentmethod=3 
-		and p.id not in (select distinct PayrollId from ddpayroll) 
-		and isnull(c.profitstarspayer,0)=1
-		and p.IsHistory=0
-	)b
-	group by companyid
-) a
-
-
-insert into DDPayroll (payrollId, payrollfundid, employeeId, companyId, netPayAmt, accounttype, accountnumber, routingnumber, paydate, transactiondate, entereddate, status, HostCheck, PayingCompanyId) 
-select p.Id, (select ddpayrollfundid from ddpayrollfund where companyid=(case when p.PEOASOCOCHECK=1 then (select CompanyId from host where id=c.hostId) else p.CompanyId end) and entereddate=@currentDate), p.employeeid, e.companyid,
-cast((p.NetWage*eba.Percentage/100) as decimal(18,2)), 
-ba.AccountType, ba.accountnumber, ba.routingnumber, p.payday, py.ConfirmedTime, @currentDate, 'To be Transmitted', p.PEOASOCOCheck, case when p.PEOASOCOCHECK=1 then (select CompanyId from host where id=c.hostId) else p.CompanyId end 
-from 
-PayrollPayCheck p inner join employee e on p.employeeid=e.id 
-inner join company c on e.companyid=c.id
-inner join EmployeeBankAccount eba on eba.EmployeeId=p.EmployeeId
-inner join BankAccount ba on eba.BankAccountId=ba.Id
-inner join payroll py on p.PayrollId=py.Id
-where p.payday<=@paydate 
-and p.id not in (select distinct PayrollId from ddpayroll)
-and p.IsVoid=0
-and (p.paymentmethod=3)
-and isnull(c.ProfitStarsPayer,0)=1
-
-insert into ddpayrollrefundrequest(ddpayrollpayid, companyid, netsum, accounttype, accountnumber, routingnumber)
-select dpp.ddpayrollpayid, dp.companyid, dp.netPayAmt,
-b.AccountType  accType,
-b.AccountNumber  accNum,
-b.RoutingNumber  routingNum
-from ddpayrollpayreport dppr
-inner join ddpayrollpay dpp on dppr.ddpayrollpayrequestid=dpp.ddpayrollpayid
-inner join ddpayroll dp on dpp.ddpayrollid=dp.ddpayrollid
-inner join CompanyAccount c on dp.CompanyId=c.CompanyId and c.Type=1 and c.SubType=2 and c.UsedInPayroll=1
-inner join BankAccount b on c.CompanyId=b.EntityId and b.EntityTypeId=2 and c.BankAccountId=b.Id
-where 
-dppr.transactionstatus not in ('Processed')
-and dppr.settlementstatus='Charged_Back'
-and dpp.ddpayrollpayid not in (select distinct ddpayrollpayid from ddpayrollrefundrequest)
-
-
-insert into ddpayrollfundrequest(ddpayrollfundid, netsum, accounttype, accountnumber, routingnumber)
-select distinct a.ddpayrollfundid, a.netsum, 
-(select b.accounttype from CompanyAccount c, bankaccount b where c.CompanyId=b.entityid and b.entitytypeid=2 and c.BankAccountId=b.Id and c.companyid=a.PayingCompanyId and c.SubType=2 and c.UsedInPayroll=1)  accType,
-(select b.accountnumber from CompanyAccount c, bankaccount b where c.CompanyId=b.entityid and b.entitytypeid=2 and c.BankAccountId=b.Id and c.companyid=a.PayingCompanyId and c.SubType=2 and c.UsedInPayroll=1)  accNum,
-(select b.routingnumber from CompanyAccount c, bankaccount b where c.CompanyId=b.entityid and b.entitytypeid=2 and c.BankAccountId=b.Id and c.companyid=a.PayingCompanyId and c.SubType=2 and c.UsedInPayroll=1)  routingNum
-from 
-(select dpf.*, dp.PayingCompanyId
-from ddpayrollfund dpf inner join ddpayroll dp on dpf.ddpayrollfundid=dp.payrollfundid
-where dp.status='To be Transmitted'  and dpf.ddpayrollfundid not in (select ddpayrollfundid from ddpayrollfundrequest)) a
-
-insert into ddpayrollpay (ddpayrollid, entereddate, payStatus)
-select distinct dp.ddpayrollid, dp.entereddate, 'Payment Requested'  from 
-ddpayroll dp inner join ddpayrollfundrequest dpf on dp.payrollfundid=dpf.ddpayrollfundid
-inner join ddpayrollfundreport dpfr on dpf.ddpayrollfundid=dpfr.ddpayrollfundrequestid
-where dp.voided is null and dpfr.transactionstatus='Processed'  and dpfr.settlementstatus='Settled' and dp.ddpayrollid not in (select ddpayrollid from ddpayrollpay)
-
-
-insert into ddpayrollpayrequest(ddpayrollpayid,netpay,accounttype,accountnumber, routingnumber,paydate)
-select dpp.ddpayrollpayid, dp.netPayAmt, dp.accounttype, dp.accountnumber, dp.routingnumber, dp.paydate
-from ddpayrollpay dpp inner join ddpayroll dp on dpp.ddpayrollid=dp.ddpayrollid
-where dpp.payStatus='Payment Requested' and 
-dpp.ddpayrollpayid not in (select ddpayrollpayid from ddpayrollpayrequest)
-
-GO
-
-/****** Object:  StoredProcedure [dbo].[usp_GetProfitStarsData]    Script Date: 1/01/2020 6:20:26 PM ******/
-SET ANSI_NULLS OFF
-GO
-SET QUOTED_IDENTIFIER OFF
-GO
-
-
-
-
-
-
-
-
-
-
-/****** Object:  Stored Procedure dbo.usp_CheckBankCOA    Script Date: 3/21/2006 4:24:45 PM ******/
-
-ALTER PROCEDURE [dbo].[usp_GetProfitStarsData]
-AS
-
-select ddpayrollfundid Id, 1 [Type], netsum Amount, case accounttype when 'Checking' then 1 else 2 end AccType, accountnumber AccNum, routingnumber RoutingNum 
-from
-ddpayrollfundrequest where requestdate is null and resultcode is null
-Union
-select ddpayrollrefundId Id, 3 [Type], netsum Amount, case accounttype when 'Checking' then 1 else 2 end AccType, accountnumber AccNum, routingnumber RoutingNum 
-from ddpayrollrefundrequest where resultcode is null or resultcode ='' and requestdate is null
-Union
-select ddpayrollpayid Id, 2 [Type], netPay Amount, case accounttype when 'Checking' then 1 else 2 end AccType, accountnumber AccNum, routingnumber RoutingNum
-from ddpayrollpayrequest
-where entereddate is null and 
-resultcode is null or resultcode=''
-for Xml path('ProfitStarsPaymentJson'), root('ProfitStarsPaymentList') , elements, type
-
-
-
-
-
-Go

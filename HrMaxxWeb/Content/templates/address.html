@@ -33,16 +33,17 @@
 
 		</div>
 		<div class="col-sm-6">
+			<div class="form-group col-sm-6 pull-right">
+				<label for="city">Zip Extension</label>
+				<input type="text" id="zipextension" name="zipextension" maxlength="4" class="form-control" placeholder="Zip Extension" data-parsley-type="number" ng-model="data.zipExtension" ng-disabled="showDisabled" data-parsley-pattern="/^\d{4}$/" data-parsley-group="{{valGroup}}" />
+
+			</div>
 			<div class="form-group col-sm-6">
 				<label for="zip">Zip</label>
-				<input type="text" id="zip" class="form-control" name="zip" data-parsley-type="number" data-parsley-trigger="blur" data-parsley-pattern="/^(\d{5}(-\d{4})?|[A-Z]\d[A-Z] *\d[A-Z]\d)$/" ng-disabled="showDisabled" required placeholder="Zip Code" ng-model="data.zip" data-parsley-group="{{valGroup}}" />
+				<input type="text" id="zip" class="form-control" name="zip" data-parsley-type="number" data-parsley-trigger="blur" maxlength="5" data-parsley-pattern="/^(\d{5}(-\d{4})?|[A-Z]\d[A-Z] *\d[A-Z]\d)$/" ng-disabled="showDisabled" required placeholder="Zip Code" ng-model="data.zip" data-parsley-group="{{valGroup}}" />
 
 			</div>
-			<div class="form-group col-sm-6">
-				<label for="city">Zip Extension</label>
-				<input type="text" id="zipextension" name="zipextension" class="form-control" placeholder="Zip Extension" data-parsley-type="number" ng-model="data.zipExtension" ng-disabled="showDisabled" data-parsley-pattern="/^\d{4}$/" data-parsley-group="{{valGroup}}" />
 
-			</div>
 
 		</div>
 	</div>

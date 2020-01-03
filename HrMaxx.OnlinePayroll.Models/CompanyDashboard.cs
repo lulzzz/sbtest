@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollMetric> PayrollHistory { get; set; }
         
         public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
+		public int YTDYear { get { return LastPayroll.PayDay.Year; } }
         public TaxExtract Last941Extract 
 		{ 
 			get
@@ -51,28 +52,28 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal941") && e.DepositDate.Year==DateTime.Today.Year).Sum(e=>e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal941") && e.DepositDate.Year==YTDYear).Sum(e=>e.Amount);
 			}
 		}
 		public decimal Ytd940Extract
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal940") && e.DepositDate.Year == DateTime.Today.Year).Sum(e => e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal940") && e.DepositDate.Year == YTDYear).Sum(e => e.Amount);
 			}
 		}
 		public decimal YtdCAPITExtract
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAPIT") && e.DepositDate.Year == DateTime.Today.Year).Sum(e => e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAPIT") && e.DepositDate.Year == YTDYear).Sum(e => e.Amount);
 			}
 		}
 		public decimal YtdCAUIETTExtract
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAUI") && e.DepositDate.Year == DateTime.Today.Year).Sum(e => e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAUI") && e.DepositDate.Year == YTDYear).Sum(e => e.Amount);
 			}
 		}
 

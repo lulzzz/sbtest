@@ -149,13 +149,112 @@ namespace SiteInspectionStatus_Utility
                 case 31:
                     MoveDocuments(container);
                     break;
+                case 32:
+                    FixFitWage(container);
+                    break;
+                case 33:
+                    FixCreditCardCompanies(container);
+                    break;
                 default:
 					break;
 			}
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void FixCreditCardCompanies(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var companyService = scope.Resolve<ICompanyService>();
+                var repository = scope.Resolve<ICompanyRepository>();
+                var readerservice = scope.Resolve<IReaderService>();
+                var companies = readerservice.GetCompanies(status:0);
+                var counter = (int)0;
+                companies.ForEach(c =>
+                    {
+                        if (c.Contract.BillingOption == BillingOptions.CreditCard)
+                        {
+                            var update = false;
+                            if (c.Contract.CreditCardDetails.CardType == 0 || c.Contract.CreditCardDetails.CardType==null)
+                            {
+                                if(!string.IsNullOrWhiteSpace(c.Contract.CreditCardDetails.CardNumber) && c.Contract.CreditCardDetails.CardNumber.Length==15)
+                                {
+                                    c.Contract.CreditCardDetails.CardType = 3;update = true;
+                                }
+                                else if (!string.IsNullOrWhiteSpace(c.Contract.CreditCardDetails.CardNumber) && c.Contract.CreditCardDetails.CardNumber.Length == 16)
+                                {
+                                    c.Contract.CreditCardDetails.CardType = 1; update = true;
+                                }
+                                else if(!string.IsNullOrWhiteSpace(c.Contract.CreditCardDetails.CardNumber))
+                                {
+                                    c.Contract.CreditCardDetails.CardType = 1;
+                                    c.Contract.CreditCardDetails.CardNumber = c.Contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
+                                    if (c.Contract.CreditCardDetails.CardNumber.Length > 16)
+                                    {
+                                        string text = string.Empty;
+                                    }
+                                    update = true;
+                                }
+                                else { c.Contract.CreditCardDetails.CardType = 1; update = true; }
+                            }
+                            if (c.Contract.CreditCardDetails.CardType == 3 && c.Contract.CreditCardDetails.CardNumber.Length!=15)
+                            {
+                                c.Contract.CreditCardDetails.CardNumber = c.Contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
+                                update = true;
+                            }
+                            else if (c.Contract.CreditCardDetails.CardType != 3 && c.Contract.CreditCardDetails.CardNumber.Length != 16)
+                            {
+                                c.Contract.CreditCardDetails.CardNumber = c.Contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
+                                update = true;
+                            }
 
+                            if (update)
+                            {
+                                repository.SaveCompanyContract(c, c.Contract);
+                                Console.WriteLine("Company " + c.Id + "   " + c.Name);
+                                counter++;
+                            }
+                            
+                        }
+                        
+                    });
+                Console.WriteLine("Companies Updated " + counter);
+
+            }
+        }
+        private static void FixFitWage(IContainer container)
+		{
+			using (var scope = container.BeginLifetimeScope())
+			{
+				var payrollService = scope.Resolve<IPayrollRepository>();
+				var readerservice = scope.Resolve<IReaderService>();
+                var taxationService = scope.Resolve<ITaxationService>();
+				
+				var payChecks = new List<PayCheck>();
+				var payrolls = readerservice.GetPayChecks(year:2019, startDate:new DateTime(2019,12,19)).Where(pc => pc.Taxes.Any(pct => pct.Tax.Code == "FIT" && pct.TaxableWage == 0)
+                && pc.LastModified > new DateTime(2019, 12, 19)).ToList();
+
+                payrolls.ForEach(pc =>
+                            {
+                                var pct = pc.Taxes.First(t => t.Tax.Code == "FIT");
+                                var deductionExempt = taxationService.GetTaxExemptedDeductions(pc, pc.GrossWage, pct.Tax.Code);
+                                var taxableWage = pc.GrossWage - deductionExempt;
+                                if (pct.TaxableWage != taxableWage)
+                                {
+                                    pct.YTDWage = Math.Round(pct.YTDWage - pct.TaxableWage + taxableWage, 2, MidpointRounding.AwayFromZero);
+                                    pct.TaxableWage = Math.Round(taxableWage, 2, MidpointRounding.AwayFromZero);
+                                    payChecks.Add(pc);
+                                }
+                                
+                            }
+
+                );
+                payrollService.FixPayCheckTaxWages(payChecks, "FIT");
+
+				Console.WriteLine("Checks Updated " + payChecks.Count);
+
+			}
+		}
 		private static void UpdateCompanyAch(IContainer container)
 		{
 			using (var scope = container.BeginLifetimeScope())

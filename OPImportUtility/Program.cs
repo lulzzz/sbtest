@@ -1439,8 +1439,8 @@ namespace OPImportUtility
 					appUser.Role = new UserRole() { RoleId = (int)RoleTypeEnum.HostStaff, RoleName = RoleTypeEnum.HostStaff.GetDbName() };
 				else if (u.LevelID == 1)
 					appUser.Role = new UserRole() { RoleId = (int)RoleTypeEnum.Host, RoleName = RoleTypeEnum.Host.GetDbName() };
-				if(!userList.Any(u1=>u1.Email.Equals(appUser.Email) || u1.UserName.Equals(appUser.UserName)))
-					appUsers.Add(appUser);
+				appUsers.Add(appUser);
+
 			});
 			Logger.Info(string.Format("Starting import of users " + appUsers.Count));
 			var success = new List<UserResource>();
@@ -1450,30 +1450,60 @@ namespace OPImportUtility
 				var client = new RestClient(ConfigurationManager.AppSettings["ZionAPIUrl"] + "MigrateUsers");
 				appUsers.ForEach(appUser =>
 				{
-					try
+					if(userList.Any(u1=> u1.Email.Equals(appUser.Email) && u1.UserName.Equals(appUser.UserName) && u1.Host==appUser.Host && u1.Company == appUser.Company))
 					{
-						var request = new RestRequest(Method.POST);
-						request.AddHeader("Authorization", string.Format("bearer {0}", ConfigurationManager.AppSettings["APIToken"]));
-						request.AddHeader("Content-Type", "application/json");
-						request.AddParameter("application/json; charset=utf-8", JsonConvert.SerializeObject(appUser), ParameterType.RequestBody);
-						request.RequestFormat = DataFormat.Json;
-						var response1 = client.Execute(request);
-						if (response1.StatusCode == HttpStatusCode.OK)
-						{
-							Logger.Info(string.Format("User Created: {0}: {1} -- {2}", appUser.UserName, appUser.Password, appUser.Email));
-							success.Add(appUser);
-						}
-						else
-						{
-							Logger.Info(string.Format("User: {0} Password: {3}, Message: {1} {2}", appUser.UserName, response1.StatusCode, response1.StatusDescription, appUser.Password));
-							failed.Add(appUser);
-						}
+						
 					}
-					catch (Exception e1)
+					else 
 					{
-						failed.Add(appUser);
-						Logger.Info(string.Format("User: {0}, Message: {1}", appUser.UserName, e1.Message));
+						if (userList.Any(u1 => u1.Email.Equals(appUser.Email) || u1.UserName.Equals(appUser.UserName)))
+						{
+							Logger.Info(string.Format("User: {0}: {1} -- {2} {3}", appUser.UserName, appUser.Password, appUser.Email, companies.First(c1=>c1.Id==appUser.Company).Name));
+							Console.WriteLine("a User with username already exists. Choose anoter username ");
+							appUser.UserName = Console.ReadLine();
+							appUser.SubjectUserName = appUser.UserName;
+						}
+						if (!string.IsNullOrWhiteSpace(appUser.SubjectUserName))
+						{
+							var response1 = AddUser(appUser, client, ref success, ref failed);
+							if (response1 == null)
+							{
+								failed.Add(appUser);
+								Logger.Info(string.Format("User Error: {0} Password: {1} {2} {3}", appUser.UserName, appUser.Password, appUser.Email, companies.First(c1 => c1.Id == appUser.Company).Name));
+							}
+							else if (response1.StatusCode == HttpStatusCode.OK)
+							{
+								Logger.Info(string.Format("User Created: {0}: {1} -- {2}", appUser.UserName, appUser.Password, appUser.Email));
+								success.Add(appUser);
+							}
+							else
+							{
+								Logger.Info(string.Format("User: {0}: {1} -- {2} {3}", appUser.UserName, appUser.Password, appUser.Email, companies.First(c1 => c1.Id == appUser.Company).Name));
+								Console.WriteLine("a User with username already exists. Choose anoter username ");
+								appUser.UserName = Console.ReadLine();
+								appUser.SubjectUserName = appUser.UserName;
+								var response2 = AddUser(appUser, client, ref success, ref failed);
+								if (response1 == null)
+								{
+									Logger.Info(string.Format("User Error: {0} Password: {1} {2} {3}", appUser.UserName, appUser.Password, appUser.Email, companies.First(c1 => c1.Id == appUser.Company).Name));
+								}
+								else if (response1.StatusCode == HttpStatusCode.OK)
+								{
+									Logger.Info(string.Format("User Created: {0}: {1} -- {2}", appUser.UserName, appUser.Password, appUser.Email));
+									success.Add(appUser);
+								}
+								else
+								{
+									failed.Add(appUser);
+								}
+
+							}
+						}
+						
+
 					}
+						
+								
 					
 				});
 					
@@ -1496,7 +1526,34 @@ namespace OPImportUtility
 			Logger.Info("Finsihed importing users");
 				
 		}
-
+		private static IRestResponse AddUser(UserResource appUser, RestClient client, ref List<UserResource> success, ref List<UserResource> failed)
+		{
+			try
+			{
+				var request = new RestRequest(Method.POST);
+				request.AddHeader("Authorization", string.Format("bearer {0}", ConfigurationManager.AppSettings["APIToken"]));
+				request.AddHeader("Content-Type", "application/json");
+				request.AddParameter("application/json; charset=utf-8", JsonConvert.SerializeObject(appUser), ParameterType.RequestBody);
+				request.RequestFormat = DataFormat.Json;
+				var response1 = client.Execute(request);
+				if (response1.StatusCode == HttpStatusCode.OK)
+				{
+					
+				}
+				else
+				{
+					Logger.Info(string.Format("User: {0} Password: {3} {4} {5}, Message: {1} {2}", appUser.UserName, response1.StatusCode, response1.StatusDescription, appUser.Password, appUser.Email, appUser.Company));
+					
+				}
+				return response1;
+				
+			}
+			catch (Exception e1)
+			{
+				Logger.Info(string.Format("User: {0} , Message: {1}", appUser.UserName, e1.Message));
+				return null;
+			}
+		}
 		private static void ImportEmployees(IContainer scope, int companyId)
 		{
 			var read = scope.Resolve<IOPReadRepository>();
@@ -2024,14 +2081,14 @@ namespace OPImportUtility
 							contract.CreditCardDetails.BillingAddress.AddressLine1 = string.IsNullOrWhiteSpace(contract.CreditCardDetails.BillingAddress.AddressLine1)
 								? "NA"
 								: contract.CreditCardDetails.BillingAddress.AddressLine1;
-							if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length!=16)
-							{
-								contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
-							}
-							if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
-							{
-								contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
-							}
+							//if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length!=16)
+							//{
+							//	contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
+							//}
+							//if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
+							//{
+							//	contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
+							//}
 							var stateid = HrMaaxxSecurity.GetEnumFromHrMaxxName<USStates>(Crypto.Decrypt(bd.billingAddressState));
 							if (stateid != null)
 								contract.CreditCardDetails.BillingAddress.StateId = (int) stateid;
@@ -2188,14 +2245,14 @@ namespace OPImportUtility
 								contract.CreditCardDetails.BillingAddress.AddressLine1 = string.IsNullOrWhiteSpace(contract.CreditCardDetails.BillingAddress.AddressLine1)
 									? "NA"
 									: contract.CreditCardDetails.BillingAddress.AddressLine1;
-								if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length != 16)
-								{
-									contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
-								}
-								if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
-								{
-									contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
-								}
+								//if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) < 3 && contract.CreditCardDetails.CardNumber.Length != 16)
+								//{
+								//	contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(16, '0');
+								//}
+								//if (!string.IsNullOrWhiteSpace(contract.CreditCardDetails.CardType) && Convert.ToInt32(contract.CreditCardDetails.CardType) == 3 && contract.CreditCardDetails.CardNumber.Length != 15)
+								//{
+								//	contract.CreditCardDetails.CardNumber = contract.CreditCardDetails.CardNumber.PadLeft(15, '0');
+								//}
 								var stateid = HrMaaxxSecurity.GetEnumFromHrMaxxName<USStates>(Crypto.Decrypt(bd.billingAddressState));
 								if (stateid != null)
 									contract.CreditCardDetails.BillingAddress.StateId = (int)stateid;

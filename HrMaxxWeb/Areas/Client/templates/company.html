@@ -480,8 +480,8 @@
     <div class="form-group">
         <label>Card Number</label>
         <div>
-            <input type="text" class="form-control" required data-parsley-group="wizard-step-4" name="cardnumber" ng-model="selectedCompany.contract.creditCardDetails.cardNumber" ui-mask="9999-9999-9999-9999" ng-if="selectedCompany.contract.creditCardDetails.cardType<3" />
-            <input type="text" class="form-control" required data-parsley-group="wizard-step-4" name="cardnumber" ng-model="selectedCompany.contract.creditCardDetails.cardNumber" ui-mask="9999-9999-9999-999" ng-if="selectedCompany.contract.creditCardDetails.cardType===3" />
+            <input type="text" class="form-control" required data-parsley-group="wizard-step-4" name="cardnumber2" id="cardnumber2" ng-model="selectedCompany.contract.creditCardDetails.cardNumber" ui-mask="9999-9999-9999-9999" ng-if="selectedCompany.contract.creditCardDetails.cardType<3" />
+            <input type="text" class="form-control" required data-parsley-group="wizard-step-4" name="cardnumber3" id="cardnumber3" ng-model="selectedCompany.contract.creditCardDetails.cardNumber" ui-mask="9999-9999-9999-999" ng-if="selectedCompany.contract.creditCardDetails.cardType===3" />
         </div>
     </div>
     <div class="form-group col-sm-4">
@@ -676,7 +676,7 @@
                 </tr>
                 <tr ng-repeat="rc in selectedCompany.recurringCharges track by $index">
                     <td><input type="text" ng-model="rc.description" class="form-control" required data-parsley-group="wizard-step-4" ng-disabled="rc.id>0  || rc.claimed>0" /></td>
-                    <td><input data-parsely-type="number" ng-model="rc.year" class="form-control" ng-pattern="/(19\d{2})|(200\d{1})|(201\d{1})/" data-parsley-pattern="/(19\d{2})|(200\d{1})|(201\d{1})/" data-parsley-group="wizard-step-4" ng-disabled="rc.id>0  || rc.claimed>0" /></td>
+                    <td><input data-parsely-type="number" ng-model="rc.year" class="form-control" ng-pattern="/(19\d{2})|(200\d{1})|(201\d{1})|(202\d{1})/" data-parsley-pattern="/(19\d{2})|(200\d{1})|(201\d{1})|(202\d{1})/" data-parsley-group="wizard-step-4" ng-disabled="rc.id>0  || rc.claimed>0" /></td>
                     <td><input data-parsely-type="number" ng-model="rc.amount" class="form-control" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" ng-disabled="rc.id>0  || rc.claimed>0"></td>
                     <td><input data-parsely-type="number" ng-model="rc.annualLimit" class="form-control" data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" ng-disabled="rc.id>0 || rc.claimed>0" /></td>
                     <td>{{rc.claimed | currency:'$'}}</td>

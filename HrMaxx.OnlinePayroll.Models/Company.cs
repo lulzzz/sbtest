@@ -129,7 +129,7 @@ namespace HrMaxx.OnlinePayroll.Models
 
 	public class CreditCard
 	{
-		public string CardType { get; set; }
+		public int? CardType { get; set; }
 		public string CardNumber { get; set; }
 		public string CardName { get; set; }
 		public string ExpiryMonth { get; set; }

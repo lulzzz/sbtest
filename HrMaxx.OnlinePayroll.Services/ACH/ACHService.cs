@@ -107,7 +107,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 					emailStr.AppendLine(result);
 					emailStr.AppendLine("<b><u>You may want to consider running the 9 AM service again manually.</u></b></br><br/>");
 				}
-				_emailService.SendEmail(EmailTo, emailSubject, emailStr.ToString(), EmailCC);
+				_emailService.SendEmail(to:EmailTo, subject:emailSubject, body:emailStr.ToString(), cc:EmailCC);
 					
 				return reportResponse;
 			}
@@ -205,7 +205,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 				{
 					emailStr.AppendLine("<b><u>No Funding/Payment/Refund requests found to be sent</u></b></br><br/>");
 				}
-				_emailService.SendEmail(EmailTo,  emailSubject, emailStr.ToString(), EmailCC);
+				_emailService.SendEmail(to:EmailTo, subject: emailSubject, body: emailStr.ToString(), cc: EmailCC);
 				return paymentRequests;
 			}
 			catch (Exception e)

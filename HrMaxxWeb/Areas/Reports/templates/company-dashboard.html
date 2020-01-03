@@ -2,7 +2,7 @@
 <div class="panel panel-inverse">
 	<div class="panel-heading hidden-print">
 		<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
-			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Tax Payments</span></a></li>
+			<li ng-class="{'active':data.tab===1}" ng-click="tabChanged(1)" ng-if="mainData.selectedCompany.allowTaxPayments"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Tax Payments</span></a></li>
 			<li ng-class="{'active':data.tab===2}" ng-click="tabChanged(2)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Payroll</span></a></li>
 			<li ng-class="{'active':data.tab===3}" ng-click="tabChanged(3)"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Documents</span></a></li>
 
@@ -20,7 +20,7 @@
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
 					</div>
-					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-title">YTD Deposit - {{data.dashboard.ytdYear}}</div>
 					<div class="stats-number">{{data.dashboard.ytd941Extract | currency}}</div>
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
@@ -40,7 +40,7 @@
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
 					</div>
-					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-title">YTD Deposit - {{data.dashboard.ytdYear}}</div>
 					<div class="stats-number">{{data.dashboard.ytd940Extract | currency}}</div>
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
@@ -60,7 +60,7 @@
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
 					</div>
-					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-title">YTD Deposit - {{data.dashboard.ytdYear}}</div>
 					<div class="stats-number">{{data.dashboard.ytdCAPITExtract | currency}}</div>
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
@@ -81,7 +81,7 @@
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
 					</div>
-					<div class="stats-title">YTD Deposit</div>
+					<div class="stats-title">YTD Deposit - {{data.dashboard.ytdYear}}</div>
 					<div class="stats-number">{{data.dashboard.ytdCAUIETTExtract | currency}}</div>
 					<div class="stats-progress progress">
 						<div class="progress-bar" style="width: 100%;"></div>
@@ -176,7 +176,7 @@
 		</div>
 		<!-- end row -->
 		
-		<div class="row" ng-show="data.tab===2">
+		<div class="row" ng-show="data.tab===2 && data.loaded">
 			<!-- begin col-3 -->
 			<div class="col-md-2 col-sm-4">
 				<div class="widget widget-stats bg-primary">
@@ -186,7 +186,7 @@
 						<p>{{data.dashboard.lastPayroll.noOfChecks}}</p>
 					</div>
 					<div class="stats-info">
-						<h4>YTD</h4>
+						<h4>YTD - {{data.dashboard.ytdYear}}</h4>
 						<p>{{data.dashboard.ytdPayroll.noOfChecks}}</p>
 					</div>
 					<div class="stats-link">
@@ -203,7 +203,7 @@
 						<p>{{data.dashboard.lastPayroll.grossWage | currency}}</p>
 					</div>
 					<div class="stats-info">
-						<h4>YTD</h4>
+						<h4>YTD - {{data.dashboard.ytdYear}}</h4>
 						<p>{{data.dashboard.ytdPayroll.grossWage | currency}}</p>
 					</div>
 					<div class="stats-link">
@@ -220,7 +220,7 @@
 						<p>{{data.dashboard.lastPayroll.netWage | currency}}</p>
 					</div>
 					<div class="stats-info">
-						<h4>YTD</h4>
+						<h4>YTD - {{data.dashboard.ytdYear}}</h4>
 						<p>{{data.dashboard.ytdPayroll.netWage | currency}}</p>
 					</div>
 					<div class="stats-link">
@@ -238,7 +238,7 @@
 						<p>{{data.dashboard.lastPayroll.employeeTaxes | currency}}</p>
 					</div>
 					<div class="stats-info">
-						<h4>YTD</h4>
+						<h4>YTD - {{data.dashboard.ytdYear}}</h4>
 						<p>{{data.dashboard.ytdPayroll.employeeTaxes | currency}}</p>
 					</div>
 					<div class="stats-link">
@@ -255,7 +255,7 @@
 						<p>{{data.dashboard.lastPayroll.employerTaxes | currency}}</p>
 					</div>
 					<div class="stats-info">
-						<h4>YTD</h4>
+						<h4>YTD - {{data.dashboard.ytdYear}}</h4>
 						<p>{{data.dashboard.ytdPayroll.employerTaxes | currency}}</p>
 					</div>
 					<div class="stats-link">
@@ -272,7 +272,7 @@
 						<p>{{data.dashboard.lastPayroll.deductions | currency}}</p>
 					</div>
 					<div class="stats-info">
-						<h4>YTD</h4>
+						<h4>YTD - {{data.dashboard.ytdYear}}</h4>
 						<p>{{data.dashboard.ytdPayroll.deductions | currency}}</p>
 					</div>
 					<div class="stats-link">

@@ -1,15 +1,14 @@
 ﻿
-
 IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'EmployeeDeduction'
-                 AND COLUMN_NAME = 'EmployerMethod')
+                 AND COLUMN_NAME = 'EmployerRate')
 Alter table EmployeeDeduction Add EmployerRate decimal(18,2);
 Go
 IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'PayCheckDeduction'
-                 AND COLUMN_NAME = 'EmployerMethod')
+                 AND COLUMN_NAME = 'EmployerRate')
 Alter table PayCheckDeduction Add EmployerRate decimal(18,2), EmployerAmount decimal(18,2);
 Go
 /****** Object:  StoredProcedure [dbo].[GetEmployeesYTD]    Script Date: 10/12/2019 4:25:02 PM ******/

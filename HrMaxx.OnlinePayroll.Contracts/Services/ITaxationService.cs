@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.OnlinePayroll.Models;
+using HrMaxx.OnlinePayroll.Models.MetaDataModels;
 using HrMaxx.OnlinePayroll.Models.USTaxModels;
 
 namespace HrMaxx.OnlinePayroll.Contracts.Services
@@ -23,6 +24,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		USTaxTables CreateTaxes(int year);
 		int GetPEOMaxCheckNumber();
 		void SetPEOMaxCheckNumber(int n);
+		decimal GetTaxExemptedDeductions(PayCheck pc, decimal grossWage, string taxCode);
 
 		int AddToConfirmPayrollQueue(ConfirmPayrollLogItem item);
 		void UpdateConfirmPayrollQueueItem(Guid payrollId);

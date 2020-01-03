@@ -742,8 +742,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				filters.Add(new FilterParam{ Key = "company", Value = id.ToString()});
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetCompanyDashboard", filters);
                 data.Accumulation = _readerService.GetTaxAccumulations(company: id,
-                    startdate: new DateTime(DateTime.Today.Year, 1, 1),
-                    enddate: new DateTime(DateTime.Today.Year, 12, 31), type: AccumulationType.Company,
+                    startdate: new DateTime(data.YTDYear, 1, 1),
+                    enddate: new DateTime(data.YTDYear, 12, 31), type: AccumulationType.Company,
                     includePayCodes: false,
                     includeTaxes: true, includePayTypeAccumulation: false,
                     includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
@@ -770,8 +770,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				filters.Add(new FilterParam { Key = "employee", Value = employeeId.ToString() });
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetEmployeeDashboard", filters);
                 data.Accumulation = _readerService.GetTaxAccumulations(company: companyId, employee: employeeId,
-                    startdate: new DateTime(DateTime.Today.Year, 1, 1),
-                    enddate: new DateTime(DateTime.Today.Year, 12, 31), type: AccumulationType.Employee,
+                    startdate: new DateTime(data.YTDYear, 1, 1),
+                    enddate: new DateTime(data.YTDYear, 12, 31), type: AccumulationType.Employee,
                     includePayCodes: false,
                     includeTaxes: true, includePayTypeAccumulation: false,
                     includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
@@ -1262,9 +1262,9 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("batchFilerId", config.BatchFilerId));
 			argList.Add(new KeyValuePair<string, string>("masterPinNumber", config.MasterInquiryPin));
-			argList.Add(new KeyValuePair<string, string>("fileSeq", reportConst.ToString()));
+			argList.Add(new KeyValuePair<string, string>("fileSeq", reportConst.ToString("00000").Substring(2,3)));
 			argList.Add(new KeyValuePair<string, string>("today", DateTime.Today.ToString("yyyyMMdd")));
-			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.EndDate.Year.ToString()));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal {2} 940 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
@@ -1288,7 +1288,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("fileSeq",  reportConst.ToString()));
 			argList.Add(new KeyValuePair<string, string>("today", DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("yyyyMMdd")));
-			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.EndDate.Year.ToString()));
 			argList.Add(new KeyValuePair<string, string>("endQuarterMonth", ((int)((request.EndDate.Month + 2) / 3)).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPSExcel.xslt", "xls", string.Format("Federal {2} 940 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule));
@@ -1304,10 +1304,10 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			var argList = new List<KeyValuePair<string, string>>();
 			argList.Add(new KeyValuePair<string, string>("batchFilerId",  config.BatchFilerId));
 			argList.Add(new KeyValuePair<string, string>("masterPinNumber",  config.MasterInquiryPin));
-			argList.Add(new KeyValuePair<string, string>("fileSeq",  reportConst.ToString()));
+			argList.Add(new KeyValuePair<string, string>("fileSeq", reportConst.ToString("00000").Substring(2, 3)));
 			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate",  request.DepositDate.Value.Date.ToString("yyyyMMdd")));
-			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.EndDate.Year.ToString()));
 			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month +2)/ 3)*3).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPS.xslt", "txt", string.Format("Federal {2} 941 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));
@@ -1329,7 +1329,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("fileSeq",  reportConst.ToString()));
 			argList.Add(new KeyValuePair<string, string>("today",  DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
-			argList.Add(new KeyValuePair<string, string>("selectedYear",  request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("selectedYear", request.EndDate.Year.ToString()));
 			argList.Add(new KeyValuePair<string, string>("endQuarterMonth",  ((int)((request.EndDate.Month+2) / 3)).ToString()));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal941EFTPSExcel.xslt", "xls", string.Format("Federal {2} 941 Excel Extract-{0}-{1}.xls", request.Year, request.Quarter, request.DepositSchedule.Value.ToString()));

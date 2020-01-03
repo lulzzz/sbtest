@@ -10,7 +10,7 @@
 </div>
 
 <div class="login login-v2" data-pageload-addclass="animated fadeIn" id="loginpartialmodal" ng-controller="loginCtrl">
-	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+	<div class="alert" ng-repeat="alert in alerts" ng-class="alert.type" close="closeAlert($index)">{{alert.msg}}</div>
 	
 	<div class="login-content">
 		@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form", id = "loginFormSubmit", name = "loginFormSubmit" }))

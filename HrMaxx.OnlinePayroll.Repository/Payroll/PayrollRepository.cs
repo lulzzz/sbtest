@@ -552,6 +552,26 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 			}
 		}
 
+		public void FixPayCheckTaxWages(List<PayCheck> taxupdate, string taxCode)
+		{
+
+			using (var conn = GetConnection())
+			{
+				const string updateCheck = @"update payrollpaycheck set Taxes=@Taxes WHERE Id = @PayCheckId;";
+				const string updatePayCheckTax = @"update PayCheckTax set TaxableWage=@TaxableWage Where PayCheckId=@PayCheckId and TaxId=@TaxId";
+
+				taxupdate.ForEach(pc1 =>
+				{
+					var pc = _mapper.Map<PayCheck, PayrollPayCheck>(pc1);
+					var pct = pc1.Taxes.First(t => t.Tax.Code.Equals(taxCode));
+					conn.Execute(updateCheck, new { Taxes = pc.Taxes, PayCheckId = pc.Id });
+					conn.Execute(updatePayCheckTax, new { TaxableWage = pct.TaxableWage, PayCheckId = pc1.Id, TaxId = pct.Tax.Id });
+					
+				});
+
+			}
+		}
+
 		public void FixPayCheckAccumulations(List<PayCheck> accupdate)
 		{
 			using (var conn = GetConnection())

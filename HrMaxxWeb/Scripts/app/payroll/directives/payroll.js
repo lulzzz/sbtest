@@ -704,7 +704,7 @@ common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter
 		var returnVal = true;
 		$.each($scope.dedList, function(i,d)
 		{
-			if (!isDeductionValid(d)) {
+			if (d.rate!==0 && !isDeductionValid(d)) {
 				returnVal = false;
 				return false;
 			}

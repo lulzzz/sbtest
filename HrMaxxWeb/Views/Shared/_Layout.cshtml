@@ -52,7 +52,7 @@
     <!-- begin #page-container -->
     @if (User.Identity.IsAuthenticated)
     {
-        <div id="page-container" ng-controller="mainCtrl" class="fade page-sidebar-fixed page-header-fixed page-with-light-sidebar" ng-app="common" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-employee="@CurrentUser.Employee" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName" data-claims="@CurrentUser.GetClaimsSerialized()">
+        <div id="page-container" ng-controller="mainCtrl" class="fade page-sidebar-fixed page-header-fixed page-with-light-sidebar page-content-full-height" ng-app="common" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-employee="@CurrentUser.Employee" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName" data-claims="@CurrentUser.GetClaimsSerialized()">
             @Html.Partial("_TopNavbar")
 
 
@@ -64,10 +64,9 @@
                 <div id="page-loader1" class="fade in" ng-if="loading"><span class="spinner"></span></div>
                 <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
                 <script type="text/ng-template" id="popover/messages.html">
-
-                    <div class="modal-body" style="padding:0px">
-                        <div ng-repeat="alert in alerts" class="alert alert-{{alert.type}}" style="margin-bottom:0px">
-                            <button type="button" class="close" data-ng-click="cancel()">
+                     <div class="modal-body" style="padding:0px">
+                        <div ng-repeat="alert in alerts track by $index" class="alert alert-{{alert.type}}" style="margin-bottom:0px">
+                            <button type="button" class="close" data-ng-click="cancel()" ng-show="$index===0">
                                 <span class="glyphicon glyphicon-remove-circle"></span>
                             </button>
                             <i class="fa fa-check text-succcess fa-lg" ng-if="alert.type==='success'"></i>
@@ -346,7 +345,7 @@
             <div id="page-container" ng-controller="mainCtrl" class="fade page-without-sidebar page-header-fixed" ng-app="common" data-host="@CurrentUser.Host" data-company="@CurrentUser.Company" data-employee="@CurrentUser.Employee" data-role="@CurrentUser.Role" data-name="@CurrentUser.FullName" data-claims="@CurrentUser.GetClaimsSerialized()">
                 @Html.Partial("_TopNavbar")
                 <div class="embed-responsive" style="padding-bottom: 47%">
-                    <iframe class="embed-responsive-item" src="http://ipaxol.com/" allowfullscreen></iframe>
+                    <iframe class="embed-responsive-item" src="https://ipaxol.com/" allowfullscreen></iframe>
                 </div>
                 @*@Html.Partial("Welcome")*@
                 <div class="modal fade" id="modal-dialog">
@@ -383,8 +382,8 @@
         $(document).ready(function () {
             App.init();
             //angular.bootstrap(document.getElementById('loginpartialmodal'), ['common']);
-            var min = $('a[data-click=sidebar-minify]:first');
-            min.click();
+            //var min = $('a[data-click=sidebar-minify]:first');
+            //min.click();
 
         });
     </script>

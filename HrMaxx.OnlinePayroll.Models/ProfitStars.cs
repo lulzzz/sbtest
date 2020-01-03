@@ -68,7 +68,7 @@ namespace HrMaxx.OnlinePayroll.Models
         public int Id => Convert.ToInt32(requestID.Replace(Type.GetHrMaxxName(), string.Empty).Replace(Type.GetDbName(), string.Empty));
 
         public string EmailEntry =>
-            $"<b>{Type.GetDbName()}</b>: Id: {Id.ToString()}, Result: {success}, RefNum: {refNum}<br/>";
+            $"<b>{Type.GetHrMaxxName()}</b>: Id: {Id.ToString()}, Result: {success}, RefNum: {refNum}<br/>";
     }
 	[XmlRoot("responses")]
 	public class ProfitStarsPayResponses
@@ -180,7 +180,7 @@ namespace HrMaxx.OnlinePayroll.Models
         public string TypeName => Type.GetHrMaxxName();
 
         public string EmailEntry =>
-            $"<b>{Type.GetDbName()}</b>: Id: {Id.ToString()}, TransactionStatus: {TransactionStatus}, SettlementStatus: {SettlementStatus}, RefNum: {RefNum}<br/>";
+            $"<b>{Type.GetHrMaxxName()}</b>: Id: {Id.ToString()}, TransactionStatus: {TransactionStatus}, SettlementStatus: {SettlementStatus}, RefNum: {RefNum}<br/>";
     }
 
 	[XmlRoot("ProfitStarsPayrollList")]

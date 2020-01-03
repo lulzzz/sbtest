@@ -27,6 +27,8 @@ common.controller('loginCtrl', [
 
 		$scope.login = function ($event, returnUrl) {
 			$($event.target).button('loading');
+			if ($scope.username.indexOf("@")>0)
+				$scope.username = $scope.username.substring(0, $scope.username.indexOf("@"));
 			var data = {
 				username: $scope.username,
 				password: $scope.password,

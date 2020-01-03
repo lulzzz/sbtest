@@ -1896,9 +1896,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						else
 						{
 
-							await _emailService.SendEmail(employee.Contact.Email,
-								string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeSubject, employee.FullName),
-								string.Format(employeeEmailBody, pc.PayDay.ToString("MM/dd/yyyy"), employee.FullName),
+							await _emailService.SendEmail(to: employee.Contact.Email,
+								subject: string.Format(OnlinePayrollStringResources.EMAIL_ACH_EmployeeSubject, employee.FullName),
+								body: string.Format(employeeEmailBody, pc.PayDay.ToString("MM/dd/yyyy"), employee.FullName),
 								cc: _emailService.GetACHPackCC(),
 								fileName: $"{dir}/{pc.Employee.FullName}.pdf");
 							returnList.Add(
@@ -1906,9 +1906,9 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						}
 
 					});
-					await _emailService.SendEmail(company.Contact.Email,
-								OnlinePayrollStringResources.EMAIL_Company_PayrollSubject,
-								string.Format(companyEmailBody, payroll.PayDay.ToString("MM/dd/yyyy"), company.Contact.FullName),
+					await _emailService.SendEmail(to: company.Contact.Email,
+								subject: OnlinePayrollStringResources.EMAIL_Company_PayrollSubject,
+								body: string.Format(companyEmailBody, payroll.PayDay.ToString("MM/dd/yyyy"), company.Contact.FullName),
 								cc: _emailService.GetACHPackCC(),
 								fileName: $"{dir}.zip");
 					
@@ -3428,7 +3428,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
                 localGrossWage -= d.Amount;
 			});
 			
-			return payCheck.Deductions;
+			return payCheck.Deductions.Where(d => d.Rate != 0).ToList();
 		}
 		
 		public PayrollInvoice DelayTaxes(Guid invoiceId, string fullName)

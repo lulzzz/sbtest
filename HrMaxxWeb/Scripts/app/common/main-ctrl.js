@@ -184,6 +184,33 @@
 						}
 					}
 				});
+			},
+			addAlertsByBreak: function (error, type) {
+				var alerts = [];
+				var rows = error.split('<br>');
+				$.each(rows, function (index, er) {
+					if (er) {
+						alerts.push({
+							msg: er,
+							type: type
+						});
+					}
+
+				});
+
+				var modalInstance = $modal.open({
+					templateUrl: 'popover/messages.html',
+					controller: 'messageCtrl',
+					backdrop: true,
+					keyboard: true,
+					backdropClick: true,
+					size: 'lg',
+					resolve: {
+						alerts: function () {
+							return alerts;
+						}
+					}
+				});
 			}
 		};
 

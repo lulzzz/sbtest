@@ -1,6 +1,6 @@
 ﻿
-<div class="col-sm-12 p-5">
-	<table class="table table-condensed panel-table">
+<div class="col-sm-12 p-5 ">
+	<table class="table">
 		<thead>
 			<tr>
 				<th class="col-sm-4">
@@ -18,22 +18,22 @@
 		</thead>
 		<tbody>
 			<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
-				<td class="col-sm-4">
+				<td class="col-sm-4" >
 					<div class="row" ng-show="showDates &&  data.filter.filterByDateRange">
-						<div class="col-sm-12">
-							<div class="col-sm-6">
-								<div class="col-sm-2"><label>From: </label></div>
+						<div class="row">
+							<div class="form-group col-sm-4">
+								<label for="startdate">From: </label>
 								<date-ctrl name="startdate" model="data.filter.startDate" disabled="false" />
 
 							</div>
-							<div class="col-sm-6">
-								<div class="col-sm-2"><label>To: </label></div>
+							<div class="form-group col-sm-4">
+								<label for="enddate">From: </label>
 								<date-ctrl name="enddate" model="data.filter.endDate" min="data.filter.startDate" />
 
-
 							</div>
+
 						</div>
-						<div class="col-sm-12">
+						<div class="row" ng-show="showHistory || showIncludeClients || showActive || showIncludeTaxDelayed">
 							<div class="col-sm-3 form-group" ng-show="showHistory">
 
 								<label for="bydatehistory" class="switch">
@@ -69,26 +69,26 @@
 								</label>
 
 							</div>
-							
+
 						</div>
-						<div class="col-sm-12">
-							<div class="col-sm-6">
-								<button class="btn btn-xs btn-success pull-right" ng-click="filterByDateRange()">Go</button>
+						<div class="row">
+							<div class="form-group col-sm-4">
+								<button class="btn btn-xs btn-success pull-left" ng-click="filterByDateRange()">Go</button>
 							</div>
 						</div>
-						
 					</div>
-
 				</td>
 
-				<td class="col-sm-4">
-					<div class="row" ng-show="data.filter.filterByMonthYear">
-						<div class="col-sm-2">
+				<td class="col-sm-4" >
+					<div class="row" ng-show="data.filter.filterByMonthYear" >
+						<div class="col-sm-4 form-group">
+							<label for="filteryears">Year</label>
 							<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
 								<option value=""> select year</option>
 							</select>
 						</div>
-						<div class="col-sm-3" >
+						<div class="col-sm-4 form-group">
+							<label for="filtermonths">Month</label>
 							<select name="filtermonths" ng-model="data.filter.month" ng-disabled="!data.filter.year" class="form-control" ng-change="data.filter.quarter=0" convert-to-number>
 								<option value="0">select month</option>
 								<option value="1">January</option>
@@ -105,7 +105,8 @@
 								<option value="12">December</option>
 							</select>
 						</div>
-						<div class="col-sm-3" >
+						<div class="col-sm-4 form-group">
+							<label for="filterquarter">Quarter</label>
 							<select name="filterquarter" ng-model="data.filter.quarter" ng-disabled="!data.filter.year" ng-change="data.filter.month=0" class="form-control" convert-to-number>
 								<option value="0">select quarter</option>
 								<option value="1">First Quarter</option>
@@ -114,6 +115,10 @@
 								<option value="4">Fourth Quarter</option>
 							</select>
 						</div>
+						
+						
+					</div>
+					<div class="row" ng-show="showHistory || showIncludeClients || showActive || showIncludeTaxDelayed">
 						<div class="col-sm-3 form-group" ng-show="showHistory">
 
 							<label for="bymqhistory" class="switch">
@@ -141,9 +146,6 @@
 							</label>
 
 						</div>
-						
-					</div>
-					<div class="row">
 						<div class="col-sm-3 form-group" ng-if="showIncludeTaxDelayed">
 
 							<label for="byqmtaxdelayed" class="switch">
@@ -152,14 +154,18 @@
 							</label>
 
 						</div>
+						
+					</div>
+					<div class="row">
 						<div class="col-sm-3"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
 					</div>
 
 				</td>
 
-				<td class="col-sm-4">
+				<td class="col-sm-4" >
 					<div class="row" ng-show="showPeriods && data.filter.filterByPeriod">
-						<div class="col-sm-8">
+						<div class="col-sm-12">
+							<label for="filterperiod">Pay Period</label>
 							<select name="filterperiod" ng-model="data.filter.period" class="form-control" convert-to-number>
 								<option value="1">All</option>
 								<option value="2">Last 3 months</option>
@@ -167,7 +173,9 @@
 								<option value="4">Last 12 months</option>
 							</select>
 						</div>
-						<div class="col-sm-4"><button class="btn btn-xs btn-success" ng-show="data.filter.period" ng-click="filterByPeriod()">Go</button></div>
+						<div class="col-sm-12">
+							<button class="btn btn-xs btn-success" ng-show="data.filter.period" ng-click="filterByPeriod()">Go</button>
+						</div>
 					</div>
 
 				</td>

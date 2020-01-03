@@ -26,7 +26,8 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 						donutPendingPercentage: 0,
 						tab: 0,
 						filteredExtracts: [],
-						filteredPendingExtracts: []
+						filteredPendingExtracts: [],
+						loaded: false
 
 				}
 					
@@ -144,6 +145,7 @@ common.directive('employeeDashboard', ['zionAPI', '$timeout', '$window', 'versio
 									handlePayrollChart(payrolls, 'payrolls');
 									handlePayrollDonutChart();
 								});
+							dataSvc.loaded = true;
 								//
 							}, function (erorr) {
 

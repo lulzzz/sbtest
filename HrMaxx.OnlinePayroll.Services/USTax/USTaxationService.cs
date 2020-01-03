@@ -85,7 +85,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			{
 				if (e.Message != "Taxes Not Available")
 				{
-					var info = string.Format("Company {0}, GrossWage={2}, PayCheck={1}", company.Id, JsonConvert.SerializeObject(payCheck), grossWage);
+					var info = string.Format("Company {0}, GrossWage={2}, PayCheck={1}", company.Id, payCheck.Employee.FullName, grossWage);
 					var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " process taxes for payroll--" + info);
 					Log.Error(message, e);
 					throw new HrMaxxApplicationException(message, e);
@@ -267,7 +267,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 		{
 			return UserRoleVersions.Any(urv => urv.UserId == userId)
 				? UserRoleVersions.First(urv => urv.UserId == userId).RoleVersion
-				: string.Empty;
+				: "0";
 		}
 
 		public void UpdateUserRoleVersion(string id, int roleVersion)
@@ -363,7 +363,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			var taxableWage = GetTaxExemptedDeductionAmount(payCheck, grossWage, tax);
 			withholdingAllowance -= taxableWage;
 			var withholdingAllowanceTest = withholdingAllowance < 0 ? 0 : withholdingAllowance;
-			
+			taxableWage = Math.Max(grossWage - taxableWage, 0);
 			var fitTaxTableRow =
 				TaxTables.FITTaxTable.First(
 					r =>
@@ -405,7 +405,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			//alien adjustment
 			if (payCheck.Employee.TaxCategory == EmployeeTaxCategory.NonImmigrantAlien)
 			{
-				var isPre2020 = payCheck.Employee.HireDate.Year < 2020 && !payCheck.Employee.UseW4Fields.Value;
+				var isPre2020 = payCheck.Employee.HireDate.Year < 2020 && (!payCheck.Employee.UseW4Fields.HasValue || !payCheck.Employee.UseW4Fields.Value);
 				taxableWage += TaxTables.FITAlienAdjustmentTable.First(f => f.Year==payDay.Year && f.PayrollSchedule == payCheck.Employee.PayrollSchedule && f.Pre2020 == isPre2020).Amount;
 			}
 			//Step 1 annualize
@@ -773,6 +773,25 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 					d =>
 						TaxTables.TaxDeductionPrecendences.Any(
 							tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(tax.Tax.Code))).ToList();
+			if (exempt.Any())
+			{
+				var exempted = exempt.Sum(ded => ded.Amount);
+				if (exempted > grossWage)
+					return grossWage;
+				return Math.Round(exempted, 2, MidpointRounding.AwayFromZero);
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		public decimal GetTaxExemptedDeductions(PayCheck payCheck, decimal grossWage, string taxCode)
+		{
+			var exempt =
+				payCheck.Deductions.Where(
+					d =>
+						TaxTables.TaxDeductionPrecendences.Any(
+							tdp => tdp.DeductionTypeId == d.Deduction.Type.Id && tdp.TaxCode.Equals(taxCode))).ToList();
 			if (exempt.Any())
 			{
 				var exempted = exempt.Sum(ded => ded.Amount);

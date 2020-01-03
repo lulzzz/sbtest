@@ -60,7 +60,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 
 
 					$scope.addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
+						$scope.mainData.addAlertsByBreak(error, type);
 					};
 					
 					$scope.selected = null;
@@ -530,8 +530,14 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 
 
 						}, function (error) {
-							$scope.set(payroll);
-							$scope.addAlert('Error processing payroll: ' + error.statusText, 'danger');
+								$scope.set(payroll);
+								var error1 = error.statusText;
+								if (error.statusText === 'Bad Request') {
+									$.each(error.data.modelState, function (i, e) {
+										error1 += "<br>" + e + '(' + i + ')' ;
+									});
+								}
+							$scope.addAlert('Error processing payroll: ' + error1, 'danger');
 						});
 					}
 					$scope.save = function (item, checks) {

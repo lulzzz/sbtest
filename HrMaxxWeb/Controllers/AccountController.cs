@@ -78,6 +78,8 @@ namespace HrMaxxWeb.Controllers
             {
                 return View(model);
             }
+            if (model.UserName.IndexOf("@")>0)
+                model.UserName = model.UserName.Substring(0, model.UserName.IndexOf("@"));
             // Require the user to have a confirmed email before they can log on.
             var user = await UserManager.FindByNameAsync(model.UserName);
             if (user != null)

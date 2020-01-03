@@ -23,7 +23,8 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 						donutPendingPercentage: 0,
 						tab: 0,
 						filteredExtracts: [],
-						filteredPendingExtracts: []
+						filteredPendingExtracts: [],
+						loaded:false
 
 				}
 					$scope.tabChanged = function(tab) {
@@ -494,6 +495,7 @@ common.directive('companyDashboard', ['zionAPI', '$timeout', '$window', 'version
 								$scope.listEmployeeDocuments = dataSvc.dashboard.employeeDocumentMetaData.employeeDocumentRequirements;
 								refillTables();
 								$scope.tabChanged(2);
+								dataSvc.loaded = true;
 								//
 							}, function (erorr) {
 

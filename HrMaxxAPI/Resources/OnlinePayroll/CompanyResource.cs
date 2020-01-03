@@ -120,7 +120,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 	public class CreditCardResource
 	{
 		[Required]
-		public string CardType { get; set; }
+		public int CardType { get; set; }
 		[Required]
 		public string CardNumber { get; set; }
 		[Required]
@@ -134,7 +134,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public AddressResource BillingAddress { get; set; }
 
-		public int CardTypeInt { get { return string.IsNullOrWhiteSpace(CardType) ? 0 : Convert.ToInt32(CardType); } }
+		public int CardTypeInt => CardType == null ? 0 : CardType;
 	}
 
 	public class CompanyWorkerCompensationResource 
