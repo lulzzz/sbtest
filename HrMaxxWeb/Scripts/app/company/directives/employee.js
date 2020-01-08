@@ -50,15 +50,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					$scope.showincludeclients = false;
 					$scope.tab = 1;
 					$scope.alert = null;
-					$scope.addAlert = function (error, type) {
-						$scope.alert = null;
-						if (!$scope.isPopup)
-							$scope.$parent.$parent.addAlert(error, type);
-						else {
-							$scope.alert = { message: error, type: type };
-						}
-					};
-				
+									
 					$scope.data = dataSvc;
 					$scope.getCompanySickLeaveExport = function(mode) {
 						$scope.$parent.$parent.getCompanySickLeaveExport(mode);
@@ -70,7 +62,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						payrollRepository.recalculateEmployeePayTypeAccumulations($scope.selected.id).then(function (result) {
 							$scope.$parent.$parent.save(result);
 						}, function (error) {
-							$scope.addAlert('error re-calculating employee accumulations', 'danger');
+							$scope.mainData.showMessage('error re-calculating employee accumulations', 'danger');
 						});
 					}
 
@@ -320,7 +312,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							$scope.selAcc = null;
 							$scope.selAccIndex = null;
 						}, function (error) {
-							$scope.addAlert('error saving employee accumulation', 'danger');
+							$scope.mainData.showMessage('error saving employee accumulation', 'danger');
 						});
 					}
 					$scope.save = function () {
@@ -372,7 +364,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 								}
 							});
 						}, function (erorr) {
-							addAlert('error checking for ssn existance', 'danger');
+							$scope.mainData.showMessage('error checking for ssn existance', 'danger');
 						});
 					}
 					var saveEmpployee = function () {
@@ -384,7 +376,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							else
 								$scope.$parent.save(result);
 						}, function (error) {
-							$scope.addAlert('error saving employee', 'danger');
+							$scope.mainData.showMessage('error saving employee', 'danger');
 						});
 					}
 					$scope.calculateAvailableWage = function (paytype) {
@@ -420,7 +412,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							});
 							dataSvc.employeeMetaData = data;
 						}, function (error) {
-							$scope.addAlert('error getting employee meta data', 'danger');
+							$scope.mainData.showMessage('error getting employee meta data', 'danger');
 						});
 						if ($scope.mainData.selectedCompany) {
 							dataSvc.payCodes = $scope.mainData.selectedCompany.payCodes;
@@ -550,10 +542,10 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					$scope.fixEmployeeYTD = function () {
 						payrollRepository.fixEmployeeYTD($scope.selected.id).then(function (data) {
 							
-							$scope.addAlert('successfully updated YTDs', 'success');
+							$scope.mainData.showMessage('successfully updated YTDs', 'success');
 						}, function (error) {
 							
-							$scope.addAlert('error getting report payroll summary report ' + error.statusText, 'danger');
+							$scope.mainData.handleError('error getting report payroll summary report ' , error, 'danger');
 						});
 					}
 					$scope.getReportW2Employee = function () {
@@ -587,7 +579,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 
 						}, function (error) {
 							dataSvc.payrollSummaryReport = null;
-							$scope.addAlert('error getting report payroll summary report ' + error.statusText, 'danger');
+							$scope.mainData.handleError('error getting report payroll summary report ' , error, 'danger');
 						});
 					}
 					var getReport = function (reportName, desc, year, quarter, includeHistory, includeTaxDelayed) {
@@ -615,7 +607,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							a.click();
 
 						}, function (erorr) {
-							$scope.addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+							$scope.mainData.handleError('Error getting report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 

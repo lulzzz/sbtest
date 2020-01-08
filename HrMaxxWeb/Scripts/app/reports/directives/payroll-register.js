@@ -25,10 +25,6 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-					
 					$scope.selected = null;
 
 					$scope.tableData = [];
@@ -115,7 +111,7 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 							$scope.fillTableData($scope.tableParams);
 							
 						}, function (error) {
-							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
+								$scope.mainData.handleError('error getting report ' + request.reportName + ': ' , error, 'danger');
 						});
 					}
 					$scope.print = function (listitem) {
@@ -133,13 +129,13 @@ common.directive('payrollRegister', ['zionAPI', '$timeout', '$window', 'version'
 									
 
 								}, function (error) {
-									addAlert('error marking pay check as printed', 'danger');
+									$scope.mainData.showMessage('error marking pay check as printed', 'danger');
 								});
 							}
 
 
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+							$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					$scope.$watch('mainData.selectedCompany',

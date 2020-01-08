@@ -474,34 +474,66 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
-			printPayCheck: function (documentId, payCheckId) {
+			getDocument: function (url, request) {
 				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Payroll/Print", {
-					documentId: documentId,
-					payCheckId: payCheckId
-				}, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
+				$http.post(url, request, { responseType: "arraybuffer" }).then(
+					function (response) {
+						var type = response.headers('Content-Type');
+						var disposition = response.headers('Content-Disposition');
 						if (disposition) {
 							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
 							if (match[1])
 								defaultFileName = match[1];
 						}
 						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
+						var blob = new Blob([response.data], { type: type });
 						var fileURL = URL.createObjectURL(blob);
 						deferred.resolve({
 							file: fileURL,
 							name: defaultFileName
 						});
 
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
+					}, function (data) {
+						var arr = new Uint8Array(data.data);
+						var str = String.fromCharCode.apply(String, arr);
+						deferred.reject(str);
 					});
 
 				return deferred.promise;
+			},
+			getDocumentGet: function (url) {
+				var deferred = $q.defer();
+				$http.get(url, { responseType: "arraybuffer" }).then(
+					function (response) {
+						var type = response.headers('Content-Type');
+						var disposition = response.headers('Content-Disposition');
+						if (disposition) {
+							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
+							if (match[1])
+								defaultFileName = match[1];
+						}
+						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
+						var blob = new Blob([response.data], { type: type });
+						var fileURL = URL.createObjectURL(blob);
+						deferred.resolve({
+							file: fileURL,
+							name: defaultFileName
+						});
+
+					}, function (data) {
+						var arr = new Uint8Array(data.data);
+						var str = String.fromCharCode.apply(String, arr);
+						deferred.reject(str);
+					});
+
+				return deferred.promise;
+			},
+			printPayCheck: function (documentId, payCheckId) {
+				return this.getDocument(zionAPI.URL + "Payroll/Print", {
+					documentId: documentId,
+					payCheckId: payCheckId
+				});
+				
 			},
 
 			printPaySlip: function (payrollId, payCheckId) {
@@ -531,162 +563,31 @@ common.factory('payrollRepository', [
 				return deferred.promise;
 			},
 			printPayrollReport: function (payroll) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Payroll/PrintPayrollReport", payroll, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Payroll/PrintPayrollReport", payroll);
+				
 			},
 			printPayrollPack: function (payroll) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Payroll/PrintPayrollPack", payroll, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Payroll/PrintPayrollPack", payroll);
+				
 			},
 			printPayrollTimesheet: function (payroll) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Payroll/PrintPayrollTimesheet", payroll, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Payroll/PrintPayrollTimesheet", payroll);
+				
 			},
 			printPayrollChecks: function (payroll, reprint, companyCheckPrintOrder) {
-				var deferred = $q.defer();
-				$http.get(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll + "/" + reprint + "/" + companyCheckPrintOrder, { responseType: "arraybuffer" }).then(
-					function (result) {
-						var type = result.headers('Content-Type');
-						var disposition = result.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([result.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					},function (error) {
-						deferred.reject(error.statusText);
-					});
-
-				return deferred.promise;
+				return this.getDocumentGet(zionAPI.URL + "Payroll/PrintPayrollChecks/" + payroll + "/" + reprint + "/" + companyCheckPrintOrder);
+				
 			},
 			printPayrollCheckPaySlips: function (payroll) {
-				var deferred = $q.defer();
-				$http.get(zionAPI.URL + "Payroll/PrintPayrollPaySlips/" + payroll, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(data);
-					});
-
-				return deferred.promise;
+				return this.getDocumentGet(zionAPI.URL + "Payroll/PrintPayrollPaySlips/" + payroll);
+				
 			},
 			getTimesheetImportTemplate: function (companyId, payTypes) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Payroll/TimesheetImportTemplate", {
+				return this.getDocument(zionAPI.URL + "Payroll/TimesheetImportTemplate", {
 					companyId: companyId,
 					payTypes: payTypes
-				}, { responseType: "arraybuffer" }).success(
-					function (data, status, headers) {
-						var type = headers('Content-Type');
-						var disposition = headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				});
+				
 			},
 			importTimesheets: function (attachment) {
 				var url = zionAPI.URL + 'Payroll/ImportTimesheets';

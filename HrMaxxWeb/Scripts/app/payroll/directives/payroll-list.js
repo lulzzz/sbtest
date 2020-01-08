@@ -59,10 +59,6 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 
-					$scope.addAlert = function (error, type) {
-						$scope.mainData.addAlertsByBreak(error, type);
-					};
-					
 					$scope.selected = null;
 					var inLastPayroll = function(employeeId) {
 						if ($scope.list.length === 0)
@@ -531,13 +527,8 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 
 						}, function (error) {
 								$scope.set(payroll);
-								var error1 = error.statusText;
-								if (error.statusText === 'Bad Request') {
-									$.each(error.data.modelState, function (i, e) {
-										error1 += "<br>" + e + '(' + i + ')' ;
-									});
-								}
-							$scope.addAlert('Error processing payroll: ' + error1, 'danger');
+								$scope.mainData.handleError('Error processing payroll: ', error, 'danger');
+								
 						});
 					}
 					$scope.save = function (item, checks) {
@@ -557,16 +548,16 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									$scope.list.push(data);
 									$scope.tableParams.reload();
 									$scope.fillTableData($scope.tableParams);
-									$scope.addAlert('successfuly saved payroll', 'info');
+									$scope.mainData.showMessage('successfuly saved payroll', 'info');
 									
 								} else {
 									$scope.updateListAndItem(item.id);
-									$scope.addAlert('successfuly saved payroll', 'success');
+									$scope.mainData.showMessage('successfuly saved payroll', 'success');
 								}
 								
 							}, function (error) {
 								$scope.set(item);
-								$scope.addAlert('error committing payroll', 'danger');
+								$scope.mainData.showMessage('error committing payroll', 'danger');
 							});
 						}, function() {
 							$scope.set(item);
@@ -575,7 +566,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 
 					$scope.set = function (item) {
 						if (item && item.isQueued) {
-							$scope.addAlert('This item is still queued for confirmation', 'danger');
+							$scope.mainData.showMessage('This item is still queued for confirmation', 'danger');
 						} else {
 							$scope.selected = null;
 							$scope.processed = null;
@@ -685,7 +676,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								deferred.resolve();
 							}, function(error) {
 								
-								$scope.addAlert('error getting payroll meta data: ' + error, 'danger');
+								$scope.mainData.handleError('error getting payroll meta data: ' , error, 'danger');
 								deferred.reject(error);
 							});
 						} else {
@@ -709,7 +700,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								$scope.mainData.fromPayrollsWithoutInvoice = false;
 								
 							}, function (error) {
-								$scope.addAlert('error getting payrolls without invoice', 'danger');
+								$scope.mainData.showMessage('error getting payrolls without invoice', 'danger');
 							});
 						} else {
 							dataSvc.loadedForPayrollsWithoutInvoice = false;
@@ -730,7 +721,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								}
 								
 							}, function (error) {
-								$scope.addAlert('error getting payrolls', 'danger');
+								$scope.mainData.showMessage('error getting payrolls', 'danger');
 							});
 						}
 
@@ -756,7 +747,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 										$scope.processed = null;
 									}
 								}, function(erorr) {
-									$scope.addAlert('error: ' + erorr.statusText, 'danger');
+									$scope.mainData.handleError('error: ' , erorr, 'danger');
 								});
 							}
 						);
@@ -774,7 +765,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									$scope.processed = null;
 								}
 							}, function (erorr) {
-								$scope.addAlert('error: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('error: ' , erorr, 'danger');
 							});
 						}
 						);
@@ -793,7 +784,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									$scope.processed = null;
 								}
 							}, function (erorr) {
-								$scope.addAlert('error: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('error: ' , erorr, 'danger');
 							});
 						}
 						);
@@ -812,7 +803,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									$scope.processed = null;
 								}
 							}, function (erorr) {
-								$scope.addAlert('error: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('error: ' , erorr, 'danger');
 							});
 						}
 						);
@@ -831,7 +822,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									$scope.processed = null;
 								}
 							}, function (erorr) {
-								$scope.addAlert('error: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('error: ' , erorr, 'danger');
 							});
 						}
 						);
@@ -846,7 +837,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								deferred.resolve();
 								console.log("loaded employees");
 							}, function(erorr) {
-								$scope.addAlert('error getting employee list', 'danger');
+								$scope.mainData.showMessage('error getting employee list', 'danger');
 								deferred.reject(error);
 							});
 						} else {
@@ -885,7 +876,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							//$location.hash("invoice");
 							anchorSmoothScroll.scrollToElement(document.getElementById('invoice'));
 						}, function (error) {
-							$scope.addAlert('error getting invoices', 'danger');
+							$scope.mainData.showMessage('error getting invoice', 'danger');
 
 						});
 						
@@ -925,9 +916,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							payroll.invoiceStatusText = data.statusText;
 							payroll.total = data.total;
 							
-							$scope.addAlert('successfully created invoice', 'success');
+							$scope.mainData.showMessage('successfully created invoice', 'success');
 						}, function (error) {
-							$scope.addAlert('error generating invoice', 'danger');
+							$scope.mainData.showMessage('error generating invoice', 'danger');
 						});
 					}
 					$scope.updateEmployeeList = function (emp) {
@@ -960,7 +951,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 					$scope.reQueuePayroll = function() {
 						payrollRepository.reQueuePayroll(dataSvc.queuedPayroll).then(function(data) {
-							$scope.addAlert('Error in Payroll Confirmation. Re-Queued - ' + moment(dataSvc.queuedPayroll.payDay).format("MM/DD/YYYY"), 'warning');
+							$scope.mainData.showMessage('Error in Payroll Confirmation. Re-Queued - ' + moment(dataSvc.queuedPayroll.payDay).format("MM/DD/YYYY"), 'warning');
 							var tableItem = $filter('filter')($scope.tableData, { id: dataSvc.queuedPayroll.id })[0];
 							if (tableItem) {
 								tableItem.queuePosition = data.queuePosition;
@@ -980,7 +971,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									$scope.processed = null;
 									dataSvc.queuedPayroll = null;
 									dataSvc.queuedConfirmFailed = false;
-									$scope.addAlert('Payroll Confirmation finished. Ready for printing - ' + moment(data.payDay).format("MM/DD/YYYY"), 'success');
+									$scope.mainData.showMessage('Payroll Confirmation finished. Ready for printing - ' + moment(data.payDay).format("MM/DD/YYYY"), 'success');
 											
 								} else if (data && data.isQueued && (data.isConfirmFailed || data.queuePosition===0)) {
 

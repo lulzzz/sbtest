@@ -30,17 +30,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 						isCustomerTypeOpen: false, isDocsOpen: true
 					}
 					$scope.data = dataSvc;
-					$scope.addAlert = function (error, type) {
-						$scope.alerts = [];
-						$scope.alerts.push({
-							msg: error,
-							type: type
-						});
-					};
-					$scope.closeAlert = function (index) {
-						$scope.alerts.splice(index, 1);
-					};
-
+					
 					$scope.files = [];
 
 				
@@ -233,7 +223,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 							}, function() {
 								$scope.files[index].doc.uploaded = false;
 								$scope.files[index].currentProgress = 0;
-								$scope.addAlert('error uploading file', 'danger');
+								$scope.mainData.showMessage('error uploading file', 'danger');
 							
 							});
 
@@ -260,7 +250,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 							}, function () {
 								$scope.files[index].doc.uploaded = false;
 								$scope.files[index].currentProgress = 0;
-								$scope.addAlert('error uploading file', 'danger');
+								$scope.mainData.showMessage('error uploading file', 'danger');
 
 							});
 
@@ -271,9 +261,9 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 							commonRepository.deleteDocument($scope.sourceTypeId, $scope.sourceId, doc.targetEntityId).then(function() {
 								$scope.list.splice($scope.list.indexOf(doc), 1);
 								refillTables();
-								$scope.addAlert('successfully removed file', 'success');
+								$scope.mainData.showMessage('successfully removed file', 'success');
 							}, function() {
-								$scope.addAlert('error deleting document', 'danger');
+								$scope.mainData.showMessage('error deleting document', 'danger');
 
 							});
 						});
@@ -283,9 +273,9 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
                             commonRepository.deleteEmployeeDocument(doc.document.targetEntityId, doc.employeeId).then(function () {
                                 $scope.listEmployeeDocuments.splice($scope.listEmployeeDocuments.indexOf(doc), 1);
                                 refillTables();
-                                $scope.addAlert('successfully removed employee document', 'success');
+                                $scope.mainData.showMessage('successfully removed employee document', 'success');
                             }, function () {
-                                $scope.addAlert('error deleting employee document', 'danger');
+                                $scope.mainData.showMessage('error deleting employee document', 'danger');
 
                             });
                         });
@@ -350,13 +340,13 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
 							
 							commonRepository.saveDocumentType($scope.selectedDocumentType).then(function (data) {
 
-								$scope.addAlert('Successfully saved document type ', 'success');
+								$scope.mainData.showMessage('Successfully saved document type ', 'success');
 								$scope.companyDocumentSubTypes[dt] = angular.copy(data);
 								$scope.selectedDocumentType = null;
 								$scope.original = null;
 
 							}, function (error) {
-								$scope.addAlert('error in saving document type. ' + error.statusText, 'danger');
+								$scope.mainData.handleError('error in saving document type. ' , error, 'danger');
 							});
 						}
 					}
@@ -388,13 +378,7 @@ common.directive('documentList', ['zionAPI', '$timeout', '$window','version',
                         }, true
                     );
 					var init = function() {
-						//commonRepository.getRelatedEntities($scope.sourceTypeId, $scope.targetTypeId, c$scope.sourceId).then(function(data) {
-						//	$scope.list = data;
-						//	$scope.tableParams.reload();
-						//	$scope.fillTableData($scope.tableParams);
-						//}, function(erorr) {
-
-						//});
+						
 						if ($scope.mode===1) {
 							commonRepository.getDocumentsMetaData($scope.companyId).then(function(data) {
 								$scope.list = data.documents;

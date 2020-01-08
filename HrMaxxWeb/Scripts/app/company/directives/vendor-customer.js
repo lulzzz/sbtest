@@ -17,11 +17,6 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'EntityTypes',
 				function ($scope, $element, $location, $filter, companyRepository, EntityTypes) {
 					
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
-					
 					$scope.validate = function () {
 						var ctx = $scope.selected;
 						if (!ctx.name || !ctx.statusId)
@@ -64,7 +59,7 @@ common.directive('vendorCustomer', ['zionAPI', '$timeout', '$window', 'version',
 						companyRepository.saveVendorCustomer($scope.selected).then(function (result) {
 							$scope.$parent.$parent.save(result);
 						}, function (error) {
-							addAlert('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
+							$scope.mainData.showMessage('error saving ' + ($scope.isVendor ? 'vendor' : 'customer'), 'danger');
 						});
 					}
 					

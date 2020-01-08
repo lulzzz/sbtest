@@ -327,7 +327,7 @@ namespace HrMaxxAPI.Controllers.Reports
 
 		[HttpGet]
 		[Route(ReportRoutes.ProfitStarsPayrollList)]
-		public List<ProfitStarsPayroll> ProfitStarsPayrollList()
+		public List<ProfitStarsPayrollFund> ProfitStarsPayrollList()
 		{
 			var data = MakeServiceCall(() => _achService.GetProfitStarsPayrollList(), "Profit Stars Payroll List ", true);
 			return data;
@@ -335,7 +335,7 @@ namespace HrMaxxAPI.Controllers.Reports
 		}
 		[HttpGet]
 		[Route(ReportRoutes.MarkFundingSuccessful)]
-		public List<ProfitStarsPayroll> MarkFundingSuccessful(int fundRequestId)
+		public List<ProfitStarsPayrollFund> MarkFundingSuccessful(int fundRequestId)
 		{
 			var data = MakeServiceCall(() => _achService.MarkFundingSuccessful(fundRequestId), "Profit Stars funding manual settle ", true);
 			return data;

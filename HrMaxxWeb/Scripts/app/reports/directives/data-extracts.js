@@ -310,7 +310,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						return stqtr !== endqytr;
 					}
 					$scope.showpayperiod = function() {
-						$scope.$parent.$parent.addAlert('Start Date: ' + dataSvc.filter941.payPeriod.startDate + ' , End Date: ' + dataSvc.filter941.payPeriod.endDate, 'info'); 
+						$scope.mainData.showMessage('Start Date: ' + dataSvc.filter941.payPeriod.startDate + ' , End Date: ' + dataSvc.filter941.payPeriod.endDate, 'info'); 
 					}
 					var fillPayPeriods = function (year) {
 						var payPeriods = [];
@@ -419,9 +419,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						}
 						return payPeriods;
 					}
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
+					
 
 					$scope.getReport940 = function() {
 						getReport('Paperless940', 'Paperless 940', dataSvc.filter940.year, null, null, null, null, null, null, true, dataSvc.filter940.includeHistory);
@@ -602,7 +600,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 								document.body.appendChild(a);
 								a.click();
 							}, function (erorr) {
-								addAlert('Failed to download report ' + desc + ': ' + erorr, 'danger');
+									$scope.mainData.handleError('Failed to download report ' + desc + ': ' , erorr, 'danger');
 							});
 						} else {
 							reportRepository.getExtract(request).then(function (extract) {
@@ -610,7 +608,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 								
 
 							}, function (erorr) {
-								addAlert('Error generating extract ' + desc + ': ' + erorr.statusText, 'danger');
+									$scope.mainData.handleError('Error generating extract ' + desc + ': ' , erorr, 'danger');
 							});
 						}
 						
@@ -648,7 +646,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 
 						}, function (erorr) {
-							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating Host WC extract: ' , erorr, 'danger');
 						});
 						
 					}
@@ -676,7 +674,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Error generating Host WC extract: ' + erorr, 'danger');
+								$scope.mainData.handleError('Error generating Host WC extract: ' , erorr, 'danger');
 						});
 						
 
@@ -701,7 +699,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 
 						}, function (erorr) {
-							addAlert('Error generating Host WC extract: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating Host WC extract: ' , erorr, 'danger');
 						});
 
 					}
@@ -731,7 +729,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 							
 						}, function (erorr) {
-							addAlert('Error generating Daily Deposit report: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating Daily Deposit report: ' , erorr, 'danger');
 						});
 
 					}
@@ -748,10 +746,10 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							depositDate: null
 						}
 						reportRepository.createDepositTickets(request).then(function () {
-							addAlert('successfully generated deposit ticket', 'success');
+							$scope.mainData.showMessage('successfully generated deposit ticket', 'success');
 
 						}, function (erorr) {
-							addAlert('Error generating Daily Deposit tickets: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating Daily Deposit tickets: ' , erorr, 'danger');
 						});
 
 					}
@@ -777,7 +775,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 							
 						}, function(erorr) {
-							addAlert('Error generating positive pay report: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating positive pay report: ' , erorr, 'danger');
 						});
 
 					};
@@ -802,7 +800,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 							
 						}, function (erorr) {
-							addAlert('Error generating host WC report: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating host WC report: ' , erorr, 'danger');
 						});
 
 					}
@@ -820,7 +818,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 
 
 						}, function (erorr) {
-							addAlert('Error generating commissions report: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error generating commissions report: ' , erorr, 'danger');
 						});
 						
 					}
@@ -840,7 +838,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 						hostRepository.getHostList().then(function (data) {
 							dataSvc.hosts = data;
 						}, function (erorr) {
-							addAlert('Error getting Host List : ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error getting Host List : ' , erorr, 'danger');
 						});
 					}
 					_init();
@@ -853,13 +851,7 @@ common.directive('extractReports', ['zionAPI', '$timeout', '$window', 'version',
 common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extract, mainData, reportRepository, item, $window) {
 	$scope.mainData = mainData;
 	$scope.alerts = [];
-	var addAlert = function(message, status) {
-		$scope.alerts = [];
-		$scope.alerts.push({
-			message: message,
-			status: status
-		});
-	}
+	
 	$scope.masterExtract = item;
 	
 	$scope.dismiss = function() {
@@ -874,9 +866,9 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 			$scope.masterExtract.id = result.id;
 			$scope.masterExtract.journals = result.journals;
 			
-			addAlert('successfully filed taxes for report: ' + $scope.masterExtract.extract.report.description, 'success');
+			$scope.mainData.showMessage('successfully filed taxes for report: ' + $scope.masterExtract.extract.report.description, 'success');
 		}, function (erorr) {
-			addAlert(erorr.statusText, 'danger');
+			$scope.mainData.handleError('', erorr, 'danger');
 		});
 		
 	};
@@ -884,9 +876,9 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 		reportRepository.payCommissions($scope.masterExtract.extract).then(function (result) {
 			$scope.masterExtract.id = result.id;
 			
-			addAlert('successfully marked invoices as commissions paid: ' + $scope.masterExtract.extract.report.description, 'success');
+			$scope.mainData.showMessage('successfully marked invoices as commissions paid: ' + $scope.masterExtract.extract.report.description, 'success');
 		}, function (erorr) {
-			addAlert(erorr.statusText, 'danger');
+			$scope.mainData.handleError('', erorr, 'danger');
 		});
 
 	};
@@ -903,7 +895,7 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 			document.body.appendChild(a);
 			a.click();
 		}, function (erorr) {
-			addAlert(erorr.statusText, 'danger');
+			$scope.mainData.handleError('', erorr, 'danger');
 		});
 
 	};
@@ -916,7 +908,7 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 			document.body.appendChild(a);
 			a.click();
 		}, function (erorr) {
-			addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+			$scope.mainData.handleError('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 		});
 	}
 	$scope.downloadFile = function () {
@@ -930,7 +922,7 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 				document.body.appendChild(a);
 				a.click();
 			}, function(erorr) {
-				addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+					$scope.mainData.handleError('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 			});
 		} else {
 			reportRepository.downloadExtract($scope.masterExtract.extract.file).then(function (data) {
@@ -942,7 +934,7 @@ common.controller('extractViewCtrl', function ($scope, $uibModalInstance, extrac
 				document.body.appendChild(a);
 				a.click();
 			}, function (erorr) {
-				addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+					$scope.mainData.handleError('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 			});
 		}
 		

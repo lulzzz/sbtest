@@ -27,11 +27,6 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 					$scope.mainData.showFilterPanel = false;
 					$scope.mainData.showCompanies = false;
 
-
-					$scope.addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-					
 					
 					$scope.showPrint = function() {
 						var selected = $filter('filter')($scope.tableData, { selected: true });
@@ -81,7 +76,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 							$scope.fillTableData($scope.tableParams);
 						
 						}, function (error) {
-							$scope.addAlert('error getting invoices', 'danger');
+							$scope.mainData.showMessage('error getting invoices', 'danger');
 							
 						});
 					}
@@ -90,7 +85,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 							$scope.history = data;
 							
 						}, function (error) {
-							$scope.addAlert('error getting history of invoice deliveries', 'danger');
+							$scope.mainData.showMessage('error getting history of invoice deliveries', 'danger');
 
 						});
 					}
@@ -112,7 +107,7 @@ common.directive('invoiceDeliveryList', ['zionAPI', '$timeout', '$window', 'vers
 							$scope.history.push(data);
 
 						}, function (error) {
-							$scope.addAlert('error printing invoice delivery list', 'danger');
+							$scope.mainData.showMessage('error printing invoice delivery list', 'danger');
 
 						});
 						$window.print();

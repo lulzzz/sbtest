@@ -57,10 +57,6 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 					$scope.mainData.showCompanies = false;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.selected = null;
 
 					$scope.tableData = [];
@@ -112,9 +108,9 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							$scope.list.push(data);
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							addAlert('successfully confirmed extract', 'success');
+							$scope.mainData.showMessage('successfully confirmed extract', 'success');
 						}, function (erorr) {
-							addAlert('Failed to delete extract', 'danger');
+							$scope.mainData.showMessage('Failed to delete extract', 'danger');
 						});
 						$scope.editing = null;
 					}
@@ -191,7 +187,7 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 								});
 
 							}, function(error) {
-								addAlert('error getting extract details', 'danger');
+								$scope.mainData.showMessage('error getting extract details', 'danger');
 							});
 						} else {
 							reportRepository.getCommissionsExtract(ext.id).then(function (data) {
@@ -222,7 +218,7 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 								});
 
 							}, function (error) {
-								addAlert('error getting extract details', 'danger');
+								$scope.mainData.showMessage('error getting extract details', 'danger');
 							});
 						}
 					}
@@ -234,7 +230,7 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							$scope.fillTableData($scope.tableParams);
 
 						}, function (error) {
-							addAlert('error getting extract list for report: ' + report.desc, 'danger');
+							$scope.mainData.showMessage('error getting extract list for report: ' + report.desc, 'danger');
 						});
 					}
 				
@@ -253,7 +249,7 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Failed to download report ' + $scope.selected.extract.report.description + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Failed to download report ' + $scope.selected.extract.report.description + ': ' , erorr, 'danger');
 						});
 					};
 					$scope.deleteExtract = function (item, event) {
@@ -263,9 +259,9 @@ common.directive('extractViewList', ['zionAPI', '$timeout', '$window', 'version'
 							$scope.list.splice($scope.list.indexOf(item));
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
-							addAlert('successfully deleted extract', 'success');
+							$scope.mainData.showMessage('successfully deleted extract', 'success');
 						}, function (erorr) {
-							addAlert('Failed to delete extract', 'danger');
+							$scope.mainData.showMessage('Failed to delete extract', 'danger');
 						});
 					}
 

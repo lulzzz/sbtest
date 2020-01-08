@@ -51,72 +51,101 @@
 		<div class="panel-heading" ng-click="data.showPayrolls = !data.showPayrolls">
 			<h4 class="panel-title">
 				Profit Stars Payrolls <button class="btn btn-sm btn-primary" ng-click="getReport($event)"><i class="fa fa-refresh"></i></button>
-				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.showPayrolls, 'glyphicon-chevron-right': !data.showPayrolls}"></i>
+				
 			</h4>
 		</div>
-		<div class="panel-body" ng-show="data.showPayrolls">
+		<div class="panel-body">
 			
 			<div class="col-sm-12">
-
-				<div ng-show="list.length===0" class="row table table-bordered">
+				<div ng-show="!data.showPayrolls" class="row table table-bordered">
+					Data not loaded yet.
+				</div>
+				<div ng-show="data.showPayrolls && list.length===0" class="row table table-bordered">
 					No pay checks found
 				</div>
-				<div class="row" ng-show="list.length>0">
+				<div class="row" ng-show="data.showPayrolls && list.length>0">
 					<i class="fa fa-check" style="color:green">  actual</i>
 					<i class="fa fa-film" style="color:orange">  forecast</i>
 				</div>
-				<div class="row" ng-show="list.length>0">
-					<table ng-table="tableParams" class="table table-bordered table-condensed" show-filter="true" template-pagination="custom/pager">
-						<tr ng-repeat="item in tableData track by $index" class="mouse-over-pointer">
-							<td data-title="'Company'" class="col-sm-2">
-								{{item.companyName}}
+				<div class="row" ng-show="data.showPayrolls && list.length>0">
+					<table ng-table="tableParams" class="table" show-filter="true" template-pagination="custom/pager">
+						<tr ng-repeat-start="item in tableData track by $index" class="mouse-over-pointer" ng-class="{'success':item.isOpen}">
+							<td data-title="'Id'" class="col-sm-1">
+								<i class="fa" ng-class="{'fa-plus-square': !item.isOpen, 'fa-minus-square':item.isOpen}" ng-click="item.isOpen=!item.isOpen"></i> {{item.id}}
+								<button class="btn btn-xs btn-circle btn-success" ng-show="item.status==='Funding Requested'" ng-click="markSettled(item, $event)"><i class="fa fa-check" style="color:white"></i></button>
 							</td>
-							<td data-title="'Paying Company'" filter="{'payingCompanyName':'text'}" class="col-sm-2">
-								{{item.payingCompanyName}}
+							<td data-title="'Paying Company'" filter="{'payingCompanyName':'text'}" class="col-sm-3">
+								<button class="btn btn-sm btn-circle" ng-click="showBankDetails(item, $event)"><i class="fa fa-info" style="color:cornflowerblue"></i></button> {{item.payingCompanyName}} 
 							</td>
-                            <td data-title="'Employee'" class="col-sm-2" filter="{'employeeName':'text'}">
-                                <i class="fa" ng-class="{'fa-plus-square': !item.isOpen, 'fa-minus-square':item.isOpen}" ng-click="item.isOpen=!item.isOpen"></i> {{item.employeeName}}
-                            <div class="row" ng-show="item.isOpen">
-                                <span>Account Type : {{item.accountTypeStr}}</span><br />
-                                <span>Account Number : {{item.accountNumberStr}}</span><br />
-                                <span>Routing Number : {{item.routingNumberStr}}</span><br />
-                            </div>
-                            </td>
-                            <td data-title="'Amount'" class="col-sm-1" filter="{'amount':'number'}">
-                                {{item.amount}}
-                            </td>
-							<td data-title=" 'Pay Day' " sortable=" 'payDate' " class="col-sm-1">
-								{{item.payDate | date:'MM/dd/yyyy'}}
+
+							<td data-title="'Amount'" class="col-sm-1" filter="{'amount':'number'}">
+								{{item.amount | currency}}
 							</td>
-							<td data-title=" 'Fund Req Date' " sortable=" 'projectedFundingDate' " class="col-sm-1">
-								{{item.projectedFundingDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':item.fundRequestId, 'fa-film':!item.fundRequestId}" ng-style="(item.fundRequestId && {'color':'green'}) || (!item.fundRequestId && {'color':'orange'})"></i>
+							<td data-title=" 'Pay Day' " sortable=" 'payDay' " class="col-sm-1">
+								{{item.payDay | date:'MM/dd/yyyy'}}
 							</td>
-							<td data-title=" 'Pay Req Date' " sortable=" 'projectedPayDate' " class="col-sm-1">
-								{{item.projectedPayDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':item.payRequestId, 'fa-film':!item.payRequestId}" ng-style="(item.payRequestId && {'color':'green'}) || (!item.payRequestId && {'color':'orange'})"></i>
+							<td data-title=" 'Fund Req Date' " sortable=" 'ProjectedFundRequestDate' " class="col-sm-1">
+								{{item.projectedFundRequestDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':item.id, 'fa-calendar':!item.id}" ng-style="(item.id && {'color':'green'}) || (!item.id && {'color':'orange'})"></i>
 							</td>
-							<td data-title=" 'Status' " class="col-sm-1">
-								{{item.status}} - {{item.fundRequestId}} <button class="btn btn-xs btn-success btn-circle" ng-show="item.status==='Funding Requested'" ng-click="markSettled(item, $event)"><i class="fa fa-check" style="color:green"></i></button>
+							<td data-title=" 'Pay Req Date' " sortable=" 'projectedPayRequestDate' " class="col-sm-1">
+								{{item.projectedPayRequestDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':(item.status==='Payment Requested' || item.status==='Payment Succeeded'), 'fa-calendar':!(item.status==='Payment Requested' || item.status==='Payment Succeeded')}" ng-style="((item.status==='Payment Requested' || item.status==='Payment Succeeded') && {'color':'green'}) || (!(item.status==='Payment Requested' || item.status==='Payment Succeeded') && {'color':'orange'})"></i>
+							</td>
+
+							<td data-title=" 'Status' " class="col-sm-2">
+								{{item.status}}
+							</td>
+						</tr>
+						<tr ng-repeat-end ng-show="item.isOpen">
+							<td colspan="7">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Id</th>
+											<th>Employee</th>
+											<th>Pay Day</th>
+											<th>Pay Request Date</th>
+											<th>Amount</th>
+											<th>AccountType</th>
+											<th>Account Number</th>
+											<th>Routing Number</th>
+											<th>Status</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="pay in item.payrolls">
+											<td>{{pay.payCheckId}}</td>
+											<td>{{pay.employeeName}}</td>
+											<td>{{pay.payDate | date:'MM/dd/yyyy'}}</td>
+											<td>{{pay.projectedPayRequestDate | date:'MM/dd/yyyy'}}<i class="fa fa-check" ng-class="{'fa-check':pay.payRequestDate, 'fa-calendar':!pay.payRequestDate}" ng-style="(pay.payRequestDate && {'color':'green'}) || (!pay.payRequestDate && {'color':'orange'})"></i></td>
+											<td>{{pay.amount | currency}}</td>
+											<td>{{pay.accountTypeStr}}</td>
+											<td>{{pay.accountNumberStr}}</td>
+											<td>{{pay.routingNumberStr}}</td>
+											<td>{{pay.status}}</td>
+										</tr>
+									</tbody>
+								</table>
 							</td>
 						</tr>
 					</table>
 					<script type="text/ng-template" id="custom/pager">
-								<ul class="pager ng-cloak">
-									<li ng-repeat="page in pages"
-											ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
-											ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
-										<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
-										<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
-									</li>
-									<li>
-										<div class="btn-group">
-											<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
-											<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
-											<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
-											<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
-										</div>
-									</li>
-								</ul>
-							</script>
+						<ul class="pager ng-cloak">
+							<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+								<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+								<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+							</li>
+							<li>
+								<div class="btn-group">
+									<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+									<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+									<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+									<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+								</div>
+							</li>
+						</ul>
+					</script>
 				</div>
 			</div>
 		</div>

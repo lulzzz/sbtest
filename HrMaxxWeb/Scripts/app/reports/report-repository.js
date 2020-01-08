@@ -240,9 +240,9 @@ common.factory('reportRepository', [
 
 				return deferred.promise;
 			},
-			getReportDocument: function (request) {
+			getDocument: function (url, request) {
 				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/ReportDocument", request, { responseType: "arraybuffer" }).then(
+				$http.post(url, request, { responseType: "arraybuffer" }).then(
 					function (response) {
 						var type = response.headers('Content-Type');
 						var disposition = response.headers('Content-Disposition');
@@ -260,37 +260,20 @@ common.factory('reportRepository', [
 						});
 
 					}, function (data) {
-					var e = data.statusText;
-						deferred.reject(e);
+						var arr = new Uint8Array(data.data);
+						var str = String.fromCharCode.apply(String, arr);
+						deferred.reject(str);
 					});
 
 				return deferred.promise;
 			},
+			getReportDocument: function (request) {
+				return this.getDocument(zionAPI.URL + "Reports/ReportDocument", request);
+				
+			},
 			getACHDocumentAndFile: function (data) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/ACHFileAndExtract", data, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Reports/ACHFileAndExtract", data);
+				
 			},
 			getExtract: function (request) {
 				var deferred = $q.defer();
@@ -323,167 +306,33 @@ common.factory('reportRepository', [
 				return deferred.promise;
 			},
 			downloadExtract: function (file) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/DownloadReport", file, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Reports/DownloadReport", file);
+				
 			},
 			downloadExtractFile: function (file) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/DownloadExtract", file, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName,
-							data : response.data
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Reports/DownloadExtract", file);
+				
 			},
 			printExtractBatch: function (file) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/PrintExtractBatch", file, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName,
-							data: response.data
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Reports/PrintExtractBatch", file);
+				
 			},
 			printExtractBatchAll: function (file) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/PrintExtractBatchAll", file, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName,
-							data: response.data
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Reports/PrintExtractBatchAll", file);
+				
 			},
 			getExtractDocument: function (request) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/ExtractDocumentReport", request, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				return this.getDocument(zionAPI.URL + "Reports/ExtractDocumentReport", request);
+				
 			},
 			printExtract: function (journals, report) {
-				var deferred = $q.defer();
-				$http.post(zionAPI.URL + "Reports/PrintExtractChecks", {
+				return this.getDocument(zionAPI.URL + "Reports/PrintExtractChecks", {
 					journals: journals,
 					report: report
-				}, { responseType: "arraybuffer" }).then(
-					function (response) {
-						var type = response.headers('Content-Type');
-						var disposition = response.headers('Content-Disposition');
-						if (disposition) {
-							var match = disposition.match(/.*filename=\"?([^;\"]+)\"?.*/);
-							if (match[1])
-								defaultFileName = match[1];
-						}
-						defaultFileName = defaultFileName.replace(/[<>:"\/\\|?*]+/g, '_');
-						var blob = new Blob([response.data], { type: type });
-						var fileURL = URL.createObjectURL(blob);
-						deferred.resolve({
-							file: fileURL,
-							name: defaultFileName
-						});
-
-					}, function (data) {
-						var e = data.statusText;
-						deferred.reject(e);
-					});
-
-				return deferred.promise;
+				});
+				
 			},
+
 			getDashboardData: function (report, startdate, enddate, criteria, onlyActive) {
 				var deferred = $q.defer();
 

@@ -23,7 +23,7 @@
 				backdrop: true,
 				keyboard: true,
 				backdropClick: true,
-				size: 'lg',
+				size: 'md',
 				resolve: {
 					alerts: function () {
 						return alerts;
@@ -50,7 +50,7 @@
 				backdrop: true,
 				keyboard: true,
 				backdropClick: true,
-				size: 'lg',
+				size: 'md',
 				resolve: {
 					alerts: function () {
 						return alerts;
@@ -164,7 +164,7 @@
                     return false;
                 });
 			},
-			addAlert: function (message, type) {
+			showMessage: function (message, type) {
 				var alerts = [];
 				alerts.push({
 					msg: message,
@@ -177,7 +177,7 @@
 					backdrop: true,
 					keyboard: true,
 					backdropClick: true,
-					size: 'lg',
+					size: 'md',
 					resolve: {
 						alerts: function () {
 							return alerts;
@@ -185,7 +185,7 @@
 					}
 				});
 			},
-			addAlertsByBreak: function (error, type) {
+			showMessagesByBreak: function (error, type) {
 				var alerts = [];
 				var rows = error.split('<br>');
 				$.each(rows, function (index, er) {
@@ -204,13 +204,25 @@
 					backdrop: true,
 					keyboard: true,
 					backdropClick: true,
-					size: 'lg',
+					size: 'md',
 					resolve: {
 						alerts: function () {
 							return alerts;
 						}
 					}
 				});
+			},
+			handleError: function (message, error, type) {
+				var errorText = message;
+				if (error.status === 400) {
+					$.each(error.data.modelState, function (i, e) {
+						error1 += "<br>" + e + '(' + i + ')';
+					});
+				}
+				else
+					errorText += (error.statusText ? error.statusText : error.data ? error.data : error);
+
+				this.showMessage(errorText, type);
 			}
 		};
 
@@ -222,7 +234,7 @@
 				dataSvc.selectedCompany1 = $filter('filter')(dataSvc.hostCompanies, { id: company })[0];
 				$scope.companySelected(url? url : null, url? true : false);
 			}, function (error) {
-				$scope.addAlert('error getting list of hosts', 'danger');
+				dataSvc.showMessage('error getting list of hosts', 'danger');
 			});
 		}
 		$scope.refreshHostAndCompanies = function() {
@@ -241,7 +253,7 @@
 					$scope.hostSelected();
 				}
 			}, function (error) {
-				$scope.addAlert('error getting list of hosts', 'danger');
+				dataSvc.showMessage('error getting list of hosts', 'danger');
 			});
 		}
 		
@@ -388,7 +400,7 @@
 					if (url)
 						$window.location.href = url;
 				}, function (error) {
-					$scope.addAlert('error getting company details', 'danger');
+					dataSvc.showMessage('error getting company details', 'danger');
 				});
 				dataSvc.isFilterOpen = false;
 			}
@@ -526,6 +538,19 @@ common.controller('messageCtrl', function ($scope, $uibModalInstance, alerts) {
 		$uibModalInstance.close($scope);
 	};
 	
+	$scope.ok = function () {
+		$uibModalInstance.close($scope);
+	};
+
+
+});
+common.controller('bankDetailsCtrl', function ($scope, $uibModalInstance, bank) {
+	$scope.model = bank;
+
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+
 	$scope.ok = function () {
 		$uibModalInstance.close($scope);
 	};

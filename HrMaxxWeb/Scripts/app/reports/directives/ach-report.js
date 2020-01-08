@@ -73,7 +73,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							data.extract.data.history = [];
 							showReview(data.extract.report, data.extract);
 						}, function (error) {
-							addAlert('error getting extract details', 'danger');
+								$scope.mainData.showMessage('error getting extract details', 'danger');
 						});
 					}
 					var getExtracts = function () {
@@ -83,7 +83,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							$scope.fillTableData($scope.tableParams);
 
 						}, function (error) {
-							addAlert('error getting extract list for report: ACH', 'danger');
+								$scope.mainData.showMessage('error getting extract list for report: ACH', 'danger');
 						});
 					}
 
@@ -104,7 +104,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+							$scope.mainData.handleError('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 						});
 					};
 					$scope.selectedHost = null;
@@ -118,9 +118,6 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 					
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 					$scope.view = function (ach) {
 						if (ach.transactionType === 1) {
 							var modalInstance = $modal.open({
@@ -183,7 +180,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 
 						}, function (erorr) {
 							dataSvc.extract = null;
-							addAlert('Error getting ACH Extract: ' + erorr.statusText, 'danger');
+							$scope.mainData.handleError('Error getting ACH Extract: ', erorr, 'danger');
 						});
 					}
 					$scope.getACHDocumentAndFile = function () {
@@ -197,7 +194,7 @@ common.directive('achReport', ['zionAPI', '$timeout', '$window', 'version', '$ui
 							dataSvc.extractFiled = true;
 							$scope.refresh();
 						}, function (erorr) {
-							addAlert('Failed to download ACH extract : ' + erorr, 'danger');
+							$scope.mainData.handleError('Failed to download ACH extract : ' , erorr, 'danger');
 						});
 
 					};

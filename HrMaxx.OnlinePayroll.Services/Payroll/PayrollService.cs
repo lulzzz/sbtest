@@ -52,6 +52,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		private readonly IReaderService _readerService;
 		private readonly IDocumentService _documentService;
 		private readonly IEmailService _emailService;
+		
 		public IBus Bus { get; set; }
 
 		public PayrollService(IPayrollRepository payrollRepository, ITaxationService taxationService, ICompanyService companyService, IJournalService journalService, IPDFService pdfService, IFileRepository fileRepository, IHostService hostService, IReportService reportService, ICommonService commonService, ICompanyRepository companyRepository, IMementoDataService mementoDataService, IStagingDataService stagingDataService, IMetaDataRepository metaDataRepository, IReaderService readerService, IDocumentService documentService, IEmailService emailService)
@@ -72,6 +73,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			_readerService = readerService;
 			_documentService = documentService;
 			_emailService = emailService;
+			
 		}
 
 

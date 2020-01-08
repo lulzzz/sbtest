@@ -741,14 +741,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				var filters = new List<FilterParam>();
 				filters.Add(new FilterParam{ Key = "company", Value = id.ToString()});
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetCompanyDashboard", filters);
-                data.Accumulation = _readerService.GetTaxAccumulations(company: id,
-                    startdate: new DateTime(data.YTDYear, 1, 1),
-                    enddate: new DateTime(data.YTDYear, 12, 31), type: AccumulationType.Company,
-                    includePayCodes: false,
-                    includeTaxes: true, includePayTypeAccumulation: false,
-                    includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
-                    includeHistory: true,
-                    includeClients: false, includeTaxDelayed: true).First();
+				if (data.YTDYear.HasValue)
+				{
+					data.Accumulation = _readerService.GetTaxAccumulations(company: id,
+					startdate: new DateTime(data.YTDYear.Value, 1, 1),
+					enddate: new DateTime(data.YTDYear.Value, 12, 31), type: AccumulationType.Company,
+					includePayCodes: false,
+					includeTaxes: true, includePayTypeAccumulation: false,
+					includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
+					includeHistory: true,
+					includeClients: false, includeTaxDelayed: true).First();
+				}
+                
 
                 return data;
 			}
@@ -769,14 +773,18 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				filters.Add(new FilterParam { Key = "company", Value = companyId.ToString() });
 				filters.Add(new FilterParam { Key = "employee", Value = employeeId.ToString() });
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetEmployeeDashboard", filters);
-                data.Accumulation = _readerService.GetTaxAccumulations(company: companyId, employee: employeeId,
-                    startdate: new DateTime(data.YTDYear, 1, 1),
-                    enddate: new DateTime(data.YTDYear, 12, 31), type: AccumulationType.Employee,
-                    includePayCodes: false,
-                    includeTaxes: true, includePayTypeAccumulation: false,
-                    includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
-                    includeHistory: true,
-                    includeClients: false, includeTaxDelayed: true).First();
+				if (data.YTDYear.HasValue)
+				{
+					data.Accumulation = _readerService.GetTaxAccumulations(company: companyId, employee: employeeId,
+				   startdate: new DateTime(data.YTDYear.Value, 1, 1),
+				   enddate: new DateTime(data.YTDYear.Value, 12, 31), type: AccumulationType.Employee,
+				   includePayCodes: false,
+				   includeTaxes: true, includePayTypeAccumulation: false,
+				   includedDeductions: true, includedCompensations: false, includeWorkerCompensations: true,
+				   includeHistory: true,
+				   includeClients: false, includeTaxDelayed: true).First();
+				}
+               
                 return data;
 			}
 			catch (Exception e)

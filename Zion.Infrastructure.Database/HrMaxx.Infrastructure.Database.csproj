@@ -687,6 +687,9 @@
     <Content Include="HrMaxx.Infrastructure.Database.nuspec">
       <SubType>Designer</SubType>
     </Content>
+    <EmbeddedResource Include="Scripts\Maintenance\SchemaChanges\013S_profit stars procs.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

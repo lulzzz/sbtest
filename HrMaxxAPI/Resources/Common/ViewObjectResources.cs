@@ -44,6 +44,7 @@ namespace HrMaxxAPI.Resources.Common
 		public Address CompanyAddress { get; set; }
 		public string FederalEIN { get; set; }
 		public StatusOption StatusId { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 		public List<CompanyTaxState> CompanyTaxStates { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; } 

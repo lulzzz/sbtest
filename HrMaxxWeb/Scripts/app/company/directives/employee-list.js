@@ -30,13 +30,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 					$scope.showCopyEmployees = $scope.mainData.hasClaim(ClaimTypes.EmployeeCopy, 1);
 					$scope.showPayChecks = $scope.mainData.hasClaim(ClaimTypes.EmployeePayChecks, 1);
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
-					$scope.addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
+					
 					$scope.files = [];
 					$scope.onFileSelect = function ($files) {
 						$scope.files = [];
@@ -70,11 +64,11 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 					var uploadDocument = function () {
 						companyRepository.importEmployees($scope.files[0]).then(function (employees) {
 							$scope.selected = null;
-							addAlert('successfully imported ' + employees.length + 'employees', 'success');
+							$scope.mainData.showMessage('successfully imported ' + employees.length + 'employees', 'success');
 							dataSvc.employeesLoadedFor = null;
 							$scope.getEmployees($scope.mainData.selectedCompany.id);
 						}, function (error) {
-							addAlert('error in importing employees: ' + error, 'danger');
+							$scope.mainData.handleError('error in importing employees: ' , error, 'danger');
 
 							});
 
@@ -93,7 +87,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							a.click();
 							
 						}, function (error) {
-							addAlert('error getting employee import template', 'danger');
+							$scope.mainData.showMessage('error getting employee import template', 'danger');
 						});
 					}
 
@@ -195,7 +189,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						event.stopPropagation();
 					}
 					$scope.bulkTerminateEmployees = function () {
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to terminate ' + $scope.bulkTerminateAvailable() + ' employees?', 'danger', function () {
+						$scope.mainData.confirmDialog('Are you sure you want to terminate ' + $scope.bulkTerminateAvailable() + ' employees?', 'danger', function () {
 							var employees = [];
 							var list = $filter('filter')($scope.tableData, { isTerminated: true });
 							$.each(list, function(i, e) {
@@ -206,7 +200,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 								dataSvc.employeesLoadedFor = null;
 								$scope.getEmployees($scope.mainData.selectedCompany.id);
 							}, function (error) {
-								addAlert('error in bulk terminating employees', 'danger');
+								$scope.mainData.showMessage('error in bulk terminating employees', 'danger');
 							});
 							
 						});
@@ -307,7 +301,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.set(result);
-						addAlert('successfully saved employee', 'success');
+						$scope.mainData.showMessage('successfully saved employee', 'success');
 					}
 					
 					$scope.viewPayCheckList = function (employee, event) {
@@ -351,7 +345,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 							a.click();
 
 						}, function (error) {
-							addAlert('Error getting Company Leave Export for ' + payTypeName + '. ' + error, 'danger');
+							$scope.mainData.handleError('Error getting Company Leave Export for ' + payTypeName + '. ' , error, 'danger');
 						});
 					}
 					$scope.getEmployees = function (companyId) {
@@ -381,7 +375,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 									}
 								}
 							}, function (erorr) {
-								addAlert('error getting employee list', 'danger');
+								$scope.mainData.showMessage('error getting employee list', 'danger');
 							});
 						}
 						
@@ -438,7 +432,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						});
 						modalInstance.result.then(function (scope) {
 							if (scope) {
-								addAlert('successfully copied employees to the new company: ' + scope.selectedCompany.name, 'success');
+								$scope.mainData.showMessage('successfully copied employees to the new company: ' + scope.selectedCompany.name, 'success');
 							}
 						}, function () {
 							return false;

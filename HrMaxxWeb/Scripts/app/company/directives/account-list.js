@@ -39,11 +39,6 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
-
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-					
 					$scope.selected = null;
 
 
@@ -149,9 +144,9 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
-							addAlert('successfully saved account', 'success');
+							$scope.mainData.showMessage('successfully saved account', 'success');
 						}, function (error) {
-							addAlert('error saving account', 'danger');
+							$scope.mainData.showMessage('error saving account', 'danger');
 						});
 					}
 					$scope.filterByDateRange = function () {
@@ -209,7 +204,7 @@ common.directive('accountList', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
 						}, function (erorr) {
-							addAlert('error getting account list', 'danger');
+							$scop.mainData.showMessage('error getting account list', 'danger');
 						});
 					}
 

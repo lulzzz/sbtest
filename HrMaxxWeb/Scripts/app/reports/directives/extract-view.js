@@ -14,13 +14,7 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 			controller: ['$scope', '$element', '$location', '$filter', 'reportRepository',
 				function ($scope, $element, $location, $filter, reportRepository) {
 
-					var addAlert = function (message, status) {
-						$scope.$parent.$parent.alerts = [];
-						$scope.$parent.$parent.alerts.push({
-							message: message,
-							status: status
-						});
-					}
+					
 					$scope.data = $scope.masterExtract.extract.data;
 					$scope.history = $scope.masterExtract.extract.data.history;
 					$scope.report = $scope.masterExtract.extract.report;
@@ -134,7 +128,7 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Failed to download batch print for all' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Failed to download batch print for all' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 						});
 					}
 
@@ -168,7 +162,7 @@ common.directive('extractView', ['zionAPI', '$timeout', '$window', 'version',
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Failed to download batch print ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Failed to download batch print ' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 						});
 					}
 					$scope.batchPrintingEvents = {

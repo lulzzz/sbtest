@@ -27,10 +27,7 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
                         $scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
                         $scope.showIncludeTaxDelayed = $scope.mainData.selectedCompany.contract.contractOption === 2 && $scope.mainData.selectedCompany.contract.billingOption === 3;
                     }
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
+					
 					$scope.getReport = function () {
 						var m = $scope.mainData;
 						var request = {
@@ -50,7 +47,7 @@ common.directive('deductionReport', ['zionAPI', '$timeout', '$window', 'version'
 							dataSvc.response = data;
 							
 						}, function (error) {
-							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
+								$scope.mainData.handleError('error getting report ' + request.reportName + ': ' , error, 'danger');
 						});
 					}
 

@@ -24,11 +24,7 @@ common.directive('incomeStatement', ['zionAPI', '$timeout', '$window', 'version'
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 					
-
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
+					
 					$scope.getReport = function () {
 						var m = $scope.mainData;
 						var request = {
@@ -45,7 +41,7 @@ common.directive('incomeStatement', ['zionAPI', '$timeout', '$window', 'version'
 							dataSvc.response = data;
 							
 						}, function (error) {
-							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
+								$scope.mainData.handleError('error getting report ' + request.reportName + ': ' , error, 'danger');
 						});
 					}
 					$scope.netIncome = function() {

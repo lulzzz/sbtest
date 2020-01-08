@@ -45,39 +45,26 @@ common.directive('userProfile', ['zionAPI','version',
 
 				$scope.save = function () {
 					userRepository.saveUserProfile($scope.user).then(function (data) {
-						$scope.addAlert('successfully saved user profile', 'success');
+						$scope.mainData.showMessage('successfully saved user profile', 'success');
 					}, function (error) {
-						$scope.addAlert('Error saving user profile', 'danger');
+						$scope.mainData.showMessage('Error saving user profile', 'danger');
 					});
 				}
 				$scope.changePassword = function () {
 					userRepository.changePassword(dataSvc.oldPassword, dataSvc.newPassword, dataSvc.confirmPassword).then(function (data) {
-						$scope.addAlert('successfully changed password', 'success');
+						$scope.mainData.showMessage('successfully changed password', 'success');
 						dataSvc.oldPassword = null;
 						dataSvc.newPassword = null;
 						dataSvc.confirmPassword = null;
 					}, function (error) {
-						$scope.addAlert('Error changing user password', 'danger');
+						$scope.mainData.showMessage('Error changing user password', 'danger');
 					});
 				}
 				$scope.cancel = function () {
 					$scope.user = angular.copy(localUser);
 					$scope.$broadcast('refreshuserprofile');
 				}
-				$scope.alerts = [];
-
-				$scope.addAlert = function (error, type) {
-					//$scope.alerts = [];
-					//$scope.alerts.push({
-					//	msg: error,
-					//	type: type
-					//});
-                    $scope.$parent.$parent.addAlert(error, type);
-                };
-
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				_init();
 				
 			}]

@@ -38,7 +38,7 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 						count: 10,
 
 						sorting: {
-							payDate: 'desc'     // initial sortingf.
+							id: 'desc'     // initial sortingf.
 						}
 					}, {
 						total: $scope.list ? $scope.list.length : 0, // length of data
@@ -76,7 +76,7 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 							document.body.appendChild(a);
 							a.click();
 						}, function (erorr) {
-							addAlert('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Failed to download report ' + $scope.masterExtract.extract.report.description + ': ' , erorr, 'danger');
 						});
 					};
 					$scope.selectedHost = null;
@@ -89,10 +89,6 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 					$scope.mainData.showFilterPanel = false;
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
-					
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 				
 					$scope.getReport = function (event) {
 						event.stopPropagation();
@@ -105,7 +101,20 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 
 						}, function (erorr) {
 							dataSvc.extract = null;
-							addAlert('Error getting Profit Stars Payroll List: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error getting Profit Stars Payroll List: ' , erorr, 'danger');
+						});
+					}
+					$scope.showBankDetails = function (listitem) {
+						var modalInstance = $modal.open({
+							templateUrl: 'popover/bankdetails.html',
+							controller: 'bankDetailsCtrl',
+							size: 'sm',
+							windowClass: 'my-modal-popup',
+							resolve: {
+								bank: function () {
+									return listitem;
+								}
+							}
 						});
 					}
 					$scope.run1pm = function (event) {
@@ -116,13 +125,13 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 								dataSvc.onePmResult = data;
 							} else {
 								dataSvc.show1pm = false;
-								addAlert('No funding or payment requests found to be sent to ProfitStars', 'warning');
+								$scope.mainData.showMessage('No funding or payment requests found to be sent to ProfitStars', 'warning');
                             }
                             $scope.getReport(event);
 
                         }, function (erorr) {
 							dataSvc.extract = null;
-							addAlert('Error running 1 pm service: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error running 1 pm service: ' , erorr, 'danger');
 						});
 					}
 					$scope.run9am = function (event) {
@@ -133,24 +142,25 @@ common.directive('profitStarsReport', ['zionAPI', '$timeout', '$window', 'versio
 								dataSvc.nineAmResult = data;
 							} else {
 								dataSvc.show9am = false;
-								addAlert('No data found. please check email for any errors', 'warning');
+								$scope.mainData.showMessage('No data found. please check email for any errors', 'warning');
                             }
                             $scope.getReport(event);
 						}, function (erorr) {
 							dataSvc.extract = null;
-							addAlert('Error running 9 am service: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error running 9 am service: ' , erorr, 'danger');
 						});
 					}
 					$scope.markSettled = function (item, event) {
+						event.stopPropagation();
 						reportRepository.markSettled(item.fundRequestId).then(function (data) {
-							addAlert('manually marked funding successful: ', 'success');
+							$scope.mainData.showMessage('manually marked funding successful: ', 'success');
 							$scope.list = data;
 							$scope.tableParams.reload();
 
 							$scope.fillTableData($scope.tableParams);
 							dataSvc.showPayrolls = true;
 						}, function (erorr) {
-							addAlert('Error updating fund request to settled: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error updating fund request to settled: ' , erorr, 'danger');
 						});
 					}
 					

@@ -19,9 +19,7 @@ common.directive('newsList', ['zionAPI', '$timeout', '$window','version',
 				$scope.list = [];
 				$scope.targetAudience = [];
 				$scope.selectedAudience = [];
-				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
-				};
+				
 				
 				$scope.selectedNewsItem = null;
 				if ($scope.mainData)
@@ -127,9 +125,9 @@ common.directive('newsList', ['zionAPI', '$timeout', '$window','version',
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.selectedNewsItem = null;
-						addAlert('successfully saved news', 'success');
+						$scope.mainData.showMessage('successfully saved news', 'success');
 					}, function (error) {
-						addAlert('error saving news', 'danger');
+						$scope.mainData.showMessage('error saving news', 'danger');
 					});
 				}
 				var init = function () {
@@ -137,7 +135,7 @@ common.directive('newsList', ['zionAPI', '$timeout', '$window','version',
 						$scope.metadata = data;
 						
 					}, function (erorr) {
-						addAlert('failed to load meta data for news', 'danger');
+						$scope.mainData.showMessage('failed to load meta data for news', 'danger');
 					});
 					if ($scope.fetch) {
 						commonRepository.getNewsfeed($scope.audienceTypeId, $scope.audienceId).then(function (data) {

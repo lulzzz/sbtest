@@ -38,10 +38,6 @@ common.directive('depositCoupons', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.showincludeclients = (!$scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.hasLocations) || ($scope.mainData.selectedCompany.fileUnderHost && $scope.mainData.selectedCompany.isHostCompany && $scope.mainData.selectedCompany.id === $scope.mainData.selectedHost.companyId && $scope.mainData.selectedHost.isPeoHost) ? true : false;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.getReport1 = function() {
 						getReport('Federal8109B_'+dataSvc.filter1.reportType, 'Federal Deposit Coupon', dataSvc.filter1.startDate, dataSvc.filter1.endDate, dataSvc.filter1.includeHistory, dataSvc.filter1.includeClients);
 					}
@@ -72,7 +68,7 @@ common.directive('depositCoupons', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 
 						}, function (erorr) {
-							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Error getting report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 					$scope.hasCalifornia = function() {

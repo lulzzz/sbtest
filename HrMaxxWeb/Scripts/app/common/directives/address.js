@@ -27,17 +27,7 @@ common.directive('addressPaxol', ['zionAPI','localStorageService','version',
 				
 				//$scope.data = angular.copy($scope.data1);
 				var localAddress = null;
-				$scope.addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
-				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
-
+				
 				$scope.countrySelected = function() {
 					$scope.data.countryId = $scope.data.selectedCountry.countryId;
 					$scope.availableStates = angular.copy($scope.data.selectedCountry.states);

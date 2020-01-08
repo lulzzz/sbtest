@@ -36,7 +36,7 @@ common.directive('paycheck', ['zionAPI', '$timeout', '$window', 'version',
 							$scope.selected = null;
 							$scope.original = null;
 						}, function (error) {
-							addAlert('error updating pay check accumulation', 'danger');
+							$scope.mainData.showMessage('error updating pay check accumulation', 'danger');
 						});
 						//$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to change thIS accumulation?', 'warning', function () {
 							
@@ -70,7 +70,7 @@ common.directive('paycheck', ['zionAPI', '$timeout', '$window', 'version',
 								$scope.check = data;
 								$scope.showControls = ($scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'SuperUser') && $scope.check.status > 2;
 							}, function(erorr) {
-								$scope.$parent.$parent.addAlert('error getting paycheck by id', 'danger');
+								$scope.mainData.showMessage('error getting paycheck by id', 'danger');
 							});
 						} else {
 							$scope.showControls = ($scope.mainData.userRole === 'Master' || $scope.mainData.userRole === 'SuperUser') && $scope.check.status > 2;

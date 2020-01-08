@@ -29,17 +29,7 @@ common.directive('host', ['zionAPI','localStorageService','version',
 				if ($scope.host.terminationDate)
 					$scope.host.terminationDate = moment($scope.host.terminationDate).toDate();
 
-				$scope.addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
-				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
-
+				
 				$scope.validate = function () {
 					return validateStep1() && validateStep2() && validateStep3() && validateStep4() && validateStep5();
 				}
@@ -356,7 +346,7 @@ common.directive('host', ['zionAPI','localStorageService','version',
 						dataSvc.companyMetaData = data;
 						setCompany();
 					}, function (error) {
-						addAlert('error getting company meta data', 'danger');
+						$scope.mainData.showMessage('error getting company meta data', 'danger');
 					});
 					
 					

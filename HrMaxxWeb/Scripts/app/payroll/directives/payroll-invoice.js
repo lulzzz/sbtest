@@ -40,9 +40,6 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						$scope.$parent.$parent.cancel();
 					}
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 					
 					$scope.getLineItemTotal = function () {
 						if ($scope.invoice) {
@@ -282,7 +279,7 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 						}
 						var validation = $scope.isInvoiceInvalid();
 						if (validation) {
-							addAlert(validation, 'warning');
+							$scope.mainData.showMessage(validation, 'warning');
 							return false;
 						}
 						if ($scope.invoice.deleted) {
@@ -309,24 +306,24 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								$scope.invoice = data;
 								fixDates();
 								$scope.updateParent();
-								addAlert('successfully saved invoice', 'success');
+								$scope.mainData.showMessage('successfully saved invoice', 'success');
 							});
 
 
 						}, function (error) {
-							addAlert('error saving invoice', 'danger');
+							$scope.mainData.showMessage('error saving invoice', 'danger');
 						});
 					}
 					$scope.delete = function () {
 						payrollRepository.deletePayrollInvoice($scope.invoice).then(function (data) {
 							$timeout(function () {
 								$scope.$parent.$parent.deleteInvoice($scope.invoice);
-								addAlert('successfully deleted invoice', 'success');
+								$scope.mainData.showMessage('successfully deleted invoice', 'success');
 							});
 
 
 						}, function (error) {
-							addAlert('error deleting invoice', 'danger');
+							$scope.mainData.showMessage('error deleting invoice', 'danger');
 						});
 					};
 					$scope.recreate = function () {
@@ -336,12 +333,12 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 								$scope.invoice = data;
 								fixDates();
 								$scope.updateParent();
-								addAlert('successfully re-created invoice', 'success');
+								$scope.mainData.showMessage('successfully re-created invoice', 'success');
 							});
 
 
 						}, function (error) {
-							addAlert('error re-created invoice', 'danger');
+							$scope.mainData.showMessage('error re-created invoice', 'danger');
 						});
 					};
 					$scope.delayTaxes = function () {
@@ -353,12 +350,12 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 									$scope.invoice = data;
 									fixDates();
 									$scope.updateParent();
-									addAlert('successfully delayed taxes on the invoice', 'success');
+									$scope.mainData.showMessage('successfully delayed taxes on the invoice', 'success');
 								});
 
 
 							}, function (error) {
-								addAlert('error delaying taxes on the invoice', 'danger');
+								$scope.mainData.showMessage('error delaying taxes on the invoice', 'danger');
 							});
 						});
 						
@@ -372,12 +369,12 @@ common.directive('payrollInvoice', ['$uibModal', 'zionAPI', '$timeout', '$window
 									$scope.invoice = data;
 									fixDates();
 									$scope.updateParent();
-									addAlert('successfully re-dated the invoice and its payroll', 'success');
+									$scope.mainData.showMessage('successfully re-dated the invoice and its payroll', 'success');
 								});
 
 
 							}, function (error) {
-								addAlert('error re-dating the invoice', 'danger');
+								$scope.mainData.showMessage('error re-dating the invoice', 'danger');
 							});
 						});
 

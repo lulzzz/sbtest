@@ -39,7 +39,7 @@ namespace HrMaxxAPI.Controllers
 			throw new HttpResponseException(new HttpResponseMessage
 			{
 				StatusCode = HttpStatusCode.Forbidden,
-				ReasonPhrase = "Access Denied"
+				ReasonPhrase = "Access Denied", Content=new StringContent("Access Denied")
 			});
 		}
 
@@ -93,7 +93,7 @@ namespace HrMaxxAPI.Controllers
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.BadRequest,
-						ReasonPhrase = "Please update your app/iOS version"
+						ReasonPhrase = "Please update your app/iOS version", Content=new StringContent("Please update your app/iOS version")
 					});
 				}
 			}
@@ -114,7 +114,7 @@ namespace HrMaxxAPI.Controllers
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message, Content=new StringContent(e.Message)
 				});
 			}
 
@@ -123,7 +123,7 @@ namespace HrMaxxAPI.Controllers
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.NotFound,
-					ReasonPhrase = CommonStringResources.ERROR_No_Resource_Found
+					ReasonPhrase = CommonStringResources.ERROR_No_Resource_Found, Content=new StringContent(CommonStringResources.ERROR_No_Resource_Found)
 				});
 			}
 
@@ -163,7 +163,7 @@ namespace HrMaxxAPI.Controllers
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.BadRequest,
-						ReasonPhrase = "Please update your app/iOS version"
+						ReasonPhrase = "Please update your app/iOS version", Content=new StringContent("Please update your app/iOS version")
 					});
 				}
 			}
@@ -186,7 +186,7 @@ namespace HrMaxxAPI.Controllers
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message, Content=new StringContent(e.Message)
 				});
 			}
 		}

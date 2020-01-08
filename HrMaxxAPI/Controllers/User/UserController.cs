@@ -114,7 +114,8 @@ namespace HrMaxxAPI.Controllers.User
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.BadRequest,
-						ReasonPhrase = "No matching user found"
+						ReasonPhrase = "No matching user found",
+						Content = new StringContent("No matching user found")
 					});
 				}
 				string code = GetCode(user.Id, false);
@@ -128,7 +129,8 @@ namespace HrMaxxAPI.Controllers.User
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = "Unexpected error occured while sending a reset password request"
+					ReasonPhrase = "Unexpected error occured while sending a reset password request",
+					Content = new StringContent("Unexpected error occurred while sending a reset password request")
 				});
 			}
 
@@ -145,7 +147,8 @@ namespace HrMaxxAPI.Controllers.User
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.BadRequest,
-					ReasonPhrase = "this user does not exist"
+					ReasonPhrase = "this user does not exist",
+					Content = new StringContent("User does not exists")
 				});
 			}
 			try
@@ -157,7 +160,8 @@ namespace HrMaxxAPI.Controllers.User
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.InternalServerError,
-						ReasonPhrase = result.Errors.Any() ? result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ") : " Failed to Change User Password"
+						ReasonPhrase = result.Errors.Any() ? result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ") : " Failed to Change User Password",
+						Content = new StringContent(result.Errors.Any() ? result.Errors.Aggregate(string.Empty, (current, m) => current + m + ", ") : " Failed to Change User Password")
 					});
 
 				}
@@ -168,7 +172,8 @@ namespace HrMaxxAPI.Controllers.User
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.GetType()==typeof(HttpResponseException) ? ((HttpResponseException)e).Response.ReasonPhrase : e.Message
+					ReasonPhrase = e.GetType()==typeof(HttpResponseException) ? ((HttpResponseException)e).Response.ReasonPhrase : e.Message,
+					Content = new StringContent(e.GetType() == typeof(HttpResponseException) ? ((HttpResponseException)e).Response.ReasonPhrase : e.Message)
 				});
 			}
 
@@ -184,7 +189,7 @@ namespace HrMaxxAPI.Controllers.User
                 throw new HttpResponseException(new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    ReasonPhrase = "this user does not exist"
+                    ReasonPhrase = "this user does not exist", Content=new StringContent("User does not exist")
                 });
             }
             try
@@ -197,7 +202,8 @@ namespace HrMaxxAPI.Controllers.User
                     throw new HttpResponseException(new HttpResponseMessage
                     {
                         StatusCode = HttpStatusCode.InternalServerError,
-                        ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Change User Password"
+                        ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Change User Password", 
+						Content=new StringContent(result.Errors.Any() ? result.Errors.First() : " Failed to Change User Password")
                     });
 
                 }
@@ -287,7 +293,7 @@ namespace HrMaxxAPI.Controllers.User
 						throw new HttpResponseException(new HttpResponseMessage
 						{
 							StatusCode = HttpStatusCode.BadRequest,
-							ReasonPhrase = "A user already exists with this user name"
+							ReasonPhrase = "A user already exists with this user name", Content=new StringContent("A user already exists with this username")
 						});
 					}
 
@@ -314,7 +320,8 @@ namespace HrMaxxAPI.Controllers.User
 					throw new HttpResponseException(new HttpResponseMessage
 					{
 						StatusCode = HttpStatusCode.Conflict,
-						ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Save User"
+						ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Save User",
+						Content = new StringContent(result.Errors.Any() ? result.Errors.First() : " Failed to Save User")
 					});
 
 				}
@@ -325,7 +332,8 @@ namespace HrMaxxAPI.Controllers.User
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = "Failed to complete user creation"
+					ReasonPhrase = "Failed to complete user creation",
+					Content = new StringContent("Failed complete user creation. ")
 				});
 			}
 
@@ -355,7 +363,8 @@ namespace HrMaxxAPI.Controllers.User
 						throw new HttpResponseException(new HttpResponseMessage
 						{
 							StatusCode = HttpStatusCode.Conflict,
-							ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Save User"
+							ReasonPhrase = result.Errors.Any() ? result.Errors.First() : " Failed to Save User",
+							Content=new StringContent(result.Errors.Any() ? result.Errors.First() : " Failed to Save User")
 						});
 					}
 				
@@ -368,7 +377,7 @@ namespace HrMaxxAPI.Controllers.User
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = "Failed to complete user creation"
+					ReasonPhrase = "Failed to complete user creation", Content = new StringContent("Failed to complete user creation")
 				});
 			}
 

@@ -24,13 +24,6 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
-
-					$scope.addAlert = function (error, type) {
-						$scope.alerts = [];
-
-						$scope.alerts.push({message: error, type: type});
-					};
-
 					$scope.selected = null;
 
 					$scope.tableData = [];
@@ -91,7 +84,7 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 
 							
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+							$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					$scope.getPaySlip = function () {
@@ -105,7 +98,7 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 
 
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+							$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					var getPaychecks = function (companyId, employeeId) {
@@ -117,7 +110,7 @@ common.directive('payCheckList', ['zionAPI', '$timeout', '$window', 'version',
 							
 							
 						}, function (error) {
-							$scope.addAlert('error getting pay checks', 'danger');
+							$scope.mainData.showMessage('error getting pay checks', 'danger');
 						});
 					}
 

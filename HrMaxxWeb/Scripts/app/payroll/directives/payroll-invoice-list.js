@@ -105,11 +105,6 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.mainData.showFilterPanel = false;
 					$scope.mainData.showCompanies = false;
 
-
-					$scope.addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-					
 					$scope.selected = null;
 
 
@@ -191,7 +186,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 								
 								anchorSmoothScroll.scrollToElement(document.getElementById('invoice'));
 							}, function (error) {
-								$scope.addAlert('error getting invoices', 'danger');
+								$scope.mainData.showMessage('error getting invoices', 'danger');
 
 							});
 						}
@@ -249,7 +244,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 							}
 							
 						}, function (error) {
-							$scope.addAlert('error getting invoices', 'danger');
+							$scope.mainData.showMessage('error getting invoices', 'danger');
 							
 						});
 					}

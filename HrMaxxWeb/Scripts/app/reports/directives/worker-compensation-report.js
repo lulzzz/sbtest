@@ -28,11 +28,6 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
                         $scope.showIncludeTaxDelayed = $scope.mainData.selectedCompany.contract.contractOption === 2 && $scope.mainData.selectedCompany.contract.billingOption === 3;
                     }
 					
-
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.getReport = function () {
 						var m = $scope.mainData;
 						var request = {
@@ -52,7 +47,7 @@ common.directive('workerCompensationReport', ['zionAPI', '$timeout', '$window', 
 							dataSvc.response = data;
 							
 						}, function (error) {
-							addAlert('error getting report ' + request.reportName + ': ' + error.statusText, 'danger');
+								$scope.mainData.handleError('error getting report ' + request.reportName + ': ' , error, 'danger');
 						});
 					}
 

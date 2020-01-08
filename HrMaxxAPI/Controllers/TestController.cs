@@ -16,11 +16,12 @@ namespace HrMaxxAPI.Controllers
 	{
 		private readonly IScheduledJobService _scheduledJobService;
         private readonly IDocumentService _documentService;
-
-        public TestController(IScheduledJobService scheduledJobService, IDocumentService documentService)
+		private readonly IACHService _achService;
+        public TestController(IScheduledJobService scheduledJobService, IDocumentService documentService, IACHService aCHService)
 		{
 			_scheduledJobService = scheduledJobService;
             _documentService = documentService;
+			_achService = aCHService;
 			
 		}
 		[System.Web.Http.HttpGet]
@@ -59,7 +60,7 @@ namespace HrMaxxAPI.Controllers
 		{
 			//if (DateTime.Now.ToString("tt") == "AM")
 			{
-				MakeServiceCall(() => _scheduledJobService.ProfitStarsNineAM(), "Update DB Stats");
+				MakeServiceCall(() => _scheduledJobService.ProfitStarsNineAM(), "Profit Stars 9 AM Service");
 			}
 
 		}
@@ -68,13 +69,19 @@ namespace HrMaxxAPI.Controllers
 		[System.Web.Http.Route("Scheduled/ProfitStarsOnePM")]
 		public void ProfitStarsOne()
 		{
-			//if (DateTime.Now.ToString("tt") == "AM")
-			{
-				MakeServiceCall(() => _scheduledJobService.ProfitStarsOnePM(), "Update DB Stats");
-			}
-
+			MakeServiceCall(() => _scheduledJobService.ProfitStarsOnePM(), "Profit Stars 1 PM service");
+			
 		}
-        [System.Web.Http.HttpGet]
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route("Scheduled/GetDDForToday")]
+		public object GetDDForToday()
+		{
+			return MakeServiceCall(() => _achService.GetProfitStarsPaymentDate(DateTime.Today), "Profit Stars 1 PM service");
+			
+		}
+
+		[System.Web.Http.HttpGet]
         [System.Web.Http.AllowAnonymous]
         [System.Web.Http.Route("Scheduled/PurgePayrollDocuments")]
         public void PurgePayrollDocuments()

@@ -109,10 +109,6 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
-
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-                    };
                     $scope.isHIPITValid = function () {
                         if (!dataSvc.filterHIPIT.year || !dataSvc.filterHIPIT.depositSchedule || !dataSvc.filterHIPIT.depositDate)
                             return false;
@@ -334,7 +330,7 @@ common.directive('govtForms', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 
 						}, function (erorr) {
-							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+                                $scope.mainData.handleError('Error getting report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 					$scope.hasState = function(stateId) {

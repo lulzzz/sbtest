@@ -43,6 +43,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		
 		private readonly string _filePath;
 		private readonly string _templatePath;
+		private List<KeyValuePair<int, DateTime>> BankHolidays;
 		public ACHService(IProfitStarsRepository profitStarsRepository, IEmailService emailService, IFileRepository fileRepository, IMetaDataService metaDataService, string templatePath, string filePath, string psemailto, string psemailcc)
 		{
 			_profitStarsRepository = profitStarsRepository;
@@ -53,6 +54,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			_filePath = filePath;
 			EmailTo = psemailto;
 			EmailCC = psemailcc;
+			BankHolidays = _metaDataService.GetBankHolidays();
 		}
 		public void FillACH()
 		{
@@ -119,13 +121,21 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			}
 		}
 
-		public List<ProfitStarsPayroll> GetProfitStarsPayrollList()
+		public List<ProfitStarsPayrollFund> GetProfitStarsPayrollList()
 		{
 			try
 			{
 				var result =  _profitStarsRepository.GetProfitStarsPayrollList();
 				if (result==null)
-					result =  new List<ProfitStarsPayroll>();
+					result =  new List<ProfitStarsPayrollFund>();
+				result.ForEach(pf =>
+				{
+					pf.ProjectedFundRequestDate = pf.RequestDate.HasValue ? pf.RequestDate.Value : GetProfitStarsProjectedFundDate(pf.PayDay);
+					pf.Payrolls.ForEach(pfp =>
+					{
+						pfp.ProjectedPayRequestDate = pfp.PayRequestDate.HasValue ? pfp.PayRequestDate.Value : GetProfitStarsPaymentDateFromFundingDate(pf.ProjectedFundRequestDate);
+					});
+				});
 				return result;
 			}
 			catch (Exception e)
@@ -136,14 +146,14 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			}
 		}
 
-		public List<ProfitStarsPayroll> MarkFundingSuccessful(int fundRequestId)
+		public List<ProfitStarsPayrollFund> MarkFundingSuccessful(int fundRequestId)
 		{
 			try
 			{
 				_profitStarsRepository.MarkFundingSuccessful(fundRequestId);
 				var result = _profitStarsRepository.GetProfitStarsPayrollList();
 				if (result == null)
-					result = new List<ProfitStarsPayroll>();
+					result = new List<ProfitStarsPayrollFund>();
 				return result;
 			}
 			catch (Exception e)
@@ -163,50 +173,59 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			{
 				var emailSubject = "Paxol: ACH Service-1 PM: Summary";
 				var emailStr = new StringBuilder();
-				var paymentRequests = GetProfitStarsPayments();
-
-				if (paymentRequests.Any())
+				if (!(DateTime.Today.DayOfWeek == DayOfWeek.Saturday || DateTime.Today.DayOfWeek == DayOfWeek.Sunday || BankHolidays.Any(b => b.Value.Equals(DateTime.Today))))
 				{
-					var fileName = string.Format("PaymentRequest-{0}-{1}", DateTime.Today.ToString("yyyy-MM-dd"),
-						DateTime.Now.Millisecond);
-					var requestFile = CreateRequestRTG(paymentRequests, "transformers/ProfitStars/PaymentRequest.xslt", fileName,
-						DateTime.Today);
-					var result = SendRTGRequest(requestFile, PaymentGateway,
-						string.Format("PaymentResponse-{0}-{1}", DateTime.Today.ToString("yyyy-MM-dd"), DateTime.Now.Millisecond));
-					if (!result.StartsWith(OnlinePayrollStringResources.ERROR_FailedToRetrieveX))
+					Log.Info("DD Payments up to " + GetProfitStarsPaymentDate(DateTime.Today).ToString("MM/dd/yyyy"));
+					var paymentRequests = GetProfitStarsPayments();
+
+					if (paymentRequests.Any())
 					{
-						var paymentResponse = Utilities.Deserialize<ProfitStarsPayResponses>(result);
-						if (paymentResponse.HasError)
+						var fileName = string.Format("PaymentRequest-{0}-{1}", DateTime.Today.ToString("yyyy-MM-dd"),
+							DateTime.Now.Millisecond);
+						var requestFile = CreateRequestRTG(paymentRequests, "transformers/ProfitStars/PaymentRequest.xslt", fileName,
+							DateTime.Today);
+						var result = SendRTGRequest(requestFile, PaymentGateway,
+							string.Format("PaymentResponse-{0}-{1}", DateTime.Today.ToString("yyyy-MM-dd"), DateTime.Now.Millisecond));
+						if (!result.StartsWith(OnlinePayrollStringResources.ERROR_FailedToRetrieveX))
 						{
-							emailSubject = "Paxol: Error in ProfitStars 1 PM";
-							emailStr.AppendLine("<b><u>There was an error in sending fund/payment requests to ProfitStars</u></b></br><br/>");
-							emailStr.AppendLine(paymentResponse.ErrorEmail);
-							emailStr.AppendLine("<b><u>You may want to consider running the 1 PM service again manually.</u></b></br><br/>");
+							var paymentResponse = Utilities.Deserialize<ProfitStarsPayResponses>(result);
+							if (paymentResponse.HasError)
+							{
+								emailSubject = "Paxol: Error in ProfitStars 1 PM";
+								emailStr.AppendLine("<b><u>There was an error in sending fund/payment requests to ProfitStars</u></b></br><br/>");
+								emailStr.AppendLine(paymentResponse.ErrorEmail);
+								emailStr.AppendLine("<b><u>You may want to consider running the 1 PM service again manually.</u></b></br><br/>");
+							}
+							else
+							{
+								paymentRequests.ForEach(
+								pr => pr.PayResponse = paymentResponse.Responses.First(prr => prr.requestID.Equals(pr.requestID)));
+								_profitStarsRepository.SavePaymentRequests(paymentRequests, requestFile);
+
+								emailStr.AppendLine(paymentResponse.Email);
+							}
+
 						}
 						else
 						{
-							paymentRequests.ForEach(
-							pr => pr.PayResponse = paymentResponse.Responses.First(prr => prr.requestID.Equals(pr.requestID)));
-							_profitStarsRepository.SavePaymentRequests(paymentRequests, requestFile);
-							
-							emailStr.AppendLine(paymentResponse.Email);
+							emailSubject = "Paxol: Error in ProfitStars 1 PM";
+							emailStr.AppendLine("<b><u>There was an error in sending payment requests to ProfitStars</u></b></br><br/>");
+							emailStr.AppendLine(result);
+							emailStr.AppendLine("<b><u>You may want to consider running the 1 PM service again manually.</u></b></br><br/>");
 						}
-						
 					}
 					else
 					{
-						emailSubject = "Paxol: Error in ProfitStars 1 PM";
-						emailStr.AppendLine("<b><u>There was an error in sending payment requests to ProfitStars</u></b></br><br/>");
-						emailStr.AppendLine(result);
-						emailStr.AppendLine("<b><u>You may want to consider running the 1 PM service again manually.</u></b></br><br/>");
+						emailStr.AppendLine("<b><u>No Funding/Payment/Refund requests found to be sent</u></b></br><br/>");
 					}
+					_emailService.SendEmail(to: EmailTo, subject: emailSubject, body: emailStr.ToString(), cc: EmailCC);
+					return paymentRequests;
 				}
 				else
 				{
-					emailStr.AppendLine("<b><u>No Funding/Payment/Refund requests found to be sent</u></b></br><br/>");
+					emailStr.AppendLine("<b><u>Service is not available on Weekends or Bank Holidays</u></b></br><br/>");
+					return new List<ProfitStarsPayment>();
 				}
-				_emailService.SendEmail(to:EmailTo, subject: emailSubject, body: emailStr.ToString(), cc: EmailCC);
-				return paymentRequests;
 			}
 			catch (Exception e)
 			{
@@ -275,7 +294,7 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 		{
 			try
 			{
-				var payDay = GetDDDayForToday();
+				var payDay = GetProfitStarsPaymentDate(DateTime.Today);
 				var returnList = new List<ProfitStarsPayment>();
 				using (var txn = TransactionScopeHelper.Transaction())
 				{
@@ -295,21 +314,59 @@ namespace HrMaxx.OnlinePayroll.Services.ACH
 			
 		}
 
-		private DateTime GetDDDayForToday()
+		public DateTime GetProfitStarsPaymentDate(DateTime today)
 		{
-			var threedaysafter = DateTime.Today.AddDays(3);
-			var bankHolidays = _metaDataService.GetBankHolidays();
-			while (threedaysafter.DayOfWeek == DayOfWeek.Saturday || threedaysafter.DayOfWeek == DayOfWeek.Sunday || bankHolidays.Any(b => b.Value.Equals(threedaysafter)))
+			var threedaysafter = today;
+			var counter = (int)0;
+			
+			while (counter < 3)
+			{				
+				threedaysafter = threedaysafter.AddDays(1);
+				if(!(threedaysafter.DayOfWeek == DayOfWeek.Saturday || threedaysafter.DayOfWeek == DayOfWeek.Sunday || BankHolidays.Any(b => b.Value.Equals(threedaysafter))))
+				{
+					counter++;
+				}
+			}
+			
+			return threedaysafter.Date;
+		}
+		public DateTime GetProfitStarsPaymentDateFromFundingDate(DateTime today)
+		{
+			var threedaysafter = today;
+			var counter = (int)0;
+
+			while (counter < 2)
 			{
 				threedaysafter = threedaysafter.AddDays(1);
+				if (!(threedaysafter.DayOfWeek == DayOfWeek.Saturday || threedaysafter.DayOfWeek == DayOfWeek.Sunday || BankHolidays.Any(b => b.Value.Equals(threedaysafter))))
+				{
+					counter++;
+				}
 			}
+
 			return threedaysafter.Date;
+		}
+
+		public DateTime GetProfitStarsProjectedFundDate(DateTime payDay)
+		{
+			var counter = (int)0;
+
+			while (counter < 3)
+			{
+				payDay = payDay.AddDays(-1);
+				if (!(payDay.DayOfWeek == DayOfWeek.Saturday || payDay.DayOfWeek == DayOfWeek.Sunday || BankHolidays.Any(b => b.Value.Equals(payDay))))
+				{
+					counter++;
+				}
+			}
+
+			return payDay.Date;
 		}
 		private DateTime GetPreviousBankingDay()
 		{
 			var previousDay = DateTime.Today.AddDays(-1);
-			var bankHolidays = _metaDataService.GetBankHolidays();
-			while (previousDay.DayOfWeek == DayOfWeek.Saturday || previousDay.DayOfWeek == DayOfWeek.Sunday || bankHolidays.Any(b => b.Value.Equals(previousDay)))
+			
+			while (previousDay.DayOfWeek == DayOfWeek.Saturday || previousDay.DayOfWeek == DayOfWeek.Sunday || BankHolidays.Any(b => b.Value.Equals(previousDay)))
 			{
 				previousDay = previousDay.AddDays(-1);
 			}

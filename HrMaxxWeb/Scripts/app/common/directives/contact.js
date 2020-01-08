@@ -18,16 +18,7 @@ common.directive('contact', ['zionAPI','localStorageService','version',
 				if (!$scope.valGroup) {
 					$scope.valGroup = "contact";
 				}
-				$scope.addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
-				};
-				$scope.closeAlert = function (index) {
-					$scope.alerts.splice(index, 1);
-				};
+				
 				
 
 				

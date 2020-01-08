@@ -25,9 +25,7 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 			}
 
 				$scope.data = dataSvc;
-				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
-				};
+				
 				if ($scope.mainData)
 					$scope.mainData.showFilterPanel = false;
 
@@ -40,13 +38,13 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 				}
 				$scope.addHoliday = function () {
 					if ($scope.holidayExists(dataSvc.newHoliday)) {
-						addAlert('This holiday is already in the system ', 'warning');
+						$scope.mainData.showMessage('This holiday is already in the system ', 'warning');
 					} else {
 						commonRepository.saveHoliday(moment(dataSvc.newHoliday).format("DDMMYYYY"), true).then(function (res) {
 							dataSvc.holidays.push(res);
 							
 						}, function (error) {
-							addAlert('error occurred in saving bank holidays ' + error.statusText, 'danger');
+							$scope.mainData.handleError('error occurred in saving bank holidays ' , error, 'danger');
 						});
 					}
 					dataSvc.newHoliday = null;
@@ -55,7 +53,7 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 					commonRepository.saveHoliday(moment(dataSvc.seleectedHoliday).format("DDMMYYYY"), false).then(function (res) {
 						dataSvc.holidays.splice(dataSvc.holidays.indexOf(res), 1);
 					}, function (error) {
-						addAlert('error occurred in removing bank holidays ' + error.statusText, 'danger');
+							$scope.mainData.handleError('error occurred in removing bank holidays ' , error, 'danger');
 					});
 				}
 				$scope.holidayExists = function (d) {
@@ -75,9 +73,9 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 						});
 					}
 					commonRepository.saveConfigData(dataSvc.configs).then(function (result) {
-						addAlert('successfully saved configurations', 'success');
+						$scope.mainData.showMessage('successfully saved configurations', 'success');
 					}, function (error) {
-						addAlert(error.statusText, 'danger');
+							$scope.mainData.handleError('', error, 'danger');
 					});
 				}
 				
@@ -108,10 +106,10 @@ common.directive('config', ['zionAPI', '$timeout', '$window', 'version',
 						commonRepository.getBankHolidays().then(function (hols) {
 							dataSvc.holidays = hols;
 						}, function (error) {
-							addAlert('error occurred in bank holidays ' + error.statusText, 'danger');
+								$scope.mainData.handleError('error occurred in bank holidays ' , error, 'danger');
 						});
 					}, function (error) {
-						addAlert('error occurred in getting configuration data ' + error.statusText, 'danger');
+							$scope.mainData.handleError('error occurred in getting configuration data ' , error, 'danger');
 					});
 
 					

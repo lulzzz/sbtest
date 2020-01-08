@@ -96,9 +96,7 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 					});
 				}
 				$scope.data = dataSvc;
-				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
-				};
+				
 				if ($scope.mainData)
 					$scope.mainData.showFilterPanel = false;
 				$scope.selectedUser = null;
@@ -340,27 +338,27 @@ common.directive('userList', ['zionAPI', '$timeout', '$window','version',
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						if ($scope.selectedUser.subjectUserId)
-							addAlert('successfully saved user', 'success');
+							$scope.mainData.showMessage('successfully saved user', 'success');
 						else
-							addAlert('successfully created a new user with default password. email has been sent to the user to confirm', 'success');
+							$scope.mainData.showMessage('successfully created a new user with default password. email has been sent to the user to confirm', 'success');
 						$scope.cancel();
 					}, function (error) {
-						addAlert('Error: ' + error.statusText, 'danger');
+						$scope.mainData.handleError('Error: ' , error, 'danger');
 					});
 				}
 				
 				$scope.resetPassword = function() {
 					commonRepository.resetPassword($scope.selectedUser).then(function (result) {
-						addAlert('successfully sent a password reset email to the user', 'success');
+						$scope.mainData.showMessage('successfully sent a password reset email to the user', 'success');
 					}, function (error) {
-						addAlert('Error: ' + error.statusText, 'danger');
+						$scope.mainData.handleError('Error: ' , error, 'danger');
 					});
                 }
                 $scope.resetPasswordDefault = function () {
                     commonRepository.resetPasswordDefault($scope.selectedUser).then(function (result) {
-                        addAlert('successfully reset the password to default password', 'success');
+                        $scope.mainData.showMessage('successfully reset the password to default password', 'success');
                     }, function (error) {
-                        addAlert('Error: ' + error.statusText, 'danger');
+                        $scope.mainData.handleError('Error: ' , error, 'danger');
                     });
                 }
 				var init = function () {

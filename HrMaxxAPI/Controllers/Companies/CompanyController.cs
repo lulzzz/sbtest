@@ -189,7 +189,7 @@ namespace HrMaxxAPI.Controllers.Companies
 		{
 			//var companies =  MakeServiceCall(() => _companyService.GetCompanies(hostId, CurrentUser.Company), "Get companies for hosts", true);
 			var companies = MakeServiceCall(() => _readerService.GetCompanies(host: hostId, company:(CurrentUser.Company==Guid.Empty? default(Guid?) : CurrentUser.Company)), "Get companies for hosts", true);
-			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() || CurrentUser.Role == RoleTypeEnum.Host.GetDbName())
+			if (CurrentUser.Role == RoleTypeEnum.HostStaff.GetDbName() )
 			{
 				companies = companies.Where(c => !c.IsHostCompany && c.IsVisibleToHost).ToList();
 			}
@@ -525,7 +525,7 @@ namespace HrMaxxAPI.Controllers.Companies
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message, Content=new StringContent(e.Message)
 				});
 			}
 			finally
@@ -577,7 +577,8 @@ namespace HrMaxxAPI.Controllers.Companies
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError, 
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message,
+					Content = new StringContent(e.Message)
 				});
 			}
 			finally

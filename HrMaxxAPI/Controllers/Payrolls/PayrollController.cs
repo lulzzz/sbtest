@@ -38,8 +38,9 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		private readonly ICompanyService _companyService;
 		private readonly IExcelService _excelService;
 		private readonly IReaderService _readerService;
+		private readonly IACHService _achService;
 		
-		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ICompanyService companyService, IExcelService excelService, IReaderService readerService, IFileRepository fileRepository)
+		public PayrollController(IPayrollService payrollService, IDocumentService documentService, ICompanyService companyService, IExcelService excelService, IReaderService readerService, IFileRepository fileRepository, IACHService achService)
 		{
 			_payrollService = payrollService;
 			_documentService = documentService;
@@ -47,6 +48,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			_excelService = excelService;
 			_readerService = readerService;
 			_fileRepository = fileRepository;
+			_achService = achService;
 		}
 
 		[HttpGet]
@@ -218,7 +220,8 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = "The PDF file is not ready for this payroll. Please try again later"
+					ReasonPhrase = "The PDF file is not ready for this payroll. Please try again later",
+					Content = new StringContent("The PDF file is not ready for this payroll. Please try again later")
 				});
 			
 			if (!reprint && _fileRepository.FileExists(EntityTypeEnum.Payroll.GetDbName(), payrollId.ToString(), "pdf"))// _documentService.DocumentExists(payrollId))
@@ -401,6 +404,18 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[DeflateCompression]
 		public PayrollResource ProcessPayroll(PayrollResource resource)
 		{
+			if(resource.PayChecks.Any(pc=>pc.PaymentMethod==EmployeePaymentMethod.ProfitStars && pc.Included && !pc.ForcePayCheck))
+			{
+				var minPSDate = _achService.GetProfitStarsPaymentDate(DateTime.Now.Hour >= 13 ? DateTime.Today.AddDays(1) : DateTime.Today);
+				if (resource.PayDay.Date < minPSDate.Date)
+				{
+					throw new HttpResponseException(new HttpResponseMessage
+					{
+						StatusCode = HttpStatusCode.NotAcceptable, Content= new StringContent("Payroll with Direct Deposit Payments must have a Pay Day On or After " + minPSDate.ToString("MM/dd/yyyy")),
+						ReasonPhrase = "Payroll with Direct Deposit Payments must have a Pay Day On or After " + minPSDate.ToString("MM/dd/yyyy")
+					});
+				}
+			}
 			resource.PayChecks.ForEach(p =>
 			{
 				p.StartDate = resource.StartDate;
@@ -837,7 +852,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message, Content=new StringContent(e.Message)
 				});
 			}
 			finally
@@ -906,7 +921,8 @@ namespace HrMaxxAPI.Controllers.Payrolls
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message,
+					Content = new StringContent(e.Message)
 				});
 			}
 			finally

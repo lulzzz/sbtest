@@ -30,10 +30,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 					$scope.quarterlyLimit = 12500;
 
 
-					$scope.alerts = [];
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
+								
 					var dataSvc = {
 						openedRack: 0,
 						minYear: 2016,
@@ -89,18 +86,15 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.importMap.columnMap.splice(index, 1);
 						$scope.selected = null;
 					}
-					$scope.closeAlert = function (index) {
-						$scope.alerts.splice(index, 1);
-					};
-
+					
 					$scope.save = function () {
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to save the imported rates? this will overwrite the existing ones', 'danger', function () {
+						$scope.mainData.confirmDialog('Are you sure you want to save the imported rates? this will overwrite the existing ones', 'danger', function () {
 							companyRepository.saveTaxRates($scope.list).then(function (data) {
 								$scope.list = [];
 								dataSvc.selectedYear = null;
-								addAlert('Successfully imported company tax rates for year' + dataSvc.selectedYear, 'success');
+								$scope.mainData.showMessage('Successfully imported company tax rates for year' + dataSvc.selectedYear, 'success');
 							}, function (error) {
-								addAlert('error in saving tax rates for year= ' + dataSvc.selectedYear, 'danger');
+								$scope.mainData.showMessage('error in saving tax rates for year= ' + dataSvc.selectedYear, 'danger');
 							});
 						}
 						);
@@ -116,7 +110,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							a.click();
 
 						}, function (error) {
-							addAlert('error getting california edd list', 'danger');
+								$scope.mainData.showMessage('error getting california edd list', 'danger');
 						});
 					}
 
@@ -147,7 +141,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							dataSvc.importInProcess = false;
 						}, function (error) {
 							$scope.list = [];
-							addAlert('error in getting company tax rates ', 'danger');
+								$scope.mainData.showMessage('error in getting company tax rates ', 'danger');
 						});
 					}
 					$scope.files = [];
@@ -232,7 +226,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.list = angular.copy(taxRates);
 							dataSvc.importInProcess = true;
 						}, function (error) {
-							addAlert('error in importing tax rates for companies: ' + error, 'danger');
+								$scope.mainData.handleError('error in importing tax rates for companies: ', error, 'danger');
 
 						});
 
@@ -243,7 +237,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.listWCRates = angular.copy(wcRates);
 							dataSvc.importInProcessWC = true;
 						}, function (error) {
-							addAlert('error in importing wc rates for clients: ' + error, 'danger');
+								$scope.mainData.handleError('error in importing wc rates for clients: ' , error, 'danger');
 
 						});
 
@@ -256,12 +250,12 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						$scope.$parent.$parent.confirmDialog('this will update all matching valid WC rates, do you wish to continue?', 'danger', function () {
 							companyRepository.uploadWCRates($scope.listWCRates, dataSvc.wcImportOption).then(function (timesheets) {
 
-								addAlert('successfully updated WC Rates in the system', 'success');
+								$scope.mainData.showMessage('successfully updated WC Rates in the system', 'success');
 
 								$scope.listWCRates = [];
 								dataSvc.importInProcessWC = false;
 							}, function (error) {
-								addAlert(error, 'danger');
+									$scope.mainData.handleError('', error, 'danger');
 
 							});
 						});
@@ -278,7 +272,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 									dataSvc.years.push(i);
 							}
 						}, function (error) {
-							addAlert('error getting meta data', 'danger');
+							$scope.mainData.showMessage('error getting meta data', 'danger');
 						});
 						
 						
@@ -327,7 +321,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.tableParams.reload();
 							$scope.fillTableData($scope.tableParams);
 						}, function (error) {
-							addAlert('error in getting company list', 'danger');
+							$scope.mainData.showMessage('error in getting company list', 'danger');
 						});
 					}
 					$scope.tableDataSWE = [];
@@ -369,7 +363,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.tableParamsSWE.reload();
 							$scope.fillTableDataSWE($scope.tableParamsSWE);
 						}, function (error) {
-							addAlert('error in getting semi weekly eligibility list', 'danger');
+							$scope.mainData.showMessage('error in getting semi weekly eligibility list', 'danger');
 						});
 					}
 					$scope.loadMinWageEligibilityReport = function () {
@@ -378,7 +372,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							dataSvc.loadedMinWageEligibilityCriteria = angular.copy(dataSvc.minWageCriteria);
 
 						}, function (error) {
-							addAlert('error in getting min Wage eligibility list', 'danger');
+							$scope.mainData.showMessage('error in getting min Wage eligibility list', 'danger');
 						});
 					}
 					$scope.showRaiseMinWage = function () {
@@ -424,13 +418,13 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 							$scope.selectedType.category = $scope.selectedType.categoryOption.key;
 							commonRepository.saveDeductionType($scope.selectedType).then(function (data) {
 
-								addAlert('Successfully saved deduction type ', 'success');
+								$scope.mainData.showMessage('Successfully saved deduction type ', 'success');
 								$scope.deductionTypes[dt] = angular.copy(data);
 								$scope.selectedType = null;
 								$scope.original = null;
 
 							}, function (error) {
-								addAlert('error in saving deductin type. ' + error.statusText, 'danger');
+									$scope.mainData.handleError('error in saving deductin type. ', error, 'danger');
 							});
 						}
 					}
@@ -447,11 +441,11 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						$scope.$parent.$parent.confirmDialog('This action will RAISE ' + message + '. Are you sure you want to continue?', 'info', function () {
 							companyRepository.raiseMinWage(dataSvc.minWageCriteria).then(function () {
 
-								addAlert('Successfully raised ' + message, 'success');
+								$scope.mainData.showMessage('Successfully raised ' + message, 'success');
 								$scope.loadMinWageEligibilityReport();
 
 							}, function (error) {
-								addAlert('error in raising min Wage. ' + error.statusText , 'danger');
+								$scope.mainData.handleError('error in raising min Wage. ' , error , 'danger');
 							});
 						});
 

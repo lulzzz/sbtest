@@ -26,10 +26,6 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.selected = null;
 
 
@@ -140,7 +136,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							$scope.fillTableData($scope.tableParams);
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
-							addAlert('successfully saved ' + ($scope.isVendor ? 'vendor' : 'customer'), 'success');
+							$scope.mainData.showMessage('successfully saved ' + ($scope.isVendor ? 'vendor' : 'customer'), 'success');
 						
 					}
 					$scope.getVendorCustomers = function (companyId) {
@@ -151,7 +147,7 @@ common.directive('vendorCustomerList', ['zionAPI', '$timeout', '$window', 'versi
 							$scope.selected = null;
 							dataSvc.isBodyOpen = true;
 						}, function (erorr) {
-							addAlert('error getting ' + ($scope.isVendor ? 'vendor' : 'customer') + ' list', 'danger');
+							$scope.showMessage('error getting ' + ($scope.isVendor ? 'vendor' : 'customer') + ' list', 'danger');
 						});
 					}
 

@@ -13,10 +13,6 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 			controller: ['$scope', '$rootScope', '$filter', 'commonRepository',
 				function ($scope, $rootScope, $filter, commonRepository) {
 					
-					$scope.alerts = [];
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 					
 					var dataSvc = {
 						taxTableYears: [],
@@ -47,9 +43,9 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 								dataSvc.originalTaxTables = data;
 								dataSvc.taxTables = angular.copy(data);
 								dataSvc.selectedYear = null;
-								addAlert('Successfully saved tax rates for year' + dataSvc.selectedYear, 'success');
+								$scope.mainData.showMessage('Successfully saved tax rates for year' + dataSvc.selectedYear, 'success');
 							}, function (error) {
-								addAlert('error in saving tax rates for year= ' + dataSvc.selectedYear, 'danger');
+								$scope.mainData.showMessage('error in saving tax rates for year= ' + dataSvc.selectedYear, 'danger');
 							});
 						}
 						);
@@ -63,7 +59,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 							
 						}, function (error) {
 							$scope.list = [];
-							addAlert('error in getting tax rates ', 'danger');
+							$scope.mainData.showMessage('error in getting tax rates ', 'danger');
 						});
 					}
 					var getTaxTableYears = function () {
@@ -73,7 +69,7 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 
 						}, function (error) {
 							$scope.list = [];
-							addAlert('error in getting tax table years ', 'danger');
+							$scope.mainData.showMessage('error in getting tax table years ', 'danger');
 						});
 					}
 					$scope.cancel = function () {
@@ -89,10 +85,10 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 								dataSvc.originalTaxTables = data;
                                 dataSvc.taxTables = angular.copy(data);
                                 dataSvc.taxTableYears.push(maxYear + 1);
-								addAlert('successfully created entries in tax tables for ' + (maxYear+1), 'success');
+								$scope.mainData.showMessage('successfully created entries in tax tables for ' + (maxYear+1), 'success');
 							}, function (error) {
 								$scope.list = [];
-								addAlert('error in creating tax tables for year ' + (maxYear + 1), 'danger');
+								$scope.mainData.showMessage('error in creating tax tables for year ' + (maxYear + 1), 'danger');
 							});
 						});
 

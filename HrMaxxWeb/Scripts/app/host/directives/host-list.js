@@ -14,13 +14,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 			controller: ['$scope', '$rootScope', '$element', '$location', '$filter', 'hostRepository', 'NgTableParams', 'EntityTypes',
 				function ($scope, $rootScope, $element, $location, $filter, hostRepository, ngTableParams, EntityTypes) {
 				$scope.sourceTypeId = EntityTypes.Host;
-				var addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
-				};
-				$scope.addAlert = function (error, type) {
-					$scope.$parent.$parent.addAlert(error, type);
-				};
-				
+								
 				$scope.selectedHost = null;
 					$scope.isBodyOpen = true;
 				$scope.addHost = function () {
@@ -101,7 +95,7 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 								$scope.tab = 1;
 								$rootScope.$broadcast('hostChanged', { host: $scope.selectedHost });
 							}, function (erorr) {
-								addAlert('error getting host details', 'danger');
+								$scope.mainData.showMessage('error getting host details', 'danger');
 							});
 						}
 					}
@@ -152,9 +146,9 @@ common.directive('hostList', ['zionAPI', '$timeout', '$window','version',
 						$scope.mainData.selectedHost = null;
 						$scope.isBodyOpen = true;
 						$rootScope.$broadcast('hostUpdated', { host: result });
-						addAlert('successfully saved Host', 'success');
+						$scope.mainData.showMessage('successfully saved Host', 'success');
 					}, function (error) {
-						addAlert('error saving Host', 'danger');
+						$scope.mainData.showMessage('error saving Host', 'danger');
 					});
 				}
 				var init = function () {

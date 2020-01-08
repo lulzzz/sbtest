@@ -9,7 +9,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 				item: "=item",
 				datasvc: "=datasvc",
 				company: "=company",
-				minPayDay: "=minPayDay"
+				minPayDay: "=minPayDay",
+				mainData: "=mainData"
 
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/payroll.html?v=' + version,
@@ -38,9 +39,6 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						$scope.$parent.$parent.data.isBodyOpen = true;
 					}
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 
 					$scope.host = $scope.$parent.$parent.mainData.selectedHost;
 					$scope.paytypes = [
@@ -169,23 +167,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 					
 					$scope.process = function () {
 						$scope.$parent.$parent.process($scope.item);
-						//var payroll = angular.copy($scope.item);
-						//$scope.cancel();
-						//payroll.startDate = moment(payroll.startDate).format("MM/DD/YYYY");
-						//payroll.endDate = moment(payroll.endDate).format("MM/DD/YYYY");
-						//payroll.payDay = moment(payroll.payDay).format("MM/DD/YYYY");
-						//payroll.taxPayDay = payroll.payDay;
-						//payrollRepository.processPayroll(payroll).then(function (data) {
-						//	$timeout(function () {
-
-						//		$scope.$parent.$parent.set(data);
-						//	});
-
-
-						//}, function (error) {
-						//	$scope.$parent.$parent.set(payroll);
-						//	addAlert('Error processing payroll: ' + error.statusText, 'danger');
-						//});
+						
 					}
 					$scope.showList = function () {
 						var returnVal = false;
@@ -442,6 +424,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								},
 								main: function() {
 									return $scope.$parent.$parent;
+								},
+								mainData: function () {
+									return $scope.mainData;
 								}
 							}
 						});
@@ -457,7 +442,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								$.each(scope.messages, function(i, m) {
 									warning += m + ', ';
 								});
-								addAlert(warning, 'warning');
+								$scope.mainData.showMessage(warning, 'warning');
 							}
 							dataSvc.importInProgress = false;
 						}, function () {
@@ -507,7 +492,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							a.click();
 
 						}, function (error) {
-							addAlert('error getting timesheet import template', 'danger');
+								$scope.mainData.showMessage('error getting timesheet import template', 'danger');
 						});
 					}
 					
@@ -842,7 +827,7 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 
 });
 
-common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $filter, company, payChecks, payTypes, payrollRepository, $timeout, map, main) {
+common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $filter, company, payChecks, payTypes, payrollRepository, $timeout, map, main, mainData) {
 	$scope.company = company;
 	$scope.payChecks = angular.copy(payChecks);
 	$scope.payTypes = payTypes;

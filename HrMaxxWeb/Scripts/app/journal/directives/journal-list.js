@@ -233,7 +233,7 @@ common.directive('journalList', ['zionAPI', '$timeout', '$window','version',
 							}, function (erorr) {
 								$scope.set(check);
 								
-								addAlert('error saving checkbook item: ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('error saving checkbook item: ' , erorr, 'danger');
 							});
 						}
 					}

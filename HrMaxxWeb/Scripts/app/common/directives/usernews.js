@@ -15,13 +15,7 @@ common.directive('userNews', ['zionAPI', '$timeout', '$window','version',
 			controller: ['$scope', '$element', '$location', '$filter', 'commonRepository', 'NgTableParams', 'EntityTypes', function ($scope, $element, $location, $filter, commonRepository, ngTableParams, EntityTypes) {
 				$scope.list = [];
 				
-				var addAlert = function (error, type) {
-					$scope.alerts = [];
-					$scope.alerts.push({
-						msg: error,
-						type: type
-					});
-				};
+				
 				$scope.mainData.showFilterPanel = false;
 				$scope.closeAlert = function (index) {
 					$scope.alerts.splice(index, 1);

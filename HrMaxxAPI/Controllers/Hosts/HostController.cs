@@ -136,7 +136,8 @@ namespace HrMaxxAPI.Controllers.Hosts
 				throw new HttpResponseException(new HttpResponseMessage
 				{
 					StatusCode = HttpStatusCode.InternalServerError,
-					ReasonPhrase = e.Message
+					ReasonPhrase = e.Message,
+					Content = new StringContent(e.Message)
 				});
 			}
 		}

@@ -64,16 +64,51 @@
                 <div id="page-loader1" class="fade in" ng-if="loading"><span class="spinner"></span></div>
                 <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
                 <script type="text/ng-template" id="popover/messages.html">
-                     <div class="modal-body" style="padding:0px">
-                        <div ng-repeat="alert in alerts track by $index" class="alert alert-{{alert.type}}" style="margin-bottom:0px">
-                            <button type="button" class="close" data-ng-click="cancel()" ng-show="$index===0">
-                                <span class="glyphicon glyphicon-remove-circle"></span>
-                            </button>
-                            <i class="fa fa-check text-succcess fa-lg" ng-if="alert.type==='success'"></i>
-                            <i class="fa fa-exclamation-triangle text-danger fa-lg" ng-if="alert.type==='danger'"></i>
-                            <i class="fa fa-exclamation-triangle text-warning fa-lg" ng-if="alert.type==='warning'"></i>
-                            <i class="fa fa-info-circle text-info fa-lg" ng-if="alert.type==='info'"></i>{{alert.msg}}
+                    <div class="modal-header">
+                        <h4 class="modal-title" ng-if="alerts[0].type==='danger'">
+                            <i class="fa fa-exclamation-triangle" style="color:darkred"></i> Error
+                        </h4>
+                        <h4 class="modal-title" ng-if="alerts[0].type==='success'">
+                            <i class="fa fa-check-circle" style="color:green"></i> Done
+                        </h4>
+                        <h4 class="modal-title" ng-if="alerts[0].type==='info'">
+                            <i class="fa fa-info-circle" style="color:cornflowerblue"></i> Info
+                        </h4>
+                        <h4 class="modal-title" ng-if="alerts[0].type==='warning'">
+                            <i class="fa fa-warning" style="color:orange"></i> Warning
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div ng-repeat="alert in alerts track by $index" class="alert alert-{{alert.type}}  m-b-0">
+                            {{alert.msg}}
                         </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm " ng-class="{'btn-danger': alerts[0].type==='danger', 'btn-warning':alerts[0].type==='warning', 'btn-success': alerts[0].type==='success', 'btn-info': alerts[0].type==='info'}" ng-click="cancel()">Close</button>
+
+                    </div>
+                </script>
+                <script type="text/ng-template" id="popover/bankdetails.html">
+                    <div class="modal-header alert alert-info">
+                        <h4 class="modal-title">Bank Details for {{model.payingCompanyName}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert m-b-0">
+                            Account Type: {{model.accountTypeStr}}
+
+                        </div>
+                        <div class="alert m-b-0">
+                            Account Number: {{model.accountNumberStr}}
+
+                        </div>
+                        <div class="alert m-b-0">
+                            Routing Number: {{model.routingNumberStr}}
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:;" class="btn btn-sm btn-white" ng-click="cancel()">Close</a>
+
                     </div>
 
                 </script>
@@ -275,30 +310,30 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     @*<div class="invoice">
-                            <div class="invoice-company">
-                                <span class="pull-right hidden-print">
-                                    <a href="javascript:;" class="btn btn-sm btn-success m-b-10"><i class="fa fa-download m-r-5"></i> Export as PDF</a>
-                                    <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-success m-b-10"><i class="fa fa-print m-r-5"></i> Print</a>
-                                </span>
-                                Company Name, Inc
-                            </div>
-                        </div>*@
+                <div class="invoice-company">
+                    <span class="pull-right hidden-print">
+                        <a href="javascript:;" class="btn btn-sm btn-success m-b-10"><i class="fa fa-download m-r-5"></i> Export as PDF</a>
+                        <a href="javascript:;" onclick="window.print()" class="btn btn-sm btn-success m-b-10"><i class="fa fa-print m-r-5"></i> Print</a>
+                    </span>
+                    Company Name, Inc
+                </div>
+            </div>*@
 
                     @*<div class="invoice row">
-                            <div class="invoice-company">
-                                <span class=" col-sm-6 pull-right hidden-print">
-                                    <div class="col-sm-6">
-                                        <select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
-                                            <option value="">Select Host</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control" placeholder="Type Company Name" ng-show="data.showCompanies" ng-disabled="data.hostCompanies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null;$viewValue=null" ng-mouseleave="data.selectedCompany1=null;$viewValue=null" typeahead-show-hint="true" typeahead-on-select="companySelected()" uib-typeahead="company as company.name for company in data.hostCompanies | filter:{name:$viewValue}">
-                                    </div>
-                                </span>
-                                {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span>
-                            </div>
-                        </div>*@
+                <div class="invoice-company">
+                    <span class=" col-sm-6 pull-right hidden-print">
+                        <div class="col-sm-6">
+                            <select id="host" class="form-control" ng-change="hostSelected()" ng-disabled="data.hosts.length===1" ng-model="data.selectedHost" ng-options="host1.firmName for host1 in data.hosts track by host1.id">
+                                <option value="">Select Host</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" placeholder="Type Company Name" ng-show="data.showCompanies" ng-disabled="data.hostCompanies.length===0" ng-model="data.selectedCompany1" ng-mouseenter="data.selectedCompany1=null;$viewValue=null" ng-mouseleave="data.selectedCompany1=null;$viewValue=null" typeahead-show-hint="true" typeahead-on-select="companySelected()" uib-typeahead="company as company.name for company in data.hostCompanies | filter:{name:$viewValue}">
+                        </div>
+                    </span>
+                    {{data.selectedCompany.name}} <span class="show-red" ng-show="data.selectedCompany.isLocation">(is a location)</span>
+                </div>
+            </div>*@
 
                     <div class="row form-group hidden-print" ng-show="data.showFilterPanel" ng-if="data.isReady">
                         <div class="col-sm-3 pull-right">

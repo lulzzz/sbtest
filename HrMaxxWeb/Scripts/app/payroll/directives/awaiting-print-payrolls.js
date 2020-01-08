@@ -24,10 +24,6 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 					$scope.mainData.showFilterPanel = false;
 					
 
-					$scope.addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.selected = null;
 
 
@@ -76,7 +72,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 							$scope.fillTableData($scope.tableParams);
 							
 						}, function (error) {
-							$scope.addAlert('error getting un printed payrolls', 'danger');
+							$scope.mainData.showMessage('error getting un printed payrolls', 'danger');
 						});
 					}
 					
@@ -97,7 +93,7 @@ common.directive('awaitingPrintPayrollList', ['$uibModal', 'zionAPI', '$timeout'
 								listItem.statusText = 'Printed';
 							}
 						}, function (error) {
-							$scope.addAlert('Error: ' + error, 'danger');
+							$scope.mainData.handleError('Error: ' , error, 'danger');
 						});
 					}
 					

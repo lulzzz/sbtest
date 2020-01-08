@@ -25,19 +25,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 					}
 
 					$scope.data = dataSvc;
-					$scope.alert = null;
-					var addAlert = function (error, type) {
-						$scope.alert = null;
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-					$scope.addAlert = function (error, type) {
-						$scope.alert = null;
-						if (!$scope.isPopup)
-							$scope.$parent.$parent.addAlert(error, type);
-						else {
-							$scope.alert = { message: error, type: type };
-						}
-					};
+					
 					$scope.isFileUnderHostDisabled = function () {
 						if ($scope.mainData.selectedHost.isPeoHost || ($scope.selectedCompany.lastPayrollDate && moment($scope.selectedCompany.lastPayrollDate).year() === moment().year()))
 							return true;
@@ -446,7 +434,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							$rootScope.$broadcast('companyUpdated', { company: result });
 						}, function (error) {
-							addAlert(error.statusText, 'danger');
+							$scope.mainData.handleError('Error is saving company: ' , error, 'danger');
 						});
 					}
 					var ready = function () {
@@ -530,7 +518,7 @@ common.directive('company', ['zionAPI', '$timeout', '$window', 'version',
 							}
 							ready();
 						}, function (error) {
-							addAlert('error getting company meta data', 'danger');
+							$scope.mainData.showMessage('error getting company meta data', 'danger');
 						});
                         
 					}

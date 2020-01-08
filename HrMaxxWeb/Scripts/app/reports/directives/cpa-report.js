@@ -28,9 +28,6 @@ common.directive('cpaReport', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 					dataSvc.hostHomePage = $scope.mainData.selectedHost.homePage;
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 					$scope.print = function () {
 						$window.print();
 					}
@@ -61,7 +58,7 @@ common.directive('cpaReport', ['zionAPI', '$timeout', '$window', 'version',
 							dataSvc.response = data;
 
 						}, function (erorr) {
-							addAlert('Error getting cpa report ' + desc + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Error getting cpa report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 				

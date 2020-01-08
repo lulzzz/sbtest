@@ -93,9 +93,10 @@ common.factory('journalRepository', [
 							name: defaultFileName
 						});
 
-					}).error(function (data, status) {
-						var e = /* error */
-						deferred.reject(e);
+					}).error(function (data) {
+						var arr = new Uint8Array(data.data);
+						var str = String.fromCharCode.apply(String, arr);
+						deferred.reject(str);
 					});
 
 				return deferred.promise;

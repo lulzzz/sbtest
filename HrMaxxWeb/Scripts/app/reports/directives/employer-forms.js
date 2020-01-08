@@ -34,10 +34,6 @@ common.directive('employerForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.getReportW4 = function() {
 						getReport('W4_'+dataSvc.filterW4.reportType, 'W4', 0, null, null, null);
 					}
@@ -69,7 +65,7 @@ common.directive('employerForms', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 
 						}, function (erorr) {
-							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Error getting report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 					$scope.hasCalifornia = function() {

@@ -113,7 +113,7 @@ common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$wi
 
 						}, function () {
 							document.doc.uploaded = false;
-							$scope.addAlert('error uploading file', 'danger');
+							$scope.mainData.showMessage('error uploading file', 'danger');
 
 						});
 
@@ -164,32 +164,24 @@ common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$wi
 					return deferred.promise;
 				}
 
-				$scope.save = function () {
-					if (false === $('form[name="homepageForm"]').parsley().validate('address'))
-						return false;
-					uploadImages().then(function () {
-						$scope.hostaddress.sourceTypeId = EntityTypes.Host;
-						$scope.hostaddress.targetTypeId = EntityTypes.Address;
-						$scope.hostaddress.sourceId = $scope.hostId;
-						commonRepository.saveAddress($scope.hostaddress).then(function(data) {
-							$scope.hostaddress.id = data.id;
-							hostRepository.saveHomePage($scope.data).then(function(data) {
+					$scope.save = function () {
+						if (false === $('form[name="homepageForm"]').parsley().validate('address'))
+							return false;
+						uploadImages().then(function () {
+							$scope.hostaddress.sourceTypeId = EntityTypes.Host;
+							$scope.hostaddress.targetTypeId = EntityTypes.Address;
+							$scope.hostaddress.sourceId = $scope.hostId;
+							hostRepository.saveHomePage($scope.data).then(function (data) {
 								localStorageService.set('hostHomePage', data);
-								$window.location.href = zionAPI.Web + '#/?host='+$scope.parent.firmName;
-								addAlert('successfully saved home page details', 'success');
-							}, function(erorr) {
-								addAlert('error saving host home page details', 'danger');
+								$window.location.href = zionAPI.Web + '#/?host=' + $scope.parent.firmName;
+								$scope.mainData.showMessage('successfully saved home page details', 'success');
+							}, function (erorr) {
+								$scope.mainData.showMessage('error saving host home page details', 'danger');
 							});
-						
-						}, function(erorr) {
-								addAlert('error saving hostaddress', 'danger');
-							});
-						}, function() {
-						
-						});
-						
+							
+						});	
 
-				}
+				};
 				$scope.cancel =  function() {
 					$scope.$parent.$parent.cancel();
 				}
@@ -202,7 +194,7 @@ common.directive('homepage', ['zionAPI', '$timeout', 'localStorageService', '$wi
 						localStorageService.set('hostHomePage', data);
 						
 					}, function (erorr) {
-						addAlert('error getting host home page details', 'danger');
+						$scope.mainData.showMessage('error getting host home page details', 'danger');
 					});
 					
 				}

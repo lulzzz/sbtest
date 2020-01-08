@@ -183,7 +183,7 @@ namespace HrMaxx.OnlinePayroll.Models
             $"<b>{Type.GetHrMaxxName()}</b>: Id: {Id.ToString()}, TransactionStatus: {TransactionStatus}, SettlementStatus: {SettlementStatus}, RefNum: {RefNum}<br/>";
     }
 
-	[XmlRoot("ProfitStarsPayrollList")]
+	
     public class ProfitStarsPayroll
 	{
 		public int Id { get; set; }
@@ -221,6 +221,54 @@ namespace HrMaxx.OnlinePayroll.Models
         public string RoutingNumberStr => Crypto.Decrypt(RoutingNumber);
     }
 
-	
+	[XmlRoot("ProfitStarsPayrollList")]
+	public class ProfitStarsPayrollFund
+	{
+		public int? Id { get; set; }
+		public string PayingCompanyName { get; set; }
+		public decimal Amount { get; set; }
+		public int AccountType { get; set; }
+		public string AccountNumber { get; set; }
+		public string RoutingNumber { get; set; }
+		public DateTime? RequestDate { get; set; }
+		public DateTime ProjectedFundRequestDate { get; set; }
+		public string AccountTypeStr => ((BankAccountType)AccountType) == BankAccountType.Checking ? "Checking" : "Savings";
+		public string AccountNumberStr => Crypto.Decrypt(AccountNumber);
+
+		public string RoutingNumberStr => Crypto.Decrypt(RoutingNumber);
+		public string CompanyName => Payrolls.FirstOrDefault().CompanyName;
+		public string Status => Payrolls.FirstOrDefault().Status;
+		public DateTime PayDay => Payrolls.FirstOrDefault().PayDate;
+		public DateTime ProjectedPayRequestDate => Payrolls.FirstOrDefault().ProjectedPayRequestDate;
+		public List<ProfitStarsPayrollPay> Payrolls { get; set; }
+	}
+	public class ProfitStarsPayrollPay
+	{
+		public int? Id { get; set; }
+		public int PayCheckId { get; set; }
+		public Guid EmployeeId { get; set; }
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+		public string MiddleInitial { get; set; }
+		public string Status { get; set; }
+		public string CompanyName { get; set; }
+		public DateTime PayDate { get; set; }
+		public DateTime? ConfirmedTime { get; set; }
+		public DateTime? EnteredDate { get; set; }
+		public DateTime? PayRequestDate { get; set; }
+		public DateTime ProjectedPayRequestDate { get; set; }
+		public int? PayRequestId { get; set; }
+		public decimal Amount { get; set; }
+		public int AccountType { get; set; }
+		public string AccountNumber { get; set; }
+		public string RoutingNumber { get; set; }
+
+		public string EmployeeName => string.Format("{0}{2}{1}", FirstName, LastName,
+			$" {(!string.IsNullOrWhiteSpace(MiddleInitial) ? MiddleInitial.Substring(0, 1) + " " : string.Empty)}");
+		public string AccountTypeStr => ((BankAccountType)AccountType) == BankAccountType.Checking ? "Checking" : "Savings";
+		public string AccountNumberStr => Crypto.Decrypt(AccountNumber);
+
+		public string RoutingNumberStr => Crypto.Decrypt(RoutingNumber);
+	}
 	
 }

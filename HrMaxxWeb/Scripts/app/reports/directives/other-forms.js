@@ -45,9 +45,6 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
 
 					$scope.getReportQA = function() {
 						getReport('QuarterAnnualReport', 'Quarter Annual Payroll Tax Report', dataSvc.filterQA.year, null, dataSvc.filterQA.includeHistory);
@@ -91,7 +88,7 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 
 						}, function (erorr) {
-							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+								$scope.mainData.handleError('Error getting report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 					$scope.getReportDisplay = function () {
@@ -119,7 +116,7 @@ common.directive('otherForms', ['zionAPI', '$timeout', '$window', 'version',
 							}
 
 						}, function (erorr) {
-							addAlert('Error getting report journals per employee : ' + erorr.statusText, 'danger');
+								$scope.mainData.handleError('Error getting report journals per employee : ' , erorr, 'danger');
 						});
 					}
 

@@ -34,7 +34,7 @@
 				$scope.myNotifications = [];
 				$scope.unreadNotificationsCount = 0;
 			}, function (error) {
-				//$scope.addAlert('Unable to read the notification.', 'danger');
+				
 			});
 		}
 		$scope.NotificationRead = function(notification) {
@@ -45,7 +45,7 @@
 					$scope.refreshNotifications();
 				}
 			}, function(error) {
-				//$scope.addAlert('Unable to read the notification.', 'danger');
+				
 			});
 
 		};
@@ -62,7 +62,7 @@
 					}
 				});
 			}, function(error) {
-				//$scope.addAlert('Unable to get list of notifications.', 'danger');
+				
 			});
 		};
 

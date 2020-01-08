@@ -15,9 +15,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 
 			controller: ['$scope', '$element', '$location', '$filter', 'companyRepository', 'NgTableParams', 'EntityTypes', 'payrollRepository',
 				function ($scope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository) {
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
+					
 					$scope.tableData = [];
 					
 					$scope.totalChecks = null;
@@ -118,7 +116,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								payrollRepository.savePayrollToStaging($scope.item).then(function(data) {
 									$scope.$parent.$parent.updateListAndItem($scope.item.id);
 								}, function(error) {
-									addAlert('error saving payroll as draft', 'danger');
+									$scope.mainData.showMessage('error saving payroll as draft', 'danger');
 								});
 							}
 						);
@@ -139,29 +137,29 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 									$scope.$parent.$parent.updateStatus(listitem.id, status, statusText);
 
 								}, function(error) {
-									addAlert('error marking pay check as printed', 'danger');
+									$scope.mainData.showMessage('error marking pay check as printed', 'danger');
 								});
 							}
 
 
 						}, function(error) {
-							addAlert('error printing pay check', 'danger');
+							$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					$scope.reIssueCheck = function (listitem) {
 						payrollRepository.reIssueCheck(listitem.id).then(function () {
-							addAlert('successfully re-issued pay check', 'success');
+							$scope.mainData.showMessage('successfully re-issued pay check', 'success');
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+								$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					$scope.fixPayrollYTD = function () {
 						payrollRepository.fixPayrollYTD($scope.item.id).then(function () {
-							addAlert('successfully fixed payroll ytd', 'success');
+							$scope.mainData.showMessage('successfully fixed payroll ytd', 'success');
 							$scope.$parent.$parent.updateListAndItem($scope.item.id);
 						}, function (error) {
-							addAlert('error fixing payroll ytd', 'danger');
+								$scope.mainData.showMessage('error fixing payroll ytd', 'danger');
 						});
 					}
 					
@@ -176,7 +174,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							if (payroll.status > 2)
 								$scope.$parent.$parent.updatePrintStatus();
 						}, function (error) {
-							addAlert('Error: ' + error, 'danger');
+							$scope.mainData.handleError('Error: ' , error, 'danger');
 						});
 					}
 					$scope.printPayrollPack = function (payroll) {
@@ -189,7 +187,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							a.click();
 							
 						}, function (error) {
-							addAlert('Error: ' + error, 'danger');
+							$scope.mainData.handleError('Error: ' , error, 'danger');
 						});
 					}
 					$scope.eftChecks = function() {
@@ -212,7 +210,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 								
 								$scope.$parent.$parent.$parent.$parent.addAlerts('', data, 'success');
 								}, function (error) {
-									addAlert('Error: ' + error, 'danger');
+									$scope.mainData.handleError('Error: ' , error, 'danger');
 								});
 							}
 						);
@@ -227,10 +225,10 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							payrollRepository.recalculateAccumulations(payroll).then(function (data) {
 								$scope.item = data;
 								
-								$scope.mainData.addAlert('successfully re-calculated accumulations', 'success');
+								$scope.mainData.showMessage('successfully re-calculated accumulations', 'success');
 								init();
 							}, function (error) {
-								addAlert('Error: ' + error, 'danger');
+								$scope.mainData.handleError('Error: ' , error, 'danger');
 							});
 						}
 						);
@@ -251,7 +249,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							if (payroll.status > 2)
 								$scope.$parent.$parent.updatePrintStatus();
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+								$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					$scope.printPayrollTimesheet = function (payroll) {
@@ -264,7 +262,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							document.body.appendChild(a);
 							a.click();
 						}, function (error) {
-							addAlert('error printing pay check', 'danger');
+								$scope.mainData.showMessage('error printing pay check', 'danger');
 						});
 					}
 					$scope.isPrintable = function(payroll) {
@@ -291,7 +289,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							payrollRepository.updatePayrollDates($scope.item).then(function () {
 								$scope.$parent.$parent.updateListAndItem($scope.item.id);
 							}, function (error) {
-								addAlert('error updating payroll dates', 'danger');
+									$scope.mainData.showMessage('error updating payroll dates', 'danger');
 							});
 						});
 					}
@@ -300,7 +298,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							payrollRepository.updateCheckNumber($scope.item).then(function () {
 								$scope.$parent.$parent.updateListAndItem($scope.item.id);
 							}, function (error) {
-								addAlert(error.statusText, 'danger');
+								$scope.mainData.handleError('',error, 'danger');
 							});
 						});
 					}
@@ -315,14 +313,14 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 									payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function(data) {
 										$scope.$parent.$parent.updateListAndItem($scope.item.id);
 									}, function(error) {
-										addAlert('error voiding pay check', 'danger');
+											$scope.mainData.showMessage('error voiding pay check', 'danger');
 									});
 								});
 							} else {
 								payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function (data) {
 									$scope.$parent.$parent.updateListAndItem($scope.item.id);
 								}, function (error) {
-									addAlert('error voiding pay check', 'danger');
+										$scope.mainData.showMessage('error voiding pay check', 'danger');
 								});
 							}
 							
@@ -334,7 +332,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							payrollRepository.unvoidPayCheck($scope.item.id, listitem.id).then(function (data) {
 								$scope.$parent.$parent.updateListAndItem($scope.item.id);
 							}, function (error) {
-								addAlert('error voiding pay check', 'danger');
+									$scope.mainData.showMessage('error voiding pay check', 'danger');
 							});
 							
 

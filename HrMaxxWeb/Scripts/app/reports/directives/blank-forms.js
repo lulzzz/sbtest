@@ -25,10 +25,6 @@ common.directive('blankForms', ['zionAPI', '$timeout', '$window', 'version',
 					$scope.mainData.showCompanies = !$scope.mainData.userCompany;
 
 
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-
 					$scope.getBlankForm = function(name) {
 						getReport("Blank_" + name, name, 0, 0);
 					}
@@ -54,7 +50,7 @@ common.directive('blankForms', ['zionAPI', '$timeout', '$window', 'version',
 							a.click();
 
 						}, function (erorr) {
-							addAlert('Error getting report ' + desc + ': ' + erorr, 'danger');
+							$scope.mainData.handleError('Error getting report ' + desc + ': ' , erorr, 'danger');
 						});
 					}
 					

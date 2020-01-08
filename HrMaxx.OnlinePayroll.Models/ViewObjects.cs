@@ -38,6 +38,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string CompanyAddress { get; set; }
 		public string FederalEIN { get; set; }
 		public StatusOption StatusId { get; set; }
+		public int DepositSchedule { get; set; }
 		public List<JsonDataModel.CompanyTaxState> CompanyTaxStates { get; set; }
 		public InsuranceGroup InsuranceGroup { get; set; }
 		public string Contact { get; set; }

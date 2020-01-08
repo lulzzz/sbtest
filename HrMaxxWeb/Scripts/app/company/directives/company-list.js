@@ -70,14 +70,8 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 					$scope.data = dataSvc;
 					$scope.mainData.showFilterPanel = !$scope.mainData.userHost || ($scope.mainData.userHost && !$scope.mainData.userCompany);
 					$scope.mainData.showCompanies = false;
-
 					
-					var addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
-					$scope.addAlert = function (error, type) {
-						$scope.$parent.$parent.addAlert(error, type);
-					};
+					
 
 					$scope.selectedCompany = null;
 
@@ -119,6 +113,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						if ($scope.mainData.selectedHost.isPeoHost) {
 							var hostCompany = $filter('filter')($scope.mainData.hostCompanies, { isHostCompany: true })[0];
 							selectedCompany.depositSchedule = hostCompany.depositSchedule;
+							selectedCompany.minWage = hostCompany.minWage;
 						}
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
 						
@@ -183,7 +178,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 
 								$scope.tab = tab;
 							}, function(error) {
-								addAlert('error getting company details', 'danger');
+								$scope.mainData.showMessage('error getting company details', 'danger');
 							});
 						} else if($scope.selectedCompany){
 							$scope.data.isBodyOpen = false;
@@ -202,7 +197,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						}
 						$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
-						addAlert('successfully saved Company', 'success');
+						$scope.mainData.showMessage('successfully saved Company', 'success');
 					}
 
 
@@ -266,7 +261,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						modalInstance.result.then(function (scope) {
 							if (scope) {
 								$scope.$parent.$parent.refreshHostAndCompanies();
-								addAlert('successfully copied company to the new host: ' + scope.selectedHost.firmName, 'success');
+								$scope.mainData.showMessage('successfully copied company to the new host: ' + scope.selectedHost.firmName, 'success');
 							}
 						}, function () {
 							return false;
@@ -340,11 +335,7 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 	$scope.showCopy = $scope.mainData.hasClaim(ClaimTypes.CompanyCopy, 1);
 	$scope.showCopyPayroll = $scope.mainData.hasClaim(ClaimTypes.CompanyCopyPayrolls, 1);
 	$scope.showCopyEmployees = $scope.mainData.hasClaim(ClaimTypes.EmployeeCopy, 1);
-	var addAlert = function(type, message) {
-		$scope.alerts = [];
-		$scope.alerts.push({ type: type, msg: message });
-	}
-
+	
 	$scope.loadPayrolls = function() {
 		if (!$scope.payrollsLoaded) {
 			payrollRepository.getCompanyPayrollListForRelocation($scope.company.id).then(function (result) {
@@ -352,7 +343,7 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 				$scope.payrolls = result;
 
 			}, function (error) {
-				addAlert('danger', 'unable to load payroll list for selection');
+				$scope.mainData.showMessage('unable to load payroll list for selection', 'danger');
 			});
 		}
 	}
@@ -373,10 +364,10 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 			endDate: $scope.endDate
 		}).then(function (result) {
 			//$uibModalInstance.close($scope);
-			addAlert('success', 'successfully copied company');
+			$scope.mainData.showMessage('successfully copied company', 'success');
 
 		}, function (error) {
-			addAlert('danger', error.statusText);
+			$scope.mainData.handleError('', error, 'danger');
 		});
 		
 	};
@@ -397,10 +388,10 @@ common.controller('copyCompanyCtrl', function ($scope, $uibModalInstance, $filte
 			payrolls: payrollList
 		}).then(function (result) {
 			//$uibModalInstance.close($scope);
-			addAlert('success', 'successfully ' + ($scope.mcPayrollsOption===1 ? 'moved' : 'copied') + ' payrolls');
+			$scope.mianData.showMessage('successfully ' + ($scope.mcPayrollsOption === 1 ? 'moved' : 'copied') + ' payrolls', 'success');
 
 		}, function (error) {
-			addAlert('danger', error.statusText);
+				$scope.mainData.handleError('', error, 'danger');
 		});
 	}
 	$scope.isValid = function() {

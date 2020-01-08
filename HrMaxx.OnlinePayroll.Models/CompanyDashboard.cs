@@ -19,7 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<PayrollMetric> PayrollHistory { get; set; }
         
         public List<PayCheckPayTypeAccumulation> Accumulations { get; set; }
-		public int YTDYear { get { return LastPayroll.PayDay.Year; } }
+		public int? YTDYear { get { return LastPayroll!=null ? LastPayroll.PayDay.Year : default(int?); } }
         public TaxExtract Last941Extract 
 		{ 
 			get
