@@ -11,6 +11,8 @@ namespace HrMaxx.Common.Contracts.Services
 		
 		void MoveDocument(MoveDocumentDto document, bool addWatermark = false);
 		byte[] GetFileBytesByPath(string documentPath);
+
+		string GetFileTextByPath(string documentPath);
 		string CreateDirectory(string dirName);
 		void DeleteDirectory(string dirName);
 		void CopyFile(string source, string destination);

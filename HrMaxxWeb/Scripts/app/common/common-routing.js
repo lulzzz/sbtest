@@ -117,6 +117,9 @@ common.config(['$httpProvider', '$routeProvider', '$locationProvider', 'zionAPI'
 	$routeProvider.when('/Admin/ACH', {
 		templateUrl: zionAPI.Web + 'Areas/Reports/templates/ACH.html'
 	});
+	$routeProvider.when('/Admin/Logs', {
+		templateUrl: zionAPI.Web + 'Content/templates/logs.html'
+	});
 	$routeProvider.when('/Admin/ProfitStars', {
 		templateUrl: zionAPI.Web + 'Areas/Reports/templates/ProfitStars.html'
 	});

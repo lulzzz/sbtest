@@ -109,7 +109,7 @@ namespace HrMaxxAPI.Controllers
 			catch (Exception e)
 			{
 				if(e.Message!=NoData && e.Message!=NoPayrollData)
-					Logger.Error(!traceMessage.Equals(string.Empty) ? traceMessage : "Make Business Layer Call", e);
+					Logger.Error(CurrentUser.FullName + " -- " + (!string.IsNullOrWhiteSpace(traceMessage) ? traceMessage : "Make Business Layer Call"), e);
 
 				throw new HttpResponseException(new HttpResponseMessage
 				{
@@ -181,7 +181,7 @@ namespace HrMaxxAPI.Controllers
 			catch (Exception e)
 			{
 				if (e.Message != NoData && e.Message != NoPayrollData)
-					Logger.Error(!traceMessage.Equals(string.Empty) ? traceMessage : "Make Business Layer Call", e);
+					Logger.Error(CurrentUser.FullName + " -- " + (!string.IsNullOrWhiteSpace(traceMessage) ? traceMessage : "Make Business Layer Call"), e);
 
 				throw new HttpResponseException(new HttpResponseMessage
 				{

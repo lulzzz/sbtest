@@ -13,6 +13,7 @@ using HrMaxx.Common.Models.Dtos;
 using HrMaxx.OnlinePayroll.Contracts.Services;
 using HrMaxxAPI.Code.Helpers;
 using HrMaxxAPI.Resources.Common;
+using log4net.Appender;
 
 namespace HrMaxxAPI.Controllers
 {
@@ -26,7 +27,16 @@ namespace HrMaxxAPI.Controllers
 			_documentService = documentService;
 			_metaDataService = metaDataService;
 		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route(HrMaxxRoutes.GetLog)]
+		public HttpResponseMessage GetLog()
+		{
+			var appender = Logger.Logger.Repository.GetAppenders().OfType<FileAppender>().FirstOrDefault();
+			var result = MakeServiceCall(() => _documentService.GetFileTextByPath(appender.File), "Get Log File", true);
 
+			return new HttpResponseMessage { Content = new StringContent(result) };
+			
+		}
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.AllowAnonymous]
 		[System.Web.Http.Route(HrMaxxRoutes.Document)]

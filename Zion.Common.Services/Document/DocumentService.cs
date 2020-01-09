@@ -74,6 +74,19 @@ namespace HrMaxx.Common.Services.Document
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public string GetFileTextByPath(string documentPath)
+		{
+			try
+			{
+				return _fileRepository.GetFileText(documentPath);
+			}
+			catch (Exception e)
+			{
+				string message = string.Format(CommonStringResources.ERROR_FailedToRetrieveX, "File");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public string CreateDirectory(string dirName)
 		{

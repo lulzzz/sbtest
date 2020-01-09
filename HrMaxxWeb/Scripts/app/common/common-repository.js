@@ -2,6 +2,16 @@ common.factory('commonRepository', [
 	'$http', 'zionAPI', 'zionPaths', '$q', '$upload', 'commonServer', '$filter', 'Entities',
 	function ($http, zionAPI, zionPaths, $q, upload, commonServer, $filter, Entities) {
 		return {
+			getLog: function () {
+				var deferred = $q.defer();
+				commonServer.one('GetLog').get().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			token: function(loginData) {
 				var data = "grant_type=password&username=" + loginData.username + "&password=" + loginData.password;
 

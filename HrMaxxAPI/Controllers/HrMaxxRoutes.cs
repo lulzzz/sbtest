@@ -2,7 +2,7 @@
 {
 	public class HrMaxxRoutes
 	{
-		
+		public const string GetLog = "GetLog";
 		public const string Document = "Document/{documentId:guid}";
 		public const string EmployeeDocument = "EmployeeDocument/{documentId:guid}/{employeeId:guid}";
 		public const string DocumentById = "DocumentById/{documentId:guid}/{extension}/{filename}";

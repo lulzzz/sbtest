@@ -303,6 +303,9 @@
     <Content Include="Content\images\coming-soon.jpg" />
     <Content Include="Content\morris.css" />
     <Content Include="Content\jstree.min.css" />
+    <Content Include="Content\templates\log-view.html" />
+    <Content Include="Content\templates\logs.html" />
+    <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
     <Content Include="Scripts\app\reports\directives\news-ticker.js" />
     <Content Include="Scripts\app\reports\directives\staff-dashboard.js" />

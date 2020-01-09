@@ -59,7 +59,11 @@
 							<li><a href="#!/Admin/ACH">ACH</a></li>
 							<li><a href="#!/Admin/ProfitStars">ProfitStars</a></li>
 						}
-
+						@if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()))
+						{
+							<li><a href="#!/Admin/Logs">Logs</a></li>
+							
+						}
 
 
 					</ul>

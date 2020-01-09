@@ -134,6 +134,7 @@ namespace HrMaxxWeb
 
 				"~/Scripts/app/common/eventlogs/userEventLog.js",
 				"~/Scripts/app/common/eventlogs/eventlog-repository.js",
+				
 				"~/Scripts/app/common/eventlogs/userEventLog-ctrl.js",
 				"~/Scripts/app/common/login-ctrl.js",
 				"~/Scripts/app/common/users/user-app.js",
@@ -147,7 +148,8 @@ namespace HrMaxxWeb
 				"~/Scripts/app/common/directives/userprofile.js",
 				"~/Scripts/app/common/directives/report-filter.js",
 				"~/Scripts/app/common/directives/memento-list.js",
-				
+				"~/Scripts/app/common/directives/log-viewer.js",
+
 				"~/Scripts/app/host/directives/host-list.js",
 				"~/Scripts/app/host/directives/host.js",
 				"~/Scripts/app/host/controllers/hostlogo-ctrl.js",
