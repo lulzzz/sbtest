@@ -72,15 +72,7 @@ namespace HrMaxxAPI.Controllers
 			MakeServiceCall(() => _scheduledJobService.ProfitStarsOnePM(), "Profit Stars 1 PM service");
 			
 		}
-		[System.Web.Http.HttpGet]
-		[System.Web.Http.AllowAnonymous]
-		[System.Web.Http.Route("Scheduled/GetDDForToday")]
-		public object GetDDForToday()
-		{
-			return MakeServiceCall(() => _achService.GetProfitStarsPaymentDate(DateTime.Today), "Profit Stars 1 PM service");
-			
-		}
-
+		
 		[System.Web.Http.HttpGet]
         [System.Web.Http.AllowAnonymous]
         [System.Web.Http.Route("Scheduled/PurgePayrollDocuments")]
