@@ -159,3 +159,8 @@ Website: http://www.seantheme.com/color-admin-v2.0/admin/html/
         overflow: visible!important;
     }
 }
+
+[uib-typeahead-popup].dropdown-menu {
+    display: block;
+    width: 590px!important
+}

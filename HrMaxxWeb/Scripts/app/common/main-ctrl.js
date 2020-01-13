@@ -95,7 +95,17 @@
 			$scope.alerts.splice(index, 1);
 		};
 		$scope.zionAPI = zionAPI;
-		
+		$scope.getPaxolLogo = function () {
+			return zionAPI.Web + "/Content/images/logo.png";
+		}
+		$scope.getDocumentUrl = function (photo) {
+			if (photo) {
+				if (photo.id)
+					return zionAPI.URL + 'DocumentById/' + photo.id + '/' + photo.documentExtension + '/' + photo.documentName;
+			}
+			return '';
+
+		};
 		var dataSvc = {
 			hosts: [],
 			companies: [],
@@ -295,6 +305,10 @@
 				}, function (error) {
 
 				});
+				var homepage = localStorageService.get('hostlogo');
+				if (homepage) {
+					$scope.logo = homepage;
+				}
 			}
 			
 		};
@@ -372,7 +386,7 @@
 			dataSvc.fromSearch = null;
 			if (dataSvc.selectedHost) {
 				dataSvc.selectedHost = $filter('filter')(dataSvc.hosts, { id: dataSvc.selectedHost.id })[0];
-				
+				$scope.logo = dataSvc.selectedHost.homePage.logo;
 				$scope.getCompanies(null);
 				$rootScope.$broadcast('hostChanged', { host: dataSvc.selectedHost });
 			}
