@@ -138,13 +138,15 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		}
 		[HttpGet]
 		[Route(PayrollRoutes.FixPayrollData)]
-		public HttpStatusCode FixPayrollData()
+		public HttpStatusCode FixPayrollData(int year)
 		{
-			var done = MakeServiceCall(() => _payrollService.FixPayrollData(null), "Fix payroll data for all companies", true);
-			if (done != null)
-				return HttpStatusCode.OK;
-			return HttpStatusCode.ExpectationFailed;
+			var payrolls = _readerService.GetPayrolls(null, startDate: new DateTime(year, 1, 1), endDate: new DateTime(year, 12, 31));
+			Logger.Info($"Total Payrolls {payrolls.Count}");
+			payrolls.ForEach(p => _payrollService.FixPayrollYTD(p.Id));
+			
+			return HttpStatusCode.OK;
 		}
+		
 
 
 		[HttpPost]

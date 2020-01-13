@@ -4,12 +4,12 @@
 	<div class="container-fluid">
 		<!-- begin mobile sidebar expand / collapse button -->
 		<div class="navbar-header m-l-40" id="hostlogo" ng-controller="hostlogo">
-			<a href="#!/" class="navbar-brand pull-left" style="background-color:transparent">
-				<img ng-src="{{zionAPI.Web}}/Content/images/logo.png" style="width:150px;" />
-			</a>
-			<a href="#!/" ng-if="getDocumentUrl(logo)" style="background-color:transparent">
-				<img ng-src="{{getDocumentUrl(logo)}}" err-src="https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg" style="width:150px;height:40px" />
-			</a>
+			
+			<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
 			
 			
 		</div>

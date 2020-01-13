@@ -30,7 +30,7 @@
 		public const string PayrollInvoice = "Payroll/PayrollInvoice";
 		public const string DeletePayrollInvoice = "Payroll/DeletePayrollInvoice/{invoiceId:guid}";
 		public const string GetInvoiceById = "Payroll/PayrollInvoice/{invoiceId:guid}";
-		public const string FixPayrollData = "Payroll/FixPayrollData";
+		public const string FixPayrollData = "Payroll/FixPayrollData/{year:int}";
 		public const string FixPayrollDataForCompany = "Payroll/FixPayrollData/{companyId:guid}";
 		public const string RecreateInvoice = "Payroll/RecreateInvoice/{invoiceId:guid}";
 		public const string DelayTaxes = "Payroll/DelayTaxes/{invoiceId:guid}";

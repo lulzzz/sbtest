@@ -69,8 +69,8 @@ namespace HrMaxxWeb
 
 
 			// Inspinia skin config script
-			bundles.Add(new ScriptBundle("~/bundles/skinConfig").Include(
-				"~/Scripts/bootstrap/bootstrap-theme/skin.config.min.js"));
+			//bundles.Add(new ScriptBundle("~/bundles/skinConfig").Include(
+			//	"~/Scripts/bootstrap/bootstrap-theme/skin.config.min.js"));
 
 			Bundle angular = new Bundle("~/bundles/angular").Include(
 				"~/Scripts/angular1.5/angular-file-upload/angular-file-upload-shim.js",

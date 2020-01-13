@@ -1273,7 +1273,7 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			argList.Add(new KeyValuePair<string, string>("fileSeq", reportConst.ToString("00000").Substring(2,3)));
 			argList.Add(new KeyValuePair<string, string>("today", DateTime.Today.ToString("yyyyMMdd")));
 			argList.Add(new KeyValuePair<string, string>("selectedYear", request.EndDate.Year.ToString()));
-			argList.Add(new KeyValuePair<string, string>("selectedYear", request.Year.ToString()));
+			argList.Add(new KeyValuePair<string, string>("settleDate", request.DepositDate.Value.Date.ToString("yyyyMMdd")));
 
 			return GetExtractTransformed(request, data, argList, "transformers/extracts/Federal940EFTPS.xslt", "txt", string.Format("Federal {2} 940 Extract-{0}-{1}.txt", request.Year, request.Quarter, request.DepositSchedule));
 		}
@@ -2472,14 +2472,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			var response = new ReportResponse();
 
-			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId);
+			response.EmployeeAccumulationList = _readerService.GetTaxAccumulations(company: request.CompanyId, startdate: request.StartDate, 
+				enddate: request.EndDate, type: AccumulationType.Employee, includeTaxes: true, 
+				includedDeductions: true, includedCompensations: true, includeHistory: request.IncludeHistory, includeClients: request.IncludeClients, employee: request.EmployeeId, includeClientEmployees: request.IncludeClients);
 			if (request.EmployeeId != Guid.Empty && response.EmployeeAccumulationList.First().LastCheckCompany.HasValue && response.EmployeeAccumulationList.First().LastCheckCompany.Value!=request.CompanyId)
 			{
 				throw new Exception(LastCheckInAnotherCompany);
 			}
 			response.EmployeeAccumulationList =
 				response.EmployeeAccumulationList.Where(
-					e => e.PayCheckWages.GrossWage > 0 && e.LastCheckCompany.HasValue && e.LastCheckCompany.Value == request.CompanyId)
+					e => e.PayCheckWages.GrossWage > 0 )
 					.OrderBy(e => e.FullName)
 					.ToList();
 			if (!response.EmployeeAccumulationList.Any())

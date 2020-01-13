@@ -4404,48 +4404,93 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						
 						payroll.PayChecks.Where(pc => !pc.IsVoid).ToList().ForEach(pc =>
 						{
+							var update = false;
 							originalList.Add(JsonConvert.DeserializeObject<PayCheck>(JsonConvert.SerializeObject(pc)));
 							var ea = employeeAccumulations.First(e => e.EmployeeId.Value == pc.Employee.Id);
 							pc.Taxes.ForEach(t =>
 							{
 								var t2 = ea.Taxes.First(t3 => t3.Tax.Code.Equals(t.Tax.Code));
-								t.YTDTax = t2.YTD;
-								t.YTDWage = t2.YTDWage;
+								if(t.YTDTax!=t2.YTD || t.YTDWage != t2.YTDWage)
+								{
+									t.YTDTax = t2.YTD;
+									t.YTDWage = t2.YTDWage;
+									update = true;
+								}
+								
 							});
 							pc.Deductions.ForEach(d =>
 							{
 								var d2 = ea.Deductions.First(d3 => d3.CompanyDeductionId == d.Deduction.Id);
-								d.YTD = d2.YTD;
-								d.YTDWage = d2.YTDWage;
-                                d.YTDEmployer = d2.YTDEmployer;
+								if (d.YTD!=d2.YTD || d.YTDWage!=d2.YTDWage || d.YTDEmployer!=d2.YTDEmployer)
+								{
+									d.YTD = d2.YTD;
+									d.YTDWage = d2.YTDWage;
+									d.YTDEmployer = d2.YTDEmployer;
+									update = true;
+								}
+								
                             });
 							pc.Compensations.ForEach(c =>
 							{
 								var c2 = ea.Compensations.First(c3 => c3.PayTypeId == c.PayType.Id);
-								c.YTD = c2.YTD;
+								if (c.YTD != c2.YTD)
+								{
+									c.YTD = c2.YTD;
+									update = true;
+								}
+								
 							});
 							pc.Accumulations.ForEach(a =>
 							{
 								var a2 = ea.Accumulations.First(a3 => a3.PayTypeId == a.PayType.PayType.Id);
-								a.YTDFiscal = a2.YTDFiscal;
-								a.YTDUsed = a2.YTDUsed;
+								if(a.YTDFiscal!=a2.YTDFiscal || a.YTDUsed != a2.YTDUsed)
+								{
+									a.YTDFiscal = a2.YTDFiscal;
+									a.YTDUsed = a2.YTDUsed;
+									update = true;
+								}
+								
 							});
 							pc.PayCodes.ForEach(p =>
 							{
-								var p2 = ea.PayCodes.First(p3 => p3.PayCodeId == p.PayCode.Id);
-								p.YTD = p2.YTDAmount;
-								p.YTDOvertime = p2.YTDOvertime;
+								var p2 = ea.PayCodes.FirstOrDefault(p3 => p3.PayCodeId == p.PayCode.Id);
+								if (p2 != null)
+								{
+									if(p.YTD!=p2.YTDAmount || p.YTDOvertime != p2.YTDOvertime)
+									{
+										p.YTD = p2.YTDAmount;
+										p.YTDOvertime = p2.YTDOvertime;
+										update = true;
+									}
+									
+								}
+								else
+								{
+									Log.Info($"{pc.EmployeeId}-{pc.Id}-{p.PayCode.Id}");
+								}
+								
 							});
 							if (pc.WorkerCompensation != null)
-								pc.WorkerCompensation.YTD =
-									ea.WorkerCompensations.Where(w2 => w2.WorkerCompensationId == pc.WorkerCompensation.WorkerCompensation.Id)
-										.Sum(w2 => w2.YTD);
-
-							pc.YTDGrossWage = ea.PayCheckWages.GrossWage;
-							pc.YTDNetWage = ea.PayCheckWages.NetWage;
-							pc.YTDSalary = ea.PayCheckWages.Salary;
-
-							updateList.Add(pc);
+							{
+								var w3 = ea.WorkerCompensations.Where(w2 => w2.WorkerCompensationId == pc.WorkerCompensation.WorkerCompensation.Id).Sum(w2 => w2.YTD);
+								if (pc.WorkerCompensation.YTD != w3)
+								{
+									pc.WorkerCompensation.YTD = w3;
+									update = true;
+								}
+								
+							}
+								
+							if(pc.YTDGrossWage!=ea.PayCheckWages.GrossWage || pc.YTDNetWage!=ea.PayCheckWages.NetWage || pc.YTDSalary != ea.PayCheckWages.Salary)
+							{
+								pc.YTDGrossWage = ea.PayCheckWages.GrossWage;
+								pc.YTDNetWage = ea.PayCheckWages.NetWage;
+								pc.YTDSalary = ea.PayCheckWages.Salary;
+								update = true;
+							}
+							
+							if(update)
+								updateList.Add(pc);
 
 							
 						});
@@ -4457,6 +4502,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						
 						txn.Complete();
 						
+					}
+					else
+					{
+						Log.Info($"Pay Checks are fine {payrollId}");
 					}
 
 

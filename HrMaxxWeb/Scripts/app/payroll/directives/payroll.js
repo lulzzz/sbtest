@@ -506,9 +506,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						if ($scope.company.payrollDaysInPast > 0) {
 							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast * -1, 'day').startOf('day').toDate();
 						}
-						if (moment($scope.minPayDay) > $scope.minPayDate) {
-							$scope.minPayDate = moment($scope.minPayDay).startOf('day');
-						}
+						//if (moment($scope.minPayDay) > $scope.minPayDate && $scope.mainData.userRole !== 'SuperUser' && $scope.mainData.userRole !== 'Master') {
+						//	$scope.minPayDate = moment($scope.minPayDay).startOf('day');
+						//}
 						
 					}
 					init();

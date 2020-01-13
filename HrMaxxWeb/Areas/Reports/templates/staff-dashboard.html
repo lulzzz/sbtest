@@ -21,7 +21,7 @@
 				Payrolls Processed - Last 15 Days
 			</div>
 			<div id="processed-donut" style="height: 260px"></div>
-			<ul class="chart-legend">
+			<ul class="chart-legend list-unstyled">
 				<li ng-repeat="i in data.dashboard.payrollsProcessedChart.legend track by $index">
 					<i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{i.value | currency:''}}% <span>{{i.key}}</span>
 				</li>
@@ -52,7 +52,7 @@
 				Payrolls Voided - Last 15 Days
 			</div>
 			<div id="voided-donut" style="height: 260px"></div>
-			<ul class="chart-legend">
+			<ul class="chart-legend list-unstyled">
 				<li ng-repeat="item in data.dashboard.payrollsVoidedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
 
 			</ul>
@@ -79,7 +79,7 @@
 				Invoice Created - Last 15 Days
 			</div>
 			<div id="created-donut" style="height: 260px"></div>
-			<ul class="chart-legend">
+			<ul class="chart-legend list-unstyled">
 				<li ng-repeat="item in data.dashboard.invoicesCreatedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
 
 			</ul>
@@ -108,7 +108,7 @@
 				Invoice Delivered - Last 15 Days
 			</div>
 			<div id="delivered-donut" style="height: 260px"></div>
-			<ul class="chart-legend">
+			<ul class="chart-legend list-unstyled">
 				<li ng-repeat="item in data.dashboard.invoicesDeliveredChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
 
 			</ul>
@@ -136,7 +136,7 @@
 				Companies Updated - Last 15 Days
 			</div>
 			<div id="companies-donut" style="height: 260px"></div>
-			<ul class="chart-legend">
+			<ul class="chart-legend list-unstyled">
 				<li ng-repeat="item in data.dashboard.companiesUpdatedChart.legend"><i class="fa fa-circle-o fa-fw m-r-5" ng-style="{'color':getColor($index)}"></i> {{item.value | currency:''}}% <span>{{item.key}}</span></li>
 
 			</ul>
