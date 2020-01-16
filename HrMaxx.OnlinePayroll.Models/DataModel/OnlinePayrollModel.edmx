@@ -152,6 +152,7 @@
           <Property Name="DashboardNotes" Type="varchar(max)" />
           <Property Name="City" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="ProfitStarsPayer" Type="bit" Nullable="false" />
+          <Property Name="ControlId" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -340,6 +341,7 @@
           <Property Name="OtherIncome" Type="decimal" Precision="18" Scale="2" />
           <Property Name="FederalDeductions" Type="decimal" Precision="18" Scale="2" />
           <Property Name="FederalAdditionalWithholding" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ClockId" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
@@ -1876,6 +1878,7 @@
           <NavigationProperty Name="CompanyRecurringCharges" Relationship="HrMaxxModel.FK_CompanyRecurringCharge_Company" FromRole="Company" ToRole="CompanyRecurringCharge" />
           <Property Name="City" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="ProfitStarsPayer" Type="Boolean" Nullable="false" />
+          <Property Name="ControlId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2349,6 +2352,7 @@
           <Property Name="OtherIncome" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="FederalDeductions" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="FederalAdditionalWithholding" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ClockId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -3196,6 +3200,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="ControlId" ColumnName="ControlId" />
                 <ScalarProperty Name="ProfitStarsPayer" ColumnName="ProfitStarsPayer" />
                 <ScalarProperty Name="City" ColumnName="City" />
                 <ScalarProperty Name="DashboardNotes" ColumnName="DashboardNotes" />
@@ -3444,6 +3449,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="ClockId" ColumnName="ClockId" />
                 <ScalarProperty Name="FederalAdditionalWithholding" ColumnName="FederalAdditionalWithholding" />
                 <ScalarProperty Name="FederalDeductions" ColumnName="FederalDeductions" />
                 <ScalarProperty Name="OtherIncome" ColumnName="OtherIncome" />

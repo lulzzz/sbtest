@@ -82,5 +82,6 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		int FillPayCheckNormalized(Guid? companyId, Guid? payrollId);
 
 		void UpdateCompanyAndEmployeeLastPayrollDate();
+		List<SchedulePayroll> SaveSchedulePayroll(SchedulePayroll payroll);
 	}
 }

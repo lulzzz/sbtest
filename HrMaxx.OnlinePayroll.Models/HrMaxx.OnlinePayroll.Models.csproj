@@ -285,12 +285,14 @@
     <Compile Include="JsonDataModel\PayrollInvoiceListItem.cs" />
     <Compile Include="JsonDataModel\PayrollPayCheck.cs" />
     <Compile Include="JsonDataModel\ProfitStarsFundJson.cs" />
+    <Compile Include="JsonDataModel\ScheduledPayrollJson.cs" />
     <Compile Include="JsonDataModel\StaffDashboardJson.cs" />
     <Compile Include="JsonDataModel\VoidedPayCheckInvoiceCredit.cs" />
     <Compile Include="MinWageEligibileCompany.cs" />
     <Compile Include="MinWageEligibilityCriteria.cs" />
     <Compile Include="PayCheckJournal.cs" />
     <Compile Include="ProfitStars.cs" />
+    <Compile Include="SchedulePayroll.cs" />
     <Compile Include="StaffDashboard.cs" />
     <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
     <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />

@@ -1,0 +1,88 @@
+﻿ <div class="row">
+	<!-- begin panel -->
+	
+	<div class="panel panel-inverse hidden-print" data-sortable-id="form-stuff-4" ng-if="mainData.selectedCompany && mainData.selectedCompany.contract">
+		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">Scheduled Payroll List<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
+			
+			<div ng-show="list.length===0 && !selected && !processed && !committed" class="table table-bordered">
+				No scheduled payrolls found <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="canRunPayroll()" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
+			</div>
+			
+			<div ng-show="list.length>0" ng-if="!data.loadedForPayrollsWithoutInvoice" class="col-sm-6 text-left p-5">
+				<strong><em>Scheduled Payrolls </em></strong>
+				<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="canRunPayroll()" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
+			</div>
+			<div class="col-sm-6 p-5 text-right">
+				<label class="alert alert-danger" ng-if="data && mainData.selectedCompany && mainData.selectedCompany.contract.billingOption===3 && !mainData.selectedCompany.contract.invoiceSetup">This company is set up to be invoiced but there are no configurations available.</label>
+				<label class="label-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresCompanyPayrollAccount()">Please set a Payroll Account in COA secton</label>
+				<label class="label-danger" ng-if="data && mainData.selectedCompany && data.startingCheckNumber>0 && requiresHostPayrollAccount()">Please set a Payroll Account in COA secton for the Host. this is a PEO/ASO Co Check Client</label>
+				<label class="label-danger" ng-if="data && data.startingCheckNumber>0 && data.employees.length===0">No Employees have been set up for this company</label>
+				<label class="label-warning" ng-if="data && mainData.selectedCompany.contract.invoiceSetup.invoiceType!==3 && mainData.selectedCompany.workerCompensations.length===0">*No Workers Compensations set up for this company</label>
+			</div>
+			<div class="row" ng-show="list.length>0">
+				<table ng-table="tableParams" class="table table-responsive" template-pagination="custom/pager">
+					<tr ng-repeat="item in tableData | orderBy:['-lastPayrollDate'] track by $index" class="mouse-over-pointer" ng-click="set(item)" ng-class="getClass(item)">
+						<td data-title=" 'Last Pay Date' " sortable=" 'lastPayrollDate' " class="col-sm-1">
+							{{item.payDay | date:'MM/dd/yyyy'}} ({{item.taxPayDay | date:'MM/dd/yyyy'}})
+						</td>
+						<td data-title=" 'Schedule Start Date' " sortable=" 'scheduleStartDate' " class="col-sm-1">
+							{{item.scheduleStartDate | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" 'Schedule Start Pay' " sortable=" 'payDateStart' " class="col-sm-1">
+							{{item.payDateStart | date:'MM/dd/yyyy'}}
+						</td>
+						<td data-title=" '# of Checks' " sortable=" 'payChecks.length' " class="col-sm-1">
+							{{item.data.payChecks.length }}
+						</td>
+
+						
+						<td data-title=" 'Saved By' " sortable=" 'lastModifiedBy' " class="col-sm-1">
+							{{item.lastModifiedBy}} ({{item.lastModified | date:'MM/dd/yyyy hh:mm a'}})
+						</td>
+						<td data-title=" 'Status' " sortable=" 'statusText' " class="col-sm-1">
+							{{item.statusText}}
+						</td>
+						<td class="col-sm-1 text-right dt-buttons button-group">
+							
+						</td>
+					</tr>
+
+				</table>
+				<script type="text/ng-template" id="custom/pager">
+					<ul class="pager ng-cloak">
+						<li ng-repeat="page in pages"
+								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
+							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
+						</li>
+						<li>
+							<div class="btn-group">
+								<button type="button" ng-class="{'active':params.count() == 10}" ng-click="params.count(10)" class="btn btn-default btn-sm">10</button>
+								<button type="button" ng-class="{'active':params.count() == 25}" ng-click="params.count(25)" class="btn btn-default btn-sm">25</button>
+								<button type="button" ng-class="{'active':params.count() == 50}" ng-click="params.count(50)" class="btn btn-default btn-sm">50</button>
+								<button type="button" ng-class="{'active':params.count() == 100}" ng-click="params.count(100)" class="btn btn-default btn-sm">100</button>
+							</div>
+						</li>
+					</ul>
+				</script>
+			</div>
+			
+
+			<!-- end panel -->
+		</div>
+	</div>
+ 	<scheduled-payroll item="selected.data" datasvc="data" main-data="mainData" company="mainData.selectedCompany" ng-if="mainData.selectedCompany && selected"  />
+	
+	
+
+
+
+	
+</div>
+
+

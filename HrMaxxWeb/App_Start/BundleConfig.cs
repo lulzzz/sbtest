@@ -89,7 +89,7 @@ namespace HrMaxxWeb
 				"~/Scripts/angular1.5/angular-route.min.js",
 				"~/Scripts/angular1.5/angular-resource.min.js",
 				"~/Scripts/angular1.5/angular-loader.min.js",
-				"~/Scripts/angular1.5/angular-ui/ui-bootstrap-tpls-2.1.3.min.js",
+				"~/Scripts/angular1.5/angular-ui/ui-bootstrap-tpls-2.5.0.min.js",
 				"~/Scripts/angular1.5/angular-file-upload/angular-file-upload.js",
 				"~/Scripts/angular1.5/restangular/restangular.js",
 				"~/Scripts/angular1.5/angular-sanitize.min.js",
@@ -177,6 +177,8 @@ namespace HrMaxxWeb
 
 				"~/Scripts/app/payroll/directives/payroll-list.js", 
 				"~/Scripts/app/payroll/directives/payroll.js",
+				"~/Scripts/app/payroll/directives/scheduled-payroll-list.js",
+				"~/Scripts/app/payroll/directives/scheduled-payroll.js",
 				"~/Scripts/app/payroll/directives/payroll-processed.js",
 				"~/Scripts/app/payroll/directives/paycheck.js",
 				"~/Scripts/app/journal/directives/regular-check.js",

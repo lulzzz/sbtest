@@ -30,8 +30,12 @@ common.directive('dateCtrl', ['zionAPI','version',
 					startingDay: 0,
 					showWeeks: false,
 				};
+				
 				$scope.formats = ['MM/dd/yyyy'];
 				$scope.format = $scope.formats[0];
+				$scope.getmoment = function (val) {
+					return moment(val, $scope.format);
+				}
 				$scope.altInputFormats = ['M!/d!/yyyy'];
 				$scope.today = function () {
 					$scope.dt = new Date();
@@ -42,7 +46,9 @@ common.directive('dateCtrl', ['zionAPI','version',
 				$scope.clear = function () {
 					$scope.dt = null;
 				};
-				$scope.open = function () {
+				$scope.open = function ($event) {
+					$event.preventDefault();
+					$event.stopPropagation();
 					$scope.data.opened = true;
 				};
 				$scope.isValid = function () {

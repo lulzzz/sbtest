@@ -29,6 +29,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal CarryOver { get; set; }
 		public string Department { get; set; }
 		public string EmployeeNo { get; set; }
+		public string ClockId { get; set; }
 		public string Memo { get; set; }
 		public int PayrollSchedule { get; set; }
 		public int PayType { get; set; }

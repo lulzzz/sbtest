@@ -62,7 +62,7 @@
 						@if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()))
 						{
 							<li><a href="#!/Admin/Logs">Logs</a></li>
-							
+
 						}
 
 
@@ -97,12 +97,16 @@
 				{
 					<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime())"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
 				}
+				if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()))
+				{
+					<li><a onclick=" this.href = '#!/Client/SchedulePayrolls' "><i class="fa fa-calendar" data-toggle="tooltip" data-placement="right" title="Schedule Payroll"></i><span>Schedule Payrolls</span></a></li>
+				}
 				if (CurrentUser.HasClaim(HrMaxxClaimTypes.CheckbookManage))
 				{
 					<li><a href="#!/Client/Checkbook" data-toggle="tooltip" data-placement="right" title="Checkbook"><i class="fa fa-bank"></i><span>Checkbook</span></a></li>
-					
+
 				}
-			    <li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
+				<li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
 				if (CurrentUser.HasClaim(HrMaxxClaimTypes.VendorsManage))
 				{
 					<li><a href="#!/Client/Vendors" data-toggle="tooltip" data-placement="right" title="Vendors"><i class="fa fa-building-o"></i><span>Vendors</span></a></li>
@@ -147,8 +151,8 @@
 			else
 			{
 				<li><a href="#" onclick=" this.href = '#!/Client/Employees/' + (new Date().getTime()); " data-toggle="tooltip" data-placement="right" title="Employee"><i class="fa fa-users"></i><span>Employee</span></a></li>
-			    <li><a href="#!/Client/PayChecks"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>PayChecks</span></a></li>
-			    <li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
+				<li><a href="#!/Client/PayChecks"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>PayChecks</span></a></li>
+				<li><a onclick=" this.href = '#!/Client/Documents/' + (new Date().getTime())"><i class="fa fa-file-archive-o" data-toggle="tooltip" data-placement="right" title="Documents"></i><span>Documents</span></a></li>
 			}
 			<!-- begin sidebar minify button -->
 			<li><a href="javascript:;" class="sidebar-minify-btn" data-click="sidebar-minify"><i class="fa fa-angle-double-left"></i></a></li>

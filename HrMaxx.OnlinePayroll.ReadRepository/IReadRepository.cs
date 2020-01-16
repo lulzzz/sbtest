@@ -19,5 +19,6 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 		T GetQueryData<T>(string query, XmlRootAttribute attribute);
 		
 		List<T> GetQueryData<T>(string query);
+		List<T1> GetQueryData<T, T1>(string query);
 	}
 }

@@ -94,6 +94,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.IsFiler1095 = dbMappedCompany.IsFiler1095;
 				dbCompany.CompanyCheckPrintOrder = dbMappedCompany.CompanyCheckPrintOrder;
 				dbCompany.City = dbMappedCompany.City;
+				dbCompany.ControlId = dbMappedCompany.ControlId;
 			}
 			_dbContext.SaveChanges();
 			if (!ignoreEinCheck)
@@ -484,6 +485,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.Notes = me.Notes;
 				dbEmployee.StatusId = me.StatusId;
 				dbEmployee.PayTypeAccruals = me.PayTypeAccruals;
+				dbEmployee.ClockId = me.ClockId;
 
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)

@@ -73,5 +73,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Payroll
 		void FixInvoiceVoidedCredit(PayrollInvoice payrollInvoice);
 		void UnVoidPayroll(Guid id, string userName);
 		void UpdateCompanyAndEmployeeLastPayrollDate();
-	}
+        void SaveScheduledPayroll(SchedulePayroll payroll);
+    }
 }

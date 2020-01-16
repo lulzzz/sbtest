@@ -19,7 +19,9 @@
 	<ReportTransformed>
 		<Name>FilledForm1099</Name>
 		<Reports>
-			<xsl:apply-templates select="VendorList/CompanyVendor/Vendor"/>
+      <xsl:apply-templates select="VendorList/CompanyVendor/Vendor">
+        <xsl:sort select="Name" data-type="text"/>
+      </xsl:apply-templates>
 			<xsl:apply-templates select="Company"/>
 		</Reports>
 	</ReportTransformed>

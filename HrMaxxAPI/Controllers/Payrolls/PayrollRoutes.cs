@@ -4,6 +4,8 @@
 	{
 		public const string UnPrintedPayrolls = "Payroll/UnPrintedPayrolls";
 		public const string Payrolls = "Payroll/Payrolls";
+		public const string SchedulePayrolls = "Payroll/ScheduledPayrolls/{companyId:guid?}";
+		public const string SaveSchedulePayrolls = "Payroll/SaveScheduledPayrolls";
 		public const string ProcessPayroll = "Payroll/Process";
 		public const string ReProcessReConfirmPayroll = "Payroll/ReProcessReConfirmPayroll";
 		public const string IsPayrollConfirmed = "Payroll/IsPayrollConfirmed";

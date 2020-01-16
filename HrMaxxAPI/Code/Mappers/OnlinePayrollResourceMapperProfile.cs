@@ -333,6 +333,10 @@ namespace HrMaxxAPI.Code.Mappers
 				.ForMember(dest => dest.Rate, opt => opt.MapFrom(src => src.ProposedRate));
 
 			CreateMap<CheckBookMetaDataRequestResource, CheckBookMetaDataRequest>();
+			CreateMap<SchedulePayrollResource, SchedulePayroll>()
+				.ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data));
+			CreateMap<SchedulePayroll, SchedulePayrollResource>()
+				.ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data));
 		}
 	}
 }

@@ -943,5 +943,16 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 				conn.Execute(sql, new {Id = id, TaxesDelayed = taxesDelayed, User = userName});
 			}
 		}
+        public void SaveScheduledPayroll(SchedulePayroll payroll)
+		{
+			const string sql =
+				"if @Id=0 insert into ScheduledPayroll(CompanyId, PaySchedule, ScheduleStartDate, PayDateStart, LastPayrollDate, Status, Data, LastModified, LastModifiedBy) values(@CompanyId, @PaySchedule, @ScheduleStartDate, @PayDateStart, @LastPayrollDate, @Status, @Data, @LastModified, @LastModifiedBy) else update ScheduledPayroll set ScheduleStartDate=@ScheduleStartDate, PayDateStart=@PayDateStart,Status=@Status, Data=@Data, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id";
+			var mapped = Mapper.Map<SchedulePayroll, ScheduledPayrollJson>(payroll);
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, mapped);
+			}
+		}
+		
 	}
 }

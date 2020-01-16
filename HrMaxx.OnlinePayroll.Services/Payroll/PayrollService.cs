@@ -4618,6 +4618,20 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public List<SchedulePayroll> SaveSchedulePayroll(SchedulePayroll payroll)
+		{
+			try
+			{
+				_payrollRepository.SaveScheduledPayroll(payroll);
+				return _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>($"select * from ScheduledPayroll where CompanyId='{payroll.CompanyId}'");
+			}
+			catch(Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, " Scheduled Payroll");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		
 	}

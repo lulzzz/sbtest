@@ -64,6 +64,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<decimal> OtherIncome { get; set; }
         public Nullable<decimal> FederalDeductions { get; set; }
         public Nullable<decimal> FederalAdditionalWithholding { get; set; }
+        public string ClockId { get; set; }
     
         public virtual Status Status { get; set; }
         public virtual Company Company { get; set; }

@@ -266,6 +266,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string LastModifiedBy { get; set; }
 		public System.DateTime LastModified { get; set; }
 		public bool IsFiler944 { get; set; }
+		public string ControlId { get; set; }
 		public bool IsHostCompany { get; set; }
 		public string Memo { get; set; }
 		public string ClientNo { get; set; }

@@ -46,6 +46,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public StatusOption StatusId { get; set; }
 		public string EmployeeNo { get; set; }
 		public int? CompanyEmployeeNo { get; set; }
+		public string ClockId { get; set; }
 		public string Memo { get; set; }
 		public string Notes { get; set; }
 		//Payroll

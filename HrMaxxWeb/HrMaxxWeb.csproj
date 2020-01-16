@@ -277,6 +277,9 @@
     <Content Include="Areas\Client\templates\company-locations.html" />
     <Content Include="Areas\Client\templates\paycheck-list.html" />
     <Content Include="Areas\Client\templates\paychecks.html" />
+    <Content Include="Areas\Client\templates\scheduledpayrolls.html" />
+    <Content Include="Areas\Client\templates\scheduled-payroll.html" />
+    <Content Include="Areas\Client\templates\scheduled-payroll-list.html" />
     <Content Include="Areas\Client\templates\tax-payment.html" />
     <Content Include="Areas\Client\templates\vendor-customer.html" />
     <Content Include="Areas\Reports\templates\ach-report.html" />
@@ -307,8 +310,11 @@
     <Content Include="Content\jstree.min.css" />
     <Content Include="Content\templates\log-view.html" />
     <Content Include="Content\templates\logs.html" />
+    <Content Include="Scripts\angular1.5\angular-ui\ui-bootstrap-tpls-2.5.0.min.js" />
     <Content Include="Scripts\app\common\directives\log-viewer.js" />
     <Content Include="Scripts\app\common\directives\pay-type-list.js" />
+    <Content Include="Scripts\app\payroll\directives\scheduled-payroll.js" />
+    <Content Include="Scripts\app\payroll\directives\scheduled-payroll-list.js" />
     <Content Include="Scripts\app\reports\directives\news-ticker.js" />
     <Content Include="Scripts\app\reports\directives\staff-dashboard.js" />
     <Content Include="Scripts\app\reports\directives\extract-dashboard.js" />

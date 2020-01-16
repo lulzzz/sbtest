@@ -42,6 +42,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime LastModified { get; set; }
 		public bool IsFiler944 { get; set; }
 		public bool IsFiler1095 { get; set; }
+		public string ControlId { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
 		public decimal MinWage { get; set; }
 		public bool IsHostCompany { get; set; }

@@ -22,6 +22,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string Name { get; set; }
 		public string EmployeeNo { get; set; }
 		public string SSN { get; set; }
+		public string ClockId { get; set; }
 		public decimal Salary { get; set; }
 		public decimal Gross { get; set; }
 		public string Notes { get; set; }
@@ -56,6 +57,14 @@ namespace HrMaxxAPI.Resources.Payroll
 			else
 			{
 				EmployeeNo = er.Value("employee no");
+			}
+			if (string.IsNullOrWhiteSpace(er.Value("clock id")))
+			{
+				error += "Clock Id, ";
+			}
+			else
+			{
+				ClockId = er.Value("clock id");
 			}
 			if (!string.IsNullOrWhiteSpace(er.ValueFromContains("salary")))
 			{
@@ -250,9 +259,10 @@ namespace HrMaxxAPI.Resources.Payroll
 			Accumulations = new List<PayTypeAccumulationResource>();
 			Deductions = new List<PayrollDeductionResource>();
 			var error = string.Empty;
+			var colcounter = (int)0;
 			foreach (var col in importMap.ColumnMap)
 			{
-				var val = er.Value(col.Key);
+				var val = er.ValueAtIndex(colcounter++);
 				if (col.Key.Equals("SSN"))
 				{
 					const string ssnRegex = @"^(\d{3}-\d{2}-\d{4})$";
@@ -274,6 +284,17 @@ namespace HrMaxxAPI.Resources.Payroll
 					else
 					{
 						EmployeeNo = val;
+					}
+				}
+				else if (col.Key.Equals("Clock Id"))
+				{
+					if (string.IsNullOrWhiteSpace(val))
+					{
+						error += "Clock Id, ";
+					}
+					else
+					{
+						ClockId = val;
 					}
 				}
 				else if (col.Key.Equals("Employee Name"))

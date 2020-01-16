@@ -195,5 +195,15 @@ namespace HrMaxx.OnlinePayroll.ReadRepository
 				return results.ToList();
 			}
 		}
+		public List<T1> GetQueryData<T, T1>(string query)
+		{
+			using (var conn = GetConnection())
+			{
+
+				IEnumerable<T> results = conn.Query<T>(query);
+
+				return _mapper.Map<List<T>, List<T1>>(results.ToList());
+			}
+		}
 	}
 }

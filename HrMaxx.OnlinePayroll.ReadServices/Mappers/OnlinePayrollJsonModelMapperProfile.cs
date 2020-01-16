@@ -285,6 +285,12 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.SSN, opt => opt.MapFrom(src => Crypto.Decrypt(src.SSN)))
 				.ForMember(dest => dest.Contact, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Contact>(src.Contact)));
 
+			CreateMap<Models.JsonDataModel.ScheduledPayrollJson, Models.SchedulePayroll>()
+				.ForMember(dest => dest.Data, opt => opt.MapFrom(src => JsonConvert.DeserializeObject<Payroll>( src.Data)));
+
+			CreateMap<Models.SchedulePayroll, Models.JsonDataModel.ScheduledPayrollJson>()
+				.ForMember(dest => dest.Data, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Data)));
+
 		}
 	}
 }

@@ -854,7 +854,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		};
 	}
 	var jobCostColumns = ['Amount', 'Rate', 'Pieces'];
-	var requiredColumns = ['Employee No', 'Employee Name', 'SSN', 'Pay Rate/Salary'];
+	var requiredColumns = ['Employee No', 'Employee Name', 'SSN', 'Pay Rate/Salary', 'Clock Id'];
 	$scope.selected = null;
 	$scope.files = [];
 	$scope.onFileSelect = function ($files) {
@@ -903,6 +903,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 		//	var errors = $('.parsley-error');
 		//	return false;
 		//}
+		$scope.alerts = [];
 		var importMap = angular.copy($scope.importMap);
 		importMap.columnMap = [];
 		$.each($scope.importMap.columnMap, function(i3, cm) {
@@ -925,6 +926,9 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 						pc = $filter('filter')($scope.payChecks, { employee: { ssn: t.ssn } })[0];
 					else if (t.employeeNo) {
 						pc = $filter('filter')($scope.payChecks, { employee: { companyEmployeeNo: parseInt(t.employeeNo) } }, true)[0];
+					}
+					else if (t.clockId) {
+						pc = $filter('filter')($scope.payChecks, { employee: { clockId: t.clockId } }, true)[0];
 					} else if (t.name) {
 						pc = $filter('filter')($scope.payChecks, { name: t.name })[0];
 					}
@@ -1044,6 +1048,9 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 							messages.push(t.ssn);
 						else if (t.employeeNo) {
 							messages.push(t.employeeNo);
+						}
+						else if (t.clcckId) {
+							messages.push(t.clockId);
 						} else if (t.name) {
 							messages.push(t.name);
 						}
@@ -1054,7 +1061,7 @@ common.controller('importTimesheetCtrl', function ($scope, $uibModalInstance, $f
 				$uibModalInstance.close($scope);
 
 
-			}, function(error) {
+			}, function (error) {
 				$scope.alerts.push({ message: error });
 
 			});

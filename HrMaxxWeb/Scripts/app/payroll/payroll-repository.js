@@ -63,6 +63,26 @@ common.factory('payrollRepository', [
 
 				return deferred.promise;
 			},
+			saveScheduledPayroll: function (payroll) {
+				var deferred = $q.defer();
+				payrollServer.all('SaveScheduledPayrolls').post(payroll).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getSchedulePayrollList: function (companyId) {
+				var deferred = $q.defer();
+				payrollServer.one('ScheduledPayrolls').one(companyId).getList().then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			reProcessReConfirmPayroll: function (payroll) {
 				var deferred = $q.defer();
 				payrollServer.all('ReProcessReConfirmPayroll').post(payroll).then(function (data) {
@@ -626,8 +646,22 @@ common.factory('payrollRepository', [
 					deferred.resolve(data);
 
 				})
-				.error(function (data, status, statusText, headers, config) {
-					deferred.reject(statusText);
+					.error(function (data) {
+						if (data) {
+							if (data.data) {
+								var arr = new Uint8Array(data.data);
+								var str = String.fromCharCode.apply(String, arr);
+								deferred.reject(str);
+							}
+							else {
+								deferred.reject(data);
+							}
+						}
+						else {
+							deferred.reject('');
+						}
+						
+					
 				});
 				return deferred.promise;
 			}

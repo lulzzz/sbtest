@@ -309,6 +309,59 @@ namespace HrMaxxAPI.Controllers.Payrolls
 			}
 			return Mapper.Map<List<Payroll>, List<PayrollResource>>(payrolls);
 		}
+		[HttpGet]
+		[Route(PayrollRoutes.SchedulePayrolls)]
+		[DeflateCompression]
+		public List<SchedulePayrollResource> GetScheduledPayrolls(Guid? companyId = null)
+		{
+			var query = "select * from ScheduledPayroll";
+
+			if (companyId.HasValue)
+			{
+				query += $" where CompanyId='{companyId.Value}'";
+			}
+			var payrolls = MakeServiceCall(() => _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>(query),
+				$"get list of scheudle payrolls for company={(companyId.HasValue ? companyId.Value.ToString() : string.Empty)}");
+			
+			var result =  Mapper.Map<List<SchedulePayroll>, List<SchedulePayrollResource>>(payrolls);
+			return result;
+		}
+
+		[HttpPost]
+		[Route(PayrollRoutes.SaveSchedulePayrolls)]
+		[DeflateCompression]
+		public List<SchedulePayrollResource> SaveScheduledPayrolls(SchedulePayrollResource resource)
+		{
+			try
+			{
+				resource.Data.PayChecks.ForEach(p =>
+				{
+					p.StartDate = resource.Data.StartDate;
+					p.EndDate = resource.Data.EndDate;
+					p.PayDay = resource.Data.PayDay;
+				});
+				var payroll = Mapper.Map<SchedulePayrollResource, SchedulePayroll>(resource);
+				payroll.LastModified = DateTime.Now;
+				payroll.LastModifiedBy = CurrentUser.FullName;
+				var payrolls = MakeServiceCall(() => _payrollService.SaveSchedulePayroll(payroll),
+					$"save scheudle payrolls for company={resource.CompanyId}");
+
+				return Mapper.Map<List<SchedulePayroll>, List<SchedulePayrollResource>>(payrolls);
+
+			}
+			catch(Exception e)
+			{
+				Logger.Error("Error importing timesheets", e);
+
+				throw new HttpResponseException(new HttpResponseMessage
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					ReasonPhrase = e.Message,
+					Content = new StringContent(e.Message)
+				});
+			}
+			
+		}
 
 		[HttpPost]
 		[Route(PayrollRoutes.IsPayrollConfirmed)]
@@ -871,7 +924,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 		[System.Web.Http.HttpPost]
 		[System.Web.Http.Route(PayrollRoutes.ImportTimesheetsWithMap)]
 		[DeflateCompression]
-		public async Task<HttpResponseMessage> ImportTimesheetsWithMap()
+		public async Task<HttpResponseMessage> ImportTimesheetsWithMapAsync()
 		{
 			var filename = string.Empty;
 			try
@@ -912,7 +965,7 @@ namespace HrMaxxAPI.Controllers.Payrolls
 					}
 				});
 				if (!string.IsNullOrWhiteSpace(error))
-					throw new Exception(error);
+					throw new Exception(error.Length>512 ? error.Substring(0, 512) : error);
 				_companyService.SaveTSImportMap(company.Id.Value, fileUploadObj.ImportMap);
 				return this.Request.CreateResponse(HttpStatusCode.OK, timesheets);
 			}

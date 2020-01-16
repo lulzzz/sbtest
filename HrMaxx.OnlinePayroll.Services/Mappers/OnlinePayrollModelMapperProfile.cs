@@ -718,6 +718,7 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.CompanyIntId, opt => opt.Ignore())
 				.ForMember(dest => dest.UpdateEmployeeRate, opt => opt.MapFrom(src => false))
 				.ForMember(dest => dest.CreditInvoiceId, opt => opt.Ignore())
+				.ForMember(dest => dest.ForcePayCheck, opt => opt.Ignore())
 				.ForMember(dest => dest.Included, opt => opt.Ignore());
 
 			CreateMap<Models.MasterExtract, Models.DataModel.MasterExtract>()

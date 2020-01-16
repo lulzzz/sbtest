@@ -48,6 +48,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public DepositSchedule941 DepositSchedule { get; set; }
 		public bool IsFiler944 { get; set; }
 		public bool IsFiler1095 { get; set; }
+		public string ControlId { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
 		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
 
