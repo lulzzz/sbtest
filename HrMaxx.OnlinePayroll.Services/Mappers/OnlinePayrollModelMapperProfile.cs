@@ -386,6 +386,9 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 				.ForMember(dest => dest.EmployeeBankAccounts, opt => opt.MapFrom(src=>src.BankAccounts))
 				.ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.UserName));
 
+			CreateMap<Models.DataModel.EmployeeACA, Models.EmployeeACA>();
+			CreateMap<Models.EmployeeACA, Models.DataModel.EmployeeACA>()
+				.ForMember(dest => dest.Employee, opt => opt.Ignore());
 			CreateMap<Models.DataModel.EmployeeDeduction, Models.EmployeeDeduction>()
                 .ForMember(dest => dest.Deduction, opt => opt.MapFrom(src => src.CompanyDeduction))
                 .ForMember(dest => dest.EmployeeWithheld, opt => opt.Ignore())

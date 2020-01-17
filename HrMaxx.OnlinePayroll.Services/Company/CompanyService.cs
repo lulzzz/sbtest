@@ -475,6 +475,20 @@ namespace HrMaxx.OnlinePayroll.Services
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public EmployeeACA SaveEmployeeACA(EmployeeACA aca)
+		{
+			try
+			{
+				return _companyRepository.SaveEmployeeACA(aca);
+				
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "ACA for employee ");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public void DeleteEmployeeDeduction(int deductionId)
 		{

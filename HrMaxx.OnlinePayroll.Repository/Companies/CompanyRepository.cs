@@ -519,7 +519,29 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			var dbemp = _dbContext.Employees.Include("CompanyWorkerCompensation").First(e => e.Id == me.Id);
 			return _mapper.Map<Models.DataModel.Employee, Employee>(dbemp);
 		}
-
+		public Models.EmployeeACA SaveEmployeeACA(Models.EmployeeACA aca)
+		{
+			var mapped = _mapper.Map<Models.EmployeeACA, Models.DataModel.EmployeeACA>(aca);
+			var exists = _dbContext.EmployeeACAs.Any(ea => ea.Year == mapped.Year && ea.EmployeeId == mapped.EmployeeId);
+			if (!exists)
+			{
+				_dbContext.EmployeeACAs.Add(mapped);
+			}
+			else
+			{
+				var dbaca = _dbContext.EmployeeACAs.FirstOrDefault(ea => ea.Year == mapped.Year && ea.EmployeeId == mapped.EmployeeId);
+				if (dbaca != null)
+				{
+					dbaca.Year = mapped.Year;
+					dbaca.Amount = mapped.Amount;
+					dbaca.LastModified = mapped.LastModified;
+					dbaca.LastModifiedBy = mapped.LastModifiedBy;
+				}
+			}
+			_dbContext.SaveChanges();
+			return _mapper.Map<Models.DataModel.EmployeeACA, Models.EmployeeACA>(mapped);
+		}
+	
 		public EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction)
 		{
 			var mappeddeduction = _mapper.Map<EmployeeDeduction, Models.DataModel.EmployeeDeduction>(deduction);

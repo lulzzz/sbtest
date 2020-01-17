@@ -19,6 +19,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         {
             this.EmployeeDeductions = new HashSet<EmployeeDeduction>();
             this.EmployeeBankAccounts = new HashSet<EmployeeBankAccount>();
+            this.EmployeeACAs = new HashSet<EmployeeACA>();
         }
     
         public System.Guid Id { get; set; }
@@ -73,5 +74,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmployeeACA> EmployeeACAs { get; set; }
     }
 }

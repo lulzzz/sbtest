@@ -60,6 +60,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal? FederalDeductions { get; set; }
 		public decimal? FederalAdditionalWithholding { get; set; }
 		public EmployeeState State { get; set; }
+		public List<EmployeeACA> EmployeeACAs { get; set; }
 		public List<EmployeeDeduction> Deductions { get; set; }
 		public CompanyWorkerCompensation WorkerCompensation { get; set; }
 		public List<PayCheckPayTypeAccumulation> Accumulations { get; set; } 
@@ -112,6 +113,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public decimal AdditionalAmount { get; set; }
 	}
 
+	public class EmployeeACA
+	{
+		public Guid EmployeeId { get; set; }
+		public int Year { get; set; }
+		public decimal Amount { get; set; }
+		public DateTime LastModified { get; set; }
+		public string LastModifiedBy { get; set; }
+	}
 	public class EmployeeDeduction
 	{
 		public int Id { get; set; }

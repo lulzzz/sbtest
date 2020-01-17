@@ -520,6 +520,58 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						}, 1);
 						
 					}
+					$scope.selectedACA = null;
+					$scope.addACA = function () {
+						var acc = {
+							year: 0,
+							employeeId: $scope.selected.id,
+							amount: 0,
+							lastModified: moment().format('MM/DD/YYYY'),
+							lastModifiedBy: ''
+						};
+
+						$scope.selected.employeeACAs.push(acc);
+						$scope.setSelectedAcc($scope.selected.employeeACAs.indexOf(acc));
+					},
+					$scope.isACAValid = function (item) {
+						if ($scope.selectedACA && $scope.selectedACA.year > 0 && $scope.selectedACA.amount >= 0)
+							return true;
+						else
+							return false;
+					}
+					$scope.saveACA = function (index) {
+						companyRepository.saveEmployeeACA($scope.selectedACA).then(function (aca) {
+							$scope.selected.employeeACAs[index] = aca;
+							
+							$scope.cancelACA(index);
+							addAlert('successfully saved employee aca', 'success');
+						}, function (error) {
+							addAlert('error in saving ca', 'danger');
+						});
+					}
+					$scope.deleteACA = function (index) {
+						$scope.selected.employeeACAs.splice(index, 1);
+					}
+					$scope.cancelACA = function (index) {
+						if (!$scope.selectedACC.year) {
+							$scope.selected.employeeACAs.splice(index, 1);
+						}
+						else if ($scope.originalACA && $scope.originalACA.id === $scope.selectedACA.id) {
+							$scope.selected.employeeACAs[index] = angular.copy($scope.originalACA);
+						}
+						$scope.selectedACA = null;
+						$scope.selectedACAIndex = null;
+					}
+					$scope.setSelectedACA = function (index) {
+						$scope.selectedACA = null;
+						$scope.selectedACAIndex = null;
+						$timeout(function () {
+							$scope.selectedACAIndex = index;
+							$scope.selectedACA = $scope.selected.employeeACAs[index];
+							$scope.originalACA = angular.copy($scope.selectedACA);
+						}, 1);
+
+					}
 					$scope.ddPercentageAvailable = function () {
 						var covered = 0;
 						$.each($scope.selected.bankAccounts, function(ind, b) {

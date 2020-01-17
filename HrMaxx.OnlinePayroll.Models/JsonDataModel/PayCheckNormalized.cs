@@ -112,6 +112,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public decimal NetWage { get; set; }
 		public decimal CheckPay { get; set; }
 		public decimal DDPay { get; set; }
+		public decimal ACAAmount { get; set; }
 		public decimal Quarter1FUTA { get; set; }
 		public decimal Quarter2FUTA { get; set; }
 		public decimal Quarter3FUTA { get; set; }

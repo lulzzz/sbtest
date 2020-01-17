@@ -343,6 +343,17 @@
           <Property Name="FederalAdditionalWithholding" Type="decimal" Precision="18" Scale="2" />
           <Property Name="ClockId" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="EmployeeACA">
+          <Key>
+            <PropertyRef Name="EmployeeId" />
+            <PropertyRef Name="Year" />
+          </Key>
+          <Property Name="EmployeeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="LastModified" Type="datetime" Nullable="false" />
+          <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="EmployeeBankAccount">
           <Key>
             <PropertyRef Name="Id" />
@@ -1073,6 +1084,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_EmployeeACA_Employee">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="1" />
+          <End Role="EmployeeACA" Type="Self.EmployeeACA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeACA">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_EmployeeBankAccount_BankAccount">
           <End Role="BankAccount" Type="Self.BankAccount" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -1312,6 +1335,7 @@
           <EntitySet Name="CompanyWorkerCompensation" EntityType="Self.CompanyWorkerCompensation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeductionType" EntityType="Self.DeductionType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EmployeeACA" EntityType="Self.EmployeeACA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmployeeBankAccount" EntityType="Self.EmployeeBankAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmployeeDeduction" EntityType="Self.EmployeeDeduction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EntityType" EntityType="Self.EntityType" Schema="dbo" store:Type="Tables" />
@@ -1451,6 +1475,10 @@
           <AssociationSet Name="FK_Employee_Status" Association="Self.FK_Employee_Status">
             <End Role="Status" EntitySet="Status" />
             <End Role="Employee" EntitySet="Employee" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmployeeACA_Employee" Association="Self.FK_EmployeeACA_Employee">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="EmployeeACA" EntitySet="EmployeeACA" />
           </AssociationSet>
           <AssociationSet Name="FK_EmployeeBankAccount_BankAccount" Association="Self.FK_EmployeeBankAccount_BankAccount">
             <End Role="BankAccount" EntitySet="BankAccount" />
@@ -1776,6 +1804,11 @@
           <AssociationSet Name="FK_CompanyRecurringCharge_Company" Association="HrMaxxModel.FK_CompanyRecurringCharge_Company">
             <End Role="Company" EntitySet="Companies" />
             <End Role="CompanyRecurringCharge" EntitySet="CompanyRecurringCharges" />
+          </AssociationSet>
+          <EntitySet Name="EmployeeACAs" EntityType="HrMaxxModel.EmployeeACA" />
+          <AssociationSet Name="FK_EmployeeACA_Employee" Association="HrMaxxModel.FK_EmployeeACA_Employee">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="EmployeeACA" EntitySet="EmployeeACAs" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="Host">
@@ -2353,6 +2386,7 @@
           <Property Name="FederalDeductions" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="FederalAdditionalWithholding" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ClockId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="EmployeeACAs" Relationship="HrMaxxModel.FK_EmployeeACA_Employee" FromRole="Employee" ToRole="EmployeeACA" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -3161,6 +3195,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="EmployeeACA">
+          <Key>
+            <PropertyRef Name="EmployeeId" />
+            <PropertyRef Name="Year" />
+          </Key>
+          <Property Name="EmployeeId" Type="Guid" Nullable="false" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="LastModified" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastModifiedBy" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Employee" Relationship="HrMaxxModel.FK_EmployeeACA_Employee" FromRole="EmployeeACA" ToRole="Employee" />
+        </EntityType>
+        <Association Name="FK_EmployeeACA_Employee">
+          <End Type="HrMaxxModel.Employee" Role="Employee" Multiplicity="1" />
+          <End Type="HrMaxxModel.EmployeeACA" Role="EmployeeACA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="EmployeeACA">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -3910,6 +3968,17 @@
                 <ScalarProperty Name="OldId" ColumnName="OldId" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmployeeACAs">
+            <EntityTypeMapping TypeName="HrMaxxModel.EmployeeACA">
+              <MappingFragment StoreEntitySet="EmployeeACA">
+                <ScalarProperty Name="LastModifiedBy" ColumnName="LastModifiedBy" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -47,7 +47,7 @@
         <EntityTypeShape EntityType="HrMaxxModel.EmployeeDeduction" Width="1.5" PointX="16.125" PointY="5.625" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" />
         <AssociationConnector Association="HrMaxxModel.FK_EmployeeDeduction_Employee" />
-        <EntityTypeShape EntityType="HrMaxxModel.Payroll" Width="1.5" PointX="14.375" PointY="13.125" />
+        <EntityTypeShape EntityType="HrMaxxModel.Payroll" Width="1.5" PointX="14.375" PointY="14.125" />
         <AssociationConnector Association="HrMaxxModel.FK_Employee_CompanyWorkerCompensation" />
         <EntityTypeShape EntityType="HrMaxxModel.Journal" Width="1.5" PointX="18.875" PointY="13.5" />
         <AssociationConnector Association="HrMaxxModel.FK_Journal_EntityType" />
@@ -94,6 +94,8 @@
         <AssociationConnector Association="HrMaxxModel.FK_CheckbookJournal_EntityType" />
         <EntityTypeShape EntityType="HrMaxxModel.CompanyRecurringCharge" Width="1.5" PointX="5.25" PointY="23.75" />
         <AssociationConnector Association="HrMaxxModel.FK_CompanyRecurringCharge_Company" />
+        <EntityTypeShape EntityType="HrMaxxModel.EmployeeACA" Width="1.5" PointX="16.125" PointY="23.625" />
+        <AssociationConnector Association="HrMaxxModel.FK_EmployeeACA_Employee" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

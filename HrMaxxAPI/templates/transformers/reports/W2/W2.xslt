@@ -76,6 +76,35 @@
 				<xsl:call-template name="CheckTemplate"><xsl:with-param name="name1" select="'13b_2'"/><xsl:with-param name="val1" select="'On'"/></xsl:call-template>
 				<xsl:call-template name="CheckTemplate"><xsl:with-param name="name1" select="'13b_3'"/><xsl:with-param name="val1" select="'On'"/></xsl:call-template>
 			</xsl:if>
+       <xsl:if test="PayCheckWages/ACAAmount >0">
+    <xsl:variable name="numdeds" select="count(Deductions/PayCheckDeduction[CompanyDeduction/DeductionType/W2_12])"/>
+    <xsl:variable name="acafield">
+      <xsl:choose>
+        <xsl:when test="$numdeds=0">
+          <xsl:value-of select="'12a'"/>
+        </xsl:when>
+        <xsl:when test="$numdeds=1">
+          <xsl:value-of select="'12b'"/>
+        </xsl:when>
+        <xsl:when test="$numdeds=2">
+          <xsl:value-of select="'12c'"/>
+        </xsl:when>
+        <xsl:when test="$numdeds=3">
+          <xsl:value-of select="'12d'"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="''"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$acafield">
+    <xsl:call-template name="W2Repeater">
+      <xsl:with-param name="prefix" select="$acafield"/>
+      <xsl:with-param name="val" select="concat('DD ',format-number(PayCheckWages/ACAAmount,'###0.00'))"/>
+      <xsl:with-param name="iter" select="3"/>
+    </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
 			<xsl:call-template name="W2Repeater"><xsl:with-param name="prefix" select="'15'"/><xsl:with-param name="val" select="$sein"/><xsl:with-param name="iter" select="3"/></xsl:call-template>
 			<xsl:call-template name="W2Repeater"><xsl:with-param name="prefix" select="'16'"/><xsl:with-param name="val" select="$SITWage"/><xsl:with-param name="iter" select="3"/></xsl:call-template>
 			<xsl:call-template name="W2Repeater"><xsl:with-param name="prefix" select="'17'"/><xsl:with-param name="val" select="$SITTax"/><xsl:with-param name="iter" select="3"/></xsl:call-template>

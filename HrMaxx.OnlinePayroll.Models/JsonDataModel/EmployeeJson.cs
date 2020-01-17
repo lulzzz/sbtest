@@ -59,10 +59,11 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? LastPayrollDate { get; set; }
 		public DateTime? LastPayDay {get; set; }
 		public int? CompanyEmployeeNo { get; set; }
+
 		public string Notes { get; set; }
 
 
-
+		public List<EmployeeACA> EmployeeACAs { get; set; }
 		public List<EmployeeDeduction> EmployeeDeductions { get; set; }
 		public CompanyWorkerCompensation CompanyWorkerCompensation { get; set; }
 		public List<EmployeeBankAccount> EmployeeBankAccounts { get; set; }
@@ -86,6 +87,14 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		
 		public DateTime HireDate { get; set; }
 		
+	}
+	public class EmployeeACA
+	{
+		public Guid EmployeeId { get; set; }
+		public int Year { get; set; }
+		public decimal Amount { get; set; }
+		public DateTime LastModified { get; set; }
+		public string LastModifiedBy { get; set; }
 	}
 	 public class EmployeeDeduction
     {

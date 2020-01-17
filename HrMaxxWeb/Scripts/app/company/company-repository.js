@@ -262,6 +262,16 @@ common.factory('companyRepository', [
 
 				return deferred.promise;
 			},
+			saveEmployeeACA: function (deduction) {
+				var deferred = $q.defer();
+				companyServer.all('EmployeeACA').post(deduction).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
 			saveEmployeeDeduction: function(deduction) {
 				var deferred = $q.defer();
 				companyServer.all('EmployeeDeduction').post(deduction).then(function (data) {

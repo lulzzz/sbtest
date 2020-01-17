@@ -32,6 +32,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		
 		Employee SaveEmployee(Employee mappedResource, bool ignoreSSNCheck = false);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction deduction);
+		EmployeeACA SaveEmployeeACA(EmployeeACA aca);
 		bool EmployeeExists(Guid id);
 		void DeleteEmployeeDeduction(int deductionId);
 		

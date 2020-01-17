@@ -353,6 +353,15 @@ namespace HrMaxxAPI.Controllers.Companies
 			var deductions = MakeServiceCall(() => _companyService.SaveEmployeeDeduction(mappedResource, CurrentUser.FullName), string.Format("saving deduction for employee {0}", resource.EmployeeId), true);
 			return Mapper.Map<EmployeeDeduction, EmployeeDeductionResource>(deductions);
 		}
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route(CompanyRoutes.EmployeeACA)]
+		public HrMaxx.OnlinePayroll.Models.EmployeeACA SaveEmployeeACA(HrMaxx.OnlinePayroll.Models.EmployeeACA resource)
+		{
+			resource.LastModified = DateTime.Now;
+			resource.LastModifiedBy = CurrentUser.FullName;
+			return MakeServiceCall(() => _companyService.SaveEmployeeACA(resource), string.Format("saving aca for employee {0}", resource.EmployeeId), true);
+			
+		}
 
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.Route(CompanyRoutes.DeleteEmployeeDeduction)]

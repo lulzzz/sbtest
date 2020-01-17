@@ -30,6 +30,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 
 		Employee SaveEmployee(Employee mappedResource, bool sendNotification = true, bool ignoreSSNCheck = false);
 		EmployeeDeduction SaveEmployeeDeduction(EmployeeDeduction mappedResource, string fullName);
+		EmployeeACA SaveEmployeeACA(EmployeeACA aca);
 		void DeleteEmployeeDeduction(int deductionId);
 		
 		CompanyTaxRate SaveCompanyTaxYearRate(CompanyTaxRate mappedResource, string fullName, Guid guid);

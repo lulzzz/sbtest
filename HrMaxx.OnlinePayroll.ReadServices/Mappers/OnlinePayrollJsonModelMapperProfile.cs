@@ -291,6 +291,9 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 			CreateMap<Models.SchedulePayroll, Models.JsonDataModel.ScheduledPayrollJson>()
 				.ForMember(dest => dest.Data, opt => opt.MapFrom(src => JsonConvert.SerializeObject(src.Data)));
 
+			CreateMap<Models.JsonDataModel.EmployeeACA, Models.EmployeeACA>();
+			CreateMap<Models.EmployeeACA, Models.JsonDataModel.EmployeeACA>();
+
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿IF NOT EXISTS(SELECT *
+﻿
+IF NOT EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'Company'
                  AND COLUMN_NAME = 'ControlId')
@@ -37,3 +38,9 @@ CREATE TABLE [dbo].[ScheduledPayroll](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
+
+ALTER TABLE PayCheckDeduction
+DROP CONSTRAINT PK_PayCheckDeduction
+
+ALTER TABLE PayCheckDeduction
+ADD CONSTRAINT PK_PayCheckDeduction PRIMARY KEY (PayCheckId, EmployeeDeductionId, CompanyDeductionId)

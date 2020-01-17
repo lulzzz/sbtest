@@ -8,12 +8,12 @@
 		<div class="panel panel-inverse overflow-hidden">
 			<div class="panel-heading">
 				<i class="fa fa-plus-circle pull-right"></i>
-                <ul class="nav nav-tabs pull-right" id="companytabs">
-                    <li ng-class="{'active':data.tab===1}" ng-click="data.tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
-                    <li ng-class="{'active':data.tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && data.viewVersions" ng-click="data.tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
-                    <li ng-class="{'active':data.tab===5}" ng-if="!isPopup && mainData.userRole!=='Employee'" ng-show=" selected.id " ng-click="data.tab=5"><a data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs">Documents</span></a></li>
-                    <li ng-class="{'active':data.tab===4}" ng-if="!isPopup && mainData.userRole!=='Employee'" ng-show=" selected.id " ng-click="data.tab=4"><a data-toggle="tab"><i class="fa fa-line-chart"></i> <span class="hidden-xs">Dashboard</span></a></li>
-                </ul>
+				<ul class="nav nav-tabs pull-right" id="companytabs">
+					<li ng-class="{'active':data.tab===1}" ng-click="data.tab=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Info</span></a></li>
+					<li ng-class="{'active':data.tab===6}" ng-if="!isPopup" ng-show=" selected.id && showControls && data.viewVersions" ng-click="data.tab=6"><a data-toggle="tab"><i class="fa fa-list"></i> <span class="hidden-xs">Versions</span></a></li>
+					<li ng-class="{'active':data.tab===5}" ng-if="!isPopup && mainData.userRole!=='Employee'" ng-show=" selected.id " ng-click="data.tab=5"><a data-toggle="tab"><i class="fa fa-archive"></i> <span class="hidden-xs">Documents</span></a></li>
+					<li ng-class="{'active':data.tab===4}" ng-if="!isPopup && mainData.userRole!=='Employee'" ng-show=" selected.id " ng-click="data.tab=4"><a data-toggle="tab"><i class="fa fa-line-chart"></i> <span class="hidden-xs">Dashboard</span></a></li>
+				</ul>
 				<h3 class="panel-title">
 					<a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion" data-target="#collapseOne">
 						Employee Details - {{selected.name}}
@@ -148,7 +148,7 @@
 												<input type="text" name="clockid" placeholder="Clock Id" class="form-control" ng-model="selected.clockId" />
 											</div>
 										</div>
-										
+
 									</div>
 									<div class="row">
 										<div class="col-sm-4">
@@ -318,15 +318,16 @@
 																	<!-- form -->
 
 																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-success btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
-																		<i class="fa fa-edit"></i> </button>
+																		<i class="fa fa-edit"></i>
+																	</button>
 																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-sm  btn-icon btn-circle" ng-click="delete($index)">
-																		<i class="fa fa-remove"></i> 
+																		<i class="fa fa-remove"></i>
 																	</button>
 																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-sm btn-icon btn-circle">
-																		<i class="fa fa-save"></i> 
+																		<i class="fa fa-save"></i>
 																	</button>
 																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-sm btn-icon btn-circle">
-																		<i class="fa fa-backward"></i> 
+																		<i class="fa fa-backward"></i>
 																	</button>
 
 																</td>
@@ -438,17 +439,17 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Dependent Children under 17y (3a)</label>
-												<input name="dedchi"  class="form-control" ng-model="selected.dependentChildren" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="dedchi" class="form-control" ng-model="selected.dependentChildren" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
 											</div>
 										</div>
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Other Dependent(s) (3b)</label>
-												<input name="dedother"  class="form-control" ng-model="selected.otherDependent" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="dedother" class="form-control" ng-model="selected.otherDependent" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
 											</div>
 										</div>
 										<div class="col-sm-3">
-											
+
 										</div>
 										<div class="col-sm-3">
 											W4 - Multiple Jobs?
@@ -544,12 +545,12 @@
 				<div class="tab-pane fade in" id="versions" ng-if="selected.id && !isPopup && data.tab===6" ng-class="{'active':data.tab===6}">
 					<memento-list main-data="mainData" source-type-id="data.sourceTypeId" memento-id="selected.id" heading="'Employee Versions'" />
 				</div>
-            <div class="tab-pane fade in" id="docs" ng-if="selected.id && !isPopup && data.tab===5" ng-class="{'active':data.tab===5}">
-                <document-list main-data="mainData" source-type-id="3" heading="'Employee Documents'" mode="2" company-id="mainData.selectedCompany.id" employee-id="selected.id" />
-            </div>
-            <div class="tab-pane fade in" id="docs" ng-if="selected.id && !isPopup && data.tab===4" ng-class="{'active':data.tab===4}">
-                <employee-dashboard main-data="data" company-id="selected.companyId" employee-id="selected.id" show-panel-title="false"/>
-            </div>
+				<div class="tab-pane fade in" id="docs" ng-if="selected.id && !isPopup && data.tab===5" ng-class="{'active':data.tab===5}">
+					<document-list main-data="mainData" source-type-id="3" heading="'Employee Documents'" mode="2" company-id="mainData.selectedCompany.id" employee-id="selected.id" />
+				</div>
+				<div class="tab-pane fade in" id="docs" ng-if="selected.id && !isPopup && data.tab===4" ng-class="{'active':data.tab===4}">
+					<employee-dashboard main-data="data" company-id="selected.companyId" employee-id="selected.id" show-panel-title="false" />
+				</div>
 			</div>
 		</div>
 
@@ -572,97 +573,168 @@
 
 		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
 			<div class="panel-heading">
-                <h3 class="panel-title">
-                    <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
-                        <i class="fa fa-plus-circle pull-right"></i>
-                        Accumulations
-                    </a>
+				<h3 class="panel-title">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
+						<i class="fa fa-plus-circle pull-right"></i>
+						Accumulations
+					</a>
 
-                </h3>
+				</h3>
 			</div>
 			<div id="collapseThree" class="panel-collapse collapse">
-                <div class="panel-body">
-                    <div class="row">
-                    <div class="col-sm-6 col-md-3" ng-repeat="ag in selected.accumulationGroups" ng-init="parentIndex = $index">
-                        <div class="widget widget-stats m-b-0" ng-class="{'bg-black': ag.key.payTypeId===6, 'bg-blue': ag.key.payTypeId===5, 'bg-grey': ag.key.payTypeId===16}">
-                            <div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
-                            <div class="stats-title">{{ag.key.payTypeName}}</div>
-                            <div class="stats-desc">Available</div>
-                            <div class="stats-number">{{calculateAvailableWage(ag.key) | currency:'$'}} for {{ag.key.available | currency:''}} hrs.</div>
-                            <div class="stats-desc">Accumulated - Used - CarryOver</div>
-                            <div class="stats-number">{{ag.key.ytdFiscal | currency:''}} hrs. - {{ag.key.ytdUsed | currency:''}} hrs. - {{ag.key.carryOver | currency:''}} hrs.</div>
-                            <div class="stats-progress progress">
-                                <div class="progress-bar" style="width: 100%;"></div>
-                            </div>
-                            <div class="stats-desc" ng-show="showControls">
-                                <!--<i class="fa fa-undo fa-lg pull-right" ng-show="selectedAccumulation && selectedAccumulationIndex===parentIndex" ng-click="cancelAccumulation(ag)"></i>
-                                <i class="fa fa-eye fa-lg pull-right" ng-show="!selectedAccumulation || selectedAccumulationIndex!==parentIndex" ng-click="setSelectedAccumulation(ag, $index)"></i>-->
-                                <i class="fa fa-download fa-lg pull-left" ng-click="getCompanyLeaveExport(1, ag.key)"></i>
-                            </div>
-                        </div>
-                        <div class="widget widget-stats m-t-0"
-                             ng-class="{'border-black': ag.key.payTypeId===6, 'border-blue': ag.key.payTypeId===5, 'border-grey': ag.key.payTypeId===16}">
-                            <div class="stats-desc" ng-repeat="acc in ag.value track by $index">
-                                <div class="form-group">
-                                    <label class="control-label">
-                                        <i class="fa fa-lg" ng-click="setSelAcc(acc, $index)" ng-class="{'fa-arrow-circle-down': selAccIndex===$index, 'fa-arrow-circle-right': selAccIndex!==$index}"></i> {{acc.fiscalStart | date:'MM/dd/yyyy'}} - {{acc.fiscalEnd | date:'MM/dd/yyyy'}} : {{calculateAvailableWage(acc) | currency:'$'}} for {{acc.available | currency:''}} hrs.
-                                    </label>
-                                </div>
-                                <div class="form-group col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
-                                    <label class="control-label col-md-4 col-sm-4 p-0" for="rate">Cycle :</label>
-                                    <div class="col-md-4 col-sm-4 p-0">
-                                        <date-ctrl name="fsd" required="true" model="acc.newFiscalStart" disabled="false"/>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-sm-6 col-md-3" ng-repeat="ag in selected.accumulationGroups" ng-init="parentIndex = $index">
+							<div class="widget widget-stats m-b-0" ng-class="{'bg-black': ag.key.payTypeId===6, 'bg-blue': ag.key.payTypeId===5, 'bg-grey': ag.key.payTypeId===16}">
+								<div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
+								<div class="stats-title">{{ag.key.payTypeName}}</div>
+								<div class="stats-desc">Available</div>
+								<div class="stats-number">{{calculateAvailableWage(ag.key) | currency:'$'}} for {{ag.key.available | currency:''}} hrs.</div>
+								<div class="stats-desc">Accumulated - Used - CarryOver</div>
+								<div class="stats-number">{{ag.key.ytdFiscal | currency:''}} hrs. - {{ag.key.ytdUsed | currency:''}} hrs. - {{ag.key.carryOver | currency:''}} hrs.</div>
+								<div class="stats-progress progress">
+									<div class="progress-bar" style="width: 100%;"></div>
+								</div>
+								<div class="stats-desc" ng-show="showControls">
+									<!--<i class="fa fa-undo fa-lg pull-right" ng-show="selectedAccumulation && selectedAccumulationIndex===parentIndex" ng-click="cancelAccumulation(ag)"></i>
+								<i class="fa fa-eye fa-lg pull-right" ng-show="!selectedAccumulation || selectedAccumulationIndex!==parentIndex" ng-click="setSelectedAccumulation(ag, $index)"></i>-->
+									<i class="fa fa-download fa-lg pull-left" ng-click="getCompanyLeaveExport(1, ag.key)"></i>
+								</div>
+							</div>
+							<div class="widget widget-stats m-t-0"
+								 ng-class="{'border-black': ag.key.payTypeId===6, 'border-blue': ag.key.payTypeId===5, 'border-grey': ag.key.payTypeId===16}">
+								<div class="stats-desc" ng-repeat="acc in ag.value track by $index">
+									<div class="form-group">
+										<label class="control-label">
+											<i class="fa fa-lg" ng-click="setSelAcc(acc, $index)" ng-class="{'fa-arrow-circle-down': selAccIndex===$index, 'fa-arrow-circle-right': selAccIndex!==$index}"></i> {{acc.fiscalStart | date:'MM/dd/yyyy'}} - {{acc.fiscalEnd | date:'MM/dd/yyyy'}} : {{calculateAvailableWage(acc) | currency:'$'}} for {{acc.available | currency:''}} hrs.
+										</label>
+									</div>
+									<div class="form-group col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
+										<label class="control-label col-md-4 col-sm-4 p-0" for="rate">Cycle :</label>
+										<div class="col-md-4 col-sm-4 p-0">
+											<date-ctrl name="fsd" required="true" model="acc.newFiscalStart" disabled="false" />
 
-                                    </div>
-                                    <div class="col-md-4 col-sm-4 p-0">
-                                        <date-ctrl name="fse" required="true" model="acc.newFiscalEnd" disabled="false"/>
-                                    </div>
+										</div>
+										<div class="col-md-4 col-sm-4 p-0">
+											<date-ctrl name="fse" required="true" model="acc.newFiscalEnd" disabled="false" />
+										</div>
 
-                                </div>
-                                <div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
-                                    <label class="control-label col-md-4 col-sm-4 p-0" for="cao{{$index}}">CarryOver :</label>
-                                    <div class="col-md-8 col-sm-8 p-0">
-                                        <input name="cao{{$index}}" class="form-control" ng-model="acc.carryOver" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" convert-to-decimal/>
+									</div>
+									<div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
+										<label class="control-label col-md-4 col-sm-4 p-0" for="cao{{$index}}">CarryOver :</label>
+										<div class="col-md-8 col-sm-8 p-0">
+											<input name="cao{{$index}}" class="form-control" ng-model="acc.carryOver" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" convert-to-decimal />
 
-                                    </div>
-
-
-                                </div>
-                                <div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
-                                    <label class="control-label col-md-4 col-sm-4 p-0">Accumulation :</label>
-                                    <div class="col-md-8 col-sm-8">
-                                        <label class="control-label col-md-10 col-sm-10 p-0">{{acc.ytdFiscal | currency:''}} hrs</label>
-
-                                    </div>
+										</div>
 
 
-                                </div>
-                                <div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
-                                    <label class="control-label col-md-4 col-sm-4 p-0">Used :</label>
-                                    <div class="col-md-8 col-sm-8 p-0">
-                                        <label class="control-label col-md-10 col-sm-10">{{acc.ytdUsed | currency:''}} hrs</label>
-                                    </div>
+									</div>
+									<div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
+										<label class="control-label col-md-4 col-sm-4 p-0">Accumulation :</label>
+										<div class="col-md-8 col-sm-8">
+											<label class="control-label col-md-10 col-sm-10 p-0">{{acc.ytdFiscal | currency:''}} hrs</label>
+
+										</div>
 
 
-                                </div>
-                                <div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId && (mainData.userRole==='Master' || mainData.userRole==='SuperUser')">
-                                    <button class="btn btn-lg btn-icon btn-circle btn-success pull-right" ng-show="showSaveAcc(acc)" ng-click="saveEmployeeAccumulation(acc)"><i class="fa fa-save"></i></button>
-                                </div>
+									</div>
+									<div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId">
+										<label class="control-label col-md-4 col-sm-4 p-0">Used :</label>
+										<div class="col-md-8 col-sm-8 p-0">
+											<label class="control-label col-md-10 col-sm-10">{{acc.ytdUsed | currency:''}} hrs</label>
+										</div>
 
-                            </div>
-                        </div>
-                    </div>
-                    </div>
 
-                    <div class="row">
-                        <!--<button class="btn btn-xs btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport || mainData.userRole==='Employee'">Sick Leave Export</button>-->
-                        <button class="btn btn-xs btn-success pull-right" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate && mainData.userRole!=='Employee'">Re-Calculate Accumulations</button>
-                    </div>
-                    <div class="row" ng-if="selected.accumulationGroups.length===0">
-                        no records found
-                    </div>
-                    
-                </div>
+									</div>
+									<div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId && (mainData.userRole==='Master' || mainData.userRole==='SuperUser')">
+										<button class="btn btn-lg btn-icon btn-circle btn-success pull-right" ng-show="showSaveAcc(acc)" ng-click="saveEmployeeAccumulation(acc)"><i class="fa fa-save"></i></button>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<!--<button class="btn btn-xs btn-danger" ng-click="getCompanySickLeaveExport(1)" ng-show="data.showSickLeaveExport || mainData.userRole==='Employee'">Sick Leave Export</button>-->
+						<button class="btn btn-xs btn-success pull-right" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate && mainData.userRole!=='Employee'">Re-Calculate Accumulations</button>
+					</div>
+					<div class="row" ng-if="selected.accumulationGroups.length===0">
+						no records found
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">
+						<i class="fa fa-plus-circle pull-right"></i>
+						ACA
+					</a>
+
+				</h3>
+			</div>
+			<div id="collapseFour" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="row">
+						<table class="table table-header table-bordered table-condensed form-controls input-sm">
+							<thead>
+								<tr>
+									<td class="col-sm-3">Year</td>
+									<td class="col-sm-3">Amount</td>
+									<td class="col-sm-3">Last Modified</td>
+									<td class="col-sm-3" ng-show="showControls"></td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="item in selected.employeeACAs track by $index">
+									<td>
+										<span editable-number="item.year" e-name="year" e-form="rowform" e-ng-change="item.year = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-ng-min="2007" e-ng-max="2030" e-step="1" e-style="width:10em;">
+											{{ item.year  }}
+										</span>
+									</td>
+									<td>
+										<!-- editable comment (text with validation) -->
+										<span editable-number="item.amount" e-name="amount" e-form="rowform" e-ng-change="item.amount = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-ng-min="0" e-step="0.01" e-style="width:10em;">
+											{{ item.amount | currency }} 
+										</span>
+									</td>
+									<td>
+										{{ item.lastModifiedBy }}( {{ item.lastModified | date:'MM/dd/yyyy'}} )
+									</td>
+									<td style="white-space: nowrap" ng-show="showControls">
+										<!-- form -->
+										<form editable-form id="rowform" name="rowform" onbeforesave="saveACA($index)" class="form-buttons form-inline" shown="selectedACA===item">
+											<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle" ng-click="rowform.$show();setSelectedACA($index)">
+												<i class="fa fa-edit"></i>
+											</button>
+											<button type="submit" ng-disabled="rowform.$waiting || !isACAValid(item)" ng-if="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+												<i class="fa fa-save"></i>
+											</button>
+											<button type="button" ng-disabled="rowform.$waiting" ng-if="rowform.$visible" ng-click="rowform.$cancel();cancelACA($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+												<i class="fa fa-remove"></i>
+											</button>
+										</form>
+									</td>
+
+								</tr>
+								<tr ng-show="!selectedACA">
+									<td colspan="4">
+										<span ng-show="list.length===0">No items found</span>
+										<button class="btn btn-success btn-lg  btn-icon btn-circle" ng-click="addACA()"><i class="fa fa-plus"></i></button>
+									</td>
+
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+
+				
+
+				</div>
 			</div>
 		</div>
 		<div class="panel panel-inverse overflow-hidden" ng-if="selected.id && !isPopup && (mainData.userRole==='Employee' || data.viewReports)">
@@ -711,7 +783,7 @@
 							</div>
 							<div class="col-sm-2">
 								<button class="btn btn-xs btn-primary" ng-click="getReportW2Employee()" ng-disabled="!data.filterW2.year">W2 - Employee</button>
-								
+
 							</div>
 
 						</div>

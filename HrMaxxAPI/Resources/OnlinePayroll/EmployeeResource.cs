@@ -82,6 +82,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public decimal? FederalAdditionalWithholding { get; set; }
 		[Required]
 		public EmployeeStateResource State { get; set; }
+		public List<HrMaxx.OnlinePayroll.Models.EmployeeACA> EmployeeACAs { get; set; }
 		public List<EmployeeDeductionResource> Deductions { get; set; }
 		public CompanyWorkerCompensationResource WorkerCompensation { get; set; }
 		public List<PayCheckPayTypeAccumulationResource> Accumulations { get; set; } 
