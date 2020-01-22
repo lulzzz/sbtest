@@ -1,8 +1,8 @@
 ﻿<div class="input-group">
 	<input name="{{name}}" type="text" class="form-control input-sm" uib-datepicker-popup="MM/dd/yyyy" ng-model="model" is-open="data.opened" 
 		   datepicker-options="{
-					minDate: min ? min : getmoment('01/01/1920'),
-					maxDate: max ? max : getmoment('12/31/2050'),
+					minDate: min ? min : '01/01/1920',
+					maxDate: max ? max : '12/31/2050',
 					startingDay: 0,
 					showWeeks: false,
 				}" ng-required="required" close-text="Close" 

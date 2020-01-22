@@ -1714,6 +1714,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = $"SSA W2 Employee Report for {request.Year} ";
 			request.AllowFiling = false;
+			request.CheckEFileFormsFlag = true;
+			request.CheckTaxPaymentFlag = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request);
 			
@@ -1739,6 +1741,8 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 		{
 			request.Description = $"SSA W2 Employer Report for {request.Year} ";
 			request.AllowFiling = false;
+			request.CheckEFileFormsFlag = true;
+			request.CheckTaxPaymentFlag = false;
 			request.IsBatchPrinting = true;
 			var data = GetExtractResponse(request);
 			

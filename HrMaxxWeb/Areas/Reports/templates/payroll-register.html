@@ -63,7 +63,7 @@
 						<td data-title=" 'Total Taxes' "  class="col-sm-1 text-center">
 							{{item.employeeTaxes + item.employerTaxes | currency:'$'}}
 						</td>
-						<td data-title=" 'Check No' " sortable=" 'checkNo' " class="col-sm-1 text-center">
+						<td data-title=" 'Check No' " sortable=" 'checkNumber' " class="col-sm-1 text-center">
 							{{item.paymentMethod===1? item.checkNumber : 'EFT'}}
 						</td>
 						<td data-title=" 'Status' " filter="{ isVoid: 'voids'}" sortable=" 'statusText' " class="col-sm-1 text-center">

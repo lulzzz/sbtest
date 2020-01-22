@@ -72,7 +72,7 @@
 		<xsl:variable name="comphostid" select="../../Company/HostId"/>
 		<xsl:variable name="hostcompanyid" select="../../HostCompanyId"/>
 
-    <xsl:variable name="host" select="/ExtractResponse/Hosts/ExtractHost[HostCompany/Id=$hostcompanyid]"/>
+		<xsl:variable name="host" select="/ExtractResponse/Hosts/ExtractHost[HostCompany/Id=$hostcompanyid]"/>
 		<xsl:variable name="compstateid" select="../../Company/BusinessAddress/StateId"/>
 		<xsl:variable name="hostcompany" select="$host/HostCompany"/>
 		<xsl:variable name="ein" select="concat(substring($hostcompany/FederalEIN,1,2),'-',substring($hostcompany/FederalEIN,3,7))"/>

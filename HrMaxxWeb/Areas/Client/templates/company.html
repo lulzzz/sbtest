@@ -290,14 +290,14 @@
     <fieldset>
         <legend class="width-full">Tax Setup</legend>
         <!-- begin row -->
-        <div class="row" ng-if="!selectedCompany.fileUnderHost">
+        <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label></label>
                     <div>
                         <label for="taxpayments" class="switch">
                             Allow Host to manage Tax Payments
-                            <input id="taxpayments" type="checkbox" ng-model="selectedCompany.allowTaxPayments" ng-disabled="selectedCompany.isLocation" /><i></i>
+                            <input id="taxpayments" type="checkbox" ng-model="selectedCompany.allowTaxPayments" ng-disabled="selectedCompany.isLocation || selectedCompany.fileUnderHost" /><i></i>
                         </label>
                     </div>
                 </div>
@@ -308,7 +308,7 @@
                     <div>
                         <label for="efileforms" class="switch">
                             Allow Host to manage E-File forms
-                            <input id="efileforms" type="checkbox" ng-model="selectedCompany.allowEFileFormFiling" ng-disabled="selectedCompany.isLocation" /><i></i>
+                            <input id="efileforms" type="checkbox" ng-model="selectedCompany.allowEFileFormFiling" ng-disabled="selectedCompany.isLocation || selectedCompany.fileUnderHost" /><i></i>
                         </label>
                     </div>
                 </div>

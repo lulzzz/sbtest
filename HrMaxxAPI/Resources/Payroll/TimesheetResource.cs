@@ -262,7 +262,7 @@ namespace HrMaxxAPI.Resources.Payroll
 			var colcounter = (int)0;
 			foreach (var col in importMap.ColumnMap)
 			{
-				var val = er.ValueAtIndex(colcounter++);
+				var val = er.Value(col.Key);
 				if (col.Key.Equals("SSN"))
 				{
 					const string ssnRegex = @"^(\d{3}-\d{2}-\d{4})$";

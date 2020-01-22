@@ -77,7 +77,7 @@
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'compAddress'"/><xsl:with-param name="val1" select="translate($compDetails,$smallcase,$uppercase)"/></xsl:call-template>
 			<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'compFein'"/><xsl:with-param name="val1" select="translate($fein,$smallcase,$uppercase)"/></xsl:call-template>
 			<xsl:choose>
-				<xsl:when test="IndividualSSN=''">
+				<xsl:when test="not(IndividualSSN) or IndividualSSN=''">
 					<xsl:call-template name="FieldTemplate"><xsl:with-param name="name1" select="'vendorEin'"/><xsl:with-param name="val1" select="concat(substring(BusinessFIN,1,2),'-',substring(BusinessFIN,3,7))"/></xsl:call-template>
 				</xsl:when>
 				<xsl:otherwise>
