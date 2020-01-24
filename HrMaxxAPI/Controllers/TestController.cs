@@ -55,6 +55,17 @@ namespace HrMaxxAPI.Controllers
 		}
 		[System.Web.Http.HttpGet]
 		[System.Web.Http.AllowAnonymous]
+		[System.Web.Http.Route("Scheduled/ScheduledPayrolls")]
+		public void ScheduledPayrolls()
+		{
+			//if (DateTime.Now.ToString("tt") == "AM")
+			{
+				MakeServiceCall(() => _scheduledJobService.RunScheduledPayrolls(), "Scheduled Payrolls");
+			}
+
+		}
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.AllowAnonymous]
 		[System.Web.Http.Route("Scheduled/ProfitStarsNineAM")]
 		public void ProfitStarsNine()
 		{

@@ -231,7 +231,7 @@ namespace SiteInspectionStatus_Utility
                 var taxationService = scope.Resolve<ITaxationService>();
 				
 				var payChecks = new List<PayCheck>();
-				var payrolls = readerservice.GetPayChecks(year:2019, startDate:new DateTime(2019,12,19)).Where(pc => pc.Taxes.Any(pct => pct.Tax.Code == "FIT" && pct.TaxableWage == 0)
+				var payrolls = readerservice.GetPayChecks(year:2019, startDate:new DateTime(2019,12,19)).Where(pc => pc.Taxes.Any(pct => pct.Tax.Code == "FIT")
                 && pc.LastModified > new DateTime(2019, 12, 19)).ToList();
 
                 payrolls.ForEach(pc =>
@@ -250,6 +250,7 @@ namespace SiteInspectionStatus_Utility
 
                 );
                 payrollService.FixPayCheckTaxWages(payChecks, "FIT");
+                payChecks.Select(pc => pc.PayrollId).Distinct().ToList().ForEach(p => Console.WriteLine("Payroll Id: " + p.ToString()));
 
 				Console.WriteLine("Checks Updated " + payChecks.Count);
 

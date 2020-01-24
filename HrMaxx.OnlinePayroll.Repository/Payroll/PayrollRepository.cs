@@ -946,7 +946,7 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
         public void SaveScheduledPayroll(SchedulePayroll payroll)
 		{
 			const string sql =
-				"if @Id=0 insert into ScheduledPayroll(CompanyId, PaySchedule, ScheduleStartDate, PayDateStart, LastPayrollDate, Status, Data, LastModified, LastModifiedBy) values(@CompanyId, @PaySchedule, @ScheduleStartDate, @PayDateStart, @LastPayrollDate, @Status, @Data, @LastModified, @LastModifiedBy) else update ScheduledPayroll set ScheduleStartDate=@ScheduleStartDate, PayDateStart=@PayDateStart,Status=@Status, Data=@Data, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id";
+				"if @Id=0 insert into ScheduledPayroll(CompanyId, PaySchedule, ScheduleStartDate, PayDateStart, LastPayrollDate, Status, Data, LastModified, LastModifiedBy, LastPayrollId) values(@CompanyId, @PaySchedule, @ScheduleStartDate, @PayDateStart, @LastPayrollDate, @Status, @Data, @LastModified, @LastModifiedBy, @LastPayrollId) else update ScheduledPayroll set ScheduleStartDate=@ScheduleStartDate, PayDateStart=@PayDateStart,Status=@Status, Data=@Data, LastModified=@LastModified, LastModifiedBy=@LastModifiedBy, LastPayrollDate=@LastPayrollDate, LastPayrollId=@LastPayrollId where Id=@Id";
 			var mapped = Mapper.Map<SchedulePayroll, ScheduledPayrollJson>(payroll);
 			using (var conn = GetConnection())
 			{

@@ -18,5 +18,6 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
         public string Data { get; set; }
         public DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
+        public Guid? LastPayrollId { get; set; }
     }
 }

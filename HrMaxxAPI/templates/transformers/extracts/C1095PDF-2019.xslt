@@ -86,7 +86,9 @@
 				<xsl:when test="$host/Contact">
 					<xsl:value-of select="concat('(',substring($host/Contact/Phone,1,3),') ',substring($host/Contact/Phone,4,3),'-',substring($host/Contact/Phone,7,4))"/>
 				</xsl:when>
-				<xsl:otherwise></xsl:otherwise>
+				<xsl:otherwise>
+          <xsl:value-of select="' '"/>
+        </xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
 		
@@ -95,7 +97,7 @@
 		<xsl:variable name="empmiddlename" select="translate(MiddleInitial,$smallcase,$uppercase)"/>
 		<xsl:variable name="emplastname" select="translate(LastName,$smallcase,$uppercase)"/>
 		<xsl:variable name="address" select="translate(Contact/Address/AddressLine1,$smallcase,$uppercase)"/>
-		<xsl:variable name="city" select="translate(Contact/Address/City,$smallcase,$uppercase)"/>
+		<xsl:variable name="city" select="concat(translate(Contact/Address/City,$smallcase,$uppercase),' ')"/>
 		<xsl:variable name="state" select="translate(Contact/Address/StateCode,$smallcase,$uppercase)"/>
 		<xsl:variable name="zip" select="translate(Contact/Address/Zip,$smallcase,$uppercase)"/>
 

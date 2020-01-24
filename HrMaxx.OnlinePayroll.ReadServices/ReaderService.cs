@@ -1027,7 +1027,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices
 					var returnHost = returnVal.Hosts.First(host => host.Host.Id == c.Id && host.HostCompany.Id == c.HostCompany.Id);
 					if (returnHost.Host.IsPeoHost && returnHost.HostCompany.FileUnderHost)
 					{
-						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.Host.Id)
+						c.Contacts.Where(ct => ct.SourceEntityId == returnHost.Host.Id || ct.SourceEntityId==returnHost.HostCompany.Id)
 							.ToList()
 							.ForEach(ct => contact.Add(JsonConvert.DeserializeObject<Contact>(ct.ContactObject)));
 					}

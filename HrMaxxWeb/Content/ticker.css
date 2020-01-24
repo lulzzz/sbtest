@@ -34,11 +34,12 @@
 	overflow: hidden;
 	height: 2rem;
 	background-color: grey;
-	padding-left: 100%;
+	
 	box-sizing: content-box;
 }
 
 .ticker {
+    padding-left: 100%;
 	display: inline-block;
 	height: 2rem;
 	line-height: 2rem;

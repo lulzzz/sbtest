@@ -14,5 +14,7 @@ namespace HrMaxx.OnlinePayroll.Contracts.Services
 		void UpdateDBStats();
 		void ProfitStarsNineAM();
 		void ProfitStarsOnePM();
+
+		void RunScheduledPayrolls();
 	}
 }

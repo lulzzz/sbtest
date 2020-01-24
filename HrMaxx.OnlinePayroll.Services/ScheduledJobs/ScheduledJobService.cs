@@ -8,8 +8,11 @@ using HrMaxx.Common.Repository.Common;
 using HrMaxx.Infrastructure.Exceptions;
 using HrMaxx.Infrastructure.Services;
 using HrMaxx.OnlinePayroll.Contracts.Services;
+using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.Enum;
+using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 using HrMaxx.OnlinePayroll.Repository.Payroll;
+using Magnum;
 using Magnum.PerformanceCounters;
 
 namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
@@ -89,6 +92,70 @@ namespace HrMaxx.OnlinePayroll.Services.ScheduledJobs
 			_payrollService.UpdateCompanyAndEmployeeLastPayrollDate();
 		}
 
+		public void RunScheduledPayrolls()
+		{
+			try
+			{
+				const string query = "select * from ScheduledPayroll;";
+				var scheduledPayrolls = _readerService.GetQueryData<ScheduledPayrollJson, SchedulePayroll>(query).Where(sp => DateTime.Today == GetPayrollNextRunDate(sp)).ToList();
+				Log.Info($"Starting Running Scheduled Payrolls - {scheduledPayrolls.Count}");
+				scheduledPayrolls.ForEach(sp =>
+				{
+					
+					var payroll = sp.Data;
+					payroll.PayDay = DateTime.Today;
+					payroll.TaxPayDay = DateTime.Today;
+					if (sp.LastPayrollDate.HasValue)
+					{
+						var lastPayroll = _readerService.GetPayroll(sp.LastPayrollId.Value);
+						payroll.StartDate = sp.PaySchedule == PayrollSchedule.Weekly ? lastPayroll.StartDate.AddDays(8) :
+												sp.PaySchedule == PayrollSchedule.BiWeekly ? lastPayroll.StartDate.AddDays(15) :
+												sp.PaySchedule == PayrollSchedule.SemiMonthly ? lastPayroll.StartDate.AddDays(16) :
+												lastPayroll.StartDate.AddMonths(1);
+					}
+					else
+						payroll.StartDate = sp.ScheduleStartDate.Date;
+					payroll.EndDate = sp.PaySchedule == PayrollSchedule.Weekly ? payroll.StartDate.AddDays(7) :
+												sp.PaySchedule == PayrollSchedule.BiWeekly ? payroll.StartDate.AddDays(14) :
+												sp.PaySchedule == PayrollSchedule.SemiMonthly ? payroll.StartDate.AddDays(15) :
+												payroll.StartDate.AddMonths(1).AddDays(-1);
+					Log.Info($"Staring Schedule Payroll for {payroll.Company.Name} PayDay: {payroll.PayDay.ToShortDateString()}");
+					var processed = _payrollService.ProcessPayroll(payroll);
+					processed.LastModified = DateTime.Now;
+					processed.UserName = "System";
+					processed.PayChecks.ForEach(p =>
+					 {
+						 p.PayrollId = processed.Id;
+						 p.LastModified = DateTime.Now;
+						 p.LastModifiedBy = "System";
+					 });
+
+					_payrollService.ConfirmPayroll(processed);
+					Log.Info($"Finished Schedule Payroll for {payroll.Company.Name} PayDay: {payroll.PayDay.ToShortDateString()}");
+					System.Threading.Thread.Sleep(20000);
+					sp.LastPayrollId = processed.Id;
+					sp.LastPayrollDate = processed.LastModified;
+					_payrollService.SaveSchedulePayroll(sp);
+				});
+				Log.Info($"Finished Running Scheduled Payrolls");
+			}
+			catch(Exception e)
+			{
+				var message = "Failed to complete running scheduled payrolls";
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
+
+		private DateTime GetPayrollNextRunDate(SchedulePayroll sp)
+		{
+			if (!sp.LastPayrollDate.HasValue)
+				return sp.PayDateStart.Date;
+			int days = sp.PaySchedule == PayrollSchedule.Weekly ? 7 : sp.PaySchedule == PayrollSchedule.BiWeekly ? 14 : sp.PaySchedule == PayrollSchedule.SemiMonthly ? 15 : 30;
+			return sp.PaySchedule == PayrollSchedule.Monthly ? sp.LastPayrollDate.Value.Date.AddMonths(1).Date : sp.LastPayrollDate.Value.Date.AddDays(days).Date;
+
+
+		}
 		public void FillACHData()
 		{
 			try

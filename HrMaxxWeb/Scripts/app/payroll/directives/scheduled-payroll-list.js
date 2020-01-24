@@ -108,54 +108,65 @@ common.directive('scheduledPayrollList', ['zionAPI', '$timeout', '$window', 'ver
 								paymentMethod: employee.paymentMethod,
 								forcePayCheck: false
 							};
-							$.each(employee.payCodes, function(index1, paycode) {
-								var pc = {
-									payCode: paycode,
-									screenHours: 0,
-									screenOvertime:0,
-									hours: 0,
-									overtimeHours: 0,
-									pwAmount: 0
-								};
-								pc.payCode.hourlyRate = +paycode.hourlyRate.toFixed(2);
-								
-								paycheck.payCodes.push(pc);
-							});
-							$.each(employee.compensations, function (index2, comp) {
-								var pt = {
-									payType: comp.payType,
-									amount: comp.amount,
-									ytd: 0
-								}
-								paycheck.compensations.push(pt);
-							});
-							$.each(employee.deductions, function (index3, ded) {
-								ded.employeeId = employee.id;
-								paycheck.deductions.push({
-									deduction: ded.deduction,
-									employeeDeduction: ded,
-                                    rate: ded.rate,
-                                    employerRate: ded.employerRate,
-									annualMax: ded.annualMax,
-									method: ded.method,
-									amount: 0,
-									ytd: 0,
-									ceilingPerCheck: ded.ceilingPerCheck,
-									ceilingMethod: ded.ceilingMethod,
-									accountNo: ded.accountNo,
-									agencyId: ded.agencyId,
-									limit: ded.limit,
-                                    priority: ded.priority,
-                                    employeeWithheld: ded.employeeWithheld,
-                                    employerWithheld: ded.employerWithheld
+							if (!$scope.foundInAnotherSchedule(employee)) {
+								$.each(employee.payCodes, function (index1, paycode) {
+									var pc = {
+										payCode: paycode,
+										screenHours: 0,
+										screenOvertime: 0,
+										hours: 0,
+										overtimeHours: 0,
+										pwAmount: 0
+									};
+									pc.payCode.hourlyRate = +paycode.hourlyRate.toFixed(2);
+
+									paycheck.payCodes.push(pc);
 								});
-							});
-							selected.data.payChecks.push(paycheck);
+								$.each(employee.compensations, function (index2, comp) {
+									var pt = {
+										payType: comp.payType,
+										amount: comp.amount,
+										ytd: 0
+									}
+									paycheck.compensations.push(pt);
+								});
+								$.each(employee.deductions, function (index3, ded) {
+									ded.employeeId = employee.id;
+									paycheck.deductions.push({
+										deduction: ded.deduction,
+										employeeDeduction: ded,
+										rate: ded.rate,
+										employerRate: ded.employerRate,
+										annualMax: ded.annualMax,
+										method: ded.method,
+										amount: 0,
+										ytd: 0,
+										ceilingPerCheck: ded.ceilingPerCheck,
+										ceilingMethod: ded.ceilingMethod,
+										accountNo: ded.accountNo,
+										agencyId: ded.agencyId,
+										limit: ded.limit,
+										priority: ded.priority,
+										employeeWithheld: ded.employeeWithheld,
+										employerWithheld: ded.employerWithheld
+									});
+								});
+								selected.data.payChecks.push(paycheck);
+							}
+							
 						});
 						
 						return selected;
 					}
 
+					$scope.foundInAnotherSchedule = function (employee) {
+						var match = $filter('filter')($scope.list, { payChecks: { employee: { id: employee.id } } })[0];
+						if (match)
+							return true;
+						else
+							return false;
+					}
+					
 					$scope.add = function () {
 						load($scope.mainData.selectedCompany.id).then(function () {
 							if ($scope.canRunPayroll2()) {
