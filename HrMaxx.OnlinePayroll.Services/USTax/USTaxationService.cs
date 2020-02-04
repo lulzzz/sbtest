@@ -444,7 +444,7 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 			
 			//DeAnnualizing
 			dependantClaim = Utilities.DeAnnualize(dependantClaim, (PaySchedule)payCheck.Employee.PayrollSchedule);
-			taxableWage = Utilities.DeAnnualize(aftw, (PaySchedule)payCheck.Employee.PayrollSchedule);
+			//taxableWage = Utilities.DeAnnualize(aftw, (PaySchedule)payCheck.Employee.PayrollSchedule);
 			taxAmount = Utilities.DeAnnualize(taxAmount, (PaySchedule)payCheck.Employee.PayrollSchedule);
 			taxAmount -= dependantClaim;
 			taxAmount += ((payCheck.Employee.UseW4Fields.HasValue && payCheck.Employee.UseW4Fields.Value) ? payCheck.Employee.FederalAdditionalWithholding ?? 0 : payCheck.Employee.FederalAdditionalAmount);

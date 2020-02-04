@@ -231,8 +231,8 @@ namespace SiteInspectionStatus_Utility
                 var taxationService = scope.Resolve<ITaxationService>();
 				
 				var payChecks = new List<PayCheck>();
-				var payrolls = readerservice.GetPayChecks(year:2019, startDate:new DateTime(2019,12,19)).Where(pc => pc.Taxes.Any(pct => pct.Tax.Code == "FIT")
-                && pc.LastModified > new DateTime(2019, 12, 19)).ToList();
+				var payrolls = readerservice.GetPayChecks(year:2020).Where(pc => pc.Taxes.Any(pct => pct.Tax.Code == "FIT")
+                ).ToList();
 
                 payrolls.ForEach(pc =>
                             {
