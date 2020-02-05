@@ -97,6 +97,16 @@ common.factory('commonRepository', [
 				});
 				return deferred.promise;
 			},
+			saveCountries: function (countries) {
+				var deferred = $q.defer();
+
+				commonServer.all('Countries').post(countries).then(function (data) {
+					deferred.resolve(data);
+				}, function (error) {
+					deferred.reject(error);
+				});
+				return deferred.promise;
+			},
 			saveComment: function(comment) {
 				var deferred = $q.defer();
 
@@ -372,6 +382,16 @@ common.factory('commonRepository', [
 				var deferred = $q.defer();
 				commonServer.one('BankHoliday/' + holiday + '/' + action).get().then(function (res) {
 					deferred.resolve(res);
+				}, function (error) {
+					deferred.reject(error);
+				});
+
+				return deferred.promise;
+			},
+			getDeductionTypes: function () {
+				var deferred = $q.defer();
+				commonServer.one('DeductionTypes').getList().then(function (data) {
+					deferred.resolve(data);
 				}, function (error) {
 					deferred.reject(error);
 				});

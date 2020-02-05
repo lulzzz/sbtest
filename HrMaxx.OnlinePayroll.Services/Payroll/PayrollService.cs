@@ -112,206 +112,15 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						paycheck.TaxPayDay = payroll.TaxPayDay;
 						paycheck.IsHistory = payroll.IsHistory;
 						var employeeAccumulation = employeeAccumulations.First(e => e.EmployeeId.Value == paycheck.Employee.Id);
-						employeeAccumulation.PayCodes = employeeAccumulation.PayCodes ?? new List<PayCheckPayCode>();
-						if (paycheck.Employee.PayType == EmployeeType.Hourly)
+						var makeup = paycheck.Compensations.FirstOrDefault(pc => pc.PayType.Id == 12);
+						if (makeup != null)
+							paycheck.Compensations.Remove(makeup);
+						var minWage = _taxationService.GetTippedMinimumWage(paycheck.Employee.State.State.StateId, payroll.PayDay.Year);
+						ProcessPayments(paycheck, employeeAccumulation, payroll, payTypes, minWage);
+						if (paycheck.Employee.IsTipped)
 						{
-							paycheck.Salary = 0;
-							var defPayCode = paycheck.PayCodes.FirstOrDefault(pc => pc.PayCode.Id == 0);
-							if (defPayCode != null)
-							{
-								if (paycheck.Employee.Rate != defPayCode.PayCode.HourlyRate)
-									paycheck.UpdateEmployeeRate = true;
-								paycheck.Employee.Rate = defPayCode.PayCode.HourlyRate;
-								var empDefCode = paycheck.Employee.PayCodes.FirstOrDefault(pc => pc.Id == 0);
-								if(empDefCode==null)
-									paycheck.Employee.PayCodes.Add(defPayCode.PayCode);
-								else
-								{
-									empDefCode.HourlyRate = defPayCode.PayCode.HourlyRate;
-								}
-							}
+							ProcessTippedEmployee(paycheck, employeeAccumulation, payroll, payTypes, minWage);
 						}
-						else if (paycheck.Employee.PayType == EmployeeType.Salary)
-						{
-							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
-							//if (paycheck.Employee.Rate != paycheck.Salary)
-							//	paycheck.UpdateEmployeeRate = true;
-							//paycheck.Employee.Rate = paycheck.Salary;
-							paycheck.PayCodes = new List<PayrollPayCode>();
-						}
-						else if (paycheck.Employee.PayType == EmployeeType.JobCost)
-						{
-							paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
-						}
-						else
-						{
-							const decimal overtimequotiant = (decimal)1.5;
-
-							var previousPayCodes = employeeAccumulation.PayCodes;// employeePayChecks.SelectMany(p => p.PayCodes).ToList();
-							var regularBreakPay = (decimal) 0;
-							var regularWage = (decimal) 0;
-							var regularHours = (decimal) 0;
-							var regularOvertime = (decimal) 0;
-							var regularBreaktime = (decimal) 0;
-							var regularRate = (decimal) 0;
-							paycheck.PayCodes.Where(pcode=>pcode.PayCode.Id==0).ToList().ForEach(pc1 =>
-							{
-								pc1.Amount = Math.Round(pc1.Hours * pc1.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
-								pc1.OvertimeAmount = Math.Round(pc1.OvertimeHours * pc1.PayCode.HourlyRate * overtimequotiant, 2,
-									MidpointRounding.AwayFromZero);
-								pc1.YTD =
-									Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc1.Amount, 2,
-										MidpointRounding.AwayFromZero);
-								pc1.YTDOvertime =
-									Math.Round(
-										previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc1.OvertimeAmount,
-										2, MidpointRounding.AwayFromZero);
-
-								regularWage = Math.Round(pc1.Amount + pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
-								regularBreakPay = Math.Round(pc1.BreakTime * pc1.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
-								regularHours = pc1.Hours;
-								regularOvertime = pc1.OvertimeHours;
-								regularRate = pc1.PayCode.HourlyRate;
-								regularBreaktime = pc1.BreakTime;
-							});
-							var pc = paycheck.PayCodes.First(pcode=>pcode.PayCode.Id==-1);
-							if (paycheck.Notes.Contains("Piece-work:"))
-							{
-								paycheck.Notes = paycheck.Notes.Substring(0, paycheck.Notes.IndexOf("Piece-work:")) +
-                                                 $"Piece-work: {pc.PWAmount.ToString("c")} piece @ {pc.Hours.ToString("##.00")} Reg Hr {pc.OvertimeHours.ToString("##.00")} OT Hr";
-							}
-							else
-							{
-								paycheck.Notes +=
-                                    $" Piece-work: {pc.PWAmount.ToString("c")} piece @ {pc.Hours.ToString("##.00")} Reg Hr {pc.OvertimeHours.ToString("##.00")} OT Hr";
-							}
-
-							var dividend = (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime));
-							if (dividend != 0)
-							{
-								var breakRate =
-									Math.Round(
-										((pc.PWAmount + regularWage - regularBreakPay)/
-										 dividend), 2, MidpointRounding.AwayFromZero);
-
-								if (breakRate < payroll.Company.MinWage)
-								{
-									breakRate = payroll.Company.MinWage;
-								}
-								var PRBreakPay = Math.Round(breakRate*pc.BreakTime, 2, MidpointRounding.AwayFromZero);
-								var breakMakeup = Math.Round(((breakRate - regularRate)*regularBreaktime), 2, MidpointRounding.AwayFromZero);
-
-
-								var prCalculatedRate = (pc.Hours + pc.OvertimeHours) > 0
-									? Math.Round((pc.PWAmount + PRBreakPay)/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero)
-									: 0;
-								var prApplicableRate = (decimal) 0 + prCalculatedRate;
-								if (prCalculatedRate > 0 && prCalculatedRate < payroll.Company.MinWage && (pc.Hours + pc.OvertimeHours) > 0)
-								{
-									prApplicableRate = payroll.Company.MinWage;
-									var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
-									var finalAmount = Math.Round(prApplicableRate*(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
-									var makeUpAmount = Math.Round(finalAmount - pc.PWAmount, 2, MidpointRounding.AwayFromZero);
-
-									if (makeUpComp != null)
-									{
-										makeUpComp.Amount = makeUpAmount;
-										makeUpComp.Hours = Math.Round(pc.Hours + pc.OvertimeHours, 2, MidpointRounding.AwayFromZero);
-										makeUpComp.Rate = Math.Round(makeUpAmount/(pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
-									}
-									else
-									{
-										paycheck.Compensations.Add(new PayrollPayType()
-										{
-											Amount = makeUpAmount,
-											Hours = 0,
-											Rate = 0,
-											PayType = payTypes.First(pt => pt.Id == 12),
-											YTD = 0
-										});
-									}
-								}
-
-								if (PRBreakPay > 0)
-								{
-									var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 13);
-									if (breakComp != null)
-									{
-										breakComp.Amount = PRBreakPay;
-										breakComp.Hours = pc.BreakTime;
-										breakComp.Rate = breakRate;
-									}
-									else
-									{
-										paycheck.Compensations.Add(new PayrollPayType()
-										{
-											Amount = PRBreakPay,
-											Hours = pc.BreakTime,
-											Rate = breakRate,
-											PayType = payTypes.First(pt => pt.Id == 13),
-											YTD = 0
-										});
-									}
-
-								}
-								if (breakMakeup > 0)
-								{
-									var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 14);
-									var breakmakeuprate = Math.Round(breakRate - regularRate, 2, MidpointRounding.AwayFromZero);
-									if (breakComp != null)
-									{
-										breakComp.Amount = breakMakeup;
-										breakComp.Hours = regularBreaktime;
-										breakComp.Rate = breakmakeuprate;
-									}
-									else
-									{
-										paycheck.Compensations.Add(new PayrollPayType()
-										{
-											Amount = breakMakeup,
-											Hours = regularBreaktime,
-											Rate = breakmakeuprate,
-											PayType = payTypes.First(pt => pt.Id == 14),
-											YTD = 0
-										});
-									}
-
-								}
-
-
-
-								paycheck.Employee.Rate = prApplicableRate;
-								pc.PayCode.HourlyRate = prApplicableRate;
-
-								if (pc.SickLeaveTime > 0)
-								{
-									var sickComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 6);
-									if (sickComp != null)
-									{
-										sickComp.Amount = Math.Round(Math.Max(prApplicableRate, regularRate)*pc.SickLeaveTime, 2,
-											MidpointRounding.AwayFromZero);
-										sickComp.Hours = pc.SickLeaveTime;
-										sickComp.Rate = Math.Max(prApplicableRate, regularRate);
-									}
-									else
-									{
-										paycheck.Compensations.Add(new PayrollPayType()
-										{
-											Amount =
-												Math.Round(Math.Max(prApplicableRate, regularRate)*pc.SickLeaveTime, 2, MidpointRounding.AwayFromZero),
-											Hours = pc.SickLeaveTime,
-											Rate = Math.Max(prApplicableRate, regularRate),
-											PayType = payTypes.First(pt => pt.Id == 6),
-											YTD = 0
-										});
-									}
-
-								}
-							}
-						}
-						
-						paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, paycheck, employeeAccumulation);
-						
 						paycheck.YTDSalary = Math.Round(employeeAccumulation.PayCheckWages.Salary + paycheck.Salary, 2, MidpointRounding.AwayFromZero);
 						
 						var grossWage = GetGrossWage(paycheck);
@@ -323,10 +132,10 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						paycheck.Deductions.ForEach(d=>d.Amount = d.Method==DeductionMethod.Amount ? d.Rate : d.Rate*grossWage/100);
 						
 						paycheck.Taxes = _taxationService.ProcessTaxes(payroll.Company, paycheck, paycheck.PayDay, grossWage, host.Company, employeeAccumulation);
-						paycheck.Deductions = ApplyDeductions(grossWage, paycheck, employeeAccumulation);
+						paycheck.Deductions = ApplyDeductions(grossWage, paycheck, employeeAccumulation, payroll.Company);
 						paycheck.GrossWage = grossWage;
 						paycheck.NetWage = Math.Round( paycheck.GrossWage - paycheck.DeductionAmount -
-															 paycheck.EmployeeTaxes + paycheck.CompensationNonTaxableAmount, 2, MidpointRounding.AwayFromZero);
+															 paycheck.EmployeeTaxes + paycheck.CompensationNonTaxableAmount - paycheck.CompensationPaidInCashAmount, 2, MidpointRounding.AwayFromZero);
 
 						if (paycheck.Employee.WorkerCompensation != null)
 						{
@@ -378,6 +187,427 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
+		}
+		private void ProcessPayments(PayCheck paycheck, Accumulation employeeAccumulation, Models.Payroll payroll, IList<PayType> payTypes, Models.USTaxModels.MinWageYearRow minWage)
+		{
+			var applicableMinWage = payroll.Company.MinWage.HasValue ? payroll.Company.MinWage.Value : minWage.MinWage;
+			employeeAccumulation.PayCodes = employeeAccumulation.PayCodes ?? new List<PayCheckPayCode>();
+			if (paycheck.Employee.PayType == EmployeeType.Hourly)
+			{
+				paycheck.Salary = 0;
+				var defPayCode = paycheck.PayCodes.FirstOrDefault(pc => pc.PayCode.Id == 0);
+				if (defPayCode != null)
+				{
+					if (paycheck.Employee.Rate != defPayCode.PayCode.HourlyRate)
+						paycheck.UpdateEmployeeRate = true;
+					paycheck.Employee.Rate = defPayCode.PayCode.HourlyRate;
+					var empDefCode = paycheck.Employee.PayCodes.FirstOrDefault(pc => pc.Id == 0);
+					if (empDefCode == null)
+						paycheck.Employee.PayCodes.Add(defPayCode.PayCode);
+					else
+					{
+						empDefCode.HourlyRate = defPayCode.PayCode.HourlyRate;
+					}
+				}
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.Salary)
+			{
+				paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+				paycheck.PayCodes = new List<PayrollPayCode>();
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.JobCost)
+			{
+				paycheck.Salary = Math.Round(paycheck.Salary, 2, MidpointRounding.AwayFromZero);
+			}
+			else
+			{
+				const decimal overtimequotiant = (decimal)1.5;
+
+				var previousPayCodes = employeeAccumulation.PayCodes;// employeePayChecks.SelectMany(p => p.PayCodes).ToList();
+				var regularBreakPay = (decimal)0;
+				var regularWage = (decimal)0;
+				var regularHours = (decimal)0;
+				var regularOvertime = (decimal)0;
+				var regularBreaktime = (decimal)0;
+				var regularRate = (decimal)0;
+				paycheck.PayCodes.Where(pcode => pcode.PayCode.Id == 0).ToList().ForEach(pc1 =>
+				{
+					pc1.AppliedRate = pc1.PayCode.HourlyRate;
+					pc1.Amount = Math.Round(pc1.Hours * pc1.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
+					pc1.OvertimeAmount = Math.Round(pc1.OvertimeHours * pc1.PayCode.HourlyRate * overtimequotiant, 2,
+						MidpointRounding.AwayFromZero);
+					pc1.YTD =
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc1.Amount, 2,
+							MidpointRounding.AwayFromZero);
+					pc1.YTDOvertime =
+						Math.Round(
+							previousPayCodes.Where(ppc => ppc.PayCodeId == pc1.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc1.OvertimeAmount,
+							2, MidpointRounding.AwayFromZero);
+
+					regularWage = Math.Round(pc1.Amount + pc1.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
+					regularBreakPay = Math.Round(pc1.BreakTime * pc1.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
+					regularHours = pc1.Hours;
+					regularOvertime = pc1.OvertimeHours;
+					regularRate = pc1.PayCode.HourlyRate;
+					regularBreaktime = pc1.BreakTime;
+				});
+				var pc = paycheck.PayCodes.First(pcode => pcode.PayCode.Id == -1);
+				if (paycheck.Notes.Contains("Piece-work:"))
+				{
+					paycheck.Notes = paycheck.Notes.Substring(0, paycheck.Notes.IndexOf("Piece-work:")) +
+									 $"Piece-work: {pc.PWAmount.ToString("c")} piece @ {pc.Hours.ToString("##.00")} Reg Hr {pc.OvertimeHours.ToString("##.00")} OT Hr";
+				}
+				else
+				{
+					paycheck.Notes +=
+						$" Piece-work: {pc.PWAmount.ToString("c")} piece @ {pc.Hours.ToString("##.00")} Reg Hr {pc.OvertimeHours.ToString("##.00")} OT Hr";
+				}
+
+				var dividend = (pc.Hours + pc.OvertimeHours + regularHours + regularOvertime - (pc.BreakTime + regularBreaktime));
+				if (dividend != 0)
+				{
+					var breakRate =
+						Math.Round(
+							((pc.PWAmount + regularWage - regularBreakPay) /
+							 dividend), 2, MidpointRounding.AwayFromZero);
+
+					if (breakRate < applicableMinWage)
+					{
+						breakRate = applicableMinWage;
+					}
+					var PRBreakPay = Math.Round(breakRate * pc.BreakTime, 2, MidpointRounding.AwayFromZero);
+					var breakMakeup = Math.Round(((breakRate - regularRate) * regularBreaktime), 2, MidpointRounding.AwayFromZero);
+
+
+					var prCalculatedRate = (pc.Hours + pc.OvertimeHours) > 0
+						? Math.Round((pc.PWAmount + PRBreakPay) / (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero)
+						: 0;
+					var prApplicableRate = (decimal)0 + prCalculatedRate;
+					if (prCalculatedRate > 0 && prCalculatedRate < applicableMinWage && (pc.Hours + pc.OvertimeHours) > 0)
+					{
+						prApplicableRate = applicableMinWage;
+						var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
+						var finalAmount = Math.Round(prApplicableRate * (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+						var makeUpAmount = Math.Round(finalAmount - pc.PWAmount, 2, MidpointRounding.AwayFromZero);
+
+						if (makeUpComp != null)
+						{
+							makeUpComp.Amount = makeUpAmount;
+							makeUpComp.Hours = Math.Round(pc.Hours + pc.OvertimeHours, 2, MidpointRounding.AwayFromZero);
+							makeUpComp.Rate = Math.Round(makeUpAmount / (pc.Hours + pc.OvertimeHours), 2, MidpointRounding.AwayFromZero);
+						}
+						else
+						{
+							paycheck.Compensations.Add(new PayrollPayType()
+							{
+								Amount = makeUpAmount,
+								Hours = 0,
+								Rate = 0,
+								PayType = payTypes.First(pt => pt.Id == 12),
+								YTD = 0
+							});
+						}
+					}
+
+					if (PRBreakPay > 0)
+					{
+						var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 13);
+						if (breakComp != null)
+						{
+							breakComp.Amount = PRBreakPay;
+							breakComp.Hours = pc.BreakTime;
+							breakComp.Rate = breakRate;
+						}
+						else
+						{
+							paycheck.Compensations.Add(new PayrollPayType()
+							{
+								Amount = PRBreakPay,
+								Hours = pc.BreakTime,
+								Rate = breakRate,
+								PayType = payTypes.First(pt => pt.Id == 13),
+								YTD = 0
+							});
+						}
+
+					}
+					if (breakMakeup > 0)
+					{
+						var breakComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 14);
+						var breakmakeuprate = Math.Round(breakRate - regularRate, 2, MidpointRounding.AwayFromZero);
+						if (breakComp != null)
+						{
+							breakComp.Amount = breakMakeup;
+							breakComp.Hours = regularBreaktime;
+							breakComp.Rate = breakmakeuprate;
+						}
+						else
+						{
+							paycheck.Compensations.Add(new PayrollPayType()
+							{
+								Amount = breakMakeup,
+								Hours = regularBreaktime,
+								Rate = breakmakeuprate,
+								PayType = payTypes.First(pt => pt.Id == 14),
+								YTD = 0
+							});
+						}
+
+					}
+
+
+
+					paycheck.Employee.Rate = prApplicableRate;
+					pc.PayCode.HourlyRate = prApplicableRate;
+					pc.AppliedRate = prApplicableRate;
+					if (pc.SickLeaveTime > 0)
+					{
+						var sickComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 6);
+						if (sickComp != null)
+						{
+							sickComp.Amount = Math.Round(Math.Max(prApplicableRate, regularRate) * pc.SickLeaveTime, 2,
+								MidpointRounding.AwayFromZero);
+							sickComp.Hours = pc.SickLeaveTime;
+							sickComp.Rate = Math.Max(prApplicableRate, regularRate);
+						}
+						else
+						{
+							paycheck.Compensations.Add(new PayrollPayType()
+							{
+								Amount =
+									Math.Round(Math.Max(prApplicableRate, regularRate) * pc.SickLeaveTime, 2, MidpointRounding.AwayFromZero),
+								Hours = pc.SickLeaveTime,
+								Rate = Math.Max(prApplicableRate, regularRate),
+								PayType = payTypes.First(pt => pt.Id == 6),
+								YTD = 0
+							});
+						}
+
+					}
+				}
+			}
+			paycheck.PayCodes = ProcessPayCodes(paycheck.PayCodes, paycheck, payroll, employeeAccumulation, minWage);
+		}
+		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, Accumulation employeeAccumulation, IList<PayType> payTypes)
+		{
+			var previousComps = employeeAccumulation.Compensations ?? new List<PayCheckCompensation>();
+			compensations.ForEach(c =>
+			{
+				c.Amount = Math.Round(c.Amount, 2, MidpointRounding.AwayFromZero);
+				c.YTD = Math.Round(previousComps.Where(ppc => c.PayType.Id == ppc.PayTypeId).Sum(ppc => ppc.YTD) + c.Amount, 2, MidpointRounding.AwayFromZero);
+			});
+			previousComps.Where(pc => compensations.All(c => c.PayType.Id != pc.PayTypeId) && pc.YTD > 0).ToList().ForEach(pc => compensations.Add(new PayrollPayType
+			{
+				Amount = 0,
+				Rate = 0,
+				YTD = pc.YTD,
+				Hours = 0,
+				PayType = payTypes.First(t => t.Id == pc.PayTypeId)
+			}));
+			return compensations;
+		}
+		private void ProcessTippedEmployee( PayCheck paycheck, Accumulation employeeAccumulation, Models.Payroll payroll, IList<PayType> payTypes, Models.USTaxModels.MinWageYearRow minWage)
+		{
+			//var minWage = _taxationService.GetTippedMinimumWage(paycheck.Employee.State.State.StateId, payroll.Company.CompanyAddress.City, payroll.Company.MinWage);
+			var payCodeSum = GetGrossWage(paycheck);
+			var tips = paycheck.Compensations.Where(pc => pc.PayType.IsTip).Sum(pc => pc.Amount);
+			var grossWage = Math.Round(payCodeSum + tips, 2, MidpointRounding.AwayFromZero);
+			//Min Wage calculation
+			var hoursWorked = paycheck.PayCodes.Sum(pc => pc.Hours);
+			var overtime = paycheck.PayCodes.Sum(pc => pc.OvertimeHours);
+			var applicableMinWage = payroll.Company.MinWage.HasValue ? payroll.Company.MinWage.Value : minWage.MinWage;
+			var overtimerate = applicableMinWage * (decimal)1.5 - minWage.MaxTipCredit;
+			var hourlyWage = Math.Round(hoursWorked * applicableMinWage, 2, MidpointRounding.AwayFromZero);
+			var overtimeWage = Math.Round(overtime * overtimerate, 2, MidpointRounding.AwayFromZero);
+			var minGrossWage = Math.Round(hourlyWage, 2, MidpointRounding.AwayFromZero);
+			paycheck.Notes = $"Min Wage comparison {minGrossWage.ToString("c")}";
+			//
+			if (grossWage < minGrossWage)
+			{
+				var makeUpComp = paycheck.Compensations.FirstOrDefault(c => c.PayType.Id == 12);
+				if (makeUpComp != null)
+				{
+					makeUpComp.Amount += (minGrossWage - grossWage);
+					
+				}
+				else
+				{
+					paycheck.Compensations.Add(new PayrollPayType()
+					{
+						Amount = Math.Round(minGrossWage - grossWage, 2, MidpointRounding.AwayFromZero),
+						Hours = 0,
+						Rate = 0,
+						PayType = payTypes.First(pt => pt.Id == 12),
+						YTD = 0
+					});
+				}
+				
+			}
+		}
+		private List<PayrollPayCode> ProcessPayCodes(List<PayrollPayCode> payCodes, PayCheck paycheck, Models.Payroll payroll, Accumulation employeeAccumulation, Models.USTaxModels.MinWageYearRow minWage)
+		{
+			var previousPayCodes = employeeAccumulation.PayCodes;
+			if (paycheck.Employee.PayType == EmployeeType.Hourly && !paycheck.Employee.IsTipped)
+			{
+				const decimal overtimequotiant = (decimal)1.5;
+
+
+				payCodes.ForEach(pc =>
+				{
+					pc.AppliedRate = pc.PayCode.RateType == PayCodeRateType.Flat || pc.PayCode.RateType== PayCodeRateType.NA ? pc.PayCode.HourlyRate : Math.Round(pc.PayCode.HourlyRate * paycheck.Employee.Rate,2, MidpointRounding.AwayFromZero);
+					pc.Amount = Math.Round(pc.Hours * pc.AppliedRate, 2, MidpointRounding.AwayFromZero);
+					pc.AppliedOverTimeRate = Math.Round(pc.AppliedRate * overtimequotiant, 2, MidpointRounding.AwayFromZero);
+					pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.AppliedOverTimeRate, 2,
+						MidpointRounding.AwayFromZero);
+					pc.YTD =
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
+							MidpointRounding.AwayFromZero);
+					pc.YTDOvertime =
+						Math.Round(
+							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
+							2, MidpointRounding.AwayFromZero);
+				});
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.Hourly && paycheck.Employee.IsTipped)
+			{
+				const decimal overtimequotiant = (decimal)1.5;
+				var applicableMinWage = payroll.Company.MinWage.HasValue ? payroll.Company.MinWage.Value : minWage.MinWage;
+				var overtimerate = Math.Round(applicableMinWage * overtimequotiant - minWage.MaxTipCredit, 2, MidpointRounding.AwayFromZero);
+				payCodes.ForEach(pc =>
+				{
+					pc.AppliedRate = pc.PayCode.RateType == PayCodeRateType.Flat || pc.PayCode.RateType == PayCodeRateType.NA ? pc.PayCode.HourlyRate : Math.Round(pc.PayCode.HourlyRate * paycheck.Employee.Rate, 2, MidpointRounding.AwayFromZero);
+					pc.Amount = Math.Round(pc.Hours * pc.AppliedRate, 2, MidpointRounding.AwayFromZero);
+					pc.AppliedOverTimeRate = overtimerate;
+					pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.AppliedOverTimeRate, 2,
+						MidpointRounding.AwayFromZero);
+					pc.YTD =
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
+							MidpointRounding.AwayFromZero);
+					pc.YTDOvertime =
+						Math.Round(
+							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
+							2, MidpointRounding.AwayFromZero);
+				});
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.Salary)
+			{
+				payCodes = new List<PayrollPayCode>();
+			}
+			else if (paycheck.Employee.PayType == EmployeeType.PieceWork)
+			{
+				const decimal overtimequotiantForPieceWork = (decimal)0.5;
+
+				payCodes.Where(pc => pc.PayCode.Id == -1).ToList().ForEach(pc =>
+				{
+					pc.Amount = pc.PWAmount;
+					pc.AppliedOverTimeRate = Math.Round(pc.PayCode.HourlyRate * overtimequotiantForPieceWork, 2, MidpointRounding.AwayFromZero);
+					pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.AppliedOverTimeRate, 2,
+						MidpointRounding.AwayFromZero);
+					pc.YTD =
+						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
+							MidpointRounding.AwayFromZero);
+					pc.YTDOvertime =
+						Math.Round(
+							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
+							2, MidpointRounding.AwayFromZero);
+				});
+			}
+			else
+			{
+				payCodes.ForEach(pc =>
+				{
+					pc.YTD = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2, MidpointRounding.AwayFromZero);
+					pc.YTDOvertime = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
+				});
+			}
+
+			return payCodes;
+		}
+		private decimal GetGrossWage(PayCheck paycheck)
+		{
+
+			if (paycheck.Employee.PayType == EmployeeType.Salary || paycheck.Employee.PayType == EmployeeType.JobCost)
+				return Math.Round(paycheck.Salary, 2);
+			else
+			{
+				return Math.Round(paycheck.PayCodes.Sum(pc => (pc.Amount + pc.OvertimeAmount)), 2, MidpointRounding.AwayFromZero);
+			}
+		}
+
+		private List<PayrollDeduction> ApplyDeductions(decimal grossWage, PayCheck payCheck, Accumulation employeeAccumulation, Company company)
+		{
+			employeeAccumulation.Deductions = employeeAccumulation.Deductions ?? new List<PayCheckDeduction>();
+			var localGrossWage = grossWage;
+			var eeApplied = false;
+
+			payCheck.Deductions = payCheck.Deductions.Where(d => d.IsApplicable(payCheck.PayDay))
+				.OrderBy(d => d.Deduction.Type.Category.GetDbId())
+				.ThenBy(d => d.EmployeeDeduction.Priority.HasValue ? d.EmployeeDeduction.Priority.Value : int.MaxValue)
+				.ThenBy(d => d.Deduction.Type.Id)
+				.ToList();
+			payCheck.Deductions.ForEach(d =>
+			{
+				var companyDeduction = company.Deductions.First(d1 => d1.Id == d.Deduction.Id);
+				if ((d.Deduction.Type.Category == DeductionCategory.Other ||
+					d.Deduction.Type.Category == DeductionCategory.PostTaxDeduction) && !eeApplied)
+				{
+					localGrossWage -= payCheck.EmployeeTaxes;
+					eeApplied = true;
+				}
+				d.Amount = 0;
+				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
+				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
+				var ytdEmployer = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDEmployer);
+				if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
+					!d.Deduction.FloorPerCheck.HasValue)
+				{
+					if (d.Method == DeductionMethod.Amount)
+						d.Amount = d.Rate;
+					else
+						d.Amount = localGrossWage * d.Rate / 100;
+					d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
+
+					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > (d.EmployeeDeduction.CeilingMethod == DeductionMethod.Amount ? d.EmployeeDeduction.CeilingPerCheck.Value : (d.EmployeeDeduction.CeilingPerCheck * localGrossWage / 100)))
+					{
+						d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
+					}
+					if (d.EmployeeDeduction.Limit.HasValue)
+					{
+						//var allPayChecks = _payrollRepository.GetEmployeePayChecks(payCheck.Employee.Id);
+						var allPayChecks = _readerService.GetPayChecks(employeeId: payCheck.Employee.Id, isvoid: 0);
+						var total =
+							allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
+								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
+						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
+						{
+							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - total);
+						}
+
+					}
+				}
+
+
+				if (d.AnnualMax.HasValue)
+				{
+					if (ytdVal + d.Amount > d.AnnualMax.Value)
+						d.Amount = Math.Max(0, d.AnnualMax.Value - ytdVal);
+				}
+
+				if (d.Amount < 0)
+					d.Amount = 0;
+				if (d.EmployerRate.HasValue && d.EmployerRate > 0)
+				{
+					d.EmployerAmount = d.Amount * d.EmployerRate / 100;
+				}
+				d.Wage = Math.Round(localGrossWage, 2, MidpointRounding.AwayFromZero);
+				d.Amount = Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
+				d.YTD = Math.Round(ytdVal + d.Amount, 2, MidpointRounding.AwayFromZero);
+				d.YTDWage = Math.Round(ytdWage + d.Wage, 2, MidpointRounding.AwayFromZero);
+				d.YTDEmployer = Math.Round(ytdEmployer + (d.EmployerAmount ?? 0), 2, MidpointRounding.AwayFromZero);
+				localGrossWage -= d.Amount;
+			});
+
+			return payCheck.Deductions.Where(d => d.Rate != 0).ToList();
 		}
 
 		private List<PayTypeAccumulation> ProcessAccumulations(PayCheck paycheck, Models.Payroll payroll, Accumulation employeeAccumulation)
@@ -2387,7 +2617,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", payCode.PayCode.Description));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
 						if (payCode.PayCode.Id != -1)
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.PayCode.HourlyRate.ToString("C")));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.AppliedRate.ToString("C")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter, payCode.Amount.ToString("c")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter, payCode.YTD.ToString("C")));
 
@@ -2402,7 +2632,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								payCode.PayCode.Description + " Overtime"));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter, payCode.OvertimeHours.ToString()));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter,
-								(payCode.PayCode.HourlyRate * (decimal)1.5).ToString("C")));
+								(payCode.AppliedOverTimeRate).ToString("C")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter,
 								payCode.OvertimeAmount.ToString("c")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter,
@@ -2689,7 +2919,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter + "-1", payCode.Hours.ToString()));
 							if(payCode.PayCode.Id!=-1)
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter + "-1",
-									payCode.PayCode.HourlyRate.ToString("C")));
+									payCode.AppliedRate.ToString("C")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter + "-1", payCode.Amount.ToString("c")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter + "-1", payCode.YTD.ToString("C")));
 
@@ -2704,7 +2934,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter + "-1",
 									payCode.OvertimeHours.ToString()));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter + "-1",
-									(payCode.PayCode.HourlyRate * (decimal)1.5).ToString("C")));
+									(payCode.AppliedOverTimeRate).ToString("C")));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter + "-1",
 									payCode.OvertimeAmount.ToString("c")));
 								pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter + "-1",
@@ -2781,7 +3011,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("pr" + hrcounter + "-s", payCode.PayCode.Description));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("hr-" + hrcounter, payCode.Hours.ToString()));
 						if(payCode.PayCode.Id!=-1)
-							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.PayCode.HourlyRate.ToString("C")));
+							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("r-" + hrcounter, payCode.AppliedRate.ToString("C")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("am-" + hrcounter, payCode.Amount.ToString("c")));
 						pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdam-" + hrcounter, payCode.YTD.ToString("C")));
 
@@ -2796,7 +3026,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 								payCode.PayCode.Description + " Overtime"));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ot-" + otcounter, payCode.OvertimeHours.ToString()));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("or-" + otcounter,
-								(payCode.PayCode.HourlyRate * (decimal)1.5).ToString("C")));
+								(payCode.AppliedOverTimeRate).ToString("C")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("otam-" + otcounter,
 								payCode.OvertimeAmount.ToString("c")));
 							pdf.NormalFontFields.Add(new KeyValuePair<string, string>("ytdot-" + otcounter,
@@ -3282,157 +3512,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 			journal.JournalDetails.Add(new JournalDetail { AccountId = coaList.First(c => c.TaxCode == "TP").Id, AccountName = coaList.First(c => c.TaxCode == "TP").AccountName, IsDebit = false, Amount = Math.Round(pc.EmployeeTaxes + pc.EmployerTaxes, 2, MidpointRounding.AwayFromZero), LastModfied = journal.LastModified, LastModifiedBy = payroll.UserName });
 			return journal; //_journalService.SaveJournalForPayroll(journal, payroll.Company);
 		}
-
-		
-		private List<PayrollPayType> ProcessCompensations(List<PayrollPayType> compensations, Accumulation employeeAccumulation, IList<PayType> payTypes)
-		{
-			var previousComps = employeeAccumulation.Compensations ?? new List<PayCheckCompensation>();
-			compensations.ForEach(c =>
-			{
-				c.Amount = Math.Round(c.Amount, 2, MidpointRounding.AwayFromZero);
-				c.YTD = Math.Round(previousComps.Where(ppc => c.PayType.Id == ppc.PayTypeId).Sum(ppc => ppc.YTD) + c.Amount, 2, MidpointRounding.AwayFromZero);
-			});
-			previousComps.Where(pc=>compensations.All(c => c.PayType.Id != pc.PayTypeId) && pc.YTD>0).ToList().ForEach(pc => compensations.Add(new PayrollPayType
-			{
-				Amount=0, Rate = 0, YTD = pc.YTD, Hours = 0, PayType = payTypes.First(t=>t.Id==pc.PayTypeId)
-			}));
-			return compensations;
-		} 
-		private List<PayrollPayCode> ProcessPayCodes(List<PayrollPayCode> payCodes, PayCheck paycheck, Accumulation employeeAccumulation)
-		{
-			var previousPayCodes = employeeAccumulation.PayCodes;
-			if ( paycheck.Employee.PayType == EmployeeType.Hourly)
-			{
-				const decimal overtimequotiant = (decimal) 1.5;
-				
-				
-				payCodes.ForEach(pc =>
-				{
-					pc.Amount = Math.Round(pc.Hours*pc.PayCode.HourlyRate, 2, MidpointRounding.AwayFromZero);
-					pc.OvertimeAmount = Math.Round(pc.OvertimeHours*pc.PayCode.HourlyRate*overtimequotiant, 2,
-						MidpointRounding.AwayFromZero);
-					pc.YTD =
-						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
-							MidpointRounding.AwayFromZero);
-					pc.YTDOvertime =
-						Math.Round(
-							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
-							2, MidpointRounding.AwayFromZero);
-				});
-			}
-			else if (paycheck.Employee.PayType == EmployeeType.Salary)
-			{
-				payCodes = new List<PayrollPayCode>();
-			}
-			else if (paycheck.Employee.PayType == EmployeeType.PieceWork)
-			{
-				const decimal overtimequotiantForPieceWork = (decimal)0.5;
-				
-				payCodes.Where(pc=>pc.PayCode.Id==-1).ToList().ForEach(pc =>
-				{
-					pc.Amount = pc.PWAmount;
-					pc.OvertimeAmount = Math.Round(pc.OvertimeHours * pc.PayCode.HourlyRate * overtimequotiantForPieceWork, 2,
-						MidpointRounding.AwayFromZero);
-					pc.YTD =
-						Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2,
-							MidpointRounding.AwayFromZero);
-					pc.YTDOvertime =
-						Math.Round(
-							previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount,
-							2, MidpointRounding.AwayFromZero);
-				});
-			}
-			else
-			{
-				payCodes.ForEach(pc =>
-				{
-					pc.YTD = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDAmount) + pc.Amount, 2, MidpointRounding.AwayFromZero);
-					pc.YTDOvertime = Math.Round(previousPayCodes.Where(ppc => ppc.PayCodeId == pc.PayCode.Id).Sum(ppc => ppc.YTDOvertime) + pc.OvertimeAmount, 2, MidpointRounding.AwayFromZero);
-				});
-			}
 			
-			return payCodes;
-		}
-		private decimal GetGrossWage(PayCheck paycheck)
-		{
-			
-			if (paycheck.Employee.PayType == EmployeeType.Salary || paycheck.Employee.PayType == EmployeeType.JobCost)
-				return Math.Round(paycheck.Salary, 2);
-			else
-			{
-				return Math.Round(paycheck.PayCodes.Sum(pc => (pc.Amount + pc.OvertimeAmount)), 2, MidpointRounding.AwayFromZero);
-			}
-		}
-
-		private List<PayrollDeduction> ApplyDeductions(decimal grossWage, PayCheck payCheck, Accumulation employeeAccumulation)
-		{
-			employeeAccumulation.Deductions = employeeAccumulation.Deductions ?? new List<PayCheckDeduction>();
-			var localGrossWage = grossWage;
-			var eeApplied = false;
-			payCheck.Deductions.OrderBy(d=>d.Deduction.Type.Category.GetDbId()).ThenBy(d=>d.EmployeeDeduction.Priority.HasValue? d.EmployeeDeduction.Priority.Value : int.MaxValue).ThenBy(d=>d.Deduction.Type.Id).ToList().ForEach(d =>
-			{
-				if ((d.Deduction.Type.Category == DeductionCategory.Other ||
-				    d.Deduction.Type.Category == DeductionCategory.PostTaxDeduction) && !eeApplied)
-				{
-					localGrossWage -= payCheck.EmployeeTaxes;
-					eeApplied = true;
-				}
-				d.Amount = 0;
-				var ytdVal = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTD);
-				var ytdWage = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDWage);
-                var ytdEmployer = employeeAccumulation.Deductions.Where(d1 => d1.CompanyDeductionId == d.Deduction.Id).Sum(d1 => d1.YTDEmployer);
-                if ((d.Deduction.FloorPerCheck.HasValue && localGrossWage >= d.Deduction.FloorPerCheck) ||
-				    !d.Deduction.FloorPerCheck.HasValue)
-				{
-					if (d.Method == DeductionMethod.Amount)
-						d.Amount = d.Rate;
-					else
-						d.Amount = localGrossWage*d.Rate/100;
-					d.Amount = d.Amount > localGrossWage ? localGrossWage : d.Amount;
-
-					if (d.EmployeeDeduction.CeilingPerCheck.HasValue && d.Amount > (d.EmployeeDeduction.CeilingMethod==DeductionMethod.Amount ? d.EmployeeDeduction.CeilingPerCheck.Value : (d.EmployeeDeduction.CeilingPerCheck*localGrossWage/100) ) )
-					{
-						d.Amount = d.EmployeeDeduction.CeilingPerCheck.Value;
-					}
-					if (d.EmployeeDeduction.Limit.HasValue)
-					{
-						//var allPayChecks = _payrollRepository.GetEmployeePayChecks(payCheck.Employee.Id);
-						var allPayChecks = _readerService.GetPayChecks(employeeId: payCheck.Employee.Id, isvoid: 0);
-						var total =
-							allPayChecks.Where(pc => pc.Deductions.Any(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id))
-								.Sum(pc => pc.Deductions.Where(d1 => d1.EmployeeDeduction.Id == d.EmployeeDeduction.Id).Sum(d2 => d2.Amount));
-						if (total + d.Amount > d.EmployeeDeduction.Limit.Value)
-						{
-							d.Amount = Math.Max(0, d.EmployeeDeduction.Limit.Value - total);
-						}
-							
-					}
-				}
-				
-				
-				if (d.AnnualMax.HasValue)
-				{
-					if (ytdVal + d.Amount > d.AnnualMax.Value)
-						d.Amount = Math.Max(0, d.AnnualMax.Value - ytdVal);
-				}
-				
-				if (d.Amount < 0)
-					d.Amount = 0;
-                if (d.EmployerRate.HasValue && d.EmployerRate > 0)
-                {
-                    d.EmployerAmount = d.Amount * d.EmployerRate / 100;
-                }
-				d.Wage = Math.Round(localGrossWage, 2, MidpointRounding.AwayFromZero);
-				d.Amount = Math.Round(d.Amount, 2, MidpointRounding.AwayFromZero);
-				d.YTD = Math.Round(ytdVal + d.Amount, 2, MidpointRounding.AwayFromZero);
-				d.YTDWage = Math.Round(ytdWage + d.Wage, 2, MidpointRounding.AwayFromZero);
-				d.YTDEmployer = Math.Round(ytdEmployer + (d.EmployerAmount ?? 0), 2, MidpointRounding.AwayFromZero);
-                localGrossWage -= d.Amount;
-			});
-			
-			return payCheck.Deductions.Where(d => d.Rate != 0).ToList();
-		}
-		
 		public PayrollInvoice DelayTaxes(Guid invoiceId, string fullName)
 		{
 			try

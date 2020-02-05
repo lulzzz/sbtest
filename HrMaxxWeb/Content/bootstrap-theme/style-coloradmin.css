@@ -190,7 +190,7 @@ html {
     height: 100%;
 }
 body {
-    background: #f4f6f7;
+    background: #d9e0e7;
     font-size: 12px;
     font-family: 'Open Sans', "Helvetica Neue",Helvetica,Arial,sans-serif;
     color: #707478;
@@ -1176,6 +1176,10 @@ legend {
 .alert.alert-warning {
     background: #ffead0;
 }
+    .alert.alert-inverse {
+        background: #242a30;
+        color: #fff;
+    }
 
 
 /* 3.5 Component - Note Setting */

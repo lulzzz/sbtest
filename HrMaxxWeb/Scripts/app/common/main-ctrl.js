@@ -59,36 +59,37 @@
 			});
 
 		};
-		$scope.confirmDialog = function(message, type, callback, nocallback) {
-			var modalInstance = $modal.open({
-				templateUrl: 'popover/confirm.html',
-				controller: 'confirmDialogCtrl',
-				backdrop: true,
-				keyboard: true,
-				backdropClick: true,
-				size: 'lg',
-				resolve: {
-					message: function () {
-						return message;
-					},
-					type: function () {
-						return type;
-					}
-				}
-			});
-			modalInstance.result.then(function (result) {
-				if (result)
-					callback();
-				else {
-					if (nocallback)
-						nocallback();
+		$scope.confirmDialog = function (message, type, callback, nocallback, ishtml) {
+			dataSvc.confirmDialog(message, type, callback, nocallback, ishtml);
+			//var modalInstance = $modal.open({
+			//	templateUrl: 'popover/confirm.html',
+			//	controller: 'confirmDialogCtrl',
+			//	backdrop: true,
+			//	keyboard: true,
+			//	backdropClick: true,
+			//	size: 'md',
+			//	resolve: {
+			//		message: function () {
+			//			return message;
+			//		},
+			//		type: function () {
+			//			return type;
+			//		}
+			//	}
+			//});
+			//modalInstance.result.then(function (result) {
+			//	if (result)
+			//		callback();
+			//	else {
+			//		if (nocallback)
+			//			nocallback();
 
-				}
-			}, function () {
-				if (nocallback)
-					nocallback();
-				return false;
-			});
+			//	}
+			//}, function () {
+			//	if (nocallback)
+			//		nocallback();
+			//	return false;
+			//});
 		}
 
 		$scope.closeAlert = function (index) {
@@ -142,97 +143,178 @@
 			hasClaim : function (type1, value) {
 				var match = $filter('filter')(this.userClaims, { Type: type1 }, true);
 				return match.length > 0;
-            },
-            confirmDialog : function (message, type, callback, nocallback) {
-                var modalInstance = $modal.open({
-                    templateUrl: 'popover/confirm.html',
-                    controller: 'confirmDialogCtrl',
-                    backdrop: true,
-                    keyboard: true,
-                    backdropClick: true,
-                    size: 'lg',
-                    resolve: {
-                        message: function () {
-                            return message;
-                        },
-                        type: function () {
-                            return type;
-                        }
-                    }
-                });
-                modalInstance.result.then(function (result) {
-                    if (result)
-                        callback();
-                    else {
-                        if (nocallback)
-                            nocallback();
-
-                    }
-                }, function () {
-                    if (nocallback)
-                        nocallback();
-                    return false;
-                });
 			},
-			showMessage: function (message, type) {
-				var alerts = [];
-				alerts.push({
-					msg: message,
-					type: type
-				});
-				
-				var modalInstance = $modal.open({
-					templateUrl: 'popover/messages.html',
-					controller: 'messageCtrl',
-					backdrop: true,
-					keyboard: true,
-					backdropClick: true,
-					size: 'md',
-					resolve: {
-						alerts: function () {
-							return alerts;
+			getButtonClass: function (type) {
+				var classname = 'btn btn-primary'
+				switch (type) {
+					case 'info':
+						classname = "btn btn-info";
+						break;
+					case 'success':
+						classname = "btn btn-success";
+						break;
+					case 'warning':
+						classname = "btn btn-warning";
+						break;
+					case 'danger':
+						classname = "btn btn-danger";
+						break;
+
+				}
+				return classname;
+			},
+			confirmDialog: function (message, type, callback, nocallback, ishtml) {
+				var span = document.createElement('p');
+				if (ishtml) {
+
+					span.innerHTML = message;
+				}
+				swal({
+					title: "Are you sure?",
+					text: ishtml ? '' : message,
+					content: ishtml ? span : null,
+
+					icon: (type==='warning' ? "warning" : (type==='danger' ? "error" : (type==="info" ? "info" : "success"))),
+					buttons: {
+						cancel: {
+							text: 'Cancel',
+							value: null,
+							visible: true,
+							className: 'btn btn-white',
+							closeModal: true,
+						},
+						confirm: {
+							text: 'OK',
+							value: true,
+							visible: true,
+							className: this.getButtonClass(type),
+							closeModal: true
 						}
-					}
+					},
+					dangerMode: type==='danger',
+				}).then((confirm) => {
+						if (confirm) {
+							callback();
+						} else {
+							//swal("Your imaginary file is safe!");
+							if (nocallback)
+								nocallback();
+						}
+					});
+                //var modalInstance = $modal.open({
+                //    templateUrl: 'popover/confirm.html',
+                //    controller: 'confirmDialogCtrl',
+                //    backdrop: true,
+                //    keyboard: true,
+                //    backdropClick: true,
+                //    size: 'md',
+                //    resolve: {
+                //        message: function () {
+                //            return message;
+                //        },
+                //        type: function () {
+                //            return type;
+                //        }
+                //    }
+                //});
+                //modalInstance.result.then(function (result) {
+                //    if (result)
+                //        callback();
+                //    else {
+                //        if (nocallback)
+                //            nocallback();
+
+                //    }
+                //}, function () {
+                //    if (nocallback)
+                //        nocallback();
+                //    return false;
+                //});
+			},
+			showMessage: function (message, type, ishtml) {
+				var content = document.createElement('p');
+				if (ishtml) {
+					
+					content.innerHTML = message;
+				}
+				
+				swal({
+					title: type==='success' ? "Done" : type==='info' ? "" : type==='warning' ? "Warning" : "Error",
+					text: ishtml ? '' : message,
+					content: ishtml ? content : null,
+					icon: type === 'success' ? "success" : type === 'info' ? "info" : type === 'warning' ? "warning" : "error",
+					buttons: {
+						
+						confirm: {
+							text: 'OK',
+							value: true,
+							visible: true,
+							className: this.getButtonClass(type),
+							closeModal: true
+						}
+					},
 				});
+				//var alerts = [];
+				//alerts.push({
+				//	msg: message,
+				//	type: type
+				//});
+				
+				//var modalInstance = $modal.open({
+				//	templateUrl: 'popover/messages.html',
+				//	controller: 'messageCtrl',
+				//	backdrop: true,
+				//	keyboard: true,
+				//	backdropClick: true,
+				//	size: 'md',
+				//	resolve: {
+				//		alerts: function () {
+				//			return alerts;
+				//		}
+				//	}
+				//});
 			},
 			showMessagesByBreak: function (error, type) {
-				var alerts = [];
-				var rows = error.split('<br>');
-				$.each(rows, function (index, er) {
-					if (er) {
-						alerts.push({
-							msg: er,
-							type: type
-						});
-					}
+				this.showMessage(error, type, true);
+				//var alerts = [];
+				//var rows = error.split('<br>');
+				//$.each(rows, function (index, er) {
+				//	if (er) {
+				//		alerts.push({
+				//			msg: er,
+				//			type: type
+				//		});
+				//	}
 
-				});
+				//});
 
-				var modalInstance = $modal.open({
-					templateUrl: 'popover/messages.html',
-					controller: 'messageCtrl',
-					backdrop: true,
-					keyboard: true,
-					backdropClick: true,
-					size: 'md',
-					resolve: {
-						alerts: function () {
-							return alerts;
-						}
-					}
-				});
+				//var modalInstance = $modal.open({
+				//	templateUrl: 'popover/messages.html',
+				//	controller: 'messageCtrl',
+				//	backdrop: true,
+				//	keyboard: true,
+				//	backdropClick: true,
+				//	size: 'md',
+				//	resolve: {
+				//		alerts: function () {
+				//			return alerts;
+				//		}
+				//	}
+				//});
 			},
 			handleError: function (message, error, type) {
 				var errorText = message;
+				var html = false;
 				if (error.status === 400) {
 					$.each(error.data.modelState, function (i, e) {
-						error1 += "<br>" + e + '(' + i + ')';
+						errorText += "<br>" + e + '(' + i + ')';
 					});
+					html = true;
 				}
 				else
 					errorText += (error.statusText ? error.statusText : error.data ? error.data : error);
 
-				this.showMessage(errorText, type);
+				this.showMessage(errorText, type, true);
 			}
 		};
 
@@ -571,9 +653,40 @@ common.controller('bankDetailsCtrl', function ($scope, $uibModalInstance, bank) 
 
 
 });
+common.controller('minWagesCtrl', function ($scope, $uibModalInstance, minWages, company) {
+	$scope.model = [];
+	$scope.company = company;
+	$.each(minWages, function (i, mw) {
+		if (!mw.stateId || company.companyAddress.stateId === mw.stateId) {
+			$scope.model.push(mw);
+		}		
+	});
+	
+	$scope.cancel = function () {
+		$uibModalInstance.close($scope);
+	};
+
+	$scope.ok = function () {
+		$uibModalInstance.close($scope);
+	};
+
+
+});
 common.controller('confirmDialogCtrl', function ($scope, $uibModalInstance, message, type) {
 	$scope.message = message;
 	$scope.type = type ? type : 'info';
+	$scope.getButtonClass = function () {
+		if ($scope.type === 'info') return 'btn-info';
+		else if($scope.type === 'success') return 'btn-success';
+		else if($scope.type === 'warning') return 'btn-warning';
+		else if($scope.type === 'danger') return 'btn-danger';
+	}
+	$scope.getColor = function () {
+		if ($scope.type === 'info') return '#49b6d6';
+		else if ($scope.type === 'success') return '#008a8a';
+		else if ($scope.type === 'warning') return '#c47d15';
+		else if ($scope.type === 'danger') return '#ff5b57';
+	}
 	$scope.cancel = function () {
 		$uibModalInstance.close(false);
 	};

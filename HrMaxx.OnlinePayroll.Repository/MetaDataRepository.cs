@@ -126,15 +126,16 @@ namespace HrMaxx.OnlinePayroll.Repository
 				$"union select CheckNumber from dbo.CompanyPayCheckNumber where CompanyIntId = {companyId})a";
 			
 
+
 			using (var con = new SqlConnection(_sqlCon))
 			{
 				using (var cmd = new SqlCommand(isPeo?peosql:nonpeosql))
 				{
 					cmd.Connection = con;
 					con.Open();
-					var result = (int)cmd.ExecuteScalar();
+					var result = (int?)cmd.ExecuteScalar();
 					
-						var max = result + 1;
+						var max = result.HasValue? result.Value + 1 : 1;
 						if (isPeo && max < 100001)
 						{
 							max = 100001 + max;
@@ -447,11 +448,11 @@ namespace HrMaxx.OnlinePayroll.Repository
         {
             const string sql = "if exists(select 'x' from PayType where Id=@Id) " +
                                "begin " +
-                               "update PayType set Name=@Name, Description=@Description, IsTaxable=@IsTaxable, IsAccumulable=@IsAccumulable where Id=@Id;" +
+                               "update PayType set Name=@Name, Description=@Description, IsTaxable=@IsTaxable, IsAccumulable=@IsAccumulable, IsTip=@IsTip, PaidInCash=@PaidInCash where Id=@Id;" +
                                "select @Id; end " +
                                "else " +
                                "begin " +
-                               "insert into PayType(Name, Description, IsTaxable, IsAccumulable) values(@Name, @Description, @IsTaxable, @IsAccumulable); select cast(scope_identity() as int) end";
+                               "insert into PayType(Name, Description, IsTaxable, IsAccumulable, IsTip, PaidInCash) values(@Name, @Description, @IsTaxable, @IsAccumulable, @IsTip, @PaidInCash); select cast(scope_identity() as int) end";
             using (var conn = GetConnection())
             {
                 payType.Id = conn.Query<int>(sql, payType).Single();

@@ -10,8 +10,8 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 			},
 			templateUrl: zionAPI.Web + 'Areas/Administration/templates/tax-rates.html?v=' + version,
 
-			controller: ['$scope', '$rootScope', '$filter', 'commonRepository',
-				function ($scope, $rootScope, $filter, commonRepository) {
+			controller: ['$scope', '$rootScope', '$filter', 'commonRepository', 'localStorageService',
+				function ($scope, $rootScope, $filter, commonRepository, localStorageService) {
 					
 					
 					var dataSvc = {
@@ -24,7 +24,8 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						payrollSchedules: [{ key: 1, value: 'Weekly' }, { key: 2, value: 'Bi-Weekly' }, { key: 3, value: 'Semi-Monthly' }, { key: 4, value: 'Monthly' }, , { key: 5, value: 'Annually' }],
 						federalFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'HeadofHousehold' }],
 						californiaFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'Married' }, { key: 3, value: 'Headofhousehold' }],
-						californiaLowIncomeFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'DualIncomeMarried' }, { key: 3, value: 'MarriedWithMultipleEmployers' }, { key: 4, value: 'Married' }, { key: 5, value: 'Headofhousehold' }]
+						californiaLowIncomeFilingStatuses: [{ key: 1, value: 'Single' }, { key: 2, value: 'DualIncomeMarried' }, { key: 3, value: 'MarriedWithMultipleEmployers' }, { key: 4, value: 'Married' }, { key: 5, value: 'Headofhousehold' }],
+						states: localStorageService.get('countries')[0].states
 					}
 					$scope.showEdit = function () {
 						return dataSvc.selectedYear >= dataSvc.currentYear;
@@ -428,6 +429,54 @@ common.directive('taxRates', ['zionAPI', 'version', '$timeout',
 						$scope.selectedExmpAllow = null;
 						return tr;
 					}
+
+					$scope.setSelectedMinWage = function (tr) {
+						$scope.selectedMinWage = tr;
+						$scope.originalSelectedMinWage = angular.copy(tr);
+					}
+					$scope.cancelMinWage = function (tr) {
+						var ind = dataSvc.taxTables.minWageYearTable.indexOf(tr);
+						dataSvc.taxTables.minWageYearTable[ind] = angular.copy($scope.originalSelectedMinWage);
+						$scope.originalSelectedMinWage = null;
+						$scope.selectedMinWage = null;
+
+					}
+					$scope.saveMinWage = function (tr) {
+						if (!angular.equals(tr, $scope.originalSelectedMinWage)) {
+							tr.hasChanged = true;
+						}
+						$scope.originalSelectedMinWage = null;
+						$scope.selectedMinWage = null;
+						return tr;
+					}
+					
+					$scope.addMinWage = function () {
+						var max = $filter('orderBy')(dataSvc.taxTables.minWageYearTable, 'id', true)[0];
+						var newm = {
+							isNew: true,
+							hasChanged: true,
+							id: max ? max.id + 1 : 1,
+							year: dataSvc.selectedYear,
+							stateId: null,
+							state: null,
+							city: null,
+							minNoOfEmployees: null,
+							maxNoOfEmployees: null,
+							minWage: null,
+							tippedMinWage: null
+						};
+						dataSvc.taxTables.minWageYearTable.push(newm);
+						$scope.setSelectedMinWage(newm);
+					}
+					$scope.getStateName = function (id) {
+						if (id) {
+							var st = $filter('filter')(dataSvc.states, { stateId: id })[0];
+							return st ? st.stateName : '';
+						}
+						else return 'Federal';
+					}
+
+
 					var _init = function () {
 						$scope.mainData.showFilterPanel = false;
 						//getTaxTables();

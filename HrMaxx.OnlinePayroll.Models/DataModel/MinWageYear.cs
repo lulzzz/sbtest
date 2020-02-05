@@ -12,15 +12,13 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
     using System;
     using System.Collections.Generic;
     
-    public partial class CompanyPayCode
+    public partial class MinWageYear
     {
         public int Id { get; set; }
-        public System.Guid CompanyId { get; set; }
-        public string Code { get; set; }
-        public string Description { get; set; }
-        public decimal HourlyRate { get; set; }
-        public int RateType { get; set; }
-    
-        public virtual Company Company { get; set; }
+        public int Year { get; set; }
+        public Nullable<int> StateId { get; set; }
+        public decimal MinWage { get; set; }
+        public decimal TippedMinWage { get; set; }
+        public decimal MaxTipCredit { get; set; }
     }
 }

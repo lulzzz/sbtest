@@ -9,6 +9,7 @@
                 <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
                     <div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-down fa-fw"></i></div>
                     <div class="stats-title" ng-if="item.id>0">{{item.description}}</div>
+                    <div class="stats-title" ng-if="item.id>0 && showDates(item)">{{showDates(item)}}</div>
                     <div class="stats-title" ng-if="item.id===0">
                         <div class="form-group">
                             <input class="form-control" type="text" id="description" name="description" placeholder="Description" ng-model="item.description" required />
@@ -31,13 +32,14 @@
 
                         </div>
                     </div>
-                    
+
                     <div class="stats-number" ng-show="item.id>0">{{item.employeeWithheld | currency}}, Employer: {{item.employerWithheld | currency}}</div>
                     <div class="stats-desc" ng-show="item.id>0 && (!selected || selected.id!==item.id)">Annual Max: {{item.annualMax ? item.annualMax : 'n.a'}}, Floor per check: {{item.floorPerCheck ? item.floorPerCheck : 'n.a'}}, InvoiceCredit?: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.applyInvoiceCredit, 'fa-times-circle': !item.applyInvoiceCredit}" /></div>
                     <div class="stats-progress progress">
                         <div class="progress-bar" style="width: 100%;"></div>
                     </div>
                     <div class="stats-desc" ng-show="showControls">
+                        <span class="text-color text-bold" ng-show="showWarningText(item)">* this deduction will not be applied</span>
                         <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
                         <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
                         <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
@@ -45,28 +47,42 @@
 
                     </div>
                 </div>
-                <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
-                    <div class="stats-desc">
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-sm-4" for="rate">Annual Max :</label>
-                            <div class="col-md-8 col-sm-8">
-                                <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required />
+                <div class="panel-body m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
+                    <div class="row">
+                        <div class="form-group row">
+                            <label class="control-label col-md-6 col-sm-6" for="rate">Annual Max :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" />
 
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-sm-4" for="fpc">Floor Per Check:</label>
-                            <div class="col-md-8 col-sm-8">
-                                <input class="form-control" type="number" id="fpc" name="fpc" ng-model="selected.floorPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" required />
+                        <div class="form-group row">
+                            <label class="control-label col-md-6 col-sm-6" for="fpc">Floor Per Check:</label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" type="number" id="fpc" name="fpc" ng-model="selected.floorPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" />
 
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-sm-4">Invoice Credit? :</label>
+                        <div class="form-group row">
+                            <label class="control-label col-md-6 col-sm-6">Invoice Credit? :</label>
                             <div class="col-md-6 col-sm-6">
                                 <label class="switch">
-                                    <input type="checkbox" ng-model="item.applyInvoiceCredit" /><i></i>
+                                    <input type="checkbox" ng-model="selected.applyInvoiceCredit" /><i></i>
                                 </label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-6 col-sm-6">Start Date :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <date-ctrl name="startdate" model="selected.startDate" disabled="(selected.employeeWithheld>0 || selected.employerWithheld>0)" ng-if="canChangeDates" />
+                                <span ng-if="!canChangeDates()">{{ selected.startDate ? (selected.startDate | date:'MM/dd/yyyy') : ''}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-6 col-sm-6">End Date :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <date-ctrl name="startdate" model="selected.endDate" disabled="false" min="selected.startDate" ng-if="canChangeDates" />
+                                <span ng-if="!canChangeDates()">{{ selected.endDate ? (selected.startDate | date:'MM/dd/yyyy') : ''}}</span>
                             </div>
                         </div>
 

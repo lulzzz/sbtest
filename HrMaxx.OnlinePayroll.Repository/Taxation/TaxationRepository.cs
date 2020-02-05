@@ -39,6 +39,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			const string selectEstDed = @"select * from EstimatedDeductionsTable  where Year=@Year ;";
 			const string selectExmpAllow = @"select * from ExemptionAllowanceTable  where Year=@Year ;";
 			const string selectDeductionPrecedence = @"select * from TaxDeductionPrecedence;";
+			const string selectMinWageYear = @"select * from MinWageYear;";
 
 			using (var conn = GetConnection())
 			{
@@ -60,6 +61,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 				var dedpre = conn.Query<Models.DataModel.TaxDeductionPrecedence>(selectDeductionPrecedence).ToList();
 				var fitw4 = conn.Query<Models.DataModel.FITW4Table>(selectFITW4, new { Year = year }).ToList();
 				var fitalien = conn.Query<Models.DataModel.FITAlienAdjustmentTable>(selectFITAlien, new { Year = year }).ToList();
+				var minwage = conn.Query<Models.DataModel.MinWageYear>(selectMinWageYear, new { Year = year }).ToList();
+
 				return new USTaxTables
 				{
 					Taxes = _mapper.Map<List<TaxYearRate>, List<TaxByYear>>(taxyearrates.ToList()),
@@ -75,6 +78,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 					TaxDeductionPrecendences = _mapper.Map<List<Models.DataModel.TaxDeductionPrecedence>, List<Models.USTaxModels.TaxDeductionPrecendence>>(dedpre.ToList()),
 					FITW4Table = _mapper.Map<List<Models.DataModel.FITW4Table>, List<Models.USTaxModels.FITW4TaxTableRow>>(fitw4.ToList()),
 					FITAlienAdjustmentTable = _mapper.Map<List<Models.DataModel.FITAlienAdjustmentTable>, List<Models.USTaxModels.FITAlienAdjustmentTableRow>>(fitalien.ToList()),
+					MinWageYearTable = _mapper.Map<List<Models.DataModel.MinWageYear>, List<Models.USTaxModels.MinWageYearRow>>(minwage.ToList()),
 				};
 
 			}
@@ -97,6 +101,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			var estded = _dbContext.EstimatedDeductionsTables;
 			var exempallow = _dbContext.ExemptionAllowanceTables;
 			var dedpre = _dbContext.TaxDeductionPrecedences;
+			var minwage = _dbContext.MinWageYears;
 
 			return new USTaxTables
 			{
@@ -111,7 +116,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 				ExemptionAllowanceTable = _mapper.Map<List<ExemptionAllowanceTable>, List<ExemptionAllowanceTableRow>>(exempallow.ToList()),
 				TaxDeductionPrecendences = _mapper.Map<List<Models.DataModel.TaxDeductionPrecedence>, List<Models.USTaxModels.TaxDeductionPrecendence>>(dedpre.ToList()),
 				FITW4Table = _mapper.Map<List<Models.DataModel.FITW4Table>, List<Models.USTaxModels.FITW4TaxTableRow>>(fitw4.ToList()),
-				FITAlienAdjustmentTable = _mapper.Map<List<Models.DataModel.FITAlienAdjustmentTable>, List<Models.USTaxModels.FITAlienAdjustmentTableRow>>(fitalien.ToList())
+				FITAlienAdjustmentTable = _mapper.Map<List<Models.DataModel.FITAlienAdjustmentTable>, List<Models.USTaxModels.FITAlienAdjustmentTableRow>>(fitalien.ToList()),
+				MinWageYearTable = _mapper.Map<List<Models.DataModel.MinWageYear>, List<Models.USTaxModels.MinWageYearRow>>(minwage.ToList()),
 			};
 		}
 
@@ -129,6 +135,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			const string insertEstDed = @"update EstimatedDeductionsTable set Amount=@Amount where Id=@Id";
 			const string insertExmpAllow = @"update ExemptionAllowanceTable set Amount=@Amount where Id=@Id;";
 			const string insertFitW4 = @"if exists(select 'x' from FITW4Table Where Id=@Id) update FITW4Table set DependentWageLimit=@DependentWageLimit, DependentAllowance1=@DependentAllowance1, DependentAllowance2=@DependentAllowance2, AdditionalDeductionW4=@AdditionalDeductionW4, DeductionForExemption=@DeductionForExemption where Id=@Id; else insert into FITW4Table(FilingStatus, DependentWageLimit, DependentAllowance1, DependentAllowance2, AdditionalDeductionW4, DeductionForExemption, Year) values (@FilingStatus, @DependentWageLimit, @DependentAllowance1, @DependentAllowance2, @AdditionalDeductionW4, @DeductionForExemption, @Year);";
+			const string insertMinWage = @"if exists(select 'x' from MinWageYear where Id=@Id) update MinWageYear set StateId=@StateId, MinWage=@MinWage, TippedMinWage=@TippedMinWage, MaxTipCredit=@MaxTipCredit where Id=@Id;  else insert into MinWageYear(Year, StateId, MinWage, TippedMinWage, MaxTipCredit) values(@Year, @StateId, @MinWage, @TippedMinWage, @MaxTipCredit);";
 
 			const string deleteFIT = @"delete from FITTaxTable where Id=@Id;";
             const string deleteHISIT = @"delete from HISITTaxTable where Id=@Id;";
@@ -147,6 +154,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 			var sitLow = _mapper.Map<List<CASITLowIncomeTaxTableRow>, List<SITLowIncomeTaxTable>>(taxTables.CASITLowIncomeTaxTable.Where(t => t.Year == year && t.HasChanged).ToList());
 			var estded = _mapper.Map<List<EstimatedDeductionTableRow>, List<EstimatedDeductionsTable>>(taxTables.EstimatedDeductionTable.Where(t => t.Year == year && t.HasChanged).ToList());
 			var exempallow = _mapper.Map<List<ExemptionAllowanceTableRow>, List<ExemptionAllowanceTable>>(taxTables.ExemptionAllowanceTable.Where(t => t.Year == year && t.HasChanged).ToList());
+			var minwageyear = _mapper.Map<List<MinWageYearRow>, List<MinWageYear>>(taxTables.MinWageYearTable.Where(t => t.Year == year && t.HasChanged).ToList());
 
 			using (var conn = GetConnection())
 			{
@@ -191,6 +199,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 					conn.Execute(insertEstDed, estded);
 				if (exempallow.Any())
 					conn.Execute(insertExmpAllow, exempallow);
+				if (minwageyear.Any())
+					conn.Execute(insertMinWage, minwageyear);
 			}
 		}
 
@@ -209,6 +219,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Taxation
 																insert into StandardDeductionTable( PayrollPeriodID, FilingStatus, Amount, AmtIfExmpGrtThan1, Year) select PayrollPeriodID, FilingStatus, Amount, AmtIfExmpGrtThan1, @Year from StandardDeductionTable where Year=@PYear;
 																insert into EstimatedDeductionsTable(PayrollPeriodID, NoOfAllowances, Amount, Year) select PayrollPeriodID, NoOfAllowances, Amount, @Year from EstimatedDeductionsTable where Year=@PYear;
 																insert into ExemptionAllowanceTable(PayrollPeriodID, NoOfAllowances, Amount, Year) select PayrollPeriodID, NoOfAllowances, Amount, @Year from ExemptionAllowanceTable where Year=@PYear;
+																insert into MinWageYear(Year, StateId, MinWage, TippedMinWage, MaxTipCredit) select @Year, StateId, MinWage, TippedMinWage, MaxTipCredit from MinWageYear where Year=@PYear;
 																end";
 			using (var conn = GetConnection())
 			{

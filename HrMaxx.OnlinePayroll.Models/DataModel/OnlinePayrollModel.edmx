@@ -137,7 +137,7 @@
           <Property Name="LastModifiedBy" Type="varchar(max)" Nullable="false" />
           <Property Name="LastModified" Type="datetime" Nullable="false" />
           <Property Name="LastPayrollDate" Type="datetime" />
-          <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" />
           <Property Name="IsHostCompany" Type="bit" Nullable="false" />
           <Property Name="Memo" Type="varchar(max)" Nullable="false" />
           <Property Name="ClientNo" Type="varchar(max)" Nullable="false" />
@@ -153,6 +153,7 @@
           <Property Name="City" Type="varchar" MaxLength="100" Nullable="false" />
           <Property Name="ProfitStarsPayer" Type="bit" Nullable="false" />
           <Property Name="ControlId" Type="varchar(max)" />
+          <Property Name="IsRestaurant" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyAccount">
           <Key>
@@ -215,6 +216,8 @@
           <Property Name="AnnualMax" Type="decimal" Precision="18" Scale="2" />
           <Property Name="FloorPerCheck" Type="decimal" Precision="18" Scale="2" />
           <Property Name="ApplyInvoiceCredit" Type="bit" Nullable="false" />
+          <Property Name="StartDate" Type="datetime" />
+          <Property Name="EndDate" Type="datetime" />
         </EntityType>
         <EntityType Name="CompanyPayCode">
           <Key>
@@ -225,6 +228,7 @@
           <Property Name="Code" Type="varchar(max)" Nullable="false" />
           <Property Name="Description" Type="varchar(max)" Nullable="false" />
           <Property Name="HourlyRate" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="RateType" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyRecurringCharge">
           <Key>
@@ -342,6 +346,8 @@
           <Property Name="FederalDeductions" Type="decimal" Precision="18" Scale="2" />
           <Property Name="FederalAdditionalWithholding" Type="decimal" Precision="18" Scale="2" />
           <Property Name="ClockId" Type="varchar(max)" />
+          <Property Name="IsTipped" Type="bit" Nullable="false" />
+          <Property Name="TerminationDate" Type="datetime" />
         </EntityType>
         <EntityType Name="EmployeeACA">
           <Key>
@@ -381,6 +387,8 @@
           <Property Name="CeilingMethod" Type="int" Nullable="false" />
           <Property Name="EmployerRate" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Note" Type="varchar(max)" />
+          <Property Name="StartDate" Type="datetime" />
+          <Property Name="EndDate" Type="datetime" />
         </EntityType>
         <EntityType Name="EntityType">
           <Key>
@@ -647,6 +655,8 @@
           <Property Name="Description" Type="varchar(max)" Nullable="false" />
           <Property Name="IsTaxable" Type="bit" Nullable="false" />
           <Property Name="IsAccumulable" Type="bit" Nullable="false" />
+          <Property Name="IsTip" Type="bit" Nullable="false" />
+          <Property Name="PaidInCash" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ReportConstants">
           <Key>
@@ -1888,7 +1898,7 @@
           <NavigationProperty Name="Employees" Relationship="HrMaxxModel.FK_Employee_Company1" FromRole="Company" ToRole="Employee" />
           <Property Name="LastPayrollDate" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Journals" Relationship="HrMaxxModel.FK_Journal_Company" FromRole="Company" ToRole="Journal" />
-          <Property Name="MinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="MinWage" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="IsHostCompany" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Hosts" Relationship="HrMaxxModel.FK_Host_Company" FromRole="Company" ToRole="Host" />
           <Property Name="Memo" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -1912,6 +1922,7 @@
           <Property Name="City" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="ProfitStarsPayer" Type="Boolean" Nullable="false" />
           <Property Name="ControlId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="IsRestaurant" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="CompanyTaxRate">
           <Key>
@@ -2083,6 +2094,8 @@
           <NavigationProperty Name="EmployeeDeductions" Relationship="HrMaxxModel.FK_EmployeeDeduction_CompanyDeduction" FromRole="CompanyDeduction" ToRole="EmployeeDeduction" />
           <Property Name="FloorPerCheck" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ApplyInvoiceCredit" Type="Boolean" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_CompanyDeduction_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2184,6 +2197,8 @@
           <Property Name="IsTaxable" Type="Boolean" Nullable="false" />
           <Property Name="IsAccumulable" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="CompanyAccumlatedPayTypes" Relationship="HrMaxxModel.FK_CompanyAccumlatedPayType_PayType" FromRole="PayType" ToRole="CompanyAccumlatedPayType" />
+          <Property Name="IsTip" Type="Boolean" Nullable="false" />
+          <Property Name="PaidInCash" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyAccumlatedPayType_PayType">
           <End Type="HrMaxxModel.PayType" Role="PayType" Multiplicity="1" />
@@ -2207,6 +2222,7 @@
           <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="HourlyRate" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <NavigationProperty Name="Company" Relationship="HrMaxxModel.FK_CompanyPayCode_Company" FromRole="CompanyPayCode" ToRole="Company" />
+          <Property Name="RateType" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="FK_CompanyPayCode_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -2387,6 +2403,8 @@
           <Property Name="FederalAdditionalWithholding" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ClockId" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="EmployeeACAs" Relationship="HrMaxxModel.FK_EmployeeACA_Employee" FromRole="Employee" ToRole="EmployeeACA" />
+          <Property Name="IsTipped" Type="Boolean" Nullable="false" />
+          <Property Name="TerminationDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Employee_Status">
           <End Type="HrMaxxModel.Status" Role="Status" Multiplicity="1" />
@@ -2432,6 +2450,8 @@
           <Property Name="CeilingMethod" Type="Int32" Nullable="false" />
           <Property Name="EmployerRate" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="StartDate" Type="DateTime" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_EmployeeDeduction_CompanyDeduction">
           <End Type="HrMaxxModel.CompanyDeduction" Role="CompanyDeduction" Multiplicity="1" />
@@ -3258,6 +3278,7 @@
           <EntitySetMapping Name="Companies">
             <EntityTypeMapping TypeName="HrMaxxModel.Company">
               <MappingFragment StoreEntitySet="Company">
+                <ScalarProperty Name="IsRestaurant" ColumnName="IsRestaurant" />
                 <ScalarProperty Name="ControlId" ColumnName="ControlId" />
                 <ScalarProperty Name="ProfitStarsPayer" ColumnName="ProfitStarsPayer" />
                 <ScalarProperty Name="City" ColumnName="City" />
@@ -3374,6 +3395,8 @@
           <EntitySetMapping Name="CompanyDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyDeduction">
               <MappingFragment StoreEntitySet="CompanyDeduction">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="ApplyInvoiceCredit" ColumnName="ApplyInvoiceCredit" />
                 <ScalarProperty Name="FloorPerCheck" ColumnName="FloorPerCheck" />
                 <ScalarProperty Name="AnnualMax" ColumnName="AnnualMax" />
@@ -3428,6 +3451,8 @@
           <EntitySetMapping Name="PayTypes">
             <EntityTypeMapping TypeName="HrMaxxModel.PayType">
               <MappingFragment StoreEntitySet="PayType">
+                <ScalarProperty Name="PaidInCash" ColumnName="PaidInCash" />
+                <ScalarProperty Name="IsTip" ColumnName="IsTip" />
                 <ScalarProperty Name="IsAccumulable" ColumnName="IsAccumulable" />
                 <ScalarProperty Name="IsTaxable" ColumnName="IsTaxable" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
@@ -3439,6 +3464,7 @@
           <EntitySetMapping Name="CompanyPayCodes">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyPayCode">
               <MappingFragment StoreEntitySet="CompanyPayCode">
+                <ScalarProperty Name="RateType" ColumnName="RateType" />
                 <ScalarProperty Name="HourlyRate" ColumnName="HourlyRate" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
@@ -3507,6 +3533,8 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HrMaxxModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="TerminationDate" ColumnName="TerminationDate" />
+                <ScalarProperty Name="IsTipped" ColumnName="IsTipped" />
                 <ScalarProperty Name="ClockId" ColumnName="ClockId" />
                 <ScalarProperty Name="FederalAdditionalWithholding" ColumnName="FederalAdditionalWithholding" />
                 <ScalarProperty Name="FederalDeductions" ColumnName="FederalDeductions" />
@@ -3557,6 +3585,8 @@
           <EntitySetMapping Name="EmployeeDeductions">
             <EntityTypeMapping TypeName="HrMaxxModel.EmployeeDeduction">
               <MappingFragment StoreEntitySet="EmployeeDeduction">
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="EmployerRate" ColumnName="EmployerRate" />
                 <ScalarProperty Name="CeilingMethod" ColumnName="CeilingMethod" />

@@ -92,6 +92,13 @@ namespace HrMaxx.Common.Repository.Common
 			var countries = _dbContext.Countries.ToList();
 			return countries.Select(c => JsonConvert.DeserializeObject<Models.Dtos.Country>(c.Data)).ToList();
 		}
+		public IList<Models.Dtos.Country> SaveCountries(Models.Dtos.Country countries)
+		{
+			var country = _dbContext.Countries.First(c=>c.CountryId==countries.CountryId);
+			country.Data = JsonConvert.SerializeObject(countries);
+			_dbContext.SaveChanges();
+			return GetCountries();
+		}
 
 		public T SaveEntityRelation<T>(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, T targetObject)
 		{

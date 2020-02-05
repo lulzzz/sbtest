@@ -15,6 +15,7 @@ namespace HrMaxx.Common.Repository.Common
 		IList<T> GetAllTargets<T>(EntityTypeEnum target);
 		void DeleteEntityRelation(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, Guid targetId);
 		IList<Country> GetCountries();
+		IList<Country> SaveCountries(Country countries);
 		T SaveEntityRelation<T>(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId, T targetObject);
 		void SaveTargetList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId, T list);
 		IList<T> GetEntityRelationList<T>(object source, object target, Guid sourceId);

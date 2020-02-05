@@ -95,6 +95,17 @@
           <Property Name="AmtForOneWithholdingAllow" Type="decimal" Precision="18" Scale="2" />
           <Property Name="Year" Type="int" />
         </EntityType>
+        <EntityType Name="MinWageYear">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Year" Type="int" Nullable="false" />
+          <Property Name="StateId" Type="int" />
+          <Property Name="MinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="TippedMinWage" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="MaxTipCredit" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
         <EntityType Name="SITLowIncomeTaxTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -148,6 +159,7 @@
           <EntitySet Name="FITWithholdingAllowanceTable" EntityType="Self.FITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HISITTaxTable" EntityType="Self.HISITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="HISITWithholdingAllowanceTable" EntityType="Self.HISITWithholdingAllowanceTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MinWageYear" EntityType="Self.MinWageYear" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITLowIncomeTaxTable" EntityType="Self.SITLowIncomeTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SITTaxTable" EntityType="Self.SITTaxTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StandardDeductionTable" EntityType="Self.StandardDeductionTable" Schema="dbo" store:Type="Tables" />
@@ -170,6 +182,7 @@
           <EntitySet Name="HISITWithholdingAllowanceTables" EntityType="USTaxTablesModel.HISITWithholdingAllowanceTable" />
           <EntitySet Name="FITW4Table" EntityType="USTaxTablesModel.FITW4Table" />
           <EntitySet Name="FITAlienAdjustmentTables" EntityType="USTaxTablesModel.FITAlienAdjustmentTable" />
+          <EntitySet Name="MinWageYears" EntityType="USTaxTablesModel.MinWageYear" />
         </EntityContainer>
         <EntityType Name="TaxDeductionPrecedence">
           <Key>
@@ -304,6 +317,17 @@
           <Property Name="Amount" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="Year" Type="Int32" Nullable="false" />
           <Property Name="Pre2020" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MinWageYear">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Year" Type="Int32" Nullable="false" />
+          <Property Name="StateId" Type="Int32" />
+          <Property Name="MinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="TippedMinWage" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="MaxTipCredit" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -452,6 +476,18 @@
                 <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="PayrollPeriodId" ColumnName="PayrollPeriodId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MinWageYears">
+            <EntityTypeMapping TypeName="USTaxTablesModel.MinWageYear">
+              <MappingFragment StoreEntitySet="MinWageYear">
+                <ScalarProperty Name="MaxTipCredit" ColumnName="MaxTipCredit" />
+                <ScalarProperty Name="TippedMinWage" ColumnName="TippedMinWage" />
+                <ScalarProperty Name="MinWage" ColumnName="MinWage" />
+                <ScalarProperty Name="StateId" ColumnName="StateId" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -52,7 +52,8 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap/wizard/bwizard.js",
 				"~/Scripts/jquery.plugin.js",
 				"~/Scripts/jquery.countdown.js",
-				"~/Scripts/coming-soon.demo.js"
+				"~/Scripts/coming-soon.demo.js",
+				"~/Scripts/bootstrap/sweetalert.min.js"
 
 
 				);

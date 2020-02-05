@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
+using HrMaxx.Infrastructure.Helpers;
+using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
 
 namespace HrMaxx.OnlinePayroll.Models
@@ -15,6 +17,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public List<TaxExtract> PendingExtracts { get; set; }
 		public List<TaxExtract> PendingExtractsByDates { get; set; }
 		public List<TaxExtract> PendingExtractsByCompany { get; set; }
+		public List<TaxExtract> PendingExtractsBySchedule { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 		public List<PayrollMetric> PayrollHistory { get; set; }
         
@@ -52,28 +55,28 @@ namespace HrMaxx.OnlinePayroll.Models
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal941") && e.DepositDate.Year==YTDYear).Sum(e=>e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal941") && e.DepositDate.Year==DateTime.Today.Year).Sum(e=>e.Amount);
 			}
 		}
 		public decimal Ytd940Extract
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal940") && e.DepositDate.Year == YTDYear).Sum(e => e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("Federal940") && e.DepositDate.Year == DateTime.Today.Year).Sum(e => e.Amount);
 			}
 		}
 		public decimal YtdCAPITExtract
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAPIT") && e.DepositDate.Year == YTDYear).Sum(e => e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAPIT") && e.DepositDate.Year == DateTime.Today.Year).Sum(e => e.Amount);
 			}
 		}
 		public decimal YtdCAUIETTExtract
 		{
 			get
 			{
-				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAUI") && e.DepositDate.Year == YTDYear).Sum(e => e.Amount);
+				return ExtractHistory.Where(e => e.ExtractName.Equals("StateCAUI") && e.DepositDate.Year == DateTime.Today.Year).Sum(e => e.Amount);
 			}
 		}
 
@@ -84,33 +87,65 @@ namespace HrMaxx.OnlinePayroll.Models
 
 		public List<TaxExtract> Pending941 { get
 		{
-			return PendingExtracts.Where(e => e.ExtractName.Equals("Federal941")).ToList();
+			return PendingExtracts.Where(e => e.ExtractName.Equals("Federal941") && !e.TaxesDelayed).ToList();
 		} }
 		public List<TaxExtract> Pending940
 		{
 			get
 			{
-				return PendingExtracts.Where(e => e.ExtractName.Equals("Federal940")).ToList();
+				return PendingExtracts.Where(e => e.ExtractName.Equals("Federal940") && !e.TaxesDelayed).ToList();
 			}
 		}
 		public List<TaxExtract> PendingPit
 		{
 			get
 			{
-				return PendingExtracts.Where(e => e.ExtractName.Equals("StateCAPIT")).ToList();
+				return PendingExtracts.Where(e => e.ExtractName.Equals("StateCAPIT") && !e.TaxesDelayed).ToList();
 			}
 		}
 		public List<TaxExtract> PendingUiEtt
 		{
 			get
 			{
-				return PendingExtracts.Where(e => e.ExtractName.Equals("StateCAUI")).ToList();
+				return PendingExtracts.Where(e => e.ExtractName.Equals("StateCAUI") && !e.TaxesDelayed).ToList();
+			}
+		}
+		public List<TaxExtract> PendingDelayed941
+		{
+			get
+			{
+				return PendingExtracts.Where(e => e.ExtractName.Equals("Federal941") && e.TaxesDelayed).ToList();
+			}
+		}
+		public List<TaxExtract> PendingDelayed940
+		{
+			get
+			{
+				return PendingExtracts.Where(e => e.ExtractName.Equals("Federal940") && e.TaxesDelayed).ToList();
+			}
+		}
+		public List<TaxExtract> PendingDelayedPit
+		{
+			get
+			{
+				return PendingExtracts.Where(e => e.ExtractName.Equals("StateCAPIT") && e.TaxesDelayed).ToList();
+			}
+		}
+		public List<TaxExtract> PendingDelayedUiEtt
+		{
+			get
+			{
+				return PendingExtracts.Where(e => e.ExtractName.Equals("StateCAUI") && e.TaxesDelayed).ToList();
 			}
 		}
 		public decimal Pending941Amount { get { return Pending941.Sum(e => e.Amount); } }
 		public decimal Pending940Amount { get { return Pending940.Sum(e => e.Amount); } }
 		public decimal PendingPitAmount { get { return PendingPit.Sum(e => e.Amount); } }
 		public decimal PendingUiEttAmount { get { return PendingUiEtt.Sum(e => e.Amount); } }
+		public decimal PendingDelayed941Amount { get { return PendingDelayed941.Sum(e => e.Amount); } }
+		public decimal PendingDelayed940Amount { get { return PendingDelayed940.Sum(e => e.Amount); } }
+		public decimal PendingDelayedPitAmount { get { return PendingDelayedPit.Sum(e => e.Amount); } }
+		public decimal PendingDelayedUiEttAmount { get { return PendingDelayedUiEtt.Sum(e => e.Amount); } }
 
 		public PayrollMetric YtdPayroll { get
 		{
@@ -137,6 +172,9 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ExtractName { get; set; }
 		public decimal Amount { get; set; }
 		public int DRank { get; set; }
+		public bool TaxesDelayed { get; set; }
+		public DepositSchedule941 Schedule { get; set; }
+		public string ScheduleText => Schedule.GetDbName();
 		public List<TaxExtract> Details { get; set; } 
 	}
 

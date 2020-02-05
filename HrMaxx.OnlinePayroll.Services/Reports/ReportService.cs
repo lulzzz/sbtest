@@ -804,12 +804,16 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetExtractDashboard", filters);
 				data.PendingExtractsByDates =
-					data.PendingExtracts.GroupBy(e => new {e.ExtractName, e.DepositDate})
-						.Select(g => new TaxExtract {DepositDate = g.Key.DepositDate, ExtractName = g.Key.ExtractName, Amount = g.Sum(g1 => g1.Amount), Details = g.GroupBy(g1=>g1.CompanyName).Select(g1=>new TaxExtract{CompanyName = g1.Key, Amount = g1.Sum(g2=>g2.Amount)}).ToList()})
+					data.PendingExtracts.GroupBy(e => new {e.ExtractName, e.DepositDate, e.TaxesDelayed})
+						.Select(g => new TaxExtract {DepositDate = g.Key.DepositDate, ExtractName = g.Key.ExtractName, TaxesDelayed= g.Key.TaxesDelayed, Amount = g.Sum(g1 => g1.Amount), Details = g.GroupBy(g1=>g1.CompanyName).Select(g1=>new TaxExtract{CompanyName = g1.Key, Amount = g1.Sum(g2=>g2.Amount)}).ToList()})
 						.ToList();
 				data.PendingExtractsByCompany =
-					data.PendingExtracts.GroupBy(e => new { e.ExtractName, e.CompanyName })
-						.Select(g => new TaxExtract {CompanyName = g.Key.CompanyName, ExtractName = g.Key.ExtractName, Details = g.ToList()})
+					data.PendingExtracts.GroupBy(e => new { e.ExtractName, e.CompanyName, e.TaxesDelayed, e.Schedule })
+						.Select(g => new TaxExtract {CompanyName = g.Key.CompanyName, ExtractName = g.Key.ExtractName, TaxesDelayed = g.Key.TaxesDelayed, Schedule=g.Key.Schedule, Details = g.ToList()})
+						.ToList();
+				data.PendingExtractsBySchedule =
+					data.PendingExtractsByCompany.GroupBy(e => new { e.Schedule })
+						.Select(g => new TaxExtract { Schedule = g.Key.Schedule, Details = g.ToList() })
 						.ToList();
 				return data;
 			}
@@ -1243,7 +1247,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 						c.EmployeeAccumulationList.Where(e => e.LastCheckCompany.HasValue && e.LastCheckCompany.Value == c.Company.Id)
 						.OrderBy(e=>e.FirstName)
 							.ToList();	
-					c.EmployeeAccumulationList.ForEach(e=>e.BuildC1095Months(c.Company, c1095limit));
+					c.EmployeeAccumulationList.ForEach(e=> {
+						var minWage = _taxationService.GetTippedMinimumWage(e.State.State.StateId, request.Year);
+						c.Company.MinWage = c.Company.MinWage.HasValue ? c.Company.MinWage.Value : minWage.MinWage;
+						e.BuildC1095Months(c.Company, c1095limit);
+						});
 				});
 				h.Companies = h.Companies.Where(c => c.EmployeeAccumulationList.Any()).ToList();
 			
@@ -2526,7 +2534,11 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 			
 			if(!response.EmployeeAccumulationList.Any())
 				throw new Exception(NoData);
-			response.EmployeeAccumulationList.ForEach(e => e.BuildC1095Months(response.Company, c1095limit));
+			response.EmployeeAccumulationList.ForEach(e => {
+				var minWage = _taxationService.GetTippedMinimumWage(e.State.State.StateId, request.StartDate.Year);
+				response.Company.MinWage = response.Company.MinWage.HasValue ? response.Company.MinWage.Value : minWage.MinWage;
+				e.BuildC1095Months(response.Company, c1095limit); 
+			});
 			
 			response.Host = GetHost(response.Company.HostId);
 			if (response.Company.FileUnderHost)

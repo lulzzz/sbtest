@@ -1,5 +1,5 @@
 ﻿<div class="col-sm-12">
-	<div class="col-sm-12 hidden-print" ng-if="invoice.status>2">
+	<div class="row hidden-print m-b-20" ng-if="invoice.status>2">
 		<div class="col-sm-12">
 			<div class="col-sm-3 form-group">
 				<label>Total</label>
@@ -18,10 +18,13 @@
 			</div>
 		</div>
 		
-		<div class="col-sm-12 panel-default" ng-show="data.showPayments">
-			<div class="panel-heading"><strong>Payments Received</strong></div>
+		<div class="col-sm-12 panel-info " ng-show="data.showPayments">
+			<div class="panel-heading" ng-click="data.displayPayments=!data.displayPayments">
+				<h4 class="panel-title">Payments Received ({{invoice.invoicePayments.length}})<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.displayPayments, 'glyphicon-chevron-right': !data.displayPayments}"></i></h4>
+				
+			</div>
 		</div>
-		<div class="col-sm-12" ng-show="data.showPayments">
+		<div class="col-sm-12 panel-body border-info" ng-show="data.showPayments && data.displayPayments">
 			<table class="table table-invoice">
 				<thead>
 					<tr>
@@ -84,7 +87,7 @@
 		</div>
 	</div>
 	
-	<div class="col-sm-12">
+	<div class="col-sm-12 col-md-12">
 		<div class="invoice col-sm-8" id="print">
 			<div class="invoice-company hidden-print" ng-show="showControls">
 				<span class="pull-left input-group">
@@ -136,15 +139,14 @@
 					
 				</div>
 				<div class="invoice-date">
-					<small>Invoice# {{invoice.invoiceNumber}}</small>
-					<div class="date m-t-5">{{invoice.invoiceDate | date:'MMMM dd, yyyy'}}</div>
+					<div class="date m-t-5">Invoice# {{invoice.invoiceNumber}}<br/>{{invoice.invoiceDate | date:'MMMM dd, yyyy'}}</div>
 					<div class="invoice-detail">
 						No. of Checks: {{invoice.noOfChecks}}<br />
-						Payroll Pay Day: {{invoice.payrollPayDay | date:'MM/dd/yyyy'}}<br/>
+						Payroll Pay Day: {{invoice.payrollPayDay | date:'MM/dd/yyyy'}}<br />
 						Tax Pay Day: {{invoice.payrollTaxPayDay | date:'MM/dd/yyyy'}} <i class="fa fa-circle hidden-print" style="color:red" ng-show="invoice.isRedated"></i><br />
-						Payroll Pay Period: {{invoice.periodStart | date:'MM/dd/yyyy'}} - {{invoice.periodEnd | date:'MM/dd/yyyy'}}<br/>
-						Check Pay: {{invoice.checkPay | currency:'$'}}<br/>
-						DD Pay: {{invoice.ddPay | currency:'$'}}<br/>
+						Payroll Pay Period: {{invoice.periodStart | date:'MM/dd/yyyy'}} - {{invoice.periodEnd | date:'MM/dd/yyyy'}}<br />
+						Check Pay: {{invoice.checkPay | currency:'$'}}<br />
+						DD Pay: {{invoice.ddPay | currency:'$'}}<br />
 						Net Pay: {{invoice.netPay | currency:'$'}}
 					</div>
 				</div>
@@ -213,10 +215,10 @@
 								<td colspan="2">
 									<label for="fileUnderHost" class="switch hidden-print">
 										Apply Min Gross Wage Limits?
-										<input id="fileUnderHost" type="checkbox" ng-model="invoice.applyWCMinWageLimit" ng-change="updateWC()" /><i></i>
+										<input id="fileUnderHost" type="checkbox" ng-model="invoice.applyWCMinWageLimit" ng-change="updateWC()" ng-disabled="invoice.companyInvoiceSetup.invoiceType===3" /><i></i>
 									</label>
 								</td>
-								<td class="text-right">{{invoice.workerCompensationCharges | currency:'$'}}<i class="fa fa-check-circle fa-lg" style="color:green" ></i></td>
+								<td class="text-right">{{invoice.workerCompensationCharges | currency:'$'}}<i class="fa fa-check-circle fa-lg" style="color:green" ng-if="invoice.companyInvoiceSetup.invoiceType!==3"></i></td>
 							</tr>
 
 							<tr ng-repeat="wc in invoice.workerCompensations | orderBy:'tax.id'" ng-if="invoice.workerCompensations.length>0">

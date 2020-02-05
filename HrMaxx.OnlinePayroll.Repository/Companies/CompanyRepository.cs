@@ -95,6 +95,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbCompany.CompanyCheckPrintOrder = dbMappedCompany.CompanyCheckPrintOrder;
 				dbCompany.City = dbMappedCompany.City;
 				dbCompany.ControlId = dbMappedCompany.ControlId;
+				dbCompany.IsRestaurant = dbMappedCompany.IsRestaurant;
 			}
 			_dbContext.SaveChanges();
 			if (!ignoreEinCheck)
@@ -217,6 +218,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.AnnualMax = mappeddeduction.AnnualMax;
 					dbdeduction.FloorPerCheck = mappeddeduction.FloorPerCheck;
 					dbdeduction.ApplyInvoiceCredit = mappeddeduction.ApplyInvoiceCredit;
+					dbdeduction.StartDate = mappeddeduction.StartDate;
+					dbdeduction.EndDate = mappeddeduction.EndDate;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -299,6 +302,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.Code = mappedpc.Code;
 					wc.Description = mappedpc.Description;
 					wc.HourlyRate = mappedpc.HourlyRate;
+					wc.RateType = mappedpc.RateType;
+				
 				}
 			}
 			_dbContext.SaveChanges();
@@ -486,6 +491,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbEmployee.StatusId = me.StatusId;
 				dbEmployee.PayTypeAccruals = me.PayTypeAccruals;
 				dbEmployee.ClockId = me.ClockId;
+				dbEmployee.IsTipped = me.IsTipped;
+				dbEmployee.TerminationDate = me.TerminationDate;
 
 				var removeCounter = 0;
 				for (removeCounter = 0; removeCounter < dbEmployee.EmployeeBankAccounts.Count; removeCounter++)
@@ -566,6 +573,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					dbdeduction.Priority = mappeddeduction.Priority;
 					dbdeduction.CeilingMethod = mappeddeduction.CeilingMethod;
                     dbdeduction.Note = mappeddeduction.Note;
+					dbdeduction.StartDate = mappeddeduction.StartDate;
+					dbdeduction.EndDate = mappeddeduction.EndDate;
 				}
 			}
 			_dbContext.SaveChanges();
@@ -672,31 +681,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			return _mapper.Map<List<Models.DataModel.Company>, List<Models.Company>>(companies.ToList());
 		}
 
-		public void UpdateMinWage(decimal minWage, List<Employee> selectEmployees, List<Company> selectedCompanies)
-		{
-			var companies = _dbContext.Companies.ToList();
-			companies.ForEach(c =>
-			{
-				var comp = selectedCompanies.FirstOrDefault(c1 => c1.Id == c.Id);
-				if (comp != null)
-				{
-					c.MinWage = 10;
-				}
-			});
-			_dbContext.Employees.ToList().ForEach(e1 =>
-			{
-				var e = selectEmployees.FirstOrDefault(e2 => e2.Id == e1.Id);
-				if (e != null)
-				{
-					e1.Rate = 10;
-					e1.PayCodes = JsonConvert.SerializeObject(e.PayCodes);
-				}
-				
-			});
-			
-			_dbContext.SaveChanges();
-		}
-
+		
 		public void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string user, bool keepEmployeeNumbers)
 		{
 			using (var con = new SqlConnection(_sqlCon))
@@ -789,6 +774,15 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, new {CompanyId = id, PayrollSchedule = (int) payrollSchedule});
+			}
+		}
+		public void UpdateEmployeePayCodes(List<Employee> employees)
+		{
+			const string sql = "update Employee set PayCodes=@PayCodes where Id=@Id";
+			var mapped = Mapper.Map<List<Employee>, List<Models.DataModel.Employee>>(employees);
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, mapped);
 			}
 		}
 	}

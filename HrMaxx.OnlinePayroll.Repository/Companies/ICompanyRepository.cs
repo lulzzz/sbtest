@@ -42,7 +42,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		
 		void SaveTSImportMap(Guid id, ImportMap importMap);
 		List<Company> GetLocations(Guid parentId);
-		void UpdateMinWage(decimal minWage, List<Employee> selectEmployees, List<Company> selectedCompanies);
+		
 		void CopyEmployees(Guid sourceCompanyId, Guid targetCompanyId, List<Guid> employeeIds, string fullName, bool keepEmployeeNumbers);
 		void SaveWorkerCompensations(List<CompanyWorkerCompensation> rates, int wcImportOption);
 		Employee GetEmployeeById(Guid id);
@@ -53,5 +53,6 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		void SaveCompanyInvoiceSetup(Guid id, string invoiceSetup);
 		Account GetCompanyAccountById(Guid companyId, int accountId);
 		void UpdateEmployeePayrollSchedules(Guid id, PayrollSchedule payrollSchedule);
+		void UpdateEmployeePayCodes(List<Employee> employees);
 	}
 }

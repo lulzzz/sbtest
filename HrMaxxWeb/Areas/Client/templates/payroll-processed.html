@@ -100,7 +100,7 @@
 								<div class="col-sm-3">Amount</div>
 							</div>
 							<div class="row" ng-repeat="pc1 in listitem.payCodes | orderBy:'pc1.payCode.id'" ng-if="pc1.amount>0">
-								<div class="col-sm-5 text-left">{{pc1.payCode.description + '@' + (pc1.payCode.hourlyRate | currency:'$')}}</div>
+								<div class="col-sm-5 text-left">{{pc1.payCode.description + '@' + ( pc1.rateText )}}</div>
 								<div class="col-sm-2">{{pc1.hours | currency:''}}</div>
 								<div class="col-sm-2">{{pc1.overtimeHours | currency:''}}</div>
 								<div class="col-sm-3">{{pc1.amount + pc1.overtimeAmount | currency:'$'}}</div>
@@ -193,7 +193,7 @@
 			<button class="btn btn-sm btn-warning pull-right" ng-click="saveStaging()" ng-show="item.status===2">Save as Draft</button>
 			<button class="btn btn-sm btn-warning  pull-right" ng-click="printPayrollPack(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-print m-r-5"></i> pack</button>
 			<button class="btn btn-sm btn-danger  pull-right" ng-click="emailPayrollPack(item)" ng-show="datasvc.canACHEmail && item.status!==1 && item.status!==2 && item.status!==6 && isPrintable(item)" ng-if="!item.isHistory"><i class="fa fa-envelope m-r-5"></i> ACH & Pack</button>
-			<button class="btn btn-sm btn-warning  pull-right" ng-click="recalculateAccumulations(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && mainData.userRole==='SuperUser'" ng-if="!item.isHistory"><i class="fa fa-recycle m-r-5"></i> Accumulations</button>
+			<button class="btn btn-sm btn-warning  pull-right" ng-click="recalculateAccumulations(item)" ng-show="item.status!==1 && item.status!==2 && item.status!==6 && mainData.userRole==='SuperUser1'" ng-if="!item.isHistory"><i class="fa fa-recycle m-r-5"></i> Accumulations</button>
 		</div>
 	</div>
 	

@@ -37,6 +37,7 @@
                     <li ng-class="{'active':data.selectedTab===7}" ng-click="data.selectedTab=7"><a data-toggle="tab">Exemption Allowance</a></li>
                     <li ng-class="{'active':data.selectedTab===8}" ng-click="data.selectedTab=8"><a data-toggle="tab">HI SIT</a></li>
                     <li ng-class="{'active':data.selectedTab===9}" ng-click="data.selectedTab=9"><a data-toggle="tab">HI SIT Withholding</a></li>
+                    <li ng-class="{'active':data.selectedTab===12}" ng-click="data.selectedTab=12"><a data-toggle="tab">Min Wage(s)</a></li>
 
                 </ul>
 
@@ -420,7 +421,7 @@
                                     </label>
                                 </div>
                             </td>
-                            
+
 
                             <td style="white-space: nowrap" ng-show="data.selectedYear>=data.currentYear">
                                 <!-- form -->
@@ -439,7 +440,7 @@
                             </td>
 
                         </tr>
-                        <tr  ng-show="!selectedFITAlien">
+                        <tr ng-show="!selectedFITAlien">
                             <td colspan="4">
                                 <span ng-show="data.taxTables.fitAlienAdjustmentTable.length===0">No items found</span>
                                 <button class="btn btn-sm btn-primary" ng-click="addFITAlien()"><i class="fa fa-plus-square"></i> add</button>
@@ -954,7 +955,7 @@
 
                             <td style="white-space: nowrap" ng-show="data.selectedYear>=data.currentYear">
                                 <!-- form -->
-                                <form editable-form id="rowform" name="rowform" onbeforesave="saveFITW(item)" class="form-buttons form-inline" shown="selectedFITW.payrollSchedule===item.payrollSchedule">
+                                <form editable-form id="rowform" name="rowform" onbeforesave="saveHISITW(item)" class="form-buttons form-inline" shown="selectedHISITW.payrollSchedule===item.payrollSchedule">
                                     <button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedHISITW(item)">
                                         <i class="fa fa-edit m-r-5"></i> edit
                                     </button>
@@ -972,6 +973,84 @@
                         <tr ng-show="!selectedTR && data.taxTables.hiSitWithholdingAllowanceTable.length===0">
                             <td colspan="4">
                                 <span>No items found</span>
+                            </td>
+
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="row m-5 tab-content" ng-if="data.selectedTab===12 && data.selectedYear">
+                <table class="table table-header table-bordered table-condensed form-controls input-sm">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-1">Year</th>
+                            <th class="col-sm-1">State</th>
+                            <th class="col-sm-1">Min Wage</th>
+                            <th class="col-sm-1">Tipped Min Wage</th>
+                            <th class="col-sm-1">Max Tip Credit</th>
+                            <th class="col-sm-1" ng-show="data.selectedYear>=data.currentYear"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in data.taxTables.minWageYearTable | filter:{ year:data.selectedYear } | orderBy:'tax.id' track by $index" ng-class="{'warning': item.hasChanged}">
+                            <td>
+                                {{item.year}}
+                            </td>
+                            <td>
+                                <select class="form-control" ng-show="item.isNew && rowform.$visible" ng-change="item.stateId = item.state.stateId" ng-model="item.state" ng-options="ps.stateName for ps in data.states track by ps.stateId">
+                                    <option value="">Select State</option>
+                                </select>
+                                <span ng-show="!item.isNew || !rowform.$visible">{{item.stateText}}</span>
+                                <span ng-show="item.isNew && !rowform.$visible">{{getStateName(item.stateId)}}</span>
+                            </td>
+                            
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.minWage" e-name="minwage" e-form="rowform" e-ng-change="item.minWage = $data; item.maxTipCredit=(item.minWage - item.tippedMinWage)" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.minWage }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.tippedMinWage" e-name="minwage" e-form="rowform" e-ng-change="item.tippedMinWage = $data; item.maxTipCredit=(item.minWage - item.tippedMinWage)" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.tippedMinWage }}
+                                </span>
+
+                            </td>
+                            <td>
+                                <!-- editable comment (text with validation) -->
+                                <span editable-number="item.maxTipCredit" e-name="minwage" e-form="rowform" e-ng-change="item.maxTipCredit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
+                                    {{ item.maxTipCredit }}
+                                </span>
+
+                            </td>
+
+
+                            <td style="white-space: nowrap" ng-show="data.selectedYear>=data.currentYear">
+                                <!-- form -->
+                                <form editable-form id="rowform" name="rowform" onbeforesave="saveMinWage(item)" class="form-buttons form-inline" shown="selectedMinWage.id===item.id">
+                                    <button type="button" ng-show="!rowform.$visible" class="btn btn-sm btn-primary" ng-click="rowform.$show();setSelectedMinWage(item)">
+                                        <i class="fa fa-edit m-r-5"></i> edit
+                                    </button>
+
+                                    <button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-sm btn-success">
+                                        <i class="fa fa-save m-r-5"></i> save
+                                    </button>
+                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();item = cancelMinWage(item)" class="btn btn-sm btn-default">
+                                        <i class="fa fa-remove m-r-5"></i> cancel
+                                    </button>
+                                </form>
+                            </td>
+
+                        </tr>
+                        <tr ng-show="!selectedMinWage">
+                            <td colspan="9">
+                                <span ng-show="data.taxTables.minWageYearTable.length===0">No items found </span>
+                                <button class="btn btn-sm btn-primary" ng-click="addMinWage()"><i class="fa fa-plus-square"></i> add</button>
                             </td>
 
 

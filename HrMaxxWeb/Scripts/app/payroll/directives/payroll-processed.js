@@ -60,7 +60,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							$scope.$parent.$parent.committed = null;
 						}
 						else if ($scope.item.status === 6) {
-							$scope.$parent.$parent.$parent.$parent.confirmDialog('This action will ONLY retain the matching timesheets from the draft. Are you sure you want to proceed? You may cancel at Step 1 to retain the draft', 'info', function() {
+							$scope.mainData.confirmDialog('This action will ONLY retain the matching timesheets from the draft. You may cancel at Step 1 to retain the draft', 'info', function() {
 								$scope.$parent.$parent.refresh($scope.item, true, 2);
 								$scope.datasvc.isBodyOpen = true;
 							});
@@ -111,7 +111,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						$scope.$parent.$parent.save($scope.item, $scope.totalChecks);
 					}
 					$scope.saveStaging = function () {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to save this Payroll as Draft? Draft Payrolls are not included in reporting figures', 'danger', function() {
+						$scope.mainData.confirmDialog('Draft Payrolls are not included in reporting figures', 'warning', function() {
 								$scope.item.payChecks = $filter('filter')($scope.item.payChecks, { included: true });
 								payrollRepository.savePayrollToStaging($scope.item).then(function(data) {
 									$scope.$parent.$parent.updateListAndItem($scope.item.id);
@@ -195,7 +195,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						return fil;
 					}
 					$scope.emailPayrollPack = function (payroll) {
-						var confirmMessage = "Are you sure you want to send emails to client Employees with ACH check? please verify below employees below <br/><br/> <ul>";
+						var confirmMessage = "Emails will be sent to client Employees with ACH check? please verify employees below <br/><br/> <ul>";
 						$.each($scope.eftChecks(), function(i, pc) {
 							if (pc.paymentMethod === 2) {
 								if(pc.employee.contact.email)
@@ -205,21 +205,21 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 							}
 						});
 						confirmMessage += "</ul>";
-						$scope.$parent.$parent.$parent.$parent.confirmDialog(confirmMessage, 'warning', function () {
+						$scope.mainData.confirmDialog(confirmMessage, 'warning', function () {
 							payrollRepository.emailPayrollPack(payroll).then(function (data) {
 								
 								$scope.$parent.$parent.$parent.$parent.addAlerts('', data, 'success');
 								}, function (error) {
 									$scope.mainData.handleError('Error: ' , error, 'danger');
 								});
-							}
+							}, null, true
 						);
 
 
 						
 					}
 					$scope.recalculateAccumulations = function (payroll) {
-						var confirmMessage = "Are you sure you want to re-calculate accumulations? please confirm";
+						var confirmMessage = "This action will re-calculate accumulations";
 						
 						$scope.mainData.confirmDialog(confirmMessage, 'warning', function () {
 							payrollRepository.recalculateAccumulations(payroll).then(function (data) {
@@ -283,7 +283,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						return 4;
 					}
 					$scope.updatePayrollDates = function() {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to change the payroll dates?', 'warning', function () {
+						$scope.mainData.confirmDialog('To change the payroll dates', 'warning', function () {
 							$scope.item.startDate = moment($scope.item.startDate).format("MM/DD/YYYY");
 							$scope.item.endDate = moment($scope.item.endDate).format("MM/DD/YYYY");
 							payrollRepository.updatePayrollDates($scope.item).then(function () {
@@ -294,7 +294,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						});
 					}
 					$scope.updateCheckNumbers = function () {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to change check numbers for this payroll?', 'warning', function () {
+						$scope.mainData.confirmDialog('To change check numbers for this payroll', 'warning', function () {
 							payrollRepository.updateCheckNumber($scope.item).then(function () {
 								$scope.$parent.$parent.updateListAndItem($scope.item.id);
 							}, function (error) {
@@ -303,13 +303,13 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						});
 					}
 					$scope.voidcheck = function (listitem) {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to mark this check Void?', 'info', function () {
+						$scope.mainData.confirmDialog('This check will be voided', 'warning', function () {
 							var checkQuarter = getQuarter(moment(listitem.payDay).format("MM"));
 							var thisQuarter = getQuarter(moment().format("MM"));
 							var checkYear = moment(listitem.payDay).format("YYYY");
 							var thisYear = moment().format("YYYY");
 							if (checkYear <= thisYear && checkQuarter < thisQuarter) {
-								$scope.$parent.$parent.$parent.$parent.confirmDialog('This check was issued in a previous quarter. are you sure you want to mark this check Void?', 'danger', function() {
+								$scope.mainData.confirmDialog('This check was issued in a previous quarter. This action will mark this check Void', 'danger', function() {
 									payrollRepository.voidPayCheck($scope.item.id, listitem.id).then(function(data) {
 										$scope.$parent.$parent.updateListAndItem($scope.item.id);
 									}, function(error) {
@@ -328,7 +328,7 @@ common.directive('payrollProcessed', ['$uibModal', 'zionAPI', '$timeout', '$wind
 					}
 
 					$scope.unvoidcheck = function (listitem) {
-						$scope.$parent.$parent.$parent.$parent.confirmDialog('Are you sure you want to Un-Void? you will have adjust invoices and extracts yourself', 'info', function () {
+						$scope.mainData.confirmDialog('Un-Voiding a check. you will have adjust invoices and extracts yourself', 'info', function () {
 							payrollRepository.unvoidPayCheck($scope.item.id, listitem.id).then(function (data) {
 								$scope.$parent.$parent.updateListAndItem($scope.item.id);
 							}, function (error) {

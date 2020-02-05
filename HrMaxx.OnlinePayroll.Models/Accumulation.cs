@@ -57,6 +57,15 @@ namespace HrMaxx.OnlinePayroll.Models
 			}
 			set { }
 		}
+		public string StateStr { get; set; }
+		public EmployeeState State
+		{
+			get
+			{
+				return !string.IsNullOrWhiteSpace(StateStr) ? JsonConvert.DeserializeObject<EmployeeState>(StateStr) : default(EmployeeState);
+			}
+			set { }
+		}
 
 		public string SSN { get; set; }
 		public string SSNVal { get { return !string.IsNullOrWhiteSpace(SSN) ? Crypto.Decrypt(SSN) : string.Empty; } set{} }
@@ -353,7 +362,7 @@ namespace HrMaxx.OnlinePayroll.Models
 				var monthVal = new C1095Month
 				{
 					Month = m.Key,
-					IsFullTime = getIsFullTime(m.ToList(), company.MinWage),
+					IsFullTime = getIsFullTime(m.ToList(), company.MinWage.Value),
 					IsNonNewHire = getIsNonNewHire(m.ToList()),
 					Value = m.ToList().SelectMany(pc => pc.Deductions).Sum(d => d.Amount),
 					Checks = m.Count(),

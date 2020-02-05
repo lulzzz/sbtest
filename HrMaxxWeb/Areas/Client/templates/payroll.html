@@ -11,25 +11,30 @@
 							<label class="control-label">Start Date <span class="text-danger">*</span></label>
 							<date-ctrl name="startdate" required="true" model="item.startDate" disabled="false" />
 						</div>
-						
-						<div class="form-group">
+						<div class="form-group"  ng-show="item.startDate">
 							<label class="control-label">End Date <span class="text-danger">*</span></label>
-							<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" disabled="!item.startDate" ng-if="item.startDate" />
+							<date-ctrl name="enddate" required="true" model="item.endDate" min="item.startDate" />
+							
 
 						</div>
+						
 					</div>
 					
 					
 					<div class="col-sm-2 form-group">
+
+
 						<div class="form-group">
-							<label class="control-label">Check Date <span class="text-danger">*</span></label>
-							<date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" disabled="!item.startDate && !item.endDate" />
-						</div>
-						<label class="control-label">Starting Check Number <span class="text-danger">*</span></label>
-						<div class="form-group">
-							<input type="number" ng-model="item.startingCheckNumber" class="form-control" required data-parsley-pattern="/^[1-9][0-9]{2,9}$/" data-parsley-type="number" step="1" />
+							<label class="control-label">Starting Check Number <span class="text-danger">*</span></label>
+							<input type="number" ng-model="item.startingCheckNumber" class="form-control input-sm" required data-parsley-pattern="/^[1-9][0-9]{2,9}$/" data-parsley-type="number" step="1" />
 
 						</div>
+						<div class="form-group" ng-show="item.startDate && item.endDate">
+							<label class="control-label">Check Date <span class="text-danger">*</span></label>
+							<date-ctrl name="payday" required="true" model="item.payDay" min="minPayDate" />
+
+						</div>
+						
 					</div>
 					<div class="col-sm-2 form-group">
 						<label class="control-label">Notes</label>
@@ -136,10 +141,10 @@
 											<div class="col-sm-3">Overtime</div>
 										</div>
 										<div class="row" ng-repeat="pc in listitem.payCodes | orderBy:'payCode.id'">
-											<div class="col-sm-6" ng-show="pc.payCode.id>0">{{pc.payCode.description }} ({{pc.payCode.hourlyRate | currency:'$'}} per hour)</div>
+											<div class="col-sm-6" ng-show="pc.payCode.id>0">{{pc.payCode.description }} ({{pc.payCode.rateType===1 ? (pc.payCode.hourlyRate | currency:'$') : (pc.payCode.hourlyRate + ' x' + (listitem.employee.rate | currency:'$'))}} per hour)</div>
 											<div class="col-sm-6" ng-show="pc.payCode.id===0"><input class="form-control" ng-model="pc.payCode.hourlyRate" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal /></div>
 											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenHours" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
-											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" /></div>
+											<div class="col-sm-3"><input class="form-control" ng-model="pc.screenOvertime" required data-parsley-pattern="/^[0-9]+((\.[0-9]{1,2})|(\:[0-5][0-9]{0,1})?)$/" ng-disabled="pc.payCode.rateType===2"/></div>
 										</div>
 									</div>
 

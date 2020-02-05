@@ -28,6 +28,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public int CeilingMethod { get; set; }
         public Nullable<decimal> EmployerRate { get; set; }
         public string Note { get; set; }
+        public Nullable<System.DateTime> StartDate { get; set; }
+        public Nullable<System.DateTime> EndDate { get; set; }
     
         public virtual CompanyDeduction CompanyDeduction { get; set; }
         public virtual Employee Employee { get; set; }

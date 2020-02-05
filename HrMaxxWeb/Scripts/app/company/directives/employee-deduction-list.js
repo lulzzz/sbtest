@@ -11,12 +11,13 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				list: "=list",
 				saveToServer: "=saveToServer",
 				showControls: "=showControls",
+				payDay: "=?payDay",
 				agencies:"=agencies"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html?v=' + version,
 
-			controller: ['$scope', '$filter', 'companyRepository',
-				function ($scope, $filter, companyRepository) {
+			controller: ['$scope', '$filter', 'companyRepository', 'ClaimTypes',
+				function ($scope, $filter, companyRepository, ClaimTypes) {
 					var dataSvc = {
 						types: [{
 								key: 1,
@@ -34,12 +35,35 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 							value: '$'
 						}
 						],
-						agencies: $scope.agencies? angular.copy($scope.agencies) : []
+						agencies: $scope.agencies ? angular.copy($scope.agencies) : [],
+						canChangeDates , $scope.mainData.hasClaim(ClaimTypes.EmployeeDeductionDates, 1)
 					};
-
+					$scope.payDay = $scope.payDay ? moment($scope.payDay).startOf('day').toDate() : moment().startOf('day').toDate();
 					$scope.data = dataSvc;
 
-				
+					$scope.showDates = function (item) {
+						if (item.deduction) {
+							if (item.deduction.startDate && item.deduction.endDate)
+								return '(' + moment(item.deduction.startDate).format('MM/DD/YYYY') + ' - ' + moment(item.deduction.endDate).format('MM/DD/YYYY') + ' )';
+							else if (item.deduction.startDate)
+								return '( From ' + moment(item.deduction.startDate).format('MM/DD/YYYY') + ' )';
+							else if (item.deduction.endDate)
+								return '( Till ' + moment(item.deduction.endDate).format('MM/DD/YYYY') + ' )';
+							else
+								return null;
+						}
+						
+					}
+					$scope.showEmployeeDates = function (item) {
+						if (item.startDate && item.endDate)
+							return '(' + moment(item.startDate).format('MM/DD/YYYY') + ' - ' + moment(item.endDate).format('MM/DD/YYYY') + ' )';
+						else if (item.startDate)
+							return '( From ' + moment(item.startDate).format('MM/DD/YYYY') + ' )';
+						else if (item.endDate)
+							return '( Till ' + moment(item.endDate).format('MM/DD/YYYY') + ' )';
+						else
+							return null;
+					}
 				$scope.getAgencyName = function(id) {
 					if (id) {
 						var fil = $filter('filter')(dataSvc.agencies, { id: id })[0];
@@ -52,7 +76,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				};
 				$scope.selected = null;
 				$scope.add = function () {
-					$scope.selected = {
+					var item = {
 						id: 0,
 						employeeId: $scope.employeeId,
 						deduction: null,
@@ -65,31 +89,34 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
                         employerRate: null,
                         employeeWithheld: 0,
                         employerWithheld: 0,
-                        note: ''
+						note: '',
+						startDate: null,
+						endDate: null
 
 					};
-					$scope.list.push($scope.selected);
+					$scope.list.push(item);
+					$scope.setSelected(item);
 				},
 				
                     $scope.save = function (index) {
                     
                         var item = $scope.selected;
-					if ($scope.saveToServer) {
-						item.employeeId = $scope.employeeId;
-						item.ceilingPerCheck1 = item.ceilingPerCheck;
-						companyRepository.saveEmployeeDeduction(item).then(function(deduction) {
-							item.id = deduction.id;
+						if ($scope.saveToServer) {
+							item.employeeId = $scope.employeeId;
+							item.ceilingPerCheck1 = item.ceilingPerCheck;
+							companyRepository.saveEmployeeDeduction(item).then(function(deduction) {
+								item.id = deduction.id;
+								$scope.selected = null;
+								$scope.$parent.$parent.updateDeductionList($scope.list);
+								addAlert('successfully saved employee deduction', 'success');
+							}, function(error) {
+								addAlert('error in saving deduction', 'danger');
+							});
+						} else {
 							$scope.selected = null;
-							$scope.$parent.$parent.updateDeductionList($scope.list);
-							addAlert('successfully saved employee deduction', 'success');
-						}, function(error) {
-							addAlert('error in saving deduction', 'danger');
-						});
-					} else {
-						$scope.selected = null;
-					}
+						}
 					
-                        }
+                    }
                     $scope.showWarning = function() {
                         if ($scope.selected) {
                             if ($scope.selected.limit === "0" || $scope.selected.ceilingPerCheck === "0")
@@ -97,7 +124,13 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
                             else
                                 return false;
                         }
-                    }
+					}
+					$scope.showWarningText = function (item) {
+						if ((item.startDate && moment(item.startDate).toDate() > $scope.payDay) || (item.endDate && moment(item.endDate).toDate() < $scope.payDay) || (item.deduction.startDate && moment(item.deduction.startDate).toDate() > $scope.payDay) || (item.deduction.endDate && moment(item.deduction.endDate).toDate() < $scope.payDay))
+							return true;
+						else
+							return false;
+					}
                     $scope.delete = function (index) {
                         var item = $scope.list[index];
 					if ($scope.saveToServer) {
@@ -124,6 +157,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				$scope.setSelected = function(item) {
 					$scope.selected = item;
 					$scope.original = angular.copy($scope.selected);
+					$scope.selected.startDate = $scope.selected.startDate ? moment($scope.selected.startDate).toDate() : null;
+					$scope.selected.endDate = $scope.selected.endDate ? moment($scope.selected.endDate).toDate() : null;
 				}
                     $scope.isValid = function(index) {
                         var form = $('form[name="dedform' + index + '"]');
@@ -153,10 +188,13 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					var returnList = [];
 					if ($scope.companyDeductions) {
 						$.each($scope.companyDeductions, function (ind, d) {
-							var matching = $filter('filter')($scope.list, { deduction: { id: d.id } })[0];
-							if (!matching || (index !== -1 && $scope.list.indexOf(matching) === index)) {
-								returnList.push(d);
+							if (!d.endDate || (d.endDate && (moment(d.endDate).toDate()>$scope.payDay ))) {
+								var matching = $filter('filter')($scope.list, { deduction: { id: d.id } })[0];
+								if (!matching || (index !== -1 && $scope.list.indexOf(matching) === index)) {
+									returnList.push(d);
+								}
 							}
+							
 						});
 					}
 					
@@ -191,7 +229,15 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 
                         else
                             return 'border-red';
-                    }
+					}
+					$scope.showDetails = function (item) {
+						if (!$scope.selected) {
+							return false;
+						}
+						else if ($scope.selected.id === item.id)
+							return true;
+						//return selected && ((selected.id && selected.id === item.id) || (!selected.id && saveToServer && selected.employeeDeduction.id === item.employeeDeduction.id))
+					}
 				
 				
 

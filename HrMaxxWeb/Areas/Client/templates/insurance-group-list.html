@@ -34,7 +34,7 @@
 						</td>
 						<td style="white-space: nowrap">
 							<!-- form -->
-							<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
+							<form editable-form id="rowformig{{$index}}" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
 								<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
 									<i class="fa fa-edit m-r-5"></i> 
 								</button>

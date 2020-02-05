@@ -82,6 +82,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 							status: 1
 						};
 						$.each(dataSvc.employees, function (index, employee) {
+							
 							var paycheck = {
 								id: 0,
 								employeeNo: employee.employeeNo ? parseInt(employee.employeeNo) : employee.employeeNo,
@@ -144,11 +145,14 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 									agencyId: ded.agencyId,
 									limit: ded.limit,
                                     priority: ded.priority,
-                                    employeeWithheld: ded.employeeWithheld,
-                                    employerWithheld: ded.employerWithheld
+									employeeWithheld: ded.employeeWithheld ? ded.employeeWithheld : 0,
+									employerWithheld: ded.employerWithheld ? ded.employerWithheld : 0,
+									startDate: ded.startDate,
+									endDate: ded.endDate
 								});
 							});
-							selected.payChecks.push(paycheck);
+								selected.payChecks.push(paycheck);
+							
 						});
 						if ($scope.list.length > 0) {
 							var sorted = $filter('orderBy')($scope.list, 'endDate', true);
@@ -388,8 +392,11 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 												d.priority = d.employeeDeduction.priority;
                                                 d.limit = d.employeeDeduction.limit;
                                                 d.employerRate = d.employeeDeduction.employerRate;
-                                                d.employeeWithheld = empDed.employeeWithheld;
-                                                d.employerWithheld = empDed.employerWithheld;
+												d.employeeWithheld = empDed.employeeWithheld ? empDed.employeeWithheld : 0;
+												d.employerWithheld = empDed.employerWithheld ? empDed.employerWithheld : 0;
+												
+												d.startDate = empDed.startDate;
+												d.endDate = empDed.endDate;
                                             });
 										} else {
 											$.each(employee.compensations, function(index2, comp) {
@@ -417,8 +424,10 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 													agencyId: ded.agencyId,
 													limit: ded.limit,
                                                     priority: ded.priority,
-                                                    employeeWithheld : ded.employeeWithheld,
-                                                    employerWithheld : ded.employerWithheld
+													employeeWithheld: ded.employeeWithheld ? ded.employeeWithheld : 0,
+													employerWithheld: ded.employerWithheld ? ded.employerWithheld : 0,
+													startDate: ded.startDate,
+													endDate: ded.endDate
 												});
 											});
 										}
@@ -533,7 +542,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 					$scope.save = function (item, checks) {
 						$scope.cancel();
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to Confirm this Payroll? # of check=' + checks + '. Gross Wage=' + $filter('currency')(item.totalGrossWage, '$'), 'warning', function () {
+						$scope.mainData.confirmDialog('Confirm this Payroll. # of check=' + checks + '. Gross Wage=' + $filter('currency')(item.totalGrossWage, '$'), 'warning', function () {
 							item.payChecks = $filter('filter')(item.payChecks, { included: true });
 
 							payrollRepository.commitPayroll(item).then(function (data) {
@@ -667,6 +676,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 								dataSvc.startingCheckNumber = data.startingCheckNumber;
 								dataSvc.importMap = data.importMap;
 								dataSvc.agencies = data.agencies;
+								dataSvc.minWages = data.minWages;
 								dataSvc.metaDataLoaded = true;
 								if ($scope.selected && !$scope.selected.startingCheckNumber) {
 									$scope.selected.startingCheckNumber = dataSvc.startingCheckNumber;
@@ -738,7 +748,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.deleteDraftPayroll = function(event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to delete this Draft Payroll?', 'danger', function() {
+						$scope.mainData.confirmDialog('Delete this Draft Payroll', 'danger', function() {
 								payrollRepository.deleteDraftPayroll(payroll).then(function(data) {
 									if (data) {
 										$scope.list.splice($scope.list.indexOf(payroll), 1);
@@ -756,7 +766,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.deletePayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();
-						$scope.$parent.$parent.confirmDialog('Please make sure the Positive Pay Report impact before deleting this payroll?', 'danger', function () {
+						$scope.mainData.confirmDialog('Please make sure the Positive Pay Report impact before deleting this payroll?', 'danger', function () {
 							payrollRepository.deletePayroll(payroll).then(function (data) {
 								if (data) {
 									$scope.list.splice($scope.list.indexOf(payroll), 1);
@@ -774,7 +784,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.voidPayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to Void all checks in this Payroll?', 'danger', function () {
+						$scope.mainData.confirmDialog('Void all checks in this Payroll', 'warning', function () {
 							payrollRepository.voidPayroll(payroll).then(function (data) {
 								if (data) {
 									$scope.list.splice($scope.list.indexOf(payroll), 1);
@@ -793,7 +803,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.unVoidPayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to Un Void all checks in this Payroll?', 'danger', function () {
+						$scope.mainData.confirmDialog('Un-Void all checks in this Payroll', 'warning', function () {
 							payrollRepository.UnVoidPayroll(payroll).then(function (data) {
 								if (data) {
 									$scope.list.splice($scope.list.indexOf(payroll), 1);
@@ -812,7 +822,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.reProcessReConfirmPayroll = function (event, payroll) {
 						event.stopPropagation();
 						$scope.cancel();
-						$scope.$parent.$parent.confirmDialog('Are you sure you want to ReProcess and ReConfirm this Payroll?', 'danger', function () {
+						$scope.mainData.confirmDialog('ReProcess and ReConfirm this Payroll', 'danger', function () {
 							payrollRepository.reProcessReConfirmPayroll(payroll).then(function (data) {
 								if (data) {
 									$scope.list.splice($scope.list.indexOf(payroll), 1);
@@ -1002,7 +1012,7 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 					
 					init();
-					$interval($scope.checkQueued, 30000);
+					$interval($scope.checkQueued, 10000);
 					
 
 				}]

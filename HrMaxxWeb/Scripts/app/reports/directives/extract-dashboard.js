@@ -26,6 +26,7 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 						filteredPendingExtracts: [],
 						filteredPendingExtractsByDate: [],
 						filteredPendingExtractsByCompany: [],
+						filteredPendingExtractsBySchedule: [],
 						isDataLoaded: false
 
 				}
@@ -67,7 +68,7 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 						month[10] = "Nov";
 						month[11] = "Dec";
 
-						return month[x.getMonth()] + '-' + x.getYear();
+						return month[x.getMonth()] + '-' + x.getFullYear().toString().substr(2, 2);
 					};
 
 					
@@ -119,18 +120,122 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 							backgroundColor: '#242a30'
 						});
 					};
+					$scope.changePanel = function (panel) {
+						if (dataSvc.viewpanel !== panel) {
+							dataSvc.viewpanel = panel;
+							$timeout(function () {
+								if (panel === 2) {
+									$('#jstree-default').jstree({
+										"core": {
+											"themes": {
+												"responsive": false
+											}
+										},
+										"types": {
+											"default": {
+												"icon": "fa fa-folder text-warning fa-lg"
+											},
+											"file": {
+												"icon": "fa fa-file text-inverse fa-lg"
+											}
+										},
+										"plugins": ["types"]
+									});
+									$('#jstree-default').on('select_node.jstree', function (e, data) {
+										var link = $('#' + data.selected).find('a');
+										if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
+											if (link.attr("target") == "_blank") {
+												link.attr("href").target = "_blank";
+											}
+											document.location.href = link.attr("href");
+											return false;
+										}
+									});
+									$('#jstree-default').jstree('refresh');
+								}
+								if (panel === 3) {
+									$('#jstree-default1').jstree({
+										"core": {
+											"themes": {
+												"responsive": false
+											}
+										},
+										"types": {
+											"default": {
+												"icon": "fa fa-folder text-warning fa-lg"
+											},
+											"file": {
+												"icon": "fa fa-file text-inverse fa-lg"
+											}
+										},
+										"plugins": ["types"]
+									});
+									$('#jstree-default1').on('select_node.jstree', function (e, data) {
+										var link = $('#' + data.selected).find('a');
+										if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
+											if (link.attr("target") == "_blank") {
+												link.attr("href").target = "_blank";
+											}
+											document.location.href = link.attr("href");
+											return false;
+										}
+									});
+									$('#jstree-default1').jstree('refresh');
+								}
 
+								if (panel === 4) {
+									$('#jstree-default2').jstree({
+										"core": {
+											"themes": {
+												"responsive": false
+											}
+										},
+										"types": {
+											"default": {
+												"icon": "fa fa-folder text-warning fa-lg"
+											},
+											"file": {
+												"icon": "fa fa-file text-inverse fa-lg"
+											}
+										},
+										"plugins": ["types"]
+									});
+									$('#jstree-default2').on('select_node.jstree', function (e, data) {
+										var link = $('#' + data.selected).find('a');
+										if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
+											if (link.attr("target") == "_blank") {
+												link.attr("href").target = "_blank";
+											}
+											document.location.href = link.attr("href");
+											return false;
+										}
+									});
+									$('#jstree-default2').jstree('refresh');
+								}
+							});
+						}
+						
+					}
 					$scope.showChart = function (extract) {
 						dataSvc.showChart = true;
+						dataSvc.viewpanel = 0;
 						dataSvc.extractType = extract;
+						dataSvc.dashboard.pendingExtractsByScheduleCopy = angular.copy(dataSvc.dashboard.pendingExtractsBySchedule);
 						$timeout(function () {
-
+							
 							var color = 'black';
 							if (extract === 1) {
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'Federal941' });
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal941' });
 								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal941' });
 								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'Federal941' });
+								dataSvc.filteredPendingExtractsBySchedule = [];
+								$.each(dataSvc.dashboard.pendingExtractsByScheduleCopy, function (i, pe) {
+									pe.details = $filter('filter')(pe.details, { extractName: 'Federal941' });
+									if (pe.details.length > 0)
+										dataSvc.filteredPendingExtractsBySchedule.push(pe);
+								});
+
 								color = '0D888B';
 								dataSvc.chartTitle = 'Federal 941 Extract History';
 								dataSvc.donutPaid = dataSvc.dashboard.ytd941Extract;
@@ -143,6 +248,12 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal940' });
 								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal940' });
 								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'Federal940' });
+								dataSvc.filteredPendingExtractsBySchedule = [];
+								$.each(dataSvc.dashboard.pendingExtractsBySchedule, function (i, pe) {
+									pe.details = $filter('filter')(pe.details, { extractName: 'Federal940' });
+									if (pe.details.length > 0)
+										dataSvc.filteredPendingExtractsBySchedule.push(pe);
+								});
 								dataSvc.donutPaid = dataSvc.dashboard.ytd940Extract;
 								dataSvc.donutPending = dataSvc.dashboard.pending940Amount;
 							}
@@ -152,6 +263,12 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAPIT' });
 								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAPIT' });
 								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'StateCAPIT' });
+								dataSvc.filteredPendingExtractsBySchedule = [];
+								$.each(dataSvc.dashboard.pendingExtractsBySchedule, function (i, pe) {
+									pe.details = $filter('filter')(pe.details, { extractName: 'StateCAPIT' });
+									if (pe.details.length > 0)
+										dataSvc.filteredPendingExtractsBySchedule.push(pe);
+								});
 								dataSvc.donutPaid = dataSvc.dashboard.ytdCAPITExtract;
 								dataSvc.donutPending = dataSvc.dashboard.pendingPitAmount;
 							}
@@ -161,6 +278,12 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAUI' });
 								dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAUI' });
 								dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'StateCAUI' });
+								dataSvc.filteredPendingExtractsBySchedule = [];
+								$.each(dataSvc.dashboard.pendingExtractsBySchedule, function (i, pe) {
+									pe.details = $filter('filter')(pe.details, { extractName: 'StateCAUI' });
+									if (pe.details.length > 0)
+										dataSvc.filteredPendingExtractsBySchedule.push(pe);
+								});
 								dataSvc.donutPaid = dataSvc.dashboard.ytdCAUIETTExtract;
 								dataSvc.donutPending = dataSvc.dashboard.pendingUiEttAmount;
 							}
@@ -173,63 +296,8 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 							handleExtractChart(dataSvc.filteredExtracts, 'extract-paid', 'Tax Paid',green, greenLight);
 							handleExtractChart(dataSvc.filteredPendingExtracts, 'extract-pending', 'Tax Pending', redLight, red);
 							handleExtractDonutChart();
-							$timeout(function() {
-								$('#jstree-default').jstree({
-									"core": {
-										"themes": {
-											"responsive": false
-										}
-									},
-									"types": {
-										"default": {
-											"icon": "fa fa-folder text-warning fa-lg"
-										},
-										"file": {
-											"icon": "fa fa-file text-inverse fa-lg"
-										}
-									},
-									"plugins": ["types"]
-								});
-
-								$('#jstree-default').on('select_node.jstree', function(e, data) {
-									var link = $('#' + data.selected).find('a');
-									if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
-										if (link.attr("target") == "_blank") {
-											link.attr("href").target = "_blank";
-										}
-										document.location.href = link.attr("href");
-										return false;
-									}
-								});
-								$('#jstree-default1').jstree({
-									"core": {
-										"themes": {
-											"responsive": false
-										}
-									},
-									"types": {
-										"default": {
-											"icon": "fa fa-folder text-warning fa-lg"
-										},
-										"file": {
-											"icon": "fa fa-file text-inverse fa-lg"
-										}
-									},
-									"plugins": ["types"]
-								});
-
-								$('#jstree-default1').on('select_node.jstree', function (e, data) {
-									var link = $('#' + data.selected).find('a');
-									if (link.attr("href") != "#" && link.attr("href") != "javascript:;" && link.attr("href") != "") {
-										if (link.attr("target") == "_blank") {
-											link.attr("href").target = "_blank";
-										}
-										document.location.href = link.attr("href");
-										return false;
-									}
-								});
-							});
-
+							
+							
 						});
 						
 

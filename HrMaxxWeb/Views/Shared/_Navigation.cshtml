@@ -97,7 +97,7 @@
 				{
 					<li><a onclick=" this.href = '#!/Client/Payrolls/' + (new Date().getTime())"><i class="fa fa-paypal" data-toggle="tooltip" data-placement="right" title="Payroll"></i><span>Payroll</span></a></li>
 				}
-				if (CurrentUser.IsInRole(RoleTypeEnum.SuperUser.GetDbName()))
+				if (CurrentUser.HasClaim(HrMaxxClaimTypes.PayrollSchedule))
 				{
 					<li><a onclick=" this.href = '#!/Client/SchedulePayrolls' "><i class="fa fa-calendar" data-toggle="tooltip" data-placement="right" title="Schedule Payroll"></i><span>Schedule Payrolls</span></a></li>
 				}

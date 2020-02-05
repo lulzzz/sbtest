@@ -36,6 +36,7 @@
 		public const string CompanyAccumulatedPayTypesLumpSum = "http://Paxol/Company/AccumulatedPayTypesLumpSum";
 		public const string CompanyCopy = "http://Paxol/Company/Copy";
 		public const string CompanyCopyPayrolls = "http://Paxol/Company/CopyPayrolls";
+		public const string CompanyDeductionDates = "http://Paxol/Company/DeductionDates";
 		public const string EmployeeManageEmployees = "http://Paxol/Employee/ManageEmployees";
 		public const string EmployeeBulkTerminate = "http://Paxol/Employee/BulkTerminate";
 		public const string EmployeeSickLeaveExport = "http://Paxol/Employee/SickLeaveExport";
@@ -48,6 +49,7 @@
 		public const string EmployeePayChecks = "http://Paxol/Employee/PayChecks";
 		public const string EmployeeReports = "http://Paxol/Employee/Reports";
 		public const string EmployeeDeductions = "http://Paxol/Employee/Deductions";
+		public const string EmployeeDeductionDates = "http://Paxol/Employee/DeductionDates";
 		public const string PayrollProcess = "http://Paxol/Payroll/Process";
 		public const string PayrollConfirm = "http://Paxol/Payroll/Confirm";
 		public const string PayrollVoid = "http://Paxol/Payroll/Void";
@@ -63,6 +65,7 @@
 		public const string PayrollDelivery = "http://Paxol/Payroll/Delivery";
 		public const string PayrollACHPackEmail = "http://Paxol/Payroll/ACHPackEmail";
 		public const string PayrollAwaitingPrint = "http://Paxol/Payroll/AwaitingPrint";
+		public const string PayrollSchedule = "http://Paxol/Payroll/SchedulePayroll";
 		public const string InvoiceList = "http://Paxol/Invoice/List";
 		public const string InvoiceCommissions = "http://Paxol/Invoice/Commissions";
 		public const string InvoiceDelete = "http://Paxol/Invoice/Delete";

@@ -72,8 +72,8 @@
 		</div>
 	</div>
 
-	<div class="hidden-print" ng-if="selectedCompany">
-		<company company="selectedCompany" main-data="mainData" is-popup="false" show-controls="true" />	
+	<div class="hidden-print" ng-if="data.companyMetaData && selectedCompany">
+		<company company="selectedCompany" main-data="mainData" company-meta-data="data.companyMetaData" is-popup="false" show-controls="true" />	
 	</div>
 	
 	<script type="text/ng-template" id="popover/copycompany.html">

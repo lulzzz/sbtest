@@ -321,6 +321,7 @@
     <Content Include="Scripts\app\reports\directives\employee-dashboard.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\app.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\app.min.js" />
+    <Content Include="Scripts\bootstrap\sweetalert.min.js" />
     <Content Include="Scripts\coming-soon.demo.js" />
     <Content Include="Scripts\flot\jquery.flot.min.js" />
     <Content Include="Scripts\flot\jquery.flot.pie.min.js" />

@@ -37,7 +37,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int InsuranceGroupNo { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
 		public PayrollScheduleSubType PayrollScheduleDay { get; set; }
-		public decimal MinWage { get; set; }
+		public decimal? MinWage { get; set; }
 		public string Memo { get; set; }
 		public string DashboardNotes { get; set; }
 		public string Notes { get; set; }
@@ -62,7 +62,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 
 		public DateTime? LastPayrollDate { get; set; }
 		public DateTime? Created { get; set; }
-
+		public bool IsRestaurant { get; set; }
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
@@ -161,11 +161,13 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string Description { get; set; }
 		public decimal? FloorPerCheck { get; set; }
 		public bool ApplyInvoiceCredit { get; set; }
-		public decimal AnnualMax { get; set; }
+		public decimal? AnnualMax { get; set; }
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
     }
 
@@ -220,10 +222,12 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public string Description { get; set; }
 		[Required]
 		public decimal HourlyRate { get; set; }
-
+		[Required]
+		public PayCodeRateType RateType { get; set; }
+		
 		public string DropDownDisplay
 		{
-			get { return string.Format("{0}:{1} ({2} per hour)", Code, Description, HourlyRate.ToString("c")); }
+			get { return string.Format("{0}:{1} ({2} {3})", Code, Description, HourlyRate.ToString("c"), RateType==PayCodeRateType.Flat ? "per hour" : " x default rate"); }
 		}
 	}
 
