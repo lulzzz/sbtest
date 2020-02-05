@@ -122,7 +122,8 @@ namespace HrMaxx.OnlinePayroll.Repository
 		{
 			//const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournal where (( @IsPEO=0 and PEOASOCOCHECK=0 and CompanyIntId=@CompanyId and TransactionType=@TransactionType) or (@IsPEO=1 and PEOASOCoCheck=1))";
 			string peosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyJournal where PEOASOCOCHECK=1";
-			string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" +companyId + ";";
+			string nonpeosql = $"select isnull(max(CheckNumber),0) as maxnumber from (select checknumber from dbo.CompanyJournalCheckbook where companyintid={companyId} " +
+				$"union select CheckNumber from dbo.CompanyPayCheckNumber where CompanyIntId = {companyId})a";
 			
 
 			using (var con = new SqlConnection(_sqlCon))
@@ -331,7 +332,10 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public int GetMaxRegularCheckNumber(int companyId)
 		{
-			const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType in (2,6)";
+			//const string sql = "select max(CheckNumber) as maxnumber from dbo.CompanyJournalCheckbook where CompanyIntId=@CompanyId and TransactionType in (2,6)";
+			//string sql = $"select isnull(max(CheckNumber),0) as maxnumber from (select checknumber from dbo.CompanyJournalCheckbook where companyintid={companyId} " +
+			//	$"union select CheckNumber from dbo.CompanyPayCheckNumber where CompanyIntId = {companyId})a";
+			string sql = $"select dbo.GetMaxASOCheckNumber(@CompanyId, null) as maxnumber";
 			using (var conn = GetConnection())
 			{
 				dynamic result =
@@ -348,10 +352,11 @@ namespace HrMaxx.OnlinePayroll.Repository
 			}
 		}
 
-		public int GetMaxCheckNumberWithoutPayroll(int companyIntId, Guid payrollId)
+		public int GetMaxCheckNumberWithoutPayroll(int companyId, Guid payrollId)
 		{
 
-			string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" + companyIntId + " and PayrollId<>'" + payrollId + "';";
+			//string nonpeosql = "select isnull(max(CheckNumber),0) as maxnumber from dbo.CompanyPayCheckNumber where CompanyIntId=" + companyIntId + " and PayrollId<>'" + payrollId + "';";
+			string nonpeosql = $"select dbo.GetMaxASOCheckNumber({companyId}, '{payrollId}') as maxnumber";
 
 
 			using (var con = new SqlConnection(_sqlCon))

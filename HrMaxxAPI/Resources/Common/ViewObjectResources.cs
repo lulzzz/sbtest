@@ -48,7 +48,7 @@ namespace HrMaxxAPI.Resources.Common
 		public List<CompanyTaxState> CompanyTaxStates { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; } 
-
+		public int CompanyIntId { get; set; }
 		public string ContractType
 		{
 			get { return InvoiceSetup == null ? string.Empty : InvoiceSetup.InvoiceType.GetDbName(); }

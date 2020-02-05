@@ -44,6 +44,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Contact { get; set; }
 		public decimal? UIRate { get; set; }
 		public decimal? ETTRate { get; set; }
+		public int CompanyIntId { get; set; }
 	}
 
 	public class HostAndCompanies
