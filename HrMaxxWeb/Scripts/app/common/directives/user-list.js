@@ -200,7 +200,8 @@ common.directive('userList', ['$uibModal', 'zionAPI', '$timeout', '$window','ver
 					dataSvc.selectedEmployee = null;
 					dataSvc.viewAccess = false;
 				}
-				$scope.setSelectedUser = function(item) {
+				$scope.setSelectedUser = function (item, $event) {
+					$event.stopPropagation();
 					$scope.selectedUser = null;
 					$timeout(function() {
 						$scope.originalUser = item;

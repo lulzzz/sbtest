@@ -117,16 +117,16 @@
                         <table class="table table-header table-bordered table-condensed form-controls input-sm">
                             <thead>
                                 <tr>
-                                    <th class="col-sm-1">Year</th>
-                                    
-                                    <th class="col-sm-1">Min Wage</th>
-                                    <th class="col-sm-1">Tipped Min Wage</th>
+                                    <th class="col-sm-3">Year</th>
+                                    <th class="col-sm-3">Min Wage</th>
+                                    <th class="col-sm-3">Min Wage</th>
+                                    <th class="col-sm-3">Tipped Min Wage</th>
 
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="mw in model" >
-                                    <td>{{me.year}}</td>
+                                    <td>{{mw.year}}</td>
                                     <td>{{mw.stateText}}</td>
                                     <td>{{mw.minWage | currency:'$'}}</td>
                                     <td>{{mw.tippedMinWage | currency:'$'}}</td>
@@ -280,18 +280,9 @@
                     </div>
                 </script>
                 <script type="text/ng-template" id="popover/company.html">
+                    <company company="company" main-data="mainData" is-popup="true" show-controls="true" />
 
-                    <div class="modal-header">
-                        <h2 class="modal-title">{{company.name}} Details</h2>
-                        <button type="btn btn-sm pull-right" class="close" ng-click="cancel()">
-                            <span class="glyphicon glyphicon-remove-circle"></span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <company company="company" main-data="mainData" is-popup="true" show-controls="true" />
-                        </div>
-                    </div>
+                    
                 </script>
                 <script type="text/ng-template" id="popover/confirm.html">
 
@@ -337,55 +328,63 @@
 
                 </script>
                 <script type="text/ng-template" id="popover/updatecomps1.html">
-
-                    <div class="modal-header">
-                        <h2 class="modal-title">Compensations for {{paycheck.employee.name}}<button class="btn btn-lg btn-success btn-icon btn-circle" ng-show="availablePayTypes().length>0" ng-click="addPayType()"><i class="fa fa-plus"></i></button></h2>
-                    </div>
-                    <div class="modal-body">
-                        <form name="compform" data-parsley-validate="true">
-                            <div class="row" ng-repeat="paytype in paycheck.compensations track by $index">
-                                <div class="col-sm-6">{{paytype.payType.description}}</div>
-                                <div class="col-sm-2">
-                                    <span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span>
-                                </div>
-                                <div class="col-sm-3">
-                                    <input class="form-control"
-                                           ng-model="paytype.amount" required data-parsley-type="number" ng-disabled="paytype.payType.id===12" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
-                                </div>
-                                <div class="col-sm-1">
-                                    <button class="btn  btn-sm btn-icon btn-circle btn-danger" ng-hide="paytype.payType.id===12" ng-click="remove($index)"><i class="fa fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="row" ng-repeat="paytype in newPayTypes track by $index">
-                                <div class="col-sm-6">
-                                    <select name="pt1{{$index}}" id="pt1{{$index}}" class="form-control" ng-change="updatePayTypeUsed(paytype)" ng-model="paytype.payType" ng-options="st.description for st in payTypeList(paytype) | orderBy:'id' track by st.id" required>
-                                        <option value="">Please select...</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span>
-
-                                </div>
-                                <div class="col-sm-3">
-                                    <input class="form-control"
-                                           data-parsley-type="number"
-                                           ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal ng-disabled="paytype.payType.id===12" />
-                                </div>
-                                <div class="col-sm-1">
-                                    <button class="btn  btn-lg btn-icon btn-circle btn-danger" ng-show="!item.id && paytype.payType && paytype.payType.id!==12" ng-click="removeFromNew($index)"><i class="fa fa-trash"></i></button>
-                                </div>
-                            </div>
-
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
-                            <button type="button" class="btn btn-default  btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
-                            <button type="button" class="btn btn-success  btn-lg btn-icon btn-circle pull-right" ng-click="save()"><i class="fa fa-save"></i></button>
+                    <div class="panel panel-success overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Compensations for {{paycheck.employee.name}}
+                            </h3>
                         </div>
+                        <div class="panel-body">
+                            <form name="compform" data-parsley-validate="true">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="col-sm-5">Pay Type</th>
+                                            <th class="col-sm-3">Wage</th>
+                                            <th class="col-sm-3">Amount</th>
+                                            <th class="col-sm-1"><button class="btn btn-success btn-icon btn-circle pull-right" ng-show="availablePayTypes().length>0" ng-click="addPayType()"><i class="fa fa-plus"></i></button></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="paytype in paycheck.compensations track by $index">
+                                            <td>{{paytype.payType.description}}</td>
+                                            <td><span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span></td>
+                                            <td>
+                                                <input class="form-control"
+                                                       ng-model="paytype.amount" required data-parsley-type="number" ng-disabled="paytype.payType.id===12" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal />
+                                            </td>
+                                            <td>
+                                                <button class="btn  btn-sm btn-circle btn-danger pull-right" ng-hide="paytype.payType.id===12" ng-click="remove($index)"><i class="fa fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr ng-repeat="paytype in newPayTypes track by $index">
+                                            <td><select name="pt1{{$index}}" id="pt1{{$index}}" class="form-control" ng-change="updatePayTypeUsed(paytype)" ng-model="paytype.payType" ng-options="st.description for st in payTypeList(paytype) | orderBy:'id' track by st.id" required>
+    <option value="">Please select...</option>
+</select></td>
+                                            <td><span ng-show="paytype.payType.isAccumulable">{{calculateWage(paytype.payType)}}</span></td>
+                                            <td>
+                                                <input class="form-control"
+                                                       data-parsley-type="number"
+                                                       ng-model="paytype.amount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" convert-to-decimal ng-disabled="paytype.payType.id===12" />
+                                            </td>
+                                            <td>
+                                                <button class="btn  btn-sm btn-circle btn-danger pull-right" ng-show="!item.id && paytype.payType && paytype.payType.id!==12" ng-click="removeFromNew($index)"><i class="fa fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>                              
 
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="col-sm-12" ng-show="paycheck.compensations.length>0 || newPayTypes.length>0 || changesMade">
+                                <button type="button" class="btn btn-white  pull-right" ng-click="cancel()">close</button>
+                                <button type="button" class="btn btn-success   pull-right" ng-click="save()">save</button>
+                            </div>
+
+                        </div>
                     </div>
-
+                    
                 </script>
 
                 <script type="text/ng-template" id="popover/updatejobcost.html">
@@ -449,44 +448,38 @@
                     </div>
                     <div class="modal-footer">
                         <div class="col-sm-12">
-                            <button type="button" class="btn btn-default  btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
-                            <button type="button" class="btn btn-success  btn-lg btn-icon btn-circle pull-right" ng-click="save()"><i class="fa fa-save"></i></button>
+                            <button type="button" class="btn btn-white   pull-right" ng-click="cancel()">close</button>
+                            <button type="button" class="btn btn-success   pull-right" ng-click="save()">save</button>
                         </div>
 
                     </div>
 
                 </script>
                 <script type="text/ng-template" id="popover/updatededs.html">
-
-                    <div class="modal-header">
-                        <h2 class="modal-title">Deductions for {{paycheck.employee.name}}</h2>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <employee-deduction-list list="dedList" pay-day="payDay" employee-id="paycheck.employee.id" company-deductions="deductionList" save-to-server="false" show-controls="true" agencies="agencies" />
+                    <div class="panel panel-inverse overflow-hidden">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Deductions for {{paycheck.employee.name}}
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <employee-deduction-list list="dedList" pay-day="payDay" employee-id="paycheck.employee.id" company-deductions="deductionList" main-data="mainData" save-to-server="false" show-controls="true" agencies="agencies" />
                         </div>
                     </div>
                     <div class="modal-footer">
                         <div class="row">
-                            <button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()">cancel</button>
+                            <button type="button" class="btn btn-white btn-sm pull-right" ng-click="cancel()">close</button>
                             <button type="button" class="btn btn-warning btn-sm pull-right" ng-disabled="!isValid()" ng-click="save()">only on this check</button>
                             <button type="button" class="btn btn-success btn-sm pull-right" ng-disabled="!isValid()" ng-click="permanentSave()">permanently save</button>
                             <button type="button" class="btn btn-danger btn-sm pull-right" ng-disabled="!isValid()" ng-click="empty()">pay no deductions on this check</button>
                         </div>
 
                     </div>
+                    
 
                 </script>
                 <script type="text/ng-template" id="popover/employee.html">
-
-                    <div class="modal-header">
-                        <h2 class="modal-title">{{employee.name}} Details</h2>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <employee employee="employee" main-data="mainData" is-popup="true" show-controls="true" />
-                        </div>
-                    </div>
+                    <employee employee="employee" main-data="mainData" is-popup="true" show-controls="true" />
                 </script>
                 <script type="text/ng-template" id="popover/importtimesheet.html">
 
@@ -589,7 +582,7 @@
                                                     <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(f)" ng-show="rowform.$visible" class="btn btn-success btn-lg btn-icon btn-circle">
                                                         <i class="fa fa-save"></i>
                                                     </button>
-                                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-default btn-lg btn-icon btn-circle">
+                                                    <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelSelected(f, $index)" class="btn btn-white btn-lg btn-icon btn-circle">
                                                         <i class="fa fa-remove"></i>
                                                     </button>
                                                 </form>
@@ -667,7 +660,7 @@
                     </div>
                     <div class="modal-footer">
                         <div class="col-sm-12">
-                            <button type="button" class="btn btn-default btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+                            <button type="button" class="btn btn-white btn-lg btn-icon btn-circle pull-right" ng-click="cancel()"><i class="fa fa-remove"></i></button>
                             <button type="button" class="btn btn-success btn-lg btn-icon btn-circle pull-right" ng-disabled="!ready()" ng-click="uploadDocument()"><i class="fa fa-save"></i></button>
                         </div>
 

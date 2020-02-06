@@ -173,7 +173,6 @@
 					title: "Are you sure?",
 					text: ishtml ? '' : message,
 					content: ishtml ? span : null,
-
 					icon: (type==='warning' ? "warning" : (type==='danger' ? "error" : (type==="info" ? "info" : "success"))),
 					buttons: {
 						cancel: {
@@ -201,35 +200,7 @@
 								nocallback();
 						}
 					});
-                //var modalInstance = $modal.open({
-                //    templateUrl: 'popover/confirm.html',
-                //    controller: 'confirmDialogCtrl',
-                //    backdrop: true,
-                //    keyboard: true,
-                //    backdropClick: true,
-                //    size: 'md',
-                //    resolve: {
-                //        message: function () {
-                //            return message;
-                //        },
-                //        type: function () {
-                //            return type;
-                //        }
-                //    }
-                //});
-                //modalInstance.result.then(function (result) {
-                //    if (result)
-                //        callback();
-                //    else {
-                //        if (nocallback)
-                //            nocallback();
-
-                //    }
-                //}, function () {
-                //    if (nocallback)
-                //        nocallback();
-                //    return false;
-                //});
+                
 			},
 			showMessage: function (message, type, ishtml) {
 				var content = document.createElement('p');

@@ -108,7 +108,7 @@
 					</div>
 				</div>
 				<div class="col-sm-12">
-					<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-save"></i> Save</button>
+					<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-check"></i> Save</button>
 				</div>
 			</form>
 
@@ -193,14 +193,14 @@
 					<td style="white-space: nowrap">
 						<!-- form -->
 						<form editable-form id="rowform" name="rowform" onbeforesave="saveDeductionType($index)" class="form-buttons form-inline" shown="selectedType===item">
-							<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelectedType($index)">
-								<i class="fa fa-edit"></i>
+							<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedType($index)">
+								<i class="fa fa-pencil"></i>
 							</button>
 							<button type="submit" ng-disabled="rowform.$waiting || !isDeductionTypeValid()" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-								<i class="fa fa-save"></i>
+								<i class="fa fa-check"></i>
 							</button>
 							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelDeduction($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
-								<i class="fa fa-remove"></i>
+								<i class="fa fa-undo"></i>
 							</button>
 						</form>
 					</td>
@@ -213,7 +213,7 @@
 	<div class="col-sm-12" ng-show="data.openedRack===5">
 		<div class="col-sm-12">
 			<button class="btn btn-sm btn-default pull-right" ng-show="hasStatesChanged()" ng-click="cancelStates()"><i class="fa fa-backspace"></i> cancel</button>
-			<button class="btn btn-sm btn-success pull-right" ng-show="hasStatesChanged() && !selectedState" ng-click="saveStates()"><i class="fa fa-save"></i> save</button>
+			<button class="btn btn-sm btn-success pull-right" ng-show="hasStatesChanged() && !selectedState" ng-click="saveStates()"><i class="fa fa-check"></i> save</button>
 		</div>
 		<table class="table table-bordered table-condensed">
 			<tr>
@@ -260,14 +260,14 @@
 				<td style="white-space: nowrap">
 					<!-- form -->
 					<form editable-form id="rowformstates" name="rowform" onbeforesave="saveState($index)" class="form-buttons form-inline" shown="selectedState===item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelectedState($index)">
-							<i class="fa fa-edit"></i>
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedState($index)">
+							<i class="fa fa-pencil"></i>
 						</button>
 						<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-							<i class="fa fa-save"></i>
+							<i class="fa fa-check"></i>
 						</button>
 						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelState($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
-							<i class="fa fa-remove"></i>
+							<i class="fa fa-undo"></i>
 						</button>
 					</form>
 				</td>

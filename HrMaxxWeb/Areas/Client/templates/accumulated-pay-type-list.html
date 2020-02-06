@@ -37,7 +37,7 @@
                 <div class="stats-desc" ng-show="showControls">
                     <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
                     <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
-                    <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
+                    <i class="fa fa-check fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
 
 
                 </div>
@@ -97,7 +97,7 @@
 </div>
 <div class="row" ng-show="!selected && showControls">
 
-    <button type="button" ng-click="add()" title="Add Pay Type Accumulation" class="btn btn-lg btn-icon btn-circle btn-success">
+    <button type="button" ng-click="add()" title="Add Pay Type Accumulation" class="btn btn-lg btn-icon btn-circle btn-primary">
         <i class="fa fa-plus"></i>
     </button>
     <button class="btn btn-xs btn-success pull-right" ng-click="recalculateEmployeePayTypeAccumulations(1)" ng-show="data.showSickLeaveRecalculate && mainData.userRole!=='Employee'">Re-Calculate Accumulations</button>
@@ -106,102 +106,5 @@
     <div class="row" ng-if="selected.accumulationGroups.length===0">
         no records found
     </div>
-    <!--<table class="table table-header table-bordered table-condensed form-controls input-sm">
-        <thead>
-            <tr>
-                <td class="col-sm-2">Pay Type</td>
-                <td class="col-sm-1">Option</td>
-                <td class="col-sm-1">Rate (upto 4 decimal)</td>
-                <td class="col-sm-1">Annual Limit</td>
-                <td class="col-sm-1">Global Limit</td>
-                <td class="col-sm-1">Is Company Managed?</td>
-                <td class="col-sm-1">Is LumpSum?</td>
-                <td class="col-sm-1">Is Employee Specific?</td>
-                <td class="col-sm-2" ng-show="showControls"></td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="item in list track by $index">
-                <td>
-                    <span e-ng-change="item.payType = $data;" editable-select="item.payType" e-name="type" e-form="rowform" e-ng-options="paytype.description for paytype in metaData track by paytype.id">
-                        {{ item.payType? item.payType.description : '' }}
-                    </span>
-                </td>
-                <td>
-                    <span e-ng-change="item.option = $data.id;" editable-select="item.option" e-name="opt" e-form="rowform" e-ng-options="option.id as option.text for option in leaveOptions track by option.id">
-                        {{ item.option? leaveOptions[1].text : leaveOptions[0].text }}
-                    </span>
-                </td>
-                <td>
-                    <span e-ng-change="item.ratePerHour = $data" editable-number="item.ratePerHour" e-name="rate" e-form="rowform" e-ng-pattern="/^[0-9]+(\.[0-9]{1,4})?$/" e-step="0.01" e-style="width:10em;">
-                        {{ item.ratePerHour }}
-                    </span>
-                </td>
-                <td>
-                     editable comment (text with validation) 
-                    <span editable-number="item.annualLimit" e-name="limit" e-form="rowform" e-ng-change="item.annualLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-                        {{ item.annualLimit }}
-                    </span>
-                </td>
-                <td>
-                     editable comment (text with validation) 
-                    <span editable-number="item.globalLimit" e-name="limit" e-form="rowform" e-ng-change="item.globalLimit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-ng-min="item.annualLimit">
-                        {{ item.globalLimit }}
-                    </span>
-                </td>
-                <td>
-                     editable comment (text with validation) 
-                    <div>
-                        <label for="compmanaged{{$index}}" class="switch">
-                            <input id="compmanaged{{$index}}" type="checkbox" ng-model="item.companyManaged" ng-disabled="!selected || !enableIsCompanyManaged" /><i></i>
-                        </label>
-                    </div>
-
-                </td>
-                <td>
-                     editable comment (text with validation) 
-                    <div>
-                        <label for="lumpsumd{{$index}}" class="switch">
-                            <input id="lumpsumd{{$index}}" type="checkbox" ng-model="item.isLumpSum" ng-disabled="!selected || !enableIsLumpSum" /><i></i>
-                        </label>
-                    </div>
-
-                </td>
-                <td>
-                     editable comment (text with validation) 
-                    <div>
-                        <label for="empspecd{{$index}}" class="switch">
-                            <input id="empspecd{{$index}}" type="checkbox" ng-model="item.isEmployeeSpecific" ng-disabled="!selected || !enableIsCompanyManaged" /><i></i>
-                        </label>
-                    </div>
-
-                </td>
-                <td style="white-space: nowrap" ng-show="showControls">
-                     form 
-                    <form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-                        <button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-                            <i class="fa fa-save"></i>
-                        </button>
-                        <button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
-                            <i class="fa fa-remove"></i>
-                        </button>
-                    </form>
-                </td>
-
-            </tr>
-            <tr ng-show="!selected && showControls">
-                <td colspan="8">
-                    <span ng-show="list.length===0">No items found</span>
-                    <button type="button" ng-click="add()" ng-show="availablePayTypes().length>0" class="btn btn-lg  btn-icon btn-circle btn-success">
-                        <i class="fa fa-plus"></i>
-                    </button>
-                </td>
-
-            </tr>
-
-        </tbody>
-    </table>-->
+    
 </div>

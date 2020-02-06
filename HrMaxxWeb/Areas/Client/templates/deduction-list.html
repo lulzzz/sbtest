@@ -42,7 +42,7 @@
                         <span class="text-color text-bold" ng-show="showWarningText(item)">* this deduction will not be applied</span>
                         <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
                         <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
-                        <i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
+                        <i class="fa fa-check fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
 
 
                     </div>
@@ -94,82 +94,9 @@
     </div>
     <div class="row" ng-show="!selected && showControls">
         <span ng-show="list.length===0">No Deductions found</span>
-        <button type="button" ng-click="add()" title="Add Deduction" class="btn btn-lg btn-icon btn-circle btn-success">
+        <button type="button" ng-click="add()" title="Add Deduction" class="btn btn-lg btn-icon btn-circle btn-primary">
             <i class="fa fa-plus"></i>
         </button>
     </div>
-    <!--<table class="table table-header table-bordered table-condensed form-controls input-sm">
-        <thead>
-            <tr>
-                <td class="col-sm-2">Type</td>
-                <td class="col-sm-2">Name</td>
-                <td class="col-sm-2">Description</td>
-                <td class="col-sm-2">Floor Per Check</td>
-                <td class="col-sm-1">Invoice Credit?</td>
-                <td class="col-sm-1">Annual Max</td>
-                <td class="col-sm-2" ng-show="showControls"></td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="item in list track by $index">
-                <td>
-                     editable tesltra worktype (select-local) 
-                    <span e-ng-change="item.type = $data;" editable-select="item.type" e-name="type" e-form="rowform" e-ng-options="ded.categoryText + ' - ' + ded.name for ded in types | orderBy:'category' track by ded.id">
-                        {{ showDeductionType(item) }}
-                    </span>
-                </td>
-                <td>
-                    <span e-ng-change="item.deductionName = $data" editable-text="item.deductionName" e-name="deductionname" e-form="rowform">
-                        {{ item.deductionName }}
-                    </span>
-                </td>
-                <td>
-                    <span e-ng-change="item.description = $data" editable-text="item.description" e-name="description" e-form="rowform">
-                        {{ item.description }}
-                    </span>
-                </td>
-                <td>
-                     editable comment (text with validation) 
-                    <span editable-number="item.applyInvocie" e-name="floor" e-form="rowform" e-ng-change="item.floorValue = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-                        {{ item.floorPerCheck }}
-                    </span>
-
-                </td>
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" ng-model="item.applyInvoiceCredit" ng-disabled="!rowform.$visible" /><i></i>
-                    </label>
-
-                </td>
-
-                <td>
-                     editable comment (text with validation) 
-                    <span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-                        {{ item.annualMax }}
-                    </span>
-                </td>
-                <td style="white-space: nowrap" ng-show="showControls">
-                     form 
-                    <form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
-                        <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!rowform.$visible" ng-click="rowform.$show();setSelected($index)" title="Edit"><i class="fa fa-edit"></i></a>
-                        <button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-circle btn-icon btn-success btn-lg">
-                            <i class="fa fa-save m-r-5"></i>
-                        </button>
-                        <a class="btn btn-default btn-icon btn-circle btn-lg" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" title="cancel"><i class="fa fa-remove"></i></a>
-
-
-                    </form>
-                </td>
-
-            </tr>
-            <tr ng-show="!selected">
-                <td colspan="7">
-                    <span ng-show="list.length===0">No items found</span>
-                    <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selected && showControls" ng-click="add()" title="Add"><i class="fa fa-plus"></i></a>
-                </td>
-
-            </tr>
-
-        </tbody>
-    </table>-->
+    
 </div>

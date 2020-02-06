@@ -169,14 +169,14 @@
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="saveAccumulation()" class="form-buttons form-inline" shown="selected==pt">
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit m-r-5"></i> 
+							<i class="fa fa-pencil m-r-5"></i> 
 						</button>
 						
 						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(pt)" ng-show="rowform.$visible" class="btn btn-success">
-							<i class="fa fa-save m-r-5"></i> 
+							<i class="fa fa-check m-r-5"></i> 
 						</button>
 						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
-							<i class="fa fa-remove m-r-5"></i> 
+							<i class="fa fa-undo m-r-5"></i> 
 						</button>
 						
 					</form>

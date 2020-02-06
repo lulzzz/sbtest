@@ -75,7 +75,7 @@
 							<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && (payment.status===2 || payment.status===5)"><i class="fa fa-lg fa-bomb"></i> Bounced?</button>
 							<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;unsavedPayments=true" ng-show="payment.status===2 || payment.status===5"><i class="fa fa-lg fa-money"/> Paid?</button>
 							<button class="btn btn-xs btn-info" ng-click="payment.status=5; payment.marker=true;unsavedPayments=true" ng-show="(payment.method===1 || payment.method===5) && (payment.status===2 || payment.status===4)"><i class="fa fa-lg fa-bank" /> Deposited?</button>
-							<i class="fa fa-remove fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="isPaymentEditable(payment) && showControls"></i>
+							<i class="fa fa-trash fa-lg" ng-click="deletepayment($index);unsavedPayments=true" ng-show="isPaymentEditable(payment) && showControls"></i>
 							<label class="label label-success" ng-if="payment.status===3 && payment.marker">Will be marked Paid when saved</label>
 							<label class="label label-danger" ng-if="payment.status===4 && payment.marker">Will be marked Bounced when saved</label>
 							<label class="label label-info" ng-if="payment.status===5 && payment.marker">Will be marked Deposited when saved</label>
@@ -107,7 +107,7 @@
 					<a class="btn btn-success btn-icon btn-circle btn-lg pull-right" ng-click="print()" ng-show="invoice.status>1" title="Print"><i class="fa fa-print"></i></a>
 					<a class="btn btn-danger btn-icon btn-circle btn-lg pull-right" ng-click="delete()" ng-show="data.showDelete && !mainData.userCompany && invoice.status===1" title="Delete"><i class="fa fa-trash"></i></a>
 					<a class="btn btn-default btn-icon btn-circle btn-lg pull-right" ng-click="cancel()" title="Cancel"><i class="fa fa-times"></i></a>
-					<a class="btn btn-success btn-icon btn-circle btn-lg pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable() && data.showEditable" ng-disabled="isInvoiceInvalid()" title="Save"><i class="fa fa-save"></i></a>
+					<a class="btn btn-success btn-icon btn-circle btn-lg pull-right" ng-click="save()" ng-show="!mainData.userCompany && isInvoiceEditable() && data.showEditable" ng-disabled="isInvoiceInvalid()" title="Save"><i class="fa fa-check"></i></a>
 
 					<a class="btn btn-info btn-icon btn-circle btn-lg" ng-click="saveWithStatus(2)" ng-show="!mainData.userCompany && invoice.status<2  && data.showEditable" ng-disabled="isInvoiceInvalid()" title="Approve"><i class="fa fa-check"></i></a>
 					<a class="btn btn-success btn-icon btn-circle btn-lg pull-left" ng-click="saveWithStatus(3)" ng-disabled="!invoice.courier" ng-if="!mainData.userCompany && invoice.status===2 && data.showDelivery" title="Delivered"><i class="fa fa-truck"></i></a>
@@ -228,7 +228,7 @@
 								<td class="text-left">{{wc.amount | currency:'$'}}</td>
 							</tr>
 							<tr class="default">
-								<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle hidden-print" ng-click="addLineItem()"></i></strong><button class="btn btn-xs btn-danger" ng-click="removeAllVoidedCredits()" ng-show="invoice.hasVoidedCredits"><i class="fa fa-remove"></i> remove all voided credits</button></td>
+								<td colspan="3"><strong>Fee(s) & Charge(s) & Credit(s) <i class="fa fa-lg fa-plus-circle hidden-print" ng-click="addLineItem()"></i></strong><button class="btn btn-xs btn-danger" ng-click="removeAllVoidedCredits()" ng-show="invoice.hasVoidedCredits"><i class="fa fa-trash"></i> remove all voided credits</button></td>
 								<td class="text-right">{{getLineItemTotal() | currency:'$'}}<i class="fa fa-check-circle fa-lg" style="color:green"></i></td>
 							</tr>
 
@@ -249,7 +249,7 @@
 							<tr ng-repeat="lineitem in invoice.miscCharges track by $index" ng-class="{'danger': lineitem.amount<0}">
 								<td>
 									<div class="input-group hidden-print" ng-show="isInvoiceEditable()">
-										<i class="fa fa-remove fa-lg input-group-addon" ng-click="deletelineitem($index, lineitem)"></i>
+										<i class="fa fa-trash fa-lg input-group-addon" ng-click="deletelineitem($index, lineitem)"></i>
 										<input class="form-control" type="text" ng-model="lineitem.description" required ng-show="lineitem.isEditable" />
 										<span class="input-group-addon form-control" ng-show="!lineitem.isEditable">{{lineitem.description}}</span>
 

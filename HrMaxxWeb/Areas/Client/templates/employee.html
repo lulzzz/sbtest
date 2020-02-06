@@ -5,7 +5,7 @@
 
 	<div class="panel-group col-sm-12" id="accordion">
 
-		<div class="panel panel-inverse overflow-hidden">
+		<div class="panel overflow-hidden" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
 			<div class="panel-heading">
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right" id="companytabs">
@@ -220,7 +220,7 @@
 																	<input name="a1{{$index}}" id="at1{{$index}}" type="number" ng-model="item.amount" class="form-control" required data-parsley-group="wizard-step-3" data-parsley-type="number" data-parsley-min="0" />
 																</td>
 																<td>
-																	<i class="fa fa-remove fa-lg" ng-click="cancel1($index)"></i>
+																	<i class="fa fa-undo fa-lg" ng-click="cancel1($index)"></i>
 																</td>
 															</tr>
 														</tbody>
@@ -334,14 +334,14 @@
 																<td style="white-space: nowrap">
 																	<!-- form -->
 
-																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-success btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
-																		<i class="fa fa-edit"></i>
+																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-primary btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
+																		<i class="fa fa-pencil"></i>
 																	</button>
 																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-sm  btn-icon btn-circle" ng-click="delete($index)">
-																		<i class="fa fa-remove"></i>
+																		<i class="fa fa-trash"></i>
 																	</button>
 																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-sm btn-icon btn-circle">
-																		<i class="fa fa-save"></i>
+																		<i class="fa fa-check"></i>
 																	</button>
 																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-sm btn-icon btn-circle">
 																		<i class="fa fa-backward"></i>
@@ -563,8 +563,9 @@
 
 						</div>
 						<div class="col-sm-4 col-sm-offset-4" ng-show="showControls">
-							<button class="btn btn-lg btn-success btn-icon btn-circle" ng-click="save()" ng-disabled="!validate()"><i class="fa fa-save"></i></button>
-							<button class="btn btn-lg btn-default btn-icon btn-circle" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+							<a class="btn btn-success " ng-click="save()" ng-disabled="!validate()" title="Save"><i class="fa fa-check"></i> save</a>
+							<a class="btn btn-white " ng-click="cancel()" title="cancel"><i class="fa fa-undo"></i> cancel</a>
+							
 						</div>
 					</form>
 				</div>
@@ -592,7 +593,7 @@
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
-					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" show-controls="showControls && data.editableDeductions" agencies="data.employeeMetaData.agencies" />
+					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" main-data="mainData" save-to-server="true" show-controls="showControls && data.editableDeductions" agencies="data.employeeMetaData.agencies" />
 				</div>
 			</div>
 		</div>
@@ -673,7 +674,7 @@
 
 									</div>
 									<div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId && (mainData.userRole==='Master' || mainData.userRole==='SuperUser')">
-										<button class="btn btn-lg btn-icon btn-circle btn-success pull-right" ng-show="showSaveAcc(acc)" ng-click="saveEmployeeAccumulation(acc)"><i class="fa fa-save"></i></button>
+										<button class="btn btn-lg btn-icon btn-circle btn-success pull-right" ng-show="showSaveAcc(acc)" ng-click="saveEmployeeAccumulation(acc)"><i class="fa fa-check"></i></button>
 									</div>
 
 								</div>
@@ -733,14 +734,14 @@
 									<td style="white-space: nowrap" ng-show="showControls">
 										<!-- form -->
 										<form editable-form id="rowform" name="rowform" onbeforesave="saveACA($index)" class="form-buttons form-inline" shown="selectedACA===item">
-											<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle" ng-click="rowform.$show();setSelectedACA($index)">
-												<i class="fa fa-edit"></i>
+											<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary btn-icon btn-circle" ng-click="rowform.$show();setSelectedACA($index)">
+												<i class="fa fa-pencil"></i>
 											</button>
 											<button type="submit" ng-disabled="rowform.$waiting || !isACAValid(item)" ng-if="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-												<i class="fa fa-save"></i>
+												<i class="fa fa-check"></i>
 											</button>
 											<button type="button" ng-disabled="rowform.$waiting" ng-if="rowform.$visible" ng-click="rowform.$cancel();cancelACA($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
-												<i class="fa fa-remove"></i>
+												<i class="fa fa-undo"></i>
 											</button>
 										</form>
 									</td>

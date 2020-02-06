@@ -110,6 +110,9 @@
 						<td data-title=" 'Balance' " sortable=" 'accountBalance' " class="col-sm-1 show-red text-center">
 							{{item.accountBalance | currency:'$'}}
 						</td>
+						<td>
+							<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-click="set(item)"><i class="fa fa-eye"></i></a>
+						</td>
 					</tr>
 
 				</table>
@@ -133,7 +136,8 @@
 				</script>
 			</div>
 			<div class="row">
-				<button class="btn btn-sm btn-primary" ng-show="!selected" ng-click="add()">Add</button>
+				<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-show="!selected" ng-click="add()"><i class="fa fa-plus"></i></a>
+				
 			</div>
 
 			<!-- end panel -->
@@ -269,8 +273,9 @@
 						
 					</div>
 					<div class="col-sm-2 col-sm-offset-4">
-						<button class="btn btn-primary" ng-click="save()"><i class="fa fa-save m-r-5"></i> Save</button>
-						<button class="btn btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+						<a class="btn btn-success " ng-click="save()" title="Save"><i class="fa fa-check"></i> save</a>
+						<a class="btn btn-white " ng-click="cancel()" title="cancel"><i class="fa fa-undo"></i> cancel</a>
+						
 					</div>
 				</form>
 			</div>

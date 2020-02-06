@@ -16,7 +16,7 @@
 					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="print()" ng-disabled="selectedHeaders.length===0"><i class="fa fa-print"></i></a>
 				</div>
 				<div class="col-sm-1 pull-right">
-					<a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="mainData.selectedCompany && !selected" ng-click="add()"><i class="fa fa-plus"></i></a>
+					<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-show="mainData.selectedCompany && !selected" ng-click="add()"><i class="fa fa-plus"></i></a>
 				</div>
 				<div class="col-sm-2 form-group pull-right">
 
@@ -136,8 +136,8 @@
 				<div class="alert alert-danger" ng-if="error">
 					{{error}}
 				</div>
-				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!selectedCompany || selectedEmployees.length===0"><i class="fa fa-save m-r-5"></i> Save</button>
+				<button type="button" class="btn btn-default btn-sm pull-right" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
+				<button type="button" class="btn btn-primary btn-sm pull-right" ng-click="save()" ng-disabled="!selectedCompany || selectedEmployees.length===0"><i class="fa fa-check m-r-5"></i> Save</button>
 			</div>
 
 		</div>

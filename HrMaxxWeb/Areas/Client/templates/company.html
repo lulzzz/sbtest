@@ -4,7 +4,7 @@
 </div>
 <div class="panel-group col-sm-12" id="accordion">
 
-<div class="panel panel-inverse overflow-hidden">
+<div class="panel overflow-hidden" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
 <div class="panel-heading">
     <i class="fa fa-plus-circle pull-right"></i>
     <ul class="nav nav-tabs pull-right" id="companytabs" ng-show="showControls">
@@ -731,7 +731,7 @@
                         </div>
                     </div></td>
                     <td><input type="text" ng-model="rc.comments" class="form-control" data-parsley-group="wizard-step-4" /></td>
-                    <td><i class="fa fa-remove" ng-click="removeRecurringCharge(rc, $index)" ng-show="!rc.id || rc.claimed===0"></i></td>
+                    <td><i class="fa fa-trash" ng-click="removeRecurringCharge(rc, $index)" ng-show="!rc.id || rc.claimed===0"></i></td>
                 </tr>
                 </thead>
             </table>
@@ -778,8 +778,8 @@
 </div>
 </div>
 <div class="col-sm-2 col-sm-offset-4" ng-show="showControls">
-    <a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="save()" ng-disabled="!validateCompany()" title="Save"><i class="fa fa-save"></i></a>
-    <a class="btn btn-default btn-icon btn-circle btn-lg" ng-click="cancel()" title="cancel"><i class="fa fa-remove"></i></a>
+    <a class="btn btn-success " ng-click="save()" ng-disabled="!validateCompany()" title="Save"><i class="fa fa-check"></i> save</a>
+    <a class="btn btn-white " ng-click="cancel()" title="cancel"><i class="fa fa-undo"></i> cancel</a>
 									
 </div>
 </form>
@@ -804,7 +804,7 @@
 </div>
 </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
@@ -819,7 +819,7 @@
     </div>
 </div>
 
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
@@ -834,7 +834,7 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id"ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">
@@ -849,7 +849,7 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFive">
@@ -864,7 +864,7 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSix">
@@ -879,7 +879,7 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id && !selectedCompany.isLocation">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id && !selectedCompany.isLocation" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSeven">

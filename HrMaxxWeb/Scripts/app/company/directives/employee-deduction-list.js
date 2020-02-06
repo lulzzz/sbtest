@@ -12,7 +12,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				saveToServer: "=saveToServer",
 				showControls: "=showControls",
 				payDay: "=?payDay",
-				agencies:"=agencies"
+				agencies: "=agencies",
+				mainData: "=mainData"
 			},
 			templateUrl: zionAPI.Web + 'Areas/Client/templates/employee-deduction-list.html?v=' + version,
 
@@ -36,7 +37,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						}
 						],
 						agencies: $scope.agencies ? angular.copy($scope.agencies) : [],
-						canChangeDates , $scope.mainData.hasClaim(ClaimTypes.EmployeeDeductionDates, 1)
+						canChangeDates: $scope.mainData.hasClaim(ClaimTypes.EmployeeDeductionDates, 1)
 					};
 					$scope.payDay = $scope.payDay ? moment($scope.payDay).startOf('day').toDate() : moment().startOf('day').toDate();
 					$scope.data = dataSvc;
@@ -74,7 +75,8 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 				var addAlert = function (error, type) {
 					$scope.$parent.$parent.addAlert(error, type);
 				};
-				$scope.selected = null;
+					$scope.selected = null;
+					$scope.selectedIndex = null;
 				$scope.add = function () {
 					var item = {
 						id: 0,
@@ -95,7 +97,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 
 					};
 					$scope.list.push(item);
-					$scope.setSelected(item);
+					$scope.setSelected(item, $scope.list.indexOf(item));
 				},
 				
                     $scope.save = function (index) {
@@ -114,6 +116,7 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 							});
 						} else {
 							$scope.selected = null;
+							$scope.selectedIndex = null;
 						}
 					
                     }
@@ -126,7 +129,10 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
                         }
 					}
 					$scope.showWarningText = function (item) {
-						if ((item.startDate && moment(item.startDate).toDate() > $scope.payDay) || (item.endDate && moment(item.endDate).toDate() < $scope.payDay) || (item.deduction.startDate && moment(item.deduction.startDate).toDate() > $scope.payDay) || (item.deduction.endDate && moment(item.deduction.endDate).toDate() < $scope.payDay))
+						if ((item.startDate && moment(item.startDate).toDate() > $scope.payDay)
+							|| (item.endDate && moment(item.endDate).toDate() < $scope.payDay)
+							|| (item.deduction && item.deduction.startDate && moment(item.deduction.startDate).toDate() > $scope.payDay)
+							|| (item.deduction && item.deduction.endDate && moment(item.deduction.endDate).toDate() < $scope.payDay))
 							return true;
 						else
 							return false;
@@ -144,18 +150,17 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						$scope.list.splice(index, 1);
 					}
 				}
-                    $scope.cancel = function () {
-                        var index = $scope.list.indexOf($scope.selected);
-					if ($scope.selected.id === 0) {
-						$scope.list.splice(index, 1);
-					}
-					else if ($scope.original && $scope.original.id === $scope.selected.id) {
+                    $scope.cancel = function (index) {
+                        
+					if ($scope.original && $scope.original.id === $scope.selected.id) {
 						$scope.list[index] = angular.copy($scope.original);
 					}
-					$scope.selected = null;
+						$scope.selected = null;
+						$scope.selectedIndex = null;
 				}
-				$scope.setSelected = function(item) {
+				$scope.setSelected = function(item, index) {
 					$scope.selected = item;
+					$scope.selectedIndex = index;
 					$scope.original = angular.copy($scope.selected);
 					$scope.selected.startDate = $scope.selected.startDate ? moment($scope.selected.startDate).toDate() : null;
 					$scope.selected.endDate = $scope.selected.endDate ? moment($scope.selected.endDate).toDate() : null;
@@ -164,22 +169,27 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
                         var form = $('form[name="dedform' + index + '"]');
                         return form.parsley().validate();
                     }
-                    $scope.isItemValid = function (item) {
+                    $scope.isItemValid = function (item, index) {
                         var returnVal = true;
                         if (item) {
-                            if (!item.deduction || !item.method || item.rate<0)
-                                returnVal =  false;
-                            if (item.ceilingPerCheck < 0 || (item.ceilingMethod.key === 1 && item.ceilingPerCheck > 100))
-                                returnVal =  false;
-                            if (item.employerRate>100)
-                                returnVal =  false;
-                            if (item.deduction.type.id === 3) {
-                                if (!item.accountNo || !item.agencyId)
-                                    returnVal = false;
-                                
+							var form = $('form[name="dedform' + index + '"]');
+							var formvalidation = form.parsley().validate();
+							if (!formvalidation)
+								return false;
 
-                            }
-                            
+							if (!item.deduction || !item.method || item.rate < 0)
+								returnVal = false;
+							else if (item.ceilingPerCheck < 0 || (item.ceilingPerCheck > 0 && (!item.ceilingMethod || (item.ceilingMethod.key === 1 && item.ceilingPerCheck > 100))))
+								returnVal = false;
+							else if (item.employerRate > 100)
+								returnVal = false;
+							else if (item.deduction && item.deduction.type && item.deduction.type.id === 3) {
+								if (!item.accountNo || !item.agencyId)
+									returnVal = false;
+
+
+							}
+							
                         }
                         return returnVal;
 
@@ -230,11 +240,11 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
                         else
                             return 'border-red';
 					}
-					$scope.showDetails = function (item) {
+					$scope.showDetails = function (item, index) {
 						if (!$scope.selected) {
 							return false;
 						}
-						else if ($scope.selected.id === item.id)
+						else if ($scope.selected.id === item.id && index===$scope.selectedIndex)
 							return true;
 						//return selected && ((selected.id && selected.id === item.id) || (!selected.id && saveToServer && selected.employeeDeduction.id === item.employeeDeduction.id))
 					}

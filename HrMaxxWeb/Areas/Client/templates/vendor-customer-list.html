@@ -27,7 +27,8 @@
 							{{item.vendorTypeText}}
 						</td>
 						<td>
-							<button type="button" class="btn btn-sm btn-primary" ng-click="set(item)">View</button>
+							<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-click="set(item)"><i class="fa fa-eye"></i></a>
+							
 						</td>
 					</tr>
 
@@ -52,7 +53,7 @@
 				</script>
 			</div>
 			<div class="row">
-				<button class="btn btn-sm btn-primary" ng-show="!selected" ng-click="add()">Add</button>
+				<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-show="!selected" ng-click="add()"><i class="fa fa-plus"></i></a>				
 			</div>
 
 			<!-- end panel -->

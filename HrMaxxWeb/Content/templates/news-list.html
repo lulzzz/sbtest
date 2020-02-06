@@ -50,8 +50,9 @@
 							</ul>
 						</script>
 					</div>
-					<div class="row">
-						<button class="btn btn-sm btn-primary" ng-show="!selectedNewsItem" ng-click="addNew()">Add</button>
+					<div class="row" ng-show="!selectedNewsItem">
+						<a class="btn btn-primary btn-icon btn-circle btn-lg" ng-click="addNew()"><i class="fa fa-plus"></i></a>
+						
 					</div>
 				</div>
 				

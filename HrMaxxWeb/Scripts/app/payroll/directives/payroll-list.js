@@ -228,36 +228,44 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					$scope.copyPayroll = function (event, payroll) {
 						
 						event.stopPropagation();
-						confirmCopyDialog('Please select an option to continue', 'warning', function (option) {
-							$scope.refresh(payroll, 0, option);
-							
-
-
-						});
-					}
-					var confirmCopyDialog = function (message, type, callback) {
-						var modalInstance = $modal.open({
-							templateUrl: 'popover/confirmcopy.html',
-							controller: 'confirmCopyDialogCtrl',
-							backdrop: true,
-							keyboard: true,
-							backdropClick: true,
-							size: 'lg',
-							resolve: {
-								message: function () {
-									return message;
+						
+						swal({
+							title: "Copy Payroll",
+							text: "Please select an option to continue",
+							icon: "info",
+							buttons: {
+								profileRates: {
+									text: 'Use - Profile Rates',
+									value: 1,
+									visible: true,
+									className: "btn btn-primary",
+									closeModal: true
 								},
-								type: function () {
-									return type;
+								payrollRates: {
+									text: 'Use - Copied Payroll Rates',
+									value: 2,
+									visible: true,
+									className: "btn btn-info",
+									closeModal: true
+								},
+
+								cancel: {
+									text: 'Cancel',
+									value: null,
+									visible: true,
+									className: 'btn btn-white',
+									closeModal: true,
 								}
-							}
-						});
-						modalInstance.result.then(function (result) {
-							callback(result);
-						}, function () {
-							return false;
+								
+							},
+							dangerMode: false,
+						}).then((confirm) => {
+							if (confirm) {
+								$scope.refresh(payroll, 0, confirm);
+							} 
 						});
 					}
+					
 					$scope.refresh = function (payroll, copydates, option) {
 						load($scope.mainData.selectedCompany.id).then(function () {
 							if ($scope.canRunPayroll2()) {
@@ -933,14 +941,20 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 					}
 					$scope.updateEmployeeList = function (emp) {
 						if (emp) {
-							var match = $filter('filter')(dataSvc.employees, { id: emp.id })[0];
-							if (match) {
-								match = angular.copy(emp);
-							}
+							$.each(dataSvc.employees, function (i, e) {
+								if (e.id === emp.id) {
+									dataSvc.employees[i] = angular.copy(emp);
+									
+								}
+							});
+							//var match = $filter('filter')(dataSvc.employees, { id: emp.id })[0];
+							//if (match) {
+							//	match = angular.copy(emp);
+							//}
 						} else {
 							getEmployees($scope.mainData.selectedCompany.id);
 						}
-						getEmployees($scope.mainData.selectedCompany.id);
+						//getEmployees($scope.mainData.selectedCompany.id);
 					}
 					$scope.minPayDate = null;
 					$scope.getClass = function (item) {

@@ -45,7 +45,7 @@
 
 						</div>
 						<div class="button-group">
-							<a class="btn btn-default btn-icon btn-circle btn-lg" ng-click="cancel()" title="Cancel"><i class="fa fa-remove"></i></a>
+							<a class="btn btn-default btn-icon btn-circle btn-lg" ng-click="cancel()" title="Cancel"><i class="fa fa-undo"></i></a>
 							<a class="btn btn-warning btn-icon btn-circle btn-lg" ng-click="includeAll()"  title="Include All"><i class="fa fa-check"></i></a>
 							
 							
@@ -57,7 +57,7 @@
 				</div>
 				
 				<div class="col-sm-12 dt-buttons button-group m-r-10" ng-if="showList()">
-					<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-save m-r-5"></i>save <span class="badge">{{correctChecks()}}</span><span></span></button>
+					<button class="btn btn-sm btn-primary pull-right" ng-click="process()" ng-if="showList()" ng-disabled="isPayrollInvalid()"><i class="fa fa-check m-r-5"></i>save <span class="badge">{{correctChecks()}}</span><span></span></button>
 					<button class="btn btn-sm pull-right" ng-class="{'btn-danger':!data.showingErrors, 'btn-success':data.showingErrors}" ng-click="showErrors()" ng-if="showList()" ng-show="erroneousChecks()>0 || data.showingErrors"><i class="fa fa-thumbs-o-up m-r-5" ng-class="{'fa-thumbs-o-down':!data.showingErrors, 'fa-thumbs-o-up':data.showingErrors}"></i>{{data.showingErrors?'show all' : 'show erorrs (' + erroneousChecks() + ')'}}</button>
 					<button class="btn btn-sm pull-right btn-warning" ng-click="showWarnings()" ng-if="showList()" ng-show="warningChecks()>0 || data.showingWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWarnings, 'fa-check':data.showingWarnings}"></i>{{data.showingWarnings?'show all' : 'min wage! (' + warningChecks() + ')'}}</button>
 					<button class="btn btn-sm pull-right btn-warning" ng-click="showWCWarnings()" ng-if="showList()" ng-show="wcWarningChecks()>0 || data.showingWCWarnings"><i class="fa m-r-5" ng-class="{'fa-warning':!data.showingWCWarnings, 'fa-check':data.showingWCWarnings}"></i>{{data.showingWCWarnings?'show all' : 'No WC! (' + wcWarningChecks() + ')'}}</button>

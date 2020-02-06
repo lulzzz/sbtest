@@ -292,7 +292,7 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/updatecomps1.html',
 							controller: 'updateCompsCtrl',
-							size: 'md',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							resolve: {
 								paycheck: function() {
@@ -338,6 +338,9 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								payday: function () {
 									return $scope.item.payDay;
 								},
+								mainData: function () {
+									return $scope.mainData;
+								}
 							}
 						});
 						modalInstance.result.then(function (dedscope) {
@@ -366,8 +369,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 								}
 							}
 						});
-						modalInstance.result.then(function (paycheck, result) {
-							$scope.$parent.$parent.updateEmployeeList(paycheck.employee);
+						modalInstance.result.then(function (scope) {
+							$scope.$parent.$parent.updateEmployeeList(scope.result);
 							
 						}, function () {
 							return false;
@@ -379,8 +382,8 @@ common.directive('payroll', ['$uibModal', 'zionAPI', '$timeout', '$window', 'ver
 							controller: 'companyCtrl',
 							size: 'lg',
 							windowClass: 'my-modal-popup',
-							backdrop  : 'static',
-							keyboard: false,
+							backdrop  : true,
+							keyboard: true,
 							backdropClick: true,
 							resolve: {
 								invoice: function () {
@@ -712,13 +715,14 @@ common.controller('updateJobCostCtrl', function ($scope, $uibModalInstance, $fil
 	_init();
 });
 
-common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, agencies, companyRepository, payday) {
+common.controller('updateDedsCtrl', function ($scope, $uibModalInstance, $filter, paycheck, companydeductions, agencies, companyRepository, payday, mainData) {
 	$scope.original = paycheck;
 	$scope.paycheck = angular.copy(paycheck);
 	$scope.dedList = angular.copy(paycheck.deductions);
 	$scope.deductionList = companydeductions;
 	$scope.agencies = agencies;
 	$scope.payDay = moment(payday).startOf('day').toDate();
+	$scope.mainData = mainData;
 
 	$scope.isValid = function () {
 		var returnVal = true;
@@ -839,7 +843,7 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 		$scope.paycheck.deductions = [];
 		$.each(result.payCodes, function (index1, paycode) {
 			var pc = {
-				payCode: paycode,
+				payCode: angular.copy(paycode),
 				hours: 0,
 				overtimeHours: 0,
 				screenHours: 0,
@@ -857,8 +861,8 @@ common.controller('employeeCtrl', function ($scope, $uibModalInstance, $filter, 
 			}
 			$scope.paycheck.compensations.push(pt);
 		});
-		
-		$uibModalInstance.close($scope.paycheck, result);
+		$scope.result = result;
+		$uibModalInstance.close($scope);
 	};
 
 

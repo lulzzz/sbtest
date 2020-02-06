@@ -3,7 +3,7 @@
 	<div class="col-sm-12">
 		<div class="col-sm-1">
 			<label>Pay Period</label>
-			<button class="btn btn-sm btn-success" ng-show="datasvc.showChangePayrollDates && item.status>2 && item.status!==6" ng-click="updatePayrollDates()"><i class="fa fa-save">update pay period</i></button>
+			<button class="btn btn-sm btn-success" ng-show="datasvc.showChangePayrollDates && item.status>2 && item.status!==6" ng-click="updatePayrollDates()"><i class="fa fa-check">update pay period</i></button>
 		</div>
 		<div class="col-sm-2 form-group" ng-if="!datasvc.showChangePayrollDates || item.status===2 || item.status===6">
 			<label class="control-label">Start Date: </label>
@@ -119,8 +119,8 @@
 					<div class="col-sm-12 text-center">
 						<strong>Employee:</strong>
 						<i class="fa fa-pencil pull-right" ng-if="datasvc.showEditableTaxes && item.isHistory && (item.status===2 || item.status===6) && (!selectedTaxItem || selectedTaxItem.employee.id!==listitem.employee.id)" ng-click="setSelectedTaxItem(listitem)"></i>
-						<i class="fa fa-remove pull-right" ng-if="datasvc.showEditableTaxes && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = cancelSelectedTaxItem(listitem)"></i>
-						<i class="fa fa-save pull-right" ng-if="datasvc.showEditableTaxes && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = saveSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-undo pull-right" ng-if="datasvc.showEditableTaxes && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = cancelSelectedTaxItem(listitem)"></i>
+						<i class="fa fa-check pull-right" ng-if="datasvc.showEditableTaxes && item.isHistory && (item.status===2 || item.status===6) && selectedTaxItem && selectedTaxItem.employee.id===listitem.employee.id" ng-click="listitem = saveSelectedTaxItem(listitem)"></i>
 					</div>
 					<div class="col-sm-12" ng-repeat="tax in listitem.taxes | filter:{isEmployeeTax:true} | orderBy:'tax.id'">
 						<div class="col-sm-4 text-left"><strong>{{tax.tax.code}}:</strong></div>

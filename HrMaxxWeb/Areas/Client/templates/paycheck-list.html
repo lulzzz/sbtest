@@ -78,14 +78,14 @@
 				<div class="col-sm-4 pull-right">
 					<button class="btn btn-sm btn-info" ng-show="!selected.isVoid" ng-click="getPaySlip(selected)"><i class="fa fa-print m-r-5"></i> pay slip</button>
 					<button class="btn btn-sm btn-success" ng-show="mainData.userRole!=='Employee' && !selected.isVoid" ng-click="markPrinted(selected)"><i class="fa fa-print m-r-5"></i> print</button>
-					<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+					<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
 				</div>
 
 
 			</div>
 			<paycheck check-id="selected.id" main-data="mainData" />
 			<div class="col-sm-12 pull-right">
-				<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
+				<button class="btn btn-sm btn-default" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
 			</div>
 		</div>
 		
