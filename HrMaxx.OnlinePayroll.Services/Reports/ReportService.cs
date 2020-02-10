@@ -803,18 +803,35 @@ namespace HrMaxx.OnlinePayroll.Services.Reports
 				var filters = new List<FilterParam>();
 				
 				var data = _readerService.GetDataFromStoredProc<CompanyDashboard, CompanyDashboardJson>("GetExtractDashboard", filters);
-				data.PendingExtractsByDates =
-					data.PendingExtracts.GroupBy(e => new {e.ExtractName, e.DepositDate, e.TaxesDelayed})
-						.Select(g => new TaxExtract {DepositDate = g.Key.DepositDate, ExtractName = g.Key.ExtractName, TaxesDelayed= g.Key.TaxesDelayed, Amount = g.Sum(g1 => g1.Amount), Details = g.GroupBy(g1=>g1.CompanyName).Select(g1=>new TaxExtract{CompanyName = g1.Key, Amount = g1.Sum(g2=>g2.Amount)}).ToList()})
-						.ToList();
-				data.PendingExtractsByCompany =
-					data.PendingExtracts.GroupBy(e => new { e.ExtractName, e.CompanyName, e.TaxesDelayed, e.Schedule })
-						.Select(g => new TaxExtract {CompanyName = g.Key.CompanyName, ExtractName = g.Key.ExtractName, TaxesDelayed = g.Key.TaxesDelayed, Schedule=g.Key.Schedule, Details = g.ToList()})
-						.ToList();
+				//data.PendingExtractsByDates =
+				//	data.PendingExtracts.GroupBy(e => new {e.ExtractName, e.DepositDate, e.TaxesDelayed})
+				//		.Select(g => new TaxExtract {DepositDate = g.Key.DepositDate, ExtractName = g.Key.ExtractName, TaxesDelayed= g.Key.TaxesDelayed, Amount = g.Sum(g1 => g1.Amount), Details = g.GroupBy(g1=>g1.CompanyName).Select(g1=>new TaxExtract{CompanyName = g1.Key, Amount = g1.Sum(g2=>g2.Amount)}).ToList()})
+				//		.ToList();
+				//data.PendingExtractsByCompany =
+				//	data.PendingExtracts.GroupBy(e => new { e.ExtractName, e.CompanyName, e.TaxesDelayed, e.Schedule })
+				//		.Select(g => new TaxExtract {CompanyName = g.Key.CompanyName, ExtractName = g.Key.ExtractName, TaxesDelayed = g.Key.TaxesDelayed, Schedule=g.Key.Schedule, Details = g.ToList()})
+				//		.ToList();
+				
 				data.PendingExtractsBySchedule =
-					data.PendingExtractsByCompany.GroupBy(e => new { e.Schedule })
-						.Select(g => new TaxExtract { Schedule = g.Key.Schedule, Details = g.ToList() })
+					data.PendingExtracts.Where(e=>!e.TaxesDelayed).ToList().GroupBy(e => new { e.ExtractName, e.Schedule })
+						.Select(g => new TaxExtract { ExtractName = g.Key.ExtractName, Schedule = g.Key.Schedule, 
+							Details = g.ToList().GroupBy(e1=>new { e1.TaxDepositDate })
+												.Select(g1=>new TaxExtract { DepositDate = g1.Key.TaxDepositDate, Details = g1.ToList()})
+												.ToList()
+						})
 						.ToList();
+				data.DelayedExtractsBySchedule =
+					data.PendingExtracts.Where(e => e.TaxesDelayed).ToList().GroupBy(e => new { e.ExtractName, e.Schedule })
+						.Select(g => new TaxExtract
+						{
+							ExtractName = g.Key.ExtractName,
+							Schedule = g.Key.Schedule,
+							Details = g.ToList().GroupBy(e1 => new { e1.TaxDepositDate })
+												.Select(g1 => new TaxExtract { DepositDate = g1.Key.TaxDepositDate, Details = g1.ToList() })
+												.ToList()
+						})
+						.ToList();
+
 				return data;
 			}
 			catch (Exception e)

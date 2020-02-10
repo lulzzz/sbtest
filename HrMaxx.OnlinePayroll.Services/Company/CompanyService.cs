@@ -452,7 +452,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "employee for company " + employee.FirstName + ", " + employee.LastName + ", " + employee.SSN);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "employee for company " + employee.FirstName + ", " + employee.LastName + ", " + employee.SSN + ". " + e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}

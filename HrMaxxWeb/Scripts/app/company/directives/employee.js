@@ -387,7 +387,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							else
 								$scope.$parent.save(result);
 						}, function (error) {
-							$scope.mainData.handleError('error saving employee', error, 'danger');
+							$scope.mainData.handleError('', error, 'danger');
 						});
 					}
 					$scope.calculateAvailableWage = function (paytype) {

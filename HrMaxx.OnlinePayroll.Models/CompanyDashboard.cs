@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HrMaxx.Common.Models;
+using HrMaxx.Infrastructure.Enums;
 using HrMaxx.Infrastructure.Helpers;
 using HrMaxx.OnlinePayroll.Models.Enum;
 using HrMaxx.OnlinePayroll.Models.JsonDataModel;
@@ -15,9 +16,8 @@ namespace HrMaxx.OnlinePayroll.Models
         public Accumulation Accumulation { get; set; }
         public List<TaxExtract> ExtractHistory { get; set; }
 		public List<TaxExtract> PendingExtracts { get; set; }
-		public List<TaxExtract> PendingExtractsByDates { get; set; }
-		public List<TaxExtract> PendingExtractsByCompany { get; set; }
 		public List<TaxExtract> PendingExtractsBySchedule { get; set; }
+		public List<TaxExtract> DelayedExtractsBySchedule { get; set; }
 		public EmployeeDocumentMetaData EmployeeDocumentMetaData { get; set; }
 		public List<PayrollMetric> PayrollHistory { get; set; }
         
@@ -175,6 +175,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool TaxesDelayed { get; set; }
 		public DepositSchedule941 Schedule { get; set; }
 		public string ScheduleText => Schedule.GetDbName();
+
+		public DateTime TaxDepositDate { get { return Utilities.DepositDateBySchedule((DepositSchedule)Schedule, DepositDate);  } }
 		public List<TaxExtract> Details { get; set; } 
 	}
 

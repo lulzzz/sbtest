@@ -134,7 +134,7 @@
 
 
 		</div>
-		<div class="col-md-4 col-sm-4" ng-show="data.showChart">
+		<div class="col-md-4 col-sm-4" ng-if="data.chartShown">
 			<div class="panel panel-success scrollableContainer p-t-0" style="height: {{data.viewpanel===1 ? 320 : 50}}px;" data-sortable-id="index-8">
 				<div class="panel-heading" ng-click="changePanel(1)">
 					<div class="panel-heading-btn">
@@ -154,98 +154,134 @@
 					</ul>
 				</div>
 			</div>
-			
-				<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===2 ? 320 : 50}}px;">
-					<div class="panel-heading" ng-click="changePanel(2)">
-						<div class="panel-heading-btn">
 
-						</div>
-						<h4 class="panel-title">Pending By Date<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===2, 'glyphicon-chevron-right': data.viewpanel!==2}"></i></h4>
+			<!--<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===2 ? 320 : 50}}px;">
+		<div class="panel-heading" ng-click="changePanel(2)">
+			<div class="panel-heading-btn">
+
+			</div>
+			<h4 class="panel-title">Pending By Date<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===2, 'glyphicon-chevron-right': data.viewpanel!==2}"></i></h4>
+		</div>
+		<div class="panel-body p-0 scrollArea" ng-if="data.viewpanel===2">
+			<div id="jstree-default">
+				<ul>
+					<li data-jstree='{"opened":false}' ng-repeat="item2 in data.filteredPendingExtractsByDate">
+						{{item2.depositDate | date:'MM/dd/yyyy'}}
+						<ul>
+							<li ng-repeat="item3 in item2.details">
+								<i class="fa fa-pause"  ng-if="item3.taxesDelayed" style="color:red"></i>{{item3.companyName}} - {{item3.amount | currency}}
+
+							</li>
+
+						</ul>
+					</li>
+
+				</ul>
+			</div>
+
+		</div>
+	</div>
+	<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===3 ? 320 : 50}}px;">
+		<div class="panel-heading" ng-click="changePanel(3)">
+			<div class="panel-heading-btn">
+
+			</div>
+			<h4 class="panel-title">Pending By Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===3, 'glyphicon-chevron-right': data.viewpanel!==3}"></i></h4>
+		</div>
+		<div class="panel-body p-0 scrollArea" ng-if="data.viewpanel===3">
+			<div id="jstree-default1">
+				<ul>
+					<li data-jstree='{"opened":false}' ng-repeat="item in data.filteredPendingExtractsByCompany">
+						{{item.companyName}}
+						<ul>
+							<li ng-repeat="item1 in item.details">
+								<i class="fa fa-pause" ng-if="item1.taxesDelayed" style="color:red"></i>{{item1.depositDate | date:'MM/dd/yyyy'}} - {{item1.amount | currency}}
+
+							</li>
+
+						</ul>
+					</li>
+
+				</ul>
+			</div>
+
+		</div>
+	</div>-->
+			<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===2 ? 320 : 50}}px;">
+				<div class="panel-heading" ng-click="changePanel(2)">
+					<div class="panel-heading-btn">
+
 					</div>
-					<div class="panel-body p-0 scrollArea" ng-if="data.viewpanel===2">
-						<div id="jstree-default">
-							<ul>
-								<li data-jstree='{"opened":false}' ng-repeat="item2 in data.filteredPendingExtractsByDate">
-									{{item2.depositDate | date:'MM/dd/yyyy'}}
-									<ul>
-										<li ng-repeat="item3 in item2.details">
-											<i class="fa fa-pause"  ng-if="item3.taxesDelayed" style="color:red"></i>{{item3.companyName}} - {{item3.amount | currency}}
-
-										</li>
-
-									</ul>
-								</li>
-
-							</ul>
-						</div>
-
-					</div>
+					<h4 class="panel-title">Pending By Schedule and Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===2, 'glyphicon-chevron-right': data.viewpanel!==2}"></i></h4>
 				</div>
-				<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===3 ? 320 : 50}}px;">
-					<div class="panel-heading" ng-click="changePanel(3)">
-						<div class="panel-heading-btn">
-
-						</div>
-						<h4 class="panel-title">Pending By Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===3, 'glyphicon-chevron-right': data.viewpanel!==3}"></i></h4>
-					</div>
-					<div class="panel-body p-0 scrollArea" ng-if="data.viewpanel===3">
-						<div id="jstree-default1">
-							<ul>
-								<li data-jstree='{"opened":false}' ng-repeat="item in data.filteredPendingExtractsByCompany">
-									{{item.companyName}}
-									<ul>
-										<li ng-repeat="item1 in item.details">
-											<i class="fa fa-pause" ng-if="item1.taxesDelayed" style="color:red"></i>{{item1.depositDate | date:'MM/dd/yyyy'}} - {{item1.amount | currency}}
-
-										</li>
-
-									</ul>
-								</li>
-
-							</ul>
-						</div>
-
-					</div>
-				</div>
-				<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===4 ? 320 : 50}}px;">
-					<div class="panel-heading" ng-click="changePanel(4)">
-						<div class="panel-heading-btn">
-
-						</div>
-						<h4 class="panel-title">Pending By Schedule and Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===4, 'glyphicon-chevron-right': data.viewpanel!==4}"></i></h4>
-					</div>
-					<div class="panel-body p-0 scrollArea" ng-if="data.viewpanel===4">
-						<div id="jstree-default2">
-							<ul>
-								<li data-jstree='{"opened":false}' ng-repeat="item4 in data.filteredPendingExtractsBySchedule">
-									{{item4.scheduleText}}
-									<ul>
-										<li data-jstree='{"opened":false}' ng-repeat="item5 in item4.details">
-											{{item5.companyName}}
-											<ul>
-												<li ng-repeat="item6 in item5.details">
-													<i class="fa fa-pause" ng-if="item6.taxesDelayed" style="color:red"></i>{{item6.depositDate | date:'MM/dd/yyyy'}} - {{item6.amount | currency}}
-												</li>
-											</ul>
-												
-
-										</li>
-
+				<div class="panel-body p-0 scrollArea" ng-show="data.viewpanel===2">
+					<div id="jstree-default2">
+						<ul>
+							<li data-jstree='{"opened":false}' ng-repeat="item4 in data.filteredPendingExtractsBySchedule">
+								{{item4.scheduleText}}
+								<ul>
+									<li data-jstree='{"opened":false}' ng-repeat="item5 in item4.details">
+										{{item5.depositDate | date:'MM/dd/yyyy'}}
+										<ul>
+											<li ng-repeat="item6 in item5.details">
+												{{item6.companyName}} - {{item6.amount | currency}}
+											</li>
 										</ul>
-									</ul>
 
 
-									
-								</li>
+									</li>
 
-							</ul>
-						</div>
+								</ul>
+						</ul>
+
+
+
+						</li>
+
+						</ul>
+					</div>
+
+				</div>
+			</div>
+			<div class="panel panel-danger scrollableContainer p-t-0 " style="height: {{data.viewpanel===3 ? 320 : 50}}px;">
+				<div class="panel-heading" ng-click="changePanel(3)">
+					<div class="panel-heading-btn">
 
 					</div>
+					<h4 class="panel-title">Delayed By Schedule and Company<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.viewpanel===3, 'glyphicon-chevron-right': data.viewpanel!==3}"></i></h4>
 				</div>
-			
-			
-			
+				<div class="panel-body p-0 scrollArea" ng-show="data.viewpanel===3">
+					<div id="jstree-default">
+						<ul>
+							<li data-jstree='{"opened":false}' ng-repeat="item7 in data.filteredDelayedExtractsBySchedule">
+								{{item7.scheduleText}}
+								<ul>
+									<li data-jstree='{"opened":false}' ng-repeat="item8 in item7.details">
+										{{item8.depositDate | date:'MM/dd/yyyy'}}
+										<ul>
+											<li ng-repeat="item9 in item8.details">
+												{{item9.companyName}} - {{item9.amount | currency}}
+											</li>
+										</ul>
+
+
+									</li>
+
+								</ul>
+						</ul>
+
+
+
+						</li>
+
+						</ul>
+					</div>
+
+				</div>
+			</div>
+
+
+
 
 		</div>
 	
