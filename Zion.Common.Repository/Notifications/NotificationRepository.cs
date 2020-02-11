@@ -4,15 +4,19 @@ using System.Linq;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Infrastructure.Mapping;
 using HrMaxx.Common.Models.DataModel;
+using HrMaxx.Infrastructure.Repository;
+using System.Data.Common;
+using Dapper;
 
 namespace HrMaxx.Common.Repository.Notifications
 {
-	public class NotificationRepository : INotificationRepository
+	public class NotificationRepository : BaseDapperRepository, INotificationRepository
 	{
 		private readonly CommonEntities _dbContext;
 		private readonly IMapper _mapper;
 		
-		public NotificationRepository(IMapper mapper, CommonEntities commonEntities)
+
+		public NotificationRepository(IMapper mapper, CommonEntities commonEntities, DbConnection connection) : base(connection)
 		{
 			_mapper = mapper;
 			_dbContext = commonEntities;
@@ -21,14 +25,11 @@ namespace HrMaxx.Common.Repository.Notifications
 
 		public List<NotificationDto> GetNotifications(string LoginId)
 		{
-			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7);
-			List<Notification> userNotifications = _dbContext.Notifications
-				.Where(notifications => notifications.LoginId.Equals(LoginId)
-																&& notifications.IsVisible
-				                        && (notifications.IsRead == false || notifications.CreatedOn >= sevenDaysBefore)
-				)
-				.OrderByDescending(notification => notification.CreatedOn).ToList();
-			return _mapper.Map<List<Notification>, List<NotificationDto>>(userNotifications);
+			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7).Date;
+			const string sql = "select * from Notifications where LoginId=@LoginId and IsVisible=1 and (IsRead=0 or CreatedOn>=@Date) order by CreatedOn desc";
+			var result = Query<Notification>(sql, new { LoginId = LoginId, Date = sevenDaysBefore });
+			return _mapper.Map<List<Notification>, List<NotificationDto>>(result.ToList());
+			
 		}
 
 		public void CreateNotifications(List<NotificationDto> notificationList)

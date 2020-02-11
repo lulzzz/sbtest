@@ -37,10 +37,12 @@ namespace HrMaxx.Common.Repository.Common
 		public IList<T> GetEntityRelations<T>(EntityTypeEnum source, EntityTypeEnum target, Guid sourceId)
 		{
 			var result = new List<T>();
-			var relations = _dbContext.EntityRelations.Where(er => er.SourceEntityTypeId == (int) source
-																														&& er.TargetEntityTypeId == (int) target
-																														&& er.SourceEntityId == sourceId
-																											).ToList();
+			//var relations = _dbContext.EntityRelations.Where(er => er.SourceEntityTypeId == (int) source
+			//																											&& er.TargetEntityTypeId == (int) target
+			//																											&& er.SourceEntityId == sourceId
+			//																								).ToList();
+			const string sql = "select * from EntityRelations where SourceEntityTypeId=@SourceEntityTypeId and TargetEntityTypeId=@TargetEntityTypeId and SourceEntityId=@SourceEntityId";
+			var relations = Query<EntityRelation>(sql, new { SourceEntityTypeId =source, TargetEntityTypeId = target, SourceEntityId=sourceId});
 			relations.ForEach(r => result.Add(JsonConvert.DeserializeObject<T>(r.TargetObject)));
 			return result;
 		}
@@ -89,7 +91,9 @@ namespace HrMaxx.Common.Repository.Common
 
 		public IList<Models.Dtos.Country> GetCountries()
 		{
-			var countries = _dbContext.Countries.ToList();
+			const string sql = "select * from Country";
+			//var countries = _dbContext.Countries.ToList();
+			var countries = Query<Models.DataModel.Country>(sql);
 			return countries.Select(c => JsonConvert.DeserializeObject<Models.Dtos.Country>(c.Data)).ToList();
 		}
 		public IList<Models.Dtos.Country> SaveCountries(Models.Dtos.Country countries)
@@ -149,7 +153,9 @@ namespace HrMaxx.Common.Repository.Common
 
 		public List<News> GetNewsListforUser(int? audienceScope, Guid? audienceId)
 		{
-			var news = _dbContext.News.Where(n => (audienceScope.HasValue && n.AudienceScope <= audienceScope) || !audienceScope.HasValue).ToList();
+			const string sql = "select * from News";
+			var news = Query<Models.DataModel.News>(sql);
+			news = news.Where(n => (audienceScope.HasValue && n.AudienceScope <= audienceScope) || !audienceScope.HasValue).ToList();
 			
 			if (audienceScope.HasValue && audienceId.HasValue)
 			{
@@ -181,7 +187,7 @@ namespace HrMaxx.Common.Repository.Common
 		public List<News> GetUserNewsfeed(Guid host, Guid company, string userId)
 		{
 			var returnList = new List<Models.DataModel.News>();
-			var news = _dbContext.News.Where(n=>n.IsActive && n.AudienceScope.HasValue).ToList();
+			var news = Query<Models.DataModel.News>("select * from News where IsActive=1 and AudienceScope is not null");
 			news = news.Where(n =>
 				(n.AudienceScope.Value == (int) RoleTypeEnum.Host &&
 				 JsonConvert.DeserializeObject<List<IdValuePair>>(n.Audience).Any(g => g.Key.Equals(host)))

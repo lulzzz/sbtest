@@ -18,9 +18,11 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 						chartTitle: '',
 						donutChartTotal: 0,
 						donutPaid:0,
-						donutPending:0,
+						donutPending: 0,
+						donutDelayed: 0,
 						donutPaidPercentage: 0,
 						donutPendingPercentage: 0,
+						donutDelayedPercentage: 0,
 						tab: 0,
 						filteredExtracts: [],
 						filteredPendingExtracts: [],
@@ -108,15 +110,16 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 
 					var handleExtractDonutChart = function () {
 						$("#extract-donut").empty();
-						var green = '#00acac';
-						var blue = '#348fe2';
+						//var green = '#00acac';
+						//var blue = '#348fe2';
 						Morris.Donut({
 							element: 'extract-donut',
 							data: [
 									{ label: "Paid", value: dataSvc.donutPaid },
-									{ label: "Pending", value: dataSvc.donutPending }
+									{ label: "Pending", value: dataSvc.donutPending },
+									{ label: "Delayed", value: dataSvc.donutDelayed }
 							],
-							colors: [green, blue],
+							colors: [green, orange, red],
 							labelFamily: 'Open Sans',
 							labelColor: 'rgba(255,255,255,0.4)',
 							labelTextSize: '12px',
@@ -152,73 +155,55 @@ common.directive('extractDashboard', ['zionAPI', '$timeout', '$window', 'version
 							if (extract === 1) {
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'Federal941' });
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'Federal941' });
-								//dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal941' });
-								//dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'Federal941' });
+								
 								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'Federal941' });
 								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'Federal941' });
-								//$.each(dataSvc.dashboard.pendingExtractsByScheduleCopy, function (i, pe) {
-								//	pe.details = $filter('filter')(pe.details, { extractName: 'Federal941' });
-								//	if (pe.details.length > 0)
-								//		dataSvc.filteredPendingExtractsBySchedule.push(pe);
-								//});
-
 								color = '0D888B';
 								dataSvc.chartTitle = 'Federal 941 Extract History';
 								dataSvc.donutPaid = dataSvc.dashboard.ytd941Extract;
 								dataSvc.donutPending = dataSvc.dashboard.pending941Amount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayed941Amount;
 
 							}
 							else if (extract === 2) {
 								dataSvc.chartTitle = 'Federal 940 Extract History';
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'Federal940' });
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'Federal940' });
-								//dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'Federal940' });
-								//dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'Federal940' });
+								
 								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'Federal940' });
 								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'Federal940' });
-								//$.each(dataSvc.dashboard.pendingExtractsBySchedule, function (i, pe) {
-								//	pe.details = $filter('filter')(pe.details, { extractName: 'Federal940' });
-								//	if (pe.details.length > 0)
-								//		dataSvc.filteredPendingExtractsBySchedule.push(pe);
-								//});
 								dataSvc.donutPaid = dataSvc.dashboard.ytd940Extract;
 								dataSvc.donutPending = dataSvc.dashboard.pending940Amount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayed940Amount;
 							}
 							else if (extract === 3) {
 								dataSvc.chartTitle = 'CA PIT & DI Extract History';
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'StateCAPIT' });
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'StateCAPIT' });
-								//dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAPIT' });
-								//dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'StateCAPIT' });
+								
 								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'StateCAPIT' });
 								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'StateCAPIT' });
-								//$.each(dataSvc.dashboard.pendingExtractsBySchedule, function (i, pe) {
-								//	pe.details = $filter('filter')(pe.details, { extractName: 'StateCAPIT' });
-								//	if (pe.details.length > 0)
-								//		dataSvc.filteredPendingExtractsBySchedule.push(pe);
-								//});
+								
 								dataSvc.donutPaid = dataSvc.dashboard.ytdCAPITExtract;
 								dataSvc.donutPending = dataSvc.dashboard.pendingPitAmount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayedPitAmount;
 							}
 							else {
 								dataSvc.chartTitle = 'CA UI & ETT Extract History';
 								dataSvc.filteredExtracts = $filter('filter')(dataSvc.dashboard.extractHistory, { extractName: 'StateCAUI' });
 								dataSvc.filteredPendingExtracts = $filter('filter')(dataSvc.dashboard.pendingExtracts, { extractName: 'StateCAUI' });
-								//dataSvc.filteredPendingExtractsByDate = $filter('filter')(dataSvc.dashboard.pendingExtractsByDates, { extractName: 'StateCAUI' });
-								//dataSvc.filteredPendingExtractsByCompany = $filter('filter')(dataSvc.dashboard.pendingExtractsByCompany, { extractName: 'StateCAUI' });
+								
 								dataSvc.filteredPendingExtractsBySchedule = $filter('filter')(dataSvc.dashboard.pendingExtractsBySchedule, { extractName: 'StateCAUI' });
 								dataSvc.filteredDelayedExtractsBySchedule = $filter('filter')(dataSvc.dashboard.delayedExtractsBySchedule, { extractName: 'StateCAUI' });
-								//$.each(dataSvc.dashboard.pendingExtractsBySchedule, function (i, pe) {
-								//	pe.details = $filter('filter')(pe.details, { extractName: 'StateCAUI' });
-								//	if (pe.details.length > 0)
-								//		dataSvc.filteredPendingExtractsBySchedule.push(pe);
-								//});
+								
 								dataSvc.donutPaid = dataSvc.dashboard.ytdCAUIETTExtract;
 								dataSvc.donutPending = dataSvc.dashboard.pendingUiEttAmount;
+								dataSvc.donutDelayed = dataSvc.dashboard.pendingDelayedUiEttAmount;
 							}
-							dataSvc.donutChartTotal = dataSvc.donutPaid + dataSvc.donutPending;
+							dataSvc.donutChartTotal = dataSvc.donutPaid + dataSvc.donutPending + dataSvc.donutDelayed;
 							dataSvc.donutPaidPercentage = (dataSvc.donutPaid / dataSvc.donutChartTotal) * 100;
 							dataSvc.donutPendingPercentage = (dataSvc.donutPending / dataSvc.donutChartTotal) * 100;
+							dataSvc.donutDelayedPercentage = (dataSvc.donutDelayed / dataSvc.donutChartTotal) * 100;
 							dataSvc.filteredExtracts = $filter('orderBy')(dataSvc.filteredExtracts, 'dRank', true);
 							dataSvc.filteredPendingExtracts = $filter('orderBy')(dataSvc.filteredPendingExtracts, 'depositDate', true);
 							dataSvc.filteredPendingExtractsByDate = $filter('orderBy')(dataSvc.filteredPendingExtractsByDate, 'depositDate', false);

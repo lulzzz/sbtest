@@ -25,14 +25,14 @@
 					</span>
 				</td>
 				<td>
-					<span e-ng-change="item.rateType = $data;" editable-select="item.rateType" e-name="ratetype" e-form="rowform" e-ng-options="rate.id as rate.name for rate in rateTypes track by rate.id">
-						{{ item.rateType===1 ? rateType[0].name : rateTypes[1].name}}
+					<span e-ng-change="item.rateType = $data;" editable-select="item.rateType" e-name="ratetype" e-form="rowform" e-ng-options="rate.id as rate.name for rate in rateTypes">
+						{{ item.rateType===2 ? rateTypes[1].name : rateTypes[0].name}}
 					</span>
 				</td>
 				<td>
 					<!-- editable comment (text with validation) -->
 					<span editable-number="item.hourlyRate" e-name="hourlyRate" e-form="rowform" e-ng-change="item.hourlyRate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-ng-min="getMinRate(item)">
-						{{ item.hourlyRate | currency:'$'}}/hr
+						{{ item.rateType===2 ? (item.hourlyRate + ' x Base Rate') : (item.hourlyRate | currency:'$')}} / hr
 					</span>
 				</td>
 

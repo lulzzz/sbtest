@@ -55,8 +55,11 @@ common.directive('payCodeList', ['zionAPI','version',
 					}
 					$scope.selected = null;
 				}
-				$scope.setSelected = function(index) {
-					$scope.selected = $scope.list[index];
+					$scope.setSelected = function (index) {
+
+						$scope.selected = $scope.list[index];
+						if (!$scope.selected.rateType)
+							$scope.selected.rateType = 1;
 				}
 
 				$scope.isItemValid = function(item) {

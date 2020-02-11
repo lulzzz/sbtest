@@ -195,23 +195,38 @@ namespace HrMaxx.OnlinePayroll.Repository
 
 		public object GetMetaDataForUser(Guid? host, Guid? company, Guid? employee)
 		{
-			var hosts = _dbContext.Hosts.Where(h => (host.HasValue && h.Id == host.Value) || (!host.HasValue)).Select(h=>new { h.Id, Name = h.FirmName }).ToList();
-			var companies = _dbContext.Companies.Where(c => ((host.HasValue && c.HostId == host.Value) || (!host.HasValue))
-																					&& ((company.HasValue && c.Id == company.Value) || (!company.HasValue))).Select(h => new { h.Id, Name = h.CompanyName, Host=h.HostId }).ToList();
-			var employees = _dbContext.Employees.Where(e => ((employee.HasValue && e.Id == employee.Value) || !employee.HasValue)
-			                                                &&
-			                                                ((company.HasValue && e.CompanyId == company.Value) ||
-			                                                 !company.HasValue)
-			                                                &&
-			                                                ((host.HasValue && e.Company.HostId == host.Value) || !host.HasValue)
-                                                            && e.StatusId==1
-				).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName, Company=e.CompanyId}).OrderBy(e=>e.Name).ToList();
-			return new {Hosts = hosts, Companies = companies, Employees = employees};
+			const string sqlhost = "select Id, FirmName Name from Host where ((@HostId is not null and Id=@HostId) or (@HostId is null))";
+			const string sqlcompany = "select Id, CompanyName Name, HostId Host from Company where ((@HostId is not null and HostId=@HostId) or (@HostId is null)) " +
+				"and ((@CompanyId is not null and Id=@CompanyId) or (@CompanyId is null))";
+			const string sqlemployee = "select e.Id, FirstName + ' ' + LastName Name, CompanyId Company from Employee e, Company c " +
+				"where e.CompanyId=c.Id and e.StatusId=1 and ((@EmployeeId is not null and e.Id=@EmployeeId) or (@EmployeeId is null))" +
+				"and ((@CompanyId is not null and e.CompanyId=@CompanyId) or (@CompanyId is null))" +
+				"and ((@HostId is not null and c.HostId=@HostId) or (@HostId is null)) ";
+			var hosts1 = Query(sqlhost, new { HostId=host});
+			var companies1 = Query(sqlcompany, new { HostId = host, CompanyId = company });
+			var employees1 = Query(sqlemployee, new { HostId = host, CompanyId = company , EmployeeId=employee});
+			//var hosts = _dbContext.Hosts.Where(h => (host.HasValue && h.Id == host.Value) || (!host.HasValue))
+			//	.Select(h=>new { h.Id, Name = h.FirmName }).ToList();
+			//var companies = _dbContext.Companies.Where(c => ((host.HasValue && c.HostId == host.Value) || (!host.HasValue))
+			//																		&& ((company.HasValue && c.Id == company.Value) || (!company.HasValue)))
+			//	.Select(h => new { h.Id, Name = h.CompanyName, Host=h.HostId }).ToList();
+			//var employees = _dbContext.Employees.Where(e => ((employee.HasValue && e.Id == employee.Value) || !employee.HasValue)
+			//                                                &&
+			//                                                ((company.HasValue && e.CompanyId == company.Value) ||
+			//                                                 !company.HasValue)
+			//                                                &&
+			//                                                ((host.HasValue && e.Company.HostId == host.Value) || !host.HasValue)
+   //                                                         && e.StatusId==1
+			//	).Select(e => new {e.Id, Name = e.FirstName + " " + e.LastName, Company=e.CompanyId}).OrderBy(e=>e.Name).ToList();
+			return new {Hosts = hosts1, 
+						Companies = companies1, 
+						Employees = employees1
+			};
 		}
 
 		public ApplicationConfig GetConfigurations()
 		{
-			var db = _dbContext.ApplicationConfigurations.First();
+			var db = QueryObject<ApplicationConfiguration>("select * from ApplicationConfiguration");//_dbContext.ApplicationConfigurations.First();
 			var returnVal = JsonConvert.DeserializeObject<ApplicationConfig>(db.config);
 			return returnVal;
 		}

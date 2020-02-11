@@ -1,6 +1,43 @@
 ﻿
-<div class="col-sm-12 p-5 ">
-	<table class="table">
+	<div class="col-sm-12 ">
+		<div class="d-flex align-items-center mb-3">
+			<a href="javascript:;" class="btn btn-inverse mr-2 text-truncate" id="daterange-filter">
+				<i class="fa fa-calendar fa-fw text-white-transparent-5 ml-n1"></i>
+				<span>1 Jun 2020 - 7 Jun 2020</span>
+				<b class="caret"></b>
+			</a>
+			<div class="text-muted mt-2 mt-sm-0">
+
+				<label for="history" class="switch" ng-if="showHistory">
+					Include History?
+					<input id="history" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
+				</label>
+				<label for="clients" class="switch" ng-if="showIncludeClients">
+					Include Clients/locations?
+					<input id="clients" type="checkbox" ng-model="data.filter.includeClients" /><i></i>
+				</label>
+				<label for="clientemployees" class="switch" ng-if="showIncludeClients && showIncludeClientEmployees" ng-show="data.filter.includeClients">
+					Include Clients/locations Employees?
+					<input id="clientemployees" type="checkbox" ng-model="data.filter.includeClientEmployees" /><i></i>
+				</label>
+				<label for="active" class="switch" ng-if="showActive">
+					Only Active?
+					<input id="active" type="checkbox" ng-model="data.filter.onlyActive" /><i></i>
+				</label>
+				<label for="delayed" class="switch" ng-if="showIncludeTaxDelayed">
+					Include Tax Delayed?
+					<input id="delayed" type="checkbox" ng-model="data.filter.includeTaxDelayed" /><i></i>
+				</label>
+
+				<button class="btn btn-sm btn-primary" ng-click="applyFilter()">Go</button>
+			</div>
+
+
+		</div>
+		<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
+			<div class="progress-bar progress-bar-striped rounded-right bg-teal"></div>
+		</div>
+		<!--<table class="table">
 		<thead>
 			<tr>
 				<th class="col-sm-4">
@@ -18,7 +55,7 @@
 		</thead>
 		<tbody>
 			<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
-				<td class="col-sm-4" >
+				<td class="col-sm-4">
 					<div class="row" ng-show="showDates &&  data.filter.filterByDateRange">
 						<div class="row">
 							<div class="form-group col-sm-4">
@@ -79,8 +116,8 @@
 					</div>
 				</td>
 
-				<td class="col-sm-4" >
-					<div class="row" ng-show="data.filter.filterByMonthYear" >
+				<td class="col-sm-4">
+					<div class="row" ng-show="data.filter.filterByMonthYear">
 						<div class="col-sm-4 form-group">
 							<label for="filteryears">Year</label>
 							<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
@@ -115,8 +152,8 @@
 								<option value="4">Fourth Quarter</option>
 							</select>
 						</div>
-						
-						
+
+
 					</div>
 					<div class="row" ng-show="showHistory || showIncludeClients || showActive || showIncludeTaxDelayed">
 						<div class="col-sm-3 form-group" ng-show="showHistory">
@@ -154,7 +191,7 @@
 							</label>
 
 						</div>
-						
+
 					</div>
 					<div class="row">
 						<div class="col-sm-3"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
@@ -162,7 +199,7 @@
 
 				</td>
 
-				<td class="col-sm-4" >
+				<td class="col-sm-4">
 					<div class="row" ng-show="showPeriods && data.filter.filterByPeriod">
 						<div class="col-sm-12">
 							<label for="filterperiod">Pay Period</label>
@@ -182,6 +219,6 @@
 
 			</tr>
 		</tbody>
-	</table>
-</div>
+	</table>-->
+	</div>
 

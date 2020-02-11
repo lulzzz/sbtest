@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using HrMaxx.Common.Models;
 using HrMaxx.Common.Models.DataModel;
 using HrMaxx.Common.Models.Dtos;
 using HrMaxx.Common.Models.Enum;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Logical;
 using UserClaim = HrMaxx.Common.Models.DataModel.UserClaim;
 
 namespace HrMaxx.Common.Repository.Security
 {
-	public class UserRepository : IUserRepository
+	public class UserRepository : BaseDapperRepository, IUserRepository
 	{
 		private readonly UserEntities _dbContext;
 		private readonly IMapper _mapper;
 
-		public UserRepository(UserEntities dbContext, IMapper mapper)
+		public UserRepository(UserEntities dbContext, IMapper mapper, DbConnection connection): base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
@@ -28,13 +31,13 @@ namespace HrMaxx.Common.Repository.Security
 
 		public UserProfile GetUserProfile(Guid userId)
 		{
-			var user = _dbContext.Users.First(u => u.Id.Equals(userId.ToString()));
+			var user = QueryObject<User>("select * from AspNetUsers where Id=@Id", new { Id=userId});//_dbContext.Users.First(u => u.Id.Equals(userId.ToString()));
 			return _mapper.Map<User, UserProfile>(user);
 		}
 
 		public IList<UserRole> GetRoles()
 		{
-			var roles = _dbContext.Roles.ToList();
+			var roles = Query<Role>("select * from AspNetRoles");//_dbContext.Roles.ToList();
 			return _mapper.Map<List<Role>, IList<UserRole>>(roles);
 		}
 
@@ -65,8 +68,8 @@ namespace HrMaxx.Common.Repository.Security
 		public List<Guid> GetUserByRoleAndId(List<RoleTypeEnum> role, Guid? userId)
 		{
 			var users = _dbContext.Users.Where(u => u.Roles.Any(r => role.Any(nr=>r.Id==((int)nr).ToString()))
-			                                        && ((userId.HasValue && u.Id == userId.Value.ToString()) || !userId.HasValue)
-																				).ToList();
+			                                        && ((userId.HasValue && u.Id == userId.Value.ToString()) || !userId.HasValue)).ToList();
+			
 			if (!users.Any())
 			{
 				return new List<Guid>();
@@ -76,8 +79,13 @@ namespace HrMaxx.Common.Repository.Security
 
 		public List<UserModel> GetUsers(Guid? hostId, Guid? companyId)
 		{
-			var users = _dbContext.Users.AsQueryable();
-
+			var sql = "select Id  UserId, Email  , EmailConfirmed  , PasswordHash  , SecurityStamp  , PhoneNumber  , PhoneNumberConfirmed  , TwoFactorEnabled  , LockoutEndDateUtc  , LockoutEnabled  , AccessFailedCount  , UserName  , FirstName  , LastName  , Host  , Company  , Active  , Employee  , RoleVersion  , LastModifiedBy  , LastModified, " +
+						"(select Role.Id RoleId, Role.Name RoleName from AspNetUserRoles ur, AspNetRoles[Role] where ur.RoleId =[Role].Id and ur.UserId =[User].Id for xml path('Role'), elements, type),  " +
+						"(select * from AspNetUserClaims UserClaim where UserClaim.UserId =[User].Id for xml auto, elements, type) Claims " +
+						"from AspNetUsers [User] " +
+						"for xml path('UserModel'), elements, type, root('UserList')";
+			var users1 = QueryXmlList<List<UserModel>>(sql, rootAttribute: new System.Xml.Serialization.XmlRootAttribute("UserList"));
+			var users = users1.AsQueryable();
 			if (hostId.HasValue)
 			{
 				if (companyId.HasValue)
@@ -95,7 +103,9 @@ namespace HrMaxx.Common.Repository.Security
 					users = users.Where(u => u.Company.Value == companyId.Value);
 			}
 			
-			return _mapper.Map<List<User>, List<UserModel>>(users.Distinct().ToList());
+			return users.ToList();
+			
+			
 		}
 
 		public void SaveUser(UserModel usermodel)

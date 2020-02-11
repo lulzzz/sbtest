@@ -139,17 +139,20 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 					}
                     $scope.delete = function (index) {
                         var item = $scope.list[index];
-					if ($scope.saveToServer) {
-						companyRepository.deleteEmployeeDeduction(item.id).then(function(deduction) {
+						if ($scope.saveToServer) {
+							$scope.mainData.confirmDialog('to remove this employee deduction', 'danger',
+								function () {
+									companyRepository.deleteEmployeeDeduction(item.id).then(function (deduction) {
+										$scope.list.splice(index, 1);
+										$scope.$parent.$parent.updateDeductionList($scope.list);
+									}, function (error) {
+											$scope.mainData.handleError('error in saving deduction', error, 'danger');
+									})
+								});
+						} else {
 							$scope.list.splice(index, 1);
-							$scope.$parent.$parent.updateDeductionList($scope.list);
-						}, function(error) {
-							addAlert('error in saving deduction', 'danger');
-						});
-					} else {
-						$scope.list.splice(index, 1);
+						}
 					}
-				}
                     $scope.cancel = function (index) {
                         
 					if ($scope.original && $scope.original.id === $scope.selected.id) {

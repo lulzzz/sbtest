@@ -227,7 +227,8 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		
 		public string DropDownDisplay
 		{
-			get { return string.Format("{0}:{1} ({2} {3})", Code, Description, HourlyRate.ToString("c"), RateType==PayCodeRateType.Flat ? "per hour" : " x default rate"); }
+			get { return $"{Code}:{Description} ({(RateType == PayCodeRateType.Flat ? (HourlyRate.ToString("c") + " per hour") : (HourlyRate.ToString() + " x default rate"))})"; }
+				
 		}
 	}
 

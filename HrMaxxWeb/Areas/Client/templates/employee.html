@@ -612,7 +612,7 @@
 				<div class="panel-body">
 					<div class="row">
 						<div class="col-sm-6 col-md-3" ng-repeat="ag in selected.accumulationGroups" ng-init="parentIndex = $index">
-							<div class="widget widget-stats m-b-0" ng-class="{'bg-black': ag.key.payTypeId===6, 'bg-blue': ag.key.payTypeId===5, 'bg-grey': ag.key.payTypeId===16}">
+							<div class="widget widget-stats m-b-0" ng-class="{'bg-dark': ag.key.payTypeId===6, 'bg-blue': ag.key.payTypeId===5, 'bg-grey': ag.key.payTypeId===16}">
 								<div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
 								<div class="stats-title">{{ag.key.payTypeName}}</div>
 								<div class="stats-desc">Available</div>
