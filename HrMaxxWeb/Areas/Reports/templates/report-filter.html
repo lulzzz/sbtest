@@ -1,7 +1,7 @@
 ﻿
 	<div class="col-sm-12 ">
 		<div class="d-flex align-items-center mb-3">
-			<a href="javascript:;" class="btn btn-inverse mr-2 text-truncate" id="daterange-filter">
+			<a href="javascript:;" class="btn btn-inverse mr-2 text-truncate daterangefilter" id="daterange-filter">
 				<i class="fa fa-calendar fa-fw text-white-transparent-5 ml-n1"></i>
 				<span>1 Jun 2020 - 7 Jun 2020</span>
 				<b class="caret"></b>
@@ -9,15 +9,15 @@
 			<div class="text-muted mt-2 mt-sm-0">
 
 				<label for="history" class="switch" ng-if="showHistory">
-					Include History?
+					History?
 					<input id="history" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
 				</label>
 				<label for="clients" class="switch" ng-if="showIncludeClients">
-					Include Clients/locations?
+					Clients/locations?
 					<input id="clients" type="checkbox" ng-model="data.filter.includeClients" /><i></i>
 				</label>
 				<label for="clientemployees" class="switch" ng-if="showIncludeClients && showIncludeClientEmployees" ng-show="data.filter.includeClients">
-					Include Clients/locations Employees?
+					Clients/locations Employees?
 					<input id="clientemployees" type="checkbox" ng-model="data.filter.includeClientEmployees" /><i></i>
 				</label>
 				<label for="active" class="switch" ng-if="showActive">
@@ -25,7 +25,7 @@
 					<input id="active" type="checkbox" ng-model="data.filter.onlyActive" /><i></i>
 				</label>
 				<label for="delayed" class="switch" ng-if="showIncludeTaxDelayed">
-					Include Tax Delayed?
+					Tax Delayed?
 					<input id="delayed" type="checkbox" ng-model="data.filter.includeTaxDelayed" /><i></i>
 				</label>
 
@@ -37,188 +37,6 @@
 		<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
 			<div class="progress-bar progress-bar-striped rounded-right bg-teal"></div>
 		</div>
-		<!--<table class="table">
-		<thead>
-			<tr>
-				<th class="col-sm-4">
-					<i class="fa" ng-show="showDates" ng-class="{'fa-plus-square': !data.filter.filterByDateRange, 'fa-minus-square':data.filter.filterByDateRange}" ng-click="data.filter.filterByDateRange=!data.filter.filterByDateRange"> Filter By Date Range</i>
-				</th>
-				<th class="col-sm-4">
-					<i class="fa" ng-class="{'fa-plus-square': !data.filter.filterByMonthYear, 'fa-minus-square':data.filter.filterByMonthYear}" ng-click="data.filter.filterByMonthYear=!data.filter.filterByMonthYear"> Filter By Month/Quarter & Year</i>
-				</th>
-				<th class="col-sm-4">
-
-					<i class="fa" ng-show="showPeriods" ng-class="{'fa-plus-square': !data.filter.filterByPeriod, 'fa-minus-square':data.filter.filterByPeriod}" ng-click="data.filter.filterByPeriod=!data.filter.filterByPeriod"> Filter By Period</i>
-				</th>
-			</tr>
-
-		</thead>
-		<tbody>
-			<tr ng-show="data.filter.filterByDateRange || data.filter.filterByMonthYear || data.filter.filterByPeriod">
-				<td class="col-sm-4">
-					<div class="row" ng-show="showDates &&  data.filter.filterByDateRange">
-						<div class="row">
-							<div class="form-group col-sm-4">
-								<label for="startdate">From: </label>
-								<date-ctrl name="startdate" model="data.filter.startDate" disabled="false" />
-
-							</div>
-							<div class="form-group col-sm-4">
-								<label for="enddate">From: </label>
-								<date-ctrl name="enddate" model="data.filter.endDate" min="data.filter.startDate" />
-
-							</div>
-
-						</div>
-						<div class="row" ng-show="showHistory || showIncludeClients || showActive || showIncludeTaxDelayed">
-							<div class="col-sm-3 form-group" ng-show="showHistory">
-
-								<label for="bydatehistory" class="switch">
-									Include History?
-									<input id="bydatehistory" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
-								</label>
-
-							</div>
-							<div class="col-sm-3 form-group" ng-if="showIncludeClients">
-
-								<label for="bydateclients" class="switch">
-									Include Clients/locations?
-									<input id="bydateclients" type="checkbox" ng-model="data.filter.includeClients" /><i></i>
-								</label>
-								<label for="bydateclientemployees" class="switch" ng-if="showIncludeClientEmployees" ng-show="data.filter.includeClients">
-									Include Clients/locations Employees?
-									<input id="bydateclientemployees" type="checkbox" ng-model="data.filter.includeClientEmployees" /><i></i>
-								</label>
-							</div>
-							<div class="col-sm-3 form-group" ng-show="showActive">
-
-								<label for="bydateactive" class="switch">
-									Only Active?
-									<input id="bydateactive" type="checkbox" ng-model="data.filter.onlyActive" /><i></i>
-								</label>
-
-							</div>
-							<div class="col-sm-3 form-group" ng-if="showIncludeTaxDelayed">
-
-								<label for="bydatetaxdelayed" class="switch">
-									Include Tax Delayed?
-									<input id="bydatetaxdelayed" type="checkbox" ng-model="data.filter.includeTaxDelayed" /><i></i>
-								</label>
-
-							</div>
-
-						</div>
-						<div class="row">
-							<div class="form-group col-sm-4">
-								<button class="btn btn-xs btn-success pull-left" ng-click="filterByDateRange()">Go</button>
-							</div>
-						</div>
-					</div>
-				</td>
-
-				<td class="col-sm-4">
-					<div class="row" ng-show="data.filter.filterByMonthYear">
-						<div class="col-sm-4 form-group">
-							<label for="filteryears">Year</label>
-							<select name="filteryears" ng-model="data.filter.year" class="form-control" convert-to-number ng-options="year for year in data.filter.years track by year">
-								<option value=""> select year</option>
-							</select>
-						</div>
-						<div class="col-sm-4 form-group">
-							<label for="filtermonths">Month</label>
-							<select name="filtermonths" ng-model="data.filter.month" ng-disabled="!data.filter.year" class="form-control" ng-change="data.filter.quarter=0" convert-to-number>
-								<option value="0">select month</option>
-								<option value="1">January</option>
-								<option value="2">February</option>
-								<option value="3">March</option>
-								<option value="4">April</option>
-								<option value="5">May</option>
-								<option value="6">June</option>
-								<option value="7">July</option>
-								<option value="8">August</option>
-								<option value="9">September</option>
-								<option value="10">October</option>
-								<option value="11">November</option>
-								<option value="12">December</option>
-							</select>
-						</div>
-						<div class="col-sm-4 form-group">
-							<label for="filterquarter">Quarter</label>
-							<select name="filterquarter" ng-model="data.filter.quarter" ng-disabled="!data.filter.year" ng-change="data.filter.month=0" class="form-control" convert-to-number>
-								<option value="0">select quarter</option>
-								<option value="1">First Quarter</option>
-								<option value="2">Second Quarter</option>
-								<option value="3">Third Quarter</option>
-								<option value="4">Fourth Quarter</option>
-							</select>
-						</div>
-
-
-					</div>
-					<div class="row" ng-show="showHistory || showIncludeClients || showActive || showIncludeTaxDelayed">
-						<div class="col-sm-3 form-group" ng-show="showHistory">
-
-							<label for="bymqhistory" class="switch">
-								Include History?
-								<input id="bymqhistory" type="checkbox" ng-model="data.filter.includeHistory" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-3 form-group" ng-if="showIncludeClients">
-
-							<label for="byqmclients" class="switch">
-								Include Clients/locations?
-								<input id="byqmclients" type="checkbox" ng-model="data.filter.includeClients" /><i></i>
-							</label>
-							<label for="byqmclientemployees" class="switch" ng-if="showIncludeClientEmployees" ng-show="data.filter.includeClients">
-								Include Clients/locations Employees?
-								<input id="byqmclientemployees" type="checkbox" ng-model="data.filter.includeClientEmployees" /><i></i>
-							</label>
-						</div>
-						<div class="col-sm-3 form-group" ng-show="showActive">
-
-							<label for="bymqactive" class="switch">
-								Only Active?
-								<input id="bymqactive" type="checkbox" ng-model="data.filter.onlyActive" /><i></i>
-							</label>
-
-						</div>
-						<div class="col-sm-3 form-group" ng-if="showIncludeTaxDelayed">
-
-							<label for="byqmtaxdelayed" class="switch">
-								Include Tax Delayed?
-								<input id="byqmtaxdelayed" type="checkbox" ng-model="data.filter.includeTaxDelayed" /><i></i>
-							</label>
-
-						</div>
-
-					</div>
-					<div class="row">
-						<div class="col-sm-3"><button class="btn btn-xs btn-success" ng-click="filterByMonthYear()">Go</button></div>
-					</div>
-
-				</td>
-
-				<td class="col-sm-4">
-					<div class="row" ng-show="showPeriods && data.filter.filterByPeriod">
-						<div class="col-sm-12">
-							<label for="filterperiod">Pay Period</label>
-							<select name="filterperiod" ng-model="data.filter.period" class="form-control" convert-to-number>
-								<option value="1">All</option>
-								<option value="2">Last 3 months</option>
-								<option value="3">Last 6 months</option>
-								<option value="4">Last 12 months</option>
-							</select>
-						</div>
-						<div class="col-sm-12">
-							<button class="btn btn-xs btn-success" ng-show="data.filter.period" ng-click="filterByPeriod()">Go</button>
-						</div>
-					</div>
-
-				</td>
-
-			</tr>
-		</tbody>
-	</table>-->
+		
 	</div>
 

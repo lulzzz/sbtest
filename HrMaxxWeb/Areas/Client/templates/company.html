@@ -83,20 +83,20 @@
             <!-- begin col-4 -->
             <div class="col-sm-2">
                 <div class="form-group" ng-show="!selectedCompany.isHostCompany && !selectedCompany.isLocation">
-                    <label></label>
+                    <label>Visible to Host Staff?</label>
                     <div>
                         <label for="visibleToHost" class="switch">
-                            Visible to Host Staff?
+                            
                             <input id="visibleToHost" type="checkbox" ng-model="selectedCompany.isVisibleToHost" ng-disabled="isFileUnderHostDisabled()" /><i></i>
                         </label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label></label>
+                    <label>Leasing/PEO?</label>
                     <div>
                         <label for="fileUnderHost" class="switch">
-                            Leasing/PEO?
+                            
                             <input id="fileUnderHost" type="checkbox" ng-model="selectedCompany.fileUnderHost" ng-disabled="isFileUnderHostDisabled()" /><i></i>
                         </label>
                     </div>

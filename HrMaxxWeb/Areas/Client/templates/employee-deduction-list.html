@@ -38,7 +38,7 @@
 
                     </div>
                 </div>
-                <div class="panel-body m-t-0" ng-class="getWidgetSubClass(item)" ng-show="showDetails(item, $index)">
+                <div class="panel-body m-t-0" ng-class="getWidgetSubClass(item)" ng-if="showDetails(item, $index)">
                     <div class="row">
                         <div class="form-group  col-md-12 col-sm-12" ng-show="showWarning()">
                             <label class="control-label label-warning">* This Deduction will not be applied</label>
@@ -46,7 +46,7 @@
                         <div class="form-group row">
                             <label class="control-label col-md-4 col-sm-4" for="rate">Rate :</label>
                             <div class="col-md-4 col-sm-4">
-                                <input class="form-control" id="rate" name="rate" ng-model="selected.rate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" step="0.01" required />
+                                <input class="form-control" id="rate{{$index}}" name="rate{{$index}}" ng-model="selected.rate" min="0.01" max="{{selected.method && selected.method.key===1 ? 100 : ''}}" step="0.01" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" required data-parsley-type="number"  />
 
                             </div>
                             <div class="col-md-4 col-sm-4 m-l-0">
@@ -60,7 +60,7 @@
                         <div class="form-group row">
                             <label class="control-label col-md-4 col-sm-4" for="ec">Employer %:</label>
                             <div class="col-md-6 col-sm-6">
-                                <input class="form-control" step="0.01" id="ec" name="ec" ng-model="selected.employerRate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" max="100" min="0" />
+                                <input class="form-control" step="any" id="ec" name="ec" ng-model="selected.employerRate"  max="100" min="0" data-parsley-type="number" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"/>
                                 <label class="label label-danger" ng-show="dedform.ec.$error.max">value can only be between 0 and 100</label>
                             </div>
                         </div>

@@ -241,7 +241,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/copycompany.html',
 							controller: 'copyCompanyCtrl',
-							size: 'lg',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							backdrop: false,
 							keyboard: true,

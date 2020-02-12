@@ -62,32 +62,7 @@
 			</div>
 			<div class="row hidden-print" ng-show="data.tab===1">
 				<staff-dashboard main-data="mainData"/>
-				<!--<div class="col-sm-12 hidden-print table-responsive">
-
-					    <div class="col-sm-6 col-sm-offset-3">
-						    <div uib-carousel active="active" interval="5000" no-wrap="true">
-							    <div uib-slide ng-repeat="news in data.myNews track by $index" index="$index">
-								    <img ng-src="{{zionAPI.Web}}/Content/images/blank.png" alt="ASP.NET" class="img-responsive" style="height:300px;width:100%" />
-								    <div class="carousel-caption">
-									    <h3>{{news.title}}</h3>
-									    <p style="font-size: 14pt">
-										    {{news.newsContent}}
-										    <br />
-										    <i>by {{news.userName}} on {{news.timeStamp | date:'MM/dd/yyyy hh:mm:ss a'}}</i>
-									    </p>
-								    </div>
-
-								    <div class="carousel-control">
-									    News
-								    </div>
-
-							    </div>
-						    </div>
-					    </div>
-
-				    </div>-->
-
-
+				
 			</div>
 			<div class="row" ng-if="data.tab===4">
 				<div class="col-sm-12">
@@ -121,7 +96,7 @@
 										{{ctx.due}}
 									</td>
 									<td class="hidden-print">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx.hostId, ctx.companyId)">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx.hostId, ctx.companyId)"><i class="fa fa-eye"/></button>
 									</td>
 
 								</tr>
@@ -148,7 +123,7 @@
 										{{d}}
 									</td>
 									<td class="hidden-print">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])"><i class="fa fa-eye" /></button>
 									</td>
 
 								</tr>
@@ -175,7 +150,7 @@
 										{{d}}
 									</td>
 									<td class="hidden-print">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(ctx[0], ctx[1])"><i class="fa fa-eye" /></button>
 									</td>
 
 								</tr>
@@ -207,7 +182,7 @@
 										{{item.due}}
 									</td>
 									<td class="hidden-print text-center">
-										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(item.hostId, item.companyId)">view</button>
+										<button class="btn btn-xs btn-primary" ng-click="viewPayrolls(item.hostId, item.companyId)"><i class="fa fa-eye" /></button>
 									</td>
 								</tr>
 							

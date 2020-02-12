@@ -43,92 +43,29 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 						dataSvc.filter.filterByPeriod = false;
 						$scope.callback();
 					}
-					$scope.filterByDateRange = function () {
-						dataSvc.filter.quarter = 0;
-						dataSvc.filter.month = 0;
-						dataSvc.filterStartDate = dataSvc.filter.startDate ? moment(dataSvc.filter.startDate).format("MM/DD/YYYY") : moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-						dataSvc.filterEndDate = dataSvc.filter.endDate ? moment(dataSvc.filter.endDate).format("MM/DD/YYYY") : moment().format("MM/DD/YYYY");
-						dataSvc.filter.filterByMonthYear = false;
-						dataSvc.filter.filterByPeriod = false;
-						_init();
-					}
-					$scope.filterByMonthYear = function () {
-						
-						if (!dataSvc.filter.month && !dataSvc.filter.quarter) {
-							dataSvc.filterStartDate = moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-							dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
-						}
-						else if (dataSvc.filter.quarter) {
-							dataSvc.filterStartDate = moment(quarterStartMonth(dataSvc.filter.quarter) + '/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-							var lastmonth = moment(dataSvc.filter.quarter*3 + '/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-							dataSvc.filterEndDate = moment(lastmonth).endOf('month').format('MM/DD/YYYY');
-						}
-						else {
-							dataSvc.filterStartDate = moment(dataSvc.filter.month + '/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
-							
-							dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('month').format('MM/DD/YYYY');
-						}
-
-						dataSvc.filter.filterByDateRange = false;
-						dataSvc.filter.filterByPeriod = false;
-						_init();
-					}
-					var quarterStartMonth = function(quarter) {
-						if (quarter === 1)
-							return 1;
-						else if (quarter === 2)
-							return 4;
-						else if (quarter === 3)
-							return 7;
-						else 
-							return 10;
-					}
-					
-					$scope.filterByPeriod = function () {
-						dataSvc.filter.quarter = 0;
-						dataSvc.filter.month = 0;
-						if (dataSvc.filter.period === 1) {
-							dataSvc.filterStartDate = null;
-							dataSvc.filterEndDate = null;
-						} else if (dataSvc.filter.period === 2) {
-							dataSvc.filterEndDate = new Date();
-							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-3, 'months').format('MM/DD/YYYY');
-						} else if (dataSvc.filter.period === 3) {
-							dataSvc.filterEndDate = new Date();
-							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-6, 'months').format('MM/DD/YYYY');
-						} else if (dataSvc.filter.period === 4) {
-							dataSvc.filterEndDate = new Date();
-							dataSvc.filterStartDate = moment(dataSvc.filterEndDate).add(-1, 'years').format('MM/DD/YYYY');
-						}
-
-						dataSvc.filter.filterByMonthYear = false;
-						dataSvc.filter.filterByDateRange = false;
-						_init();
-					}
 					var _init = function () {
 						handleDateRangeFilter();
 						$scope.callback();
-
 					}
 					if (!$scope.defaultsProvided) {
 						dataSvc.filterStartDate = moment('01/01/' + dataSvc.filter.year).format('MM/DD/YYYY');
 						dataSvc.filterEndDate = moment(dataSvc.filterStartDate).endOf('year').format('MM/DD/YYYY');
 					}
 					if (!dataSvc.filterEndDate) {
-						dataSvc.filterEndDate = moment().format('MM/DD/YYYY');
+						dataSvc.filterEndDate = moment().endOf('year').format('MM/DD/YYYY');
 					}
 					dataSvc.filter.includeHistory = false;
 					dataSvc.filter.includeClients = false;
 					dataSvc.filter.includeClientEmployees = false;
 					dataSvc.filter.includeTaxDelayed = false;
 					var handleDateRangeFilter = function () {
-						$('#daterange-filter span').html(moment(dataSvc.filterStartDate).format('D MMMM YYYY') + ' - ' + moment(dataSvc.filterEndDate).format('D MMMM YYYY'));
+						$('.daterangefilter span').html(moment(dataSvc.filterStartDate).format('MMMM D, YYYY') + ' - ' + moment(dataSvc.filterEndDate).format('MMMM D, YYYY'));
 						
-						$('#daterange-filter').daterangepicker({
+						$('.daterangefilter').daterangepicker({
 							format: 'MM/DD/YYYY',
 							startDate: dataSvc.filterStartDate,
 							endDate: dataSvc.filterEndDate,
-							maxDate: moment(),
+							maxDate: moment().endOf('year'),
 							showDropdowns: true,
 							showWeekNumbers: true,
 							timePicker: false,
@@ -162,7 +99,7 @@ common.directive('reportFilter', ['zionAPI', '$timeout', '$window', 'version',
 								firstDay: 1
 							}
 						}, function (start, end, label) {
-							$('#daterange-filter span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
+								$('.daterangefilter span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
 								dataSvc.filter.startDate = start;
 								dataSvc.filter.endDate = end;
 						});
