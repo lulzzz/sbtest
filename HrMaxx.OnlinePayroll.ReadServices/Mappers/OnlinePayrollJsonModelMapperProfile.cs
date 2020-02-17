@@ -271,6 +271,7 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.PendingDelayed940, opt => opt.Ignore())
 				.ForMember(dest => dest.PendingDelayed941, opt => opt.Ignore())
 				.ForMember(dest => dest.PendingDelayedPit, opt => opt.Ignore())
+				.ForMember(dest => dest.DelayedExtractsBySchedule, opt => opt.Ignore())
 				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
                 .ForMember(dest => dest.PendingExtractsBySchedule, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.TaxExtractJson, Models.TaxExtract>()
