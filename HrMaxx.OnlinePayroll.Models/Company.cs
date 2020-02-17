@@ -32,7 +32,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public int InsuranceGroupNo { get; set; }
 		public PayrollSchedule PayrollSchedule { get; set; }
 		public PayrollScheduleSubType PayrollScheduleDay { get; set; }
-		public decimal MinWage { get; set; }
+		public decimal? MinWage { get; set; }
 		public string Memo { get; set; }
 		public string Notes { get; set; }
 		public string DashboardNotes { get; set; }
@@ -51,7 +51,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ControlId { get; set; }
 		public DateTime? LastPayrollDate { get; set; }
 		public CompanyCheckPrintOrder CompanyCheckPrintOrder { get; set; }
-
+		public bool IsRestaurant { get; set; }
 		public string InsuranceClientNo { get; set; }
 		public InsuranceGroupDto InsuranceGroup { get; set; }
 		public Contact Contact { get; set; }
@@ -159,11 +159,14 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool ApplyInvoiceCredit { get; set; }
 		public string DeductionName { get; set; }
 		public string Description { get; set; }
-		public decimal AnnualMax { get; set; }
+		public decimal? AnnualMax { get; set; }
 		public string W2_12 { get; set; }
 		public string W2_13R { get; set; }
 		public string R940_R { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
 
     }
@@ -209,6 +212,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string Code { get; set; }
 		public string Description { get; set; }
 		public decimal HourlyRate { get; set; }
+		public PayCodeRateType RateType { get; set; }
+		
 	}
 
 	public class CompanyLocation

@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace HrMaxx.Common.Models.Dtos
 {
+	[Serializable]
+	[XmlRoot("UserList")]
 	public class UserModel
 	{
 		public Guid UserId { get; set; }

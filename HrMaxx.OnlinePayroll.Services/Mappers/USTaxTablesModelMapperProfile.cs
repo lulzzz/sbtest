@@ -147,6 +147,10 @@ namespace HrMaxx.OnlinePayroll.Services.Mappers
 
 			CreateMap<Models.DataModel.TaxDeductionPrecedence, TaxDeductionPrecendence>();
 
+			CreateMap<Models.DataModel.MinWageYear, MinWageYearRow>()
+				.ForMember(dest => dest.HasChanged, opt => opt.MapFrom(src => false));
+			CreateMap<MinWageYearRow, Models.DataModel.MinWageYear>();
+
 		}
 	}
 }

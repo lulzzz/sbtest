@@ -2,278 +2,142 @@
     <div class="row">
         <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
     </div>
-<div class="row">
-    <div class="col-sm-3" ng-repeat="item in list track by $index" ng-form >
-        <form name="dedform{{$index}}" data-parsley-validate="true">
-
-       
-			<div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
-				<div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-down fa-fw"></i></div>
-				<div class="stats-title" ng-if="((!item.employeeDeduction && item.id>0) || (item.employeeDeduction))">{{item.deduction? item.deduction.description : ''}}</div>
-				<div class="stats-title" ng-if="item.id===0">
-					<div class="form-group">
-
-						<select class="form-control" id="ded" ng-model="item.deduction" ng-options="ded.description for ded in availableCompanyDeductions($index) track by ded.id" required>
-							<option value="">Please select...</option>
-						</select>
-
-					</div>
-				</div>
-				<div class="stats-desc">{{item.deduction? item.deduction.type.name : ''}}</div>
-				<div class="stats-number">{{item.employeeWithheld | currency}} (@ {{ item.method.key===1? (item.rate | currency:'') + '%' : (item.rate | currency)}} p.c)</div>
-				<div class="stats-number" ng-show="item.employerWithheld">Employer: {{item.employerWithheld | currency}} (@ {{ (item.employerRate | currency:'') + '%'}})</div>
-				<div class="stats-progress progress">
-					<div class="progress-bar" style="width: 100%;"></div>
-				</div>
-				<div class="stats-desc" ng-show="showControls">
-					<span class="text-color text-bold">* this deduction will not be applied</span>
-					<i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected(item)"></i>
-					<i class="fa fa-remove fa-lg pull-right" ng-show="!selected && ((item.id>0 && item.employeeWithheld===0 && item.employerWithheld===0) || !saveToServer)" ng-click="delete($index)"></i>
-					<i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
-					<i class="fa fa-save fa-lg pull-right" ng-show="selected && selected.id===item.id && selected!==original" ng-click="isValid($index) && save($index)"></i>
+    <div class="row">
+        <div class="col-sm-3" ng-repeat="item in list track by $index" ng-form>
+            <form name="dedform{{$index}}" data-parsley-validate="true">
 
 
-				</div>				
-			</div>
-        <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && ((selected.id && selected.id===item.id) || (!selected.id && selected.employeeDeduction.id===item.employeeDeduction.id))">
-            <div class="stats-desc">
-                <div class="form-group  col-md-12 col-sm-12" ng-show="showWarning()">
-                    <label class="control-label label-warning">* This Deduction will not be applied</label>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-4 col-sm-4" for="rate">Rate :</label>
-                    <div class="col-md-4 col-sm-4">
-                        <input class="form-control"  id="rate" name="rate" ng-model="selected.rate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="1" step="0.01" required />
+                <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
+                    <div class="stats-icon stats-icon-lg"><i class="fa fa-hand-o-down fa-fw"></i></div>
+                    <div class="stats-title" ng-if="((!item.employeeDeduction && item.id>0) || (item.employeeDeduction))">{{item.deduction? item.deduction.description : ''}}</div>
+                    <div class="stats-title" ng-if="item.id===0">
+                        <div class="form-group">
+
+                            <select class="form-control" id="ded" ng-model="item.deduction" ng-options="ded.description for ded in availableCompanyDeductions($index) track by ded.id" required>
+                                <option value="">Please select...</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="stats-title">{{item.deduction? item.deduction.deductionName : ''}}</div>
+                    <div class="stats-title" ng-if="showDates(item)">{{showDates(item)}}</div>
+                    <div class="stats-desc">{{item.deduction? item.deduction.type.name : ''}}</div>
+                    <div class="stats-number">{{item.employeeWithheld | currency}} (@ {{ item.method.key===1? (item.rate | currency:'') + '%' : (item.rate | currency)}} p.c)</div>
+                    <div class="stats-number" ng-show="item.employerWithheld">Employer: {{item.employerWithheld | currency}} (@ {{ (item.employerRate | currency:'') + '%'}})</div>
+                    <div class="stats-title" ng-if="showEmployeeDates(item)">{{showEmployeeDates(item)}}</div>
+                    <div class="stats-progress progress">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                    </div>
+                    <div class="stats-desc" ng-show="showControls">
+                        <span class="text-color text-bold" ng-show="showWarningText(item)">* this deduction will not be applied</span>
+                        <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected(item, $index)"></i>
+                        <i class="fa fa-trash fa-lg pull-right" ng-show="!selected && ((item.id>0 && item.employeeWithheld===0 && item.employerWithheld===0) || !saveToServer)" ng-click="delete($index)"></i>
+                        <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel($index)"></i>
+                        <i class="fa fa-check fa-lg pull-right" ng-show="selected && selected.id===item.id && selected!==original" ng-click="isItemValid(item, $index) && save($index)"></i>
+
 
                     </div>
-                    <div class="col-md-4 col-sm-4 m-l-0">
+                </div>
+                <div class="panel-body m-t-0" ng-class="getWidgetSubClass(item)" ng-if="showDetails(item, $index)">
+                    <div class="row">
+                        <div class="form-group  col-md-12 col-sm-12" ng-show="showWarning()">
+                            <label class="control-label label-warning">* This Deduction will not be applied</label>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="rate">Rate :</label>
+                            <div class="col-md-4 col-sm-4">
+                                <input class="form-control" id="rate{{$index}}" name="rate{{$index}}" ng-model="selected.rate" min="0.01" max="{{selected.method && selected.method.key===1 ? 100 : ''}}" step="0.01" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" required data-parsley-type="number"  />
 
-                        <select class="form-control" ng-model="selected.method" ng-options="m.value for m in data.types track by m.key" required>
-                            <option value="">Please select...</option>
-                        </select>
-                    </div>
+                            </div>
+                            <div class="col-md-4 col-sm-4 m-l-0">
 
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-4 col-sm-4" for="ec">Employer %:</label>
-                    <div class="col-md-6 col-sm-6">
-                        <input class="form-control" step="0.01" id="ec" name="ec" ng-model="selected.employerRate" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" max="100" min="0" />
-                        <label class="label label-danger" ng-show="dedform.ec.$error.max">value can only be between 0 and 100</label>
+                                <select class="form-control" ng-model="selected.method" ng-options="m.value for m in data.types track by m.key" required>
+                                    <option value="">Please select...</option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="ec">Employer %:</label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" step="any" id="ec" name="ec" ng-model="selected.employerRate"  max="100" min="0" data-parsley-type="number" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"/>
+                                <label class="label label-danger" ng-show="dedform.ec.$error.max">value can only be between 0 and 100</label>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="amax">Annual Max :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" step="0.01" id="amax" name="amax" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="limit">Absolute Limit :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" step="0.01" id="limit" name="limit" ng-model="selected.limit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="ceiling">Ceiling p.c :</label>
+                            <div class="col-md-4 col-sm-4">
+                                <input class="form-control" step="0.01" id="ceiling" name="ceiling" ng-model="selected.ceilingPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
+                            </div>
+                            <div class="col-md-4 col-sm-4 m-l-0" ng-if="selected.ceilingPerCheck">
+                                <select class="form-control" ng-model="selected.ceilingMethod" ng-required="selected.ceilingPerCheck" ng-options="m.value for m in data.types track by m.key" >
+                                    <option value="">Please select...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4">Start Date :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <date-ctrl name="startdate" model="selected.startDate" disabled="(selected.employeeWithheld || selected.employerWithheld)" ng-min="selected.deduction.startDate" ng-max="selected.deduction.endDate" ng-if="data.canChangeDates" />
+                                <span ng-if="!data.canChangeDates()">{{ selected.startDate ? (selected.startDate | date:'MM/dd/yyyy') : ''}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4">End Date :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <date-ctrl name="startdate" model="selected.endDate" disabled="false" ng-min="selected.deduction.startDate" ng-max="selected.deduction.endDate" ng-if="data.canChangeDates" />
+                                <span ng-if="!data.canChangeDates()">{{ selected.startDate ? (selected.startDate | date:'MM/dd/yyyy') : ''}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-if="selected.deduction.type.id===3">
+                            <label class="control-label col-md-4 col-sm-4" for="priority">Priority :</label>
+                            <div class="col-md-4 col-sm-4">
+                                <input class="form-control" id="priority" name="priority" ng-model="selected.priority" ng-pattern="/^[0-9]?$/" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-if="selected.deduction.type.id===3">
+                            <label class="control-label col-md-4 col-sm-4" for="account">Account No :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <input class="form-control" type="text" id="account" name="account" ng-model="selected.accountNo" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" ng-required="selected.deduction.type.id===3" />
+                            </div>
+                        </div>
+                        <div class="form-group row" ng-if="selected.deduction.type.id===3">
+                            <label class="control-label col-md-4 col-sm-4" for="agency">Agency :</label>
+                            <div class="col-md-8 col-sm-8">
+                                <select class="form-control" id="agency" ng-required="selected.deduction.type.id===3" ng-model="item.agencyId" ng-options="a.id as a.name + '(' + a.contact.firstName + ' ' + a.contact.lastName + ')' for a in data.agencies">
+                                    <option value="">Please select...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 col-sm-4" for="note">Note :</label>
+                            <div class="col-md-6 col-sm-6">
+                                <input class="form-control" type="text" id="note" name="note" ng-model="selected.note" />
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label col-md-4 col-sm-4" for="amax">Annual Max :</label>
-                    <div class="col-md-6 col-sm-6">
-                        <input class="form-control" step="0.01" id="amax" name="amax" ng-model="selected.annualMax" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-4 col-sm-4" for="limit">Absolute Limit :</label>
-                    <div class="col-md-6 col-sm-6">
-                        <input class="form-control" step="0.01" id="limit" name="limit" ng-model="selected.limit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-4 col-sm-4" for="ceiling">Ceiling p.c :</label>
-                    <div class="col-md-4 col-sm-4">
-                        <input class="form-control" step="0.01" id="ceiling" name="ceiling" ng-model="selected.ceilingPerCheck" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" min="0" />
-                    </div>
-                    <div class="col-md-4 col-sm-4 m-l-0">
-                        <select class="form-control" ng-model="selected.ceilingMethod" ng-options="m.value for m in data.types track by m.key" ng-required="selected.ceilingPerCheck">
-                            <option value="">Please select...</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" ng-show="selected.deduction.type.id===3">
-                    <label class="control-label col-md-4 col-sm-4" for="priority">Priority :</label>
-                    <div class="col-md-4 col-sm-4">
-                        <input class="form-control"  id="priority" name="priority" ng-model="selected.priority" ng-pattern="/^[0-9]?$/" />
-                    </div>
-                </div>
-                <div class="form-group" ng-show="selected.deduction.type.id===3">
-                    <label class="control-label col-md-4 col-sm-4" for="account">Account No :</label>
-                    <div class="col-md-8 col-sm-8">
-                        <input class="form-control" type="text" id="account" name="account" ng-model="selected.accountNo" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
-                    </div>
-                </div>
-                <div class="form-group" ng-show="selected.deduction.type.id===3">
-                    <label class="control-label col-md-4 col-sm-4" for="agency">Agency :</label>
-                    <div class="col-md-8 col-sm-8">
-                        <select class="form-control" id="agency" ng-model="item.agencyId" ng-options="a.id as a.name + '(' + a.contact.firstName + ' ' + a.contact.lastName + ')' for a in data.agencies">
-                            <option value="">Please select...</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="control-label col-md-4 col-sm-4" for="note">Note :</label>
-                    <div class="col-md-6 col-sm-6">
-                        <input class="form-control" type="text" id="note" name="note" ng-model="selected.note"  />
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-        </form>
+
+    </div>
+    <div class="row" ng-show="!selected && showControls">
+        <span ng-show="list.length===0">No Deductions found</span>
+        <button type="button" ng-show="availableCompanyDeductions(-1).length>0" ng-click="add()" class="btn btn-lg btn-icon btn-circle btn-success">
+            <i class="fa fa-plus"></i>
+        </button>
     </div>
 
-</div>
-<div class="row" ng-show="!selected && showControls">
-    <span ng-show="list.length===0">No Deductions found</span>
-    <button type="button" ng-show="availableCompanyDeductions(-1).length>0" ng-click="add()" class="btn btn-lg btn-icon btn-circle btn-success">
-        <i class="fa fa-plus"></i>
-    </button>
-</div>
-	<table class="table table-header table-bordered table-condensed form-controls input-sm" ng-show="false">
-		<thead>
-			<tr>
-				<td class="col-sm-4">Description</td>
-				<td class="col-sm-3">Type</td>
-				<td class="col-sm-1">Method</td>
-				<td class="col-sm-1">Rate</td>
-				<td class="col-sm-1">Annual Max</td>
-				<td class="col-sm-3" ng-show="showControls"></td>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="item in list track by $index" ng-class="{'warning' : item.limit===0 || item.ceilingPerCheck===0}">
-				<td>
-					<!-- editable tesltra worktype (select-local) -->
-					<span e-ng-change="item.deduction = $data;" editable-select="item.deduction" e-name="deduction" e-form="rowform" e-ng-options="ded.description for ded in availableCompanyDeductions($index) track by ded.id">
-						{{ item.deduction? item.deduction.description : '' }}
-					</span>
-					<div class="row" ng-show="item.deduction.type.id!==3">
-						<div class="form-group col-sm-12">
-							<div class="col-sm-6 text-right">
-								<label>Ceiling Per Check</label>
-							</div>
-							<div class="col-sm-6">
-								<span editable-number="item.ceilingPerCheck" e-name="ceiling" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-									<span ng-show="item.ceilingMethod.key===2">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? (item.ceilingPerCheck | currency:'$') : 'no deduction') : 'none'  }}</span>
-									<span ng-show="item.ceilingMethod.key===1">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? ((item.ceilingPerCheck | currency:'') + '%') : 'no deduction') : 'none'  }}</span>
-								</span>
-								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="type" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
-
-								</span>
-							</div>
-
-
-						</div>
-					</div>
-					<div class="row" ng-show="item.deduction.type.id===3">
-						<div class="form-group col-sm-12">
-							<div class="col-sm-6 text-right">
-								<label>Ceiling Per Check</label>	
-							</div>
-							<div class="col-sm-6">
-								<span editable-number="item.ceilingPerCheck" e-name="ceilingoercheck" e-form="rowform" e-ng-change="item.ceilingPerCheck = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-									<span ng-show="item.ceilingMethod===2">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? (item.ceilingPerCheck | currency:'$') : 'no deduction' ): 'none'  }}</span>
-									<span ng-show="item.ceilingMethod===1">{{ item.ceilingPerCheck!==null ? (item.ceilingPerCheck!==0 ? ((item.ceilingPerCheck | currency:'') + '%') : 'no deduction'): 'none'  }}</span>
-								</span>
-								<span e-ng-change="item.ceilingMethod = $data;" editable-select="item.ceilingMethod" e-name="ceilingtype" e-form="rowform" e-ng-options="fm.key as fm.value for fm in data.ceilingMethods">
-									
-								</span>
-							</div>
-							
-						
-						</div>
-						<div class="form-group col-sm-12">
-							<div class="col-sm-6 text-right">
-								<label>Absolute Limit (across years)</label>	
-							</div>
-							<div class="col-sm-6 pull-left">
-								<span editable-number="item.limit" e-name="limit" e-form="rowform" e-ng-change="item.limit = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-									{{ item.limit!==null ? (item.limit!==0 ? (item.limit | currency:'$') : 'no deduction') : 'none'}}
-								</span>
-							</div>
-							
-							
-						</div>
-						<div class="form-group col-sm-12">
-							<div class="col-sm-6 text-right"><label>Priority</label></div>
-							<div class="col-sm-6 pull-left">
-								<span ng-show="item.deduction.type.id===3" editable-number="item.priority" e-name="ceiling" e-form="rowform" e-ng-change="item.priority = $data" e-ng-pattern="/^[0-9]?$/" e-step="0.01" e-style="width:10em;">
-									{{ item.priority!==null ? item.priority : 'none'  }}
-								</span>
-							</div>
-							
-							
-						</div>
-						<div class="form-group col-sm-12">
-							<div class="col-sm-6 text-right"><label>Account Id</label></div>
-							<div class="col-sm-6 pull-left">
-								<span ng-show="item.deduction.type.id===3" editable-text="item.accountNo" e-name="account" e-form="rowform" e-ng-change="item.accountNo = $data">
-									{{ item.accountNo }}
-								</span>
-							</div>
-							
-							
-						</div>
-						<div class="form-group col-sm-12">
-							<div class="col-sm-6 text-right"><label>Agency</label></div>
-							<div class="col-sm-6 pull-left">
-								<span ng-show="item.deduction.type.id===3" e-ng-change="item.agencyId = $data;" editable-select="item.agencyId" e-name="agnecy" e-form="rowform" e-ng-options="a.id as a.name + '(' + a.contact.firstName + ' ' + a.contact.lastName + ')' for a in data.agencies">
-									{{ item.agencyId? getAgencyName(item.agencyId) : '' }}
-								</span>
-							</div>
-							
-							
-						</div>
-						
-					</div>
-				</td>
-				<td>
-					{{ item.deduction? item.deduction.type.name : '' }}
-					
-				</td>
-				<td>
-					<span e-ng-change="item.method = $data;" editable-select="item.method" e-name="method" e-form="rowform" e-ng-options="m.value for m in data.types track by m.key">
-						{{ item.method? item.method.value : '' }}
-					</span>
-
-				</td>
-				<td>
-					<span ng-show="item.method && item.method===2">$</span>
-					<span editable-number="item.rate" e-name="rate" e-form="rowform" e-ng-change="item.rate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.rate }}
-					</span>
-					<span ng-show="item.method && item.method===1">%</span>
-				</td>
-				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.annualMax" e-name="annualmax" e-form="rowform" e-ng-change="item.annualMax = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.annualMax | currency:'$' }}
-					</span>
-				</td>
-				
-				<td style="white-space: nowrap" ng-show="showControls">
-					<!-- form -->
-					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected==item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit"></i>
-						</button>
-						<button type="button" ng-show="!rowform.$visible && (item.id>0 || !saveToServer)" class="btn btn-lg btn-danger btn-icon btn-circle" ng-click="delete($index)">
-							<i class="fa fa-recycle"></i>
-						</button>
-						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle">
-							<i class="fa fa-save"></i>
-						</button>
-						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default btn-icon btn-circle">
-							<i class="fa fa-remove"></i>
-						</button>
-						<h3 ng-if="item.limit===0 || item.ceilingPerCheck===0">This Deduction will not be applied</h3>
-					</form>
-				</td>
-				
-			</tr>
-			<tr ng-show="!selected && showControls">
-				<td colspan="6">
-					<span ng-show="list.length===0">No items found</span>
-					<button type="button" ng-show="availableCompanyDeductions(-1).length>0" ng-click="add()" class="btn btn-lg btn-icon btn-circle btn-success">
-						<i class="fa fa-plus"></i>
-					</button>
-				</td>
-
-			</tr>
-			
-		</tbody>
-	</table>
 </div>

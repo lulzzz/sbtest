@@ -1,15 +1,24 @@
 ﻿<div class="row">
-	
-	
-	
+	<div class="row m-b-20">
+		<ul class="nav nav-tabs  nav-tabs-inverse nav-justified nav-justified-mobile" id="dashboardtabs">
+			<li ng-class="{'active':data.openedRack===2}" ng-click="data.openedRack=2"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Configurations</span></a></li>
+			<li ng-class="{'active':data.openedRack===3}" ng-click="data.openedRack=3"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Tax Department & Agencies</span></a></li>
+			<li ng-class="{'active':data.openedRack===1}" ng-click="data.openedRack=1"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Meta Data</span></a></li>
+			<li ng-class="{'active':data.openedRack===4}" ng-click="data.openedRack=4"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Deduction Types</span></a></li>
+			<li ng-class="{'active':data.openedRack===5}" ng-click="data.openedRack=5" ng-show="mainData.userRole==='SuperUser'"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">States</span></a></li>
+			<!--<li ng-class="{'active':data.openedRack===4}" ng-click="data.openedRack=4"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Extract History</span></a></li>
+			<li ng-class="{'active':data.openedRack===5}" ng-click="data.openedRack=5"><a data-toggle="tab"><i class="fa fa-info"></i> <span class="hidden-xs">Dashboard</span></a></li>-->
 
-	<div class="panel panel-inverse">
 
-		<div class="panel-heading" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">Manage Configurations<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i></h4>
+		</ul>
 
-		</div>
-		<div class="panel-body" ng-show="data.isBodyOpen">
+	</div>
+
+
+
+	<div class="panel panel-inverse" ng-show="data.openedRack===2">
+
+		<div class="panel-body">
 			<form name="configForm" data-parsley-validate="true">
 				<div class="col-sm-12">
 
@@ -95,43 +104,178 @@
 								</tbody>
 							</table>
 						</div>
-						<div class="col-sm-12">
-							<div class="form-group">
-								<lable>Bank Holidays <a class="btn btn-danger btn-icon btn-circle btn-sm" ng-show="data.selectedHoliday" ng-click="removeHoliday()"><i class="fa fa-minus"></i></a></lable>
-								<select id="holidays" class="form-control" ng-model="data.selectedHoliday" ng-options="(holiday.value | date:'MM/dd/yyyy') for holiday in data.holidays track by holiday.value">
-									<option value="">select date</option>
-								</select>
-								
-							</div>
-							<div class="form-group">
-								<label class="control-label">New Holiday <a class="btn btn-success btn-icon btn-circle btn-sm" ng-disabled="holidayExists(data.newHoliday)" ng-show="data.newHoliday" ng-click="addHoliday()"><i class="fa fa-plus"></i></a></label>
-								<date-ctrl name="newholiday" model="data.newHoliday"  />
-								
-							</div>
-							
-							
-						</div>
+
 					</div>
 				</div>
 				<div class="col-sm-12">
-					<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-save"></i> Save</button>
+					<button class="btn btn-sm btn-primary" ng-click="save()"><i class="fa fa-check"></i> Save</button>
 				</div>
 			</form>
 
 		</div>
 	</div>
-	<div class="col-sm-12">
-		<vendor-customer-list heading="'Gloabl Vendors'" is-vendor="true" main-data="data" is-global="true" />	
+	<div class="col-sm-12" ng-show="data.openedRack===3">
+
+		<vendor-customer-list heading="'Gloabl Vendors'" is-vendor="true" main-data="data" is-global="true" />
 	</div>
-    <div class="col-sm-12">
-        <div class="col-sm-6">
-            <insurance-group-list />
-        </div>
-        <div class="col-sm-6">
-            <pay-type-list />
-        </div>
-    </div>
+	<div class="row" ng-show="data.openedRack===1">
+
+		<div class="col-sm-8">
+			<pay-type-list main-data="mainData" />
+		</div>
+		<div class="col-sm-4">
+			<div class="panel panel-inverse">
+				<div class="panel-heading">
+					<h4 class=" panel-title">
+						Bank Holidays for Direct Deposit
+					</h4>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<lable>Bank Holidays <a class="btn btn-danger btn-icon btn-circle btn-sm" ng-show="data.selectedHoliday" ng-click="removeHoliday()"><i class="fa fa-minus"></i></a></lable>
+						<select id="holidays" class="form-control" ng-model="data.selectedHoliday" ng-options="(holiday.value | date:'MM/dd/yyyy') for holiday in data.holidays track by holiday.value">
+							<option value="">select date</option>
+						</select>
+
+					</div>
+					<div class="form-group">
+						<label class="control-label">New Holiday <a class="btn btn-success btn-icon btn-circle btn-sm" ng-disabled="holidayExists(data.newHoliday)" ng-show="data.newHoliday" ng-click="addHoliday()"><i class="fa fa-plus"></i></a></label>
+						<date-ctrl name="newholiday" model="data.newHoliday" />
+
+					</div>
+				</div>
+
+			</div>
+			<insurance-group-list />
+		</div>
+
+	</div>
 	
-	
-	
+	<div class="col-sm-12" ng-show="data.openedRack===4">
+		<div class="row" ng-show="deductionTypes.length>0">
+			<table class="table table-bordered table-condensed">
+				<tr>
+					<th>Category</th>
+					<th>Name</th>
+					<th>W2_12</th>
+					<th>W2_13R</th>
+					<th>940_R</th>
+					<th><a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="!selectedType" ng-click="addDeductionType()"><i class="fa fa-plus"></i></a></th>
+				</tr>
+				<tr ng-repeat="item in deductionTypes track by $index" class="mouse-over-pointer" ng-class="{'success':selectedType.id===item.id}">
+					<td>
+						<span e-ng-change="item.categoryOption = $data;" editable-select="item.categoryOption" e-name="type" e-form="rowform" e-ng-options="category.value for category in data.deductionCategories track by category.key">
+							{{ item.categoryOption? item.categoryOption.value : '' }}
+						</span>
+					</td>
+					<td>
+						<span e-ng-change="item.name = $data" editable-text="item.name" e-name="name" e-form="rowform">
+							{{ item.name }}
+						</span>
+					</td>
+					<td>
+						<span e-ng-change="item.w2_12 = $data" editable-text="item.w2_12" e-name="w2_12" e-form="rowform">
+							{{ item.w2_12 }}
+						</span>
+					</td>
+					<td>
+						<div>
+							<label for="w2_13r{{$index}}" class="switch">
+								<input id="w2_13r{{$index}}" type="checkbox" ng-model="item.w2_13rVal" ng-disabled="!selectedType" /><i></i>
+							</label>
+						</div>
+					</td>
+					<td>
+						<span e-ng-change="item.r940_R = $data" editable-text="item.r940_R" e-name="w2_12" e-form="rowform">
+							{{ item.r940_R }}
+						</span>
+					</td>
+					<td style="white-space: nowrap">
+						<!-- form -->
+						<form editable-form id="rowform" name="rowform" onbeforesave="saveDeductionType($index)" class="form-buttons form-inline" shown="selectedType===item">
+							<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedType($index)">
+								<i class="fa fa-pencil"></i>
+							</button>
+							<button type="submit" ng-disabled="rowform.$waiting || !isDeductionTypeValid()" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+								<i class="fa fa-check"></i>
+							</button>
+							<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelDeduction($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+								<i class="fa fa-undo"></i>
+							</button>
+						</form>
+					</td>
+				</tr>
+
+			</table>
+
+		</div>
+	</div>
+	<div class="col-sm-12" ng-show="data.openedRack===5">
+		<div class="col-sm-12">
+			<button class="btn btn-sm btn-default pull-right" ng-show="hasStatesChanged()" ng-click="cancelStates()"><i class="fa fa-backspace"></i> cancel</button>
+			<button class="btn btn-sm btn-success pull-right" ng-show="hasStatesChanged() && !selectedState" ng-click="saveStates()"><i class="fa fa-check"></i> save</button>
+		</div>
+		<table class="table table-bordered table-condensed">
+			<tr>
+				<th>State Name</th>
+				<th>Abbreviation</th>
+				<th>Taxes Enabled</th>
+				<th>EIN Format</th>
+				<th>UIN Format</th>
+				<th>Has Counties</th>
+				<th></th>
+			</tr>
+			<tr ng-repeat="item in data.states track by item.stateId" class="mouse-over-pointer" ng-class="{'success':selectedState.stateId===item.stateId}">
+				<td>
+					{{item.stateName}}
+				</td>
+				<td>
+					{{item.abbreviation}}
+				</td>
+				<td>
+					<div>
+						<label for="taxes{{$index}}" class="switch">
+							<input id="taxes{{$index}}" type="checkbox" ng-model="item.taxesEnabled" ng-disabled="!selectedState" /><i></i>
+						</label>
+					</div>
+				</td>
+				<td>
+					<span e-ng-change="item.einFormat = $data" editable-text="item.einFormat" e-name="ein" e-form="rowform">
+						{{ item.einFormat }}
+					</span>
+				</td>
+				<td>
+					<span e-ng-change="item.einFormat = $data" editable-text="item.einFormat" e-name="ein" e-form="rowform">
+						{{ item.uiFormat }}
+					</span>
+				</td>
+				<td>
+					<div>
+						<label for="counties{{$index}}" class="switch">
+							<input id="counties{{$index}}" type="checkbox" ng-model="item.hasCounties" ng-disabled="!selectedState" /><i></i>
+						</label>
+					</div>
+				</td>
+
+				<td style="white-space: nowrap">
+					<!-- form -->
+					<form editable-form id="rowformstates" name="rowform" onbeforesave="saveState($index)" class="form-buttons form-inline" shown="selectedState===item">
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelectedState($index)">
+							<i class="fa fa-pencil"></i>
+						</button>
+						<button type="submit" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
+							<i class="fa fa-check"></i>
+						</button>
+						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancelState($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
+							<i class="fa fa-undo"></i>
+						</button>
+					</form>
+				</td>
+			</tr>
+
+		</table>
+
+	</div>
+
+
 </div>

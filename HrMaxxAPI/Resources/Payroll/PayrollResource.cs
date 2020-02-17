@@ -238,6 +238,8 @@ namespace HrMaxxAPI.Resources.Payroll
 		public string ScreenOvertime { get; set; }
 		public decimal Hours { get; set; }
 		public decimal OvertimeHours { get; set; }
+		public decimal AppliedRate { get; set; }
+		public decimal AppliedOverTimeRate { get; set; }
 		public decimal PWAmount { get; set; }
 		public decimal BreakTime { get; set; }
 		public decimal SickLeaveTime { get; set; }
@@ -245,6 +247,7 @@ namespace HrMaxxAPI.Resources.Payroll
 		public decimal YTD { get; set; }
 		public decimal OvertimeAmount { get; set; }
 		public decimal YTDOvertime { get; set; }
+		public string RateText { get { return PayCode.RateType == PayCodeRateType.Flat || PayCode.RateType == PayCodeRateType.NA ? $"{PayCode.HourlyRate.ToString("c")}" : $"{AppliedRate.ToString("c")}"; } }
 	}
 
 	public class PayrollTaxResource

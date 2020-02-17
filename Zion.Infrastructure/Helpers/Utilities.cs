@@ -203,5 +203,29 @@ namespace HrMaxx.Infrastructure.Helpers
 			return Math.Round(value, 2, MidpointRounding.AwayFromZero);
 		}
 
+		public static DateTime DepositDateBySchedule(DepositSchedule schedule, DateTime payDay)
+		{
+			if (schedule == DepositSchedule.Monthly)
+				return new DateTime(payDay.AddMonths(1).Year, payDay.AddMonths(1).Month, 1).Date;
+			else if (schedule == DepositSchedule.Quarterly)
+				return payDay.Date.AddMonths(3 - (payDay.Month - 1) % 3).AddDays(-payDay.Day).Date;
+			else
+			{
+				int numDays = 0;
+				if (payDay.DayOfWeek == DayOfWeek.Wednesday || payDay.DayOfWeek == DayOfWeek.Thursday || payDay.DayOfWeek == DayOfWeek.Friday)
+				{
+					numDays = DayOfWeek.Wednesday - payDay.DayOfWeek;
+				}
+				else
+				{
+					numDays = DayOfWeek.Friday - payDay.DayOfWeek;
+				}
+				if (numDays < 0)
+					numDays += 7;
+				return payDay.AddDays(numDays).Date;
+			}
+				
+		}
+
 	}
 }

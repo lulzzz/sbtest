@@ -28,6 +28,8 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public Nullable<decimal> AnnualMax { get; set; }
         public Nullable<decimal> FloorPerCheck { get; set; }
         public bool ApplyInvoiceCredit { get; set; }
+        public Nullable<System.DateTime> StartDate { get; set; }
+        public Nullable<System.DateTime> EndDate { get; set; }
     
         public virtual Company Company { get; set; }
         public virtual DeductionType DeductionType { get; set; }

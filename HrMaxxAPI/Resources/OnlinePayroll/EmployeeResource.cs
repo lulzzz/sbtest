@@ -40,6 +40,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DateTime HireDate { get; set; }
 		[Required]
 		public DateTime SickLeaveHireDate { get; set; }
+		public DateTime? TerminationDate { get; set; }
 		public decimal CarryOver { get; set; }
 		public string Department { get; set; }
 		[Required]
@@ -89,7 +90,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public DateTime? LastPayrollDate { get; set; }
 
 		public bool IsTerminate { get { return false; } }
-
+		public bool IsTipped { get; set; }
 		public string WcCode
 		{
 			get { return WorkerCompensation != null ? WorkerCompensation.Code.ToString() : string.Empty; }
@@ -443,7 +444,9 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		public int? Priority { get; set; }
 		public string AccountNo { get; set; }
 		public Guid? AgencyId { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
 
         public string Note { get; set; }

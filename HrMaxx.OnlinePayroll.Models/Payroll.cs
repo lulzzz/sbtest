@@ -222,6 +222,11 @@ namespace HrMaxx.OnlinePayroll.Models
 			get { return Math.Round(Compensations.Where(c => !c.PayType.IsTaxable).Sum(c => c.Amount), 2, MidpointRounding.AwayFromZero); }
 		}
 
+		public decimal CompensationPaidInCashAmount
+		{
+			get { return Math.Round(Compensations.Where(c => c.PayType.PaidInCash).Sum(c => c.Amount), 2, MidpointRounding.AwayFromZero); }
+		}
+
 		public decimal CompensationNonTaxableYTD
 		{
 			get { return Math.Round(Compensations.Where(c => !c.PayType.IsTaxable).Sum(c => c.YTD), 2, MidpointRounding.AwayFromZero); }
@@ -497,6 +502,8 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string ScreenOvertime { get; set; }
 		public decimal Hours { get; set; }
 		public decimal OvertimeHours { get; set; }
+		public decimal AppliedRate { get; set; }
+		public decimal AppliedOverTimeRate { get; set; }
 		public decimal PWAmount { get; set; }
 		public decimal BreakTime { get; set; }
 		public decimal SickLeaveTime { get; set; }
@@ -567,6 +574,18 @@ namespace HrMaxx.OnlinePayroll.Models
 					: 0;
 				return dbId + priority;
 			}
+		}
+		public bool IsApplicable(DateTime payday)
+		{
+			if (Deduction.StartDate.HasValue && payday < Deduction.StartDate.Value.Date)
+				return false;
+			if (Deduction.EndDate.HasValue && payday > Deduction.EndDate.Value.Date)
+				return false;
+			if (EmployeeDeduction.StartDate.HasValue && payday < EmployeeDeduction.StartDate.Value.Date)
+				return false;
+			if (EmployeeDeduction.EndDate.HasValue && payday > EmployeeDeduction.EndDate.Value.Date)
+				return false;
+			return true;
 		}
 	}
 

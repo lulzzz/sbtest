@@ -407,7 +407,7 @@ common.directive('employeeList', ['$uibModal','zionAPI', '$timeout', '$window', 
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/copyemployees.html',
 							controller: 'copyEmployeesCtrl',
-							size: 'lg',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							backdrop: true,
 							keyboard: true,

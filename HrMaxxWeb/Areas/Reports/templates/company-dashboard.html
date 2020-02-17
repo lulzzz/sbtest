@@ -75,7 +75,7 @@
 				</div>
 
 				<div class="col-md-3 col-sm-6">
-					<div class="widget widget-stats bg-black">
+					<div class="widget widget-stats bg-dark">
 						<div class="stats-icon">UI & ETT</div>
 						<div class="stats-title">Last Deposit - {{data.dashboard.lastCAUIETTExtract.depositDate | date:'MM/dd/yyyy'}}</div>
 						<div class="stats-number">{{data.dashboard.lastCAUIETTExtract.amount | currency}}</div>
@@ -106,14 +106,14 @@
 			<div class="row" ng-show="data.tab===1">
 				<!-- begin col-8 -->
 				<div class="col-md-8" ng-show="data.showChart">
-					<div class="widget-chart with-sidebar bg-black">
+					<div class="widget-chart with-sidebar bg-dark">
 						<div class="widget-chart-content">
 							<h4 class="chart-title">
 								{{data.chartTitle}} - Paid
 							</h4>
 							<div id="extract-paid" class="morris-inverse" style="height: 260px;"></div>
 						</div>
-						<div class="widget-chart-sidebar bg-black-darker">
+						<div class="widget-chart-sidebar bg-dark-darker">
 							<div class="chart-number">
 								{{data.donutChartTotal | currency}}
 							</div>
@@ -145,7 +145,7 @@
 					</div>
 				</div>
 				<div class="col-sm-4" ng-show="data.showChart">
-					<div class="widget-chart with-sidebar bg-black">
+					<div class="widget-chart with-sidebar bg-dark">
 						<div class="widget-chart-content">
 							<h4 class="chart-title">
 								{{data.chartTitle}} - Pending
@@ -268,7 +268,7 @@
 					</div>
 				</div>
 				<div class="col-md-2 col-sm-4">
-					<div class="widget widget-stats bg-black">
+					<div class="widget widget-stats bg-dark">
 						<div class="stats-icon"></div>
 						<div class="stats-info">
 							<h4>Last Check {{data.dashboard.lastPayroll.payDay | date:'MM/dd/yyyy'}}</h4>
@@ -293,7 +293,7 @@
 			<div class="row" ng-show="data.tab===2 && data.loaded && data.dashboard.ytdYear">
 				<!-- begin col-8 -->
 				<div class="col-md-12">
-					<div class="widget-chart with-sidebar bg-black">
+					<div class="widget-chart with-sidebar bg-dark">
 						<div class="widget-chart-content">
 							<h4 class="chart-title">
 								Payrolls

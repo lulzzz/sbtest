@@ -4,7 +4,7 @@
 </div>
 <div class="panel-group col-sm-12" id="accordion">
 
-<div class="panel panel-inverse overflow-hidden">
+<div class="panel overflow-hidden" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
 <div class="panel-heading">
     <i class="fa fa-plus-circle pull-right"></i>
     <ul class="nav nav-tabs pull-right" id="companytabs" ng-show="showControls">
@@ -83,20 +83,20 @@
             <!-- begin col-4 -->
             <div class="col-sm-2">
                 <div class="form-group" ng-show="!selectedCompany.isHostCompany && !selectedCompany.isLocation">
-                    <label></label>
+                    <label>Visible to Host Staff?</label>
                     <div>
                         <label for="visibleToHost" class="switch">
-                            Visible to Host?
+                            
                             <input id="visibleToHost" type="checkbox" ng-model="selectedCompany.isVisibleToHost" ng-disabled="isFileUnderHostDisabled()" /><i></i>
                         </label>
                     </div>
                 </div>
 
-                <div class="form-group" ng-show="!selectedCompany.isHostCompany && !selectedCompany.isLocation && selectedHost.isPeoHost">
-                    <label></label>
+                <div class="form-group">
+                    <label>Leasing/PEO?</label>
                     <div>
                         <label for="fileUnderHost" class="switch">
-                            Leasing?
+                            
                             <input id="fileUnderHost" type="checkbox" ng-model="selectedCompany.fileUnderHost" ng-disabled="isFileUnderHostDisabled()" /><i></i>
                         </label>
                     </div>
@@ -141,7 +141,7 @@
 
                         </select>
                     </div>
-                    <div class="col-sm-4" ng-show="selectedCompany.payrollSchedule!==original.payrollSchedule">
+                    <div class="col-sm-4" ng-show="selectedCompany.id && selectedCompany.payrollSchedule!==original.payrollSchedule">
                         <label></label>
                         <div>
                             <label for="updateemployees" class="switch">
@@ -152,16 +152,18 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Minimum Wage</label>
-                    <input type="text" name="minwage" class="form-control" required data-parsley-group="wizard-step-2" data-parsley-type="number" data-parsley-min="10" ng-model="selectedCompany.minWage" />
+                    <label>Minimum Wage <button class="btn btn-sm btn-circle" ng-click="showMinWages($event)"><i class="fa fa-info" style="color:cornflowerblue"></i></button></label>
+                    <input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" min="{{getApplicableMinimumWage()}}" ng-model="selectedCompany.minWage" step="0.01" ng-disabled="selectedCompany.fileUnderHost" />
+                    
                 </div>
                 <div class="form-group">
-                    <label>Check Print Order</label>
-                    <select ng-model="selectedCompany.companyCheckPrintOrder" name="printorder" class="form-control" data-parsley-group="wizard-step-2" required="" convert-to-number>
-                        <option value="1">Company Employee No</option>
-                        <option value="2">Employee Last Name</option>
-															
-                    </select>
+                    <label></label>
+                    <div>
+                        <label for="isrestaurant" class="switch">
+                            Restarurant Payroll?
+                            <input id="isrestaurant" type="checkbox" ng-model="selectedCompany.isRestaurant"  /><i></i>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="col-sm-4">
@@ -207,12 +209,20 @@
                         <option value="1">MICR Encoded Top</option>
                         <option value="2">Laser Middle</option>
                         <option value="3">Laser Top</option>
-                        <option value="4">MICR QB</option>															
+                        <option value="4">MICR QB</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Check Stub Memo</label>
                     <input type="text" name="memo" class="form-control" data-parsley-group="wizard-step-2" ng-model="selectedCompany.memo" />
+                </div>
+                <div class="form-group">
+                    <label>Check Print Order</label>
+                    <select ng-model="selectedCompany.companyCheckPrintOrder" name="printorder" class="form-control" data-parsley-group="wizard-step-2" required="" convert-to-number>
+                        <option value="1">Company Employee No</option>
+                        <option value="2">Employee Last Name</option>
+
+                    </select>
                 </div>
             </div>
             <div class="col-sm-4">
@@ -585,87 +595,109 @@
             <option value="2">Client Checks</option>
             <option value="3">Conv Payroll</option>
             <option value="4">Conv Payroll with WC</option>
-            <option value="5">WC Only</option>
+            <!--<option value="5">WC Only</option>-->
         </select>
     </div>
-
     <div class="form-group">
-        <label>Admin Fee Type</label>
+        <label>Invoice Style</label>
+        <select ng-model="selectedCompany.contract.invoiceSetup.invoiceStyle" name="invstyle" class="form-control" convert-to-number>
+            <option value="1">Summarized</option>
+            <option value="2">Detailed</option>
+        </select>
+    </div>
+    <div class="form-group col-sm-4">
+        <label>Admin Fee Rate</label>
+        <input class="form-control" name="adminfee" ng-model="selectedCompany.contract.invoiceSetup.adminFee" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
+    </div>
+    <div class="form-group col-sm-4">
+        <label>Admin Fee Method</label>
         <select ng-model="selectedCompany.contract.invoiceSetup.adminFeeMethod" name="adminfeemethod" class="form-control" convert-to-number>
             <option value="1">Amount (per payroll)</option>
             <option value="2">Percentage</option>
         </select>
     </div>
+    <div class="form-group col-sm-4">
+        <label>Fee Threshold</label>
+        <input class="form-control" name="threshold" ng-model="selectedCompany.contract.invoiceSetup.adminFeeThreshold" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
+    </div>
+
+
+
 
     <div class="form-group">
         <label>SUI Management</label>
         <input class="form-control" name="suimanagement" ng-model="selectedCompany.contract.invoiceSetup.suiManagement" data-parsley-type="number" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01" />
     </div>
 
-    <div class="form-group">
-        <label></label>
-        <div>
-            <label for="envfee" class="switch">
-                Apply Environmental Fee ?
-                <input id="envfee" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.applyEnvironmentalFee" /><i></i>
-            </label>
-        </div>
-    </div>
-    <div class="form-group">
-        <label></label>
-        <div>
-            <label for="printname" class="switch">
-                Print Client Name on Payroll ?
-                <input id="printname" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.printClientName" /><i></i>
-            </label>
-        </div>
-    </div>
-    <div class="form-group">
-        <label></label>
-        <div>
-            <label for="paysach" class="switch">
-                Pays ACH ?
-                <input id="paysach" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.paysByAch" /><i></i>
-            </label>
-        </div>
-    </div>
+
 
 </div>
 <div class="col-sm-4" ng-if="selectedCompany.contract.billingOption===3">
-    <div class="form-group">
-        <label>Invoice Style</label>
-        <select ng-model="selectedCompany.contract.invoiceSetup.invoiceStyle" name="invstyle" class="form-control" convert-to-number>
-            <option value="1">PEO ASO Co</option>
-            <option value="2">Detailed</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label>Admin Fee</label>
-        <input class="form-control" name="adminfee" ng-model="selectedCompany.contract.invoiceSetup.adminFee" required data-parsley-group="wizard-step-4" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
-    </div>
-    <div class="form-group">
-        <label>Fee Threshold</label>
-        <input class="form-control" name="threshold" ng-model="selectedCompany.contract.invoiceSetup.adminFeeThreshold" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-min="0" data-parsley-trigger="blur" step="0.01">
-    </div>
-    <div class="form-group">
-        <label></label>
-        <div>
-            <label for="statlimits" class="switch">
-                Apply Statuary Limits ?
-                <input id="statlimits" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.applyStatuaryLimits" /><i></i>
-            </label>
-        </div>
-    </div>
-    <div class="form-group">
-        <label></label>
-        <div>
-            <label for="wccharge" class="switch">
-                Apply WC Charge ?
-                <input id="wccharge" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.applyWCCharge" /><i></i>
-            </label>
-        </div>
-    </div>
+   
+    <ul class="list-group">
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===1, 'fa-times-circle':selectedCompany.contract.invoiceSetup.invoiceType!==1}" ng-style="(selectedCompany.contract.invoiceSetup.invoiceType===1 && {'color':'green'}) || (selectedCompany.contract.invoiceSetup.invoiceType!==1 && {'color':'red'})" ></i> Gross Wages</li>
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2, 'fa-times-circle': !(selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2)}" ng-style="((selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2) && {'color':'green'}) || (!(selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2) && {'color':'red'})" ></i> Employer Contributions</li>
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===2, 'fa-times-circle':selectedCompany.contract.invoiceSetup.invoiceType!==2}" ng-style="(selectedCompany.contract.invoiceSetup.invoiceType===2 && {'color':'green'}) || (selectedCompany.contract.invoiceSetup.invoiceType!==2 && {'color':'red'})"></i> Employee Contributions</li>
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2, 'fa-times-circle': !(selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2)}" ng-style="((selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2) && {'color':'green'}) || (!(selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2) && {'color':'red'})"></i> Environmental Fee</li>
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle' :selectedCompany.contract.invoiceSetup.invoiceType!==3, 'fa-times-circle':selectedCompany.contract.invoiceSetup.invoiceType===3}" ng-style="(selectedCompany.contract.invoiceSetup.invoiceType!==3 && {'color':'green'}) || (selectedCompany.contract.invoiceSetup.invoiceType===3 && {'color':'red'})"></i> Worker Compensation Charges</li>
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle':selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2, 'fa-times-circle': !(selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2)}" ng-style="((selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2) && {'color':'green'}) || (!(selectedCompany.contract.invoiceSetup.invoiceType===1 || selectedCompany.contract.invoiceSetup.invoiceType===2) && {'color':'red'})"></i> Deductions Credit</li>
+        <li class="list-group-item no-border"><i class="fa fa-lg" ng-class="{'fa-check-circle' :selectedCompany.contract.invoiceSetup.invoiceType!==1, 'fa-times-circle':selectedCompany.contract.invoiceSetup.invoiceType===1}" ng-style="(selectedCompany.contract.invoiceSetup.invoiceType!==1 && {'color':'green'}) || (selectedCompany.contract.invoiceSetup.invoiceType===1 && {'color':'red'})"></i> ACH Check(s) Net Wage</li>
+    </ul>
+    
+    
 </div>
+</div>
+<div class="row" ng-if="selectedCompany.contract.billingOption===3">
+    <div class="col-sm-4">
+
+    </div>
+    <div class="col-sm-8">
+        <div class="form-group col-sm-3">
+            <label>Apply Environmental Fee ?</label>
+            <div>
+                <label for="envfee" class="switch">
+                    <input id="envfee" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.applyEnvironmentalFee" /><i></i>
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-sm-3">
+            <label>Print Client Name on Payroll ?</label>
+            <div>
+                <label for="printname" class="switch">
+
+                    <input id="printname" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.printClientName" /><i></i>
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-sm-2">
+            <label>Pays ACH ?</label>
+            <div>
+                <label for="paysach" class="switch">
+
+                    <input id="paysach" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.paysByAch" /><i></i>
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-sm-2">
+            <label>Apply Statuary Limits ?</label>
+            <div>
+                <label for="statlimits" class="switch">
+
+                    <input id="statlimits" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.applyStatuaryLimits" /><i></i>
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-sm-2">
+            <label>Apply WC Charge ?</label>
+            <div>
+                <label for="wccharge" class="switch">
+
+                    <input id="wccharge" type="checkbox" ng-model="selectedCompany.contract.invoiceSetup.applyWCCharge" /><i></i>
+                </label>
+            </div>
+        </div>
+    </div>
+
 </div>
 <div class="row" ng-if="selectedCompany.contract.billingOption===3">
     <div class="col-sm-12">
@@ -699,7 +731,7 @@
                         </div>
                     </div></td>
                     <td><input type="text" ng-model="rc.comments" class="form-control" data-parsley-group="wizard-step-4" /></td>
-                    <td><i class="fa fa-remove" ng-click="removeRecurringCharge(rc, $index)" ng-show="!rc.id || rc.claimed===0"></i></td>
+                    <td><i class="fa fa-trash" ng-click="removeRecurringCharge(rc, $index)" ng-show="!rc.id || rc.claimed===0"></i></td>
                 </tr>
                 </thead>
             </table>
@@ -746,8 +778,8 @@
 </div>
 </div>
 <div class="col-sm-2 col-sm-offset-4" ng-show="showControls">
-    <a class="btn btn-success btn-icon btn-circle btn-lg" ng-click="save()" ng-disabled="!validateCompany()" title="Save"><i class="fa fa-save"></i></a>
-    <a class="btn btn-default btn-icon btn-circle btn-lg" ng-click="cancel()" title="cancel"><i class="fa fa-remove"></i></a>
+    <a class="btn btn-success " ng-click="save()" ng-disabled="!validateCompany()" title="Save"><i class="fa fa-check"></i> save</a>
+    <a class="btn btn-white " ng-click="cancel()" title="cancel"><i class="fa fa-undo"></i> cancel</a>
 									
 </div>
 </form>
@@ -772,7 +804,7 @@
 </div>
 </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseTwo">
@@ -782,12 +814,12 @@
     </div>
     <div id="collapseTwo" class="panel-collapse collapse">
         <div class="panel-body">
-            <deduction-list list="selectedCompany.deductions" types="data.companyMetaData.deductionTypes" company-id="selectedCompany.id" show-controls="showControls" />
+            <deduction-list list="selectedCompany.deductions" types="data.companyMetaData.deductionTypes" main-data="mainData" company-id="selectedCompany.id" show-controls="showControls" />
         </div>
     </div>
 </div>
 
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseThree">
@@ -802,7 +834,7 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id"ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFour">
@@ -817,7 +849,7 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseFive">
@@ -832,22 +864,22 @@
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSix">
                 <i class="fa fa-plus-circle pull-right"></i>
-                Pay Codes
+                Pay Rates
             </a>
         </h3>
     </div>
     <div id="collapseSix" class="panel-collapse collapse">
         <div class="panel-body">
-            <pay-code-list list="selectedCompany.payCodes" company-id="selectedCompany.id" show-controls="showControls" />
+            <pay-code-list list="selectedCompany.payCodes" company-id="selectedCompany.id" main-data="mainData" show-controls="showControls" />
         </div>
     </div>
 </div>
-<div class="panel panel-inverse overflow-hidden" ng-if="selectedCompany.id && !selectedCompany.isLocation">
+<div class="panel overflow-hidden" ng-if="selectedCompany.id && !selectedCompany.isLocation" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
     <div class="panel-heading">
         <h3 class="panel-title">
             <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion" data-target="#collapseSeven">

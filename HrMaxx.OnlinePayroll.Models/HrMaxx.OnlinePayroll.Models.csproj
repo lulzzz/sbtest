@@ -185,6 +185,9 @@
     <Compile Include="DataModel\MasterExtract.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataModel\MinWageYear.cs">
+      <DependentUpon>USTaxTablesModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="DataModel\PayCheckExtract.cs">
       <DependentUpon>OnlinePayrollModel.tt</DependentUpon>
     </Compile>
@@ -299,6 +302,7 @@
     <Compile Include="StaffDashboard.cs" />
     <Compile Include="USTaxModels\FITW4TaxTableRow.cs" />
     <Compile Include="USTaxModels\FITAlienAdjustmentTableRow.cs" />
+    <Compile Include="USTaxModels\MinWageYearRow.cs" />
     <Compile Include="ViewObjects.cs" />
     <Compile Include="Invoice.cs" />
     <Compile Include="InvoiceDeliveryClaim.cs" />

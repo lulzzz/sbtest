@@ -953,6 +953,17 @@ LastModified=@LastModified, LastModifiedBy=@LastModifiedBy where Id=@Id;";
 				conn.Execute(sql, mapped);
 			}
 		}
-		
+		public void FixPayCheckPayCodes(List<PayCheck> payChecks)
+		{
+			var mapped = Mapper.Map<List<PayCheck>, List<Models.DataModel.PayrollPayCheck>>(payChecks);
+			const string sql =
+				"update PayrollPayCheck set PayCodes = @PayCodes where Id=@Id";
+			
+			using (var conn = GetConnection())
+			{
+				conn.Execute(sql, mapped);
+			}
+		}
+
 	}
 }

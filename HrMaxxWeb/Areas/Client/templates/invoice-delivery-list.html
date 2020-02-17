@@ -107,22 +107,10 @@
 
 		</div>
 		<div class="panel-body" ng-show="data.isBodyOpenHistory">
-			<div class="row">
-
-				<div class="col-sm-1 form-group">
-					<label class="control-label">Start Date </label>
-					<date-ctrl name="startdate" model="data.startDate" disabled="false" />
-				</div>
-				<div class="col-sm-1 form-group">
-					<label class="control-label">End Date </label>
-					<date-ctrl name="enddate" model="data.endDate" disabled="false" />
-				</div>
-
-				<div class="col-sm-1 form-group">
-					<label></label>
-					<button class="btn btn-sm btn-primary form-control" ng-click="getInvoiceDeliveryClaims()">Filter</button>
-				</div>
+			<div class="row hidden-print">
+				<report-filter filter="data.reportFilter" callback="getInvoiceDeliveryClaims()" show-dates="true" show-periods="true" defaults-provided="true" />
 			</div>
+			
 			<table class="table  table-invoice">
 				<thead>
 					<tr>

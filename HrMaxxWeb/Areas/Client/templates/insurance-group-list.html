@@ -34,15 +34,15 @@
 						</td>
 						<td style="white-space: nowrap">
 							<!-- form -->
-							<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-								<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
-									<i class="fa fa-edit m-r-5"></i> 
+							<form editable-form id="rowformig{{$index}}" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
+								<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+									<i class="fa fa-pencil m-r-5"></i> 
 								</button>
 								<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-									<i class="fa fa-save m-r-5"></i> 
+									<i class="fa fa-check m-r-5"></i> 
 								</button>
 								<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default  btn-icon btn-circle">>
-									<i class="fa fa-remove m-r-5"></i> 
+									<i class="fa fa-undo m-r-5"></i> 
 								</button>
 							</form>
 						</td>
@@ -54,7 +54,7 @@
 						</td>
 
 						<td>
-							<button type="button" ng-click="add()" class="btn btn-lg  btn-icon btn-circle btn-success">
+							<button type="button" ng-click="add()" class="btn btn-lg  btn-icon btn-circle btn-primary">
                                 <i class="fa fa-plus"></i>
 							</button>
 						</td>

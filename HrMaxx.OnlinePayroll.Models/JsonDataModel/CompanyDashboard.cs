@@ -23,6 +23,8 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string ExtractName { get; set; }
 		public decimal Amount { get; set; }
 		public int DRank { get; set; }
+		public bool TaxesDelayed { get; set; }
+		public int Schedule { get; set; }
 	}
 
 	public class PayrollMetricJson

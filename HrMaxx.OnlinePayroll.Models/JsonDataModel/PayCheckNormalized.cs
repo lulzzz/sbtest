@@ -44,6 +44,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 	{
 		public int PayCheckId { get; set; }
 		public int PayTypeId { get; set; }
+		public bool IsTip { get; set; }
 		public string PayTypeName { get; set; }
 		public Models.PayType PayType { get; set; }
 		public decimal Amount { get; set; }

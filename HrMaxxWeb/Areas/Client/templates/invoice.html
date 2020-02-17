@@ -69,8 +69,8 @@
 				</div>
 				<div class=" table-responsive m-t-5 m-b-5">
 					<div class="col-sm-10 col-sm-offset-1">
-						<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-remove m-r-5"></i> Cancel</button>
-						<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-show="item.status!==4"><i class="fa fa-save m-r-5"></i> Save</button>
+						<button class="btn btn-sm btn-default pull-right m-5" ng-click="cancel()"><i class="fa fa-undo m-r-5"></i> Cancel</button>
+						<button class="btn btn-sm btn-primary pull-right m-5" ng-click="save()" ng-show="item.status!==4"><i class="fa fa-check m-r-5"></i> Save</button>
 						<button class="btn btn-sm btn-success pull-right m-5" ng-click="print()" ng-show="item.id && !item.isVoid"><i class="fa fa-print m-r-5"></i> Print</button>
 					</div>
 				</div>
@@ -111,7 +111,7 @@
 									<input class="form-control" type="text" ng-model="lineitem.notes" />
 								</td>
 								<td>
-									<i class="fa fa-remove fa-lg" ng-click="deletelineitem($index)" ng-show="item.status===1"></i>
+									<i class="fa fa-trash fa-lg" ng-click="deletelineitem($index)" ng-show="item.status===1"></i>
 								</td>
 							</tr>
 
@@ -230,7 +230,7 @@
 
 									<button class="btn btn-xs btn-danger" ng-click="payment.status=4; payment.marker=true;" ng-show="payment.method===1 && payment.status===2">Bounced?</button>
 									<button class="btn btn-xs btn-success" ng-click="payment.status=3; payment.marker=true;" ng-show="payment.status===2">Mark Paid</button>
-									<i class="fa fa-remove fa-lg" ng-click="deletepayment($index)" ng-show="payment.status===1"></i>
+									<i class="fa fa-trash fa-lg" ng-click="deletepayment($index)" ng-show="payment.status===1"></i>
 								</td>
 							</tr>
 

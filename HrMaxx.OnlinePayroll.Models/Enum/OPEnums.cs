@@ -130,6 +130,12 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		Monthly = 23
 		
 	}
+	public enum PayCodeRateType
+	{
+		NA=0,
+		Flat=1,
+		Times=2
+	}
 
 	public enum BillingOptions
 	{

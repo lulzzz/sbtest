@@ -5,7 +5,7 @@
 
 	<div class="panel-group col-sm-12" id="accordion">
 
-		<div class="panel panel-inverse overflow-hidden">
+		<div class="panel overflow-hidden" ng-class="{'panel-inverse':!isPopup, 'panel-info' : isPopup}">
 			<div class="panel-heading">
 				<i class="fa fa-plus-circle pull-right"></i>
 				<ul class="nav nav-tabs pull-right" id="companytabs">
@@ -30,12 +30,16 @@
 									<small>Name, Address etc</small>
 								</li>
 								<li>
+									Employment
+									<small>Details</small>
+								</li>
+								<li>
 									Payroll
 									<small>Payroll processing details</small>
 								</li>
 								<li>
 									Taxation
-									<small>Taxation Address and Federal and State details</small>
+									<small>Federal and State details</small>
 								</li>
 							</ol>
 							<!-- begin wizard step-1 -->
@@ -58,9 +62,10 @@
 											</div>
 										</div>
 										<div class="col-sm-4">
-											<div class="form-group">
-												<label>SSN <button class="btn btn-info btn-sm" ng-disabled="!selected.ssn" ng-click="checkSSN()" ng-show="data.showSSN"><i class="fa fa-eye"></i></button></label>
+											<label>SSN </label>
+											<div class="form-group input-group">
 												<input type="text" name="ssn" class="form-control" ng-model="selected.ssn" ui-mask="899-99-9999" required data-parsley-group="wizard-step-1" />
+												<span class="btn btn-primary input-group-addon" ng-disabled="!selected.ssn" ng-click="checkSSN()" ng-show="data.showSSN"><i class="fa fa-eye"></i></span>
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -72,6 +77,12 @@
 										</div>
 									</div>
 								</fieldset>
+								
+							</div>
+							<!-- end wizard step-1 -->
+							<!-- begin wizard step-2 -->
+							<div class="wizard-step-2">
+								
 								<fieldset>
 									<legend class="width-full">Employment</legend>
 									<!-- begin row -->
@@ -86,8 +97,8 @@
 										</div>
 										<div class="col-sm-2">
 											<div class="form-group">
-												<label class="control-label">Sick Leave Hire Date</label>
-												<date-ctrl name="'sickleavehiredate'" required="true" model="selected.sickLeaveHireDate" disabled="false" />
+												<label class="control-label">Termination Date</label>
+												<date-ctrl name="'terminationdate'" model="selected.terminationDate" disabled="false" />
 
 											</div>
 										</div>
@@ -108,7 +119,14 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-sm-4">
+										<div class="col-sm-2">
+											<div class="form-group">
+												<label class="control-label">Sick Leave Hire Date</label>
+												<date-ctrl name="'sickleavehiredate'" required="true" model="selected.sickLeaveHireDate" disabled="false" />
+
+											</div>
+										</div>
+										<div class="col-sm-2">
 											<div class="form-group" ng-hide="!selected.id">
 												<label>SL Carry Over</label>
 												<input type="text" name="slco" placeholder="Carry Over" class="form-control" ng-model="selected.carryOver" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" convert-to-decimal />
@@ -123,23 +141,29 @@
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label>W/C Job Class </label>
-												<select class="form-control" ng-model="selected.workerCompensation" ng-options="wc.code + '-' + wc.description for wc in mainData.selectedCompany.workerCompensations | orderBy:'id' track by wc.id" data-parsley-group="wizard-step-1" ng-required="mainData.selectedCompany.workerCompensations.length>0">
+												<select class="form-control" ng-model="selected.workerCompensation" ng-options="wc.code + '-' + wc.description for wc in mainData.selectedCompany.workerCompensations | orderBy:'id' track by wc.id" data-parsley-group="wizard-step-2" ng-required="mainData.selectedCompany.workerCompensations.length>0">
 													<option value="">Please select...</option>
 												</select>
 											</div>
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-sm-4">
+										<div class="col-sm-2">
 											<div class="form-group" ng-hide="!selected.id">
 												<label>Employee No</label>
 												<input type="text" name="empno" placeholder="Employee No" class="form-control" ng-model="selected.employeeNo" ng-disabled="true" />
 											</div>
 										</div>
-										<div class="col-sm-4">
+										<div class="col-sm-2">
 											<div class="form-group">
 												<label>Employee No (Company)</label>
 												<input type="text" name="empno1" placeholder="Employee No" class="form-control" ng-model="selected.companyEmployeeNo" />
+											</div>
+										</div>
+										<div class="col-sm-4">
+											<div class="form-group">
+												<label>Internal Notes</label>
+												<input type="text" name="memo" placeholder="notes" class="form-control" ng-model="selected.notes" />
 											</div>
 										</div>
 										<div class="col-sm-4">
@@ -150,19 +174,12 @@
 										</div>
 
 									</div>
-									<div class="row">
-										<div class="col-sm-4">
-											<div class="form-group">
-												<label>Internal Notes</label>
-												<input type="text" name="memo" placeholder="notes" class="form-control" ng-model="selected.notes" />
-											</div>
-										</div>
-									</div>
+									
 								</fieldset>
 							</div>
-							<!-- end wizard step-1 -->
-							<!-- begin wizard step-2 -->
-							<div class="wizard-step-2">
+							<!-- end wizard step-2 -->
+							<!-- begin wizard step-3 -->
+							<div class="wizard-step-3">
 								<fieldset>
 									<legend class="width-full">Payroll</legend>
 									<!-- begin row -->
@@ -171,7 +188,7 @@
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label>Payroll Schedule</label>
-												<select ng-model="selected.payrollSchedule" name="scheuled" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number data-parsley-type="number">
+												<select ng-model="selected.payrollSchedule" name="scheuled" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number data-parsley-type="number">
 													<option value="1">Weekly</option>
 													<option value="2">Bi-Weekly</option>
 													<option value="3">Semi-Monthly</option>
@@ -203,7 +220,7 @@
 																	<input name="a1{{$index}}" id="at1{{$index}}" type="number" ng-model="item.amount" class="form-control" required data-parsley-group="wizard-step-3" data-parsley-type="number" data-parsley-min="0" />
 																</td>
 																<td>
-																	<i class="fa fa-remove fa-lg" ng-click="cancel1($index)"></i>
+																	<i class="fa fa-undo fa-lg" ng-click="cancel1($index)"></i>
 																</td>
 															</tr>
 														</tbody>
@@ -217,7 +234,7 @@
 											</div>
 											<div class="form-group" ng-if="showAccruals()">
 												<label for="payTypeAccruals">Accrual(s)</label>
-												<div name="payTypeAccruals" ng-dropdown-multiselect="" options="data.accrualPayTypes" extra-settings="{displayProp: 'name', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedAccruals" events="accrualEvents" required data-parsley-group="wizard-step-2"></div>
+												<div name="payTypeAccruals" ng-dropdown-multiselect="" options="data.accrualPayTypes" extra-settings="{displayProp: 'name', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedAccruals" events="accrualEvents" required data-parsley-group="wizard-step-3"></div>
 
 											</div>
 										</div>
@@ -225,7 +242,7 @@
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label>Pay Type</label>
-												<select ng-model="selected.payType" name="paytype" class="form-control" ng-change="payTypeChanged()" convert-to-number required data-parsley-group="wizard-step-2" data-parsley-type="number">
+												<select ng-model="selected.payType" name="paytype" class="form-control" ng-change="payTypeChanged()" convert-to-number required data-parsley-group="wizard-step-3" data-parsley-type="number">
 													<option value="1">Hourly</option>
 													<option value="2">Salary</option>
 													<option value="3">Piece-work</option>
@@ -234,7 +251,7 @@
 											</div>
 											<div class="form-group">
 												<label>Payment Method</label>
-												<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-2" required convert-to-number data-parsley-type="number">
+												<select ng-model="selected.paymentMethod" name="method" class="form-control" data-parsley-group="wizard-step-3" required convert-to-number data-parsley-type="number">
 													<option value="1">Check</option>
 													<option value="2" ng-show="mainData.selectedCompany.directDebitPayer">Direct Deposit</option>
 													<option value="3" ng-show="mainData.selectedCompany.profitStarsPayer">Direct Deposit - ProfitStars</option>
@@ -317,14 +334,14 @@
 																<td style="white-space: nowrap">
 																	<!-- form -->
 
-																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-success btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
-																		<i class="fa fa-edit"></i>
+																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-primary btn-sm btn-icon btn-circle" ng-click="setSelectedBank($index)">
+																		<i class="fa fa-pencil"></i>
 																	</button>
 																	<button type="button" ng-show="!selectedBank || selectedBankIndex!==$index" class="btn btn-danger btn-sm  btn-icon btn-circle" ng-click="delete($index)">
-																		<i class="fa fa-remove"></i>
+																		<i class="fa fa-trash"></i>
 																	</button>
 																	<button type="button" ng-disabled="!isbankValid()" ng-show="selectedBank && selectedBankIndex===$index" ng-click="saveBank()" ng class="btn btn-success btn-sm btn-icon btn-circle">
-																		<i class="fa fa-save"></i>
+																		<i class="fa fa-check"></i>
 																	</button>
 																	<button type="button" ng-show="selectedBank && selectedBankIndex===$index" ng-click="cancelBank($index)" class="btn btn-default btn-sm btn-icon btn-circle">
 																		<i class="fa fa-backward"></i>
@@ -356,14 +373,23 @@
 										<div class="col-sm-4" ng-if="selected.payType">
 											<div class="form-group" ng-if="selected.payType!==3">
 												<label>{{selected.payType===1 ? 'Base Hourly Rate' : 'Salary $'}}</label>
-												<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-2" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" data-parsley-min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
+												<input id="rate" class="form-control" ng-model="selected.rate" required data-parsley-group="wizard-step-3" style="width:10em;" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-trigger="blur" step="0.01" min="0" />{{selected.payType===1? ' per hour' : ' per pay schedule'}}
 
 											</div>
 
 											<div class="form-group" ng-if="selected.payType===1">
-												<label for="paycodes">Pay Code(s)</label>
-												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-2"></div>
+												<label for="paycodes">Pay Rate(s)</label>
+												<div ng-dropdown-multiselect="" options="data.payCodes" extra-settings="{displayProp: 'dropDownDisplay', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true, scrollableHeight: 220, buttonClasses:'btn btn-sm btn-default'}" selected-model="selectedPayCodes" events="payCodeEvents" required data-parsley-group="wizard-step-3"></div>
 
+											</div>
+											<div class="form-group" ng-if="mainData.selectedCompany.isRestaurant && selected.payType===1">
+												<label></label>
+												<div>
+													<label for="istipped" class="switch">
+														Tipped ?
+														<input id="istipped" type="checkbox" ng-model="selected.isTipped" /><i></i>
+													</label>
+												</div>
 											</div>
 
 										</div>
@@ -373,9 +399,9 @@
 									<!-- end row -->
 								</fieldset>
 							</div>
-							<!-- end wizard step-2 -->
-							<!-- begin wizard step-3 -->
-							<div class="wizard-step-3">
+							<!-- end wizard step-3 -->
+							<!-- begin wizard step-4 -->
+							<div class="wizard-step-4">
 								<fieldset>
 									<legend class="width-full">Taxation</legend>
 									<!-- begin row -->
@@ -383,7 +409,7 @@
 										<div class="col-sm-4">
 											<div class="form-group">
 												<label>Tax Status</label>
-												<select ng-model="selected.taxCategory" name="category" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
+												<select ng-model="selected.taxCategory" name="category" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number">
 													<option value="1">US Worker non-visa</option>
 													<option value="2">Non Immigrant Alien (H1, F1, J1,)</option>
 													<option value="3">Clergy (only FIT & SIT)</option>
@@ -395,7 +421,7 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>Federal Filing Status</label>
-												<select ng-model="selected.federalStatus" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
+												<select ng-model="selected.federalStatus" name="fstatus" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number">
 													<option value="1">Single</option>
 													<option value="2">Married</option>
 													<option value="3">Unmarried Head of Household</option>
@@ -406,7 +432,7 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>Federal Exemptions (* Pre 2020)</label>
-												<select ng-model="selected.federalExemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number" ng-disabled="selected.useW4Fields">
+												<select ng-model="selected.federalExemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number" ng-disabled="selected.useW4Fields">
 													<option value="0">0</option>
 													<option value="1">1</option>
 													<option value="2">2</option>
@@ -424,7 +450,7 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>Federal Additional Amount (* Pre 2020)</label>
-												<input name="faddamount" ng-disabled="selected.useW4Fields" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.federalAdditionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="faddamount" ng-disabled="selected.useW4Fields" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.federalAdditionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 										</div>
 										<div class="col-sm-3 form-group">
@@ -439,13 +465,13 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Dependent Children under 17y (3a)</label>
-												<input name="dedchi" class="form-control" ng-model="selected.dependentChildren" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="dedchi" class="form-control" ng-model="selected.dependentChildren" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 										</div>
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Other Dependent(s) (3b)</label>
-												<input name="dedother" class="form-control" ng-model="selected.otherDependent" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="dedother" class="form-control" ng-model="selected.otherDependent" data-parsley-pattern="/^[0-9]?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 										</div>
 										<div class="col-sm-3">
@@ -462,19 +488,19 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Other Income (4a)</label>
-												<input name="otherincome" class="form-control" ng-model="selected.otherIncome" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="otherincome" class="form-control" ng-model="selected.otherIncome" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 										</div>
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Extra Deductions (4b)</label>
-												<input name="extradeds" class="form-control" ng-model="selected.federalDeductions" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="extradeds" class="form-control" ng-model="selected.federalDeductions" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 										</div>
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>W4 - Additional Withholding (4c)</label>
-												<input name="addwith" class="form-control" ng-model="selected.federalAdditionalWithholding" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="addwith" class="form-control" ng-model="selected.federalAdditionalWithholding" data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 										</div>
 
@@ -487,14 +513,14 @@
 											<div class="form-group">
 												<label>State</label>
 												<div>
-													<select id="state" class="form-control" ng-model="selected.state.state" ng-options="st.stateName for st in data.companyStates track by st.stateId" required data-parsley-group="wizard-step-3"></select>
+													<select id="state" class="form-control" ng-model="selected.state.state" ng-options="st.stateName for st in data.companyStates track by st.stateId" required data-parsley-group="wizard-step-4"></select>
 												</div>
 											</div>
 										</div>
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>State Filing Status</label>
-												<select ng-model="selected.state.taxStatus" name="sstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
+												<select ng-model="selected.state.taxStatus" name="sstatus" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number">
 													<option value="1">Single</option>
 													<option value="2">Married</option>
 													<option value="3">Unmarried Head of Household</option>
@@ -505,7 +531,7 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>Exemptions</label>
-												<select ng-model="selected.state.exemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-3" convert-to-number data-parsley-type="number">
+												<select ng-model="selected.state.exemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number">
 													<option value="0">0</option>
 													<option value="1">1</option>
 													<option value="2">2</option>
@@ -524,7 +550,7 @@
 										<div class="col-sm-3">
 											<div class="form-group">
 												<label>Additional Amout</label>
-												<input name="addamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.state.additionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-3" />
+												<input name="addamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.state.additionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 
 										</div>
@@ -537,8 +563,9 @@
 
 						</div>
 						<div class="col-sm-4 col-sm-offset-4" ng-show="showControls">
-							<button class="btn btn-lg btn-success btn-icon btn-circle" ng-click="save()" ng-disabled="!validate()"><i class="fa fa-save"></i></button>
-							<button class="btn btn-lg btn-default btn-icon btn-circle" ng-click="cancel()"><i class="fa fa-remove"></i></button>
+							<a class="btn btn-success " ng-click="save()" ng-disabled="!validate()" title="Save"><i class="fa fa-check"></i> save</a>
+							<a class="btn btn-white " ng-click="cancel()" title="cancel"><i class="fa fa-undo"></i> cancel</a>
+							
 						</div>
 					</form>
 				</div>
@@ -566,7 +593,7 @@
 			</div>
 			<div id="collapseTwo" class="panel-collapse collapse">
 				<div class="panel-body">
-					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" save-to-server="true" show-controls="showControls && data.editableDeductions" agencies="data.employeeMetaData.agencies" />
+					<employee-deduction-list list="selected.deductions" employee-id="selected.id" company-deductions="mainData.selectedCompany.deductions" main-data="mainData" save-to-server="true" show-controls="showControls && data.editableDeductions" agencies="data.employeeMetaData.agencies" />
 				</div>
 			</div>
 		</div>
@@ -585,7 +612,7 @@
 				<div class="panel-body">
 					<div class="row">
 						<div class="col-sm-6 col-md-3" ng-repeat="ag in selected.accumulationGroups" ng-init="parentIndex = $index">
-							<div class="widget widget-stats m-b-0" ng-class="{'bg-black': ag.key.payTypeId===6, 'bg-blue': ag.key.payTypeId===5, 'bg-grey': ag.key.payTypeId===16}">
+							<div class="widget widget-stats m-b-0" ng-class="{'bg-dark': ag.key.payTypeId===6, 'bg-blue': ag.key.payTypeId===5, 'bg-grey': ag.key.payTypeId===16}">
 								<div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
 								<div class="stats-title">{{ag.key.payTypeName}}</div>
 								<div class="stats-desc">Available</div>
@@ -647,7 +674,7 @@
 
 									</div>
 									<div class="form-group  col-md-12 p-0" ng-show="selAccIndex===$index && selAcc.payTypeId===ag.key.payTypeId && (mainData.userRole==='Master' || mainData.userRole==='SuperUser')">
-										<button class="btn btn-lg btn-icon btn-circle btn-success pull-right" ng-show="showSaveAcc(acc)" ng-click="saveEmployeeAccumulation(acc)"><i class="fa fa-save"></i></button>
+										<button class="btn btn-lg btn-icon btn-circle btn-success pull-right" ng-show="showSaveAcc(acc)" ng-click="saveEmployeeAccumulation(acc)"><i class="fa fa-check"></i></button>
 									</div>
 
 								</div>
@@ -707,14 +734,14 @@
 									<td style="white-space: nowrap" ng-show="showControls">
 										<!-- form -->
 										<form editable-form id="rowform" name="rowform" onbeforesave="saveACA($index)" class="form-buttons form-inline" shown="selectedACA===item">
-											<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle" ng-click="rowform.$show();setSelectedACA($index)">
-												<i class="fa fa-edit"></i>
+											<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary btn-icon btn-circle" ng-click="rowform.$show();setSelectedACA($index)">
+												<i class="fa fa-pencil"></i>
 											</button>
 											<button type="submit" ng-disabled="rowform.$waiting || !isACAValid(item)" ng-if="rowform.$visible" class="btn btn-lg btn-success  btn-icon btn-circle">
-												<i class="fa fa-save"></i>
+												<i class="fa fa-check"></i>
 											</button>
 											<button type="button" ng-disabled="rowform.$waiting" ng-if="rowform.$visible" ng-click="rowform.$cancel();cancelACA($index)" class="btn btn-lg btn-default  btn-icon btn-circle">
-												<i class="fa fa-remove"></i>
+												<i class="fa fa-undo"></i>
 											</button>
 										</form>
 									</td>
@@ -918,45 +945,6 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/ng-template" id="popover/ssnlist.html">
-
-		<div class="modal-header">
-			<h2 class="modal-title">SSN Details</h2>
-		</div>
-		<div class="modal-body">
-			<div class="row">
-				<table class="table table-bordered table-condensed" ng-show="list.length>0">
-					<thead>
-						<tr>
-							<th>Host</th>
-							<th>Company</th>
-							<th>Name</th>
-
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="ctx in list track by $index">
-							<td>
-								{{ctx.host}}
-							</td>
-							<td>
-								{{ctx.company}}
-							</td>
-							<td>
-								{{ctx.name}}
-							</td>
-
-						</tr>
-					</tbody>
-				</table>
-				<span ng-show="list.length===0">No results found</span>
-			</div>
-
-		</div>
-		<div class="modal-footer">
-			<button class="btn btn-xs btn-default" ng-click="cancel()">close</button>
-		</div>
-
-	</script>
+	
 
 </div>

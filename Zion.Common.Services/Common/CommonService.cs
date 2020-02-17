@@ -132,6 +132,19 @@ namespace HrMaxx.Common.Services.Common
 				throw new HrMaxxApplicationException(message, e);
 			}
 		}
+		public IList<Country> SaveCountries(Country countries)
+		{
+			try
+			{
+				return _commonRepository.SaveCountries(countries);
+			}
+			catch (Exception e)
+			{
+				var message = string.Format(CommonStringResources.ERROR_FailedToSaveX, " country list");
+				Log.Error(message, e);
+				throw new HrMaxxApplicationException(message, e);
+			}
+		}
 
 		public T AddToList<T>(EntityTypeEnum sourceTypeId, EntityTypeEnum targetTypeId, Guid sourceId, T target)
 		{

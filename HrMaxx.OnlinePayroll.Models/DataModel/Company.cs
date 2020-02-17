@@ -60,7 +60,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public System.DateTime LastModified { get; set; }
         public bool IsFiler944 { get; set; }
         public Nullable<System.DateTime> LastPayrollDate { get; set; }
-        public decimal MinWage { get; set; }
+        public Nullable<decimal> MinWage { get; set; }
         public bool IsHostCompany { get; set; }
         public string Memo { get; set; }
         public string ClientNo { get; set; }
@@ -76,6 +76,7 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public string City { get; set; }
         public bool ProfitStarsPayer { get; set; }
         public string ControlId { get; set; }
+        public bool IsRestaurant { get; set; }
     
         public virtual Host Host { get; set; }
         public virtual Status Status { get; set; }
