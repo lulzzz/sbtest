@@ -53,6 +53,8 @@ namespace HrMaxxAPI.Code.IOC.OnlinePayroll
 
 			builder.RegisterType<HostRepository>()
 				.WithParameters(namedParameters)
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IHostRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

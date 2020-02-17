@@ -289,7 +289,7 @@ var handlePanelAction = function() {
         var target = $(this).closest('.panel');
         if (!$(target).hasClass('panel-loading')) {
             var targetBody = $(target).find('.panel-body');
-            var spinnerHtml = '<div class="panel-loader"><span class="spinner-small"></span></div>';
+            var spinnerHtml = '<div id="panel-loader" class="fade in"><span class="spinner-small"></span></div>';
             $(target).addClass('panel-loading');
             $(targetBody).prepend(spinnerHtml);
             setTimeout(function() {

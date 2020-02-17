@@ -961,6 +961,9 @@ common.directive('payrollList', ['zionAPI', '$timeout', '$window', 'version','$q
 						if (item && item.isQueued) {
 							return 'danger';
 						}
+						else if (item.isVoid)
+							return 'warning';
+							
 						else if ($scope.committed && $scope.committed.id === item.id)
 							return 'success';
 						else if (item.status === 6) {

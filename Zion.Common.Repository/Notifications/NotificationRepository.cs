@@ -36,35 +36,48 @@ namespace HrMaxx.Common.Repository.Notifications
 		{
 			var newNotifications =
 				_mapper.Map<List<NotificationDto>, List<Notification>>(notificationList);
-			foreach (var notification in newNotifications)
+			const string sql = "insert into Notifications (NotificationId, Type, Text, MetaData, LoginId, IsRead, CreatedOn, IsVisible) value(@NotificationId, @Type, @Text, @MetaData, @LoginId, @IsRead, @CreatedOn, 1)";
+			using (var conn = GetConnection())
 			{
-				notification.IsVisible = true;
-				_dbContext.Notifications.Add(notification);
+				conn.Execute(sql, notificationList);
 			}
-			_dbContext.SaveChanges();
+			//foreach (var notification in newNotifications)
+			//{
+			//	notification.IsVisible = true;
+			//	_dbContext.Notifications.Add(notification);
+			//}
+			//_dbContext.SaveChanges();
 		}
 
 		public void NotificationRead(Guid notificationId)
 		{
-			var selectedNotification =
-				_dbContext.Notifications.FirstOrDefault(notification => notification.NotificationId.Equals(notificationId));
-			if (selectedNotification != null) selectedNotification.IsRead = true;
-			_dbContext.SaveChanges();
+			using (var conn = GetConnection())
+			{
+				const string sql = "update Notifications set IsRead=1 where NotificationId=@NotificationId";
+				conn.Execute(sql, new { NotificationId = notificationId });
+			}
+			
 		}
 
 		public void ClearAllNotiifications(string userId)
 		{
-			var notifications = _dbContext.Notifications.Where(n => n.LoginId == userId).ToList();
-			notifications.ForEach(n=>n.IsVisible=false);
-			_dbContext.SaveChanges();
+			using(var conn = GetConnection())
+			{
+				const string sql = "update Notifications set IsVisible=0 where LoginId=@LoginId";
+				conn.Execute(sql, new { LoginId = userId });
+			}
+			
 		}
 
 		public void DeleteOldNotifications()
 		{
-			DateTime sevenDaysBefore = DateTime.Now.AddDays(-7);
-			var notifications = _dbContext.Notifications.Where(n => n.CreatedOn <= sevenDaysBefore.Date);
-			_dbContext.Notifications.RemoveRange(notifications);
-			_dbContext.SaveChanges();
+			using (var conn = GetConnection())
+			{
+				DateTime sevenDaysBefore = DateTime.Now.AddDays(-7).Date;
+				const string sql = "delete from Notifications set CreatedOn<=@Date";
+				conn.Execute(sql, new { Date = sevenDaysBefore });
+			}
+			
 		}
 	}
 }
