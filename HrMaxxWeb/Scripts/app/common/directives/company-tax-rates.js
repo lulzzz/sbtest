@@ -16,7 +16,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 					$scope.list = [];
 					$scope.listWCRates = [];
 					$scope.companyScheduleList = [];
-					$scope.deductionTypes = [];
+					
 					$scope.loadedScheudleList = false;
 
 					$scope.loadedSemiWeeklyEligibility = false;
@@ -43,8 +43,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						minWageCriteria: {
 							contractType: 2, minEmployeeCount:null, maxEmployeeCount: null, minWage:null, statusId:0, city:'', payrollYear: (new Date().getFullYear() - 1)
 						},
-						wcImportOption: 1,
-						deductionCategories: [{ key: 1, value: 'Post Tax Deduction' }, { key: 2, value: 'Partial Pre Tax Deduction' }, { key: 3, value: 'Total Pre Tax Deduction' }, { key: 4, value: 'Other' }]
+						wcImportOption: 1
 					}
 					$scope.data = dataSvc;
 					$scope.importMap = {
@@ -265,7 +264,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 						var currentYear = new Date().getFullYear();
 						companyRepository.getCompanyMetaData().then(function (data) {
 							dataSvc.companyMetaData = data;
-							$scope.deductionTypes = angular.copy(data.deductionTypes);
+							
 							for (var i = currentYear - 4; i <= currentYear + 1; i++) {
 								var taxes = $filter('filter')(dataSvc.companyMetaData.taxes, { taxYear: i });
 								if (i >= dataSvc.minYear && taxes.length>0)
@@ -383,51 +382,7 @@ common.directive('companyTaxRates', ['zionAPI', 'version', '$timeout',
 					$scope.print = function () {
 						$window.print();
 					}
-					$scope.addDeductionType = function() {
-						var dt = {
-							id:0, name: '', w2_12: '', r940_R:'', w2_13rVal: false, w2_13R: '', category: 0, categoryOption:null
-						};
-						$scope.deductionTypes.push(dt);
-						$scope.selectedType = dt;
-					}
-					$scope.cancelDeduction = function(dt) {
-						$scope.selectedType = null;
-						$scope.deductionTypes[dt] = angular.copy($scope.original);
-						$scope.original = null;
-						if (!$scope.deductionTypes[dt]) {
-							$scope.deductionTypes.splice(dt, 1);
-						}
-					}
-					$scope.setSelectedType = function(dt) {
-						$scope.original = angular.copy($scope.deductionTypes[dt]);
-						$scope.selectedType = $scope.deductionTypes[dt];
-					}
-					$scope.isDeductionTypeValid = function () {
-						if ($scope.selectedType) {
-							if (!$scope.selectedType.categoryOption || !$scope.selectedType.name)
-								return false;
-							else
-								return true;
-						} else {
-							return true;
-						}
-						
-					}
-					$scope.saveDeductionType = function(dt) {
-						if ($scope.selectedType) {
-							$scope.selectedType.category = $scope.selectedType.categoryOption.key;
-							commonRepository.saveDeductionType($scope.selectedType).then(function (data) {
-
-								$scope.mainData.showMessage('Successfully saved deduction type ', 'success');
-								$scope.deductionTypes[dt] = angular.copy(data);
-								$scope.selectedType = null;
-								$scope.original = null;
-
-							}, function (error) {
-									$scope.mainData.handleError('error in saving deductin type. ', error, 'danger');
-							});
-						}
-					}
+					
 
 					$scope.raiseMinWage = function () {
 						var message = 'Min Wage to ' + dataSvc.minWageCriteria.minWage + " for all";

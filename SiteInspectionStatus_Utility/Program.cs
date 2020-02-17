@@ -54,8 +54,9 @@ namespace SiteInspectionStatus_Utility
 			builder.RegisterModule<ControllerModule>();
 			builder.RegisterModule<BusModule>();
 
-			//builder.RegisterModule<SiteInspectionStatus_Utility.MappingModule>();
-			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.RepositoriesModule>();
+            //builder.RegisterModule<SiteInspectionStatus_Utility.MappingModule>();
+            builder.RegisterModule<SiteInspectionStatus_Utility.RepositoriesModule>();
+            builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.RepositoriesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.MappingModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.ServicesModule>();
 			builder.RegisterModule<HrMaxxAPI.Code.IOC.Common.CommandHandlerModule>();
@@ -152,8 +153,15 @@ namespace SiteInspectionStatus_Utility
                 case 32:
                     FixFitWage(container);
                     break;
+                
                 case 33:
                     FixCreditCardCompanies(container);
+                    break;
+                case 34:
+                    AddFieldsToPayCodes(container);
+                    break;
+                case 35:
+                    CreateDemoData(container);
                     break;
                 default:
 					break;
@@ -161,6 +169,111 @@ namespace SiteInspectionStatus_Utility
 
 			Console.WriteLine("Utility run finished for ");
 		}
+        private static void CreateDemoData(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var payrollService = scope.Resolve<IPayrollRepository>();
+                var mapper = scope.Resolve<IMapper>();
+                var readerservice = scope.Resolve<IReaderService>();
+                var hostservice = scope.Resolve<IHostService>();
+                var companyrepository = scope.Resolve<ICompanyRepository>();
+                var writerepository = scope.Resolve<IWriteRepository>();
+                var hosts = hostservice.GetHostList(Guid.Empty);
+                var companies = readerservice.GetCompanies(status: 0).Where(c => !c.IsLocation).ToList();
+                
+                companies.ForEach(c =>
+                {
+                    var h = hosts.First(h1 => h1.Id == c.HostId);
+                    c.FederalEIN = $"{h.HostIntId.ToString("00")}{c.CompanyIntId.ToString("0000000")}";
+                    c.States.ForEach(cs =>
+                    {
+                        cs.StateEIN = $"{h.HostIntId.ToString("000")}{c.CompanyIntId.ToString("0000")}1";
+                    });
+                });
+                var mappedcompanies = mapper.Map<List<HrMaxx.OnlinePayroll.Models.Company>, List<HrMaxx.OnlinePayroll.Models.DataModel.Company>>(companies);
+                writerepository.ExecuteQuery("update company set FederalEIN=@FederalEIN where Id=@Id", mappedcompanies);
+                writerepository.ExecuteQuery("update companytaxstate set StateEIN=@StateEIN where Id=@Id", mappedcompanies.SelectMany(c => c.CompanyTaxStates.ToList()).ToList());
+
+                var employees = readerservice.GetEmployees(status: 0);
+
+                //employees.ForEach(e =>
+                //{
+                //    e.Contact.FirstName = e.FirstName;
+                //    e.Contact.LastName = e.LastName;
+                //    e.Contact.Email = "cs.paxol@gmail.com";
+                
+                    
+
+                //});
+                //var mapped = mapper.Map<List<HrMaxx.OnlinePayroll.Models.Employee>, List<HrMaxx.OnlinePayroll.Models.DataModel.Employee>>(employees);
+                //writerepository.ExecuteQuery("update employee set Contact=@Contact where Id=@Id", mapped);
+
+
+
+
+            }
+        }
+        private static void AddFieldsToPayCodes(IContainer container)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var payrollService = scope.Resolve<IPayrollRepository>();
+
+                var readerservice = scope.Resolve<IReaderService>();
+                var taxationService = scope.Resolve<ITaxationService>();
+                var companyrepository = scope.Resolve<ICompanyRepository>();
+                
+                var companies = readerservice.GetCompanies(status: 0);
+                var counter = (int)1;
+                var empcounter = (int)0;
+                var chckCounter = (int)0;
+                companies.ForEach(c =>
+                {
+                    var employees = readerservice.GetEmployees(company: c.Id, status: 0).Where(e => e.PayCodes.Any(pc=>pc.RateType==PayCodeRateType.NA)).ToList();
+                    employees.ForEach(e =>
+                    {
+                        e.PayCodes.ForEach(pc =>
+                        {
+                            pc.RateType = pc.RateType == PayCodeRateType.NA ? PayCodeRateType.Flat : pc.RateType;
+                        });
+                    });
+                    companyrepository.UpdateEmployeePayCodes(employees);
+                    empcounter += employees.Count;
+                    var payChecks = new List<PayCheck>();
+                    var payrolls = readerservice.GetPayChecks(companyId: c.Id).Where(pc => pc.PayCodes.Any()).ToList();
+
+                    payrolls.ForEach(pc =>
+                    {
+                        pc.PayCodes.ForEach(pcc =>
+                        {
+                            pcc.PayCode.RateType = PayCodeRateType.Flat;
+                            if (pcc.PayCode.Id >= 0)
+                            {
+                                pcc.AppliedRate = pcc.PayCode.HourlyRate;
+                                pcc.AppliedOverTimeRate = Math.Round(pcc.PayCode.HourlyRate * (decimal)1.5, 2, MidpointRounding.AwayFromZero);
+                            }
+                            else if (pcc.PayCode.Id == -1)
+                            {
+                                pcc.AppliedRate = pcc.PayCode.HourlyRate;
+                                pcc.AppliedOverTimeRate = Math.Round(pcc.PayCode.HourlyRate * (decimal)0.5, 2, MidpointRounding.AwayFromZero);
+                            }
+                        });
+                        payChecks.Add(pc);
+                    }
+
+                    );
+                    payrollService.FixPayCheckPayCodes(payChecks);
+                    Console.WriteLine($"{counter++} - {c.Name} -  Checks Updated {payChecks.Count}");
+                    chckCounter += payChecks.Count;
+                });
+                Console.WriteLine($"{chckCounter} total checks, {empcounter} Employees");
+
+
+
+
+            }
+        }
         private static void FixCreditCardCompanies(IContainer container)
         {
             using (var scope = container.BeginLifetimeScope())
@@ -1030,8 +1143,8 @@ namespace SiteInspectionStatus_Utility
 						};
 						if (baserate.HourlyRate == 0)
 						{
-							e.Rate = company.MinWage;
-							baserate.HourlyRate = company.MinWage;
+							e.Rate = company.MinWage.Value;
+							baserate.HourlyRate = company.MinWage.Value;
 						}
 						e.PayCodes.Add(baserate);
 						e.UserName = "System";

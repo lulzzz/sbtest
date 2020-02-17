@@ -24,5 +24,7 @@ namespace HrMaxx.OnlinePayroll.Models.USTaxModels
         public List<FITTaxTableRow> HISITTaxTable { get; set; }
         public List<FITWithholdingAllowanceTableRow> HISitWithholdingAllowanceTable { get; set; }
         public List<FITAlienAdjustmentTableRow> FITAlienAdjustmentTable { get; set; }
+
+		public List<MinWageYearRow> MinWageYearTable { get; set; }
     }
 }

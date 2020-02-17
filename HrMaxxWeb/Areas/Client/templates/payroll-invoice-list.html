@@ -1,10 +1,18 @@
 ﻿<div class="row">
-	
-	<!-- begin panel -->
-	<div class="panel panel-inverse hidden-print">
-		<div class="panel-body">
+	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-class="{'hidden-print': selectedInvoice}">
+		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
+			<h4 class="panel-title">
+				Invoice List
+				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>
+				<span class="badge" ng-if="tableData.length>0">{{tableParams.total()}}</span>
+				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
+				<button class="btn btn-xs btn-success pull-right" ng-click="printList($event)"><i class="fa fa-print"></i></button>
+			</h4>
+
+		</div>
+		<div class="panel-body" ng-show="data.isBodyOpen">
 			<div class="row">
-				<div class="col-sm-4 hidden-print form-group">
+				<div class="col-sm-3 hidden-print form-group">
 					<label class="control-label">Company</label>
 					<select id="comp" class="form-control" ng-model="data.selectedCompany" ng-options="comp.name for comp in mainData.companies track by comp.id">
 						<option value="">All</option>
@@ -12,26 +20,19 @@
 				</div>
 				<div class="col-sm-1 form-group">
 					<label for="statuses">Status</label>
-					<div class="col-sm-12" ng-dropdown-multiselect="" options="statuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedStatuses" ></div>
+					<div ng-dropdown-multiselect="" options="statuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedStatuses"></div>
 				</div>
-				<div class="col-sm-1 form-group">
-					<label class="control-label">Start Date </label>
-					<date-ctrl name="startdate" model="data.startDate" disabled="false" />
-				</div>
-				<div class="col-sm-1 form-group">
-					<label class="control-label">End Date </label>
-					<date-ctrl name="enddate" model="data.endDate" disabled="false" />
-				</div>
+
 				<div class="col-sm-1 form-group">
 					<label for="statuses">Payment Status</label>
-					<div class="col-sm-12" ng-dropdown-multiselect="" options="paymentstatuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentStatuses"></div>
+					<div ng-dropdown-multiselect="" options="paymentstatuses" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentStatuses"></div>
 				</div>
 				<div class="col-sm-1 form-group">
 					<label for="statuses">Payment Method</label>
-					<div class="col-sm-12" ng-dropdown-multiselect="" options="paymentmethods" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentMethods"></div>
+					<div ng-dropdown-multiselect="" options="paymentmethods" extra-settings="{displayProp: 'title', idProp: 'id', showCheckAll: true, showUncheckAll: true ,scrollable: true}" selected-model="selectedPaymentMethods"></div>
 				</div>
 				<div class="col-sm-1 form-group">
-					<label >Only Delayed Taxes</label>
+					<label>Only Delayed</label>
 					<div>
 						<label for="delayedtaxes" class="switch">
 							<input id="delayedtaxes" type="checkbox" ng-model="data.includeDelayedTaxes" /><i></i>
@@ -46,26 +47,23 @@
 						</label>
 					</div>
 				</div>
-				<div class="col-sm-1 form-group">
-					<label></label>
-					<button class="btn btn-sm btn-primary form-control" ng-click="updateData()">Filter</button>
-				</div>
-			</div>
-			
-		</div>
-	</div>
-	<div class="panel panel-inverse" data-sortable-id="form-stuff-4" ng-class="{'hidden-print': selectedInvoice}">
-		<div class="panel-heading hidden-print" ng-click="data.isBodyOpen=!data.isBodyOpen">
-			<h4 class="panel-title">
-				Invoice List
-				<em><u> <button class="btn btn-xs btn-success"><i class="fa fa-lg fa-refresh" ng-click="refreshData($event)"></i></button></u></em>
-				<span class="badge" ng-if="tableData.length>0">{{tableParams.total()}}</span>
-				<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': data.isBodyOpen, 'glyphicon-chevron-right': !data.isBodyOpen}"></i>
-				<button class="btn btn-xs btn-success pull-right" ng-click="printList($event)"><i class="fa fa-print"></i></button>
-			</h4>
 
-		</div>
-		<div class="panel-body" ng-show="data.isBodyOpen">
+				<div class="d-flex align-items-center mb-3 col-sm-4">
+					<a href="javascript:;" class="btn btn-inverse mr-2 text-truncate" id="daterange-filter">
+						<i class="fa fa-calendar fa-fw text-white-transparent-5 ml-n1"></i>
+						<span>1 Jun 2020 - 7 Jun 2020</span>
+						<b class="caret"></b>
+					</a>
+					<div class="form-group">
+						<label></label>
+						<button class="btn btn-sm btn-primary form-control" ng-click="updateData()">Filter</button>
+					</div>
+				</div>
+
+			</div>
+			<div class="progress progress-xs rounded-lg bg-grey-darker m-b-5">
+				<div class="progress-bar progress-bar-striped rounded-right bg-teal"></div>
+			</div>
 			<div ng-show="list.length===0 && !selectedInvoice" class="table table-bordered">
 				No payrolls found
 			</div>
@@ -121,8 +119,8 @@
 				<script type="text/ng-template" id="custom/pager">
 					<ul class="pager ng-cloak hidden-print">
 						<li ng-repeat="page in pages"
-								ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
-								ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
+							ng-class="{'disabled': !page.active, 'previous': page.type == 'prev', 'next': page.type == 'next'}"
+							ng-show="page.type == 'prev' || page.type == 'next'" ng-switch="page.type">
 							<a ng-switch-when="prev" ng-click="params.page(page.number)" href="" class="marginned">&laquo; Previous</a>
 							<a ng-switch-when="next" ng-click="params.page(page.number)" href="" class="marginned">Next &raquo;</a>
 						</li>
@@ -138,23 +136,23 @@
 					</ul>
 				</script>
 				<!--<script type="text/ng-template" id="ng-table/filters/status.html">
-					<select id="statuslist" class="form-control" ng-model="params.filter()[name]" name="filter-status1" convert-to-number>
-						<option value="0">All</option>
-						<option value="8">Deposited</option>
-						<option value="9">Not Deposited</option>
-						<option value="5">Taxes Delayed</option>
-						<option value="6">Bounced</option>
-						<option value="1">Draft</option>
-						<option value="2">Approved</option>
-						<option value="3">Delivered</option>
-						<option value="4">Closed</option>
-						<option value="7">Partial Payment</option>
-						<option value="10">ACH Pending</option>
+			<select id="statuslist" class="form-control" ng-model="params.filter()[name]" name="filter-status1" convert-to-number>
+				<option value="0">All</option>
+				<option value="8">Deposited</option>
+				<option value="9">Not Deposited</option>
+				<option value="5">Taxes Delayed</option>
+				<option value="6">Bounced</option>
+				<option value="1">Draft</option>
+				<option value="2">Approved</option>
+				<option value="3">Delivered</option>
+				<option value="4">Closed</option>
+				<option value="7">Partial Payment</option>
+				<option value="10">ACH Pending</option>
 
 
 
-					</select>
-				</script>-->
+			</select>
+		</script>-->
 			</div>
 
 			<!-- end panel -->

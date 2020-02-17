@@ -20,6 +20,7 @@ namespace HrMaxxAPI.Resources.Payroll
         public PayrollResource Data { get; set; }
         public DateTime LastModified { get; set; }
         public string LastModifiedBy { get; set; }
+        public Guid? LastPayrollId { get; set; }
         public string StatusText { get { return Status.GetDbName(); } }
         public string ScheduleText { get { return PaySchedule.GetDbName(); } }
         public DateTime NextPayrollDate

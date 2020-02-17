@@ -131,7 +131,7 @@ namespace HrMaxx.OnlinePayroll.Services
 
 						});
 					}
-					if (comp != null && savedcompany.MinWage > comp.MinWage)
+					if (comp != null && savedcompany.MinWage.HasValue && savedcompany.MinWage > comp.MinWage)
 					{
 						var employees = _readerService.GetEmployees(company: savedcompany.Id);
 
@@ -139,8 +139,8 @@ namespace HrMaxx.OnlinePayroll.Services
 							.ToList()
 							.ForEach(e =>
 							{
-								e.Rate = e.Rate < savedcompany.MinWage ? savedcompany.MinWage : e.Rate;
-								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < savedcompany.MinWage).ToList().ForEach(pc => pc.HourlyRate = savedcompany.MinWage);
+								e.Rate = e.Rate < savedcompany.MinWage.Value ? savedcompany.MinWage.Value : e.Rate;
+								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < savedcompany.MinWage).ToList().ForEach(pc => pc.HourlyRate = savedcompany.MinWage.Value);
 								SaveEmployee(e);
 							});
 						
@@ -452,7 +452,7 @@ namespace HrMaxx.OnlinePayroll.Services
 			}
 			catch (Exception e)
 			{
-				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "employee for company " + employee.FirstName + ", " + employee.LastName + ", " + employee.SSN);
+				var message = string.Format(OnlinePayrollStringResources.ERROR_FailedToSaveX, "employee for company " + employee.FirstName + ", " + employee.LastName + ", " + employee.SSN + ". " + e.Message);
 				Log.Error(message, e);
 				throw new HrMaxxApplicationException(message, e);
 			}
@@ -664,6 +664,7 @@ namespace HrMaxx.OnlinePayroll.Services
 				criteria.Companies.ForEach(c =>
 				{
 					var comp = _readerService.GetCompany(c.CompanyId);
+					comp.MinWage = comp.MinWage.HasValue ? comp.MinWage.Value : 0;
 					if (comp != null)
 					{
 						if (criteria.MinWage > comp.MinWage)
@@ -673,12 +674,12 @@ namespace HrMaxx.OnlinePayroll.Services
 						}
 
 						var employees = _readerService.GetEmployees(company: comp.Id);
-						employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < comp.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage)))
+						employees.Where(e => e.PayType != EmployeeType.Salary && (e.Rate < comp.MinWage || e.PayCodes.Any(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage.Value)))
 							.ToList()
 							.ForEach(e =>
 							{
-								e.Rate = e.Rate < comp.MinWage ? comp.MinWage : e.Rate;
-								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage).ToList().ForEach(pc => pc.HourlyRate = comp.MinWage);
+								e.Rate = e.Rate < comp.MinWage.Value ? comp.MinWage.Value : e.Rate;
+								e.PayCodes.Where(pc => pc.Id == 0 && pc.HourlyRate < comp.MinWage.Value).ToList().ForEach(pc => pc.HourlyRate = comp.MinWage.Value);
 								SaveEmployee(e, false);
 							});
 						var memento = Memento<Company>.Create(comp, EntityTypeEnum.Company, user, "Min Wage Raised", userId);

@@ -305,6 +305,7 @@
     <Content Include="Content\bootstrap-theme\app.min.css" />
     <Content Include="Content\bootstrap-theme\google.css" />
     <Content Include="Content\bootstrap-theme\plugins\jquery.countdown.css" />
+    <Content Include="Content\daterangepicker.css" />
     <Content Include="Content\images\coming-soon.jpg" />
     <Content Include="Content\morris.css" />
     <Content Include="Content\jstree.min.css" />
@@ -321,7 +322,9 @@
     <Content Include="Scripts\app\reports\directives\employee-dashboard.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\app.js" />
     <Content Include="Scripts\bootstrap\bootstrap-theme\app.min.js" />
+    <Content Include="Scripts\bootstrap\sweetalert.min.js" />
     <Content Include="Scripts\coming-soon.demo.js" />
+    <Content Include="Scripts\daterangepicker.js" />
     <Content Include="Scripts\flot\jquery.flot.min.js" />
     <Content Include="Scripts\flot\jquery.flot.pie.min.js" />
     <Content Include="Scripts\flot\jquery.flot.resize.min.js" />

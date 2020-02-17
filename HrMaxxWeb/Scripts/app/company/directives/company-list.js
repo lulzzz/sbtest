@@ -15,6 +15,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 				function ($scope, $rootScope, $element, $location, $filter, companyRepository, ngTableParams, EntityTypes, payrollRepository, ClaimTypes) {
 					var dataSvc = {
 						isBodyOpen: true,
+						companyMetaData: null,
 						showCopy: $scope.mainData.hasClaim(ClaimTypes.CompanyCopy, 1),
 						showCopyPayrolls: $scope.mainData.hasClaim(ClaimTypes.CompanyCopyPayrolls, 1)
 					}
@@ -90,6 +91,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							payrollDaysInPast: 0,
 							payCheckStock: 3,
 							companyCheckPrintOrder: 1,
+							isRestaurant: false,
 							companyAddress: {},
 							states: [],
 							companyTaxRates: [],
@@ -115,6 +117,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 							selectedCompany.depositSchedule = hostCompany.depositSchedule;
 							selectedCompany.minWage = hostCompany.minWage;
 						}
+						
 						selectedCompany.businessAddress = selectedCompany.companyAddress;
 						
 						$scope.selectedCompany = angular.copy(selectedCompany);
@@ -238,7 +241,7 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 						var modalInstance = $modal.open({
 							templateUrl: 'popover/copycompany.html',
 							controller: 'copyCompanyCtrl',
-							size: 'lg',
+							size: 'sm',
 							windowClass: 'my-modal-popup',
 							backdrop: false,
 							keyboard: true,
@@ -302,6 +305,11 @@ common.directive('companyList', ['zionAPI', '$timeout', '$window', 'version', '$
 								$scope.setCompany(exists, 1);
 							}
 						}
+						companyRepository.getCompanyMetaData().then(function (data) {
+							dataSvc.companyMetaData = data;							
+						}, function (error) {
+							$scope.mainData.showMessage('error getting company meta data', 'danger');
+						});
 						
 					}
 					init();

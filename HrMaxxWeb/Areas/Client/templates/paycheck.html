@@ -41,14 +41,15 @@
 			<tr ng-repeat-start="pc in check.payCodes | orderBy:'pc.payCode.id'" ng-if="check.employee.payType<4 || (check.employee.payType===4 && check.expanded)">
 				<td>{{pc.payCode.description}} - Hours</td>
 				<td class="text-right">{{pc.hours}}</td>
-				<td class="text-right">{{pc.payCode.hourlyRate | currency:'$'}}</td>
+				<td class="text-right">{{pc.rateText}}</td>
 				<td class="text-right">{{pc.amount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytd | currency:'$'}}</td>
 			</tr>
 			<tr ng-repeat-end ng-if="(check.employee.payType<4  || (check.employee.payType===4 && check.expanded) ) && (pc.overtimeHours>0 || pc.ytdOvertime>0)">
 				<td>{{ pc.payCode.id===-1 || check.employee.payType===4 ? pc.payCode.description + ' 0.5 OT' : pc.payCode.description}} - Overtime</td>
 				<td class="text-right">{{pc.overtimeHours}}</td>
-				<td class="text-right">{{ (pc.payCode.id===-1 || check.employee.payType===4 ? pc.payCode.hourlyRate * 0.5 : pc.payCode.hourlyRate * 1.5) | currency:'$'}}</td>
+				<!--<td class="text-right">{{ (pc.payCode.id===-1 || check.employee.payType===4 ? pc.payCode.hourlyRate * 0.5 : pc.payCode.hourlyRate * 1.5) | currency:'$'}}</td>-->
+				<td class="text-right">{{ pc.appliedOverTimeRate | currency:'$'}}</td>
 				<td class="text-right">{{pc.overtimeAmount | currency:'$'}}</td>
 				<td class="text-right">{{pc.ytdOvertime | currency:'$'}}</td>
 			</tr>
@@ -168,14 +169,14 @@
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="saveAccumulation()" class="form-buttons form-inline" shown="selected==pt">
 						<button type="button" ng-show="!rowform.$visible" class="btn btn-primary" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit m-r-5"></i> 
+							<i class="fa fa-pencil m-r-5"></i> 
 						</button>
 						
 						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(pt)" ng-show="rowform.$visible" class="btn btn-success">
-							<i class="fa fa-save m-r-5"></i> 
+							<i class="fa fa-check m-r-5"></i> 
 						</button>
 						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-default">
-							<i class="fa fa-remove m-r-5"></i> 
+							<i class="fa fa-undo m-r-5"></i> 
 						</button>
 						
 					</form>

@@ -804,5 +804,20 @@ namespace HrMaxx.OnlinePayroll.Services.USTax
 				return 0;
 			}
 		}
+
+		public List<MinWageYearRow> GetMinWageTable()
+		{
+			return TaxTables.MinWageYearTable;
+		}
+		public MinWageYearRow GetTippedMinimumWage(int stateId, int year)
+		{
+			var federal =  TaxTables.MinWageYearTable.First(mw => !mw.StateId.HasValue && mw.Year==year);
+			var state = TaxTables.MinWageYearTable.FirstOrDefault(mw=>mw.StateId.HasValue && mw.StateId.Value== stateId && mw.Year == year);
+						
+			if (state == null)
+				return federal;
+			return  state;
+
+		}
 	}
 }

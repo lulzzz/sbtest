@@ -14,4 +14,11 @@ namespace HrMaxx.Infrastructure.Enums
 		Monthly = 4
 		
 	}
+	public enum DepositSchedule
+	{
+		SemiWeekly = 1,
+		Monthly = 2,
+		Quarterly = 3
+
+	}
 }

@@ -20,7 +20,53 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						includeDelayedTaxes: false,
 						includeRedated: false
 
-				}
+					}
+					var handleDateRangeFilter = function () {
+						$('#daterange-filter span').html(moment(dataSvc.startDate).format('MMMM D, YYYY') + ' - ' + moment(dataSvc.endDate).format('MMMM D, YYYY'));
+
+						$('#daterange-filter').daterangepicker({
+							format: 'MM/DD/YYYY',
+							startDate: dataSvc.startDate,
+							endDate: dataSvc.endDate,
+							maxDate: moment().endOf('year'),
+							showDropdowns: true,
+							showWeekNumbers: true,
+							timePicker: false,
+							timePickerIncrement: 1,
+							timePicker12Hour: true,
+							ranges: {
+								'Today': [moment(), moment()],
+								'Last 14 Days': [moment().subtract(13, 'days'), moment()],
+								'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+								'This Month': [moment().startOf('month'), moment().endOf('month')],
+								'This Quarter': [moment().quarter(moment().quarter()).startOf('quarter'), moment().quarter(moment().quarter()).endOf('quarter')],
+								'This Year': [moment().startOf('year'), moment().endOf('year')],
+								'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+								'Last Quarter': [moment().subtract(1, 'quarter').startOf('quarter'), moment().subtract(1, 'quarter').endOf('quarter')],
+								'Last Year': [moment().subtract(1, 'year').startOf('year'), moment().subtract(1, 'year').endOf('year')]
+							},
+							opens: 'right',
+							drops: 'down',
+							buttonClasses: ['btn', 'btn-sm'],
+							applyClass: 'btn-primary',
+							cancelClass: 'btn-default',
+							separator: ' to ',
+							locale: {
+								applyLabel: 'Submit',
+								cancelLabel: 'Cancel',
+								fromLabel: 'From',
+								toLabel: 'To',
+								customRangeLabel: 'Custom',
+								daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+								monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+								firstDay: 1
+							}
+						}, function (start, end, label) {
+								$('#daterange-filter span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+							dataSvc.startDate = start;
+							dataSvc.endDate = end;
+						});
+					};
 					$scope.printList = function (event) {
 						$scope.selectedInvoice = null;
 						event.stopPropagation();
@@ -269,6 +315,8 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						} else {
 							if (!dataSvc.startDate)
 								dataSvc.startDate = moment().add(-1, 'week').toDate();
+							if (!dataSvc.endDate)
+								dataSvc.endDate = moment().endOf('year').toDate();
 							$scope.selectedStatuses.push({ id: 1 });
 							$scope.selectedStatuses.push({ id: 3 });
 							$scope.selectedStatuses.push({ id: 6 });
@@ -278,7 +326,7 @@ common.directive('payrollInvoiceList', ['zionAPI', '$timeout', '$window', 'versi
 						}
 							
 
-						
+						handleDateRangeFilter();
 						getInvoices(invoice);
 						
 					}

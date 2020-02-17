@@ -37,5 +37,6 @@ namespace HrMaxx.OnlinePayroll.Models.DataModel
         public virtual DbSet<HISITWithholdingAllowanceTable> HISITWithholdingAllowanceTables { get; set; }
         public virtual DbSet<FITW4Table> FITW4Table { get; set; }
         public virtual DbSet<FITAlienAdjustmentTable> FITAlienAdjustmentTables { get; set; }
+        public virtual DbSet<MinWageYear> MinWageYears { get; set; }
     }
 }

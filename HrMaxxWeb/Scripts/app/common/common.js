@@ -112,7 +112,7 @@ common.constant('zionPaths', {
 	Logout: 'Account/LogOff',
 	Token: 'token'
 });
-common.constant('version', '1.0.3.62');
+common.constant('version', '1.0.3.68');
 common.constant('EntityTypes', {
 	General:0,
 	Host:1,
@@ -152,6 +152,7 @@ common.constant('ClaimTypes', {
 	CompanyAccumulatedPayTypesLumpSum: 'http://Paxol/Company/AccumulatedPayTypesLumpSum',
 	CompanyCopy: 'http://Paxol/Company/Copy',
 	CompanyCopyPayrolls: 'http://Paxol/Company/CopyPayrolls',
+	CompanyDeductionDates: 'http://Paxol/Company/DeductionDates',
 	EmployeeManageEmployees: 'http://Paxol/Employee/ManageEmployees',
 	EmployeeBulkTerminate: 'http://Paxol/Employee/BulkTerminate',
 	EmployeeSickLeaveExport: 'http://Paxol/Employee/SickLeaveExport',
@@ -164,6 +165,7 @@ common.constant('ClaimTypes', {
 	EmployeePayChecks: 'http://Paxol/Employee/PayChecks',
 	EmployeeReports: 'http://Paxol/Employee/Reports',
 	EmployeeDeductions: 'http://Paxol/Employee/Deductions',
+	EmployeeDeductionDates: 'http://Paxol/Employee/DeductionDates',
 	PayrollProcess: 'http://Paxol/Payroll/Process',
 	PayrollConfirm: 'http://Paxol/Payroll/Confirm',
 	PayrollVoid: 'http://Paxol/Payroll/Void',
@@ -179,6 +181,7 @@ common.constant('ClaimTypes', {
 	PayrollDelivery: 'http://Paxol/Payroll/Delivery',
 	PayrollACHPackEmail: 'http://Paxol/Payroll/ACHPackEmail',
 	PayrollAwaitingPrint: 'http://Paxol/Payroll/AwaitingPrint',
+	PayrollSchedule: 'http://Paxol/Payroll/SchedulePayroll',
 	InvoiceList: 'http://Paxol/Invoice/List',
 	InvoiceCommissions: 'http://Paxol/Invoice/Commissions',
 	InvoiceDelete: 'http://Paxol/Invoice/Delete',

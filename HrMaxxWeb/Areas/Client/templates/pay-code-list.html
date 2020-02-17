@@ -5,10 +5,11 @@
 	<table class="table table-header table-bordered table-condensed form-controls input-sm">
 		<thead>
 			<tr>
-				<td class="col-sm-3">Code (4 chars)</td>
+				<td class="col-sm-2">Code (4 chars)</td>
 				<td class="col-sm-3">Description</td>
-				<td class="col-sm-3">Hourly Rate</td>
-				<td class="col-sm-3" ng-show="showControls"></td>
+				<td class="col-sm-2">Rate Type</td>
+				<td class="col-sm-2">Rate / Times</td>
+				<td class="col-sm-2" ng-show="showControls"></td>
 			</tr>
 		</thead>
 		<tbody>
@@ -24,31 +25,37 @@
 					</span>
 				</td>
 				<td>
-					<!-- editable comment (text with validation) -->
-					<span editable-number="item.hourlyRate" e-name="hourlyRate" e-form="rowform" e-ng-change="item.hourlyRate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;">
-						{{ item.hourlyRate | currency:'$'}}/hr
+					<span e-ng-change="item.rateType = $data;" editable-select="item.rateType" e-name="ratetype" e-form="rowform" e-ng-options="rate.id as rate.name for rate in rateTypes">
+						{{ item.rateType===2 ? rateTypes[1].name : rateTypes[0].name}}
 					</span>
 				</td>
+				<td>
+					<!-- editable comment (text with validation) -->
+					<span editable-number="item.hourlyRate" e-name="hourlyRate" e-form="rowform" e-ng-change="item.hourlyRate = $data" e-ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" e-step="0.01" e-style="width:10em;" e-ng-min="getMinRate(item)">
+						{{ item.rateType===2 ? (item.hourlyRate + ' x Base Rate') : (item.hourlyRate | currency:'$')}} / hr
+					</span>
+				</td>
+
 				<td style="white-space: nowrap" ng-show="showControls">
 					<!-- form -->
 					<form editable-form id="rowform" name="rowform" onbeforesave="save(item)" class="form-buttons form-inline" shown="selected===item">
-						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
-							<i class="fa fa-edit"></i>
+						<button type="button" ng-show="!rowform.$visible" class="btn btn-lg btn-primary btn-icon btn-circle" ng-click="rowform.$show();setSelected($index)">
+							<i class="fa fa-pencil"></i>
 						</button>
 						<button type="submit" ng-disabled="rowform.$waiting || !isItemValid(item)" ng-show="rowform.$visible" class="btn btn-lg btn-success btn-icon btn-circle">
-							<i class="fa fa-save"></i>
+							<i class="fa fa-check"></i>
 						</button>
 						<button type="button" ng-disabled="rowform.$waiting" ng-show="rowform.$visible" ng-click="rowform.$cancel();cancel($index)" class="btn btn-lg btn-default btn-icon btn-circle">
-							<i class="fa fa-remove"></i>
+							<i class="fa fa-undo"></i>
 						</button>
 					</form>
 				</td>
-				
+
 			</tr>
 			<tr ng-show="!selected">
 				<td colspan="4">
 					<span ng-show="list.length===0">No items found</span>
-					<button type="button" ng-click="add()" class="btn btn-lg btn-success  btn-icon btn-circle" ng-show="showControls">
+					<button type="button" ng-click="add()" class="btn btn-lg btn-primary  btn-icon btn-circle" ng-show="showControls">
 						<i class="fa fa-plus"></i>
 					</button>
 				</td>

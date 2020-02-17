@@ -26,6 +26,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? BirthDate { get; set; }
 		public DateTime HireDate { get; set; }
 		public DateTime? SickLeaveHireDate { get; set; }
+		public DateTime? TerminationDate { get; set; }
 		public decimal CarryOver { get; set; }
 		public string Department { get; set; }
 		public string EmployeeNo { get; set; }
@@ -59,7 +60,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public DateTime? LastPayrollDate { get; set; }
 		public DateTime? LastPayDay {get; set; }
 		public int? CompanyEmployeeNo { get; set; }
-
+		public bool IsTipped { get; set; }
 		public string Notes { get; set; }
 
 
@@ -113,7 +114,9 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
         public int CeilingMethod { get; set; }
         public string Note { get; set; }
         public CompanyDeduction CompanyDeduction { get; set; }
-        public decimal EmployeeWithheld { get; set; }
+		public DateTime? StartDate { get; set; }
+		public DateTime? EndDate { get; set; }
+		public decimal EmployeeWithheld { get; set; }
         public decimal EmployerWithheld { get; set; }
 
     }

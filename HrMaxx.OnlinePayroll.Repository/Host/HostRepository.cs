@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using HrMaxx.Infrastructure.Mapping;
+using HrMaxx.Infrastructure.Repository;
 using HrMaxx.OnlinePayroll.Models;
 using HrMaxx.OnlinePayroll.Models.DataModel;
 using Newtonsoft.Json;
 
 namespace HrMaxx.OnlinePayroll.Repository.Host
 {
-	public class HostRepository : IHostRepository
+	public class HostRepository : BaseDapperRepository, IHostRepository
 	{
 		private readonly OnlinePayrollEntities _dbContext;
 		private readonly IMapper _mapper;
 		private string _domain;
-		public HostRepository(IMapper mapper, OnlinePayrollEntities dbContext, string domain)
+		public HostRepository(IMapper mapper, OnlinePayrollEntities dbContext, string domain, DbConnection connection):base(connection)
 		{
 			_dbContext = dbContext;
 			_mapper = mapper;
@@ -23,15 +25,17 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 
 		public IList<Models.Host> GetHostList(Guid host)
 		{
-			var hosts = _dbContext.Hosts.AsQueryable();
+			//var hosts = _dbContext.Hosts.AsQueryable();
+			var hosts = Query<Models.DataModel.Host>("select * from Host");
 			if (host != Guid.Empty)
-				hosts = hosts.Where(h => h.Id == host);
-			return _mapper.Map<List<Models.DataModel.Host>, List<Models.Host>>(hosts.ToList());
+				hosts = hosts.Where(h => h.Id == host).ToList();
+			return _mapper.Map<List<Models.DataModel.Host>, List<Models.Host>>(hosts);
 		}
 
 		public Models.Host GetHost(Guid cpaId)
 		{
-			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
+			//var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
+			var cpa = QueryObject<Models.DataModel.Host>("select * from Host where Id=@Id", new { Id=cpaId});
 			if(cpa==null)
 				return new Models.Host();
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);
@@ -120,7 +124,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 
 		public Models.Host GetHostById(int hostId)
 		{
-			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.HostIntId.Equals(hostId));
+			//var cpa = _dbContext.Hosts.FirstOrDefault(c => c.HostIntId.Equals(hostId));
+			var cpa = QueryObject<Models.DataModel.Host>("select * from Host where HostIntId=@HostIntId", new { HostIntId=hostId});
 			if (cpa == null)
 				return new Models.Host();
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);

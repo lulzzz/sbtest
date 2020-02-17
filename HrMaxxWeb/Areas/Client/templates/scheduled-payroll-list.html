@@ -9,7 +9,7 @@
 		<div class="panel-body" ng-show="data.isBodyOpen">
 			
 			<div ng-show="list.length===0 && !selected && !processed && !committed" class="table table-bordered">
-				No scheduled payrolls found <a class="btn btn-success btn-icon btn-circle btn-lg" ng-show="canRunPayroll()" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
+				No scheduled payrolls found <a class="btn btn-primary btn-icon btn-circle btn-lg" ng-show="canRunPayroll()" id="test" ng-click="add()"><i class="fa fa-plus"></i></a>
 			</div>
 			
 			<div ng-show="list.length>0" ng-if="!data.loadedForPayrollsWithoutInvoice" class="col-sm-6 text-left p-5">

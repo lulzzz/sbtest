@@ -50,8 +50,9 @@ namespace HrMaxx.OnlinePayroll.Services
 				var deductiontypes = _metaDataRepository.GetDeductionTypes();
 				var paytypes = _metaDataRepository.GetAccumulablePayTypes();
 				var insurancegroups = _commonService.GetInsuranceGroups();
+				var minWages = _taxationService.GetMinWageTable();
 				
-				return new CompanyMetaData(){Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups};
+				return new CompanyMetaData(){Countries = countries, Taxes = taxes, DeductionTypes = deductiontypes, PayTypes = paytypes, InsuranceGroups= insurancegroups, MinWages = minWages};
 			}
 			catch (Exception e)
 			{
@@ -134,7 +135,8 @@ namespace HrMaxx.OnlinePayroll.Services
 			{
 				var paytypes = _metaDataRepository.GetAllPayTypes();
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
-				return new EmployeeMetaData { PayTypes = paytypes, Agencies = agencies };
+				var minWages = _taxationService.GetMinWageTable();
+				return new EmployeeMetaData { PayTypes = paytypes, Agencies = agencies, MinWages = minWages };
 			}
 			catch (Exception e)
 			{
@@ -170,7 +172,8 @@ namespace HrMaxx.OnlinePayroll.Services
 				//var maxCheckNumber = _metaDataRepository.GetMaxCheckNumber((request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck) ? request.HostCompanyIntId : request.CompanyIntId, (request.InvoiceSetup != null && request.InvoiceSetup.InvoiceType == CompanyInvoiceType.PEOASOCoCheck));
 				var importMap = _metaDataRepository.GetCompanyTsImportMap(request.CompanyId);
 				var agencies = _metaDataRepository.GetGarnishmentAgencies();
-				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies };
+				var minWages = _taxationService.GetMinWageTable();
+				return new { PayTypes = paytypes, StartingCheckNumber = maxCheckNumber, PayrollAccount = bankAccount, HostPayrollAccount = hostAccount, ImportMap = importMap, Agencies = agencies, MinWages = minWages };
 			}
 			catch (Exception e)
 			{

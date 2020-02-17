@@ -267,9 +267,12 @@ namespace HrMaxx.OnlinePayroll.ReadServices.Mappers
 				.ForMember(dest => dest.Pending940, opt => opt.Ignore())
 				.ForMember(dest => dest.Pending941, opt => opt.Ignore())
 				.ForMember(dest => dest.PendingPit, opt => opt.Ignore())
-                .ForMember(dest => dest.Accumulation, opt => opt.Ignore())
-                .ForMember(dest => dest.PendingExtractsByCompany, opt => opt.Ignore())
-				.ForMember(dest => dest.PendingExtractsByDates, opt => opt.Ignore());
+				.ForMember(dest => dest.PendingDelayedUiEtt, opt => opt.Ignore())
+				.ForMember(dest => dest.PendingDelayed940, opt => opt.Ignore())
+				.ForMember(dest => dest.PendingDelayed941, opt => opt.Ignore())
+				.ForMember(dest => dest.PendingDelayedPit, opt => opt.Ignore())
+				.ForMember(dest => dest.Accumulation, opt => opt.Ignore())
+                .ForMember(dest => dest.PendingExtractsBySchedule, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.TaxExtractJson, Models.TaxExtract>()
 				.ForMember(dest => dest.Details, opt => opt.Ignore());
 			CreateMap<Models.JsonDataModel.PayrollMetricJson, Models.PayrollMetric>()

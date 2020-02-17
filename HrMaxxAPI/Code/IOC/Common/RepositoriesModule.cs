@@ -89,6 +89,8 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.PropertiesAutowired();
 			
 			builder.RegisterType<NotificationRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<INotificationRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();
@@ -98,6 +100,8 @@ namespace HrMaxxAPI.Code.IOC.Common
 				.InstancePerLifetimeScope();
 
 			builder.RegisterType<UserRepository>()
+				.WithParameter((param, cont) => param.Name == "connection",
+					(param, cont) => cont.ResolveNamed<SqlConnection>("connection"))
 				.As<IUserRepository>()
 				.InstancePerLifetimeScope()
 				.PropertiesAutowired();

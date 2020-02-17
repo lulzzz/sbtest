@@ -40,6 +40,7 @@ namespace HrMaxxWeb
 				"~/Scripts/jquery/jquery.ui.widget.min.js",
 				"~/Scripts/lodash/lodash.js",
 				"~/Scripts/es5-shim.js",
+				"~/Scripts/moment.js",
 				"~/Scripts/modernizr-{version}.js",
 				"~/Scripts/bootstrap/bootstrap.js",
 				"~/Scripts/bootstrap3-typeahead.js",
@@ -52,7 +53,9 @@ namespace HrMaxxWeb
 				"~/Scripts/bootstrap/wizard/bwizard.js",
 				"~/Scripts/jquery.plugin.js",
 				"~/Scripts/jquery.countdown.js",
-				"~/Scripts/coming-soon.demo.js"
+				"~/Scripts/coming-soon.demo.js",
+				"~/Scripts/bootstrap/sweetalert.min.js",
+				"~/Scripts/daterangepicker.js"
 
 
 				);
@@ -74,7 +77,7 @@ namespace HrMaxxWeb
 
 			Bundle angular = new Bundle("~/bundles/angular").Include(
 				"~/Scripts/angular1.5/angular-file-upload/angular-file-upload-shim.js",
-				"~/Scripts/moment.js",
+				
 				"~/Scripts/flot/jquery.flot.min.js",
 				"~/Scripts/flot/jquery.flot.time.min.js",
 				"~/Scripts/flot/jquery.flot.pie.min.js",

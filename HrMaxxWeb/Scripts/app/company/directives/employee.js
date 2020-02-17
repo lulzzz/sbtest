@@ -159,7 +159,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 					}
 
 					$scope.validate = function () {
-						return validateStep1() && validateStep2() && validateStep3();
+						return validateStep1() && validateStep2() && validateStep3() && validateStep4();
 					}
 					var validateStep1 = function () {
 						var c = $scope.selected;
@@ -169,6 +169,15 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							return false;
 						else if (!c.contact.address.addressLine1 || !c.contact.address.countryId || !c.contact.address.stateId || !c.contact.address.zip)
 							return false;
+						else {
+							return true;
+						}
+					}
+					var validateStep4 = function () {
+						var c = $scope.selected;
+						if (!c.ssn || !c.hireDate || !c.statusId || !c.sickLeaveHireDate)
+							return false;
+						
 						else {
 							return true;
 						}
@@ -352,7 +361,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							var modalInstance = $modal.open({
 								templateUrl: 'popover/ssnlist.html',
 								controller: 'ssnListCtrl',
-								size: 'lg',
+								size: 'md',
 								windowClass: 'my-modal-popup',
 								resolve: {
 									list: function () {
@@ -368,15 +377,17 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 						});
 					}
 					var saveEmpployee = function () {
-						$scope.selected.hireDate = moment($scope.selected.hireDate).format("MM/DD/YYYY");
-						$scope.selected.sickLeaveHireDate = moment($scope.selected.sickLeaveHireDate).format("MM/DD/YYYY");
-						companyRepository.saveEmployee($scope.selected).then(function (result) {
+						var employee = angular.copy($scope.selected);
+						employee.hireDate = moment(employee.hireDate).format("MM/DD/YYYY");
+						employee.terminationDate = employee.terminationDate ? moment(employee.terminationDate).format("MM/DD/YYYY") : null;
+						employee.sickLeaveHireDate = moment(employee.sickLeaveHireDate).format("MM/DD/YYYY");
+						companyRepository.saveEmployee(employee).then(function (result) {
 							if (!$scope.isPopup)
 								$scope.$parent.$parent.save(result);
 							else
 								$scope.$parent.save(result);
 						}, function (error) {
-							$scope.mainData.showMessage('error saving employee', 'danger');
+							$scope.mainData.handleError('', error, 'danger');
 						});
 					}
 					$scope.calculateAvailableWage = function (paytype) {
@@ -435,6 +446,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							if ($scope.selected.birthDate)
 								$scope.selected.birthDate = moment($scope.selected.birthDate).toDate();
 							$scope.selected.hireDate = moment($scope.selected.hireDate).toDate();
+							$scope.selected.terminationDate = $scope.selected.terminationDate ? moment($scope.selected.terminationDate).toDate() : null;
 
 							$scope.selected.sickLeaveHireDate = moment($scope.selected.sickLeaveHireDate).toDate();
 							$.each($scope.selected.payCodes, function (index, pc) {
@@ -456,12 +468,17 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 												}
 											} else if (ui.index == 1) {
 												// step-2 validation
-												if (false === $('form[name="employee"]').parsley().validate('wizard-step-2') || false === validateStep2()) {
+												if (false === $('form[name="employee"]').parsley().validate('wizard-step-2') || false === validateStep4()) {
 													return false;
 												}
 											} else if (ui.index == 2) {
+												// step-2 validation
+												if (false === $('form[name="employee"]').parsley().validate('wizard-step-3') || false === validateStep2()) {
+													return false;
+												}
+											} else if (ui.index == 3) {
 												// step-3 validation
-												if (false === $('form[name="employee"]').parsley().validate('wizard-step-3') || false === validateStep3()) {
+												if (false === $('form[name="employee"]').parsley().validate('wizard-step-4') || false === validateStep3()) {
 													return false;
 												}
 											}
