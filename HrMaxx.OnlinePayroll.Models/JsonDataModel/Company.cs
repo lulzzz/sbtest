@@ -115,7 +115,7 @@ namespace HrMaxx.OnlinePayroll.Models.JsonDataModel
 		public string EIN { get; set; }
 		public string Pin { get; set; }
         public string UIAccountNumber { get; set; }
-
+		public int DepositSchedule { get; set; }
     }
 	public class CompanyContract
 	{

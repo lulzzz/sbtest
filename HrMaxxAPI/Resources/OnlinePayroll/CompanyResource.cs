@@ -200,6 +200,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Required]
 		public string StatePin { get; set; }
         public string StateUIAccount { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 	}
 
 	public class CompanyTaxRateResource

@@ -421,6 +421,7 @@ namespace HrMaxxAPI.Resources.OnlinePayroll
 		[Range(0, 10)]
 		public int Exemptions { get; set; }
 		public decimal AdditionalAmount { get; set; }
+		public bool IsSitExempt { get; set; }
 	}
 
 	public class EmployeeDeductionResource

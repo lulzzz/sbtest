@@ -142,6 +142,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public string StatePIN { get { return Crypto.Decrypt(Pin); } }
 
         public string UIAccountNumber { get; set; }
+		public DepositSchedule941 DepositSchedule { get; set; }
 	}
 	public class ExtractCompany
 	{

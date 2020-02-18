@@ -517,7 +517,7 @@
 												</div>
 											</div>
 										</div>
-										<div class="col-sm-3">
+										<div class="col-sm-2">
 											<div class="form-group">
 												<label>State Filing Status</label>
 												<select ng-model="selected.state.taxStatus" name="sstatus" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number">
@@ -528,7 +528,7 @@
 											</div>
 
 										</div>
-										<div class="col-sm-3">
+										<div class="col-sm-2">
 											<div class="form-group">
 												<label>Exemptions</label>
 												<select ng-model="selected.state.exemptions" name="fstatus" class="form-control" required data-parsley-group="wizard-step-4" convert-to-number data-parsley-type="number">
@@ -547,12 +547,20 @@
 											</div>
 
 										</div>
-										<div class="col-sm-3">
+										<div class="col-sm-2">
 											<div class="form-group">
 												<label>Additional Amout</label>
 												<input name="addamount" placeholder="Federal Additional Amount" class="form-control" ng-model="selected.state.additionalAmount" required data-parsley-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" data-parsley-type="number" data-parsley-group="wizard-step-4" />
 											</div>
 
+										</div>
+										<div class="col-sm-1">
+											<div class="form-group">
+												W4 - SIT Exempt?
+												<label for="exempt" class="switch">
+													<input id="exempt" type="checkbox" ng-model="selected.state.isSitExempt" /><i></i>
+												</label>
+											</div>
 										</div>
 									</div>
 									<!-- end row -->

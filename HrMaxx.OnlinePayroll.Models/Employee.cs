@@ -112,6 +112,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public EmployeeTaxStatus TaxStatus { get; set; }
 		public int Exemptions { get; set; }
 		public decimal AdditionalAmount { get; set; }
+		public bool IsSitExempt { get; set; }
 	}
 
 	public class EmployeeACA

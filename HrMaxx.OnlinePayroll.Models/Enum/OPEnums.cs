@@ -61,7 +61,9 @@ namespace HrMaxx.OnlinePayroll.Models.Enum
 		[HrMaxxSecurity(DbId = 2, DbName = "Monthly")]
 		Monthly=2,
 		[HrMaxxSecurity(DbId = 3, DbName = "Quarterly")]
-		Quarterly=3
+		Quarterly=3,
+		[HrMaxxSecurity(DbId = 4, DbName = "Annual")]
+		Annual = 4
 	}
 
 	public enum PayrollSchedule

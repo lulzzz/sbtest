@@ -74,7 +74,7 @@ namespace HrMaxx.Common.Repository.Notifications
 			using (var conn = GetConnection())
 			{
 				DateTime sevenDaysBefore = DateTime.Now.AddDays(-7).Date;
-				const string sql = "delete from Notifications set CreatedOn<=@Date";
+				const string sql = "delete from Notifications where CreatedOn<=@Date";
 				conn.Execute(sql, new { Date = sevenDaysBefore });
 			}
 			

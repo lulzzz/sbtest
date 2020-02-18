@@ -155,6 +155,7 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 				dbState.EIN = existingState.EIN;
 				dbState.Pin = existingState.Pin;
                 dbState.UIAccountNumber = existingState.UIAccountNumber;
+				dbState.DepositSchedule = existingState.DepositSchedule;
 			}
 
 			_dbContext.SaveChanges();
