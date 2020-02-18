@@ -183,6 +183,7 @@ namespace HrMaxx.OnlinePayroll.Models
 		public bool IsLumpSum { get; set; }
 		public bool IsEmployeeSpecific { get; set; }
 		public AccumulatedPayTypeOption Option { get; set; }
+		public string Name { get; set; }
 	}
 
 	public class CompanyTaxState

@@ -154,12 +154,14 @@ common.directive('employeeDeductionList', ['$uibModal', 'zionAPI', 'version',
 						}
 					}
                     $scope.cancel = function (index) {
-                        
-					if ($scope.original && $scope.original.id === $scope.selected.id) {
-						$scope.list[index] = angular.copy($scope.original);
-					}
-						$scope.selected = null;
-						$scope.selectedIndex = null;
+						$scope.mainData.confirmDialog('changes to this deduction will be lost', 'danger', function () {
+							if ($scope.original && $scope.original.id === $scope.selected.id) {
+								$scope.list[index] = angular.copy($scope.original);
+							}
+							$scope.selected = null;
+							$scope.selectedIndex = null;
+						});
+					
 				}
 				$scope.setSelected = function(item, index) {
 					$scope.selected = item;

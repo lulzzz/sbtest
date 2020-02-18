@@ -8,6 +8,8 @@
             <div class="clearfix" ng-if="$index % 4 === 0"></div>
             <div class="widget widget-stats m-b-0" ng-class="getWidgetClass(item)">
                 <div class="stats-icon stats-icon-lg"><i class="fa fa-caret-left fa-fw"></i></div>
+                <div class="stats-title" ng-if="item.id>0 && selected.id!==item.id">{{item.name}}</div>
+
                 <div class="stats-title" ng-if="item.id>0">{{item.payType.description}}</div>
                 <div class="stats-title" ng-if="item.id===0">
                     <div class="form-group">
@@ -17,7 +19,11 @@
 
                     </div>
                 </div>
-
+                <div class="stats-title" ng-if="item.id===0 || selected.id===item.id">
+                    <div class="form-group">
+                        <input class="form-control" id="name" name="name" placeholder="Leave Name" ng-model="selected.name" required />
+                    </div>
+                </div>
                 <div class="stats-info" ng-if="item.id>0">{{item.option? leaveOptions[1].text : leaveOptions[0].text}}</div>
                 <div class="stats-info" ng-if="item.id===0">
                     <div class="form-group">
@@ -29,7 +35,7 @@
 
                     </div>
                 </div>
-                <div class="stats-title">Rate: {{item.ratePerHour | currency}}, Annual Limit: {{item.annualLimit | currency}}, Global Limit: {{item.global | currency}}</div>
+                <div class="stats-title">Rate: {{item.ratePerHour | currency:''}}, Annual Limit: {{item.annualLimit | currency:''}}, Global Limit: {{item.globalLimit | currency:''}}</div>
                 <div class="stats-title">Company Managed: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.companyManaged, 'fa-times-circle': !item.companyManaged}" />, Lump Sum: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isLumpSum, 'fa-times-circle': !item.isLumpSum}" />, Employee Specific: <i class="fa fa-lg" ng-class="{'fa-check-circle': item.isEmployeeSpecific, 'fa-times-circle': !item.isEmployeeSpecific}" /></div>
                 <div class="stats-progress progress">
                     <div class="progress-bar" style="width: 100%;"></div>
@@ -37,36 +43,39 @@
                 <div class="stats-desc" ng-show="showControls">
                     <i class="fa fa-pencil fa-lg pull-right" ng-show="!selected" ng-click="setSelected($index)"></i>
                     <i class="fa fa-undo fa-lg pull-right" ng-show="selected && selected.id===item.id" ng-click="cancel()"></i>
-                    <i class="fa fa-check fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(item) && save(item)"></i>
+                    <i class="fa fa-check fa-lg pull-right" ng-show="selected && selected.id===item.id && hasItemChanged()" ng-click="isItemValid(selected) && save(selected)"></i>
 
 
                 </div>
             </div>
-            <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(item)" ng-show="selected && selected.id===item.id">
+            <div class="widget widget-stats m-t-0" ng-class="getWidgetSubClass(selected)" ng-show="selected && selected.id===item.id">
                 <div class="stats-desc">
-                    <div class="form-group">
+                    <div class="form-group row">
                         <label class="control-label col-md-6 col-sm-6" for="rate">Rate :</label>
-                        <div class="col-md-6 col-sm-6">
+                        <div class="col-md-5 col-sm-5">
                             <input class="form-control" type="number" id="rate" name="rate" ng-model="selected.ratePerHour" ng-pattern="/^[0-9]+(\.[0-9]{1,4})?$/" min="0" required />
 
                         </div>
+                        <label class="control-label" for="rate">{{ selected.option!==null ? (selected.option===0 ? '/hr' : '/day'):'' }}</label>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-6 col-sm-6" for="al">Annual Limit:</label>
-                        <div class="col-md-6 col-sm-6">
+                    <div class="form-group row">
+                        <label class="control-label col-md-6 col-sm-6" for="al">Annual Limit :</label>
+                        <div class="col-md-5 col-sm-5">
                             <input class="form-control" type="number" id="al" name="al" ng-model="selected.annualLimit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
 
                         </div>
+                        <label class="control-label"  for="al">{{ selected.option!==null ? (selected.option===0 ? 'hrs' : 'days'):'' }}</label>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-6 col-sm-6" for="gl">Global Limit:</label>
-                        <div class="col-md-6 col-sm-6">
+                    <div class="form-group row">
+                        <label class="control-label col-md-6 col-sm-6" for="gl">Global Limit :</label>
+                        <div class="col-md-5 col-sm-5">
                             <input class="form-control" type="number" id="gl" name="gl" ng-model="selected.globalLimit" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
 
                         </div>
+                        <label class="control-label"  for="gl">{{ selected.option!==null ? (selected.option===0 ? 'hrs' : 'days'):'' }}</label>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-6 col-sm-6">Company Managed? :</label>
+                    <div class="form-group row">
+                        <label class="control-label col-md-6 col-sm-6">Company Managed?</label>
                         <div class="col-md-6 col-sm-6">
                             <label class="switch">
                                 <input type="checkbox" ng-model="item.companyManaged"/><i></i>
@@ -74,7 +83,7 @@
                             
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group row">
                         <label class="control-label col-md-6 col-sm-6">Lump Sum? :</label>
                         <div class="col-md-6 col-sm-6">
                             <label class="switch">
@@ -82,8 +91,8 @@
                             </label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-6 col-sm-6">Employee Specific? :</label>
+                    <div class="form-group row">
+                        <label class="control-label col-md-6 col-sm-6">Employee Sp.?</label>
                         <div class="col-md-6 col-sm-6">
                             <label class="switch">
                                 <input type="checkbox" ng-model="item.isEmployeeSpecific" /><i></i>

@@ -188,6 +188,7 @@
           <Property Name="IsEmployeeSpecific" Type="bit" Nullable="false" />
           <Property Name="Option" Type="int" Nullable="false" />
           <Property Name="GlobalLimit" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Name" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="CompanyContract">
           <Key>
@@ -2174,6 +2175,7 @@
           <Property Name="IsEmployeeSpecific" Type="Boolean" Nullable="false" />
           <Property Name="Option" Type="Int32" Nullable="false" />
           <Property Name="GlobalLimit" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_CompanyAccumlatedPayType_Company">
           <End Type="HrMaxxModel.Company" Role="Company" Multiplicity="1" />
@@ -3435,6 +3437,7 @@
           <EntitySetMapping Name="CompanyAccumlatedPayTypes">
             <EntityTypeMapping TypeName="HrMaxxModel.CompanyAccumlatedPayType">
               <MappingFragment StoreEntitySet="CompanyAccumlatedPayType">
+                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="GlobalLimit" ColumnName="GlobalLimit" />
                 <ScalarProperty Name="Option" ColumnName="Option" />
                 <ScalarProperty Name="IsEmployeeSpecific" ColumnName="IsEmployeeSpecific" />

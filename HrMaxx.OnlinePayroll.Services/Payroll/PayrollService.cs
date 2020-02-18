@@ -614,7 +614,7 @@ namespace HrMaxx.OnlinePayroll.Services.Payroll
 		{
 			var result = new List<PayTypeAccumulation>();
 
-			foreach (var payType in payroll.Company.AccumulatedPayTypes.Where(at => !at.IsEmployeeSpecific || (paycheck.Employee.PayTypeAccruals != null && paycheck.Employee.PayTypeAccruals.Any(epta=>epta==at.PayType.Id))))	
+			foreach (var payType in payroll.Company.AccumulatedPayTypes.Where(at => !at.IsEmployeeSpecific || (paycheck.Employee.PayTypeAccruals != null && paycheck.Employee.PayTypeAccruals.Any(epta=>epta==at.Id))))	
 			{
 				var fiscalStartDate = CalculateFiscalStartDate(paycheck.Employee.SickLeaveHireDate, paycheck.PayDay, payType);
 				var fiscalEndDate = fiscalStartDate.AddYears(1).AddDays(-1);

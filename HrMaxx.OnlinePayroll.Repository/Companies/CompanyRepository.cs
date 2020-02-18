@@ -263,13 +263,14 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 		public AccumulatedPayType SaveAccumulatedPayType(AccumulatedPayType mappedAccPayType)
 		{
 			var mappedwc = _mapper.Map<AccumulatedPayType, Models.DataModel.CompanyAccumlatedPayType>(mappedAccPayType);
-			if (mappedwc.Id == 0 && !_dbContext.CompanyAccumlatedPayTypes.Any(cat=>cat.CompanyId==mappedwc.CompanyId && cat.PayTypeId==mappedwc.PayTypeId))
+			if (mappedwc.Id == 0 )
 			{
-				_dbContext.CompanyAccumlatedPayTypes.Add(mappedwc);
+				var re =_dbContext.CompanyAccumlatedPayTypes.Add(mappedwc);
+				mappedwc.Id = re.Id;
 			}
 			else
 			{
-				var wc = _dbContext.CompanyAccumlatedPayTypes.FirstOrDefault(cd => cd.Id == mappedwc.Id || (cd.CompanyId==mappedwc.CompanyId && cd.PayTypeId==mappedwc.PayTypeId));
+				var wc = _dbContext.CompanyAccumlatedPayTypes.FirstOrDefault(cd => cd.Id == mappedwc.Id );
 				if (wc != null)
 				{
 					wc.RatePerHour = mappedwc.RatePerHour;
@@ -279,10 +280,12 @@ namespace HrMaxx.OnlinePayroll.Repository.Companies
 					wc.IsLumpSum = mappedwc.IsLumpSum;
 					wc.IsEmployeeSpecific = mappedwc.IsEmployeeSpecific;
 					wc.Option = mappedwc.Option;
+					wc.Name = mappedwc.Name;
 				}
 			}
 			_dbContext.SaveChanges();
 			var ret = _mapper.Map<Models.DataModel.CompanyAccumlatedPayType, AccumulatedPayType>(mappedwc);
+			
 			ret.PayType = mappedAccPayType.PayType;
 			return ret;
 		}

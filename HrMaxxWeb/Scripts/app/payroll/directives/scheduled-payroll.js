@@ -504,13 +504,7 @@ common.directive('scheduledPayroll', ['$uibModal', 'zionAPI', '$timeout', '$wind
 						//$scope.tableParams.reload();
 						$scope.fillTableData($scope.tableParams);
 						$scope.datasvc.isBodyOpen = false;
-						$scope.minPayDate = moment().startOf('day');
-						if ($scope.company.payrollDaysInPast > 0) {
-							$scope.minPayDate = moment().add($scope.company.payrollDaysInPast * -1, 'day').startOf('day').toDate();
-						}
-						//if (moment($scope.minPayDay) > $scope.minPayDate && $scope.mainData.userRole !== 'SuperUser' && $scope.mainData.userRole !== 'Master') {
-						//	$scope.minPayDate = moment($scope.minPayDay).startOf('day');
-						//}
+						$scope.minPayDate = moment().add(1, 'days').startOf('day');
 						
 					}
 					init();

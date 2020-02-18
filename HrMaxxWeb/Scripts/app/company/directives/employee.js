@@ -437,7 +437,7 @@ common.directive('employee', ['zionAPI', '$timeout', '$window', 'version', '$uib
 							});
 							$.each($scope.mainData.selectedCompany.accumulatedPayTypes, function (index, at) {
 								if (at.isEmployeeSpecific)
-									dataSvc.accrualPayTypes.push(at.payType);
+									dataSvc.accrualPayTypes.push(at);
 							});
 						}
 						

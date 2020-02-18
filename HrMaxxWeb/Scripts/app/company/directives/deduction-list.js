@@ -78,11 +78,19 @@ common.directive('deductionList', ['zionAPI', 'version',
 						}
 
 					$scope.cancel = function (index) {
+						var message = "changed will be lost.";
 						if ($scope.selected.id === 0) {
-							$scope.list.splice($scope.list.indexOf($scope.selected), 1);
+							message = "this deduction is not saved so it will be removed";
+
 						}
-						$scope.selected = null;
-						$scope.original = null;
+						$scope.mainData.confirmDialog(message, 'warning', function () {
+							if ($scope.selected.id === 0) {
+								$scope.list.splice($scope.list.indexOf($scope.selected), 1);
+							}
+							$scope.selected = null;
+							$scope.original = null;
+						});
+						
 					}
 					$scope.setSelected = function (index) {
 						$scope.selected = $scope.list[index];

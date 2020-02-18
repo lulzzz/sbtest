@@ -153,7 +153,7 @@
                 </div>
                 <div class="form-group">
                     <label>Minimum Wage <button class="btn btn-sm btn-circle" ng-click="showMinWages($event)"><i class="fa fa-info" style="color:cornflowerblue"></i></button></label>
-                    <input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" min="{{getApplicableMinimumWage()}}" ng-model="selectedCompany.minWage" step="0.01" ng-disabled="selectedCompany.fileUnderHost" />
+                    <input type="text" name="minwage" class="form-control" data-parsley-group="wizard-step-2" data-parsley-type="number" min="{{getApplicableMinimumWage()}}" ng-model="selectedCompany.minWage" step="0.01" />
                     
                 </div>
                 <div class="form-group">
@@ -860,7 +860,7 @@
     </div>
     <div id="collapseFive" class="panel-collapse collapse">
         <div class="panel-body">
-            <accumulated-pay-type-list list="selectedCompany.accumulatedPayTypes" company-id="selectedCompany.id" meta-data="data.companyMetaData.payTypes" show-controls="showControls" />
+            <accumulated-pay-type-list list="selectedCompany.accumulatedPayTypes" company-id="selectedCompany.id" meta-data="data.companyMetaData.payTypes" show-controls="showControls" main-data="mainData" />
         </div>
     </div>
 </div>
