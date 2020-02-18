@@ -41,7 +41,7 @@ namespace HrMaxx.Common.Repository.Common
 			//																											&& er.TargetEntityTypeId == (int) target
 			//																											&& er.SourceEntityId == sourceId
 			//																								).ToList();
-			const string sql = "select * from EntityRelations where SourceEntityTypeId=@SourceEntityTypeId and TargetEntityTypeId=@TargetEntityTypeId and SourceEntityId=@SourceEntityId";
+			const string sql = "select * from EntityRelation where SourceEntityTypeId=@SourceEntityTypeId and TargetEntityTypeId=@TargetEntityTypeId and SourceEntityId=@SourceEntityId";
 			var relations = Query<EntityRelation>(sql, new { SourceEntityTypeId =source, TargetEntityTypeId = target, SourceEntityId=sourceId});
 			relations.ForEach(r => result.Add(JsonConvert.DeserializeObject<T>(r.TargetObject)));
 			return result;
@@ -60,7 +60,7 @@ namespace HrMaxx.Common.Repository.Common
 			//var entity =
 			//	_dbContext.EntityRelations.FirstOrDefault(
 			//		er => er.TargetEntityTypeId == (int) target && er.TargetEntityId == targetId);
-			var entity = QueryObject<EntityRelation>("select top(1) * from EntityRelations where TargetEntityTypeId=@TargetEntityTypeId and TargetEntityId=@TargetEntityId", new { TargetEntityTypeId = (int)target, TargetEntityId = targetId });
+			var entity = QueryObject<EntityRelation>("select top(1) * from EntityRelation where TargetEntityTypeId=@TargetEntityTypeId and TargetEntityId=@TargetEntityId", new { TargetEntityTypeId = (int)target, TargetEntityId = targetId });
 			if (entity == null)
 				return default(T);
 			return JsonConvert.DeserializeObject<T>(entity.TargetObject);
@@ -72,7 +72,7 @@ namespace HrMaxx.Common.Repository.Common
 			//var targets =
 			//	_dbContext.EntityRelations.Where(er => er.TargetEntityTypeId == (int) target)
 			//		.ToList();
-			var targets = Query<EntityRelation>("select * from EntityRelations where TargetEntityTypeId=@TargetEntityTypeId", new { TargetEntityTypeId = (int)target });
+			var targets = Query<EntityRelation>("select * from EntityRelation where TargetEntityTypeId=@TargetEntityTypeId", new { TargetEntityTypeId = (int)target });
 			targets.ForEach(r => result.Add(JsonConvert.DeserializeObject<T>(r.TargetObject)));
 			return result;
 		}
@@ -145,11 +145,11 @@ namespace HrMaxx.Common.Repository.Common
 
 		public IList<T> GetEntityRelationList<T>(object source, object target, Guid sourceId)
 		{
-			//var relation = _dbContext.EntityRelations.FirstOrDefault(er => er.SourceEntityTypeId == (int) source
-			//																											&& er.TargetEntityTypeId == (int) target
-			//																											&& er.SourceEntityId == sourceId
-			//																								);
-			var relation = QueryObject<EntityRelation>("select top(1) * from EntityRelations where SourceEntityTypeId=@SourceEntityTypeId and SourceEntityId=@SourceEntityId", new { TargetEntityTypeId = (int)target, SourceEntityId = sourceId, SourceEntityTypeId=source });
+			var relation = _dbContext.EntityRelations.FirstOrDefault(er => er.SourceEntityTypeId == (int)source
+																														&& er.TargetEntityTypeId == (int)target
+																														&& er.SourceEntityId == sourceId
+																											);
+			//var relation = QueryObject<EntityRelation>("select top(1) * from EntityRelation where SourceEntityTypeId=@SourceEntityTypeId and SourceEntityId=@SourceEntityId and TargetEntityTypeId=@TargetEntityTypeId", new { TargetEntityTypeId = (int)target, SourceEntityId = sourceId, SourceEntityTypeId=source });
 			return relation == null ? new List<T>() : JsonConvert.DeserializeObject<List<T>>(relation.TargetObject);
 
 		}

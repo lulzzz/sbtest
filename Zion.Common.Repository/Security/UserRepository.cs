@@ -85,25 +85,25 @@ namespace HrMaxx.Common.Repository.Security
 						"from AspNetUsers [User] " +
 						"for xml path('UserModel'), elements, type, root('UserList')";
 			var users1 = QueryXmlList<List<UserModel>>(sql, rootAttribute: new System.Xml.Serialization.XmlRootAttribute("UserList"));
-			var users = users1.AsQueryable();
+			
 			if (hostId.HasValue)
 			{
 				if (companyId.HasValue)
 				{
-					users = users.Where(u => u.Host.Value == hostId.Value && u.Company.Value == companyId.Value);
+					users1 = users1.Where(u =>u.Host.HasValue && u.Host.Value == hostId.Value && u.Company.HasValue && u.Company.Value == companyId.Value).ToList();
 				}
 				else
 				{
-					users = users.Where(u => u.Host.Value == hostId.Value);
+					users1 = users1.Where(u => u.Host.HasValue && u.Host.Value == hostId.Value).ToList();
 				}
 			}
 			else
 			{
 				if (companyId.HasValue)
-					users = users.Where(u => u.Company.Value == companyId.Value);
+					users1 = users1.Where(u => u.Company.HasValue && u.Company.Value == companyId.Value).ToList();
 			}
 			
-			return users.ToList();
+			return users1.ToList();
 			
 			
 		}

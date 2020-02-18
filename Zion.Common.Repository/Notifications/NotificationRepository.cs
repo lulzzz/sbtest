@@ -36,7 +36,7 @@ namespace HrMaxx.Common.Repository.Notifications
 		{
 			var newNotifications =
 				_mapper.Map<List<NotificationDto>, List<Notification>>(notificationList);
-			const string sql = "insert into Notifications (NotificationId, Type, Text, MetaData, LoginId, IsRead, CreatedOn, IsVisible) value(@NotificationId, @Type, @Text, @MetaData, @LoginId, @IsRead, @CreatedOn, 1)";
+			const string sql = "insert into Notifications (NotificationId, Type, Text, MetaData, LoginId, IsRead, CreatedOn, IsVisible) values(@NotificationId, @Type, @Text, @MetaData, @LoginId, @IsRead, @CreatedOn, 1)";
 			using (var conn = GetConnection())
 			{
 				conn.Execute(sql, notificationList);
