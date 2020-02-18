@@ -34,8 +34,8 @@ namespace HrMaxx.OnlinePayroll.Repository.Host
 
 		public Models.Host GetHost(Guid cpaId)
 		{
-			//var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
-			var cpa = QueryObject<Models.DataModel.Host>("select * from Host where Id=@Id", new { Id=cpaId});
+			var cpa = _dbContext.Hosts.FirstOrDefault(c => c.Id.Equals(cpaId));
+			//var cpa = QueryObject<Models.DataModel.Host>("select * from Host where Id=@Id", new { Id=cpaId});
 			if(cpa==null)
 				return new Models.Host();
 			return _mapper.Map<Models.DataModel.Host, Models.Host>(cpa);
