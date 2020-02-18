@@ -12,5 +12,5 @@ IF EXISTS(SELECT *
           FROM   INFORMATION_SCHEMA.COLUMNS
           WHERE  TABLE_NAME = 'CompanyPayCode'
                  AND COLUMN_NAME = 'TimesFactor')
-Alter table CompanyPayCode Drop Column timesfactor);
+Alter table CompanyPayCode Drop Column timesfactor;
 Go
